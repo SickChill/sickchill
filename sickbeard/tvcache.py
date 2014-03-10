@@ -225,7 +225,7 @@ class TVCache():
         indexer_lang = None
 
         # if we need indexer_id or tvrage_id then search the DB for them
-        if not indexer_id or not tvrage_id:
+        if not indexer_id:
 
             # if we have only the indexer_id, use the database
             if indexer_id:
@@ -234,23 +234,11 @@ class TVCache():
                 except (MultipleShowObjectsException):
                     showObj = None
                 if showObj:
-                    indexer_lang = showObj.lang
-                else:
-                    logger.log(u"We were given a " + self.indexer + " id " + str(indexer_id) + " but it doesn't match a show we have in our list, so leaving tvrage_id empty", logger.DEBUG)
-                    tvrage_id = 0
+                    # correct the indexer with the proper one linked to the show
+                    self.indexer = showObj.indexer
+                    sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
 
-            # if we have only a tvrage_id then use the database
-            elif tvrage_id:
-                try:
-                    showObj = helpers.findCertainTVRageShow(sickbeard.showList, tvrage_id)
-                except (MultipleShowObjectsException):
-                    showObj = None
-                if showObj:
-                    indexer_id = showObj.indexerid
                     indexer_lang = showObj.lang
-                else:
-                    logger.log(u"We were given a TVRage id " + str(tvrage_id) + " but it doesn't match a show we have in our list, so leaving indexer_id empty", logger.DEBUG)
-                    indexer_id = 0
 
             # if they're both empty then fill out as much info as possible by searching the show name
             else:
@@ -300,6 +288,10 @@ class TVCache():
                     except (MultipleShowObjectsException):
                         showObj = None
                     if showObj:
+                        # correct the indexer with the proper one linked to the show
+                        self.indexer = showObj.indexer
+                        sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
+
                         indexer_lang = showObj.lang
 
         # if we weren't provided with season/episode information then get it from the name that we parsed

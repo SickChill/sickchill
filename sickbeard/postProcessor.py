@@ -46,8 +46,8 @@ from sickbeard.exceptions import ex
 
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
-
 from sickbeard.indexers import indexer_api, indexer_exceptions
+from common import indexerStrings
 
 class PostProcessor(object):
     """
@@ -510,7 +510,7 @@ class PostProcessor(object):
             self._log(u"Looking up " + cur_name +u" in the DB", logger.DEBUG)
             db_result = helpers.searchDBForShow(cur_name)
             if db_result:
-                self._log(u"Lookup successful, using " + db_result[0] + " id " + str(db_result[0]), logger.DEBUG)
+                self._log(u"Lookup successful, using " + db_result[0] + " id " + str(db_result[1]), logger.DEBUG)
                 _finalize(parse_result)
                 return (int(db_result[1]), season, episodes)
 
@@ -808,11 +808,6 @@ class PostProcessor(object):
         Post-process a given file
         """
 
-        if self.indexer is not None:
-            sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-        else:
-            sickbeard.INDEXER_API_PARMS['indexer'] = 'Tvdb'
-
         self._log(u"Processing " + self.file_path + " (" + str(self.nzb_name) + ")")
 
         if ek.ek(os.path.isdir, self.file_path):
@@ -825,26 +820,27 @@ class PostProcessor(object):
         # reset per-file stuff
         self.in_history = False
 
-        # try to find the file info
-        (indexer_id, season, episodes) = self._find_info()
+        indexer_id = season = episodes = None
+        if 'auto' in self.indexer:
+            for indexer in indexerStrings:
+                self.indexer = indexer[0]
+                sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
 
-        # if we don't have it then give up
-        if not indexer_id or season == None or not episodes:
-            if 'Tvdb' in self.indexer:
-                self._log(u"Can't find show id from " + self.indexer + " or season or episode, trying other indexer", logger.WARNING)
-                self.indexer = 'TVRage'
-            else:
-                self._log(u"Can't find show id from " + self.indexer + " or season or episode, trying other indexer", logger.WARNING)
-                self.indexer = 'Tvdb'
+                # try to find the file info
+                (indexer_id, season, episodes) = self._find_info()
+                if indexer_id and season != None and episodes:
+                    break
 
+                self._log(u"Can't find show on " + self.indexer + ", auto trying next indexer in list", logger.WARNING)
+        else:
             sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
 
-            # try to find the file info with a different indexer
+            # try to find the file info
             (indexer_id, season, episodes) = self._find_info()
 
-            if not indexer_id or season == None or not episodes:
-                self._log(u"Can't find show id from ANY of the indexers or season or episode, skipping", logger.WARNING)
-                return False
+        if not indexer_id or season == None or not episodes:
+            self._log(u"Can't find show id from ANY of the indexers or season or episode, skipping", logger.WARNING)
+            return False
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(indexer_id, season, episodes)

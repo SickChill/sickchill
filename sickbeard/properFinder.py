@@ -167,6 +167,10 @@ class ProperFinder():
                     logger.log(u"This should never have happened, post a bug about this!", logger.ERROR)
                     raise Exception("BAD STUFF HAPPENED")
 
+                # correct the indexer with the proper one linked to the show
+                self.indexer = showObj.indexer
+                sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
+
                 indexer_lang = showObj.lang
                 # There's gotta be a better way of doing this but we don't wanna
                 # change the language value elsewhere

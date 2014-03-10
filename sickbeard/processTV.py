@@ -40,7 +40,7 @@ def logHelper (logMessage, logLevel=logger.MESSAGE):
     logger.log(logMessage, logLevel)
     return logMessage + u"\n"
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto", indexer="Tvdb"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto", indexer="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
