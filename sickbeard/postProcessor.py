@@ -498,7 +498,7 @@ class PostProcessor(object):
             self._log(u"Checking scene exceptions for a match on " + cur_name, logger.DEBUG)
             scene_id = scene_exceptions.get_scene_exception_by_name(cur_name)
             if scene_id:
-                self._log(u"Scene exception lookup got tvdb id " + str(scene_id) + ", using that", logger.DEBUG)
+                self._log(u"Scene exception lookup got a indexer id " + str(scene_id) + ", using that", logger.DEBUG)
                 _finalize(parse_result)
                 return (scene_id, season, episodes)
 
@@ -507,37 +507,49 @@ class PostProcessor(object):
             self._log(u"Looking up " + cur_name +u" in the DB", logger.DEBUG)
             db_result = helpers.searchDBForShow(cur_name)
             if db_result:
-                self._log(u"Lookup successful, using tvdb id " + str(db_result[0]), logger.DEBUG)
+                self._log(u"Lookup successful, using " + db_result[0] + " id " + str(db_result[0]), logger.DEBUG)
                 _finalize(parse_result)
-                return (int(db_result[0]), season, episodes)
+                return (int(db_result[1]), season, episodes)
 
         # see if we can find the name with a TVDB lookup
         for cur_name in name_list:
             try:
+                sickbeard.INDEXER_API_PARMS['indexer'] = 'Tvdb'
                 t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
 
-                self._log(u"Looking up name " + cur_name + u" on " + self.indexer + "", logger.DEBUG)
+                self._log(u"Looking up name " + cur_name + u" on " + t.name + "", logger.DEBUG)
                 showObj = t[cur_name]
-            except (indexer_exceptions):
+            except (indexer_exceptions.indexer_exception, IOError):
                 # if none found, search on all languages
                 try:
                     # There's gotta be a better way of doing this but we don't wanna
                     # change the language value elsewhere
+                    sickbeard.INDEXER_API_PARMS['indexer'] = 'Tvdb'
                     lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
 
                     lINDEXER_API_PARMS['search_all_languages'] = True
                     t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
 
-                    self._log(u"Looking up name " + cur_name + u" in all languages on " + self.indexer + "", logger.DEBUG)
+                    self._log(u"Looking up name " + cur_name + u" in all languages on " + t.name + "", logger.DEBUG)
                     showObj = t[cur_name]
                 except (indexer_exceptions.indexer_exception, IOError):
-                    pass
+                    # if none found, search on TVRage
+                    try:
+                        sickbeard.INDEXER_API_PARMS['indexer'] = 'TVRage'
+                        lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+
+                        t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+
+                        self._log(u"Looking up name " + cur_name + u" in all languages on " + t.name + "", logger.DEBUG)
+                        showObj = t[cur_name]
+                    except (indexer_exceptions.indexer_exception, IOError):
+                        pass
 
                 continue
             except (IOError):
                 continue
 
-            self._log(u"Lookup successful, using tvdb id " + str(showObj["id"]), logger.DEBUG)
+            self._log(u"Lookup successful, using " + sickbeard.INDEXER_API_PARMS['indexer'] + " id " + str(showObj["id"]), logger.DEBUG)
             _finalize(parse_result)
             return (int(showObj["id"]), season, episodes)
 
@@ -551,6 +563,7 @@ class PostProcessor(object):
         """
 
         indexer_id = season = None
+        indexer = None
         episodes = []
 
                         # try to look up the nzb in history
@@ -600,6 +613,7 @@ class PostProcessor(object):
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
                     if(showObj != None):
                         indexer_lang = showObj.lang
+                        indexer = showObj.indexer
                 except exceptions.MultipleShowObjectsException:
                     raise #TODO: later I'll just log this, for now I want to know about it ASAP
 
@@ -622,7 +636,7 @@ class PostProcessor(object):
                     episodes = []
                     continue
                 except indexer_exceptions.indexer_error, e:
-                    logger.log(u"Unable to contact " + self.indexer + ": " + ex(e), logger.WARNING)
+                    logger.log(u"Unable to contact " + showObj.indexer + ": " + ex(e), logger.WARNING)
                     episodes = []
                     continue
 
@@ -635,9 +649,9 @@ class PostProcessor(object):
                     season = 1
 
             if indexer_id and season != None and episodes:
-                return (indexer_id, season, episodes)
+                return (indexer, indexer_id, season, episodes)
 
-        return (indexer_id, season, episodes)
+        return (indexer, indexer_id, season, episodes)
 
     def _get_ep_obj(self, indexer_id, season, episodes):
         """
@@ -813,11 +827,11 @@ class PostProcessor(object):
         self.in_history = False
 
         # try to find the file info
-        (indexer_id, season, episodes) = self._find_info()
+        (indexer, indexer_id, season, episodes) = self._find_info()
 
         # if we don't have it then give up
         if not indexer_id or season == None or not episodes:
-            self._log(u"Can't find show id from " + self.indexer + " or season or episode, skipping", logger.WARNING)
+            self._log(u"Can't find show id from " + indexer + " or season or episode, skipping", logger.WARNING)
             return False
 
         # retrieve/create the corresponding TVEpisode objects

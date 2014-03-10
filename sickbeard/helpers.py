@@ -320,7 +320,7 @@ def searchDBForShow(regShowName):
             sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ? OR show_name LIKE ?", [showName, showName])
 
         if len(sqlResults) == 1:
-            return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
+            return (sqlResults[0]["indexer"], int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
 
         else:
 
@@ -337,7 +337,7 @@ def searchDBForShow(regShowName):
                 logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name", logger.DEBUG)
                 continue
             else:
-                return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
+                return (sqlResults[0]["indexer"], int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
 
 
     return None

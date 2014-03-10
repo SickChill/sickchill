@@ -280,7 +280,7 @@ class NameParser(object):
             for cur_name in name_list:
                 logger.log(u"Looking up "+cur_name+u" in the DB", logger.DEBUG)
                 db_result = sickbeard.helpers.searchDBForShow(cur_name)
-                if db_result: return db_result[0]
+                if db_result: return db_result[1]
         
         # see if we can find the name with a TVDB lookup
         if check_tvdb:

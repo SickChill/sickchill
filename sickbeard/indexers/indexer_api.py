@@ -26,6 +26,12 @@ class indexerApi:
         return object.__new__(new_type)
 
     def __init__(self, indexer=None, language=None, *args, **kwargs):
+        if indexer is not None:
+            self.name = eval(indexer)
+            self._wrapped = eval(indexer)(*args, **kwargs)
+        else:
+            self.name = "Indexer"
+
         self.config = {}
 
         self.config['valid_languages'] = [
@@ -47,9 +53,6 @@ class indexerApi:
                 ))
             else:
                 self.config['language'] = language
-
-        if indexer is not None:
-            self._wrapped = eval(indexer)(*args, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self._wrapped, attr)
