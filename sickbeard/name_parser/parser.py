@@ -25,10 +25,6 @@ import regexes
 import sickbeard
 
 from sickbeard import logger
-from sickbeard import classes
-from sickbeard import show_name_helpers
-from sickbeard import scene_numbering
-from sickbeard import scene_exceptions
 
 from sickbeard.indexers import indexer_api, indexer_exceptions
 
