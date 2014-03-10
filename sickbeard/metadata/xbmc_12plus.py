@@ -127,7 +127,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         # check for title and id
         try:
             if getattr(myShow, 'seriesname', None) is None or getattr(myShow, 'id') is None:
-                logger.log(u"Incomplete info for show with id " + str(show_ID) + " on tvdb, skipping it", logger.ERROR)
+                logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + show_obj.indexer + ", skipping it", logger.ERROR)
 
                 return False
         except indexer_exceptions.indexer_attributenotfound:
@@ -189,7 +189,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'network', None) is not None:
             studio.text = myShow["network"]
 
-        if getattr(myShow, 'actors', None) is not None:
+        if getattr(myShow, '_actors', None) is not None:
             for actor in myShow['_actors']:
                 cur_actor = etree.SubElement(tv_node, "actor")
 
@@ -258,10 +258,10 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
                 logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on " + ep_obj.show.indexer + ".. has it been removed? Should I delete from db?")
                 return None
 
-            if getattr(myShow, 'firstaired', None) is not None:
+            if getattr(myEp, 'firstaired', None) is None:
                 myEp["firstaired"] = str(datetime.date.fromordinal(1))
 
-            if getattr(myShow, 'episodename', None) is not None:
+            if getattr(myEp, 'episodename', None) is None:
                 logger.log(u"Not generating nfo because the ep has no title", logger.DEBUG)
                 return None
 
@@ -301,7 +301,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
             runtime = etree.SubElement(episode, "runtime")
             if curEpToWrite.season != 0:
-                if getattr(myEp, 'runtime', None) is not None:
+                if getattr(myShow, 'runtime', None) is not None:
                     runtime.text = myShow["runtime"]
 
             displayseason = etree.SubElement(episode, "displayseason")

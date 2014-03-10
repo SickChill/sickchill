@@ -418,17 +418,17 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on tvdb... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on " + ep_obj.show.indexer + ".. has it been removed? Should I delete from db?")
                 return None
 
             if curEpToWrite == ep_obj:
                 # root (or single) episode
 
                 # default to today's date for specials if firstaired is not set
-                if getattr(myShow, 'firstaired', None) is not None and ep_obj.season == 0:
+                if getattr(myEp, 'firstaired', None) is None and ep_obj.season == 0:
                     myEp['firstaired'] = str(datetime.date.fromordinal(1))
 
-                if getattr(myShow, 'episodename', None) is None or getattr(myShow, 'firstaired', None) is not None:
+                if getattr(myEp, 'episodename', None) is None or getattr(myEp, 'firstaired', None) is None:
                     return None
 
                 episode = rootNode
@@ -470,7 +470,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
                 if not ep_obj.relatedEps:
                     Rating = etree.SubElement(episode, "Rating")
-                    rating_text = myEp['rating']
+                    if getattr(myEp, 'rating', None) is not None:
+                        rating_text = myEp['rating']
                     if rating_text != None:
                         Rating.text = rating_text
 
@@ -518,11 +519,11 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                         Overview.text = Overview.text + "\r" + curEpToWrite.description
 
             # collect all directors, guest stars and writers
-            if getattr(myShow, 'director', None) is not None:
+            if getattr(myEp, 'director', None) is not None:
                 persons_dict['Director'] += [x.strip() for x in myEp['director'].split('|') if x]
-            if getattr(myShow, 'gueststars', None) is not None:
+            if getattr(myEp, 'gueststars', None) is not None:
                 persons_dict['GuestStar'] += [x.strip() for x in myEp['gueststars'].split('|') if x]
-            if getattr(myShow, 'writer', None) is not None:
+            if getattr(myEp, 'writer', None) is not None:
                 persons_dict['Writer'] += [x.strip() for x in myEp['writer'].split('|') if x]
 
         # fill in Persons section with collected directors, guest starts and writers

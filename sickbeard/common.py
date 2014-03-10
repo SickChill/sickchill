@@ -80,8 +80,8 @@ multiEpStrings[NAMING_LIMITED_EXTEND] = "Extend (Limited)"
 multiEpStrings[NAMING_LIMITED_EXTEND_E_PREFIXED] = "Extend (Limited, E-prefixed)"
 
 ### Notification Types
-INDEXER_TVDB = 'Tvdb'
-INDEXER_TVRAGE = 'TVRage'
+INDEXER_TVDB = "Tvdb"
+INDEXER_TVRAGE = "TVRage"
 
 indexerStrings = {}
 indexerStrings[INDEXER_TVDB] = "TheTVDB"

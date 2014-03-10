@@ -21,17 +21,11 @@ from lib.tvrage_api.tvrage_api import TVRage
 
 class indexerApi:
     def __new__(self, indexer):
-        cls = type(eval(indexer))
+        cls = type(indexer)
         new_type = type(cls.__name__ + '_wrapped', (indexerApi, cls), {})
         return object.__new__(new_type)
 
-    def __init__(self, indexer=None, language=None, *args, **kwargs):
-        if indexer is not None:
-            self.name = indexer
-            self._wrapped = eval(indexer)(*args, **kwargs)
-        else:
-            self.name = "Indexer"
-
+    def __init__(self, indexer=None, language=None, custom_ui=None, *args, **kwargs):
         self.config = {}
 
         self.config['valid_languages'] = [
@@ -53,6 +47,12 @@ class indexerApi:
                 ))
             else:
                 self.config['language'] = language
+
+        if indexer is not None:
+            self.name = indexer
+            self._wrapped = eval(indexer)(custom_ui=custom_ui, language=language, *args, **kwargs)
+        else:
+            self.name = "Indexer"
 
     def __getattr__(self, attr):
         return getattr(self._wrapped, attr)

@@ -1335,7 +1335,7 @@ class TVEpisode(object):
                 logger.log(u"" + self.indexer + " timed out, unable to create the episode", logger.ERROR)
                 return False
         except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-            logger.log(u"Unable to find the episode on tvdb... has it been removed? Should I delete from db?", logger.DEBUG)
+            logger.log(u"Unable to find the episode on " + self.idexer + "... has it been removed? Should I delete from db?", logger.DEBUG)
             # if I'm no longer on TVDB but I once was then delete myself from the DB
             if self.indexerid != -1:
                 self.deleteEpisode()

@@ -24,12 +24,12 @@ $(document).ready(function () {
                 }
 
                 $('#tvdbLangSelect').html(resultStr);
-                $('#tvdbLangSelect').change(function () { searchTvdb(); });
+                $('#tvdbLangSelect').change(function () { searchIndexers(); });
             });
         }
     }
 
-    function searchTvdb() {
+    function searchIndexers() {
         if (!$('#nameToSearch').val().length) {
             return;
         }
@@ -91,7 +91,7 @@ $(document).ready(function () {
         });
     }
 
-    $('#searchName').click(function () { searchTvdb(); });
+    $('#searchName').click(function () { searchIndexers(); });
 
     if ($('#nameToSearch').length && $('#nameToSearch').val().length) {
         $('#searchName').click();

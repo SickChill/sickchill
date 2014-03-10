@@ -359,7 +359,7 @@ class GenericMetadata():
             try:
                 myEp = indexer_show_obj[cur_ep.season][cur_ep.episode]
             except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(cur_ep.season) + "x" + str(cur_ep.episode) + " on tvdb... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode " + str(cur_ep.season) + "x" + str(cur_ep.episode) + " on " + ep_obj.show.indexer + ".. has it been removed? Should I delete from db?")
                 continue
 
             thumb_url = getattr(myEp, 'filename', None)
@@ -873,8 +873,8 @@ class GenericMetadata():
                     + str(showXML.findtext('id')))
                 return empty_return
 
-            indexer = None
             name = showXML.findtext('title')
+            indexer = showXML.findtext('indexer')
             if showXML.findtext('tvdbid') != None:
                 indexer_id = int(showXML.findtext('tvdbid'))
             elif showXML.findtext('id') != None:
@@ -882,11 +882,6 @@ class GenericMetadata():
             else:
                 logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID", logger.WARNING)
                 return empty_return
-
-            if indexer is None:
-                indexer = showXML.findtext('indexer')
-                if indexer is None:
-                    indexer = 'Tvdb'
 
             if indexer_id is None:
                 logger.log(u"Invalid indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)

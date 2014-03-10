@@ -1992,10 +1992,6 @@ class NewHomeAddShows:
         t = PageTemplate(file="home_massAddTable.tmpl")
         t.submenu = HomeMenu()
 
-        for curIndexer in sorted(indexerStrings.items(), key=lambda x: x[1]):
-            a = curIndexer[0]
-            b = curIndexer[1]
-
         myDB = db.DBConnection()
 
         if not rootDir:
@@ -2052,12 +2048,14 @@ class NewHomeAddShows:
                 show_name = ''
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
-                    if indexer_id and indexer and show_name:
+                    if indexer_id  and show_name:
                         break
 
                 # default to TVDB if indexer was not detected
                 if indexer is None:
-                    indexer = 'Tvdb'
+                    found_info = helpers.searchIndexersForShow(show_name)
+                    if found_info is not None:
+                        indexer = found_info
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 

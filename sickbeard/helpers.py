@@ -58,7 +58,7 @@ import sickbeard
 
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions, XML_NSMAP
+from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions, XML_NSMAP, indexerStrings
 
 from sickbeard import db
 from sickbeard import encodingKludge as ek
@@ -303,7 +303,7 @@ def makeDir(path):
     return True
 
 
-def searchDBForShow(regShowName):
+def searchDBForShow(regShowName, useIndexer=False):
 
     showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
 
@@ -313,7 +313,7 @@ def searchDBForShow(regShowName):
 
     for showName in showNames:
 
-        show = get_show_by_name(showName,sickbeard.showList)
+        show = get_show_by_name(showName,sickbeard.showList, useIndexer==useIndexer)
         if show:
             sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ? OR show_name LIKE ?", [show.name, show.name])
         else:
@@ -339,6 +339,42 @@ def searchDBForShow(regShowName):
             else:
                 return (sqlResults[0]["indexer"], int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
 
+    return None
+
+def searchIndexersForShow(regShowName):
+
+    showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
+
+    yearRegex = "([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
+
+    for name in showNames:
+        for indexer in indexerStrings:
+            logger.log(u"Trying to find the " + name + " on " + indexer, logger.DEBUG)
+
+            # try each indexer till we find a match
+            sickbeard.INDEXER_API_PARMS['indexer'] = indexer
+
+            try:
+                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
+                showObj = t[name]
+                return indexer
+            except (indexer_exceptions.indexer_exception, IOError):
+                # if none found, search on all languages
+                try:
+                    # There's gotta be a better way of doing this but we don't wanna
+                    # change the language value elsewhere
+                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+
+                    lINDEXER_API_PARMS['search_all_languages'] = True
+                    t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+                    showObj = t[name]
+                    return indexer
+                except (indexer_exceptions.indexer_exception, IOError):
+                    pass
+
+                continue
+            except (IOError):
+                continue
 
     return None
 
@@ -908,7 +944,7 @@ def _check_against_names(name, show):
 
     return False
 
-def get_show_by_name(name, showList, useTvdb=False):
+def get_show_by_name(name, showList, useIndexer=False):
     logger.log(u"Trying to get the indexerid for "+name, logger.DEBUG)
 
     if showList:
@@ -917,30 +953,35 @@ def get_show_by_name(name, showList, useTvdb=False):
                 logger.log(u"Matched "+name+" in the showlist to the show "+show.name, logger.DEBUG)
                 return show
 
-    if useTvdb:
-        try:
-            t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
-            showObj = t[name]
-        except (indexer_exceptions):
-            # if none found, search on all languages
-            try:
-                # There's gotta be a better way of doing this but we don't wanna
-                # change the language value elsewhere
-                lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+    if useIndexer:
+        showResult = None
+        for indexer in indexerStrings:
+            # try each indexer till we find a match
+            sickbeard.INDEXER_API_PARMS['indexer'] = indexer
 
-                lINDEXER_API_PARMS['search_all_languages'] = True
-                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+            try:
+                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
                 showObj = t[name]
             except (indexer_exceptions.indexer_exception, IOError):
-                pass
+                # if none found, search on all languages
+                try:
+                    # There's gotta be a better way of doing this but we don't wanna
+                    # change the language value elsewhere
+                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
 
-            return None
-        except (IOError):
-            return None
-        else:
-            show = findCertainShow(sickbeard.showList, int(showObj["id"]))
-            if show:
-                return show
+                    lINDEXER_API_PARMS['search_all_languages'] = True
+                    t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+                    showObj = t[name]
+                except (indexer_exceptions.indexer_exception, IOError):
+                    pass
+
+                continue
+            except (IOError):
+                continue
+
+            showResult = findCertainShow(sickbeard.showList, int(showObj["id"]))
+            if showResult is not None:
+                return showResult
 
     return None
 

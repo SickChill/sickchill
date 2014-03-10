@@ -192,16 +192,16 @@ class TIVOMetadata(generic.GenericMetadata):
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
             except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on tvdb... has it been removed? Should I delete from db?")
+                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on " + ep_obj.show.indexer + "... has it been removed? Should I delete from db?")
                 return None
 
-            if myEp["firstaired"] == None and ep_obj.season == 0:
+            if getattr(myEp, 'firstaired', None) is None and ep_obj.season == 0:
                 myEp["firstaired"] = str(datetime.date.fromordinal(1))
 
-            if myEp["episodename"] == None or myEp["firstaired"] == None:
+            if getattr(myEp, 'episodename', None) is None or getattr(myEp, 'firstaired', None) is None:
                 return None
 
-            if myShow["seriesname"] != None:
+            if getattr(myShow, 'seriesname', None) is not None:
                 data += ("title : " + myShow["seriesname"] + "\n")
                 data += ("seriesTitle : " + myShow["seriesname"] + "\n")
 
@@ -236,11 +236,11 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # Usually starts with "SH" and followed by 6-8 digits.
             # Tivo uses zap2it for thier data, so the series id is the zap2it_id.
-            if myShow["zap2it_id"] != None:
+            if getattr(myShow, 'zap2it_id', None) is not None:
                 data += ("seriesId : " + myShow["zap2it_id"] + "\n")
 
             # This is the call sign of the channel the episode was recorded from.
-            if myShow["network"] != None:
+            if getattr(myShow, 'network', None) is not None:
                 data += ("callsign : " + myShow["network"] + "\n")
 
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
@@ -250,13 +250,13 @@ class TIVOMetadata(generic.GenericMetadata):
                 data += ("originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
-            if myShow["actors"]:
+            if getattr(myShow, 'actors', None) is not None:
                 for actor in myShow["actors"].split('|'):
                     if actor:
                         data += ("vActor : " + actor + "\n")
 
             # This is shown on both the Program screen and the Details screen.
-            if myEp["rating"] != None:
+            if getattr(myEp, 'rating', None) is not None:
                 try:
                     rating = float(myEp['rating'])
                 except ValueError:
@@ -268,7 +268,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
-            if myShow["contentrating"]:
+            if getattr(myShow, 'contentrating', None) is not None:
                 data += ("tvRating : " + str(myShow["contentrating"]) + "\n")
 
             # This field can be repeated as many times as necessary or omitted completely.

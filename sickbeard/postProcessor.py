@@ -547,7 +547,6 @@ class PostProcessor(object):
         _finalize(parse_result)
         return to_return
 
-
     def _find_info(self):
         """
         For a given file try to find the showid, season, and episode.
@@ -823,7 +822,7 @@ class PostProcessor(object):
         indexer_id = season = episodes = None
         if 'auto' in self.indexer:
             for indexer in indexerStrings:
-                self.indexer = indexer[0]
+                self.indexer = indexer
                 sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
 
                 # try to find the file info
