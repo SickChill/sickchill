@@ -263,6 +263,8 @@ class TVRage:
 
         self.config['debug_enabled'] = debug # show debugging messages
 
+        self.config['custom_ui'] = custom_ui
+
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
@@ -487,15 +489,36 @@ class TVRage:
         """This searches tvrage.com for the series name
         and returns the result list
         """
+
+        remap_keys = {
+            'showid': 'id',
+            'epnum': 'id',
+            'started': 'firstaired',
+            'airdate': 'firstaired',
+            'genres': 'genre',
+            'airtime': 'airs_time',
+            'name': 'seriesname',
+            'image': 'image_type',
+            'airday': 'airs_dayofweek',
+            'title': 'episodename',
+            'seasonnum': 'episodenumber'
+        }
+
         series = urllib.quote(series.encode("utf-8"))
         log().debug("Searching for show %s" % series)
         seriesEt = self._getetsrc(self.config['url_getSeries'] % (series))
         allSeries = []
+        seriesResult = {}
         for series in seriesEt:
-            result = dict((k.tag.lower(), k.text) for k in series.getchildren())
-            result['showid'] = int(result['showid'])
-            log().debug('Found series %(name)s' % result)
-            allSeries.append(result)
+            for k in series.getchildren():
+                if k.tag.lower() in remap_keys:
+                    seriesResult.setdefault(remap_keys[k.tag.lower()], k.text)
+                else:
+                    seriesResult.setdefault(k.tag.lower(), k.text)
+
+            seriesResult['id'] = int(seriesResult['id'])
+            log().debug('Found series %s' % seriesResult['seriesname'])
+            allSeries.append(seriesResult)
         
         return allSeries
 
@@ -511,8 +534,12 @@ class TVRage:
             log().debug('Series result returned zero')
             raise tvrage_shownotfound("Show-name search returned zero results (cannot find show on TVRAGE)")
 
-        log().debug('Auto-selecting first search result using BaseUI')
-        ui = BaseUI(config = self.config)
+        if self.config['custom_ui'] is not None:
+            log().debug("Using custom UI %s" % (repr(self.config['custom_ui'])))
+            ui = self.config['custom_ui'](config = self.config)
+        else:
+            log().debug('Auto-selecting first search result using BaseUI')
+            ui = BaseUI(config = self.config)
 
         return ui.selectSeries(allSeries)
 

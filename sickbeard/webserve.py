@@ -1845,7 +1845,7 @@ class HomePostProcess:
         return _munge(t)
 
     @cherrypy.expose
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto"):
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="Tvdb"):
 
         if failed == "0":
             failed = False
@@ -1865,7 +1865,7 @@ class HomePostProcess:
         if not dir:
             redirect("/home/postprocess/")
         else:
-            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type)
+            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type, indexer=indexer)
             if quiet != None and int(quiet) == 1:
                 return result
 

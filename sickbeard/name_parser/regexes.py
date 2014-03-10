@@ -100,7 +100,8 @@ ep_regexes = [
                # Show.Name.2010.Nov.23rd.Source.Quality.Etc-Group
                # Show Name - 2010-Nov-23rd - Ep Name
                '''
-               ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
+               ^((?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+)?             # Show_Name and separator
+               (?P<part_name>.+?)[. _-]+
                (?P<air_day>\d+)(?:[a-zA-Z]{2})[. _-]+      # 23rd and seperator
                (?P<air_month>[a-zA-Z]{3})[. _-]+           # Nov and seperator
                (?P<air_year>\d{4})                         # 2010
