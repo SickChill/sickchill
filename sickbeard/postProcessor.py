@@ -602,6 +602,7 @@ class PostProcessor(object):
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
                     if(showObj != None):
+                        self.indexer = showObj.indexer
                         indexer_lang = showObj.lang
                 except exceptions.MultipleShowObjectsException:
                     raise #TODO: later I'll just log this, for now I want to know about it ASAP
@@ -825,8 +826,21 @@ class PostProcessor(object):
 
         # if we don't have it then give up
         if not indexer_id or season == None or not episodes:
-            self._log(u"Can't find show id from " + self.indexer + " or season or episode, skipping", logger.WARNING)
-            return False
+            if 'Tvdb' in self.indexer:
+                self._log(u"Can't find show id from " + self.indexer + " or season or episode, trying other indexer", logger.WARNING)
+                self.indexer = 'TVRage'
+            else:
+                self._log(u"Can't find show id from " + self.indexer + " or season or episode, trying other indexer", logger.WARNING)
+                self.indexer = 'Tvdb'
+
+            sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
+
+            # try to find the file info with a different indexer
+            (indexer_id, season, episodes) = self._find_info()
+
+            if not indexer_id or season == None or not episodes:
+                self._log(u"Can't find show id from ANY of the indexers or season or episode, skipping", logger.WARNING)
+                return False
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(indexer_id, season, episodes)
