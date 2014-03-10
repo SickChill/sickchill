@@ -563,7 +563,7 @@ class PostProcessor(object):
         """
 
         indexer_id = season = None
-        indexer = None
+        indexer = 'Indexer'
         episodes = []
 
                         # try to look up the nzb in history
