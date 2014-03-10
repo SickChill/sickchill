@@ -602,7 +602,11 @@ class PostProcessor(object):
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
                     if(showObj != None):
+                        # correct the indexer with the proper one linked to the show
                         self.indexer = showObj.indexer
+                        sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
+
+                        # set the language of the show
                         indexer_lang = showObj.lang
                 except exceptions.MultipleShowObjectsException:
                     raise #TODO: later I'll just log this, for now I want to know about it ASAP
