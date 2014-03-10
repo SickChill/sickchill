@@ -1,0 +1,630 @@
+#import os.path
+#import sickbeard
+#from sickbeard.common import *
+#from sickbeard import config
+#from sickbeard import metadata
+#from sickbeard.metadata.generic import GenericMetadata
+#from sickbeard import naming
+
+#set global $title  = "Config - Post Processing"
+#set global $header = "Post Processing"
+
+#set global $sbPath="../.."
+
+#set global $topmenu="config"#
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+
+<script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+#if $varExists('header') 
+	<h1 class="header">$header</h1>
+#else 
+	<h1 class="title">$title</h1>
+#end if
+<div id="config">
+<div id="config-content">
+
+<form id="configForm" action="savePostProcessing" method="post">
+
+            <div id="config-components">
+                <ul>
+                	<li><a href="#core-component-group3">Post-Processing</a></li>
+                	<li><a href="#core-component-group4">Episode Naming</a></li>
+                	<li><a href="#core-component-group2">Metadata</a></li>
+                </ul>
+                
+                <div id="core-component-group3" class="component-group clearfix">
+
+                    <div class="component-group-desc">
+                        <h3>Post-Processing</h3>
+                        <p>Settings that dictate how Sick Beard should process completed downloads.</p>
+                    </div>
+
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label class="nocheck clearfix" for="tv_download_dir">
+                                <span class="component-title">TV Download Dir</span>
+                                <input type="text" name="tv_download_dir" id="tv_download_dir" value="$sickbeard.TV_DOWNLOAD_DIR" size="35" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">The folder where your download client puts TV downloads.</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Use only if not using SABnzbd+ post processing.</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Or if SABnzbd+ and Sick Beard are on different PCs.</span>
+                            </label>
+                        </div>
+       
+                        <div class="field-pair">
+                            <label class="nocheck clearfix" for="process_method">
+                                <span class="component-title">Process Episode Method:</span>
+                                <span class="component-desc">
+                                    <select name="process_method" id="process_method" class="input-medium" >
+                                        #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
+                                        #for $curAction in ('copy', 'move', 'hardlink', 'symlink'):
+                                          #if $sickbeard.PROCESS_METHOD == $curAction:
+                                            #set $process_method = "selected=\"selected\""
+                                          #else
+                                            #set $process_method = ""
+                                          #end if
+                                        <option value="$curAction" $process_method>$process_method_text[$curAction]</option>
+                                        #end for
+                                    </select>                                
+                                </span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">What method should be used to put file in the TV directory?</span>
+                            </label>
+                        </div>
+
+						<div class="field-pair">
+						    <label class="nocheck clearfix">
+						        <span class="component-title">Extra Scripts</span>
+						        <input type="text" name="extra_scripts" value="<%='|'.join(sickbeard.EXTRA_SCRIPTS)%>" size="35" />
+						    </label>
+						    <label class="nocheck clearfix">
+						        <span class="component-title">&nbsp;</span>
+						        <span class="component-desc">Additional scripts separated by <b>|</b>.</span>
+						    </label>
+						    <label class="nocheck clearfix">
+						        <span class="component-title">&nbsp;</span>
+						        <span class="component-desc"><b>NOTE:</b> Scripts are called after Sick Beard's own post-processing.</span>
+						    </label>						    
+						</div>
+
+                        <div class="field-pair">
+                            <input type="checkbox" name="move_associated_files" id="move_associated_files" #if $sickbeard.MOVE_ASSOCIATED_FILES == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="move_associated_files">
+                                <span class="component-title">Move Associated Files</span>
+                                <span class="component-desc">Move srr/srt/sfv/etc files with the episode when processed?</span>
+                            </label>
+                            <label class="nocheck clearfix" for="move_associated_files">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> <i>.nfo</i> will be renamed to <i>.nfo-orig</i> when moved.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <input type="checkbox" name="rename_episodes" id="rename_episodes" #if $sickbeard.RENAME_EPISODES == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="rename_episodes">
+                                <span class="component-title">Rename Episodes</span>
+                                <span class="component-desc">Rename episode using the Episode Naming settings?</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <input type="checkbox" name="process_automatically" id="process_automatically" #if $sickbeard.PROCESS_AUTOMATICALLY == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="process_automatically">
+                                <span class="component-title">Scan and Process</span>
+                                <span class="component-desc">Scan and post-process any files in your <i>TV Download Dir</i>?</span>
+                            </label>
+                            <label class="nocheck clearfix" for="process_automatically">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Do not use if you use PostProcesing external script</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">eg. NZBMedia w/ NZBGET, sabToSickbeard w/ SABnzbd+!</span>
+                            </label>                            
+                        </div>
+
+                        <div class="field-pair">
+                            <input id="unpack" type="checkbox" name="unpack" #if $sickbeard.UNPACK == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="unpack">
+                                <span class="component-title">Unpack</span>
+                                <span class="component-desc">Unpack any TV releases in your <i>TV Download Dir</i>?</span>
+                            </label>
+                            <label class="nocheck clearfix" for="unpack">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Only working with RAR archive</span>
+                            </label>
+                        </div>
+                    
+                        <div class="field-pair">
+                            <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" #if $sickbeard.USE_FAILED_DOWNLOADS == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="use_failed_downloads">
+                                <span class="component-title">Use Failed Downloads</span>
+                                <span class="component-desc">Use Failed Download Handling?</span>
+                            </label>
+                            <label class="nocheck clearfix" for="use_failed_downloads">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> See <i>readme-FailedDownloads.md</i> before enabling.</span>
+                            </label>
+                        </div>
+						
+                        <div id="content_use_failed_downloads">
+                            <div class="field-pair">
+                                <input id="delete_failed" type="checkbox" name="delete_failed" #if $sickbeard.DELETE_FAILED == True then "checked=\"checked\"" else ""# />
+                                <label class="clearfix" for="delete_failed">
+                                    <span class="component-title">Delete Failed</span>
+                                    <span class="component-desc">Delete files left over from a failed download?</span>
+                                </label>
+                                <label class="nocheck clearfix" for="delete_failed">
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc"><b>NOTE:</b> This only works if Use Failed Downloads is enabled.</span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+
+                    </fieldset>
+                </div><!-- /component-group3 //-->
+
+                <div id="core-component-group2" class="component-group clearfix">
+
+                    <div class="component-group-desc">
+                        <h3>Metadata</h3>
+                        <p>The data associated to the data. These are files associated to a TV show in the form of images and text that, when supported, will enhance the viewing experience.</p>
+                    </div>
+
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title jumbo">Metadata Type:</span>
+                                <span class="component-desc">
+                                    #set $m_dict = $metadata.get_metadata_generator_dict()
+                                    <select id="metadataType">
+                                    #for ($cur_name, $cur_generator) in sorted($m_dict.items()):
+                                    	<option value="$cur_generator.get_id()">$cur_name</option>
+                                    #end for
+                                    </select>
+                                </span>
+                            </label>
+                            <span>Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b></span>
+                        </div>
+
+                        <div id="metadataLegend">
+                            <div style="width: 190px; float: left;">Create:</div>
+                            <div style="width: 260px; float: left;">Results:</div>
+                        </div>
+                        <div class="clearfix"></div>
+
+#for ($cur_name, $cur_generator) in $m_dict.items(): 
+#set $cur_metadata_inst = $sickbeard.metadata_provider_dict[$cur_generator.name]
+#set $cur_id = $cur_generator.get_id()
+<div class="metadataDiv" id="$cur_id">
+    <div class="metadata_options">
+        <label for="${cur_id}_show_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_show_metadata" #if $cur_metadata_inst.show_metadata then "checked=\"checked\"" else ""#/>&nbsp;Show Metadata</label>
+        <label for="${cur_id}_episode_metadata"><input type="checkbox" class="metadata_checkbox" id="${cur_id}_episode_metadata" #if $cur_metadata_inst.episode_metadata then "checked=\"checked\"" else ""#/>&nbsp;Episode Metadata</label>
+        <label for="${cur_id}_fanart" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_fanart" #if $cur_metadata_inst.fanart then "checked=\"checked\"" else ""#/>&nbsp;Show Fanart</label>
+        <label for="${cur_id}_poster" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_poster" #if $cur_metadata_inst.poster then "checked=\"checked\"" else ""#/>&nbsp;Show Poster</label>
+        <label for="${cur_id}_banner" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_banner" #if $cur_metadata_inst.banner then "checked=\"checked\"" else ""#/>&nbsp;Show Banner</label>
+        <label for="${cur_id}_episode_thumbnails" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_episode_thumbnails" #if $cur_metadata_inst.episode_thumbnails then "checked=\"checked\"" else ""#/>&nbsp;Episode Thumbnails</label>
+        <label for="${cur_id}_season_posters" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_posters" #if $cur_metadata_inst.season_posters then "checked=\"checked\"" else ""#/>&nbsp;Season Posters</label>
+        <label for="${cur_id}_season_banners" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_banners" #if $cur_metadata_inst.season_banners then "checked=\"checked\"" else ""#/>&nbsp;Season Banners</label>
+        <label for="${cur_id}_season_all_poster" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_poster" #if $cur_metadata_inst.season_all_poster then "checked=\"checked\"" else ""#/>&nbsp;Season All Poster</label>
+        <label for="${cur_id}_season_all_banner" class="clearfix"><input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_banner" #if $cur_metadata_inst.season_all_banner then "checked=\"checked\"" else ""#/>&nbsp;Season All Banner</label>
+    </div>
+    <div class="metadata_example">
+        <label for="${cur_id}_show_metadata"><span id="${cur_id}_eg_show_metadata">$cur_metadata_inst.eg_show_metadata</span></label>
+        <label for="${cur_id}_episode_metadata"><span id="${cur_id}_eg_episode_metadata">$cur_metadata_inst.eg_episode_metadata</span></label>
+        <label for="${cur_id}_fanart"><span id="${cur_id}_eg_fanart">$cur_metadata_inst.eg_fanart</span></label>
+        <label for="${cur_id}_poster"><span id="${cur_id}_eg_poster">$cur_metadata_inst.eg_poster</span></label>
+        <label for="${cur_id}_banner"><span id="${cur_id}_eg_banner">$cur_metadata_inst.eg_banner</span></label>
+        <label for="${cur_id}_episode_thumbnails"><span id="${cur_id}_eg_episode_thumbnails">$cur_metadata_inst.eg_episode_thumbnails</span></label>
+        <label for="${cur_id}_season_posters"><span id="${cur_id}_eg_season_posters">$cur_metadata_inst.eg_season_posters</span></label>
+        <label for="${cur_id}_season_banners"><span id="${cur_id}_eg_season_banners">$cur_metadata_inst.eg_season_banners</span></label>
+        <label for="${cur_id}_season_all_poster"><span id="${cur_id}_eg_season_all_poster">$cur_metadata_inst.eg_season_all_poster</span></label>
+        <label for="${cur_id}_season_all_banner"><span id="${cur_id}_eg_season_all_banner">$cur_metadata_inst.eg_season_all_banner</span></label>
+    </div>
+    <input type="hidden" name="${cur_id}_data" id="${cur_id}_data" value="$cur_metadata_inst.get_config()" />
+</div>
+#end for
+
+                        <div class="clearfix" style="clear:left;"></div><br/>
+
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+
+                    </fieldset>
+                </div><!-- /component-group2 //-->
+
+                <div id="core-component-group4" class="component-group clearfix">
+
+                    <div class="component-group-desc">
+                        <h3>Episode Naming</h3>
+                        <p>How Sick Beard will name and sort your episodes.</p>
+                    </div>
+
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix" for="name_presets">
+                                <span class="component-title">Name Pattern:</span>
+                                <span class="component-desc">
+                                    <select id="name_presets">
+                                        #set is_custom = True
+                                        #for $cur_preset in $naming.name_presets:
+                                            #set $tmp = $naming.test_name($cur_preset)
+                                            #if $cur_preset == $sickbeard.NAMING_PATTERN:
+                                                #set is_custom = False
+                                            #end if
+                                            <option id="$cur_preset" #if $cur_preset == $sickbeard.NAMING_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                        #end for
+                                        <option id="$sickbeard.NAMING_PATTERN" #if $is_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="naming_custom">
+                            <div class="field-pair clearfix" style="padding-top: 0;">
+                                <label class="nocheck clearfix">
+                                    <span class="component-title">
+                                        &nbsp;
+                                    </span>
+                                    <span class="component-desc">
+                                        <input type="text" size="45" name="naming_pattern" id="naming_pattern" class="custom-pattern" value="$sickbeard.NAMING_PATTERN" style="font-size: 13px; height: 18px; margin-top: -8px;" />
+                                        <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" style="padding: 0 0 0 3px; margin-top: -2px;" />
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div id="naming_key" class="nocheck clearfix" style="display: none;">
+                                  <table class="Key">
+                                    <thead>
+                                        <tr>
+                                          <th class="align-right">Meaning</th>
+                                          <th>Pattern</th>
+                                          <th width="60%">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                          <th colspan="3">Use lower case if you want lower case names (eg. %sn, %e.n, %q_n etc)</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr>
+                                          <td class="align-right"><b>Show Name:</b></td>
+                                          <td>%SN</td>
+                                          <td>Show Name</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%S.N</td>
+                                          <td>Show.Name</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%S_N</td>
+                                          <td>Show_Name</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td class="align-right"><b>Season Number:</b></td>
+                                          <td>%S</td>
+                                          <td>2</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%0S</td>
+                                          <td>02</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td class="align-right"><b>Episode Number:</b></td>
+                                          <td>%E</td>
+                                          <td>3</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%0E</td>
+                                          <td>03</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td class="align-right"><b>Episode Name:</b></td>
+                                          <td>%EN</td>
+                                          <td>Episode Name</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%E.N</td>
+                                          <td>Episode.Name</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%E_N</td>
+                                          <td>Episode_Name</td>
+                                        </tr>
+                                        <tr>
+                                          <td class="align-right"><b>Quality:</b></td>
+                                          <td>%QN</td>
+                                          <td>720p BluRay</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td>&nbsp;</td>
+                                          <td>%Q.N</td>
+                                          <td>720p.BluRay</td>
+                                        </tr>
+                                        <tr>
+                                          <td>&nbsp;</td>
+                                          <td>%Q_N</td>
+                                          <td>720p_BluRay</td>
+                                        </tr>
+                                        <tr class="even">
+                                          <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                          <td>%RN</td>
+                                          <td>Show.Name.S02E03.HDTV.XviD-RLSGROUP</td>
+                                        </tr>
+                                        <tr>
+                                          <td class="align-right"><i class="icon-info-sign" title="'SiCKBEARD' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                          <td>%RG</td>
+                                          <td>RLSGROUP</td>
+                                        </tr>
+                                        <tr>
+                                          <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                          <td>%RT</td>
+                                          <td>PROPER</td>
+                                        </tr>
+                                    </tbody>
+                                  </table>
+                                  <br/>
+                            </div>
+                        </div>
+                        
+                        <div class="field-pair">
+                            <label class="nocheck clearfix" for="naming_multi_ep">
+                                <span class="component-title">Multi-Episode Style:</span>
+                                <span class="component-desc">
+                                    <select id="naming_multi_ep" name="naming_multi_ep">
+                                    #for $cur_multi_ep in sorted($multiEpStrings.items(), key=lambda x: x[1]):
+                                        <option value="$cur_multi_ep[0]" #if $cur_multi_ep[0] == $sickbeard.NAMING_MULTI_EP then "selected=\"selected\" class=\"selected\"" else ""#>$cur_multi_ep[1]</option>
+                                    #end for
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="naming_example_div">
+                            <h2>Sample:</h2>
+                            <div class="example">
+                                <span class="jumbo" id="naming_example">&nbsp;</span>
+                            </div>
+                            <br/>
+                        </div>
+
+                        <div id="naming_example_multi_div">
+                            <h2>Multi-EP sample:</h2>
+                            <div class="example">
+                                <span class="jumbo" id="naming_example_multi">&nbsp;</span>
+                            </div>
+                            <br/>
+                        </div>
+
+                        <div class="field-pair">                                                                                                                          
+                            <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" #if $sickbeard.NAMING_STRIP_YEAR then "checked=\"checked\"" else ""#/> 
+                            <label class="clearfix" for="naming_strip_year">                                                                                              
+                                <span class="component-title">Strip Show Year</span>                                                                                      
+                                <span class="component-desc">Remove the TV show's year when renaming the file?</span>                                                     
+                            </label>                                                                                                                                      
+                            <label class="nocheck clearfix">                                                                                                              
+                                <span class="component-title">&nbsp;</span>                                                                                               
+                                <span class="component-desc">Only applies to shows that have year inside parentheses</span>                                         
+                            </label>                                                                                                                                      
+                        </div>
+
+                        <div class="field-pair clearfix">
+                            <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" #if $sickbeard.NAMING_CUSTOM_ABD then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="naming_custom_abd">
+                                <span class="component-title">Custom Air-By-Date</span>
+                                <span class="component-desc">Name Air-By-Date shows differently than regular shows?</span>
+                            </label>
+                        </div>
+
+                        <div id="content_naming_custom_abd">
+                            <div class="field-pair">
+                                <label class="nocheck clearfix" for="name_abd_presets">
+                                    <span class="component-title">Name Pattern:</span>
+                                    <span class="component-desc">
+                                        <select id="name_abd_presets">
+                                            #set is_abd_custom = True
+                                            #for $cur_preset in $naming.name_abd_presets:
+                                                #set $tmp = $naming.test_name($cur_preset)
+                                                #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN:
+                                                    #set is_abd_custom = False
+                                                #end if
+                                                <option id="$cur_preset" #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                            #end for
+                                            <option id="$sickbeard.NAMING_ABD_PATTERN" #if $is_abd_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                        </select>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div id="naming_abd_custom">
+                                <div class="field-pair clearfix" style="padding-top: 0;">
+                                    <label class="nocheck clearfix">
+                                        <span class="component-title">
+                                            &nbsp;
+                                        </span>
+                                        <span class="component-desc">
+                                            <input type="text" size="45" name="naming_abd_pattern" id="naming_abd_pattern" class="custom-pattern" value="$sickbeard.NAMING_ABD_PATTERN" style="font-size: 13px; height: 18px; margin-top: -8px"/>
+                                            <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" style="padding: 0 0 0 3px; margin-top: -2px;" />
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div id="naming_abd_key" class="nocheck clearfix" style="display: none;">
+                                      <table class="Key">
+                                        <thead>
+                                            <tr>
+                                              <th class="align-right">Meaning</th>
+                                              <th>Pattern</th>
+                                              <th width="60%">Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                              <th colspan="3">Use lower case if you want lower case names (eg. %sn, %e.n, %q_n etc)</th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                              <td class="align-right"><b>Show Name:</b></td>
+                                              <td>%SN</td>
+                                              <td>Show Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%S.N</td>
+                                              <td>Show.Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%S_N</td>
+                                              <td>Show_Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Air-By-Date:</b></td>
+                                              <td>%AD</td>
+                                              <td>2010 03 09</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%A.D</td>
+                                              <td>2010.03.09</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%A_D</td>
+                                              <td>2010_03_09</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%A-D</td>
+                                              <td>2010-03-09</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Episode Name:</b></td>
+                                              <td>%EN</td>
+                                              <td>Episode Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%E.N</td>
+                                              <td>Episode.Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%E_N</td>
+                                              <td>Episode_Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Quality:</b></td>
+                                              <td>%QN</td>
+                                              <td>720p BluRay</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%Q.N</td>
+                                              <td>720p.BluRay</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%Q_N</td>
+                                              <td>720p_BluRay</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Year:</b></td>
+                                              <td>%Y</td>
+                                              <td>2010</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Month:</b></td>
+                                              <td>%M</td>
+                                              <td>3</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right">&nbsp;</td>
+                                              <td>%0M</td>
+                                              <td>03</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Day:</b></td>
+                                              <td>%D</td>
+                                              <td>9</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right">&nbsp;</td>
+                                              <td>%0D</td>
+                                              <td>09</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                              <td>%RN</td>
+                                              <td>Show.Name.2010.03.09.HDTV.XviD-RLSGROUP</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><i class="icon-info-sign" title="'SiCKBEARD' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                              <td>%RG</td>
+                                              <td>RLSGROUP</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                              <td>%RT</td>
+                                              <td>PROPER</td>
+                                            </tr>
+                                        </tbody>
+                                      </table>
+                                      <br/>
+                                </div>
+                            </div><!-- /naming_abd_custom -->
+                            
+                            <div id="naming_abd_example_div">
+                                <h2>Sample:</h2>
+                                <div class="example">
+                                    <span class="jumbo" id="naming_abd_example">&nbsp;</span>
+                                </div>
+                                <br/>
+                            </div>
+
+                        </div><!-- /naming_abd_different -->
+
+                        <div class="clearfix"></div>
+                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+
+                    </fieldset>
+                </div><!-- /component-naming //-->
+
+            <br/>
+			<small class="float-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </small>            
+			<input type="submit" class="btn config_submitter button" value="Save Changes" /><br/>
+
+</form>
+</div></div>
+<div class="clearfix"></div>
+
+<script type="text/javascript" charset="utf-8">
+<!--
+    jQuery('#config-components').tabs();
+    jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
+//-->
+</script>
+#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

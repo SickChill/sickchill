@@ -1,0 +1,91 @@
+fieldset.sectionwrap{
+text-align: left;
+width: 800px;
+border-width:0;
+padding:5px;
+top: -25px !important;
+}
+
+legend.legendStep{
+font:bold 16px Arial;
+color: #343434;
+display: none;
+}
+
+div.stepsguide{ /*div that contains all the "steps" text located at top of form */ 
+text-align: left;
+width: 800px; /*width of "steps" container*/
+overflow:hidden;
+margin-bottom:15px;
+cursor:pointer;
+}
+
+div.stepsguide .step{
+width:250px; /*width of each "steps" text*/
+font: bold 24px Arial;
+float:left;
+}
+div.stepsguide .step p {
+border-bottom: 4px solid #57442B;
+}
+
+div.stepsguide .disabledstep{
+color:#C4C4C4;
+}
+div.stepsguide .disabledstep p {
+border-bottom: 4px solid #8A775E;
+}
+
+div.stepsguide .step .smalltext{
+font-size: 13px;
+font-weight: normal;
+}
+
+div.formpaginate{
+width: 800px;
+overflow:auto;
+font-weight:bold;
+text-align:center;
+margin-top:1em;
+}
+
+div.formpaginate .prev, div.formpaginate .next{
+border-radius:6px;
+-webkit-border-radius:6px;
+-moz-border-radius:6px;
+padding:3px 6px;
+background:#57442B;
+color:white;
+cursor:hand;
+cursor:pointer;
+}
+
+.stepDiv {padding: 21px 15px 15px 15px;}
+
+input:not(.btn){float:left;margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4px;padding-right:4px;padding-left:4px;border-bottom-left-radius:3px;border-bottom-right-radius:3px;border-top-left-radius:3px;border-top-right-radius:3px;border-top-width: 1px;
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-bottom-color: #CCCCCC;
+    border-right-color: #CCCCCC;
+    border-left-color: #CCCCCC;
+    border-right-style: solid;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-width-value: 1px;
+    border-top-color: #CCCCCC;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+
+/* step 3 related */
+
+#customQualityWrapper {/* height: 190px;*/ overflow: hidden; }
+#customQualityWrapper div.component-group-desc{float:left;width:165px;}
+#customQualityWrapper div.component-group-desc p{width:85%;font-size:14px;color:#666;margin:.8em 0;}
+#customQualityWrapper div.component-group-desc p.note{width:90%;font-size:14px;color:#333;margin:.8em 0;}

@@ -1,0 +1,47 @@
+#  SB User Related   #
+######################
+cache/*
+cache.db*
+config.ini*
+Logs/*
+sickbeard.db*
+failed.db*
+autoProcessTV/autoProcessTV.cfg
+server.crt
+server.key
+
+#  SB Test Related   #
+######################
+tests/Logs/*
+tests/sickbeard.*
+tests/cache.db
+
+#  Compiled source   #
+######################
+*.py[co]
+
+#  IDE specific      #
+######################
+*.bak
+*.tmp
+*.wpr
+*.project
+*.pydevproject
+*.cproject
+*.tmproj
+*.tmproject
+*.sw?
+Session.vim
+.ropeproject/*
+
+# OS generated files #
+######################
+.Spotlight-V100
+.Trashes
+.DS_Store
+desktop.ini
+ehthumbs.db
+Thumbs.db
+.directory
+*~
+/.idea/
