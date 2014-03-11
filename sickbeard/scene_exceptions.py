@@ -66,56 +66,62 @@ def retrieve_exceptions():
     """
 
     exception_dict = {}
+    url_data = ''
 
     # exceptions are stored on github pages
-    url = 'http://midgetspy.github.com/sb_tvdb_scene_exceptions/exceptions.txt'
+    url_dict = {
+        'TheTVDB': 'http://midgetspy.github.com/sb_tvdb_scene_exceptions/exceptions.txt',
+        'TVRage': 'http://raw.github.com/echel0n/sb_tvrage_scene_exceptions/master/exceptions.txt'
+        }
 
-    logger.log(u"Check scene exceptions update")
-    url_data = helpers.getURL(url)
+    for indexer, url in url_dict.iteritems():
+        logger.log(u"Checking for scene exception updates for " + indexer)
 
-    if url_data is None:
-        # When urlData is None, trouble connecting to github
-        logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
-        return
+        url_data = helpers.getURL(url)
 
-    else:
-        # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
-        for cur_line in url_data.splitlines():
-            cur_line = cur_line.decode('utf-8')
-            indexer_id, sep, aliases = cur_line.partition(':') #@UnusedVariable
+        if url_data is None:
+            # When urlData is None, trouble connecting to github
+            logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
+            continue
 
-            if not aliases:
-                continue
-
-            indexer_id = int(indexer_id)
-
-            # regex out the list of shows, taking \' into account
-            alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
-
-            exception_dict[indexer_id] = alias_list
-
-        myDB = db.DBConnection("cache.db")
-
-        changed_exceptions = False
-
-        # write all the exceptions we got off the net into the database
-        for cur_indexer_id in exception_dict:
-
-            # get a list of the existing exceptions for this ID
-            existing_exceptions = [x["show_name"] for x in myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
-
-            for cur_exception in exception_dict[cur_indexer_id]:
-                # if this exception isn't already in the DB then add it
-                if cur_exception not in existing_exceptions:
-                    myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [cur_indexer_id, cur_exception])
-                    changed_exceptions = True
-
-        # since this could invalidate the results of the cache we clear it out after updating
-        if changed_exceptions:
-            logger.log(u"Updated scene exceptions")
-            name_cache.clearCache()
         else:
-            logger.log(u"No scene exceptions update needed")
+            # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
+            for cur_line in url_data.splitlines():
+                cur_line = cur_line.decode('utf-8')
+                indexer_id, sep, aliases = cur_line.partition(':') #@UnusedVariable
+
+                if not aliases:
+                    continue
+
+                indexer_id = int(indexer_id)
+
+                # regex out the list of shows, taking \' into account
+                alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
+
+                exception_dict[indexer_id] = alias_list
+
+    myDB = db.DBConnection("cache.db")
+
+    changed_exceptions = False
+
+    # write all the exceptions we got off the net into the database
+    for cur_indexer_id in exception_dict:
+
+        # get a list of the existing exceptions for this ID
+        existing_exceptions = [x["show_name"] for x in myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
+
+        for cur_exception in exception_dict[cur_indexer_id]:
+            # if this exception isn't already in the DB then add it
+            if cur_exception not in existing_exceptions:
+                myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [cur_indexer_id, cur_exception])
+                changed_exceptions = True
+
+    # since this could invalidate the results of the cache we clear it out after updating
+    if changed_exceptions:
+        logger.log(u"Updated scene exceptions")
+        name_cache.clearCache()
+    else:
+        logger.log(u"No scene exceptions update needed")
                     
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
