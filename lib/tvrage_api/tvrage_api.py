@@ -576,8 +576,13 @@ class TVRage:
                 tag = curInfo.tag.lower()
 
             if curInfo.tag.lower() in ('started', 'ended') and curInfo.text is not None:
-                fixDate = dt.datetime.strptime(curInfo.text,"%b/%d/%Y")
-                value = fixDate.strftime("%Y-%m-%d")
+                try:
+                    fixDate = dt.datetime.strptime(curInfo.text,"%b/%Y")
+                    newDate = fixDate.replace(day=01)
+                    value = newDate.strftime("%Y-%m-%d")
+                except Exception:
+                    fixDate = dt.datetime.strptime(curInfo.text,"%b/%d/%Y")
+                    value = fixDate.strftime("%Y-%m-%d")
             else:
                 value = curInfo.text
 
