@@ -59,7 +59,7 @@ class AddNetworkTimezones(AddSceneNameCache):
 
 class ConverSceneExceptionsToIndexerID(AddNetworkTimezones):
     def test(self):
-        return self.hasColumn("scene_exceptions", "indexer_id")
+        return self.hasColumn("scene_exceptions", "tvdb_id")
 
     def execute(self):
         self.connection.action("ALTER TABLE scene_exceptions RENAME TO tmp_scene_exceptions")
@@ -69,7 +69,7 @@ class ConverSceneExceptionsToIndexerID(AddNetworkTimezones):
 
 class ConverSceneNamesToIndexerID(ConverSceneExceptionsToIndexerID):
     def test(self):
-        return self.hasColumn("scene_names", "indexer_id")
+        return self.hasColumn("scene_names", "tvdb_id")
 
     def execute(self):
         self.connection.action("ALTER TABLE scene_names RENAME TO tmp_scene_names")
