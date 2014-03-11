@@ -41,14 +41,14 @@ class AddSceneExceptions(InitialSchema):
         return self.hasTable("scene_exceptions")
 
     def execute(self):
-        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
+        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, tvdb_id INTEGER KEY, show_name TEXT)")
 
 class AddSceneNameCache(AddSceneExceptions):
     def test(self):
         return self.hasTable("scene_names")
 
     def execute(self):
-        self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT)")
+        self.connection.action("CREATE TABLE scene_names (tvdb_id INTEGER, name TEXT)")
 
 class AddNetworkTimezones(AddSceneNameCache):
     def test(self):
@@ -62,17 +62,17 @@ class ConverSceneExceptionsToIndexerID(AddNetworkTimezones):
         return self.hasColumn("scene_exceptions", "indexer_id")
 
     def execute(self):
-        self.connection.action("ALTER TABLE scene_exceptions RENAME TO scene_exceptions_tmp")
+        self.connection.action("ALTER TABLE scene_exceptions RENAME TO tmp_scene_exceptions")
         self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
-        self.connection.action("INSERT INTO scene_exceptions(exception_id, indexer_id, show_name) SELECT exception_id, tvdb_id, show_name FROM scene_exceptions_tmp")
-        self.connection.action("DROP TABLE scene_exceptions_tmp")
+        self.connection.action("INSERT INTO scene_exceptions(exception_id, indexer_id, show_name) SELECT exception_id, tvdb_id, show_name FROM tmp_scene_exceptions")
+        self.connection.action("DROP TABLE tmp_scene_exceptions")
 
 class ConverSceneNamesToIndexerID(ConverSceneExceptionsToIndexerID):
     def test(self):
         return self.hasColumn("scene_names", "indexer_id")
 
     def execute(self):
-        self.connection.action("ALTER TABLE scene_names RENAME TO scene_names_tmp")
-        self.connection.action("INSERT INTO scene_names(indexer_id, name) SELECT tvdb_id, name FROM scene_name_tmp")
+        self.connection.action("ALTER TABLE scene_names RENAME TO tmp_scene_names")
         self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT)")
-        self.connection.action("DROP TABLE scene_name_tmp")
+        self.connection.action("INSERT INTO scene_names(indexer_id, name) SELECT tvdb_id, name FROM tmp_scene_namee")
+        self.connection.action("DROP TABLE tmp_scene_namee")
