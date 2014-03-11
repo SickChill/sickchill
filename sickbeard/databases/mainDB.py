@@ -513,6 +513,8 @@ class ConvertTVShowsToIndexerScheme(AddIndicesToTvEpisodes):
         self.connection.action("INSERT INTO tv_shows(show_id, indexer_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_indexer, dvdorder) SELECT show_id, tvdb_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_tvdb, dvdorder FROM tmp_tv_shows")
         self.connection.action("DROP TABLE tmp_tv_shows")
 
+        self.incDBVersion()
+
 class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
     def test(self):
         return self.checkDBVersion() >= 23
@@ -527,6 +529,8 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
         self.connection.action("INSERT INTO tv_episodes(episode_id, showid, indexerid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper) SELECT episode_id, showid, tvdbid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper FROM tmp_tv_episodes")
         self.connection.action("DROP TABLE tmp_tv_episodes")
 
+        self.incDBVersion()
+
 class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
     def test(self):
         return self.checkDBVersion() >= 24
@@ -540,6 +544,8 @@ class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
         self.connection.action("INSERT INTO imdb_info(indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update) SELECT tvdb_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update FROM tmp_imdb_info")
         self.connection.action("DROP TABLE tmp_imdb_info")
 
+        self.incDBVersion()
+
 class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
     def test(self):
         return self.checkDBVersion() >= 25
@@ -552,3 +558,5 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
         self.connection.action("CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)")
         self.connection.action("INSERT INTO info(last_backlog, last_indexer, last_proper_search) SELECT last_backlog, last_tvdb, last_proper_search FROM tmp_info")
         self.connection.action("DROP TABLE tmp_info")
+
+        self.incDBVersion()

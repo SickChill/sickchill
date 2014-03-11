@@ -128,11 +128,9 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         try:
             if getattr(myShow, 'seriesname', None) is None or getattr(myShow, 'id') is None:
                 logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + show_obj.indexer + ", skipping it", logger.ERROR)
-
                 return False
         except indexer_exceptions.indexer_attributenotfound:
             logger.log(u"Incomplete info for show with id " + str(show_ID) + " on " + show_obj.indexer + ", skipping it", logger.ERROR)
-
             return False
 
         title = etree.SubElement(tv_node, "title")

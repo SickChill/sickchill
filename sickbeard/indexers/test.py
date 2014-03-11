@@ -19,13 +19,10 @@ try:
 
     t = indexerApi().config['valid_languages']
     t = indexerApi(**lindexer_api_parms)
-    myEp = t[111051]
+    myEp = t[258171]
 
-    if getattr(myEp, 'classification', None) is not None:
+    if getattr(myEp, 'seriesname', None) is not None:
         print "FOUND"
-
-    if imdbid :
-        print "IMDBID TRUE"
 
 except indexer_exception as e:
     print e
