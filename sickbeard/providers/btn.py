@@ -201,7 +201,7 @@ class BTNProvider(generic.TorrentProvider):
 
             current_params = {}
 
-            # Search by name if we don't have tvdb or tvrage id
+            # Search by name if we don't have indexer ID
             current_params['series'] = sanitizeSceneName(name)
 
             if searchSeason:

@@ -199,7 +199,7 @@ class TVCache():
 
         return True
 
-    def _addCacheEntry(self, name, url, season=None, episodes=None, indexer_id=0, tvrage_id=0, quality=None, extraNames=[]):
+    def _addCacheEntry(self, name, url, season=None, episodes=None, indexer_id=0, quality=None, extraNames=[]):
 
         myDB = self._getDB()
 
@@ -224,7 +224,7 @@ class TVCache():
 
         indexer_lang = None
 
-        # if we need indexer_id or tvrage_id then search the DB for them
+        # if we need indexer_id then search the DB for them
         if not indexer_id:
 
             # if we have only the indexer_id, use the database

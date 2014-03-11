@@ -107,10 +107,10 @@ class InitialSchema (db.SchemaUpgrade):
             queries = [
                 "CREATE TABLE db_version (db_version INTEGER);",
                 "CREATE TABLE history (action NUMERIC, date NUMERIC, showid NUMERIC, season NUMERIC, episode NUMERIC, quality NUMERIC, resource TEXT, provider TEXT);",
-                "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)",
+                "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC);",
                 "CREATE TABLE info (last_backlog NUMERIC, last_indexerid NUMERIC, last_proper_search NUMERIC);",
-                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC)",
-                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer TEXT, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC)",
+                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC);",
+                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer TEXT, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC);",
                 "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);",
                 "CREATE INDEX idx_showid ON tv_episodes (showid);",
                 "CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);",
@@ -418,7 +418,7 @@ class AddEmailSubscriptionTable(AddProperNamingSupport):
     def execute(self):
         self.addColumn('tv_shows', 'notify_list', 'TEXT', None)
         self.incDBVersion()
-        
+
 class AddShowidIndexeridIndex(AddEmailSubscriptionTable):
     """ Adding index on indexer_id (tv_shows) and showid (tv_episodes) to speed up searches/queries """
 
@@ -482,127 +482,124 @@ class AddDvdOrderOption(AddLastProperSearch):
         
         self.incDBVersion()
 
-class AddIndexerTable(AddDvdOrderOption):
-    """ Adding indices to tv episodes """
-
+class AddIndicesToTvEpisodes(AddDvdOrderOption):
     def test(self):
         return self.checkDBVersion() >= 21
 
     def execute(self):
         backupDatabase(21)
 
-        logger.log(u"[1/8] Adding column indexer to tv_shows")
-        if not self.hasColumn("tv_shows", "indexer"):
-            self.addColumn('tv_shows', 'indexer', 'TEXT', 'tvdb')
+        logger.log(u"Adding column last_proper_search to info")
+        if not self.hasColumn("info", "last_proper_search"):
+            self.addColumn("info", "last_proper_search", default=1)
 
-        logger.log(u"[2/8] Adding column indexer_id to tv_shows")
+        self.incDBVersion()
+
+class ConvertToSickBeardTVRAGE(AddIndicesToTvEpisodes):
+    """ Adding indices to tv episodes """
+
+    def test(self):
+        return self.checkDBVersion() >= 22
+
+    def execute(self):
+        backupDatabase(22)
+
+        logger.log(u"[1/7] Adding Indexer to TV Shows table...")
+        if not self.hasColumn("tv_shows", "indexer"):
+            self.addColumn('tv_shows', 'indexer', 'TEXT', 'Tvdb')
+
+        logger.log(u"[2/7] Adding Indexer to TV Episodes table...")
+        if not self.hasColumn("tv_episodes", "indexer"):
+            self.addColumn('tv_episodes', 'indexer', 'TEXT', 'Tvdb')
+
+        logger.log(u"[3/7] Adding Indexer ID to TV Shows table...")
         if not self.hasColumn("tv_shows", "indexer_id"):
             self.addColumn('tv_shows', 'indexer_id', 'NUMERIC', 0)
 
-        logger.log(u"[3/8] Adding column indexer to tv_episodes")
-        if not self.hasColumn("tv_episodes", "indexer"):
-            self.addColumn('tv_episodes', 'indexer', 'TEXT', 'tvdb')
-
-        logger.log(u"[4/8] Adding column indexerid to tv_episodes")
+        logger.log(u"[4/7] Adding Indexer ID to TV Episodes table...")
         if not self.hasColumn("tv_episodes", "indexerid"):
             self.addColumn('tv_episodes', 'indexerid', 'NUMERIC', 0)
 
-        logger.log(u"[5/8] Adding column indexer_id to imdb_info")
+        logger.log(u"[5/7] Adding Indexer ID to IMDB Info table...")
         if not self.hasColumn("imdb_info", "indexer_id"):
             self.addColumn('imdb_info', 'indexer_id', 'NUMERIC', 0)
 
-        logger.log(u"[7/8] Adding column classification to tv_shows")
-        if not self.hasColumn("tv_shows", "classification"):
-            self.addColumn('tv_shows', 'classification', 'TEXT', 'Scripted')
-
-        logger.log(u"[7/8] Adding column last_indexerid to info")
+        logger.log(u"[6/7] Adding Indexer ID to Info table...")
         if not self.hasColumn("info", "last_indexerid"):
             self.addColumn('info', 'last_indexerid', 'NUMERIC', 0)
 
+        logger.log(u"[7/7] Adding Classifications to TV Shows table...")
+        if not self.hasColumn("tv_shows", "classification"):
+            self.addColumn('tv_shows', 'classification', 'TEXT', 'Scripted')
+
         # update indexer and indexer_id on tv_shows
-        if self.hasColumn("tv_shows", "indexer_id") and self.hasColumn("tv_shows", "indexer_id"):
-            logger.log(u"[1/10] Updating indexer_id for each show...", logger.MESSAGE)
+        if self.hasColumn("tv_shows", "tvdb_id") and self.hasColumn("tv_shows", "indexer_id"):
+            logger.log(u"[1/4] Converting TV Shows table...", logger.MESSAGE)
             ql = []
             shows = self.connection.select("SELECT * FROM tv_shows")
             for cur_show in shows:
                 if cur_show["indexer_id"] == 0:
-                    indexer_id = cur_show["indexer_id"]
-                    ql.append(["UPDATE tv_shows SET indexer_id = ? WHERE show_id = ?", [indexer_id, cur_show["show_id"]]])
+                    ql.append(["UPDATE tv_shows SET indexer_id = ? WHERE tvdb_id = ?", [cur_show["tvdb_id"], cur_show["tvdb_id"]]])
 
             self.connection.mass_action(ql)
 
         # update indexer and indexer_id on tv_shows
-        if self.hasColumn("tv_episodes", "indexerid") and self.hasColumn("tv_episodes", "indexerid"):
-            logger.log(u"[2/10] Updating indexerid for each episode...", logger.MESSAGE)
+        if self.hasColumn("tv_episodes", "tvdbid") and self.hasColumn("tv_episodes", "indexerid"):
+            logger.log(u"[2/4] Converting TV Episodes table...", logger.MESSAGE)
             ql = []
             episodes = self.connection.select("SELECT * FROM tv_episodes")
             for cur_ep in episodes:
                 if cur_ep["indexerid"] == 0:
-                    indexerid = cur_ep["indexerid"]
-                    ql.append(["UPDATE tv_episodes SET indexerid = ? WHERE episode_id = ?", [indexerid, cur_ep["episode_id"]]])
+                    ql.append(["UPDATE tv_episodes SET indexerid = ? WHERE tvdbid = ?", [cur_ep["tvdbid"], cur_ep["tvdbid"]]])
 
             self.connection.mass_action(ql)
 
         # update indexer_id on imdb_info
-        if self.hasColumn("imdb_info", "indexer_id") and self.hasColumn("imdb_info", "indexer_id"):
-            logger.log(u"[3/10] Updating indexer_id for imdb_info...", logger.MESSAGE)
+        if self.hasColumn("imdb_info", "tvdb_id") and self.hasColumn("imdb_info", "indexer_id"):
+            logger.log(u"[3/4] Converting IMDB Info table...", logger.MESSAGE)
             ql = []
             imdb_infos = self.connection.select("SELECT * FROM imdb_info")
             for cur_imdb_info in imdb_infos:
                 if cur_imdb_info["indexer_id"] == 0:
-                    indexer_id = cur_imdb_info["indexer_id"]
-                    ql.append(["UPDATE imdb_info SET indexer_id = ? WHERE indexer_id = ?", [indexer_id, cur_imdb_info["indexer_id"]]])
+                    ql.append(["UPDATE imdb_info SET indexer_id = ? WHERE tvdb_id = ?", [cur_imdb_info["tvdb_id"], cur_imdb_info["tvdb_id"]]])
 
             self.connection.mass_action(ql)
 
         # update last_indexerid on info
-        if self.hasColumn("info", "last_indexerid") and self.hasColumn("info", "last_indexerid"):
-            logger.log(u"[4/10] Updating indexerid for infos...", logger.MESSAGE)
+        if self.hasColumn("info", "last_tvdbid") and self.hasColumn("info", "last_indexerid"):
+            logger.log(u"[4/4] Converting Info table...", logger.MESSAGE)
             ql = []
             infos = self.connection.select("SELECT * FROM info")
             for cur_info in infos:
                 if cur_info["last_indexerid"] == 0:
-                    last_indexerid = cur_info["last_indexerid"]
-                    ql.append(["UPDATE info SET last_indexerid = ? WHERE last_indexerid = ?", [last_indexerid, cur_info["last_indexerid"]]])
+                    ql.append(["UPDATE info SET last_indexerid = ? WHERE last_tvdbid = ?", [cur_info["last_tvdbid"], cur_info["last_tvdbid"]]])
 
             self.connection.mass_action(ql)
 
         # drop indexer_id from tv_shows
-        if self.hasColumn("tv_shows", "indexer_id") and self.hasColumn("tv_shows", "indexer_id"):
-            logger.log(u"[5/10] Dropping indexerid from shows...", logger.MESSAGE)
-            self.connection.action("ALTER TABLE tv_shows DROP COLUMN indexer_id")
-
-        # drop indexerid from tv_episodes
-        if self.hasColumn("tv_episodes", "indexerid") and self.hasColumn("tv_episodes", "indexerid"):
-            logger.log(u"[6/10] Dropping indexer_id from episodes...", logger.MESSAGE)
-            self.connection.action("ALTER TABLE tv_episodes DROP COLUMN indexerid")
-
+        if self.hasColumn("tv_shows", "tvdb_id") and self.hasColumn("tv_shows", "indexer_id"):
+            logger.log(u"[1/3] Cleaning TV Shows table...", logger.MESSAGE)
+            self.connection.action("ALTER TABLE tv_shows DROP COLUMN tvdb_id")
         # drop indexer_id from tv_shows
         if self.hasColumn("tv_shows", "tvr_id") and self.hasColumn("tv_shows", "indexer_id"):
-            logger.log(u"[7/10] Dropping indexerid from shows...", logger.MESSAGE)
             self.connection.action("ALTER TABLE tv_shows DROP COLUMN tvr_id")
 
         # drop indexerid from tv_episodes
+        if self.hasColumn("tv_episodes", "tvdbid") and self.hasColumn("tv_episodes", "indexerid"):
+            logger.log(u"[2/3] Cleaning TV Episodes table...", logger.MESSAGE)
+            self.connection.action("ALTER TABLE tv_episodes DROP COLUMN tvdbid")
+        # drop indexerid from tv_episodes
         if self.hasColumn("tv_shows", "show_name") and self.hasColumn("tv_shows", "indexer_id"):
-            logger.log(u"[8/10] Dropping indexer_id from episodes...", logger.MESSAGE)
             self.connection.action("ALTER TABLE tv_shows DROP COLUMN show_name")
 
         # drop indexerid from tv_episodes
-        if self.hasColumn("info", "last_indexerid") and self.hasColumn("info", "last_indexerid"):
-            logger.log(u"[9/10] Dropping last_indexerid from infos...", logger.MESSAGE)
-            self.connection.action("ALTER TABLE info DROP COLUMN last_indexerid")
+        if self.hasColumn("imdb_info", "tvdb_id") and self.hasColumn("imdb_info", "indexer_id"):
+            logger.log(u"[3/4] Cleaning IMDB Info table...", logger.MESSAGE)
+            self.connection.action("ALTER TABLE info DROP COLUMN tvdb_id")
 
-        self.incDBVersion()
-
-class AddIndicesToTvEpisodes(AddIndexerTable):
-    def test(self):
-        return self.checkDBVersion() >= 22
-    
-    def execute(self):
-        backupDatabase(22)
-
-        logger.log(u"Adding column last_proper_search to info")
-        if not self.hasColumn("info", "last_proper_search"):
-            self.addColumn("info", "last_proper_search", default=1)
+        # drop indexerid from tv_episodes
+        if self.hasColumn("info", "last_tvdbid") and self.hasColumn("info", "last_indexerid"):
+            logger.log(u"[4/4] Cleaning Info table...", logger.MESSAGE)
+            self.connection.action("ALTER TABLE info DROP COLUMN last_tvdbid")
 
         self.incDBVersion()
