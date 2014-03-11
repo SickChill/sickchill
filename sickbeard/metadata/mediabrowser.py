@@ -250,11 +250,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             raise
 
         # check for title and id
-        try:
-            if getattr(myShow, 'seriesname', None) is None or getattr(myShow, 'id', None) is None:
-                logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + show_obj.indexer + ", skipping it", logger.ERROR)
-                return False
-        except indexer_exceptions.indexer_attributenotfound:
+        if getattr(myShow, 'seriesname', None) is None or getattr(myShow, 'id', None) is None:
             logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on " + show_obj.indexer + ", skipping it", logger.ERROR)
             return False
 
