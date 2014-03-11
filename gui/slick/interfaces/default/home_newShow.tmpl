@@ -34,7 +34,7 @@
             #if 'Tvdb' in $provided_indexer
                 Show retrieved from existing metadata: <a href="http://thetvdb.com/?tab=series&id=$provided_indexer_id">$provided_indexer_name</a>
             #else
-                Show retrieved from existing metadata: <a href="http://tvrage.com/$provided_indexer_name">$provided_indexer_name</a>
+                Show retrieved from existing metadata: <a href="http://tvrage.com/shows/id-$provided_indexer_id">$provided_indexer_name</a>
             #end if
             <input type="hidden" name="indexerLang" value="en" />
             <input type="hidden" name="whichSeries" value="$provided_indexer_id" />

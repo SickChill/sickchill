@@ -30,7 +30,7 @@
     #if 'Tvdb' in $indexer
         <td>#if $curDir['existing_info'][0] and $curDir['existing_info'][1] then '<a href="http://thetvdb.com/?tab=series&id='+$str($curDir['existing_info'][0])+'">'+$curDir['existing_info'][1]+'</a>' else "?"#</td>
     #elif 'TVRage' in $indexer
-        <td>#if $curDir['existing_info'][1] then '<a href="http://tvrage.com/'+$str($curDir['existing_info'][1])+'">'+$curDir['existing_info'][1]+'</a>' else "?"#</td>
+        <td>#if $curDir['existing_info'][1] then '<a href="http://tvrage.com/shows/id-'+$str($curDir['existing_info'][0])+'">'+$curDir['existing_info'][1]+'</a>' else "?"#</td>
     #else
     <td>$curDir['existing_info'][1]</td>
     #end if

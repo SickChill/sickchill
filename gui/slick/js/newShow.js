@@ -60,7 +60,7 @@ $(document).ready(function () {
                     } else if (obj[0] == 'Tvdb') {
                         resultStr += '<a href="http://thetvdb.com/?tab=series&id=' + obj[1] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
                     } else {
-                        resultStr += '<a href="http://tvrage.com/' + obj[2] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
+                        resultStr += '<a href="http://tvrage.com/shows/id-' + obj[1] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
                     }
 
                     if (obj[3] !== null) {
@@ -74,11 +74,7 @@ $(document).ready(function () {
                     }
 
                     if (obj[0] !== null) {
-                        if (obj[0] == "Tvdb") {
-                            resultStr += ' [' + obj[0] + ']';
-                        } else {
-                            resultStr += ' [' + obj[0] + ']';
-                        }
+                        resultStr += ' [' + obj[0] + ']';
                     }
                     resultStr += '<br />';
                 });
