@@ -257,7 +257,7 @@ class NameParser(object):
         return final_result
     
     @classmethod
-    def series_name_to_indexer_id(cls, series_name, check_scene_exceptions=True, check_database=True, check_tvdb=False):
+    def series_name_to_indexer_id(cls, series_name, check_scene_exceptions=True, check_database=True, check_indexer=False):
         """
         Given a series name, return it's tvdbd_id.
         Returns None if not found.
@@ -283,7 +283,7 @@ class NameParser(object):
                 if db_result: return db_result[1]
         
         # see if we can find the name with a TVDB lookup
-        if check_tvdb:
+        if check_indexer:
             for cur_name in name_list:
                 try:
                     t = indexer_api.indexerApi(custom_ui=sickbeard.classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)

@@ -244,7 +244,7 @@ class TVCache():
             else:
 
                 # check the name cache and see if we already know what show this is
-                logger.log(u"Checking the cache to see if we already know the tvdb id of "+parse_result.series_name, logger.DEBUG)
+                logger.log(u"Checking the cache to see if we already know the indexer id of "+parse_result.series_name, logger.DEBUG)
                 indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
                 
                 # remember if the cache lookup worked or not so we know whether we should bother updating it later

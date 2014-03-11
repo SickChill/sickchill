@@ -27,17 +27,21 @@
 <form id="addShowForm" method="post" action="$sbRoot/home/addShows/addNewShow" accept-charset="utf-8">
 
 <fieldset class="sectionwrap">
-    <legend class="legendStep">Find a show on the TVDB</legend>
+    <legend class="legendStep">Find a show on the TVDB and TVRAGE</legend>
 
     <div class="stepDiv">
         #if $use_provided_info:
-            Show retrieved from existing metadata: <a href="http://thetvdb.com/?tab=series&id=$provided_indexer_id">$provided_indexer_name</a>
-            <input type="hidden" name="tvdbLang" value="en" />
+            #if 'Tvdb' in $provided_indexer
+                Show retrieved from existing metadata: <a href="http://thetvdb.com/?tab=series&id=$provided_indexer_id">$provided_indexer_name</a>
+            #else
+                Show retrieved from existing metadata: <a href="http://tvrage.com/$provided_indexer_name">$provided_indexer_name</a>
+            #end if
+            <input type="hidden" name="indexerLang" value="en" />
             <input type="hidden" name="whichSeries" value="$provided_indexer_id" />
             <input type="hidden" id="providedName" value="$provided_indexer_name" />
         #else:
             <input type="text" id="nameToSearch" value="$default_show_name" style="margin-top: 1px;" />
-            <select name="tvdbLang" id="tvdbLangSelect" style="height: 26px;margin-top: 1px;">
+            <select name="indexerLang" id="indexerLangSelect" style="height: 26px;margin-top: 1px;">
                 <option value="en" selected="selected">en</option>
             </select><b>*</b>
             <input class="btn" type="button" id="searchName" value="Search" style="margin-top: -3px;" /><br /><br />

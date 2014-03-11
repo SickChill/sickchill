@@ -50,13 +50,21 @@
 		- $show.genre[1:-1].replace('|',' | ') 
 	#end if
 	<span class="tvshowLink" style="vertical-align: text-top">
+	#if "Tvdb" in $show.indexer
 		<a href="http://www.thetvdb.com/?tab=series&amp;id=$show.indexerid" onclick="window.open(this.href, '_blank'); return false;" title="http://www.thetvdb.com/?tab=series&amp;id=$show.indexerid"><img alt="[tvdb]" height="16" width="16" src="$sbRoot/images/thetvdb16.png" style="margin-top: -1px;"/></a>
+	#else
+		<a href="http://www.tvrage.com/$show.name" onclick="window.open(this.href, '_blank'); return false;" title="http://www.tvrage.com/$show.name"><img alt="[tvdb]" height="16" width="16" src="$sbRoot/images/thetvdb16.png" style="margin-top: -1px;"/></a>
+	#end if
 	</span>
 #else
 	<img src="$sbRoot/images/flags/${$show.imdb_info['country_codes']}.png" width="16" height="11" style="margin-top: 3px; margin-left: 3px" /> ($show.imdb_info['year']) - $show.imdb_info['runtimes'] min - $show.imdb_info['genres'].replace('|',' | ')
 	<span class="tvshowLink" style="vertical-align: text-top">
 		<a href="http://www.imdb.com/title/$show.imdbid" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/$show.imdbid"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" style="margin-top: -1px;"/>
+	#if "Tvdb" in $show.indexer
 		<a href="http://www.thetvdb.com/?tab=series&amp;id=$show.indexerid" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.thetvdb.com/?tab=series&amp;id=$show.indexerid"><img alt="[tvdb]" height="16" width="16" src="$sbRoot/images/thetvdb16.png" style="margin-top: -1px;"/></a>
+	#else
+	    <a href="http://www.tvrage.com/$show.name" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.tvrage.com/$show.name"><img alt="[tvdb]" height="16" width="16" src="$sbRoot/images/thetvdb16.png" style="margin-top: -1px;"/></a>
+	#end if
 	</span>
 
 #end if
@@ -249,7 +257,7 @@
 	    	<input type="text" placeholder="<%=str(dfltSeas) + 'x' + str(dfltEpis)%>" size="6" maxlength="8"
 	    		class="sceneSeasonXEpisode" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
 	    		id="sceneSeasonXEpisode_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>"
-	    		title="Change the value here if scene numbering differs from tvdb episode numbering"
+	    		title="Change the value here if scene numbering differs from the indexer episode numbering"
 	    		#if $dfltEpNumbering:
 	    			value=""
 	    		#else

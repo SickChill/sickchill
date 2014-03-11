@@ -197,9 +197,9 @@ class ImageCache:
         
         return True
 
-    def _cache_image_from_tvdb(self, show_obj, img_type):
+    def _cache_image_from_indexer(self, show_obj, img_type):
         """
-        Retrieves an image of the type specified from TVDB and saves it to the cache folder
+        Retrieves an image of the type specified from indexer and saves it to the cache folder
         
         returns: bool representing success
         
@@ -224,7 +224,7 @@ class ImageCache:
             logger.log(u"Invalid cache image type: "+str(img_type), logger.ERROR)
             return False
 
-        # retrieve the image from TVDB using the generic metadata class
+        # retrieve the image from indexer using the generic metadata class
         #TODO: refactor
         metadata_generator = GenericMetadata()
         img_data = metadata_generator._retrieve_show_image(img_type_name, show_obj)
@@ -235,7 +235,7 @@ class ImageCache:
     def fill_cache(self, show_obj):
         """
         Caches all images for the given show. Copies them from the show dir if possible, or
-        downloads them from TVDB if they aren't in the show dir.
+        downloads them from indexer if they aren't in the show dir.
         
         show_obj: TVShow object to cache images for
         """
@@ -274,11 +274,11 @@ class ImageCache:
             except exceptions.ShowDirNotFoundException:
                 logger.log(u"Unable to search for images in show dir because it doesn't exist", logger.WARNING)
                     
-        # download from TVDB for missing ones
+        # download from indexer for missing ones
         for cur_image_type in [self.POSTER, self.BANNER, self.POSTER_THUMB, self.BANNER_THUMB]:
             logger.log(u"Seeing if we still need an image of type "+str(cur_image_type)+": "+str(need_images[cur_image_type]), logger.DEBUG)
             if cur_image_type in need_images and need_images[cur_image_type]:
-                self._cache_image_from_tvdb(show_obj, cur_image_type)
+                self._cache_image_from_indexer(show_obj, cur_image_type)
         
 
         logger.log(u"Done cache check")

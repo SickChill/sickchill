@@ -326,7 +326,7 @@ class GenericMetadata():
     def _get_episode_thumb_url(self, ep_obj):
         """
         Returns the URL to use for downloading an episode's thumbnail. Uses
-        theTVDB.com data.
+        theTVDB.com and TVRage.com data.
 
         ep_obj: a TVEpisode object for which to grab the thumb URL
         """
@@ -702,7 +702,7 @@ class GenericMetadata():
 
     def _retrieve_show_image(self, image_type, show_obj, which=None):
         """
-        Gets an image URL from theTVDB.com, downloads it and returns the data.
+        Gets an image URL from theTVDB.com and TVRage.com, downloads it and returns the data.
 
         image_type: type of image to retrieve (currently supported: fanart, poster, banner)
         show_obj: a TVShow object to use when searching for the image
@@ -791,7 +791,7 @@ class GenericMetadata():
 
         result[season] = {}
 
-        # find the correct season in the tvdb object and just copy the dict into our result dict
+        # find the correct season in the TVDB and TVRAGE object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
             if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == 'en':
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
@@ -838,7 +838,7 @@ class GenericMetadata():
 
         result[season] = {}
 
-        # find the correct season in the tvdb object and just copy the dict into our result dict
+        # find the correct season in the TVDB and TVRAGE object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
             if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == 'en':
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']

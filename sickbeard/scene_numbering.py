@@ -51,7 +51,7 @@ def get_scene_numbering(indexer_id, season, episode, fallback_to_xem=True):
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),
     otherwise returns the xem numbering (if fallback_to_xem is set), otherwise 
-    returns the tvdb numbering.
+    returns the TVDB and TVRAGE numbering.
     (so the return values will always be set)
     
     @param indexer_id: int
@@ -91,7 +91,7 @@ def find_scene_numbering(indexer_id, season, episode):
     
 def get_indexer_numbering(indexer_id, sceneSeason, sceneEpisode, fallback_to_xem=True):
     """
-    Returns a tuple, (season, episode) with the tvdb numbering for (sceneSeason, sceneEpisode)
+    Returns a tuple, (season, episode) with the TVDB and TVRAGE numbering for (sceneSeason, sceneEpisode)
     (this works like the reverse of get_scene_numbering)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:

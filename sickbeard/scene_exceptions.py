@@ -53,7 +53,7 @@ def get_scene_exception_by_name(show_name):
         cur_indexer_id = int(cur_exception["indexer_id"])
 
         if show_name.lower() in (cur_exception_name.lower(), helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
-            logger.log(u"Scene exception lookup got tvdb id "+str(cur_indexer_id)+u", using that", logger.DEBUG)
+            logger.log(u"Scene exception lookup got indexer id "+str(cur_indexer_id)+u", using that", logger.DEBUG)
             return cur_indexer_id
 
     return None

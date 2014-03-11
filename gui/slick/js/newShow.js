@@ -5,8 +5,8 @@ $(document).ready(function () {
             return;
         }
 
-        if ($('#tvdbLangSelect option').length <= 1) {
-            $.getJSON(sbRoot + '/home/addShows/getTVDBLanguages', {}, function (data) {
+        if ($('#indexerLangSelect option').length <= 1) {
+            $.getJSON(sbRoot + '/home/addShows/getIndexerLanguages', {}, function (data) {
                 var selected, resultStr = '';
 
                 if (data.results.length === 0) {
@@ -23,8 +23,8 @@ $(document).ready(function () {
                     });
                 }
 
-                $('#tvdbLangSelect').html(resultStr);
-                $('#tvdbLangSelect').change(function () { searchIndexers(); });
+                $('#indexerLangSelect').html(resultStr);
+                $('#indexerLangSelect').change(function () { searchIndexers(); });
             });
         }
     }
@@ -36,7 +36,7 @@ $(document).ready(function () {
 
         $('#searchResults').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching...');
 
-        $.getJSON(sbRoot + '/home/addShows/searchIndexersForShowName', {'name': $('#nameToSearch').val(), 'lang': $('#tvdbLangSelect').val()}, function (data) {
+        $.getJSON(sbRoot + '/home/addShows/searchIndexersForShowName', {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val()}, function (data) {
             var firstResult = true;
             var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
             var checked = '';

@@ -22,7 +22,7 @@
 <!--
 \$(document).ready(function(){
 
-  \$.getJSON('$sbRoot/home/addShows/getTVDBLanguages', {}, function(data) {
+  \$.getJSON('$sbRoot/home/addShows/getIndexerLanguages', {}, function(data) {
         var resultStr = '';
 
         if (data.results.length == 0) {
@@ -47,7 +47,7 @@
                 resultStr += '<option value="$show.lang" selected="selected">$show.lang</option>';
 
         }
-        \$('#tvdbLangSelect').html(resultStr)
+        \$('#indexerLangSelect').html(resultStr)
 
   });
 
@@ -95,7 +95,7 @@
 <br />
 <br />
 
-<b>Info Language:</b> <select name="tvdbLang" id="tvdbLangSelect"></select><br />
+<b>Info Language:</b> <select name="indexerLang" id="indexerLangSelect"></select><br />
 Note: This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
 This <b>DOES NOT</b> allow Sick Beard to download non-english TV episodes!<br />
 <br />

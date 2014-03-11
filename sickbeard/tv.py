@@ -1987,7 +1987,7 @@ class TVEpisode(object):
 
         (self.season, self.episode) = sickbeard.scene_numbering.get_scene_numbering(indexer_id, self.season, self.episode)
 
-    def convertToTVDB(self):
+    def convertToIndexer(self):
         if self.show.air_by_date: return
 
         if self.season is None: return # can't work without a season

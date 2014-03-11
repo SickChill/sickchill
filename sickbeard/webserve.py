@@ -126,7 +126,7 @@ def redirect(abspath, *args, **KWs):
     raise cherrypy.HTTPRedirect(sickbeard.WEB_ROOT + abspath, *args, **KWs)
 
 
-class TVDBWebUI:
+class IndexerWebUI:
     def __init__(self, config, log=None):
         self.config = config
         self.log = log
@@ -1845,7 +1845,7 @@ class HomePostProcess:
         return _munge(t)
 
     @cherrypy.expose
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="Tvdb"):
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="auto"):
 
         if failed == "0":
             failed = False
@@ -1883,7 +1883,7 @@ class NewHomeAddShows:
         return _munge(t)
 
     @cherrypy.expose
-    def getTVDBLanguages(self):
+    def getIndexerLanguages(self):
         result = indexer_api.indexerApi().config['valid_languages']
 
         # Make sure list is sorted alphabetically but 'en' is in front
@@ -2120,7 +2120,7 @@ class NewHomeAddShows:
         return _munge(t)
 
     @cherrypy.expose
-    def addNewShow(self, whichSeries=None, tvdbLang="en", rootDir=None, defaultStatus=None,
+    def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None):
         """
@@ -2201,7 +2201,7 @@ class NewHomeAddShows:
         newQuality = Quality.combineQualities(map(int, anyQualities), map(int, bestQualities))
 
         # add the show
-        sickbeard.showQueueScheduler.action.    addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality, flatten_folders, subtitles, tvdbLang) # @UndefinedVariable
+        sickbeard.showQueueScheduler.action.    addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality, flatten_folders, subtitles, indexerLang) # @UndefinedVariable
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2801,7 +2801,7 @@ class Home:
         return result['description'] if result else 'Episode not found.'
 
     @cherrypy.expose
-    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[], flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, tvdbLang=None, subtitles=None):
+    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[], flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, indexerLang=None, subtitles=None):
 
         if show == None:
             errString = "Invalid show ID: " + str(show)

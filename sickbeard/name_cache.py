@@ -24,7 +24,7 @@ def addNameToCache(name, indexer_id):
     Adds the show & tvdb id to the scene_names table in cache.db.
     
     name: The show name to cache
-    indexer_id: The tvdb id that this show should be cached with (can be None/0 for unknown)
+    indexer_id: the TVDB and TVRAGE id that this show should be cached with (can be None/0 for unknown)
     """
     
     # standardize the name we're using to account for small differences in providers
@@ -42,7 +42,7 @@ def retrieveNameFromCache(name):
     
     name: The show name to look up.
     
-    Returns: the tvdb id that resulted from the cache lookup or None if the show wasn't found in the cache
+    Returns: the TVDB and TVRAGE id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
     
     # standardize the name we're using to account for small differences in providers
