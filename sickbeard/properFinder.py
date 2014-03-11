@@ -266,7 +266,7 @@ class ProperFinder():
         sqlResults = myDB.select("SELECT * FROM info")
 
         if len(sqlResults) == 0:
-            myDB.action("INSERT INTO info (last_backlog, last_indexerid, last_proper_search) VALUES (?,?,?)", [0, 0, str(when)])
+            myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)", [0, 0, str(when)])
         else:
             myDB.action("UPDATE info SET last_proper_search=" + str(when))
 
