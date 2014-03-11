@@ -596,20 +596,22 @@ class TVRage:
 
             self._setShowData(sid, tag, value)
 
-        # Parse genre data
-        log().debug('Getting genres of %s' % (sid))
+        try:
+            # Parse genre data
+            log().debug('Getting genres of %s' % (sid))
+            for genre in seriesInfoEt.find('genres'):
+                if genre.tag in remap_keys:
+                    tag = remap_keys[genre.tag.lower()]
+                else:
+                    tag = genre.tag.lower()
 
-        for genre in seriesInfoEt.find('genres'):
-            if genre.tag in remap_keys:
-                tag = remap_keys[genre.tag.lower()]
-            else:
-                tag = genre.tag.lower()
+                value = genre.text
+                if value is not None:
+                    value = self._cleanData(value)
 
-            value = genre.text
-            if value is not None:
-                value = self._cleanData(value)
-
-            self._setShowData(sid, tag, value)
+                self._setShowData(sid, tag, value)
+        except Exception:
+            log().debug('No genres for %s' % (sid))
 
         # Parse episode data
         log().debug('Getting all episodes of %s' % (sid))
