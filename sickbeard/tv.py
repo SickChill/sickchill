@@ -716,11 +716,11 @@ class TVShow(object):
 
         myEp = t[self.indexerid]
 
-        if getattr(myEp, 'seriesname', None) is not None:
-            self.name = myEp["seriesname"].strip()
-        else:
-            raise indexer_exceptions.indexer_attributenotfound\
-                    ("Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
+        try:
+            if getattr(myEp, 'seriesname', None) is not None:
+                self.name = myEp['seriesname'].strip()
+        except AttributeError:
+            raise indexer_exceptions.indexer_attributenotfound("Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
 
         self.classification = getattr(myEp, 'classification', 'Scripted')
         self.genre = getattr(myEp, 'genre', '')
