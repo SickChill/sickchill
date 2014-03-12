@@ -286,7 +286,7 @@ class TVCache():
                     except (MultipleShowObjectsException):
                         showObj = None
                     if showObj:
-                        self.indexer = showObj.inexer
+                        self.indexer = showObj.indexer
                         indexer_lang = showObj.lang
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
