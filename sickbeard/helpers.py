@@ -351,11 +351,13 @@ def searchIndexersForShow(regShowName):
         for indexer in indexerStrings:
             logger.log(u"Trying to find the " + name + " on " + indexer, logger.DEBUG)
 
-            # try each indexer till we find a match
-            sickbeard.INDEXER_API_PARMS['indexer'] = indexer
-
             try:
-                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
+                lINDEXER_API_PARMS = {'indexer': indexer}
+
+                lINDEXER_API_PARMS['search_all_languages'] = True
+                lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
                 showObj = t[name]
                 return indexer
             except (indexer_exceptions.indexer_exception, IOError):
@@ -363,10 +365,13 @@ def searchIndexersForShow(regShowName):
                 try:
                     # There's gotta be a better way of doing this but we don't wanna
                     # change the language value elsewhere
-                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+
+                    lINDEXER_API_PARMS = {'indexer': indexer}
 
                     lINDEXER_API_PARMS['search_all_languages'] = True
-                    t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+                    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                    t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
                     showObj = t[name]
                     return indexer
                 except (indexer_exceptions.indexer_exception, IOError):
@@ -954,23 +959,23 @@ def get_show_by_name(name, showList, useIndexer=False):
                 return show
 
     if useIndexer:
-        showResult = None
         for indexer in indexerStrings:
-            # try each indexer till we find a match
-            sickbeard.INDEXER_API_PARMS['indexer'] = indexer
-
             try:
-                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
+                lINDEXER_API_PARMS = {'indexer': indexer}
+
+                lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
                 showObj = t[name]
             except (indexer_exceptions.indexer_exception, IOError):
                 # if none found, search on all languages
                 try:
-                    # There's gotta be a better way of doing this but we don't wanna
-                    # change the language value elsewhere
-                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+                    lINDEXER_API_PARMS = {'indexer': indexer}
 
                     lINDEXER_API_PARMS['search_all_languages'] = True
-                    t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+                    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                    t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
                     showObj = t[name]
                 except (indexer_exceptions.indexer_exception, IOError):
                     pass

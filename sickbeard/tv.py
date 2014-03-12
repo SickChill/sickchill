@@ -58,8 +58,6 @@ class TVShow(object):
 
     def __init__(self, indexer, indexerid, lang=""):
 
-        sickbeard.INDEXER_API_PARMS['indexer'] = indexer
-
         self.indexerid = indexerid
         self.indexer = indexer
         self.name = ""
@@ -351,15 +349,15 @@ class TVShow(object):
 
         scannedEps = {}
 
-        lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+        lINDEXER_API_PARMS = {'indexer': self.indexer}
 
         if self.lang:
-            lindexer_api_parms['language'] = self.lang
+            lINDEXER_API_PARMS['language'] = self.lang
 
         if self.dvdorder != 0:
-            lindexer_api_parms['dvdorder'] = True
+            lINDEXER_API_PARMS['dvdorder'] = True
 
-        t = indexer_api.indexerApi(**lindexer_api_parms)
+        t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
         cachedShow = t[self.indexerid]
         cachedSeasons = {}
@@ -400,21 +398,19 @@ class TVShow(object):
 
     def loadEpisodesFromIndexer(self, cache=True):
 
-        # There's gotta be a better way of doing this but we don't wanna
-        # change the cache value elsewhere
-        lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+        lINDEXER_API_PARMS = {'indexer': self.indexer}
 
         if not cache:
-            lindexer_api_parms['cache'] = False
+            lINDEXER_API_PARMS['cache'] = False
 
         if self.lang:
-            lindexer_api_parms['language'] = self.lang
+            lINDEXER_API_PARMS['language'] = self.lang
 
         if self.dvdorder != 0:
-            lindexer_api_parms['dvdorder'] = True
+            lINDEXER_API_PARMS['dvdorder'] = True
 
         try:
-            t = indexer_api.indexerApi(**lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
             showObj = t[self.indexerid]
         except indexer_exceptions.indexer_error:
             logger.log(u"" + self.indexer + " timed out, unable to update episodes from " + self.indexer, logger.ERROR)
@@ -505,17 +501,15 @@ class TVShow(object):
         # if we have an air-by-date show then get the real season/episode numbers
         if parse_result.air_by_date:
             try:
-                # There's gotta be a better way of doing this but we don't wanna
-                # change the cache value elsewhere
-                lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+                lINDEXER_API_PARMS = {'indexer': self.indexer}
 
                 if self.lang:
-                    lindexer_api_parms['language'] = self.lang
+                    lINDEXER_API_PARMS['language'] = self.lang
 
                 if self.dvdorder != 0:
-                    lindexer_api_parms['dvdorder'] = True
+                    lINDEXER_API_PARMS['dvdorder'] = True
 
-                t = indexer_api.indexerApi(**lindexer_api_parms)
+                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
                 epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
                 season = int(epObj["seasonnumber"])
@@ -698,18 +692,18 @@ class TVShow(object):
         # There's gotta be a better way of doing this but we don't wanna
         # change the cache value elsewhere
         if tvapi is None:
-            lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': self.indexer}
 
             if not cache:
-                lindexer_api_parms['cache'] = False
+                lINDEXER_API_PARMS['cache'] = False
 
             if self.lang:
-                lindexer_api_parms['language'] = self.lang
+                lINDEXER_API_PARMS['language'] = self.lang
 
             if self.dvdorder != 0:
-                lindexer_api_parms['dvdorder'] = True
+                lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(**lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
         else:
             t = tvapi
@@ -1305,20 +1299,18 @@ class TVEpisode(object):
         try:
             if cachedSeason is None:
                 if tvapi is None:
-                    # There's gotta be a better way of doing this but we don't wanna
-                    # change the cache value elsewhere
-                    lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+                    lINDEXER_API_PARMS = {'indexer': self.indexer}
 
                     if not cache:
-                        lindexer_api_parms['cache'] = False
+                        lINDEXER_API_PARMS['cache'] = False
 
                     if indexer_lang:
-                        lindexer_api_parms['language'] = indexer_lang
+                        lINDEXER_API_PARMS['language'] = indexer_lang
 
                     if self.show.dvdorder != 0:
-                        lindexer_api_parms['dvdorder'] = True
+                        lINDEXER_API_PARMS['dvdorder'] = True
 
-                    t = indexer_api.indexerApi(**lindexer_api_parms)
+                    t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
                 else:
                     t = tvapi
                 myEp = t[self.show.indexerid][season][episode]

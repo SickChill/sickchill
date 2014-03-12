@@ -2840,10 +2840,6 @@ class Home:
         air_by_date = config.checkbox_to_value(air_by_date)
         subtitles = config.checkbox_to_value(subtitles)
 
-        # correct the indexer with the proper one linked to the show
-        self.indexer = showObj.indexer
-        sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-
         indexer_lang = showObj.lang
 
         # if we changed the language then kick off an update

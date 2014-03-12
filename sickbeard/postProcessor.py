@@ -517,19 +517,23 @@ class PostProcessor(object):
         # see if we can find the name with a TVDB lookup
         for cur_name in name_list:
             try:
-                t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
+                lINDEXER_API_PARMS = {'indexer': self.indexer}
+
+                lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
                 self._log(u"Looking up name " + cur_name + u" on " + self.indexer + "", logger.DEBUG)
                 showObj = t[cur_name]
             except (indexer_exceptions.indexer_exception, IOError):
                 # if none found, search on all languages
                 try:
-                    # There's gotta be a better way of doing this but we don't wanna
-                    # change the language value elsewhere
-                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+                    lINDEXER_API_PARMS = {'indexer': self.indexer}
 
                     lINDEXER_API_PARMS['search_all_languages'] = True
-                    t = indexer_api.indexerApi(custom_ui=classes.ShowListUI, **lINDEXER_API_PARMS)
+                    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                    t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
                     self._log(u"Looking up name " + cur_name + u" in all languages on " + self.indexer + "", logger.DEBUG)
                     showObj = t[cur_name]
@@ -601,27 +605,25 @@ class PostProcessor(object):
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
                     if(showObj != None):
-                        # correct the indexer with the proper one linked to the show
-                        self.indexer = showObj.indexer
-                        sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-
                         # set the language of the show
                         indexer_lang = showObj.lang
+                        self.indexer = showObj.indexer
                 except exceptions.MultipleShowObjectsException:
                     raise #TODO: later I'll just log this, for now I want to know about it ASAP
 
                 try:
-                    # There's gotta be a better way of doing this but we don't wanna
-                    # change the language value elsewhere
-                    lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+                    lINDEXER_API_PARMS = {'indexer': self.indexer}
 
                     if indexer_lang and not indexer_lang == 'en':
-                        lINDEXER_API_PARMS['language'] = indexer_lang
+                        lINDEXER_API_PARMS = {'language': indexer_lang}
 
                     t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
                     epObj = t[indexer_id].airedOn(episodes[0])[0]
+
                     season = int(epObj["seasonnumber"])
                     episodes = [int(epObj["episodenumber"])]
+
                     self._log(u"Got season " + str(season) + " episodes " + str(episodes), logger.DEBUG)
                 except indexer_exceptions.indexer_episodenotfound, e:
                     self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(indexer_id) + u", skipping", logger.DEBUG)
@@ -819,11 +821,11 @@ class PostProcessor(object):
         # reset per-file stuff
         self.in_history = False
 
+        # try to find the file info
         indexer_id = season = episodes = None
         if 'auto' in self.indexer:
             for indexer in indexerStrings:
                 self.indexer = indexer
-                sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
 
                 # try to find the file info
                 (indexer_id, season, episodes) = self._find_info()
@@ -832,9 +834,6 @@ class PostProcessor(object):
 
                 self._log(u"Can't find show on " + self.indexer + ", auto trying next indexer in list", logger.WARNING)
         else:
-            sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-
-            # try to find the file info
             (indexer_id, season, episodes) = self._find_info()
 
         if not indexer_id or season == None or not episodes:

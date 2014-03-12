@@ -15,7 +15,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+import os
 
+import sickbeard
+
+from indexer_config import *
 from lib.tvdb_api.tvdb_api import Tvdb
 from lib.tvrage_api.tvrage_api import TVRage
 
@@ -26,33 +30,18 @@ class indexerApi:
         return object.__new__(new_type)
 
     def __init__(self, indexer=None, language=None, *args, **kwargs):
+        self.name = indexer
+        self.config = INDEXER_CONFIG.copy()
+
+        # wrap the indexer API object and return it back
         if indexer is not None:
-            self.name = indexer
-            self._wrapped = eval(indexer)(*args, **kwargs)
-        else:
-            self.name = "Indexer"
+            if sickbeard.CACHE_DIR:
+                    INDEXER_API_PARMS[indexer]['cache'] = os.path.join(sickbeard.CACHE_DIR, indexer)
 
-        self.config = {}
+            lINDEXER_API_PARMS = INDEXER_API_PARMS[indexer].copy()
+            lINDEXER_API_PARMS.update(**kwargs)
 
-        self.config['valid_languages'] = [
-            "da", "fi", "nl", "de", "it", "es", "fr","pl", "hu","el","tr",
-            "ru","he","ja","pt","zh","cs","sl", "hr","ko","en","sv","no"
-        ]
-
-        self.config['langabbv_to_id'] = {'el': 20, 'en': 7, 'zh': 27,
-        'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
-        'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
-        'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
-
-        if language is None:
-            self.config['language'] = 'en'
-        else:
-            if language not in self.config['valid_languages']:
-                raise ValueError("Invalid language %s, options are: %s" % (
-                    language, self.config['valid_languages']
-                ))
-            else:
-                self.config['language'] = language
+            self._wrapped = eval(indexer)(*args, **lINDEXER_API_PARMS)
 
     def __getattr__(self, attr):
         return getattr(self._wrapped, attr)

@@ -236,10 +236,6 @@ class TVCache():
                 except (MultipleShowObjectsException):
                     showObj = None
                 if showObj:
-                    # correct the indexer with the proper one linked to the show
-                    self.indexer = showObj.indexer
-                    sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-
                     indexer_lang = showObj.lang
 
             # if they're both empty then fill out as much info as possible by searching the show name
@@ -290,10 +286,7 @@ class TVCache():
                     except (MultipleShowObjectsException):
                         showObj = None
                     if showObj:
-                        # correct the indexer with the proper one linked to the show
-                        self.indexer = showObj.indexer
-                        sickbeard.INDEXER_API_PARMS['indexer'] = self.indexer
-
+                        self.indexer = showObj.inexer
                         indexer_lang = showObj.lang
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
@@ -305,14 +298,13 @@ class TVCache():
         # if we have an air-by-date show then get the real season/episode numbers
         if parse_result.air_by_date and indexer_id:
             try:
-                # There's gotta be a better way of doing this but we don't wanna
-                # change the language value elsewhere
-                lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+                lINDEXER_API_PARMS = {'indexer': self.indexer}
 
                 if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
                 t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
                 epObj = t[indexer_id].airedOn(parse_result.air_date)[0]
                 season = int(epObj["seasonnumber"])
                 episodes = [int(epObj["episodenumber"])]

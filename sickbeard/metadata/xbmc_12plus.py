@@ -16,13 +16,13 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import generic
-
 import datetime
 
+import sickbeard
 
 from sickbeard.indexers import indexer_api, indexer_exceptions
+from sickbeard.indexers.indexer_config import INDEXER_BASEURL
 
-import sickbeard
 from sickbeard import logger, exceptions, helpers
 from sickbeard.exceptions import ex
 
@@ -100,17 +100,17 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         show_ID = show_obj.indexerid
 
         indexer_lang = show_obj.lang
-        # There's gotta be a better way of doing this but we don't wanna
-        # change the language value elsewhere
-        lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+        lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+
+        lINDEXER_API_PARMS['actors'] = True
 
         if indexer_lang and not indexer_lang == 'en':
-            lindexer_api_parms['language'] = indexer_lang
+            lINDEXER_API_PARMS['language'] = indexer_lang
 
         if show_obj.dvdorder != 0:
-            lindexer_api_parms['dvdorder'] = True
+            lINDEXER_API_PARMS['dvdorder'] = True
 
-        t = indexer_api.indexerApi(actors=True, **lindexer_api_parms)
+        t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
         tv_node = etree.Element("tvshow")
 
@@ -153,8 +153,8 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         episodeguide = etree.SubElement(tv_node, "episodeguide")
         episodeguideurl = etree.SubElement(episodeguide, "url")
         episodeguideurl2 = etree.SubElement(tv_node, "episodeguideurl")
-        if myShow["id"] != None:
-            showurl = sickbeard.TVDB_BASE_URL + '/series/' + myShow["id"] + '/all/en.zip'
+        if getattr(myShow, 'id', None) is not None:
+            showurl = INDEXER_BASEURL[show_obj.indexer] + '/series/' + myShow["id"] + '/all/en.zip'
             episodeguideurl.text = showurl
             episodeguideurl2.text = showurl
 
@@ -219,18 +219,19 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
         indexer_lang = ep_obj.show.lang
-        # There's gotta be a better way of doing this but we don't wanna
-        # change the language value elsewhere
-        lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+
+        lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+
+        lINDEXER_API_PARMS['actors'] = True
 
         if indexer_lang and not indexer_lang == 'en':
-            lindexer_api_parms['language'] = indexer_lang
+            lINDEXER_API_PARMS['language'] = indexer_lang
 
         if ep_obj.show.dvdorder != 0:
-            lindexer_api_parms['dvdorder'] = True
+            lINDEXER_API_PARMS['dvdorder'] = True
 
         try:
-            t = indexer_api.indexerApi(actors=True, **lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
         except indexer_exceptions.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(e.message)

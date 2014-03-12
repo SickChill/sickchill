@@ -29,12 +29,13 @@ import urllib
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
+from sickbeard import indexers
+from indexers import indexer_api, indexer_exceptions, indexer_config
 from sickbeard import providers, metadata
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator
-
 from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, subtitles, traktWatchListChecker
-from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler
+from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
 from sickbeard import logger
 from sickbeard import naming
 
@@ -145,10 +146,6 @@ NAMING_ABD_PATTERN = None
 NAMING_CUSTOM_ABD = None
 NAMING_FORCE_FOLDERS = False
 NAMING_STRIP_YEAR = None
-
-TVDB_API_KEY = '9DAF49C96CBF8DAC'
-TVDB_BASE_URL = None
-INDEXER_API_PARMS = {}
 
 USE_NZBS = None
 USE_TORRENTS = None
@@ -467,8 +464,8 @@ def initialize(consoleLogging=True):
                 USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
                 USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
                 versionCheckScheduler, VERSION_NOTIFY, PROCESS_AUTOMATICALLY, UNPACK, \
-                KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, TVDB_BASE_URL, MIN_SEARCH_FREQUENCY, \
-                showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, INDEXER_API_PARMS, \
+                KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, \
+                showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
                 NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_STRIP_YEAR, \
                 RENAME_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
                 WOMBLE, OMGWTFNZBS, OMGWTFNZBS_USERNAME, OMGWTFNZBS_APIKEY, providerList, newznabProviderList, torrentRssProviderList,\
@@ -580,14 +577,6 @@ def initialize(consoleLogging=True):
         elif 'ftp' in proxies:
             proxy_url = proxies['ftp']
 
-        # Set our common indexer_api options here
-        INDEXER_API_PARMS = {'apikey': TVDB_API_KEY,
-                          'language': 'en',
-                          'useZip': True}
-
-        if CACHE_DIR:
-            INDEXER_API_PARMS['cache'] = os.path.join(CACHE_DIR, 'tvdb')
-
         QUALITY_DEFAULT = check_setting_int(CFG, 'General', 'quality_default', SD)
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         VERSION_NOTIFY = check_setting_int(CFG, 'General', 'version_notify', 1)
@@ -601,8 +590,6 @@ def initialize(consoleLogging=True):
         NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = bool(check_setting_int(CFG, 'General', 'naming_strip_year', 0))
-
-        TVDB_BASE_URL = 'http://thetvdb.com/api/' + TVDB_API_KEY
 
         USE_NZBS = bool(check_setting_int(CFG, 'General', 'use_nzbs', 0))
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))

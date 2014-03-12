@@ -227,7 +227,9 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         indexer_lang = show_obj.lang
         # There's gotta be a better way of doing this but we don't wanna
         # change the language value elsewhere
-        lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+        lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+
+        lINDEXER_API_PARMS['actors'] = True
 
         if indexer_lang and not indexer_lang == 'en':
             lINDEXER_API_PARMS['language'] = indexer_lang
@@ -235,7 +237,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         if show_obj.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
-        t = indexer_api.indexerApi(actors=True, **lINDEXER_API_PARMS)
+        t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
 
         tv_node = etree.Element("Series")
 
@@ -388,9 +390,9 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         indexer_lang = ep_obj.show.lang
 
         try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+
+            lINDEXER_API_PARMS['actors'] = True
 
             if indexer_lang and not indexer_lang == 'en':
                 lINDEXER_API_PARMS['language'] = indexer_lang
@@ -398,7 +400,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             if ep_obj.show.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(actors=True, **lINDEXER_API_PARMS)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
             myShow = t[ep_obj.show.indexerid]
         except indexer_exceptions.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(e.message)

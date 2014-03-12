@@ -37,6 +37,7 @@ from sickbeard import search_queue
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
 from sickbeard import image_cache
+from sickbeard.common import indexerStrings
 
 from sickbeard.indexers import indexer_api, indexer_exceptions
 try:
@@ -1515,6 +1516,8 @@ class CMD_SickBeardSearchTVDB(ApiCall):
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
+        self.indexer, args = self.check_params(args, kwargs, "indexer", None, False, "string", [])
+
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1546,9 +1549,7 @@ class CMD_SickBeardSearchTVDB(ApiCall):
                 return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': self.indexer}
 
             lang_id = self.valid_languages[self.lang]
             if self.lang and not self.lang == 'en':

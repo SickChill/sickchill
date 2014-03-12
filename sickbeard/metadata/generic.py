@@ -338,15 +338,18 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+
+            lINDEXER_API_PARMS['actors'] = True
 
             if indexer_lang and not indexer_lang == 'en':
-                lindexer_api_parms['language'] = indexer_lang
+                lINDEXER_API_PARMS['language'] = indexer_lang
 
             if ep_obj.show.dvdorder != 0:
-                lindexer_api_parms['dvdorder'] = True
+                lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(actors=True, **lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
             indexer_show_obj = t[ep_obj.show.indexerid]
         except indexer_exceptions.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(e.message)
@@ -716,15 +719,17 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+
+            lINDEXER_API_PARMS['banners'] = True
 
             if indexer_lang and not indexer_lang == 'en':
-                lindexer_api_parms['language'] = indexer_lang
+                lINDEXER_API_PARMS['language'] = indexer_lang
 
             if show_obj.dvdorder != 0:
-                lindexer_api_parms['dvdorder'] = True
+                lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(banners=True, **lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (indexer_exceptions.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + show_obj.indexer + ", not downloading images: " + ex(e), logger.ERROR)
@@ -764,15 +769,17 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+
+            lINDEXER_API_PARMS['banners'] = True
 
             if indexer_lang and not indexer_lang == 'en':
-                lindexer_api_parms['language'] = indexer_lang
+                lINDEXER_API_PARMS['language'] = indexer_lang
 
             if show_obj.dvdorder != 0:
-                lindexer_api_parms['dvdorder'] = True
+                lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(banners=True, **lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (indexer_exceptions.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + show_obj.indexer + ", not downloading images: " + ex(e), logger.ERROR)
@@ -814,12 +821,14 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lindexer_api_parms = sickbeard.INDEXER_API_PARMS.copy()
+            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+
+            lINDEXER_API_PARMS['banners'] = True
 
             if indexer_lang and not indexer_lang == 'en':
-                lindexer_api_parms['language'] = indexer_lang
+                lINDEXER_API_PARMS['language'] = indexer_lang
 
-            t = indexer_api.indexerApi(banners=True, **lindexer_api_parms)
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (indexer_exceptions.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + show_obj.indexer + ", not downloading images: " + ex(e), logger.ERROR)

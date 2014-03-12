@@ -24,9 +24,10 @@ import regexes
 
 import sickbeard
 
-from sickbeard import logger
-
+from sickbeard import logger, classes
+from sickbeard import scene_numbering, scene_exceptions
 from sickbeard.indexers import indexer_api, indexer_exceptions
+from sickbeard.common import indexerStrings
 
 from time import strptime
 
@@ -285,31 +286,36 @@ class NameParser(object):
         # see if we can find the name with a TVDB lookup
         if check_indexer:
             for cur_name in name_list:
-                try:
-                    t = indexer_api.indexerApi(custom_ui=sickbeard.classes.ShowListUI, **sickbeard.INDEXER_API_PARMS)
-
-                    logger.log(u"Looking up name "+cur_name+u" on the Indexer", logger.DEBUG)
-                    showObj = t[cur_name]
-                except (indexer_exceptions):
-                    # if none found, search on all languages
+                for indexer in indexerStrings:
                     try:
-                        # There's gotta be a better way of doing this but we don't wanna
-                        # change the language value elsewhere
-                        lINDEXER_API_PARMS = sickbeard.INDEXER_API_PARMS.copy()
-    
-                        lINDEXER_API_PARMS['search_all_languages'] = True
-                        t = indexer_api.indexerApi(custom_ui=sickbeard.classes.ShowListUI, **lINDEXER_API_PARMS)
-    
-                        logger.log(u"Looking up name "+cur_name+u" in all languages on the Indexer", logger.DEBUG)
+                        lINDEXER_API_PARMS = {'indexer': indexer}
+
+                        lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+
+                        t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
+                        logger.log(u"Looking up name "+cur_name+u" on the Indexer", logger.DEBUG)
                         showObj = t[cur_name]
-                    except (indexer_exceptions.indexer_exception, IOError):
-                        pass
-    
-                    continue
-                except (IOError):
-                    continue
-                
-                return showObj["id"]
+                    except (indexer_exceptions):
+                        # if none found, search on all languages
+                        try:
+                            lINDEXER_API_PARMS = {'indexer': indexer}
+
+                            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+                            lINDEXER_API_PARMS['search_all_languages'] = True
+
+                            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+
+                            logger.log(u"Looking up name "+cur_name+u" in all languages on the Indexer", logger.DEBUG)
+                            showObj = t[cur_name]
+                        except (indexer_exceptions.indexer_exception, IOError):
+                            pass
+
+                        continue
+                    except (IOError):
+                        continue
+
+                    return showObj["id"]
             
         return None
 
@@ -402,7 +408,7 @@ class ParseResult(object):
         new_episode_numbers = []
         new_season_numbers = []
         for epNo in self.episode_numbers:
-            (s, e) = sickbeard.scene_numbering.get_indexer_numbering(indexer_id, self.season_number, epNo)
+            (s, e) = scene_numbering.get_indexer_numbering(indexer_id, self.season_number, epNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)
             
