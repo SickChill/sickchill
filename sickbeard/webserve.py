@@ -2052,7 +2052,7 @@ class NewHomeAddShows:
                         break
 
                 # default to TVDB if indexer was not detected
-                if indexer is None:
+                if indexer is None and show_name:
                     found_info = helpers.searchIndexersForShow(show_name)
                     if found_info is not None:
                         indexer = found_info

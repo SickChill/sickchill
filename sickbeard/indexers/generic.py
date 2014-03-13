@@ -35,7 +35,7 @@ class GenericIndexer(object):
 
         INDEXER_BASEURL = {}
         INDEXER_BASEURL[INDEXER_NONE] = ''
-        INDEXER_BASEURL[INDEXER_TVDB] = 'http://thetvdb.com/api/' + INDEXER_API_KEY[INDEXER_TVDB]
+        INDEXER_BASEURL[INDEXER_TVDB] = 'http://thetvdb.com/api/' + INDEXER_API_KEY[INDEXER_TVDB] + '/series/'
         INDEXER_BASEURL[INDEXER_TVRAGE] = 'http://tvrage.com/showinfo?key=' + INDEXER_API_KEY[INDEXER_TVRAGE] + 'sid='
 
         INDEXER_API_PARMS = {}
@@ -57,5 +57,6 @@ class GenericIndexer(object):
         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
+        self.config['base_url'] = INDEXER_BASEURL[indexer]
         self.config['api_parms'] = INDEXER_API_PARMS[indexer]
         self.config['name'] = INDEXER_NAME[indexer]

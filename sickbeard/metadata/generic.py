@@ -32,6 +32,7 @@ from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
+from lib.tmdb_api.tmdb_api import TMDB
 from sickbeard.indexers import indexer_api, indexer_exceptions
 
 class GenericMetadata():
@@ -704,7 +705,7 @@ class GenericMetadata():
 
     def _retrieve_show_image(self, image_type, show_obj, which=None):
         """
-        Gets an image URL from theTVDB.com and TVRage.com, downloads it and returns the data.
+        Gets an image URL from theTVDB.com and TMDB.com, downloads it and returns the data.
 
         image_type: type of image to retrieve (currently supported: fanart, poster, banner)
         show_obj: a TVShow object to use when searching for the image
@@ -712,7 +713,7 @@ class GenericMetadata():
 
         Returns: the binary image data if available, or else None
         """
-
+        image_url = None
         indexer_lang = show_obj.lang
 
         try:
@@ -738,19 +739,32 @@ class GenericMetadata():
             logger.log(u"Invalid image type " + str(image_type) + ", couldn't find it in the " + show_obj.indexer + " object", logger.ERROR)
             return None
 
-        try:
-            if image_type == 'poster_thumb':
+        if image_type == 'poster_thumb':
+            if getattr(indexer_show_obj, 'poster', None) is not None:
                 image_url = re.sub('posters', '_cache/posters', indexer_show_obj['poster'])
-            elif image_type == 'banner_thumb':
+        elif image_type == 'banner_thumb':
+            if getattr(indexer_show_obj, 'banner', None) is not None:
                 image_url = re.sub('graphical', '_cache/graphical', indexer_show_obj['banner'])
-            else:
+        else:
+            if getattr(indexer_show_obj, 'banner', None) is not None:
                 image_url = indexer_show_obj[image_type]
-        except:
-            return None
 
-        image_data = metadata_helpers.getShowImage(image_url, which)
+        # Try and get posters and fanart from TMDB
+        if image_url is None:
+            for showname in show_obj.name, show_obj.exceptions:
+                if image_type in ('poster', 'poster_thumb'):
+                    image_url = self._retrieve_show_images_from_tmdb(showname, poster=True)
+                elif image_type == 'fanart':
+                    image_url = self._retrieve_show_images_from_tmdb(showname, backdrop=True)
 
-        return image_data
+                if image_url:
+                    break
+
+        if image_url:
+            image_data = metadata_helpers.getShowImage(image_url, which)
+            return image_data
+
+        return None
 
     def _season_posters_dict(self, show_obj, season):
         """
@@ -900,3 +914,54 @@ class GenericMetadata():
             return empty_return
 
         return (indexer_id, name, indexer)
+
+    def _retrieve_show_images_from_tmdb(self, name, id=None, backdrop=False, poster=False):
+        tmdb = TMDB(sickbeard.TMDB_API_KEY)
+        result = None
+
+        # get TMDB configuration info
+        config = tmdb.Configuration()
+        response = config.info()
+        base_url = response['images']['base_url']
+        sizes = response['images']['poster_sizes']
+
+        def size_str_to_int(x):
+            return float("inf") if x == 'original' else int(x[1:])
+        max_size = max(sizes, key=size_str_to_int)
+
+        try:
+            if id is None:
+                search = tmdb.Search()
+                response = search.collection({'query': name})
+                id = response['results'][0]['id']
+
+            result = tmdb.Collections(id)
+        except:
+            try:
+                if id is None:
+                    search = tmdb.Search()
+                    response = search.tv({'query': name})
+                    id = response['results'][0]['id']
+
+                result = tmdb.TV(id)
+            except:
+                return None
+            return None
+
+        if result is None:
+            return None
+
+        images = result.images()
+        # get backdrop urls
+        if backdrop:
+            rel_path = images['backdrops'][0]['file_path']
+            url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+            return url
+
+        # get poster urls
+        if poster:
+            rel_path = images['posters'][0]['file_path']
+            url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+            return url
+
+        return None

@@ -20,11 +20,13 @@ import os
 import sickbeard
 import generic
 
+from indexer_exceptions import indexer_attributenotfound
 from lib.tvdb_api.tvdb_api import Tvdb
 from lib.tvrage_api.tvrage_api import TVRage
 
 class indexerApi(generic.GenericIndexer):
-    def __init__(self, indexer=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        indexer = kwargs.pop('indexer',None)
         super(indexerApi, self).__init__(indexer)
         self.name = self.config['name']
 
@@ -35,10 +37,16 @@ class indexerApi(generic.GenericIndexer):
                 self.config['api_parms']['cache'] = os.path.join(sickbeard.CACHE_DIR, indexer)
 
             # wrap the indexer API object and return it back
-            self._wrapped = eval(indexer)(*args, **self.config['api_parms'])
+            self._wrapped = eval(indexer)(forceConnect=True, *args, **self.config['api_parms'])
 
     def __getattr__(self, attr):
-        return getattr(self._wrapped, attr)
+        try:
+            return getattr(self._wrapped, attr)
+        except KeyError:
+            raise indexer_attributenotfound
 
     def __getitem__(self, attr):
-        return self._wrapped.__getitem__(attr)
+        try:
+            return self._wrapped.__getitem__(attr)
+        except KeyError:
+            raise indexer_attributenotfound
