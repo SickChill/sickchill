@@ -18,30 +18,23 @@
 import os
 
 import sickbeard
+import generic
 
-from indexer_config import *
 from lib.tvdb_api.tvdb_api import Tvdb
 from lib.tvrage_api.tvrage_api import TVRage
 
-class indexerApi:
-    def __new__(self, indexer):
-        cls = type(indexer)
-        new_type = type(cls.__name__ + '_wrapped', (indexerApi, cls), {})
-        return object.__new__(new_type)
+class indexerApi(generic.GenericIndexer):
+    def __init__(self, indexer=None, *args, **kwargs):
+        super(indexerApi, self).__init__(indexer)
 
-    def __init__(self, indexer=None, language=None, *args, **kwargs):
-        self.name = indexer
-        self.config = INDEXER_CONFIG.copy()
+        if indexer:
+            self.api_parms.update(**kwargs)
 
-        # wrap the indexer API object and return it back
-        if indexer is not None:
             if sickbeard.CACHE_DIR:
-                    INDEXER_API_PARMS[indexer]['cache'] = os.path.join(sickbeard.CACHE_DIR, indexer)
+                self.api_parms['cache'] = os.path.join(sickbeard.CACHE_DIR, indexer)
 
-            lINDEXER_API_PARMS = INDEXER_API_PARMS[indexer].copy()
-            lINDEXER_API_PARMS.update(**kwargs)
-
-            self._wrapped = eval(indexer)(*args, **lINDEXER_API_PARMS)
+            # wrap the indexer API object and return it back
+            self._wrapped = eval(indexer)(*args, **self.api_parms)
 
     def __getattr__(self, attr):
         return getattr(self._wrapped, attr)

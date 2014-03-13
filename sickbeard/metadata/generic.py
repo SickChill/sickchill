@@ -32,7 +32,6 @@ from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
-
 from sickbeard.indexers import indexer_api, indexer_exceptions
 
 class GenericMetadata():
