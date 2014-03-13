@@ -47,15 +47,15 @@ class GenericIndexer(object):
         INDEXER_API_PARMS[INDEXER_TVRAGE] = {'apikey': INDEXER_API_KEY[INDEXER_TVRAGE],
                                            'language': 'en'}
 
-        config = {}
-        config['valid_languages'] = [
+        self.config = {}
+        self.config['valid_languages'] = [
             "da", "fi", "nl", "de", "it", "es", "fr","pl", "hu","el","tr",
             "ru","he","ja","pt","zh","cs","sl", "hr","ko","en","sv","no"]
 
-        config['langabbv_to_id'] = {'el': 20, 'en': 7, 'zh': 27,
+        self.config['langabbv_to_id'] = {'el': 20, 'en': 7, 'zh': 27,
         'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
-        self.api_parms = config['api_parms'] = INDEXER_API_PARMS[indexer]
-        self.name = config['name'] = INDEXER_NAME[indexer]
+        self.config['api_parms'] = INDEXER_API_PARMS[indexer]
+        self.config['name'] = INDEXER_NAME[indexer]
