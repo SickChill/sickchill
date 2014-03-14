@@ -28,8 +28,10 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from tvrage_cache import CacheHandler
+from lib import requests
+from lib.dateutil.parser import parse
 
+from tvrage_cache import CacheHandler
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
     tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
@@ -409,7 +411,8 @@ class TVRage:
         global lastTimeout
         try:
             log().debug("Retrieving URL %s" % url)
-            resp = self.urlopener.open(url)
+            #resp = self.urlopener.open(url)
+            resp = requests.get(url)
             if 'x-local-cache' in resp.headers:
                 log().debug("URL %s was cached in %s" % (
                     url,
@@ -423,7 +426,7 @@ class TVRage:
                 lastTimeout = dt.datetime.now()
             raise tvrage_error("Could not connect to server: %s" % (errormsg))
 
-        return resp.read()
+        return resp.content
 
     def _getetsrc(self, url):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -456,18 +459,8 @@ class TVRage:
                 elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                 if elm.tag in 'firstaired':
-                    try:
-                        fixDate = dt.datetime.strptime(elm.text,"%b/%d/%Y")
-                        value = fixDate.strftime("%Y-%m-%d")
-                    except:
-                        try:
-                            fixDate = dt.datetime.strptime(elm.text,"%b/%Y")
-                            newDate = fixDate.replace(day=01)
-                            value = newDate.strftime("%Y-%m-%d")
-                        except:
-                            fixDate = dt.datetime.strptime(elm.text,"%Y")
-                            newDate = fixDate.replace(month=01, day=01)
-                            value = newDate.strftime("%Y-%m-%d")
+                    fixDate = parse(elm.text)
+                    value = fixDate.strftime("%Y-%m-%d")
 
                     elm.text = value
             return ElementTree.fromstring(ElementTree.tostring(xml))
@@ -480,18 +473,8 @@ class TVRage:
                     elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                     if elm.tag in 'firstaired':
-                        try:
-                            fixDate = dt.datetime.strptime(elm.text,"%b/%d/%Y")
-                            value = fixDate.strftime("%Y-%m-%d")
-                        except:
-                            try:
-                                fixDate = dt.datetime.strptime(elm.text,"%b/%Y")
-                                newDate = fixDate.replace(day=01)
-                                value = newDate.strftime("%Y-%m-%d")
-                            except:
-                                fixDate = dt.datetime.strptime(elm.text,"%Y")
-                                newDate = fixDate.replace(month=01, day=01)
-                                value = newDate.strftime("%Y-%m-%d")
+                        fixDate = parse(elm.text)
+                        value = fixDate.strftime("%Y-%m-%d")
 
                         elm.text = value
                     return ElementTree.fromstring(ElementTree.tostring(xml))
