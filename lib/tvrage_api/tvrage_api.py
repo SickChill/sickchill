@@ -431,8 +431,9 @@ class TVRage:
         reDict = {
             'showid': 'id',
             'showname': 'seriesname',
+            'name': 'seriesname',
             'summary': 'overview',
-            'startdate': 'firstaired',
+            'started': 'firstaired',
             'genres': 'genre',
             'airtime': 'airs_time',
             'airday': 'airs_dayofweek',
@@ -453,6 +454,22 @@ class TVRage:
             tree = ElementTree.ElementTree(xml)
             for elm in tree.iter():
                 elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
+
+                if elm.tag in 'firstaired':
+                    try:
+                        fixDate = dt.datetime.strptime(elm.text,"%b/%d/%Y")
+                        value = fixDate.strftime("%Y-%m-%d")
+                    except:
+                        try:
+                            fixDate = dt.datetime.strptime(elm.text,"%b/%Y")
+                            newDate = fixDate.replace(day=01)
+                            value = newDate.strftime("%Y-%m-%d")
+                        except:
+                            fixDate = dt.datetime.strptime(elm.text,"%Y")
+                            newDate = fixDate.replace(month=01, day=01)
+                            value = newDate.strftime("%Y-%m-%d")
+
+                    elm.text = value
             return ElementTree.fromstring(ElementTree.tostring(xml))
         except SyntaxError:
             src = self._loadUrl(url, recache=True)
@@ -461,7 +478,23 @@ class TVRage:
                 tree = ElementTree.ElementTree(xml)
                 for elm in tree.iter():
                     elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
-                return ElementTree.fromstring(ElementTree.tostring(xml))
+
+                    if elm.tag in 'firstaired':
+                        try:
+                            fixDate = dt.datetime.strptime(elm.text,"%b/%d/%Y")
+                            value = fixDate.strftime("%Y-%m-%d")
+                        except:
+                            try:
+                                fixDate = dt.datetime.strptime(elm.text,"%b/%Y")
+                                newDate = fixDate.replace(day=01)
+                                value = newDate.strftime("%Y-%m-%d")
+                            except:
+                                fixDate = dt.datetime.strptime(elm.text,"%Y")
+                                newDate = fixDate.replace(month=01, day=01)
+                                value = newDate.strftime("%Y-%m-%d")
+
+                        elm.text = value
+                    return ElementTree.fromstring(ElementTree.tostring(xml))
             except SyntaxError, exceptionmsg:
                 errormsg = "There was an error with the XML retrieved from tvrage.com:\n%s" % (
                     exceptionmsg
@@ -570,22 +603,7 @@ class TVRage:
 
         for curInfo in seriesInfoEt:
             tag = curInfo.tag.lower()
-
-            if tag in 'firstaired':
-                try:
-                    fixDate = dt.datetime.strptime(curInfo.text,"%b/%d/%Y")
-                    value = fixDate.strftime("%Y-%m-%d")
-                except:
-                    try:
-                        fixDate = dt.datetime.strptime(curInfo.text,"%b/%Y")
-                        newDate = fixDate.replace(day=01)
-                        value = newDate.strftime("%Y-%m-%d")
-                    except:
-                        fixDate = dt.datetime.strptime(curInfo.text,"%Y")
-                        newDate = fixDate.replace(month=01, day=01)
-                        value = newDate.strftime("%Y-%m-%d")
-            else:
-                value = curInfo.text
+            value = curInfo.text
 
             if value is not None:
                 value = self._cleanData(value)
