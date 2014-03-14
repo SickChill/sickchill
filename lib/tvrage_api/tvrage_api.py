@@ -358,7 +358,7 @@ class TVRage:
 
             # cacheControl
             if self.config['cache_enabled']:
-                sess = CacheControl(requests.Session(), cache=FileCache(self.config['cache_location']))
+                sess = CacheControl(requests.Session(), cache_force=True, cache=FileCache(self.config['cache_location']))
             else:
                 sess = requests.Session()
 

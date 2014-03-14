@@ -494,7 +494,7 @@ class Tvdb:
             self.config['params_getSeries'] = {"seriesname": "", "language": "all"}
         else:
             self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php" % self.config
-            self.config['params_getSeries'] = {"seriesname": "", "language": ""}
+            self.config['params_getSeries'] = {"seriesname": "", "language": self.config['language']}
 
         self.config['url_epInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.xml" % self.config
         self.config['url_epInfo_zip'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.zip" % self.config
@@ -527,7 +527,7 @@ class Tvdb:
 
             # cacheControl
             if self.config['cache_enabled']:
-                sess = CacheControl(requests.Session(), cache=FileCache(self.config['cache_location']))
+                sess = CacheControl(requests.Session(), cache_force=True, cache=FileCache(self.config['cache_location']))
             else:
                 sess = requests.Session()
 
@@ -538,26 +538,26 @@ class Tvdb:
                 lastTimeout = datetime.datetime.now()
             raise tvdb_error("Could not connect to server: %s" % (e))
 
-        # handle gzipped content,
-        # http://dbr.lighthouseapp.com/projects/13342/tickets/72-gzipped-data-patch
-        if 'gzip' in resp.headers.get("Content-Encoding", ''):
-            if gzip:
-                stream = StringIO.StringIO(resp.content)
-                gz = gzip.GzipFile(fileobj=stream)
-                return gz.read()
-
-            raise tvdb_error("Received gzip data from thetvdb.com, but could not correctly handle it")
-
-        if 'application/zip' in resp.headers.get("Content-Type", ''):
-            try:
-                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                log().debug("We recived a zip file unpacking now ...")
-                zipdata = StringIO.StringIO()
-                zipdata.write(resp.content)
-                myzipfile = zipfile.ZipFile(zipdata)
-                return myzipfile.read('%s.xml' % language)
-            except zipfile.BadZipfile:
-                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        ## handle gzipped content,
+        ## http://dbr.lighthouseapp.com/projects/13342/tickets/72-gzipped-data-patch
+        #if 'gzip' in resp.headers.get("Content-Encoding", ''):
+        #    if gzip:
+        #        stream = StringIO.StringIO(resp.content)
+        #        gz = gzip.GzipFile(fileobj=stream)
+        #        return gz.read()
+        #
+        #    raise tvdb_error("Received gzip data from thetvdb.com, but could not correctly handle it")
+        #
+        #if 'application/zip' in resp.headers.get("Content-Type", ''):
+        #    try:
+        #        # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+        #        log().debug("We recived a zip file unpacking now ...")
+        #        zipdata = StringIO.StringIO()
+        #        zipdata.write(resp.content)
+        #        myzipfile = zipfile.ZipFile(zipdata)
+        #        return myzipfile.read('%s.xml' % language)
+        #    except zipfile.BadZipfile:
+        #        raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
 
         return resp.content
 
