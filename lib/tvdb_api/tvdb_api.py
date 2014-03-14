@@ -39,7 +39,6 @@ except ImportError:
     gzip = None
 
 from lib import requests
-from urlparse import urlparse, urlsplit
 from lib.cachecontrol.wrapper import CacheControl
 from lib.cachecontrol.caches.file_cache import FileCache
 
@@ -538,26 +537,16 @@ class Tvdb:
                 lastTimeout = datetime.datetime.now()
             raise tvdb_error("Could not connect to server: %s" % (e))
 
-        ## handle gzipped content,
-        ## http://dbr.lighthouseapp.com/projects/13342/tickets/72-gzipped-data-patch
-        #if 'gzip' in resp.headers.get("Content-Encoding", ''):
-        #    if gzip:
-        #        stream = StringIO.StringIO(resp.content)
-        #        gz = gzip.GzipFile(fileobj=stream)
-        #        return gz.read()
-        #
-        #    raise tvdb_error("Received gzip data from thetvdb.com, but could not correctly handle it")
-        #
-        #if 'application/zip' in resp.headers.get("Content-Type", ''):
-        #    try:
-        #        # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-        #        log().debug("We recived a zip file unpacking now ...")
-        #        zipdata = StringIO.StringIO()
-        #        zipdata.write(resp.content)
-        #        myzipfile = zipfile.ZipFile(zipdata)
-        #        return myzipfile.read('%s.xml' % language)
-        #    except zipfile.BadZipfile:
-        #        raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        if 'application/zip' in resp.headers.get("Content-Type", ''):
+            try:
+                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+                log().debug("We recived a zip file unpacking now ...")
+                zipdata = StringIO.StringIO()
+                zipdata.write(resp.content)
+                myzipfile = zipfile.ZipFile(zipdata)
+                return myzipfile.read('%s.xml' % language)
+            except zipfile.BadZipfile:
+                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
 
         return resp.content
 
@@ -570,7 +559,7 @@ class Tvdb:
             # remove it to avoid errors. Change from SickBeard, from will14m
             return ElementTree.fromstring(src.rstrip("\r"))
         except SyntaxError:
-            src = self._loadUrl(url, params=None, language=language)
+            src = self._loadUrl(url, params=params, language=language)
             try:
                 return ElementTree.fromstring(src.rstrip("\r"))
             except SyntaxError, exceptionmsg:

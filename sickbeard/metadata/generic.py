@@ -31,6 +31,7 @@ from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
+from sickbeard.show_name_helpers import allPossibleShowNames
 
 from lib.tmdb_api.tmdb_api import TMDB
 from sickbeard.indexers import indexer_api, indexer_exceptions
@@ -751,11 +752,11 @@ class GenericMetadata():
 
         # Try and get posters and fanart from TMDB
         if image_url is None:
-            for showname in show_obj.name, show_obj.exceptions:
+            for show_name in set(allPossibleShowNames(show_obj)):
                 if image_type in ('poster', 'poster_thumb'):
-                    image_url = self._retrieve_show_images_from_tmdb(showname, poster=True)
+                    image_url = self._retrieve_show_images_from_tmdb(show_name, poster=True)
                 elif image_type == 'fanart':
-                    image_url = self._retrieve_show_images_from_tmdb(showname, backdrop=True)
+                    image_url = self._retrieve_show_images_from_tmdb(show_name, backdrop=True)
 
                 if image_url:
                     break

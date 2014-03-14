@@ -20,6 +20,8 @@ import getpass
 import tempfile
 import warnings
 import logging
+import StringIO
+import zipfile
 import datetime as dt
 
 try:
@@ -368,6 +370,17 @@ class TVRage:
             if not str(e).startswith('HTTP Error'):
                 lastTimeout = dt.datetime.now()
             raise tvrage_error("Could not connect to server: %s" % (e))
+
+        if 'application/zip' in resp.headers.get("Content-Type", ''):
+            try:
+                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+                log().debug("We recived a zip file unpacking now ...")
+                zipdata = StringIO.StringIO()
+                zipdata.write(resp.content)
+                myzipfile = zipfile.ZipFile(zipdata)
+                return myzipfile.read('%s.xml' % self.config['language'])
+            except zipfile.BadZipfile:
+                raise tvrage_error("Bad zip file received from tvrage.com, could not read it")
 
         return resp.content
 
