@@ -20,7 +20,6 @@ __version__ = "1.9"
 import os
 import time
 import urllib
-import urllib2
 import getpass
 import StringIO
 import tempfile
@@ -39,8 +38,11 @@ try:
 except ImportError:
     gzip = None
 
+from lib import requests
+from urlparse import urlparse, urlsplit
+from lib.cachecontrol.wrapper import CacheControl
+from lib.cachecontrol.caches.file_cache import FileCache
 
-from tvdb_cache import CacheHandler
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
@@ -435,26 +437,13 @@ class Tvdb:
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
-            self.urlopener = urllib2.build_opener(
-                CacheHandler(self.config['cache_location'])
-            )
 
         elif cache is False:
             self.config['cache_enabled'] = False
-            self.urlopener = urllib2.build_opener() # default opener with no caching
 
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.config['cache_location'] = cache
-            self.urlopener = urllib2.build_opener(
-                CacheHandler(self.config['cache_location'])
-            )
-
-        elif isinstance(cache, urllib2.OpenerDirector):
-            # If passed something from urllib2.build_opener, use that
-            log().debug("Using %r as urlopener" % cache)
-            self.config['cache_enabled'] = True
-            self.urlopener = cache
 
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
@@ -501,9 +490,11 @@ class Tvdb:
         self.config['base_url'] = "http://thetvdb.com"
 
         if self.config['search_all_languages']:
-            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php?seriesname=%%s&language=all" % self.config
+            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php" % self.config
+            self.config['params_getSeries'] = {"seriesname": "", "language": "all"}
         else:
-            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php?seriesname=%%s&language=%(language)s" % self.config
+            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php" % self.config
+            self.config['params_getSeries'] = {"seriesname": "", "language": ""}
 
         self.config['url_epInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.xml" % self.config
         self.config['url_epInfo_zip'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.zip" % self.config
@@ -529,78 +520,29 @@ class Tvdb:
 
         return os.path.join(tempfile.gettempdir(), "tvdb_api-%s" % (uid))
 
-    def retry(ExceptionToCheck, default=None, tries=4, delay=3, backoff=2, logger=None):
-        """Retry calling the decorated function using an exponential backoff.
-
-        http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
-        original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
-
-        :param ExceptionToCheck: the exception to check. may be a tuple of
-            excpetions to check
-        :type ExceptionToCheck: Exception or tuple
-        :param tries: number of times to try (not retry) before giving up
-        :type tries: int
-        :param delay: initial delay between retries in seconds
-        :type delay: int
-        :param backoff: backoff multiplier e.g. value of 2 will double the delay
-            each retry
-        :type backoff: int
-        :param logger: logger to use. If None, print
-        :type logger: logging.Logger instance
-        """
-        def deco_retry(f):
-            def f_retry(*args, **kwargs):
-                mtries, mdelay = tries, delay
-                try_one_last_time = True
-                while mtries > 1:
-                    try:
-                        print args,kwargs
-                        return f(*args, **kwargs)
-                        try_one_last_time = False
-                        break
-                    except ExceptionToCheck, e:
-                        msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
-                        if logger:
-                            logger.warning(msg)
-                        else:
-                            print msg
-                        time.sleep(mdelay)
-                        mtries -= 1
-                        mdelay *= backoff
-                if try_one_last_time:
-                    try:
-                        return f(*args, **kwargs)
-                    except ExceptionToCheck, e:
-                        return default
-                return
-            return f_retry  # true decorator
-        return deco_retry
-
-    @retry(urllib2.URLError, tries=4, delay=3, backoff=2)
-    def _loadUrl(self, url, recache = False, language=None):
+    def _loadUrl(self, url, params=None, language=None):
         global lastTimeout
         try:
             log().debug("Retrieving URL %s" % url)
-            resp = self.urlopener.open(url)
-            if 'x-local-cache' in resp.headers:
-                log().debug("URL %s was cached in %s" % (
-                    url,
-                    resp.headers['x-local-cache'])
-                )
-                if recache:
-                    log().debug("Attempting to recache %s" % url)
-                    resp.recache()
-        except (IOError, urllib2.URLError), errormsg:
-            if not str(errormsg).startswith('HTTP Error'):
-                lastTimeout = datetime.datetime.now()
-            raise tvdb_error("Could not connect to server: %s" % (errormsg))
 
-        
+            # cacheControl
+            if self.config['cache_enabled']:
+                sess = CacheControl(requests.Session(), cache=FileCache(self.config['cache_location']))
+            else:
+                sess = requests.Session()
+
+            # get response from TVRage
+            resp = sess.get(url, params=params)
+        except Exception, e:
+            if not str(e).startswith('HTTP Error'):
+                lastTimeout = datetime.datetime.now()
+            raise tvdb_error("Could not connect to server: %s" % (e))
+
         # handle gzipped content,
         # http://dbr.lighthouseapp.com/projects/13342/tickets/72-gzipped-data-patch
         if 'gzip' in resp.headers.get("Content-Encoding", ''):
             if gzip:
-                stream = StringIO.StringIO(resp.read())
+                stream = StringIO.StringIO(resp.content)
                 gz = gzip.GzipFile(fileobj=stream)
                 return gz.read()
 
@@ -611,26 +553,24 @@ class Tvdb:
                 # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
                 log().debug("We recived a zip file unpacking now ...")
                 zipdata = StringIO.StringIO()
-                zipdata.write(resp.read())
+                zipdata.write(resp.content)
                 myzipfile = zipfile.ZipFile(zipdata)
                 return myzipfile.read('%s.xml' % language)
             except zipfile.BadZipfile:
-                if 'x-local-cache' in resp.headers:
-                    resp.delete_cache()
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
 
-        return resp.read()
+        return resp.content
 
-    def _getetsrc(self, url, language=None):
+    def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
         """
-        src = self._loadUrl(url, language=language)
+        src = self._loadUrl(url, params=params, language=language)
         try:
             # TVDB doesn't sanitize \r (CR) from user input in some fields,
             # remove it to avoid errors. Change from SickBeard, from will14m
             return ElementTree.fromstring(src.rstrip("\r"))
         except SyntaxError:
-            src = self._loadUrl(url, recache=True, language=language)
+            src = self._loadUrl(url, params=None, language=language)
             try:
                 return ElementTree.fromstring(src.rstrip("\r"))
             except SyntaxError, exceptionmsg:
@@ -694,7 +634,8 @@ class Tvdb:
         """
         series = urllib.quote(series.encode("utf-8"))
         log().debug("Searching for show %s" % series)
-        seriesEt = self._getetsrc(self.config['url_getSeries'] % (series))
+        self.config['params_getSeries']['seriesname'] = series
+        seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
         allSeries = []
         for series in seriesEt:
             result = dict((k.tag.lower(), k.text) for k in series.getchildren())

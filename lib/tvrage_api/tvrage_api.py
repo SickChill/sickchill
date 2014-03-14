@@ -16,7 +16,6 @@ import os
 import re
 import time
 import urllib
-import urllib2
 import getpass
 import tempfile
 import warnings
@@ -28,10 +27,12 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from lib import requests
 from lib.dateutil.parser import parse
 
-from tvrage_cache import CacheHandler
+from lib import requests
+from lib.cachecontrol.wrapper import CacheControl
+from lib.cachecontrol.caches.file_cache import FileCache
+
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
     tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
@@ -276,26 +277,13 @@ class TVRage:
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
-            self.urlopener = urllib2.build_opener(
-                CacheHandler(self.config['cache_location'])
-            )
 
         elif cache is False:
             self.config['cache_enabled'] = False
-            self.urlopener = urllib2.build_opener() # default opener with no caching
 
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.config['cache_location'] = cache
-            self.urlopener = urllib2.build_opener(
-                CacheHandler(self.config['cache_location'])
-            )
-
-        elif isinstance(cache, urllib2.OpenerDirector):
-            # If passed something from urllib2.build_opener, use that
-            log().debug("Using %r as urlopener" % cache)
-            self.config['cache_enabled'] = True
-            self.urlopener = cache
 
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
@@ -336,13 +324,17 @@ class TVRage:
 
         # The following url_ configs are based of the
         # http://tvrage.com/wiki/index.php/Programmers_API
+
         self.config['base_url'] = "http://services.tvrage.com"
 
-        self.config['url_getSeries'] = u"%(base_url)s/myfeeds/search.php?key=%(apikey)s&show=%%s" % self.config
+        self.config['url_getSeries'] = u"%(base_url)s/myfeeds/search.php" % self.config
+        self.config['params_getSeries'] = {"key": self.config['apikey'], "show": ""}
 
-        self.config['url_epInfo'] = u"%(base_url)s/myfeeds/episode_list.php?key=%(apikey)s&sid=%%s" % self.config
+        self.config['url_epInfo'] = u"%(base_url)s/myfeeds/episode_list.php" % self.config
+        self.config['params_epInfo'] = {"key": self.config['apikey'], "sid": ""}
 
-        self.config['url_seriesInfo'] = u"%(base_url)s/myfeeds/showinfo.php?key=%(apikey)s&sid=%%s" % self.config
+        self.config['url_seriesInfo'] = u"%(base_url)s/myfeeds/showinfo.php" % self.config
+        self.config['params_seriesInfo'] = {"key": self.config['apikey'], "sid": ""}
 
     def _getTempDir(self):
         """Returns the [system temp dir]/tvrage_api-u501 (or
@@ -359,76 +351,27 @@ class TVRage:
 
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
-    def retry(ExceptionToCheck, default=None, tries=4, delay=3, backoff=2, logger=None):
-        """Retry calling the decorated function using an exponential backoff.
-
-        http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
-        original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
-
-        :param ExceptionToCheck: the exception to check. may be a tuple of
-            excpetions to check
-        :type ExceptionToCheck: Exception or tuple
-        :param tries: number of times to try (not retry) before giving up
-        :type tries: int
-        :param delay: initial delay between retries in seconds
-        :type delay: int
-        :param backoff: backoff multiplier e.g. value of 2 will double the delay
-            each retry
-        :type backoff: int
-        :param logger: logger to use. If None, print
-        :type logger: logging.Logger instance
-        """
-        def deco_retry(f):
-            def f_retry(*args, **kwargs):
-                mtries, mdelay = tries, delay
-                try_one_last_time = True
-                while mtries > 1:
-                    try:
-                        print args,kwargs
-                        return f(*args, **kwargs)
-                        try_one_last_time = False
-                        break
-                    except ExceptionToCheck, e:
-                        msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
-                        if logger:
-                            logger.warning(msg)
-                        else:
-                            print msg
-                        time.sleep(mdelay)
-                        mtries -= 1
-                        mdelay *= backoff
-                if try_one_last_time:
-                    try:
-                        return f(*args, **kwargs)
-                    except ExceptionToCheck, e:
-                        return default
-                return
-            return f_retry  # true decorator
-        return deco_retry
-
-    @retry(urllib2.URLError, tries=4, delay=3, backoff=2)
-    def _loadUrl(self, url, recache = False):
+    def _loadUrl(self, url, params=None):
         global lastTimeout
         try:
             log().debug("Retrieving URL %s" % url)
-            #resp = self.urlopener.open(url)
-            resp = requests.get(url)
-            if 'x-local-cache' in resp.headers:
-                log().debug("URL %s was cached in %s" % (
-                    url,
-                    resp.headers['x-local-cache'])
-                )
-                if recache:
-                    log().debug("Attempting to recache %s" % url)
-                    resp.recache()
-        except (IOError, urllib2.URLError), errormsg:
-            if not str(errormsg).startswith('HTTP Error'):
+
+            # cacheControl
+            if self.config['cache_enabled']:
+                sess = CacheControl(requests.Session(), cache=FileCache(self.config['cache_location']))
+            else:
+                sess = requests.Session()
+
+            # get response from TVRage
+            resp = sess.get(url, params=params)
+        except Exception, e:
+            if not str(e).startswith('HTTP Error'):
                 lastTimeout = dt.datetime.now()
-            raise tvrage_error("Could not connect to server: %s" % (errormsg))
+            raise tvrage_error("Could not connect to server: %s" % (e))
 
         return resp.content
 
-    def _getetsrc(self, url):
+    def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
         """
         reDict = {
@@ -449,7 +392,7 @@ class TVRage:
         }
 
         robj = re.compile('|'.join(reDict.keys()))
-        src = self._loadUrl(url)
+        src = self._loadUrl(url, params)
         try:
             # TVRAGE doesn't sanitize \r (CR) from user input in some fields,
             # remove it to avoid errors. Change from SickBeard, from will14m
@@ -459,24 +402,30 @@ class TVRage:
                 elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                 if elm.tag in 'firstaired':
-                    fixDate = parse(elm.text)
-                    value = fixDate.strftime("%Y-%m-%d")
-
-                    elm.text = value
+                    if elm.text is "0000-00-00":
+                        elm.text = str(dt.date.fromordinal(1))
+                    try:
+                        fixDate = parse(elm.text, fuzzy=True)
+                        elm.text = fixDate.strftime("%Y-%m-%d")
+                    except:
+                        pass
             return ElementTree.fromstring(ElementTree.tostring(xml))
         except SyntaxError:
-            src = self._loadUrl(url, recache=True)
+            src = self._loadUrl(url, params)
             try:
                 xml = ElementTree.fromstring(src.rstrip("\r"))
                 tree = ElementTree.ElementTree(xml)
                 for elm in tree.iter():
                     elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
-                    if elm.tag in 'firstaired':
-                        fixDate = parse(elm.text)
-                        value = fixDate.strftime("%Y-%m-%d")
-
-                        elm.text = value
+                    if elm.tag in 'firstaired' and elm.text:
+                        if elm.text is "0000-00-00":
+                            elm.text = str(dt.date.fromordinal(1))
+                        try:
+                            fixDate = parse(elm.text, fuzzy=True)
+                            elm.text = fixDate.strftime("%Y-%m-%d")
+                        except:
+                            pass
                     return ElementTree.fromstring(ElementTree.tostring(xml))
             except SyntaxError, exceptionmsg:
                 errormsg = "There was an error with the XML retrieved from tvrage.com:\n%s" % (
@@ -538,7 +487,8 @@ class TVRage:
         """
         series = urllib.quote(series.encode("utf-8"))
         log().debug("Searching for show %s" % series)
-        seriesEt = self._getetsrc(self.config['url_getSeries'] % (series))
+        self.config['params_getSeries']['show'] = series
+        seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
         allSeries = []
         seriesResult = {}
         for series in seriesEt:
@@ -580,8 +530,10 @@ class TVRage:
 
         # Parse show information
         log().debug('Getting all series data for %s' % (sid))
+        self.config['params_seriesInfo']['sid'] = sid
         seriesInfoEt = self._getetsrc(
-            self.config['url_seriesInfo'] % (sid)
+            self.config['url_seriesInfo'],
+            self.config['params_seriesInfo']
         )
 
         for curInfo in seriesInfoEt:
@@ -610,8 +562,8 @@ class TVRage:
         # Parse episode data
         log().debug('Getting all episodes of %s' % (sid))
 
-        url = self.config['url_epInfo'] % (sid)
-        epsEt = self._getetsrc(url)
+        self.config['params_epInfo']['sid'] = sid
+        epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
         for cur_list in epsEt.findall("Episodelist"):
             for cur_seas in cur_list:
                 try:

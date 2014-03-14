@@ -153,7 +153,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         episodeguideurl = etree.SubElement(episodeguide, "url")
         episodeguideurl2 = etree.SubElement(tv_node, "episodeguideurl")
         if getattr(myShow, 'id', None) is not None:
-            showurl = t.config['base_url'] + myShow["id"] + '/all/en.zip'
+            showurl = t.base_url + myShow["id"] + '/all/en.zip'
             episodeguideurl.text = showurl
             episodeguideurl2.text = showurl
 

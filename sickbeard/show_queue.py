@@ -451,7 +451,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log(u"Retrieving show info from " + self.show.indexer + "", logger.DEBUG)
         try:
-            self.show.loadFromIndexer(cache=not self.force)
+            self.show.loadFromIndexer(cache=self.force)
         except indexer_exceptions.indexer_error, e:
             logger.log(u"Unable to contact " + self.show.indexer + ", aborting: " + ex(e), logger.WARNING)
             return

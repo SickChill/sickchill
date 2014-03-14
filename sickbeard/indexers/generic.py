@@ -15,6 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+import os
+
+import sickbeard
 
 class GenericIndexer(object):
     def __init__(self, indexer):
@@ -23,10 +26,10 @@ class GenericIndexer(object):
         INDEXER_TVDB = 'Tvdb'
         INDEXER_TVRAGE = 'TVRage'
 
-        INDEXER_NAME = {}
-        INDEXER_NAME[INDEXER_NONE] = ''
-        INDEXER_NAME[INDEXER_TVDB] = 'theTVDB'
-        INDEXER_NAME[INDEXER_TVRAGE] = 'TVRage'
+        INDEXERS = {}
+        INDEXERS[INDEXER_NONE] = ''
+        INDEXERS[INDEXER_TVDB] = 'theTVDB'
+        INDEXERS[INDEXER_TVRAGE] = 'TVRage'
 
         INDEXER_API_KEY = {}
         INDEXER_API_KEY[INDEXER_NONE] = ''
@@ -57,6 +60,8 @@ class GenericIndexer(object):
         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
-        self.config['base_url'] = INDEXER_BASEURL[indexer]
-        self.config['api_parms'] = INDEXER_API_PARMS[indexer]
-        self.config['name'] = INDEXER_NAME[indexer]
+        self.base_url = INDEXER_BASEURL[indexer]
+        self.api_parms = INDEXER_API_PARMS[indexer]
+        self.indexerName = INDEXERS[indexer]
+        self.cache = os.path.join(sickbeard.CACHE_DIR, indexer)
+        self.indexers = [indexer for indexer in INDEXERS]
