@@ -746,7 +746,7 @@ class GenericMetadata():
             if getattr(indexer_show_obj, 'banner', None) is not None:
                 image_url = re.sub('graphical', '_cache/graphical', indexer_show_obj['banner'])
         else:
-            if getattr(indexer_show_obj, 'banner', None) is not None:
+            if getattr(indexer_show_obj, image_type, None) is not None:
                 image_url = indexer_show_obj[image_type]
 
         # Try and get posters and fanart from TMDB

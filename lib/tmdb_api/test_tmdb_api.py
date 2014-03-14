@@ -26,8 +26,9 @@ class TVCheck(unittest.TestCase):
         id = 1396
         name = 'UFC'
         tmdb = TMDB(TMDB_API_KEY)
-        tv = tmdb.TV(id)
-        response = tv.images()
+        find = tmdb.Find(23281)
+        response = find.info({'external_source': 'tvrage_id'})
+        self.assertTrue(hasattr(response, name))
 
     def testTVSearch(self):
         id = 1396

@@ -23,7 +23,6 @@ import test_lib as test
 import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
 
-
 class TVShowTests(test.SickbeardTestDBCase):
 
     def setUp(self):

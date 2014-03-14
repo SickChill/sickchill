@@ -2266,7 +2266,7 @@ class NewHomeAddShows:
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, SKIPPED, sickbeard.QUALITY_DEFAULT, sickbeard.FLATTEN_FOLDERS_DEFAULT, sickbeard.SUBTITLES_DEFAULT, refresh=True) # @UndefinedVariable
+                sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, SKIPPED, sickbeard.QUALITY_DEFAULT, sickbeard.FLATTEN_FOLDERS_DEFAULT, sickbeard.SUBTITLES_DEFAULT, refresh=True)
                 num_added += 1
 
         if num_added:

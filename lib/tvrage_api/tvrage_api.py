@@ -13,6 +13,7 @@ __author__ = "echel0n"
 __version__ = "1.0"
 
 import os
+import re
 import time
 import urllib
 import urllib2
@@ -261,6 +262,11 @@ class TVRage:
 
         self.config = {}
 
+        if apikey is not None:
+            self.config['apikey'] = apikey
+        else:
+            self.config['apikey'] = "Uhewg1Rr0o62fvZvUIZt" # tvdb_api's API key
+
         self.config['debug_enabled'] = debug # show debugging messages
 
         self.config['custom_ui'] = custom_ui
@@ -330,11 +336,11 @@ class TVRage:
         # http://tvrage.com/wiki/index.php/Programmers_API
         self.config['base_url'] = "http://services.tvrage.com"
 
-        self.config['url_getSeries'] = u"%(base_url)s/feeds/full_search.php?show=%%s" % self.config
+        self.config['url_getSeries'] = u"%(base_url)s/myfeeds/search.php?key=%(apikey)s&show=%%s" % self.config
 
-        self.config['url_epInfo'] = u"%(base_url)s/feeds/episode_list.php?sid=%%s" % self.config
+        self.config['url_epInfo'] = u"%(base_url)s/myfeeds/episode_list.php?key=%(apikey)s&sid=%%s" % self.config
 
-        self.config['url_seriesInfo'] = u"%(base_url)s/feeds/full_show_info.php?sid=%%s" % self.config
+        self.config['url_seriesInfo'] = u"%(base_url)s/myfeeds/showinfo.php?key=%(apikey)s&sid=%%s" % self.config
 
     def _getTempDir(self):
         """Returns the [system temp dir]/tvrage_api-u501 (or
@@ -422,15 +428,40 @@ class TVRage:
     def _getetsrc(self, url):
         """Loads a URL using caching, returns an ElementTree of the source
         """
+        reDict = {
+            'showid': 'id',
+            'showname': 'seriesname',
+            'summary': 'overview',
+            'startdate': 'firstaired',
+            'genres': 'genre',
+            'airtime': 'airs_time',
+            'airday': 'airs_dayofweek',
+            'image': 'fanart',
+            'epnum': 'id',
+            'title': 'episodename',
+            'airdate': 'firstaired',
+            'screencap': 'filename',
+            'seasonnum': 'episodenumber',
+        }
+
+        robj = re.compile('|'.join(reDict.keys()))
         src = self._loadUrl(url)
         try:
             # TVRAGE doesn't sanitize \r (CR) from user input in some fields,
             # remove it to avoid errors. Change from SickBeard, from will14m
-            return ElementTree.fromstring(src.rstrip("\r"))
+            xml = ElementTree.fromstring(src.rstrip("\r"))
+            tree = ElementTree.ElementTree(xml)
+            for elm in tree.iter():
+                elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
+            return ElementTree.fromstring(ElementTree.tostring(xml))
         except SyntaxError:
             src = self._loadUrl(url, recache=True)
             try:
-                return ElementTree.fromstring(src.rstrip("\r"))
+                xml = ElementTree.fromstring(src.rstrip("\r"))
+                tree = ElementTree.ElementTree(xml)
+                for elm in tree.iter():
+                    elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
+                return ElementTree.fromstring(ElementTree.tostring(xml))
             except SyntaxError, exceptionmsg:
                 errormsg = "There was an error with the XML retrieved from tvrage.com:\n%s" % (
                     exceptionmsg
@@ -489,21 +520,6 @@ class TVRage:
         """This searches tvrage.com for the series name
         and returns the result list
         """
-
-        remap_keys = {
-            'showid': 'id',
-            'epnum': 'id',
-            'started': 'firstaired',
-            'airdate': 'firstaired',
-            'genres': 'genre',
-            'airtime': 'airs_time',
-            'name': 'seriesname',
-            'image': 'image_type',
-            'airday': 'airs_dayofweek',
-            'title': 'episodename',
-            'seasonnum': 'episodenumber'
-        }
-
         series = urllib.quote(series.encode("utf-8"))
         log().debug("Searching for show %s" % series)
         seriesEt = self._getetsrc(self.config['url_getSeries'] % (series))
@@ -511,10 +527,7 @@ class TVRage:
         seriesResult = {}
         for series in seriesEt:
             for k in series.getchildren():
-                if k.tag.lower() in remap_keys:
-                    seriesResult.setdefault(remap_keys[k.tag.lower()], k.text)
-                else:
-                    seriesResult.setdefault(k.tag.lower(), k.text)
+                seriesResult.setdefault(k.tag.lower(), k.text)
 
             seriesResult['id'] = int(seriesResult['id'])
             log().debug('Found series %s' % seriesResult['seriesname'])
@@ -549,20 +562,6 @@ class TVRage:
         shows[series_id][season_number][episode_number]
         """
 
-        remap_keys = {
-            'showid': 'id',
-            'epnum': 'id',
-            'started': 'firstaired',
-            'airdate': 'firstaired',
-            'genres': 'genre',
-            'airtime': 'airs_time',
-            'name': 'seriesname',
-            'image': 'image_type',
-            'airday': 'airs_dayofweek',
-            'title': 'episodename',
-            'seasonnum': 'episodenumber'
-        }
-
         # Parse show information
         log().debug('Getting all series data for %s' % (sid))
         seriesInfoEt = self._getetsrc(
@@ -570,12 +569,9 @@ class TVRage:
         )
 
         for curInfo in seriesInfoEt:
-            if curInfo.tag.lower() in remap_keys:
-                tag = remap_keys[curInfo.tag.lower()]
-            else:
-                tag = curInfo.tag.lower()
+            tag = curInfo.tag.lower()
 
-            if curInfo.tag.lower() in ('started', 'ended') and curInfo.text is not None:
+            if tag in 'firstaired':
                 try:
                     fixDate = dt.datetime.strptime(curInfo.text,"%b/%d/%Y")
                     value = fixDate.strftime("%Y-%m-%d")
@@ -600,10 +596,7 @@ class TVRage:
             # Parse genre data
             log().debug('Getting genres of %s' % (sid))
             for genre in seriesInfoEt.find('genres'):
-                if genre.tag in remap_keys:
-                    tag = remap_keys[genre.tag.lower()]
-                else:
-                    tag = genre.tag.lower()
+                tag = genre.tag.lower()
 
                 value = genre.text
                 if value is not None:
@@ -623,13 +616,10 @@ class TVRage:
                 try:
                     seas_no = int(cur_seas.attrib['no'])
                     for cur_ep in cur_seas:
-                        ep_no = int(cur_ep.find('seasonnum').text)
+                        ep_no = int(cur_ep.find('episodenumber').text)
                         self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
                         for cur_item in cur_ep:
-                            if cur_item.tag.lower() in remap_keys:
-                                tag = remap_keys[cur_item.tag.lower()]
-                            else:
-                                tag = cur_item.tag.lower()
+                            tag = cur_item.tag.lower()
 
                             value = cur_item.text
                             if value is not None:

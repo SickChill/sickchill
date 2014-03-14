@@ -37,16 +37,10 @@ class indexerApi(generic.GenericIndexer):
                 self.config['api_parms']['cache'] = os.path.join(sickbeard.CACHE_DIR, indexer)
 
             # wrap the indexer API object and return it back
-            self._wrapped = eval(indexer)(forceConnect=True, *args, **self.config['api_parms'])
+            self._wrapped = eval(indexer)(*args, **self.config['api_parms'])
 
     def __getattr__(self, attr):
-        try:
-            return getattr(self._wrapped, attr)
-        except KeyError:
-            raise indexer_attributenotfound
+        return getattr(self._wrapped, attr)
 
     def __getitem__(self, attr):
-        try:
-            return self._wrapped.__getitem__(attr)
-        except KeyError:
-            raise indexer_attributenotfound
+        return self._wrapped.__getitem__(attr)

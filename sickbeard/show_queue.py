@@ -347,7 +347,7 @@ class QueueItemAdd(ShowQueueItem):
             sickbeard.backlogSearchScheduler.action.searchBacklog([self.show]) #@UndefinedVariable
 
         self.show.writeMetadata(force=self.refresh)
-        self.show.populateCache()    
+        self.show.populateCache()
 
         self.show.flushEpisodes()
 
