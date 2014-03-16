@@ -1846,7 +1846,10 @@ class HomePostProcess:
         return _munge(t)
 
     @cherrypy.expose
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="auto"):
+    def processEpisode(self, dir=None, dirName=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="auto"):
+
+        # backwards compatibility for original param 'dirName' that has been renamed to 'dir'
+        if dirName and dir is None: dir = dirName
 
         if failed == "0":
             failed = False
