@@ -102,7 +102,7 @@ ep_regexes = [
                '''
                ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)
                (?P<air_day>\d{1,2}[a-zA-Z]{2})[. _-]+           # 23rd and seperator
-               (?P<air_month>[a-zA-Z]{3,4})[. _-]+              # Nov and seperator
+               (?P<air_month>[a-zA-Z]{3,})[. _-]+              # Nov and seperator
                (?P<air_year>\d{4})[. _-]+                       # 2010
                (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+    # Make sure this is really the release group
                (?P<release_group>.*?)$                          # Group

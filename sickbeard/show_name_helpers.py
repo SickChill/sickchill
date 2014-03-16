@@ -194,7 +194,7 @@ def isGoodResult(name, show, log=True):
         escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(curName))
         if show.startyear:
             escaped_name += "(?:\W+" + str(show.startyear) + ")?"
-            curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+)|((.+?)[. _-]+)(\d{1,2}[a-zA-Z]{2})[. _-]+([a-zA-Z]{3,4})[. _-]+(\d{4})*(.+?)([. _-])()((([^- ]+))?)?$'
+            curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+)|((.+?)[. _-]+)(\d{1,2}[a-zA-Z]{2})[. _-]+([a-zA-Z]{3,})[. _-]+(\d{4})*(.+?)([. _-])()((([^- ]+))?)?$'
         if log:
             logger.log(u"Checking if show " + name + " matches " + curRegex, logger.DEBUG)
 
