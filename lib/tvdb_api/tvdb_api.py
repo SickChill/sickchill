@@ -39,18 +39,13 @@ except ImportError:
     gzip = None
 
 from lib import requests
-from lib.cachecontrol.wrapper import CacheControl
-from lib.cachecontrol.caches.file_cache import FileCache
-
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
     tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
 
-
 def log():
     return logging.getLogger("tvdb_api")
-
 
 class ShowContainer(dict):
     """Simple dict that holds a series of Show instances
@@ -518,12 +513,15 @@ class Tvdb:
 
             # cacheControl
             if self.config['cache_enabled']:
-                sess = CacheControl(requests.Session(), cache_force=True, cache=FileCache(self.config['cache_location']))
+                from lib.httpcache import CachingHTTPAdapter
+                sess = requests.Session()
+                sess.mount('http://', CachingHTTPAdapter())
             else:
                 sess = requests.Session()
 
             # get response from TVDB
             resp = sess.get(url, params=params)
+            sess.close()
         except requests.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
 
@@ -536,7 +534,7 @@ class Tvdb:
         except Exception, e:
             raise tvdb_error("Unknown exception occured: " + str(e.message) + " while loading URL " + str(url))
 
-        if resp.ok:
+        if resp.ok and resp.content:
             if 'application/zip' in resp.headers.get("Content-Type", ''):
                 try:
                     # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
@@ -559,11 +557,11 @@ class Tvdb:
         try:
             # TVDB doesn't sanitize \r (CR) from user input in some fields,
             # remove it to avoid errors. Change from SickBeard, from will14m
-            return ElementTree.fromstring(src.rstrip("\r"))
+            return ElementTree.fromstring(src.rstrip("\r")) if src else None
         except SyntaxError:
             src = self._loadUrl(url, params=params, language=language)
             try:
-                return ElementTree.fromstring(src.rstrip("\r"))
+                return ElementTree.fromstring(src.rstrip("\r")) if src else None
             except SyntaxError, exceptionmsg:
                 errormsg = "There was an error with the XML retrieved from thetvdb.com:\n%s" % (
                     exceptionmsg

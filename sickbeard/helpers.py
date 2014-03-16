@@ -35,6 +35,7 @@ import base64
 from lib import requests
 from httplib import BadStatusLine
 from itertools import izip, cycle
+from lib.httpcache import CachingHTTPAdapter
 
 try:
     import json
@@ -169,6 +170,9 @@ def getURL(url, post_data=None, headers=None, params=None, timeout=None):
 Returns a byte-string retrieved from the url provider.
 """
 
+    # Cache Handler
+    sess = requests.Session()
+    sess.mount('http://', CachingHTTPAdapter())
 
     req_headers = ['User-Agent', USER_AGENT, 'Accept-Encoding', 'gzip,deflate']
     if headers:
@@ -182,8 +186,8 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        sess = requests.session()
         resp = sess.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
+        sess.close()
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
@@ -196,7 +200,7 @@ Returns a byte-string retrieved from the url provider.
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
-    return resp.content if resp.ok else None
+    return resp.content if resp.ok and resp.content else None
 
 def _remove_file_failed(file):
     try:
@@ -206,8 +210,11 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        sess = requests.session()
+        # cache handler
+        sess = requests.Session()
+        sess.mount('http://', CachingHTTPAdapter())
         req = sess.get(url, stream=True)
+
         #CHUNK = 16 * 1024
         with open(filename, 'wb') as fp:
             for chunk in req.iter_content(chunk_size=(16 *1024)):
@@ -215,7 +222,7 @@ def download_file(url, filename):
                     fp.write(chunk)
                     fp.flush()
             fp.close()
-        req.close()
+        sess.close()
 
     except requests.HTTPError, e:
         _remove_file_failed(filename)

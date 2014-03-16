@@ -30,10 +30,7 @@ except ImportError:
     import xml.etree.ElementTree as ElementTree
 
 from lib.dateutil.parser import parse
-
 from lib import requests
-from lib.cachecontrol.wrapper import CacheControl
-from lib.cachecontrol.caches.file_cache import FileCache
 
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
@@ -41,7 +38,6 @@ from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfou
 
 def log():
     return logging.getLogger("tvrage_api")
-
 
 class ShowContainer(dict):
     """Simple dict that holds a series of Show instances
@@ -351,12 +347,15 @@ class TVRage:
 
             # cacheControl
             if self.config['cache_enabled']:
-                sess = CacheControl(requests.Session(), cache_force=True, cache=FileCache(self.config['cache_location']))
+                from lib.httpcache import CachingHTTPAdapter
+                sess = requests.Session()
+                sess.mount('http://', CachingHTTPAdapter())
             else:
                 sess = requests.Session()
 
             # get response from TVRage
             resp = sess.get(url, params=params)
+            sess.close()
         except requests.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
 
@@ -366,7 +365,7 @@ class TVRage:
         except requests.Timeout, e:
             raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
-        return resp.content if resp.ok else None
+        return resp.content if resp.ok and resp.content else None
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
