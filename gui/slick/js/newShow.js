@@ -36,7 +36,7 @@ $(document).ready(function () {
 
         $('#searchResults').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching...');
 
-        $.getJSON(sbRoot + '/home/addShows/searchIndexersForShowName', {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val()}, function (data) {
+        $.getJSON(sbRoot + '/home/addShows/searchIndexersForShowName', {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()}, function (data) {
             var firstResult = true;
             var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
             var checked = '';
@@ -146,7 +146,7 @@ $(document).ready(function () {
         var show_name, sep_char;
         // if they've picked a radio button then use that
         if ($('input:radio[name=whichSeries]:checked').length) {
-            show_name = $('input:radio[name=whichSeries]:checked').val().split('|')[1];
+            show_name = $('input:radio[name=whichSeries]:checked').val().split('|')[2];
         }
         // if we provided a show in the hidden field, use that
         else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) {

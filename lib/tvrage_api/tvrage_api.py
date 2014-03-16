@@ -39,8 +39,6 @@ from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
     tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
 
-lastTimeout = None
-
 def log():
     return logging.getLogger("tvrage_api")
 
@@ -255,13 +253,7 @@ class TVRage:
             trying again, and any requests within that one minute window will
             return an exception immediately.
         """
-        
-        global lastTimeout
-        
-        # if we're given a lastTimeout that is less than 1 min just give up
-        if not forceConnect and lastTimeout != None and dt.datetime.now() - lastTimeout < dt.timedelta(minutes=1):
-            raise tvrage_error("We recently timed out, so giving up early this time")
-        
+
         self.shows = ShowContainer() # Holds all Show classes
         self.corrections = {} # Holds show-name to show_id mapping
 
@@ -354,7 +346,6 @@ class TVRage:
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
     def _loadUrl(self, url, params=None):
-        global lastTimeout
         try:
             log().debug("Retrieving URL %s" % url)
 
@@ -370,29 +361,12 @@ class TVRage:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
 
         except requests.ConnectionError, e:
-            lastTimeout = dt.datetime.now()
             raise tvrage_error("Connection error " + str(e.message) + " while loading URL " + str(url))
 
         except requests.Timeout, e:
-            lastTimeout = dt.datetime.now()
             raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
-        except Exception, e:
-            lastTimeout = dt.datetime.now()
-            raise tvrage_error("Unknown exception while loading URL " + str(url) + ": " + str(e))
-
-        if 'application/zip' in resp.headers.get("Content-Type", ''):
-            try:
-                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                log().debug("We recived a zip file unpacking now ...")
-                zipdata = StringIO.StringIO()
-                zipdata.write(resp.content)
-                myzipfile = zipfile.ZipFile(zipdata)
-                return myzipfile.read('%s.xml' % self.config['language'])
-            except zipfile.BadZipfile:
-                raise tvrage_error("Bad zip file received from tvrage.com, could not read it")
-
-        return resp.content
+        return resp.content if resp.ok else None
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source

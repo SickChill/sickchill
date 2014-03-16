@@ -47,7 +47,6 @@ from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
     tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
 
-lastTimeout = None
 
 def log():
     return logging.getLogger("tvdb_api")
@@ -535,20 +534,23 @@ class Tvdb:
             raise tvdb_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
         except Exception, e:
-            raise tvdb_error("Unknown exception while loading URL " + str(url) + ": " + str(e))
+            raise tvdb_error("Unknown exception occured: " + str(e.message) + " while loading URL " + str(url))
 
-        if 'application/zip' in resp.headers.get("Content-Type", ''):
-            try:
-                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                log().debug("We recived a zip file unpacking now ...")
-                zipdata = StringIO.StringIO()
-                zipdata.write(resp.content)
-                myzipfile = zipfile.ZipFile(zipdata)
-                return myzipfile.read('%s.xml' % language)
-            except zipfile.BadZipfile:
-                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        if resp.ok:
+            if 'application/zip' in resp.headers.get("Content-Type", ''):
+                try:
+                    # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+                    log().debug("We recived a zip file unpacking now ...")
+                    zipdata = StringIO.StringIO()
+                    zipdata.write(resp.content)
+                    myzipfile = zipfile.ZipFile(zipdata)
+                    return myzipfile.read('%s.xml' % language)
+                except zipfile.BadZipfile:
+                    raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
 
-        return resp.content
+            return resp.content
+
+        return None
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source

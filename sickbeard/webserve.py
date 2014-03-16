@@ -1900,7 +1900,7 @@ class NewHomeAddShows:
         return helpers.sanitizeFileName(name)
 
     @cherrypy.expose
-    def searchIndexersForShowName(self, name, lang="en"):
+    def searchIndexersForShowName(self, name, lang="en", indexer=None):
         if not lang or lang == 'null':
             lang = "en"
 
@@ -1924,8 +1924,13 @@ class NewHomeAddShows:
 
             paramsTVRAGE = {'show': searchTerm}
 
-            urlDataTVDB = helpers.getURL(baseURL_TVDB, params=paramsTVDB)
-            urlDataTVRAGE = helpers.getURL(baseURL_TVRAGE, params=paramsTVRAGE)
+            urlDataTVDB = None
+            if indexer is None or indexer in 'Tvdb':
+                urlDataTVDB = helpers.getURL(baseURL_TVDB, params=paramsTVDB)
+
+            urlDataTVRAGE = None
+            if indexer is None or indexer in 'TVRage':
+                urlDataTVRAGE = helpers.getURL(baseURL_TVRAGE, params=paramsTVRAGE)
 
             if urlDataTVDB is None and urlDataTVRAGE is None:
                 # When urlData is None, trouble connecting to TVDB and TVRage, don't try the rest of the keywords
@@ -2078,10 +2083,10 @@ class NewHomeAddShows:
         else:
             use_provided_info = False
 
-        # tell the template whether we're giving it show name & TVDB ID
+        # tell the template whether we're giving it show name & Indexer ID
         t.use_provided_info = use_provided_info
 
-        # use the given show_dir for the tvdb search if available
+        # use the given show_dir for the indexer search if available
         if not show_dir:
             t.default_show_name = ''
         elif not show_name:
@@ -2097,11 +2102,11 @@ class NewHomeAddShows:
 
         if use_provided_info:
             t.provided_indexer_id = indexer_id
-            t.provided_indexer = indexer
             t.provided_indexer_name = show_name
 
         t.provided_show_dir = show_dir
         t.other_shows = other_shows
+        t.provided_indexer = indexer
 
         return _munge(t)
 

@@ -196,11 +196,7 @@ Returns a byte-string retrieved from the url provider.
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
-    except Exception:
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
-        return None
-
-    return resp.content
+    return resp.content if resp.ok else None
 
 def _remove_file_failed(file):
     try:

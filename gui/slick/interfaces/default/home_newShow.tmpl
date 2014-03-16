@@ -39,7 +39,9 @@
             <input type="hidden" name="indexerLang" value="en" />
             <input type="hidden" name="whichSeries" value="$provided_indexer_id" />
             <input type="hidden" id="providedName" value="$provided_indexer_name" />
+            <input type="hidden" id="providedIndexer" value="$provided_indexer" />
         #else:
+            <input type="hidden" id="providedIndexer" value="$provided_indexer" />
             <input type="text" id="nameToSearch" value="$default_show_name" style="margin-top: 1px;" />
             <select name="indexerLang" id="indexerLangSelect" style="height: 26px;margin-top: 1px;">
                 <option value="en" selected="selected">en</option>
