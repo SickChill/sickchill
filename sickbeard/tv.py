@@ -1348,13 +1348,10 @@ class TVEpisode(object):
         self.description = getattr(myEp, 'overview', "")
 
         try:
-            firstaired = "0000-00-00"
-            if getattr(myEp, 'firstaired', None) is not None:
-                firstaired = myEp['firstaired']
+            firstaired =  getattr(myEp, 'firstaired', None)
+            if firstaired is None: raise ValueError
 
-            if firstaired is "0000-00-00":
-                firstaired = str(datetime.date.fromordinal(1))
-
+            firstaired = re.sub("(0{4})([-]0{2}){1,}", str(datetime.date.fromordinal(1)), firstaired)
             rawAirdate = [int(x) for x in firstaired.split("-")]
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except ValueError:
@@ -1365,9 +1362,8 @@ class TVEpisode(object):
             return False
 
         #early conversion to int so that episode doesn't get marked dirty
-        if getattr(myEp, 'id', None) is not None:
-            self.indexerid = int(myEp['id'])
-        else:
+        self.indexerid =  getattr(myEp, 'id', None)
+        if self.indexerid is None:
             logger.log(u"Failed to retrieve ID from " + self.indexer, logger.ERROR)
             if self.indexerid != -1:
                 self.deleteEpisode()

@@ -398,13 +398,13 @@ class TVRage:
                 elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                 if elm.tag in 'firstaired':
-                    if elm.text is "0000-00-00":
-                        elm.text = str(dt.date.fromordinal(1))
                     try:
+                        elm.text = re.sub("(0{4})([-]0{2}){1,}", str(dt.date.fromordinal(1)), elm.text)
+                        elm.text = re.sub("([-]0{2}){1,}", "", elm.text)
                         fixDate = parse(elm.text, fuzzy=True).date()
                         elm.text = fixDate.strftime("%Y-%m-%d")
                     except:
-                        pass
+                        continue
             return ElementTree.fromstring(ElementTree.tostring(xml))
         except SyntaxError:
             src = self._loadUrl(url, params)
