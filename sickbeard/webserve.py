@@ -60,7 +60,8 @@ from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.scene_numbering import find_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, get_xem_numbering_for_show
 from sickbeard.providers.generic import TorrentProvider
 
-from sickbeard.indexers import indexer_api, indexer_exceptions
+from sickbeard.indexers.indexer_api import indexerApi
+from sickbeard.indexers.indexer_exceptions import indexer_shownotfound
 from lib.dateutil import tz
 from lib.unrar2 import RarFile, RarInfo
 
@@ -1884,7 +1885,7 @@ class NewHomeAddShows:
 
     @cherrypy.expose
     def getIndexerLanguages(self):
-        result = indexer_api.indexerApi().config['valid_languages']
+        result = indexerApi().config['valid_languages']
 
         # Make sure list is sorted alphabetically but 'en' is in front
         if 'en' in result:
@@ -1978,7 +1979,7 @@ class NewHomeAddShows:
                     logger.log(u"Unable to parse XML from " + indexer + " for some reason: " + ex(e), logger.ERROR)
 
 
-        lang_id = indexer_api.indexerApi().config['langabbv_to_id'][lang]
+        lang_id = indexerApi().config['langabbv_to_id'][lang]
 
         return json.dumps({'results': results, 'langid': lang_id})
 

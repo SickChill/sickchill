@@ -40,8 +40,8 @@ class ShowUpdater():
         # update at 3 AM
         run_updater_time = datetime.time(hour=3)
 
-        update_datetime = datetime.time.today()
-        update_date = update_datetime.date()
+        update_datetime = datetime.time.now()
+        update_date = update_datetime.time
 
         logger.log(u"Checking update interval", logger.DEBUG)
 

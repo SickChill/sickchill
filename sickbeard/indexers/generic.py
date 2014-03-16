@@ -60,8 +60,12 @@ class GenericIndexer(object):
         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
-        self.base_url = INDEXER_BASEURL[indexer]
-        self.api_parms = INDEXER_API_PARMS[indexer]
-        self.indexerName = INDEXERS[indexer]
-        self.cache = os.path.join(sickbeard.CACHE_DIR, indexer)
         self.indexers = [indexer for indexer in INDEXERS]
+
+        if indexer:
+            self.base_url = INDEXER_BASEURL[indexer]
+            self.api_parms = INDEXER_API_PARMS[indexer]
+            self.name = INDEXERS[indexer]
+
+        if sickbeard.CACHE_DIR:
+            self.cache = os.path.join(sickbeard.CACHE_DIR, indexer)

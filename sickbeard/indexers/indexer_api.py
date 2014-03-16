@@ -28,7 +28,6 @@ from lib.tvrage_api.tvrage_api import TVRage
 class indexerApi(generic.GenericIndexer):
     def __init__(self, indexer=None, *args, **kwargs):
         super(indexerApi, self).__init__(indexer)
-        self.name = self.indexerName
 
         if indexer:
             self.api_parms.update(**kwargs)
