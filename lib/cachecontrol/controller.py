@@ -151,9 +151,11 @@ class CacheController(object):
         fresh = (freshness_lifetime > current_age)
 
         if fresh:
-            # make sure we set the from_cache to true
-            resp.from_cache = True
-            return resp
+            if resp.ok:
+                # make sure we set the from_cache to true
+                resp.from_cache = True
+                return resp
+            return False
 
         # we're not fresh. If we don't have an Etag, clear it out
         if 'etag' not in resp.headers:
@@ -216,7 +218,7 @@ class CacheController(object):
 
             # If the request is for our local cache, it means we should cache it
             elif self.cache_force:
-                resp.headers.update({'cache-control': 'max-age=21600, private'})
+                resp.headers.update({'cache-control': 'max-age=900, private'})
                 self.cache.set(cache_url, resp)
 
     def update_cached_response(self, request, response):
