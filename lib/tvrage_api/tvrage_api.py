@@ -366,10 +366,20 @@ class TVRage:
 
             # get response from TVRage
             resp = sess.get(url, params=params)
+        except requests.HTTPError, e:
+            raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
+
+        except requests.ConnectionError, e:
+            lastTimeout = dt.datetime.now()
+            raise tvrage_error("Connection error " + str(e.message) + " while loading URL " + str(url))
+
+        except requests.Timeout, e:
+            lastTimeout = dt.datetime.now()
+            raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
+
         except Exception, e:
-            if not str(e).startswith('HTTP Error'):
-                lastTimeout = dt.datetime.now()
-            raise tvrage_error("Could not connect to server: %s" % (e))
+            lastTimeout = dt.datetime.now()
+            raise tvrage_error("Unknown exception while loading URL " + str(url) + ": " + str(e))
 
         if 'application/zip' in resp.headers.get("Content-Type", ''):
             try:

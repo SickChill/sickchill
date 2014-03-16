@@ -191,6 +191,10 @@ Returns a byte-string retrieved from the url provider.
         logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
+    except requests.Timeout, e:
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return None
+
     except Exception:
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return None
@@ -222,6 +226,10 @@ def download_file(url, filename):
 
     except requests.ConnectionError, e:
         logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return False
+
+    except requests.Timeout, e:
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return False
 
     except Exception:

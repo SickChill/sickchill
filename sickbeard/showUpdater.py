@@ -40,8 +40,8 @@ class ShowUpdater():
         # update at 3 AM
         run_updater_time = datetime.time(hour=3)
 
-        update_datetime = datetime.time.now()
-        update_date = update_datetime.time
+        update_datetime = datetime.datetime.now()
+        update_date = update_datetime.date()
 
         logger.log(u"Checking update interval", logger.DEBUG)
 
@@ -86,7 +86,7 @@ class ShowUpdater():
 
         myDB = db.DBConnection()
         # last_update_date <= 90 days, sorted ASC because dates are ordinal
-        sql_result = myDB.select("SELECT indexer_id FROM tv_shows WHERE status = 'Ended' AND last_update_indexer <= ? ORDER BY last_update_tvdb ASC LIMIT 10;", [stale_update_date])
+        sql_result = myDB.select("SELECT indexer_id FROM tv_shows WHERE status = 'Ended' AND last_update_indexer <= ? ORDER BY last_update_indexer ASC LIMIT 10;", [stale_update_date])
 
         for cur_result in sql_result:
             stale_should_update.append(cur_result['indexer_id'])
