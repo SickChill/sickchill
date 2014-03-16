@@ -404,7 +404,7 @@ class TVRage:
                         fixDate = parse(elm.text, fuzzy=True).date()
                         elm.text = fixDate.strftime("%Y-%m-%d")
                     except:
-                        continue
+                        pass
             return ElementTree.fromstring(ElementTree.tostring(xml))
         except SyntaxError:
             src = self._loadUrl(url, params)
