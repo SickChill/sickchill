@@ -21,13 +21,15 @@ import os.path
 import re
 import copy
 import regexes
-
 import sickbeard
+import calendar
 
 from sickbeard import logger, classes
 from sickbeard import scene_numbering, scene_exceptions
 from sickbeard.indexers import indexer_api, indexer_exceptions
 from sickbeard.common import indexerStrings
+
+from lib.dateutil.parser import parse
 
 from time import strptime
 
@@ -107,22 +109,17 @@ class NameParser(object):
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                 if 'scene_sports_date_format' in cur_regex_name:
-                    year = int(match.group('air_year'))
-                    month = int(strptime(match.group('air_month'),'%b').tm_mon)
-                    day = int(strptime(match.group('air_day'),'%d').tm_mday)
+                    year = match.group('air_year')
+                    month = strptime(match.group('air_month')[:3],'%b').tm_mon
+                    day = re.sub("(st|nd|rd|th)", "", match.group('air_day'))
                 else:
                     year = int(match.group('air_year'))
                     month = int(match.group('air_month'))
                     day = int(match.group('air_day'))
-                
-                # make an attempt to detect YYYY-DD-MM formats
-                if month > 12:
-                    tmp_month = month
-                    month = day
-                    day = tmp_month
 
                 try:
-                    result.air_date = datetime.date(year, month, day)
+                    dtStr = '%s-%s-%s' % (year, month, day)
+                    result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
                 except ValueError, e:
                     raise InvalidNameException(e.message)
 

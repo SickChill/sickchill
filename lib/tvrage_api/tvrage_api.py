@@ -435,6 +435,10 @@ class TVRage:
                         if elm.text is "0000-00-00":
                             elm.text = str(dt.date.fromordinal(1))
                         try:
+                            #month = strptime(match.group('air_month')[:3],'%b').tm_mon
+                            #day = re.sub("(st|nd|rd|th)", "", match.group('air_day'))
+                            #dtStr = '%s/%s/%s' % (year, month, day)
+
                             fixDate = parse(elm.text, fuzzy=True)
                             elm.text = fixDate.strftime("%Y-%m-%d")
                         except:

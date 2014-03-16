@@ -18,26 +18,21 @@
 
 from __future__ import with_statement
 
-import gzip
 import os
 import re
 import shutil
 import socket
 import stat
-import StringIO
-import shutil
-import sys
 import time
 import traceback
 import urllib
-import urllib2
-import zlib
 import hashlib
 import httplib
 import urlparse
 import uuid
 import base64
 
+from lib import requests
 from httplib import BadStatusLine
 from itertools import izip, cycle
 
@@ -169,15 +164,16 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=[], timeout=None):
+def getURL(url, post_data=None, headers=None, timeout=None):
     """
 Returns a byte-string retrieved from the url provider.
 """
 
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-Agent', USER_AGENT), ('Accept-Encoding', 'gzip,deflate')]
-    for cur_header in headers:
-        opener.addheaders.append(cur_header)
+
+    req_headers = ['User-Agent', USER_AGENT, 'Accept-Encoding', 'gzip,deflate']
+    if headers:
+        for cur_header in headers:
+            req_headers.append(cur_header)
 
     try:
         # Remove double-slashes from url
@@ -185,53 +181,21 @@ Returns a byte-string retrieved from the url provider.
         parsed[2] = re.sub("/{2,}", "/", parsed[2]) # replace two or more / with one
         url = urlparse.urlunparse(parsed)
 
-        if sys.version_info < (2, 6) or timeout is None:
-            usock = opener.open(url)
-        else:
-            usock = opener.open(url, timeout=timeout)
-
-        url = usock.geturl()
-        encoding = usock.info().get("Content-Encoding")
-
-        if encoding in ('gzip', 'x-gzip', 'deflate'):
-            content = usock.read()
-            if encoding == 'deflate':
-                data = StringIO.StringIO(zlib.decompress(content))
-            else:
-                data = gzip.GzipFile('', 'rb', 9, StringIO.StringIO(content))
-            result = data.read()
-
-        else:
-            result = usock.read()
-
-        usock.close()
-
-    except urllib2.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.code) + " while loading URL " + url, logger.WARNING)
+        it = iter(req_headers)
+        resp = requests.get(url, data=post_data, headers=dict(zip(it, it)))
+    except requests.HTTPError, e:
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
 
-    except urllib2.URLError, e:
-        logger.log(u"URL error " + str(e.reason) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    except BadStatusLine:
-        logger.log(u"BadStatusLine error while loading URL " + url, logger.WARNING)
-        return None
-
-    except socket.timeout:
-        logger.log(u"Timed out while loading URL " + url, logger.WARNING)
-        return None
-
-    except ValueError:
-        logger.log(u"Unknown error while loading URL " + url, logger.WARNING)
+    except requests.ConnectionError, e:
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
     except Exception:
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return None
 
-    return result
-
+    return resp.content
 
 def _remove_file_failed(file):
     try:
@@ -241,39 +205,23 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        req = urllib2.urlopen(url)
-        CHUNK = 16 * 1024
+        req = requests.get(url, stream=True)
+        #CHUNK = 16 * 1024
         with open(filename, 'wb') as fp:
-            while True:
-                chunk = req.read(CHUNK)
-                if not chunk: break
-                fp.write(chunk)
+            for chunk in req.iter_content(chunk_size=1024):
+                if chunk:
+                    fp.write(chunk)
+                    fp.flush()
             fp.close()
         req.close()
 
-    except urllib2.HTTPError, e:
+    except requests.HTTPError, e:
         _remove_file_failed(filename)
-        logger.log(u"HTTP error " + str(e.code) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return False
 
-    except urllib2.URLError, e:
-        _remove_file_failed(filename)
-        logger.log(u"URL error " + str(e.reason) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except BadStatusLine:
-        _remove_file_failed(filename)
-        logger.log(u"BadStatusLine error while loading URL " + url, logger.WARNING)
-        return False
-
-    except socket.timeout:
-        _remove_file_failed(filename)
-        logger.log(u"Timed out while loading URL " + url, logger.WARNING)
-        return False
-
-    except ValueError:
-        _remove_file_failed(filename)
-        logger.log(u"Unknown error while loading URL " + url, logger.WARNING)
+    except requests.ConnectionError, e:
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return False
 
     except Exception:
@@ -699,7 +647,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
     """
     try:
-        from OpenSSL import crypto  # @UnresolvedImport
+        from lib.OpenSSL import crypto  # @UnresolvedImport
         from lib.certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, serial  # @UnresolvedImport
     except:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)

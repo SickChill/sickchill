@@ -108,6 +108,10 @@ simple_test_cases = {
               'Show Name - 2010-11-23 - Ep Name': parser.ParseResult(None, 'Show Name', extra_info = 'Ep Name', air_date = datetime.date(2010,11,23)),
               '2010-11-23 - Ep Name': parser.ParseResult(None, extra_info = 'Ep Name', air_date = datetime.date(2010,11,23)),
               'Show.Name.2010.11.23.WEB-DL': parser.ParseResult(None, 'Show Name', None, [], 'WEB-DL', None, datetime.date(2010,11,23)),
+               },
+
+              'scene_sports_date_format': {
+              'UFC 165 Jones vs Gustafsson 21st Sept 2013 HDTV x264-Sir Paul': parser.ParseResult(None, 'UFC', None, [], 'HDTV x264-Sir Paul', 'Group', datetime.date(2013,11,23))
                }
               }
 
@@ -243,93 +247,97 @@ class BasicTests(unittest.TestCase):
             self.assertEqual(test_result.which_regex, [section])
             self.assertEqual(test_result, result)
 
-    def test_standard_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'standard')
+    #def test_standard_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'standard')
+    #
+    #def test_standard_repeat_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'standard_repeat')
+    #
+    #def test_fov_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'fov')
+    #
+    #def test_fov_repeat_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'fov_repeat')
+    #
+    #def test_bare_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'bare')
+    #
+    #def test_stupid_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'stupid')
+    #
+    #def test_no_season_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'no_season')
+    #
+    #def test_no_season_general_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'no_season_general')
+    #
+    #def test_no_season_multi_ep_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'no_season_multi_ep')
+    #
+    #def test_season_only_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'season_only')
+    #
+    #def test_scene_date_format_names(self):
+    #    np = parser.NameParser(False)
+    #    self._test_names(np, 'scene_date_format')
+    #
+    #def test_standard_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'standard', lambda x: x + '.avi')
+    #
+    #def test_standard_repeat_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'standard_repeat', lambda x: x + '.avi')
+    #
+    #def test_fov_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'fov', lambda x: x + '.avi')
+    #
+    #def test_fov_repeat_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'fov_repeat', lambda x: x + '.avi')
+    #
+    #def test_bare_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'bare', lambda x: x + '.avi')
+    #
+    #def test_stupid_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'stupid', lambda x: x + '.avi')
+    #
+    #def test_no_season_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'no_season', lambda x: x + '.avi')
+    #
+    #def test_no_season_general_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'no_season_general', lambda x: x + '.avi')
+    #
+    #def test_no_season_multi_ep_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'no_season_multi_ep', lambda x: x + '.avi')
+    #
+    #def test_season_only_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'season_only', lambda x: x + '.avi')
+    #
+    #def test_scene_date_format_file_names(self):
+    #    np = parser.NameParser()
+    #    self._test_names(np, 'scene_date_format', lambda x: x + '.avi')
 
-    def test_standard_repeat_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'standard_repeat')
-
-    def test_fov_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'fov')
-
-    def test_fov_repeat_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'fov_repeat')
-
-    def test_bare_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'bare')
-
-    def test_stupid_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'stupid')
-
-    def test_no_season_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'no_season')
-
-    def test_no_season_general_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'no_season_general')
-
-    def test_no_season_multi_ep_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'no_season_multi_ep')
-
-    def test_season_only_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'season_only')
-
-    def test_scene_date_format_names(self):
-        np = parser.NameParser(False)
-        self._test_names(np, 'scene_date_format')
-
-    def test_standard_file_names(self):
+    def test_scene_sports_date_format_file_names(self):
         np = parser.NameParser()
-        self._test_names(np, 'standard', lambda x: x + '.avi')
-
-    def test_standard_repeat_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'standard_repeat', lambda x: x + '.avi')
-
-    def test_fov_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'fov', lambda x: x + '.avi')
-
-    def test_fov_repeat_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'fov_repeat', lambda x: x + '.avi')
-
-    def test_bare_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'bare', lambda x: x + '.avi')
-
-    def test_stupid_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'stupid', lambda x: x + '.avi')
-
-    def test_no_season_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'no_season', lambda x: x + '.avi')
-
-    def test_no_season_general_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'no_season_general', lambda x: x + '.avi')
-
-    def test_no_season_multi_ep_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'no_season_multi_ep', lambda x: x + '.avi')
-
-    def test_season_only_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'season_only', lambda x: x + '.avi')
-
-    def test_scene_date_format_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'scene_date_format', lambda x: x + '.avi')
+        self._test_names(np, 'scene_sports_date_format', lambda x: x + '.avi')
 
     def test_combination_names(self):
         pass

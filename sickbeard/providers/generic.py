@@ -193,7 +193,7 @@ class GenericProvider:
         quality = Quality.sceneQuality(title)
         return quality
 
-    def _doSearch(self):
+    def _doSearch(self, search_params, show=None, age=None):
         return []
 
     def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
