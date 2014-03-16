@@ -182,7 +182,8 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
+        sess = requests.session()
+        resp = sess.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
@@ -209,10 +210,11 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        req = requests.get(url, stream=True)
+        sess = requests.session()
+        req = sess.get(url, stream=True)
         #CHUNK = 16 * 1024
         with open(filename, 'wb') as fp:
-            for chunk in req.iter_content(chunk_size=1024):
+            for chunk in req.iter_content(chunk_size=(16 *1024)):
                 if chunk:
                     fp.write(chunk)
                     fp.flush()

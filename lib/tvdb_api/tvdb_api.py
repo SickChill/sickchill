@@ -402,13 +402,7 @@ class Tvdb:
             This is only used when all episodes are pulled.
             And only the main language xml is used, the actor and banner xml are lost.
         """
-        
-        global lastTimeout
-        
-        # if we're given a lastTimeout that is less than 1 min just give up
-        if not forceConnect and lastTimeout != None and datetime.datetime.now() - lastTimeout < datetime.timedelta(minutes=1):
-            raise tvdb_error("We recently timed out, so giving up early this time")
-        
+
         self.shows = ShowContainer() # Holds all Show classes
         self.corrections = {} # Holds show-name to show_id mapping
 
@@ -520,7 +514,6 @@ class Tvdb:
         return os.path.join(tempfile.gettempdir(), "tvdb_api-%s" % (uid))
 
     def _loadUrl(self, url, params=None, language=None):
-        global lastTimeout
         try:
             log().debug("Retrieving URL %s" % url)
 
@@ -532,10 +525,17 @@ class Tvdb:
 
             # get response from TVDB
             resp = sess.get(url, params=params)
+        except requests.HTTPError, e:
+            raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
+
+        except requests.ConnectionError, e:
+            raise tvdb_error("Connection error " + str(e.message) + " while loading URL " + str(url))
+
+        except requests.Timeout, e:
+            raise tvdb_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
+
         except Exception, e:
-            if not str(e).startswith('HTTP Error'):
-                lastTimeout = datetime.datetime.now()
-            raise tvdb_error("Could not connect to server: %s" % (e))
+            raise tvdb_error("Unknown exception while loading URL " + str(url) + ": " + str(e))
 
         if 'application/zip' in resp.headers.get("Content-Type", ''):
             try:
