@@ -22,27 +22,22 @@ import sickbeard
 class GenericIndexer(object):
     def __init__(self, indexer):
 
-        INDEXER_NONE = None
         INDEXER_TVDB = 'Tvdb'
         INDEXER_TVRAGE = 'TVRage'
 
         INDEXERS = {}
-        INDEXERS[INDEXER_NONE] = ''
         INDEXERS[INDEXER_TVDB] = 'theTVDB'
         INDEXERS[INDEXER_TVRAGE] = 'TVRage'
 
         INDEXER_API_KEY = {}
-        INDEXER_API_KEY[INDEXER_NONE] = ''
         INDEXER_API_KEY[INDEXER_TVDB] = '9DAF49C96CBF8DAC'
         INDEXER_API_KEY[INDEXER_TVRAGE] = 'Uhewg1Rr0o62fvZvUIZt'
 
         INDEXER_BASEURL = {}
-        INDEXER_BASEURL[INDEXER_NONE] = ''
         INDEXER_BASEURL[INDEXER_TVDB] = 'http://thetvdb.com/api/' + INDEXER_API_KEY[INDEXER_TVDB] + '/series/'
         INDEXER_BASEURL[INDEXER_TVRAGE] = 'http://tvrage.com/showinfo?key=' + INDEXER_API_KEY[INDEXER_TVRAGE] + 'sid='
 
         INDEXER_API_PARMS = {}
-        INDEXER_API_PARMS[INDEXER_NONE] = ''
         INDEXER_API_PARMS[INDEXER_TVDB] = {'apikey': INDEXER_API_KEY[INDEXER_TVDB],
                                            'language': 'en',
                                            'useZip': True}
@@ -60,12 +55,12 @@ class GenericIndexer(object):
         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
-        self.indexers = [indexer for indexer in INDEXERS]
+        self.indexers = [x for x in INDEXERS]
 
-        if indexer:
+        if indexer in INDEXERS:
             self.base_url = INDEXER_BASEURL[indexer]
             self.api_parms = INDEXER_API_PARMS[indexer]
             self.name = INDEXERS[indexer]
 
-        if sickbeard.CACHE_DIR:
-            self.cache = os.path.join(sickbeard.CACHE_DIR, indexer)
+            if sickbeard.CACHE_DIR:
+                self.cache = os.path.join(sickbeard.CACHE_DIR, indexer)

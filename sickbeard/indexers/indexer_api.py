@@ -27,9 +27,9 @@ from lib.tvrage_api.tvrage_api import TVRage
 
 class indexerApi(generic.GenericIndexer):
     def __init__(self, indexer=None, *args, **kwargs):
-        super(indexerApi, self).__init__(indexer)
+        generic.GenericIndexer.__init__(self, indexer)
 
-        if indexer:
+        if indexer in self.indexers:
             self.api_parms.update(**kwargs)
 
             if sickbeard.CACHE_DIR:

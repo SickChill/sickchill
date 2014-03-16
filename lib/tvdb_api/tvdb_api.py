@@ -530,7 +530,7 @@ class Tvdb:
             else:
                 sess = requests.Session()
 
-            # get response from TVRage
+            # get response from TVDB
             resp = sess.get(url, params=params)
         except Exception, e:
             if not str(e).startswith('HTTP Error'):
