@@ -1903,8 +1903,8 @@ class NewHomeAddShows:
         if not lang or lang == 'null':
             lang = "en"
 
-        baseURL_TVDB = "http://thetvdb.com/api/GetSeries.php?"
-        baseURL_TVRAGE = "http://services.tvrage.com/feeds/search.php?"
+        baseURL_TVDB = "http://thetvdb.com/api/GetSeries.php"
+        baseURL_TVRAGE = "http://services.tvrage.com/feeds/search.php"
         nameUTF8 = name.encode('utf-8')
 
         # Use each word in the show's name as a possible search term
@@ -1917,20 +1917,14 @@ class NewHomeAddShows:
 
         # Query the TVDB for each search term and build the list of results
         results = []
-
         for searchTerm in keywords:
             paramsTVDB = {'seriesname': searchTerm,
                           'language': lang}
 
             paramsTVRAGE = {'show': searchTerm}
 
-            finalURL_TVDB = baseURL_TVDB + urllib.urlencode(paramsTVDB)
-            finalURL_TVRAGE = baseURL_TVRAGE + urllib.urlencode(paramsTVRAGE)
-
-            logger.log(u"Searching for Show with searchterm: \'" + searchTerm.decode('utf-8') + u"\' on URL " + finalURL_TVDB, logger.DEBUG)
-
-            urlDataTVDB = helpers.getURL(finalURL_TVDB)
-            urlDataTVRAGE = helpers.getURL(finalURL_TVRAGE)
+            urlDataTVDB = helpers.getURL(baseURL_TVDB, params=paramsTVDB)
+            urlDataTVRAGE = helpers.getURL(baseURL_TVRAGE, params=paramsTVRAGE)
 
             if urlDataTVDB is None and urlDataTVRAGE is None:
                 # When urlData is None, trouble connecting to TVDB and TVRage, don't try the rest of the keywords
@@ -1945,20 +1939,21 @@ class NewHomeAddShows:
                 try:
                     seriesXML_TVDB = etree.ElementTree(etree.XML(urlDataTVDB))
                     seriesTVDB = seriesXML_TVDB.getiterator('Series')
-                except Exception, e:
-                    # use finalURL in log, because urlData can be too much information
-                    logger.log(u"Unable to parse XML from " + indexer + " for some reason: " + ex(e) + " from XML: " + finalURL_TVDB, logger.ERROR)
-                    series = ''
 
                     # add each TVDB result to our list
-                for curSeries in seriesTVDB:
-                    indexer_id = int(curSeries.findtext('seriesid'))
+                    if seriesTVDB:
+                        for curSeries in seriesTVDB:
+                            indexer_id = int(curSeries.findtext('seriesid'))
 
-                    # don't add duplicates
-                    if indexer_id in [x[0] for x in results]:
-                        continue
+                            # don't add duplicates
+                            if indexer_id in [x[0] for x in results]:
+                                continue
 
-                    results.append((indexer, indexer_id, curSeries.findtext('SeriesName'), curSeries.findtext('FirstAired')))
+                            results.append((indexer, indexer_id, curSeries.findtext('SeriesName'), curSeries.findtext('FirstAired')))
+
+                except Exception, e:
+                    # use finalURL in log, because urlData can be too much information
+                    logger.log(u"Unable to parse XML from " + indexer + " for some reason: " + ex(e), logger.ERROR)
 
             if urlDataTVRAGE is not None:
                 indexer = "TVRage"
@@ -1968,20 +1963,20 @@ class NewHomeAddShows:
                 try:
                     seriesXML_TVRAGE = etree.ElementTree(etree.XML(urlDataTVRAGE))
                     seriesTVRAGE = seriesXML_TVRAGE.getiterator('show')
+
+                    # add each TVRAGE result to our list
+                    for curSeries in seriesTVRAGE:
+                        indexer_id = int(curSeries.findtext('showid'))
+
+                        # don't add duplicates
+                        if indexer_id in [x[0] for x in results]:
+                            continue
+
+                        results.append((indexer, indexer_id, curSeries.findtext('name'), curSeries.findtext('started')))
                 except Exception, e:
                     # use finalURL in log, because urlData can be too much information
-                    logger.log(u"Unable to parse XML from " + indexer + " for some reason: " + ex(e) + " from XML: " + finalURL_TVRAGE, logger.ERROR)
-                    series = ''
+                    logger.log(u"Unable to parse XML from " + indexer + " for some reason: " + ex(e), logger.ERROR)
 
-                # add each TVRAGE result to our list
-                for curSeries in seriesTVRAGE:
-                    indexer_id = int(curSeries.findtext('showid'))
-
-                    # don't add duplicates
-                    if indexer_id in [x[0] for x in results]:
-                        continue
-
-                    results.append((indexer, indexer_id, curSeries.findtext('name'), curSeries.findtext('started')))
 
         lang_id = indexer_api.indexerApi().config['langabbv_to_id'][lang]
 

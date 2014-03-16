@@ -164,7 +164,7 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, timeout=None):
+def getURL(url, post_data=None, headers=None, params=None, timeout=None):
     """
 Returns a byte-string retrieved from the url provider.
 """
@@ -182,7 +182,7 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        resp = requests.get(url, data=post_data, headers=dict(zip(it, it)))
+        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
