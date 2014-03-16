@@ -401,7 +401,7 @@ class TVRage:
                     if elm.text is "0000-00-00":
                         elm.text = str(dt.date.fromordinal(1))
                     try:
-                        fixDate = parse(elm.text, fuzzy=True)
+                        fixDate = parse(elm.text, fuzzy=True).date()
                         elm.text = fixDate.strftime("%Y-%m-%d")
                     except:
                         pass

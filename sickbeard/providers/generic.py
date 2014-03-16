@@ -304,7 +304,7 @@ class GenericProvider:
             searchSeason = True
 
         for sceneSeason,sceneEpisodes in sceneSeasons.iteritems():
-            for curString in self._get_season_search_strings(show, sceneSeason, sceneEpisodes, searchSeason):
+            for curString in self._get_season_search_strings(show, str(sceneSeason), sceneEpisodes, searchSeason):
                 itemList += self._doSearch(curString)
 
         for item in itemList:
