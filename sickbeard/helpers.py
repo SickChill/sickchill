@@ -264,7 +264,7 @@ def makeDir(path):
     return True
 
 
-def searchDBForShow(regShowName, useIndexer=False):
+def searchDBForShow(regShowName):
 
     showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
 
@@ -274,7 +274,7 @@ def searchDBForShow(regShowName, useIndexer=False):
 
     for showName in showNames:
 
-        show = get_show_by_name(showName,sickbeard.showList, useIndexer==useIndexer)
+        show = get_show_by_name(showName, sickbeard.showList)
         if show:
             sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ? OR show_name LIKE ?", [show.name, show.name])
         else:
