@@ -237,7 +237,7 @@ class BTNProvider(generic.TorrentProvider):
 
         search_params = {'category': 'Episode'}
 
-        search_params['series'] = sanitizeSceneName(ep_obj.show_name)
+        search_params['series'] = sanitizeSceneName(ep_obj.show.name)
 
         if ep_obj.show.air_by_date:
             date_str = str(ep_obj.airdate)

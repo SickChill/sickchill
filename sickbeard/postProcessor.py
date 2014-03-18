@@ -741,6 +741,7 @@ class PostProcessor(object):
             logger.log(self.file_name + u" looks like it has quality " + common.Quality.qualityStrings[ep_quality] + ", using that", logger.DEBUG)
             return ep_quality
 
+        test = str(ep_quality)
         return ep_quality
 
     def _run_extra_scripts(self, ep_obj):
@@ -845,6 +846,7 @@ class PostProcessor(object):
 
         # get the quality of the episode we're processing
         new_ep_quality = self._get_quality(ep_obj)
+        test = str(new_ep_quality)
         logger.log(u"Quality of the episode we're processing: " + str(new_ep_quality), logger.DEBUG)
 
         # see if this is a priority download (is it snatched, in history, or PROPER)

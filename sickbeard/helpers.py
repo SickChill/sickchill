@@ -306,8 +306,6 @@ def searchIndexersForShow(regShowName):
 
     showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
 
-    yearRegex = "([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
-
     for name in showNames:
         for indexer in indexerStrings:
             logger.log(u"Trying to find the " + name + " on " + indexer, logger.DEBUG)

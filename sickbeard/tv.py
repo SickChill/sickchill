@@ -78,6 +78,7 @@ class TVShow(object):
         self.air_by_date = 0
         self.subtitles = int(sickbeard.SUBTITLES_DEFAULT if sickbeard.SUBTITLES_DEFAULT else 0)
         self.dvdorder = 0
+        self.archive_firstmatch = 0
         self.lang = lang
         self.last_update_indexer = 1
 
@@ -662,6 +663,10 @@ class TVShow(object):
             if not self.dvdorder:
                 self.dvdorder = 0
 
+            self.archive_firstmatch = sqlResults[0]["archive_firstmatch"]
+            if not self.archive_firstmatch:
+                self.archive_firstmatch = 0
+
             self.quality = int(sqlResults[0]["quality"])
             self.flatten_folders = int(sqlResults[0]["flatten_folders"])
             self.paused = int(sqlResults[0]["paused"])
@@ -924,6 +929,7 @@ class TVShow(object):
                         "air_by_date": self.air_by_date,
                         "subtitles": self.subtitles,
                         "dvdorder": self.dvdorder,
+                        "archive_firstmatch": self.archive_firstmatch,
                         "startyear": self.startyear,
                         "lang": self.lang,
                         "imdb_id": self.imdbid,
@@ -982,7 +988,7 @@ class TVShow(object):
 
         # if we know we don't want it then just say no
         if epStatus in (SKIPPED, IGNORED, ARCHIVED) and not manualSearch:
-            logger.log(u"Ep is skipped, not bothering", logger.DEBUG)
+            logger.log(u"Ep is skipped or marked as archived, not bothering", logger.DEBUG)
             return False
 
         # if it's one of these then we want it as long as it's in our allowed initial qualities

@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9 # oldest db version we support migrating from
-MAX_DB_VERSION = 25
+MAX_DB_VERSION = 26
 
 class MainSanityCheck(db.DBSanityCheck):
 
@@ -558,5 +558,16 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
         self.connection.action("CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)")
         self.connection.action("INSERT INTO info(last_backlog, last_indexer, last_proper_search) SELECT last_backlog, last_tvdb, last_proper_search FROM tmp_info")
         self.connection.action("DROP TABLE tmp_info")
+
+        self.incDBVersion()
+
+class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
+    def test(self):
+        return self.checkDBVersion() >= 26
+
+    def execute(self):
+        backupDatabase(26)
+
+        self.connection.action("ALTER TABLE tv_shows ADD archive_firstmatch NUMERIC")
 
         self.incDBVersion()

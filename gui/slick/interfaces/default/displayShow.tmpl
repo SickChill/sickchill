@@ -160,7 +160,11 @@
     <tr><td class="showLegend">Flat Folders: </td><td><img src="$sbRoot/images/#if $show.flatten_folders == 1 or $sickbeard.NAMING_FORCE_FOLDERS then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
     <tr><td class="showLegend">Paused: </td><td><img src="$sbRoot/images/#if int($show.paused) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
     <tr><td class="showLegend">Air-by-Date: </td><td><img src="$sbRoot/images/#if int($show.air_by_date) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-#if $all_scene_exceptions:  
+    <tr><td class="showLegend">DVD Order: </td><td><img src="$sbRoot/images/#if int($show.dvdorder) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
+#if $bestQualities
+    <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
+#end if
+#if $all_scene_exceptions:
 	<tr>
 		<td class="showLegend">Alternate Scene Names:</td>
 		<td>
