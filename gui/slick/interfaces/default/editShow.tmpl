@@ -112,6 +112,12 @@ This <b>DOES NOT</b> allow Sick Beard to download non-english TV episodes!<br />
 <input type="checkbox" name="dvdorder" #if $show.dvdorder == 1 then "checked=\"checked\"" else ""# /><br/>
 (check this if you wish to use the DVD order instead of the Airing order)
 <br/><br/>
+<b>Archive on first match: </b>
+#if $bestQualities
+<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# /><br />
+(check this to have the show archived after first match and download from your archive quality choices)
+<br />
+#end if
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>
 
