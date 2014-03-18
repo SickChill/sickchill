@@ -199,7 +199,7 @@ def isGoodResult(name, show, log=True):
             '(?:\d{4}\W\d\d\W\d\d)|' \
             '(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' \
             'Season\W+\d+\W+|E\d+\W+)|' \
-            '((.+?)[. _-]+)(\d{1,2}[a-zA-Z]{2})[. _-]+([a-zA-Z]{3,})[. _-]+(\d{4})*(.+?)([. _-])()((([^- ]+))?)?$'
+            '((.+)[. _-]+)(\d{1,2}[a-zA-Z]{2})[. _-]+([a-zA-Z]{3,})[. _-]+(\d{4})*(.+)([. _-])()((([^- ]+))?)?$'
         if log:
             logger.log(u"Checking if show " + name + " matches " + curRegex, logger.DEBUG)
 
