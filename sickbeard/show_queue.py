@@ -227,39 +227,38 @@ class QueueItemAdd(ShowQueueItem):
         ShowQueueItem.execute(self)
 
         logger.log(u"Starting to add show " + self.showDir)
-
+        # make sure the indexer ids are valid
         try:
-            # make sure the indexer ids are valid
-            try:
 
-                lINDEXER_API_PARMS = {'indexer': self.indexer}
+            lINDEXER_API_PARMS = {'indexer': self.indexer}
 
-                if self.lang:
-                    lINDEXER_API_PARMS['language'] = self.lang
+            if self.lang:
+                lINDEXER_API_PARMS['language'] = self.lang
 
-                logger.log(u"" + self.indexer + ": " + repr(lINDEXER_API_PARMS))
+            logger.log(u"" + self.indexer + ": " + repr(lINDEXER_API_PARMS))
 
-                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
-                s = t[self.indexer_id]
+            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+            s = t[self.indexer_id]
 
-                # this usually only happens if they have an NFO in their show dir which gave us a indexer ID that has no proper english version of the show
-                if not s['seriesname']:
-                    logger.log(u"Show in " + self.showDir + " has no name on " + self.indexer + ", probably the wrong language used to search with.", logger.ERROR)
-                    ui.notifications.error("Unable to add show", "Show in " + self.showDir + " has no name on " + self.indexer + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
-                    self._finishEarly()
-                    return
-                # if the show has no episodes/seasons
-                if not s:
-                    logger.log(u"Show " + str(s['seriesname']) + " is on " + self.indexer + " but contains no season/episode data.", logger.ERROR)
-                    ui.notifications.error("Unable to add show", "Show " + str(s['seriesname']) + " is on " + self.indexer + " but contains no season/episode data.")
-                    self._finishEarly()
-                    return
-            except indexer_exceptions.indexer_exception, e:
-                logger.log(u"Error contacting " + self.indexer + ": " + ex(e), logger.ERROR)
-                ui.notifications.error("Unable to add show", "Unable to look up the show in " + self.showDir + " on " + self.indexer + ", not using the NFO. Delete .nfo and add manually in the correct language or try a different Indexer.")
+            # this usually only happens if they have an NFO in their show dir which gave us a indexer ID that has no proper english version of the show
+            if getattr(s, 'seriesname', None) is None:
+                logger.log(u"Show in " + self.showDir + " has no name on " + self.indexer + ", probably the wrong language used to search with.", logger.ERROR)
+                ui.notifications.error("Unable to add show", "Show in " + self.showDir + " has no name on " + self.indexer + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
                 self._finishEarly()
                 return
+            # if the show has no episodes/seasons
+            if not s:
+                logger.log(u"Show " + str(s['seriesname']) + " is on " + self.indexer + " but contains no season/episode data.", logger.ERROR)
+                ui.notifications.error("Unable to add show", "Show " + str(s['seriesname']) + " is on " + self.indexer + " but contains no season/episode data.")
+                self._finishEarly()
+                return
+        except Exception, e:
+            logger.log(u"Unable to find show ID:" + self.indexer_id + "on Indexer: " + self.indexer, logger.ERROR)
+            ui.notifications.error("Unable to add show", "Unable to look up the show in " + self.showDir + " on " + self.indexer + " using ID " + self.indexer_id + ", not using the NFO. Delete .nfo and try adding manually again.")
+            self._finishEarly()
+            return
 
+        try:
             # clear the name cache
             name_cache.clearCache()
 
@@ -306,8 +305,6 @@ class QueueItemAdd(ShowQueueItem):
         except imdb_exceptions.IMDbError, e:
             #todo Insert UI notification
             logger.log(u" Something wrong on IMDb api: " + ex(e), logger.WARNING)
-        except imdb_exceptions.IMDbParserError, e:
-            logger.log(u" IMDb_api parser error: " + ex(e), logger.WARNING)
         except Exception, e:
             logger.log(u"Error loading IMDb info: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
@@ -464,8 +461,6 @@ class QueueItemUpdate(ShowQueueItem):
             self.show.loadIMDbInfo()
         except imdb_exceptions.IMDbError, e:
             logger.log(u" Something wrong on IMDb api: " + ex(e), logger.WARNING)
-        except imdb_exceptions.IMDbParserError, e:
-            logger.log(u" IMDb api parser error: " + ex(e), logger.WARNING)
         except Exception, e:
             logger.log(u"Error loading IMDb info: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
