@@ -24,7 +24,7 @@ import datetime
 
 import sickbeard
 
-from common import SNATCHED, SNATCHED_PROPER, Quality, SEASON_RESULT, MULTI_EP_RESULT
+from common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT
 
 from sickbeard import logger, db, show_name_helpers, exceptions, helpers
 from sickbeard import sab
@@ -104,6 +104,9 @@ def snatchEpisode(result, endStatus=SNATCHED):
     result: SearchResult instance to be snatched.
     endStatus: the episode status that should be used for the episode object once it's snatched.
     """
+
+    if result is None: return False
+
     result.priority = 0 # -1 = low, 0 = normal, 1 = high
     if sickbeard.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
@@ -153,7 +156,10 @@ def snatchEpisode(result, endStatus=SNATCHED):
     # don't notify when we re-download an episode
     for curEpObj in result.episodes:
         with curEpObj.lock:
-            curEpObj.status = Quality.compositeStatus(endStatus, result.quality)
+            if isFirstBestMatch(result):
+                curEpObj.status = Quality.compositeStatus(SNATCHED_BEST, result.quality)
+            else:
+                curEpObj.status = Quality.compositeStatus(endStatus, result.quality)
             curEpObj.saveToDB()
 
         if curEpObj.status not in Quality.DOWNLOADED:
@@ -290,6 +296,22 @@ def isFinalResult(result):
     else:
         return False
 
+def isFirstBestMatch(result):
+    """
+    Checks if the given result is a best quality match and if we want to archive the episode on first match.
+    """
+
+    logger.log(u"Checking if we should archive our first best quality match for for episode " + result.name, logger.DEBUG)
+
+    show_obj = result.episodes[0].show
+
+    any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
+
+    # if there is a redownload that's a match to one of our best qualities and we want to archive the episode then we are done
+    if best_qualities and show_obj.archive_firstmatch and result.quality in best_qualities:
+        return True
+
+    return False
 
 def findEpisode(episode, manualSearch=False):
 

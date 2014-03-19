@@ -710,7 +710,7 @@ class PostProcessor(object):
         ep_quality = common.Quality.UNKNOWN
 
         # if there is a quality available in the status then we don't need to bother guessing from the filename
-        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER:
+        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             oldStatus, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status) #@UnusedVariable
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
@@ -787,7 +787,7 @@ class PostProcessor(object):
             return True
 
         # if SB downloaded this on purpose then this is a priority download
-        if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER:
+        if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             self._log(u"SB snatched this episode so I'm marking it as priority", logger.DEBUG)
             return True
 
@@ -846,10 +846,10 @@ class PostProcessor(object):
 
         # get the quality of the episode we're processing
         new_ep_quality = self._get_quality(ep_obj)
-        test = str(new_ep_quality)
+
         logger.log(u"Quality of the episode we're processing: " + str(new_ep_quality), logger.DEBUG)
 
-        # see if this is a priority download (is it snatched, in history, or PROPER)
+        # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
         self._log(u"Is ep a priority download: " + str(priority_download), logger.DEBUG)
 
@@ -924,7 +924,10 @@ class PostProcessor(object):
                 else:
                     logger.log("good results: " + repr(self.good_results), logger.DEBUG)
 
-                cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
+                if ep_obj.status in common.Quality.SNATCHED_BEST:
+                    cur_ep.status = common.Quality.compositeStatus(common.ARCHIVED, new_ep_quality)
+                else:
+                    cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
                 cur_ep.subtitles = []
 

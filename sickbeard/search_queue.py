@@ -26,7 +26,6 @@ from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue
 from sickbeard import search, failed_history, history
 from sickbeard import ui
-from sickbeard.common import Quality
 
 BACKLOG_SEARCH = 10
 RSS_SEARCH = 20
@@ -105,7 +104,9 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
             # just use the first result for now
             logger.log(u"Downloading episode from " + foundEpisode.url)
+
             result = search.snatchEpisode(foundEpisode)
+
             providerModule = foundEpisode.provider
             if not result:
                 ui.notifications.error('Error while attempting to snatch ' + foundEpisode.name+', check your logs')
@@ -231,7 +232,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 highestBestQuality = 0
 
             # if we need a better one then say yes
-            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER) and curQuality < highestBestQuality) or curStatus == common.WANTED:
+            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
                 wantSeason = True
                 break
 

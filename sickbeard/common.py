@@ -63,6 +63,7 @@ IGNORED = 7 # episodes that you don't want included in your download stats
 SNATCHED_PROPER = 9 # qualified with quality
 SUBTITLED = 10 # qualified with quality
 FAILED = 11 #episode downloaded or snatched we don't want
+SNATCHED_BEST = 12 # episode redownloaded using best quality
 
 NAMING_REPEAT = 1
 NAMING_EXTEND = 2
@@ -117,7 +118,8 @@ class Quality:
     statusPrefixes = {DOWNLOADED: "Downloaded",
                       SNATCHED: "Snatched",
                       SNATCHED_PROPER: "Snatched (Proper)",
-                      FAILED: "Failed"}
+                      FAILED: "Failed",
+                      SNATCHED_BEST: "Snatched (Best)"}
 
     @staticmethod
     def _getStatusStrings(status):
@@ -248,11 +250,13 @@ class Quality:
     SNATCHED = None
     SNATCHED_PROPER = None
     FAILED = None
+    SNATCHED_BEST = None
 
 Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings.keys()]
 Quality.SNATCHED_PROPER = [Quality.compositeStatus(SNATCHED_PROPER, x) for x in Quality.qualityStrings.keys()]
 Quality.FAILED = [Quality.compositeStatus(FAILED, x) for x in Quality.qualityStrings.keys()]
+Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings.keys()]
 
 SD = Quality.combineQualities([Quality.SDTV, Quality.SDDVD], [])                                                                                                                                          
 HD = Quality.combineQualities([Quality.HDTV, Quality.FULLHDTV, Quality.HDWEBDL, Quality.FULLHDWEBDL, Quality.HDBLURAY, Quality.FULLHDBLURAY], []) # HD720p + HD1080p                                      
@@ -282,10 +286,11 @@ class StatusStrings:
                               ARCHIVED: "Archived",
                               IGNORED: "Ignored",
                               SUBTITLED: "Subtitled",
-                              FAILED: "Failed"}
+                              FAILED: "Failed",
+                              SNATCHED_BEST: "Snatched (Best)"}
 
     def __getitem__(self, name):
-        if name in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER:
+        if name in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
             status, quality = Quality.splitCompositeStatus(name)
             if quality == Quality.NONE:
                 return self.statusStrings[status]
@@ -295,7 +300,7 @@ class StatusStrings:
             return self.statusStrings[name]
 
     def has_key(self, name):
-        return name in self.statusStrings or name in Quality.DOWNLOADED or name in Quality.SNATCHED or name in Quality.SNATCHED_PROPER
+        return name in self.statusStrings or name in Quality.DOWNLOADED or name in Quality.SNATCHED or name in Quality.SNATCHED_PROPER or name in Quality.SNATCHED_BEST
 
 statusStrings = StatusStrings()
 
@@ -307,7 +312,7 @@ class Overview:
     SKIPPED = SKIPPED # 5
     
     # For both snatched statuses. Note: SNATCHED/QUAL have same value and break dict.
-    SNATCHED = SNATCHED_PROPER # 9
+    SNATCHED = SNATCHED_PROPER = SNATCHED_BEST  # 9
     
     overviewStrings = {SKIPPED: "skipped",
                        WANTED: "wanted",
