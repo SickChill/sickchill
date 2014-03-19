@@ -3075,7 +3075,8 @@ class Home:
             else:
                 return _genericMessage("Error", errMsg)
 
-        segment_list = {}
+        wanted_segments = []
+        failed_segments = {}
 
         if eps != None:
 
@@ -3091,11 +3092,14 @@ class Home:
                     return _genericMessage("Error", "Episode couldn't be retrieved")
 
                 if int(status) in (WANTED, FAILED):
-                    # figure out what segment the episode is in and remember it so we can backlog it
+                    # figure out what episodes are wanted so we can backlog them
                     if epObj.show.air_by_date:
-                        segment_list.setdefault(str(epObj.airdate)[:7],[]).append(epObj.episode)
+                        wanted_segments.append(str(epObj.airdate)[:7])
                     else:
-                        segment_list.setdefault(epObj.season,[]).append(epObj.episode)
+                        wanted_segments.append(epObj.season)
+
+                    # figure out what episodes failed so we can retry them
+                    failed_segments.setdefault(epObj.season,[]).append(epObj.episode)
 
                 with epObj.lock:
                     # don't let them mess up UNAIRED episodes
@@ -3116,26 +3120,26 @@ class Home:
                 
         if int(status) == WANTED:           
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br /><ul>"
-            for cur_segment, cur_episodes in segment_list.iteritems():
+            for cur_segment in wanted_segments:
                 msg += "<li>Season " + str(cur_segment) + "</li>"
                 logger.log(u"Sending backlog for " + showObj.name + " season " + str(cur_segment) + " because some eps were set to wanted")
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, cur_segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item) # @UndefinedVariable
             msg += "</ul>"
 
-            if segment_list:
+            if wanted_segments:
                 ui.notifications.message("Backlog started", msg)
 
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
-            for cur_segment, cur_episodes in segment_list.iteritems():
+            for cur_segment in failed_segments:
                 msg += "<li>Season " + str(cur_segment) + "</li>"
                 logger.log(u"Retrying Search for " + showObj.name + " season " + str(cur_segment) + " because some eps were set to failed")
-                cur_failed_queue_item = search_queue.FailedQueueItem(showObj, cur_segment, cur_episodes)
+                cur_failed_queue_item = search_queue.FailedQueueItem(showObj, cur_segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item) # @UndefinedVariable
             msg += "</ul>"
 
-            if segment_list:
+            if failed_segments:
                 ui.notifications.message("Retry Search started", msg)
             
         if direct:
@@ -3336,14 +3340,8 @@ class Home:
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
-        # figure out what segment the episode is in and remember it so we can backlog it
-        if ep_obj.show.air_by_date:
-            segment = str(ep_obj.airdate)[:7]
-        else:
-            segment = ep_obj.season
-
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, segment, [ep_obj.episode])
+        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, {ep_obj.season: ep_obj.episode})
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item) # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
@@ -3365,27 +3363,6 @@ class Home:
                                })
 
         return json.dumps({'result': 'failure'})
-            
-#        try:
-#            
-#                
-#            ui.notifications.message('Info', pp.log)
-#        except exceptions.FailedHistoryNotFoundException:
-#            ui.notifications.error('Not Found Error', 'Couldn\'t find release in history. (Has it been over 30 days?)\n'
-#                                   'Can\'t mark it as bad.')
-#            return json.dumps({'result': 'failure'})
-#        except exceptions.FailedHistoryMultiSnatchException:
-#            ui.notifications.error('Multi-Snatch Error', 'The same episode was snatched again before the first one was done.\n'
-#                                   'Please cancel any downloads of this episode and then set it back to wanted.\n Can\'t continue.')
-#            return json.dumps({'result': 'failure'})
-#        except exceptions.FailedProcessingFailed:
-#            ui.notifications.error('Processing Failed', pp.log)
-#            return json.dumps({'result': 'failure'})
-#        except Exception as e:
-#            ui.notifications.error('Unknown Error', 'Unknown exception: ' + str(e))
-#            return json.dumps({'result': 'failure'})
-#
-#        return json.dumps({'result': 'success'})
 
 class UI:
 

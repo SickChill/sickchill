@@ -79,14 +79,9 @@ class FailedProcessor(object):
             self._log(u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)", logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
-        # figure out what segment the episode is in and remember it so we can backlog it
-        if self._show_obj.air_by_date:
-            segment = str(parsed.air_date)[:7]
-        else:
-            segment = parsed.season_number
-            
-        cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, segment, parsed.episode_numbers)
-        sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+        for episode in parsed.episode_numbers:
+            cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, {parsed.season_number: episode})
+            sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True
 

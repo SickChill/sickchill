@@ -110,7 +110,7 @@ def hasFailed(release, size, provider="%"):
     return (len(sql_results) > 0)
 
 
-def revertEpisodes(show_obj, season, episodes):
+def revertEpisode(show_obj, season, episode=None):
     """Restore the episodes of a failed download to their original state"""
     myDB = db.DBConnection("failed.db")
     log_str = u""
@@ -119,24 +119,22 @@ def revertEpisodes(show_obj, season, episodes):
     # {episode: result, ...}
     history_eps = dict([(res["episode"], res) for res in sql_results])
 
-    if len(episodes) > 0:
-        for cur_episode in episodes:
-            try:
-                ep_obj = show_obj.getEpisode(season, cur_episode)
-            except exceptions.EpisodeNotFoundException, e:
-                log_str += _log_helper(u"Unable to create episode, please set its status manually: " + exceptions.ex(e), logger.WARNING)
-                continue
-
-            log_str += _log_helper(u"Reverting episode (%s, %s): %s" % (season, cur_episode, ep_obj.name))
+    if episode:
+        try:
+            ep_obj = show_obj.getEpisode(season, episode)
+            log_str += _log_helper(u"Reverting episode (%s, %s): %s" % (season, episode, ep_obj.name))
             with ep_obj.lock:
-                if cur_episode in history_eps:
+                if episode in history_eps:
                     log_str += _log_helper(u"Found in history")
-                    ep_obj.status = history_eps[cur_episode]['old_status']
+                    ep_obj.status = history_eps[episode]['old_status']
                 else:
                     log_str += _log_helper(u"WARNING: Episode not found in history. Setting it back to WANTED", logger.WARNING)
                     ep_obj.status = WANTED
 
                 ep_obj.saveToDB()
+
+        except exceptions.EpisodeNotFoundException, e:
+            log_str += _log_helper(u"Unable to create episode, please set its status manually: " + exceptions.ex(e), logger.WARNING)
     else:
         # Whole season
         log_str += _log_helper(u"Setting season to wanted: " + str(season))
@@ -152,21 +150,22 @@ def revertEpisodes(show_obj, season, episodes):
 
                 ep_obj.saveToDB()
 
-def markFailed(show_obj, season, episodes):
+    return log_str
+
+def markFailed(show_obj, season, episode=None):
     log_str = u""
 
-    if len(episodes) > 0:
-        for cur_episode in episodes:
-            try:
-                ep_obj = show_obj.getEpisode(season, cur_episode)
-            except exceptions.EpisodeNotFoundException, e:
-                log_str += _log_helper(u"Unable to get episode, please set its status manually: " + exceptions.ex(e), logger.WARNING)
-                continue
+    if episode:
+        try:
+            ep_obj = show_obj.getEpisode(season, episode)
 
             with ep_obj.lock:
                 quality = Quality.splitCompositeStatus(ep_obj.status)[1]
                 ep_obj.status = Quality.compositeStatus(FAILED, quality)
                 ep_obj.saveToDB()
+
+        except exceptions.EpisodeNotFoundException, e:
+            log_str += _log_helper(u"Unable to get episode, please set its status manually: " + exceptions.ex(e), logger.WARNING)
     else:
         # Whole season
         for ep_obj in show_obj.getAllEpisodes(season):
