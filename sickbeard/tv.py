@@ -1235,14 +1235,14 @@ class TVEpisode(object):
                     logger.log(str(self.show.indexerid) + u": There was an error loading the NFO for episode " + str(season) + "x" + str(episode), logger.ERROR)
                     pass
 
-                # if we tried loading it from NFO and didn't find the NFO, use TVDB
+                # if we tried loading it from NFO and didn't find the NFO, try the Indexers
                 if self.hasnfo == False:
                     try:
                         result = self.loadFromIndexer(season, episode)
                     except exceptions.EpisodeDeletedException:
                         result = False
 
-                    # if we failed SQL *and* NFO, TVDB then fail
+                    # if we failed SQL *and* NFO, Indexers then fail
                     if result == False:
                         raise exceptions.EpisodeNotFoundException("Couldn't find episode " + str(season) + "x" + str(episode))
 
@@ -1339,7 +1339,7 @@ class TVEpisode(object):
                 return False
         except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
             logger.log(u"Unable to find the episode on " + self.indexer + "... has it been removed? Should I delete from db?", logger.DEBUG)
-            # if I'm no longer on TVDB but I once was then delete myself from the DB
+            # if I'm no longer on the Indexers but I once was then delete myself from the DB
             if self.indexerid != -1:
                 self.deleteEpisode()
             return
@@ -1564,7 +1564,7 @@ class TVEpisode(object):
 
         # use a custom update/insert method to get the data into the DB
         return ["INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode) VALUES ((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-        [self.show.tvdbid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode]]
+        [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode]]
 
     def saveToDB(self, forceSave=False):
         """
