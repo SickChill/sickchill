@@ -42,7 +42,7 @@ from sickbeard import clients
 from sickbeard import tv
 
 from lib import requests
-from lib.bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 from lib.unidecode import unidecode
 
 class KATProvider(generic.TorrentProvider):
