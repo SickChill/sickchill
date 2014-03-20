@@ -57,7 +57,21 @@ class AddNetworkTimezones(AddSceneNameCache):
     def execute(self):
         self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT)")
 
-class ConverSceneExceptionsToIndexerID(AddNetworkTimezones):
+class AddXemNumbering(AddNetworkTimezones):
+    def test(self):
+        return self.hasTable("xem_numbering")
+
+    def execute(self):
+        self.connection.action("CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
+
+class AddXemRefresh(AddXemNumbering):
+    def test(self):
+        return self.hasTable("xem_refresh")
+
+    def execute(self):
+        self.connection.action("CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
+
+class ConvertSceneExceptionsToIndexerID(AddXemRefresh):
     def test(self):
         return self.hasColumn("scene_exceptions", "indexer_id")
 
@@ -67,7 +81,7 @@ class ConverSceneExceptionsToIndexerID(AddNetworkTimezones):
         self.connection.action("INSERT INTO scene_exceptions(exception_id, indexer_id, show_name) SELECT exception_id, tvdb_id, show_name FROM tmp_scene_exceptions")
         self.connection.action("DROP TABLE tmp_scene_exceptions")
 
-class ConverSceneNamesToIndexerID(ConverSceneExceptionsToIndexerID):
+class ConvertSceneNamesToIndexerID(ConvertSceneExceptionsToIndexerID):
     def test(self):
         return self.hasColumn("scene_names", "indexer_id")
 
@@ -76,3 +90,4 @@ class ConverSceneNamesToIndexerID(ConverSceneExceptionsToIndexerID):
         self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT)")
         self.connection.action("INSERT INTO scene_names(indexer_id, name) SELECT tvdb_id, name FROM tmp_scene_names")
         self.connection.action("DROP TABLE tmp_scene_names")
+

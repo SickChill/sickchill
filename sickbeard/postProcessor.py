@@ -676,7 +676,7 @@ class PostProcessor(object):
 
         root_ep = None
         for cur_episode in episodes:
-            # convert episode from scene numbering to TVDB numbering
+            # convert episode from scene numbering to Indexer numbering
             (s, e) = sickbeard.scene_numbering.get_indexer_numbering(indexer_id, season, int(cur_episode))
 
             self._log(u"Retrieving episode object for " + str(s) + "x" + str(e), logger.DEBUG)

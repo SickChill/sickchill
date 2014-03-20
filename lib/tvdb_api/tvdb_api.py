@@ -44,6 +44,11 @@ from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
     tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
 
+# Cached Session Handler
+from lib.httpcache import CachingHTTPAdapter
+s = requests.Session()
+s.mount('http://', CachingHTTPAdapter())
+
 def log():
     return logging.getLogger("tvdb_api")
 
@@ -511,17 +516,12 @@ class Tvdb:
         try:
             log().debug("Retrieving URL %s" % url)
 
-            # cacheControl
-            if self.config['cache_enabled']:
-                from lib.httpcache import CachingHTTPAdapter
-                sess = requests.Session()
-                sess.mount('http://', CachingHTTPAdapter())
-            else:
-                sess = requests.Session()
-
             # get response from TVDB
-            resp = sess.get(url, params=params)
-            sess.close()
+            if self.config['cache_enabled']:
+                resp = s.get(url, params=params)
+            else:
+                resp = requests.get(url, params=params)
+
         except requests.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
 
@@ -534,21 +534,18 @@ class Tvdb:
         except Exception, e:
             raise tvdb_error("Unknown exception occured: " + str(e.message) + " while loading URL " + str(url))
 
-        if resp.ok and resp.content:
-            if 'application/zip' in resp.headers.get("Content-Type", ''):
-                try:
-                    # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                    log().debug("We recived a zip file unpacking now ...")
-                    zipdata = StringIO.StringIO()
-                    zipdata.write(resp.content)
-                    myzipfile = zipfile.ZipFile(zipdata)
-                    return myzipfile.read('%s.xml' % language)
-                except zipfile.BadZipfile:
-                    raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        if 'application/zip' in resp.headers.get("Content-Type", '') and resp.ok:
+            try:
+                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+                log().debug("We recived a zip file unpacking now ...")
+                zipdata = StringIO.StringIO()
+                zipdata.write(resp.content)
+                myzipfile = zipfile.ZipFile(zipdata)
+                return myzipfile.read('%s.xml' % language)
+            except zipfile.BadZipfile:
+                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
 
-            return resp.content
-
-        return None
+        return resp.content if resp.ok else None
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source

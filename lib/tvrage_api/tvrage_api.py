@@ -36,6 +36,11 @@ from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
     tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
 
+# Cached Session Handler
+from lib.httpcache import CachingHTTPAdapter
+s = requests.Session()
+s.mount('http://', CachingHTTPAdapter())
+
 def log():
     return logging.getLogger("tvrage_api")
 
@@ -252,6 +257,7 @@ class TVRage:
 
         self.shows = ShowContainer() # Holds all Show classes
         self.corrections = {} # Holds show-name to show_id mapping
+        self.sess = requests.session() # HTTP Session
 
         self.config = {}
 
@@ -266,15 +272,10 @@ class TVRage:
 
         if cache is True:
             self.config['cache_enabled'] = True
-            self.config['cache_location'] = self._getTempDir()
-
         elif cache is False:
             self.config['cache_enabled'] = False
-
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
-            self.config['cache_location'] = cache
-
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -345,17 +346,12 @@ class TVRage:
         try:
             log().debug("Retrieving URL %s" % url)
 
-            # cacheControl
-            if self.config['cache_enabled']:
-                from lib.httpcache import CachingHTTPAdapter
-                sess = requests.Session()
-                sess.mount('http://', CachingHTTPAdapter())
-            else:
-                sess = requests.Session()
-
             # get response from TVRage
-            resp = sess.get(url, params=params)
-            sess.close()
+            if self.config['cache_enabled']:
+                resp = s.get(url, params=params)
+            else:
+                resp = requests.get(url, params=params)
+
         except requests.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
 
@@ -365,7 +361,7 @@ class TVRage:
         except requests.Timeout, e:
             raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
-        return resp.content if resp.ok and resp.content else None
+        return resp.content if resp.ok else None
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source

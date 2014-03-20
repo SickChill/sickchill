@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9 # oldest db version we support migrating from
-MAX_DB_VERSION = 26
+MAX_DB_VERSION = 27
 
 class MainSanityCheck(db.DBSanityCheck):
 
@@ -569,5 +569,19 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
         backupDatabase(26)
 
         self.connection.action("ALTER TABLE tv_shows ADD archive_firstmatch NUMERIC")
+
+        self.incDBVersion()
+
+class AddSceneNumbering(AddArchiveFirstMatchOption):
+    def test(self):
+        return self.checkDBVersion() >= 27
+
+    def execute(self):
+        backupDatabase(27)
+
+        if self.hasTable("scene_numbering"):
+            self.connection.action("DROP TABLE scene_numbering")
+
+        self.connection.action("CREATE TABLE scene_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
 
         self.incDBVersion()

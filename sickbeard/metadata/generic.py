@@ -949,8 +949,7 @@ class GenericMetadata():
 
                 result = tmdb.TV(id)
             except:
-                return None
-            return None
+                pass
 
         if result is None:
             return None

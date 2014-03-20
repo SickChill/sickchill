@@ -33,9 +33,8 @@ import uuid
 import base64
 
 from lib import requests
-from httplib import BadStatusLine
 from itertools import izip, cycle
-from lib.httpcache import CachingHTTPAdapter
+from contextlib import closing
 
 try:
     import json
@@ -170,10 +169,6 @@ def getURL(url, post_data=None, headers=None, params=None, timeout=None):
 Returns a byte-string retrieved from the url provider.
 """
 
-    # Cache Handler
-    sess = requests.Session()
-    sess.mount('http://', CachingHTTPAdapter())
-
     req_headers = ['User-Agent', USER_AGENT, 'Accept-Encoding', 'gzip,deflate']
     if headers:
         for cur_header in headers:
@@ -186,8 +181,7 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        resp = sess.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
-        sess.close()
+        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
@@ -200,7 +194,7 @@ Returns a byte-string retrieved from the url provider.
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
-    return resp.content if resp.ok and resp.content else None
+    return resp.content if resp.ok else None
 
 def _remove_file_failed(file):
     try:
@@ -210,19 +204,13 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        # cache handler
-        sess = requests.Session()
-        sess.mount('http://', CachingHTTPAdapter())
-        req = sess.get(url, stream=True)
-
-        #CHUNK = 16 * 1024
-        with open(filename, 'wb') as fp:
-            for chunk in req.iter_content(chunk_size=(16 *1024)):
-                if chunk:
-                    fp.write(chunk)
-                    fp.flush()
-            fp.close()
-        sess.close()
+        with closing(requests.get(url, stream=True)) as r:
+            with open(filename, 'wb') as fp:
+                for chunk in r.iter_content(chunk_size=(16 *1024)):
+                    if chunk:
+                        fp.write(chunk)
+                        fp.flush()
+                fp.close()
 
     except requests.HTTPError, e:
         _remove_file_failed(filename)
@@ -264,7 +252,7 @@ def makeDir(path):
     return True
 
 
-def searchDBForShow(regShowName):
+def searchDBForShow(regShowName, indexer_id=None):
 
     showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
 
@@ -302,7 +290,7 @@ def searchDBForShow(regShowName):
 
     return None
 
-def searchIndexersForShow(regShowName):
+def searchIndexersForShow(regShowName, indexer_id = None):
 
     showNames = [re.sub('[. -]', ' ', regShowName),regShowName]
 

@@ -37,6 +37,7 @@ from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker,
 from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
 from sickbeard import logger
 from sickbeard import naming
+from sickbeard import scene_numbering
 
 from common import SD, SKIPPED, NAMING_REPEAT
 
