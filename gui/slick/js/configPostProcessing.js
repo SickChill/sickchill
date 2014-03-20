@@ -238,8 +238,8 @@ $(document).ready(function () {
             config_arr.push(show_metadata ? '1' : '0');
             config_arr.push(episode_metadata ? '1' : '0');
             config_arr.push(fanart ? '1' : '0');
-			config_arr.push(poster ? '1' : '0');
-			config_arr.push(banner ? '1' : '0');
+            config_arr.push(poster ? '1' : '0');
+            config_arr.push(banner ? '1' : '0');
             config_arr.push(episode_thumbnails ? '1' : '0');
             config_arr.push(season_posters ? '1' : '0');
             config_arr.push(season_banners ? '1' : '0');
@@ -274,7 +274,7 @@ $(document).ready(function () {
             $(this).showHideMetadata();
         }
 
-    }
+    };
 
     $(this).refreshMetadataConfig(true);
     $('img[title]').qtip( {
@@ -295,7 +295,7 @@ $(document).ready(function () {
         position: {
             viewport: $(window),
             at: 'top center',
-            my: 'bottom center',
+            my: 'bottom center'
         },
         style: {
             tip: {
@@ -315,7 +315,7 @@ $(document).ready(function () {
         position: {
             viewport: $(window),
             at: 'center left',
-            my: 'center right',
+            my: 'center right'
         },
         style: {
             tip: {

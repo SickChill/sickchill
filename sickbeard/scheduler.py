@@ -45,7 +45,7 @@ class Scheduler:
         self.abort = False
 
     def initThread(self):
-        if self.thread == None or not self.thread.isAlive():
+        if self.thread is None or not self.thread.isAlive():
             self.thread = threading.Thread(None, self.runAction, self.threadName)
 
     def timeLeft(self):

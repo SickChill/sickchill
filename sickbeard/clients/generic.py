@@ -26,8 +26,9 @@ class GenericClient(object):
         self.session = requests.session()
         self.session.auth = (self.username, self.password)
         
-    def _request(self, method='get', params={}, data=None, files=None):
+    def _request(self, method='get', params=None, data=None, files=None):
 
+        if not params: params = {}
         if time.time() > self.last_time + 1800 or not self.auth:
             self.last_time = time.time()
             self._get_auth()
@@ -130,8 +131,7 @@ class GenericClient(object):
             if len(torrent_hash) == 32:
                 torrent_hash = b16encode(b32decode(torrent_hash)).lower()
         else:
-            info = bdecode(result.content)["info"]
-            torrent_hash = sha1(bencode(info)).hexdigest()
+            torrent_hash = sha1(bencode.bdecode(result.content)["info"]).hexdigest()
 
         return torrent_hash
         

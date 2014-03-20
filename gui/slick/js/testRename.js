@@ -4,7 +4,7 @@ $(document).ready(function(){
         var seasNo = $(seasCheck).attr('id');
 
         $('.epCheck:visible').each(function(){
-            var epParts = $(this).attr('id').split('x')
+            var epParts = $(this).attr('id').split('x');
 
             if (epParts[0] == seasNo) {
                 this.checked = seasCheck.checked
@@ -13,7 +13,7 @@ $(document).ready(function(){
     });
 
     $('input[type=submit]').click(function(){
-        var epArr = new Array()
+        var epArr = new Array();
 
         $('.epCheck').each(function() {
             if (this.checked == true) {

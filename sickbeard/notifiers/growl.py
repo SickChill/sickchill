@@ -88,10 +88,10 @@ class GrowlNotifier:
         if not sickbeard.USE_GROWL and not force:
             return False
     
-        if name == None:
+        if name is None:
             name = title
     
-        if host == None:
+        if host is None:
             hostParts = sickbeard.GROWL_HOST.split(':')
         else:
             hostParts = host.split(':')
@@ -114,7 +114,7 @@ class GrowlNotifier:
         opts['priority'] = None
         opts['debug'] = False
     
-        if password == None:
+        if password is None:
             opts['password'] = sickbeard.GROWL_PASSWORD
         else:
             opts['password'] = password
@@ -141,7 +141,7 @@ class GrowlNotifier:
     def _sendRegistration(self, host=None, password=None, name='Sick Beard Notification'):
         opts = {}
     
-        if host == None:
+        if host is None:
             hostParts = sickbeard.GROWL_HOST.split(':')
         else:
             hostParts = host.split(':')
@@ -155,7 +155,7 @@ class GrowlNotifier:
         opts['port'] = port
         
             
-        if password == None:
+        if password is None:
             opts['password'] = sickbeard.GROWL_PASSWORD
         else:
             opts['password'] = password

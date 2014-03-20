@@ -128,8 +128,9 @@ class BTNProvider(generic.TorrentProvider):
 
         return []
 
-    def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
+    def _api_call(self, apikey, params=None, results_per_page=1000, offset=0):
 
+        if not params: params = {}
         server = jsonrpclib.Server('http://api.btnapps.net')
         parsedJSON = {}
 

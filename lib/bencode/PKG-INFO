@@ -1,0 +1,16 @@
+Metadata-Version: 1.0
+Name: BitTorrent-bencode
+Version: 5.0.8.1
+Summary: The BitTorrent bencode module as leight-weight, standalone package.
+Home-page: http://bittorrent.com/
+Author: Bram Cohen
+Author-email: bugs@bittorrent.com
+License: BitTorrent Open Source License
+Description: This package simply re-packages the existing bencoding and bdecoding implemention from the 'official' BitTorrent client as a separate, leight-weight package for re-using them without having the entire BitTorrent software as a dependency.
+        
+        It currently uses the implementation from BitTorrent Version 5.0.8, the file `bencode.py` is a verbatim, unmodified copy from that distribution.
+        
+        It also contains some tests and a benchmark.
+        
+Keywords: bittorrent bencode bdecode
+Platform: UNKNOWN

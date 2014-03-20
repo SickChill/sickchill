@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
   $('#submitMassEdit').click(function(){
-    var editArr = new Array()
+    var editArr = new Array();
   
     $('.editCheck').each(function() {
       if (this.checked == true) {
@@ -19,12 +19,12 @@ $(document).ready(function(){
 
   $('#submitMassUpdate').click(function(){
   
-    var updateArr = new Array()
-    var refreshArr = new Array()
-    var renameArr = new Array()
-    var subtitleArr = new Array()
-    var deleteArr = new Array()
-    var metadataArr = new Array()
+    var updateArr = new Array();
+    var refreshArr = new Array();
+    var renameArr = new Array();
+    var subtitleArr = new Array();
+    var deleteArr = new Array();
+    var metadataArr = new Array();
 
     $('.updateCheck').each(function() {
       if (this.checked == true) {

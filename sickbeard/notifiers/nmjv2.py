@@ -65,7 +65,7 @@ class NMJv2Notifier:
             xml = parseString(response1)
             time.sleep (300.0 / 1000.0)
             for node in xml.getElementsByTagName('path'):
-                xmlTag=node.toxml();
+                xmlTag=node.toxml()
                 xmlData=xmlTag.replace('<path>','').replace('</path>','').replace('[=]','')
                 url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1="+ xmlData
                 reqdb = urllib2.Request(url_db)

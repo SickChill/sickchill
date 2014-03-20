@@ -171,7 +171,7 @@ class PostProcessor(object):
         base_name = file_path.rpartition('.')[0]
 
         if not base_name_only:
-            base_name = base_name + '.'
+            base_name += '.'
 
         # don't strip it all and use cwd by accident
         if not base_name:
@@ -476,10 +476,10 @@ class PostProcessor(object):
 
             # remember whether it's a proper
             if parse_result.extra_info:
-                self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) != None
+                self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info, re.I) is not None
 
             # if the result is complete then remember that for later
-            if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
+            if parse_result.series_name and parse_result.season_number is not None and parse_result.episode_numbers and parse_result.release_group:
                 test_name = os.path.basename(name)
                 if test_name == self.nzb_name:
                     self.good_results[self.NZB_NAME] = True
@@ -591,7 +591,7 @@ class PostProcessor(object):
             # if we already did a successful history lookup then keep that indexer_id value
             if cur_indexer_id and not (self.in_history and indexer_id):
                 indexer_id = cur_indexer_id
-            if cur_season != None:
+            if cur_season is not None:
                 season = cur_season
             if cur_episodes:
                 episodes = cur_episodes
@@ -604,7 +604,7 @@ class PostProcessor(object):
                 indexer_lang = None
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                    if(showObj != None):
+                    if(showObj is not None):
                         # set the language of the show
                         indexer_lang = showObj.lang
                         self.indexer = showObj.indexer
@@ -636,14 +636,14 @@ class PostProcessor(object):
                     continue
 
             # if there's no season then we can hopefully just use 1 automatically
-            elif season == None and indexer_id:
+            elif season is None and indexer_id:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select("SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0", [indexer_id])
-                if int(numseasonsSQlResult[0][0]) == 1 and season == None:
+                if int(numseasonsSQlResult[0][0]) == 1 and season is None:
                     self._log(u"Don't have a season number, but this show appears to only have 1 season, setting seasonnumber to 1...", logger.DEBUG)
                     season = 1
 
-            if indexer_id and season != None and episodes:
+            if indexer_id and season is not None and episodes:
                 return (indexer_id, season, episodes)
 
         return (indexer_id, season, episodes)
@@ -689,7 +689,7 @@ class PostProcessor(object):
                 raise exceptions.PostProcessingFailed()
             
             # associate all the episodes together under a single root episode
-            if root_ep == None:
+            if root_ep is None:
                 root_ep = curEp
                 root_ep.relatedEps = []
             elif curEp not in root_ep.relatedEps:
@@ -830,14 +830,14 @@ class PostProcessor(object):
 
                 # try to find the file info
                 (indexer_id, season, episodes) = self._find_info()
-                if indexer_id and season != None and episodes:
+                if indexer_id and season is not None and episodes:
                     break
 
                 self._log(u"Can't find show on " + self.indexer + ", auto trying next indexer in list", logger.WARNING)
         else:
             (indexer_id, season, episodes) = self._find_info()
 
-        if not indexer_id or season == None or not episodes:
+        if not indexer_id or season is None or not episodes:
             self._log(u"Can't find show id from ANY of the indexers or season or episode, skipping", logger.WARNING)
             return False
 

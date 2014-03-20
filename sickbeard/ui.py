@@ -112,7 +112,8 @@ class Notification(object):
 
 class ProgressIndicator():
 
-    def __init__(self, percentComplete=0, currentStatus={'title': ''}):
+    def __init__(self, percentComplete=0, currentStatus=None):
+        if not currentStatus: currentStatus = {'title': ''}
         self.percentComplete = percentComplete
         self.currentStatus = currentStatus
 
@@ -129,7 +130,7 @@ class ProgressIndicators():
 
         # if any of the progress indicators are done take them off the list
         for curPI in ProgressIndicators._pi[name]:
-            if curPI != None and curPI.percentComplete() == 100:
+            if curPI is not None and curPI.percentComplete() == 100:
                 ProgressIndicators._pi[name].remove(curPI)
 
         # return the list of progress indicators associated with this name

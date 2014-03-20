@@ -48,7 +48,7 @@ class ShowUpdater():
         hour_diff = update_datetime.time().hour - run_updater_time.hour
 
         # if it's less than an interval after the update time then do an update (or if we're forcing it)
-        if hour_diff >= 0 and hour_diff < self.updateInterval.seconds / 3600 or force:
+        if 0 <= hour_diff < self.updateInterval.seconds / 3600 or force:
             logger.log(u"Doing full update on all shows")
         else:
             return

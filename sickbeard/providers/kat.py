@@ -134,7 +134,7 @@ class KATProvider(generic.TorrentProvider):
                 quality = Quality.sceneQuality(os.path.basename(fileName))
                 if quality != Quality.UNKNOWN: break
 
-            if fileName!=None and quality == Quality.UNKNOWN:
+            if fileName is not None and quality == Quality.UNKNOWN:
                 quality = Quality.assumeQuality(os.path.basename(fileName))
 
             if quality == Quality.UNKNOWN:

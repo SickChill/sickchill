@@ -37,7 +37,7 @@ $(document).ready(function() {
         $('.dir_check').each(function(i,w){
             if ($(w).is(':checked')) {
                 if (url.length)
-                    url += '&'
+                    url += '&';
                 url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
             }
         });

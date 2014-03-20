@@ -13,7 +13,7 @@ $(document).ready(function() {
         row += '  <td><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td>'+season+'x'+episode+'</td>';
         row += '  <td style="width: 100%">'+name+'</td>';
-        row += ' </tr>'
+        row += ' </tr>';
         
         return row;
     }

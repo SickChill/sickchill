@@ -140,21 +140,21 @@ class GenericMetadata():
 
     def _has_episode_thumb(self, ep_obj):
         location = self.get_episode_thumb_path(ep_obj)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location is not None and ek.ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_poster(self, show_obj, season):
         location = self.get_season_poster_path(show_obj, season)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location is not None and ek.ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
 
     def _has_season_banner(self, show_obj, season):
         location = self.get_season_banner_path(show_obj, season)
-        result = location != None and ek.ek(os.path.isfile, location)
+        result = location is not None and ek.ek(os.path.isfile, location)
         if location:
             logger.log(u"Checking if " + location + " exists: " + str(result), logger.DEBUG)
         return result
@@ -595,8 +595,6 @@ class GenericMetadata():
         else:
             return False
 
-        return True
-
     def save_season_banners(self, show_obj, season):
         """
         Saves all season banners to disk for the given show.
@@ -641,8 +639,6 @@ class GenericMetadata():
             return all(result)
         else:
             return False
-
-        return True
 
     def save_season_all_poster(self, show_obj, which=None):
         # use the default season all poster name
@@ -890,8 +886,8 @@ class GenericMetadata():
             with ek.ek(open, metadata_path, 'r') as xmlFileObj:
                 showXML = etree.ElementTree(file=xmlFileObj)
 
-            if showXML.findtext('title') == None\
-                or (showXML.findtext('tvdbid') == None and showXML.findtext('id') == None):
+            if showXML.findtext('title') is None \
+                or (showXML.findtext('tvdbid') is None and showXML.findtext('id') is None):
                 logger.log(u"Invalid info in tvshow.nfo (missing name or id):" \
                     + str(showXML.findtext('title')) + " " \
                     + str(showXML.findtext('indexer')) + " " \
@@ -901,9 +897,9 @@ class GenericMetadata():
 
             name = showXML.findtext('title')
             indexer = showXML.findtext('indexer')
-            if showXML.findtext('tvdbid') != None:
+            if showXML.findtext('tvdbid') is not None:
                 indexer_id = int(showXML.findtext('tvdbid'))
-            elif showXML.findtext('id') != None:
+            elif showXML.findtext('id') is not None:
                 indexer_id = int(showXML.findtext('id'))
             else:
                 logger.log(u"Empty <id> or <tvdbid> field in NFO, unable to find a ID", logger.WARNING)

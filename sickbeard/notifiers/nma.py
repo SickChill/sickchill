@@ -27,10 +27,10 @@ class NMA_Notifier:
         if not sickbeard.USE_NMA and not force:
             return False
         
-        if nma_api == None:
+        if nma_api is None:
             nma_api = sickbeard.NMA_API
             
-        if nma_priority == None:
+        if nma_priority is None:
             nma_priority = sickbeard.NMA_PRIORITY
     
         logger.log(u"NMA title: " + title, logger.DEBUG)

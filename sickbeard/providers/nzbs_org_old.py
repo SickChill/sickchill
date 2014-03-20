@@ -81,7 +81,7 @@ class NZBsProvider(generic.NZBProvider):
 		# Pause to avoid 503's
 		time.sleep(5)
 
-		if data == None:
+		if data is None:
 			return []
 
 		try:
@@ -126,7 +126,7 @@ class NZBsProvider(generic.NZBProvider):
 
 				resultDate = datetime.datetime.strptime(match.group(1), "%a, %d %b %Y %H:%M:%S")
 
-				if date == None or resultDate > date:
+				if date is None or resultDate > date:
 					results.append(classes.Proper(title, url, resultDate))
 
 		return results

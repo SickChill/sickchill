@@ -112,7 +112,7 @@ class SubtitlesFinder():
             return
         
         rules = self._getRules()
-        now = datetime.datetime.now();
+        now = datetime.datetime.now()
         for epToSub in sqlResults:
             if not ek.ek(os.path.isfile, epToSub['location']):
                 logger.log('Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)

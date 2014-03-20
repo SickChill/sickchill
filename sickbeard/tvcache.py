@@ -195,14 +195,16 @@ class TVCache():
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update
+
         if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
             logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
             return False
 
         return True
 
-    def _addCacheEntry(self, name, url, season=None, episodes=None, indexer_id=0, quality=None, extraNames=[]):
+    def _addCacheEntry(self, name, url, season=None, episodes=None, indexer_id=0, quality=None, extraNames=None):
 
+        if not extraNames: extraNames = []
         myDB = self._getDB()
 
         parse_result = None
@@ -246,7 +248,7 @@ class TVCache():
                 indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
                 
                 # remember if the cache lookup worked or not so we know whether we should bother updating it later
-                if indexer_id == None:
+                if indexer_id is None:
                     logger.log(u"No cache results returned, continuing on with the search", logger.DEBUG)
                     from_cache = False
                 else:
@@ -254,7 +256,7 @@ class TVCache():
                     from_cache = True
                 
                 # if the cache failed, try looking up the show name in the database
-                if indexer_id == None:
+                if indexer_id is None:
                     logger.log(u"Trying to look the show up in the show database", logger.DEBUG)
                     showResult = helpers.searchDBForShow(parse_result.series_name)
                     if showResult:
@@ -262,7 +264,7 @@ class TVCache():
                         indexer_id = showResult[1]
 
                 # if the DB lookup fails then do a comprehensive regex search
-                if indexer_id == None:
+                if indexer_id is None:
                     logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead", logger.DEBUG)
                     for curShow in sickbeard.showList:
                         if show_name_helpers.isGoodResult(name, curShow, False):
@@ -276,7 +278,7 @@ class TVCache():
                     name_cache.addNameToCache(parse_result.series_name, indexer_id)
 
                 # if we came out with indexer_id = None it means we couldn't figure it out at all, just use 0 for that
-                if indexer_id == None:
+                if indexer_id is None:
                     indexer_id = 0
 
                 # if we found the show then retrieve the show object
@@ -291,7 +293,7 @@ class TVCache():
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
         if not season:
-            season = parse_result.season_number if parse_result.season_number != None else 1
+            season = parse_result.season_number if parse_result.season_number is not None else 1
         if not episodes:
             episodes = parse_result.episode_numbers
 
@@ -300,7 +302,7 @@ class TVCache():
             try:
                 lINDEXER_API_PARMS = {'indexer': self.indexer}
 
-                if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
+                if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang is None):
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
                 t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
@@ -340,7 +342,7 @@ class TVCache():
 
         sql = "SELECT * FROM [" + self.providerID + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
 
-        if date != None:
+        if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
         #return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))

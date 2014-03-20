@@ -10,7 +10,7 @@
 				if (data.result != "failure" && data.result != "No subtitles downloaded") {
 				// clear and update the subtitles column with new informations
 				var subtitles = data.subtitles.split(',');
-				subtitles_td.empty()
+				subtitles_td.empty();
 				$.each(subtitles,function(index, language){
 					if (language != "" && language != "und") {
 						if (index != subtitles.length - 1) {

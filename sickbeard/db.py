@@ -70,7 +70,7 @@ class DBConnection:
 
         with db_lock:
 
-            if query == None:
+            if query is None:
                 return
 
             sqlResult = None
@@ -78,7 +78,7 @@ class DBConnection:
 
             while attempt < 5:
                 try:
-                    if args == None:
+                    if args is None:
                         logger.log(self.filename + ": " + query, logger.DB)
                         cursor = self.connection.cursor()
                         cursor.execute(query)
@@ -109,7 +109,7 @@ class DBConnection:
 
         with db_lock:
 
-            if querylist == None:
+            if querylist is None:
                 return
 
             sqlResult = []
@@ -153,7 +153,7 @@ class DBConnection:
 
         with db_lock:
 
-            if query == None:
+            if query is None:
                 return
 
             sqlResult = None
@@ -161,7 +161,7 @@ class DBConnection:
 
             while attempt < 5:
                 try:
-                    if args == None:
+                    if args is None:
                         logger.log(self.filename + ": " + query, logger.DB)
                         sqlResult = self.connection.execute(query)
                     else:
@@ -189,7 +189,7 @@ class DBConnection:
 
         sqlResults = self.action(query, args).fetchall()
 
-        if sqlResults == None:
+        if sqlResults is None:
             return []
 
         return sqlResults

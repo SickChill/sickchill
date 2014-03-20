@@ -38,13 +38,11 @@ def fixStupidEncodings(x, silent=False):
         logger.log(u"Unknown value passed in, ignoring it: "+str(type(x))+" ("+repr(x)+":"+repr(type(x))+")", logger.DEBUG if silent else logger.ERROR)
         return None
 
-    return None
-
 def fixListEncodings(x):
     if type(x) != list and type(x) != tuple:
         return x
     else:
-        return filter(lambda x: x != None, map(fixStupidEncodings, x))
+        return filter(lambda x: x is not None, map(fixStupidEncodings, x))
 
 def callPeopleStupid(x):
     try:

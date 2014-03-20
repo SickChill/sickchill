@@ -125,7 +125,7 @@ class GenericProvider:
 
         data = self.getURL(result.url)
 
-        if data == None:
+        if data is None:
             return False
 
         # use the appropriate watch folder
@@ -323,7 +323,8 @@ class GenericProvider:
 
             if not show.air_by_date:
                 # this check is meaningless for non-season searches
-                if (parse_result.season_number != None and parse_result.season_number != season) or (parse_result.season_number == None and season != 1):
+                if (parse_result.season_number is not None and parse_result.season_number != season) or (
+                        parse_result.season_number is None and season != 1):
                     logger.log(u"The result " + title + " doesn't seem to be a valid episode for season " + str(season) + ", ignoring", logger.DEBUG)
                     continue
 
