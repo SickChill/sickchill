@@ -21,7 +21,7 @@ from __future__ import with_statement
 import sys
 import os
 import traceback
-import urllib, urllib2
+import urllib
 import re
 import datetime
 import urlparse
@@ -202,6 +202,7 @@ class KATProvider(generic.TorrentProvider):
         else:
             for show_name in set(allPossibleShowNames(ep_obj.show)):
                 ep_string = sanitizeSceneName(show_name) +' '+'season:'+str(ep_obj.season)+' episode:'+str(ep_obj.episode)
+
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
     
         return [search_string]

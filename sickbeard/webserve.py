@@ -3080,6 +3080,7 @@ class Home:
 
         if eps != None:
 
+            sql_l = []
             for curEp in eps.split('|'):
 
                 logger.log(u"Attempting to set status on episode " + curEp + " to " + status, logger.DEBUG)
@@ -3116,8 +3117,12 @@ class Home:
                         continue
                    
                     epObj.status = int(status)
-                    epObj.saveToDB()
-                
+                    sql_l.append(epObj.get_sql())
+
+                if len(sql_l) > 0:
+                    myDB = db.DBConnection()
+                    myDB.mass_action(sql_l)
+
         if int(status) == WANTED:           
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br /><ul>"
             for cur_segment in wanted_segments:

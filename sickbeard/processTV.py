@@ -104,7 +104,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     #Don't Link media when the media is extracted from a rar in the same path
     if process_method in ('hardlink', 'symlink') and videoInRar:
         process_media(path, videoInRar, nzbName, 'move', force, is_priority, indexer)
-        delete_files(path, rarContent) 
+        delete_files(path, rarContent)
         for video in set(videoFiles) - set(videoInRar):
             process_media(path, [video], nzbName, process_method, force, is_priority, indexer)
     else:
@@ -129,21 +129,21 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             if process_method in ('hardlink', 'symlink') and videoInRar:
                 process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, indexer)
                 process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force, is_priority, indexer)
-                delete_files(processPath, rarContent) 
+                delete_files(processPath, rarContent)
             else:
                 process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, indexer)
 
                 #Delete all file not needed
                 if process_method != "move" or not process_result \
-                or type=="manual": #Avoid to delete files if is Manual PostProcessing  
+                or type=="manual": #Avoid to delete files if is Manual PostProcessing
                     continue
-    
+
                 delete_files(processPath, notwantedFiles)
-    
+
                 if process_method == "move" and \
                 ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
                     delete_dir(processPath)
-        
+
     return returnStr
 
 def validateDir(path, dirName, nzbNameOriginal, failed):
@@ -182,7 +182,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
 
     videoFiles = filter(helpers.isMediaFile, allFiles)
     allDirs.append(dirName)
-    
+
     #check if the dir have at least one tv video file
     for video in videoFiles:
         try:
@@ -237,8 +237,8 @@ def unRAR(path, rarFiles, force):
                         break
 
                 if skip_file:
-                    continue    
-                
+                    continue
+
                 rar_handle.extract(path = path, withSubpath = False, overwrite = False)
                 unpacked_files += [os.path.basename(x.filename) for x in rar_handle.infolist() if not x.isdir]
                 del rar_handle
