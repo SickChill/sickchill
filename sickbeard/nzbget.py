@@ -39,7 +39,7 @@ def sendNZB(nzb, proper = False):
     nzbgetprio = 0
     nzbgetXMLrpc = "http://%(username)s:%(password)s@%(host)s/xmlrpc"
 
-    if sickbeard.NZBGET_HOST is None:
+    if sickbeard.NZBGET_HOST == None:
         logger.log(u"No NZBget host found in configuration. Please configure it.", logger.ERROR)
         return False
 
@@ -83,7 +83,7 @@ def sendNZB(nzb, proper = False):
     if nzb.resultType == "nzb":
         genProvider = GenericProvider("")
         data = genProvider.getURL(nzb.url)
-        if (data is None):
+        if (data == None):
             return False
 
     # if we get a raw data result thats even better

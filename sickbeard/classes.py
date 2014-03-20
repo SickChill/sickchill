@@ -94,7 +94,7 @@ class SearchResult:
 
     def __str__(self):
 
-        if self.provider is None:
+        if self.provider == None:
             return "Invalid provider, unable to print self"
 
         myString = self.provider.name + " @ " + self.url + "\n"
@@ -166,7 +166,7 @@ class Proper:
         self.episode = -1
 
     def __str__(self):
-        return str(self.date)+" "+self.name+" "+str(self.season)+"x"+str(self.episode)+" of "+str(self.indexerid)+" from "+str(self.indexer)
+        return str(self.date)+" "+self.name+" "+str(self.season)+"x"+str(self.episode)+" of "+str(self.indexerid+" from "+self.indexer)
 
 
 class ErrorViewer():

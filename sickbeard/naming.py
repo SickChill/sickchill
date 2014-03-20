@@ -65,12 +65,12 @@ def check_force_season_folders(pattern=None, multi=None):
     
     Returns true if season folders need to be forced on or false otherwise.
     """
-    if pattern is None:
+    if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
     
     valid = not validate_name(pattern, None, file_only=True) 
     
-    if multi is not None:
+    if multi != None:
         valid = valid or not validate_name(pattern, multi, file_only=True)
 
     return valid
@@ -81,13 +81,13 @@ def check_valid_naming(pattern=None, multi=None):
     
     Returns true if the naming is valid, false if not.
     """
-    if pattern is None:
+    if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
         
     logger.log(u"Checking whether the pattern "+pattern+" is valid for a single episode", logger.DEBUG)
     valid = validate_name(pattern, None)
 
-    if multi is not None:
+    if multi != None:
         logger.log(u"Checking whether the pattern "+pattern+" is valid for a multi episode", logger.DEBUG)
         valid = valid and validate_name(pattern, multi)
 
@@ -99,7 +99,7 @@ def check_valid_abd_naming(pattern=None):
     
     Returns true if the naming is valid, false if not.
     """
-    if pattern is None:
+    if pattern == None:
         pattern = sickbeard.NAMING_PATTERN
         
     logger.log(u"Checking whether the pattern "+pattern+" is valid for an air-by-date episode", logger.DEBUG)
@@ -156,7 +156,7 @@ def _generate_sample_ep(multi=None, abd=False):
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
 
-    if multi is not None:
+    if multi != None:
         ep._name = "Ep Name (1)"
         ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-RLSGROUP'
 

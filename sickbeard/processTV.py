@@ -345,11 +345,11 @@ def delete_files(processPath, notwantedFiles):
             try:
                 ek.ek(os.chmod,cur_file_path,stat.S_IWRITE)
             except OSError, e:
-                returnStr += logHelper(u"Cannot change permissions of " + cur_file_path + ': ' + str(e.strerror), logger.DEBUG)
+                returnStr += logHelper(u"Cannot change permissions of " + cur_file_path + ': ' + e.strerror, logger.DEBUG)
         try:
             ek.ek(os.remove, cur_file_path)
         except OSError, e:
-            returnStr += logHelper(u"Unable to delete file " + cur_file + ': ' + str(e.strerror), logger.DEBUG)
+            returnStr += logHelper(u"Unable to delete file " + cur_file + ': ' + e.strerror, logger.DEBUG)
 
 def delete_dir(processPath):
 

@@ -511,6 +511,9 @@ class GitUpdateManager(UpdateManager):
         else:
             return False
 
+        return False
+
+
 class SourceUpdateManager(UpdateManager):
 
     def __init__(self):

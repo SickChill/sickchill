@@ -33,7 +33,7 @@ from sickbeard.exceptions import ex
 
 from lib import requests
 from bs4 import BeautifulSoup
-from lib import bencode
+from lib.bencode import bdecode
 
 class TorrentRssProvider(generic.TorrentProvider):
 
@@ -116,7 +116,7 @@ class TorrentRssProvider(generic.TorrentProvider):
     
                 torrent_file = self.getURL(url)
                 try: 
-                    bencode.bdecode(torrent_file)
+                    bdecode(torrent_file)
                 except Exception, e:
                     self.dumpHTML(torrent_file)
                     return (False, 'Torrent link is not a valid torrent file: ' + ex(e))

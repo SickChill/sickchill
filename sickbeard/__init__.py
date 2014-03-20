@@ -1630,13 +1630,13 @@ def launchBrowser(startPort=None):
 
 def getEpList(epIDs, showid=None):
 
-    if epIDs is None or len(epIDs) == 0:
+    if epIDs == None or len(epIDs) == 0:
         return []
 
     query = "SELECT * FROM tv_episodes WHERE indexerid in (%s)" % (",".join(['?']*len(epIDs)),)
     params = epIDs
 
-    if showid is not None:
+    if showid != None:
         query += " AND showid = ?"
         params.append(showid)
 

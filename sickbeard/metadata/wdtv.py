@@ -229,7 +229,7 @@ class WDTVMetadata(generic.GenericMetadata):
                 seriesName.text = myShow["seriesname"]
 
             episodeName = etree.SubElement(episode, "episode_name")
-            if curEpToWrite.name is not None:
+            if curEpToWrite.name != None:
                 episodeName.text = curEpToWrite.name
 
             seasonNumber = etree.SubElement(episode, "season_number")
@@ -264,7 +264,7 @@ class WDTVMetadata(generic.GenericMetadata):
             director = etree.SubElement(episode, "director")
             if getattr(myEp, 'director', None) is not None:
                 director_text = myEp['director']
-            if director_text is not None:
+            if director_text != None:
                 director.text = director_text
 
             if getattr(myShow, '_actors', None) is not None:
@@ -274,11 +274,11 @@ class WDTVMetadata(generic.GenericMetadata):
                     cur_actor_name.text = actor['name']
                     cur_actor_role = etree.SubElement(cur_actor, "role")
                     cur_actor_role_text = actor['role']
-                    if cur_actor_role_text is not None:
+                    if cur_actor_role_text != None:
                         cur_actor_role.text = cur_actor_role_text
 
             overview = etree.SubElement(episode, "overview")
-            if curEpToWrite.description is not None:
+            if curEpToWrite.description != None:
                 overview.text = curEpToWrite.description
 
             # Make it purdy

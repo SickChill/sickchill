@@ -12,13 +12,13 @@ $(document).ready(function() {
         row += '  <td style="width: 1%;">'+season+'x'+episode+'</td>';
         row += '  <td>'+name+'</td>';
         row += '  <td style="float: right;">'; 
-        	subtitles = subtitles.split(',');
+        	subtitles = subtitles.split(',')
         	for (i in subtitles)
         	{
         		row += '   <img src="/images/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
         	}
         row += '  </td>';
-        row += ' </tr>';
+        row += ' </tr>'
         
         return row;
     }

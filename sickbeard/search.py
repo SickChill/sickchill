@@ -53,7 +53,7 @@ def _downloadResult(result):
 
     newResult = False
 
-    if resProvider is None:
+    if resProvider == None:
         logger.log(u"Invalid provider name - this is a coding error, report it please", logger.ERROR)
         return False
 
@@ -143,7 +143,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         logger.log(u"Unknown result type, unable to download it", logger.ERROR)
         dlResult = False
 
-    if not dlResult:
+    if dlResult == False:
         return False
 
     if sickbeard.USE_FAILED_DOWNLOADS:
@@ -244,7 +244,7 @@ def pickBestResult(results, quality_list=None):
             logger.log(cur_result.name + u" has previously failed, rejecting it")
             continue
 
-        if not bestResult or bestResult.quality < cur_result.quality != Quality.UNKNOWN:
+        if not bestResult or bestResult.quality < cur_result.quality and cur_result.quality != Quality.UNKNOWN:
             bestResult = cur_result
         elif bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():

@@ -27,8 +27,7 @@ from sickbeard.webserve import WebInterface
 
 from sickbeard.helpers import create_https_certificates
 
-def initWebServer(options=None):
-        if not options: options = {}
+def initWebServer(options = {}):
         options.setdefault('port',      8081)
         options.setdefault('host',      '0.0.0.0')
         options.setdefault('log_dir',   None)

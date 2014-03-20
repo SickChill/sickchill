@@ -144,7 +144,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             quality = Quality.sceneQuality(os.path.basename(fileName))
             if quality != Quality.UNKNOWN: break
 
-        if fileName is not None and quality == Quality.UNKNOWN:
+        if fileName!=None and quality == Quality.UNKNOWN:
             quality = Quality.assumeQuality(os.path.basename(fileName))            
 
         if quality == Quality.UNKNOWN:
@@ -254,7 +254,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue 
 
                     #Accept Torrent only from Good People for every Episode Search
-                    if sickbeard.THEPIRATEBAY_TRUSTED and re.search('(VIP|Trusted|Helper)',torrent.group(0)) is None:
+                    if sickbeard.THEPIRATEBAY_TRUSTED and re.search('(VIP|Trusted|Helper)',torrent.group(0))== None:
                         logger.log(u"ThePirateBay Provider found result " + torrent.group('title') + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
 

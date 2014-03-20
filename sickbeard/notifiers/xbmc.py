@@ -185,6 +185,8 @@ class XBMCNotifier:
             logger.log(u"Failed to detect XBMC version for '" + host + "', check configuration and try again.", logger.DEBUG)
             return False
 
+        return False
+
 ##############################################################################
 # Legacy HTTP API (pre XBMC 12) methods
 ##############################################################################
@@ -523,7 +525,7 @@ class XBMCNotifier:
                         return True
                 else:
                     logger.log(u"Failed to detect XBMC version for '" + host + "', check configuration and try again.", logger.ERROR)
-                    result += 1
+                    result = result + 1
 
             # needed for the 'update xbmc' submenu command
             # as it only cares of the final result vs the individual ones

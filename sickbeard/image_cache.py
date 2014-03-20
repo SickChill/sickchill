@@ -261,7 +261,7 @@ class ImageCache:
                         cur_file_name = os.path.abspath(cur_provider.get_poster_path(show_obj))
                         cur_file_type = self.which_type(cur_file_name)
                         
-                        if cur_file_type is None:
+                        if cur_file_type == None:
                             logger.log(u"Unable to retrieve image type, not using the image from "+str(cur_file_name), logger.WARNING)
                             continue
     

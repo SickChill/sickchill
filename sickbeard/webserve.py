@@ -154,17 +154,17 @@ def _genericMessage(subject, message):
 
 def _getEpisode(show, season, episode):
 
-    if show is None or season is None or episode is None:
+    if show == None or season == None or episode == None:
         return "Invalid parameters"
 
     showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-    if showObj is None:
+    if showObj == None:
         return "Show not in show list"
 
     epObj = showObj.getEpisode(int(season), int(episode))
 
-    if epObj is None:
+    if epObj == None:
         return "Episode couldn't be retrieved"
 
     return epObj
@@ -177,7 +177,7 @@ def ManageMenu():
     { 'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/' },]
 
     if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
-    and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
+    and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' \
     or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
         manageMenu.append({ 'title': 'Manage Torrents', 'path': 'manage/manageTorrents/'})
 
@@ -438,7 +438,7 @@ class Manage:
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 
             for epResult in to_download[cur_indexer_id]:
-                season, episode = epResult.split('x')
+                season, episode = epResult.split('x');
 
                 show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
                 subtitles = show.getEpisode(int(season), int(episode)).downloadSubtitles()
@@ -569,10 +569,9 @@ class Manage:
         return _munge(t)
 
     @cherrypy.expose
-    def massEditSubmit(self, paused=None, flatten_folders=None, quality_preset=False, subtitles=None, anyQualities=[],
-                       bestQualities=None, toEdit=None, *args, **kwargs):
+    def massEditSubmit(self, paused=None, flatten_folders=None, quality_preset=False, subtitles=None,
+                       anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
 
-        if not bestQualities: bestQualities = []
         dir_map = {}
         for cur_arg in kwargs:
             if not cur_arg.startswith('orig_root_dir_'):
@@ -636,32 +635,32 @@ class Manage:
     @cherrypy.expose
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toMetadata=None, toSubtitle=None):
 
-        if toUpdate is not None:
+        if toUpdate != None:
             toUpdate = toUpdate.split('|')
         else:
             toUpdate = []
 
-        if toRefresh is not None:
+        if toRefresh != None:
             toRefresh = toRefresh.split('|')
         else:
             toRefresh = []
 
-        if toRename is not None:
+        if toRename != None:
             toRename = toRename.split('|')
         else:
             toRename = []
 
-        if toSubtitle is not None:
+        if toSubtitle != None:
             toSubtitle = toSubtitle.split('|')
         else:
             toSubtitle = []
 
-        if toDelete is not None:
+        if toDelete != None:
             toDelete = toDelete.split('|')
         else:
             toDelete = []
 
-        if toMetadata is not None:
+        if toMetadata != None:
             toMetadata = toMetadata.split('|')
         else:
             toMetadata = []
@@ -679,7 +678,7 @@ class Manage:
 
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(curShowID))
 
-            if showObj is None:
+            if showObj == None:
                 continue
 
             if curShowID in toDelete:
@@ -762,7 +761,7 @@ class Manage:
             t.webui_url = '/'.join(s.strip('/') for s in (t.webui_url, 'gui/'))
         if sickbeard.TORRENT_METHOD == 'download_station':
             if helpers.check_url(t.webui_url + 'download/'):
-                t.webui_url += 'download/'
+                t.webui_url = t.webui_url + 'download/'
             else:
                 t.info_download_station = '<p>To have a better experience please set the Download Station alias as <code>download</code>, you can check this setting in the Synology DSM <b>Control Panel</b> > <b>Application Portal</b>. Make sure you allow DSM to be embedded with iFrames too in <b>Control Panel</b> > <b>DSM Settings</b> > <b>Security</b>.</p><br/><p>There is more information about this available <a href="https://github.com/echel0n/SickBeard-TVRage/pull/338">here</a>.</p><br/>'
 
@@ -778,7 +777,7 @@ class Manage:
         else:
             sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [limit])
 
-        toRemove = toRemove.split("|") if toRemove is not None else []
+        toRemove = toRemove.split("|") if toRemove != None else []   
 
         for release in toRemove:
             myDB.action('DELETE FROM failed WHERE release = ?', [release])
@@ -811,9 +810,9 @@ class History:
         
         for sql_result in sqlResults:
            
-            if not any((history['show_id'] == sql_result['showid']
-                        and history['season'] == sql_result['season']
-                        and history['episode'] == sql_result['episode']
+            if not any((history['show_id'] == sql_result['showid'] \
+                        and history['season'] == sql_result['season'] \
+                        and history['episode'] == sql_result['episode'] \
                         and history['quality'] == sql_result['quality'])\
                         for history in compact):
 
@@ -1180,7 +1179,7 @@ class ConfigPostProcessing:
     @cherrypy.expose
     def testNaming(self, pattern=None, multi=None, abd=False):
 
-        if multi is not None:
+        if multi != None:
             multi = int(multi)
 
         result = naming.test_name(pattern, multi, abd)
@@ -1191,7 +1190,7 @@ class ConfigPostProcessing:
 
     @cherrypy.expose
     def isNamingValid(self, pattern=None, multi=None, abd=False):
-        if pattern is None:
+        if pattern == None:
             return "invalid"
 
         # air by date shows just need one check, we don't need to worry about season folders
@@ -1757,7 +1756,7 @@ class ConfigSubtitles:
             subtitles_finder_frequency = 1
 
         if use_subtitles == "on":
-            if sickbeard.subtitlesFinderScheduler.thread is None or not sickbeard.subtitlesFinderScheduler.thread.isAlive():
+            if sickbeard.subtitlesFinderScheduler.thread == None or not sickbeard.subtitlesFinderScheduler.thread.isAlive():
                 sickbeard.subtitlesFinderScheduler.silent = False
                 sickbeard.subtitlesFinderScheduler.initThread()
         else:
@@ -1871,7 +1870,7 @@ class HomePostProcess:
             redirect("/home/postprocess/")
         else:
             result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type, indexer=indexer)
-            if quiet is not None and int(quiet) == 1:
+            if quiet != None and int(quiet) == 1:
                 return result
 
             result = result.replace("\n","<br />\n")
@@ -2423,7 +2422,7 @@ class Home:
         host = config.clean_host(host, default_port=23053)
         
         result = notifiers.growl_notifier.test_notify(host, password)
-        if password is None or password == '':
+        if password == None or password == '':
             pw_append = ''
         else:
             pw_append = " with password: " + password
@@ -2695,12 +2694,12 @@ class Home:
     @cherrypy.expose
     def displayShow(self, show=None):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "Invalid show ID")
         else:
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-            if showObj is None:
+            if showObj == None:
                 return _genericMessage("Error", "Show not in show list")
 
         showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
@@ -2806,14 +2805,9 @@ class Home:
         return result['description'] if result else 'Episode not found.'
 
     @cherrypy.expose
-    def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None, exceptions_list=None,
-                 flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, archive_firstmatch=None):
+    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[], flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, indexerLang=None, subtitles=None, archive_firstmatch=None):
 
-        if not anyQualities: anyQualities = []
-        if not bestQualities: bestQualities = []
-        if not exceptions_list: exceptions_list = []
-        if show is None:
+        if show == None:
             errString = "Invalid show ID: " + str(show)
             if directCall:
                 return [errString]
@@ -2822,7 +2816,7 @@ class Home:
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             errString = "Unable to find the specified show: " + str(show)
             if directCall:
                 return [errString]
@@ -2948,12 +2942,12 @@ class Home:
     @cherrypy.expose
     def deleteShow(self, show=None):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "Invalid show ID")
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             return _genericMessage("Error", "Unable to find the specified show")
 
         if sickbeard.showQueueScheduler.action.isBeingAdded(showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj): # @UndefinedVariable
@@ -2967,12 +2961,12 @@ class Home:
     @cherrypy.expose
     def refreshShow(self, show=None):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "Invalid show ID")
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             return _genericMessage("Error", "Unable to find the specified show")
 
         # force the update from the DB
@@ -2989,12 +2983,12 @@ class Home:
     @cherrypy.expose
     def updateShow(self, show=None, force=0):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "Invalid show ID")
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             return _genericMessage("Error", "Unable to find the specified show")
 
         # force the update
@@ -3012,12 +3006,12 @@ class Home:
     @cherrypy.expose
     def subtitleShow(self, show=None, force=0):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "Invalid show ID")
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             return _genericMessage("Error", "Unable to find the specified show")
 
         # search and download subtitles
@@ -3055,7 +3049,7 @@ class Home:
     @cherrypy.expose
     def setStatus(self, show=None, eps=None, status=None, direct=False):
 
-        if show is None or eps is None or status is None:
+        if show == None or eps == None or status == None:
             errMsg = "You must specify a show and at least one episode"
             if direct:
                 ui.notifications.error('Error', errMsg)
@@ -3073,7 +3067,7 @@ class Home:
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             errMsg = "Error", "Show not in show list"
             if direct:
                 ui.notifications.error('Error', errMsg)
@@ -3084,7 +3078,7 @@ class Home:
         wanted_segments = []
         failed_segments = {}
 
-        if eps is not None:
+        if eps != None:
 
             sql_l = []
             for curEp in eps.split('|'):
@@ -3095,7 +3089,7 @@ class Home:
 
                 epObj = showObj.getEpisode(int(epInfo[0]), int(epInfo[1]))
 
-                if epObj is None:
+                if epObj == None:
                     return _genericMessage("Error", "Episode couldn't be retrieved")
 
                 if int(status) in (WANTED, FAILED):
@@ -3161,12 +3155,12 @@ class Home:
     @cherrypy.expose
     def testRename(self, show=None):
 
-        if show is None:
+        if show == None:
             return _genericMessage("Error", "You must specify a show")
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if showObj == None:
             return _genericMessage("Error", "Show not in show list")
 
         try:
@@ -3207,13 +3201,13 @@ class Home:
     @cherrypy.expose
     def doRename(self, show=None, eps=None):
 
-        if show is None or eps is None:
+        if show == None or eps == None:
             errMsg = "You must specify a show and at least one episode"
             return _genericMessage("Error", errMsg)
 
         show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if show_obj is None:
+        if show_obj == None:
             errMsg = "Error", "Show not in show list"
             return _genericMessage("Error", errMsg)
 
@@ -3224,7 +3218,7 @@ class Home:
 
         myDB = db.DBConnection()
 
-        if eps is None:
+        if eps == None:
             redirect("/home/displayShow?show=" + show)
 
         for curEp in eps.split('|'):
@@ -3264,7 +3258,7 @@ class Home:
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item) # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
-        while ep_queue_item.success is None: # @UndefinedVariable
+        while ep_queue_item.success == None: # @UndefinedVariable
             time.sleep(1)
 
         # return the correct json value
@@ -3362,7 +3356,7 @@ class Home:
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item) # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
-        while ep_queue_item.success is None: # @UndefinedVariable
+        while ep_queue_item.success == None: # @UndefinedVariable
             time.sleep(1)
 
         # return the correct json value
@@ -3642,7 +3636,7 @@ class WebInterface:
                 air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"], show['network'])
         
                 # Create event for episode
-                ical += 'BEGIN:VEVENT\r\n'
+                ical = ical + 'BEGIN:VEVENT\r\n'
                 ical = ical + 'DTSTART;VALUE=DATE:' + str(air_date_time.date()).replace("-", "") + '\r\n'
                 ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show['show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(episode['season']) + '\r\n'
@@ -3651,7 +3645,7 @@ class WebInterface:
                 else:
                     ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\r\n'
                 ical = ical + 'LOCATION:' + 'Episode ' + str(episode['episode']) + ' - Season ' + str(episode['season']) + '\r\n'
-                ical += 'END:VEVENT\r\n'
+                ical = ical + 'END:VEVENT\r\n'
 
         # Ending the iCal
         ical += 'END:VCALENDAR'

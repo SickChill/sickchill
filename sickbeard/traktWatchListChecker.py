@@ -86,7 +86,7 @@ class TraktChecker():
         Adds a new show with the default settings
         """
         showObj = helpers.findCertainShow(sickbeard.showList, int(indexerid))
-        if showObj is not None:
+        if showObj != None:
             return
         logger.log(u"Adding show " + indexerid)
         root_dirs = sickbeard.ROOT_DIRS.split('|')
@@ -106,7 +106,7 @@ class TraktChecker():
         Sets an episode to wanted, only is it is currently skipped
         """
         epObj = show.getEpisode(int(s), int(e))
-        if epObj is None:
+        if epObj == None:
             return
         with epObj.lock:
             if epObj.status != SKIPPED:

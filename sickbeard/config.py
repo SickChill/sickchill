@@ -174,7 +174,7 @@ def change_VERSION_NOTIFY(version_notify):
 
     sickbeard.VERSION_NOTIFY = version_notify
 
-    if not version_notify:
+    if version_notify == False:
         sickbeard.NEWEST_VERSION_STRING = None
 
     if oldSetting == False and version_notify == True:
@@ -265,7 +265,7 @@ def clean_url(url):
             url = 'http://' + url
 
         if not url.endswith('/'):
-            url += '/'
+            url = url + '/'
 
     else:
         url = ''

@@ -75,6 +75,34 @@ class rTorrentAPI(GenericClient):
         except:
             return False
 
+        if not self.auth:
+            return False
+
+        if not result:
+            return False
+
+        try:
+            # Send magnet to rTorrent
+            torrent = self.auth.load_magnet(result.url, result.hash)
+
+            if not torrent:
+                return False
+
+            # Set label
+            if sickbeard.TORRENT_LABEL:
+                torrent.set_custom(1, sickbeard.TORRENT_LABEL.lower())
+
+            if sickbeard.TORRENT_PATH:
+                torrent.set_directory(sickbeard.TORRENT_PATH)
+
+            # Start torrent
+            torrent.start()
+
+            return True
+
+        except:
+            return False
+
     def _add_torrent_file(self, result):
         filedata = None
 

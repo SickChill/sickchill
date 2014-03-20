@@ -58,10 +58,10 @@ class GenericQueue(object):
     def run(self):
 
         # only start a new task if one isn't already going
-        if self.thread is None or self.thread.isAlive() == False:
+        if self.thread == None or self.thread.isAlive() == False:
 
             # if the thread is dead then the current item should be finished
-            if self.currentItem is not None:
+            if self.currentItem != None:
                 self.currentItem.finish()
                 self.currentItem = None
 

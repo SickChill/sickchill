@@ -75,7 +75,7 @@ class BacklogSearcher:
         else:
             show_list = sickbeard.showList
 
-        if self.amActive:
+        if self.amActive == True:
             logger.log(u"Backlog is still running, not starting it again", logger.DEBUG)
             return
 
@@ -147,7 +147,7 @@ class BacklogSearcher:
 
         if len(sqlResults) == 0:
             lastBacklog = 1
-        elif sqlResults[0]["last_backlog"] is None or sqlResults[0]["last_backlog"] == "":
+        elif sqlResults[0]["last_backlog"] == None or sqlResults[0]["last_backlog"] == "":
             lastBacklog = 1
         else:
             lastBacklog = int(sqlResults[0]["last_backlog"])

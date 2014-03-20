@@ -53,10 +53,10 @@ class ProwlNotifier:
         if not sickbeard.USE_PROWL and not force:
                 return False
         
-        if prowl_api is None:
+        if prowl_api == None:
             prowl_api = sickbeard.PROWL_API
             
-        if prowl_priority is None:
+        if prowl_priority == None:
             prowl_priority = sickbeard.PROWL_PRIORITY
         
             

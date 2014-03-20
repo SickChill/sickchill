@@ -43,13 +43,13 @@ def sendNZB(nzb):
 
     # set up a dict with the URL params in it
     params = {}
-    if sickbeard.SAB_USERNAME is not None:
+    if sickbeard.SAB_USERNAME != None:
         params['ma_username'] = sickbeard.SAB_USERNAME
-    if sickbeard.SAB_PASSWORD is not None:
+    if sickbeard.SAB_PASSWORD != None:
         params['ma_password'] = sickbeard.SAB_PASSWORD
-    if sickbeard.SAB_APIKEY is not None:
+    if sickbeard.SAB_APIKEY != None:
         params['apikey'] = sickbeard.SAB_APIKEY
-    if sickbeard.SAB_CATEGORY is not None:
+    if sickbeard.SAB_CATEGORY != None:
         params['cat'] = sickbeard.SAB_CATEGORY
 
     # use high priority if specified (recently aired episode)
@@ -105,7 +105,7 @@ def sendNZB(nzb):
         return False
 
     # this means we couldn't open the connection or something just as bad
-    if f is None:
+    if f == None:
         logger.log(u"No data returned from SABnzbd, NZB not sent", logger.ERROR)
         return False
 
@@ -173,7 +173,7 @@ def _sabURLOpenSimple(url):
     except httplib.InvalidURL, e:
         logger.log(u"Invalid SAB host, check your config: " + ex(e), logger.ERROR)
         return False, "Invalid SAB host"
-    if f is None:
+    if f == None:
         logger.log(u"No data returned from SABnzbd", logger.ERROR)
         return False, "No data returned from SABnzbd"
     else:

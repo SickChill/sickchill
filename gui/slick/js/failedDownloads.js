@@ -1,8 +1,7 @@
 $(document).ready(function(){
   $('#submitMassRemove').click(function(){
 
-    var removeArr = new Array();
-      ;
+    var removeArr = new Array()
 
     $('.removeCheck').each(function() {
       if (this.checked == true) {
@@ -13,7 +12,7 @@ $(document).ready(function(){
     if (removeArr.length == 0)
       return false
 
-    url = sbRoot + '/manage/failedDownloads?toRemove=' + removeArr.join('|');
+    url = sbRoot + '/manage/failedDownloads?toRemove='+removeArr.join('|')
 
     window.location.href = url
 

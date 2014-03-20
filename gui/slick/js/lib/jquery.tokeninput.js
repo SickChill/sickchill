@@ -96,29 +96,29 @@ var KEY = {
 
 // Additional public (exposed) methods
 var methods = {
-    init: function (url_or_data_or_function, options) {
+    init: function(url_or_data_or_function, options) {
         var settings = $.extend({}, DEFAULT_SETTINGS, options || {});
 
         return this.each(function () {
             $(this).data("tokenInputObject", new $.TokenList(this, url_or_data_or_function, settings));
         });
     },
-    clear: function () {
+    clear: function() {
         this.data("tokenInputObject").clear();
         return this;
     },
-    add: function (item) {
+    add: function(item) {
         this.data("tokenInputObject").add(item);
         return this;
     },
-    remove: function (item) {
+    remove: function(item) {
         this.data("tokenInputObject").remove(item);
         return this;
     },
-    get: function () {
-        return this.data("tokenInputObject").getTokens();
-    }
-};
+    get: function() {
+    	return this.data("tokenInputObject").getTokens();
+   	}
+}
 
 // Expose the .tokenInput function to jQuery as a plugin
 $.fn.tokenInput = function (method) {
@@ -384,20 +384,20 @@ $.TokenList = function (input, url_or_data, settings) {
     // Public functions
     //
 
-    this.clear = function () {
-        token_list.children("li").each(function () {
+    this.clear = function() {
+        token_list.children("li").each(function() {
             if ($(this).children("input").length === 0) {
                 delete_token($(this));
             }
         });
-    };
+    }
 
-    this.add = function (item) {
+    this.add = function(item) {
         add_token(item);
-    };
+    }
 
-    this.remove = function (item) {
-        token_list.children("li").each(function () {
+    this.remove = function(item) {
+        token_list.children("li").each(function() {
             if ($(this).children("input").length === 0) {
                 var currToken = $(this).data("tokeninput");
                 var match = true;
@@ -412,11 +412,11 @@ $.TokenList = function (input, url_or_data, settings) {
                 }
             }
         });
-    };
+    }
     
-    this.getTokens = function () {
-        return saved_tokens;
-    };
+    this.getTokens = function() {
+   		return saved_tokens;
+   	}
 
     //
     // Private functions

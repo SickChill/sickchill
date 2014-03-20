@@ -261,7 +261,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             indexerid.text = myShow['id']
 
         indexer = etree.SubElement(tv_node, "indexer")
-        if show_obj.indexer is not None:
+        if show_obj.indexer != None:
             indexer.text = show_obj.indexer
 
         SeriesName = etree.SubElement(tv_node, "SeriesName")
@@ -363,7 +363,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 cur_actor_type.text = "Actor"
                 cur_actor_role = etree.SubElement(cur_actor, "Role")
                 cur_actor_role_text = actor['role']
-                if cur_actor_role_text is not None:
+                if cur_actor_role_text != None:
                     cur_actor_role.text = cur_actor_role_text
 
         helpers.indentXML(tv_node)
@@ -433,7 +433,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 episode = rootNode
 
                 EpisodeName = etree.SubElement(episode, "EpisodeName")
-                if curEpToWrite.name is not None:
+                if curEpToWrite.name != None:
                     EpisodeName.text = curEpToWrite.name
                 else:
                     EpisodeName.text = ""
@@ -462,7 +462,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 MetadataType.text = "Episode"
 
                 Overview = etree.SubElement(episode, "Overview")
-                if curEpToWrite.description is not None:
+                if curEpToWrite.description != None:
                     Overview.text = curEpToWrite.description
                 else:
                     Overview.text = ""
@@ -471,7 +471,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                     Rating = etree.SubElement(episode, "Rating")
                     if getattr(myEp, 'rating', None) is not None:
                         rating_text = myEp['rating']
-                    if rating_text is not None:
+                    if rating_text != None:
                         Rating.text = rating_text
 
                     IMDB_ID = etree.SubElement(episode, "IMDB_ID")
