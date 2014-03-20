@@ -204,13 +204,12 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        with closing(requests.get(url, stream=True)) as r:
-            with open(filename, 'wb') as fp:
-                for chunk in r.iter_content(chunk_size=(16 *1024)):
-                    if chunk:
-                        fp.write(chunk)
-                        fp.flush()
-                fp.close()
+        r = requests.get(url, stream=True)
+        with open(filename, 'wb') as fp:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    fp.write(chunk)
+                    fp.flush()
 
     except requests.HTTPError, e:
         _remove_file_failed(filename)

@@ -243,7 +243,6 @@ def _xem_refresh(indexer_id):
 
     try:
         logger.log(u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, indexer,), logger.DEBUG)
-        #data = getURL('http://thexem.de/map/all?id=%s&origin=tvdb&destination=scene' % (indexer_id,))
         data = None
         if 'Tvdb' in indexer:
             data = requests.get('http://thexem.de/map/all?id=%s&origin=tvdb&destination=scene' % (indexer_id,)).json()
