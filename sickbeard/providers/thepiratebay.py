@@ -289,27 +289,26 @@ class ThePirateBayProvider(generic.TorrentProvider):
     def getURL(self, url, headers=None):
 
         if not headers:
-            headers = []
+            headers = {}
 
         # Glype Proxies does not support Direct Linking.
         # We have to fake a search on the proxy site to get data
         if self.proxy.isEnabled():
-            headers.append(('Referer', self.proxy.getProxyURL()))
-            
+            headers.update({'referer': self.proxy.getProxyURL()})
+
         result = None
 
         try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2]) # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            result = helpers.getURL(url, headers=headers)
-        except (urllib2.HTTPError, IOError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
+            r = requests.get(url, headers=headers)
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+            logger.log(u"Error loading "+self.name+" URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
             return None
 
-        return result
+        if r.status_code != 200:
+            logger.log(self.name + u" page requested with url " + url +" returned status code is " + str(r.status_code) + ': ' + requests.clients.http_error_code[r.status_code], logger.WARNING)
+            return None
+
+        return r.content
 
     def downloadResult(self, result):
         """
@@ -340,7 +339,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 
             helpers.chmodAsParent(magnetFileName)
         
-        except EnvironmentError:
+        except EnvironmentError, e:
             logger.log("Unable to save the file: " + ex(e), logger.ERROR)
             return False
         

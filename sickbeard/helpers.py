@@ -198,7 +198,7 @@ Returns a byte-string retrieved from the url provider.
 
 def _remove_file_failed(file):
     try:
-        os.remove(file)
+        ek.ek(os.remove,file)
     except:
         pass
 
@@ -687,8 +687,8 @@ def parse_json(data):
 
     try:
         parsedJSON = json.loads(data)
-    except ValueError:
-        logger.log(u"Error trying to decode json data:" + data, logger.ERROR)
+    except ValueError, e:
+        logger.log(u"Error trying to decode json data. Error: " + ex(e), logger.DEBUG)
         return None
 
     return parsedJSON
@@ -710,7 +710,7 @@ def parse_xml(data, del_xmlns=False):
     try:
         parsedXML = etree.fromstring(data)
     except Exception, e:
-        logger.log(u"Error trying to parse xml data: " + data + " to Elementtree, Error: " + ex(e), logger.DEBUG)
+        logger.log(u"Error trying to parse xml data. Error: " + ex(e), logger.DEBUG)
         parsedXML = None
 
     return parsedXML
@@ -941,3 +941,21 @@ def suffix(d):
 
 def custom_strftime(format, t):
     return t.strftime(format).replace('{S}', str(t.day) + suffix(t.day))
+
+def is_hidden_folder(folder):
+    """
+    Returns True if folder is hidden.
+    On Linux based systems hidden folders start with . (dot)
+    folder: Full path of folder to check
+    """
+    if ek.ek(os.path.isdir, folder):
+        if ek.ek(os.path.basename, folder).startswith('.'):
+            return True
+
+    return False
+
+def real_path(path):
+    """
+    Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
+    """
+    return ek.ek(os.path.normpath, ek.ek(os.path.normcase, ek.ek(os.path.realpath, path)))

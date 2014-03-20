@@ -21,7 +21,7 @@ from __future__ import with_statement
 import sys
 import os
 import traceback
-import urllib, urllib2, urlparse
+import urllib, urlparse
 import re
 import datetime
 
@@ -239,7 +239,7 @@ class PublicHDProvider(generic.TorrentProvider):
                 
             helpers.chmodAsParent(magnetFileName)
         
-        except EnvironmentError:
+        except EnvironmentError, e:
             logger.log("Unable to save the file: " + ex(e), logger.ERROR)
             return False
         

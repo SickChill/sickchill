@@ -42,7 +42,7 @@ from sickbeard import clients
 from sickbeard import tv
 
 from lib import requests
-from bs4 import BeautifulSoup
+from lib.bs4 import BeautifulSoup
 from lib.unidecode import unidecode
 
 class KATProvider(generic.TorrentProvider):
@@ -201,11 +201,7 @@ class KATProvider(generic.TorrentProvider):
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(allPossibleShowNames(ep_obj.show)):
-                ep_string = sanitizeSceneName(show_name) +' '+ \
-                sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.season, 'episodenumber': ep_obj.episode} +'|'+\
-                sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.season, 'episodenumber': ep_obj.episode} +'|'+\
-                sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep_obj.season, 'episodenumber': ep_obj.episode} + ' %s category:tv' %add_string \
-                
+                ep_string = sanitizeSceneName(show_name) +' '+'season:'+str(ep_obj.season)+' episode:'+str(ep_obj.episode)
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
     
         return [search_string]
@@ -341,7 +337,7 @@ class KATProvider(generic.TorrentProvider):
                 
             helpers.chmodAsParent(magnetFileName)
         
-        except EnvironmentError:
+        except EnvironmentError, e:
             logger.log("Unable to save the file: " + ex(e), logger.ERROR)
             return False
         
@@ -364,7 +360,7 @@ class KATProvider(generic.TorrentProvider):
         
         for sqlShow in sqlResults:
             curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
-            curEp = curShow.getEpisode(int(sqlShow["season"]),int(sqlShow["episode"]))
+            curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
             searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0]):
