@@ -1358,12 +1358,12 @@ class TVEpisode(object):
 
         self.description = getattr(myEp, 'overview', "")
 
-        try:
-            firstaired =  getattr(myEp, 'firstaired', None)
-            if firstaired is None: raise ValueError
+        firstaired =  getattr(myEp, 'firstaired', None)
+        if firstaired is None or "0000-00-00":
+            firstaired = str(datetime.date.fromordinal(1))
+        rawAirdate = [int(x) for x in firstaired.split("-")]
 
-            firstaired = re.sub("(0{4})([-]0{2}){1,}", str(datetime.date.fromordinal(1)), firstaired)
-            rawAirdate = [int(x) for x in firstaired.split("-")]
+        try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except ValueError:
             logger.log(u"Malformed air date retrieved from " + self.indexer + " ("+self.show.name+" - "+str(season)+"x"+str(episode)+")", logger.ERROR)
