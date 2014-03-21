@@ -79,9 +79,7 @@ def find_scene_numbering(indexer_id, season, episode):
     rows = myDB.select("SELECT scene_season, scene_episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?", [indexer, indexer_id, season, episode])
     if rows:
         return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
-    else:
-        return (season, episode)
-    
+
 def get_indexer_numbering(indexer_id, sceneSeason, sceneEpisode, fallback_to_xem=True):
     """
     Returns a tuple, (season, episode) with the TVDB and TVRAGE numbering for (sceneSeason, sceneEpisode)

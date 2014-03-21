@@ -44,7 +44,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     """
     Scans through the files in dirName and processes whatever media files it finds
 
-    dirName or dir: The folder name to look in
+    dirName: The folder name to look in
     nzbName: The NZB name which resulted in this folder being downloaded
     force: True to postprocess already postprocessed files
     failed: Boolean for whether or not the download failed

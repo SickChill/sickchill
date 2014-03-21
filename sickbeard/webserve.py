@@ -57,7 +57,7 @@ from sickbeard.common import indexerStrings
 from sickbeard.exceptions import ex
 from sickbeard.webapi import Api
 from sickbeard.scene_exceptions import get_scene_exceptions
-from sickbeard.scene_numbering import find_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, get_xem_numbering_for_show
+from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, get_xem_numbering_for_show
 from sickbeard.providers.generic import TorrentProvider
 
 from sickbeard.indexers.indexer_api import indexerApi
@@ -3326,7 +3326,7 @@ class Home:
             
             set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
             
-        sn = find_scene_numbering(show, forSeason, forEpisode)
+        sn = get_scene_numbering(show, forSeason, forEpisode)
         if sn:
             (result['sceneSeason'], result['sceneEpisode']) = sn
         else:
