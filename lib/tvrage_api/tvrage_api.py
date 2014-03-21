@@ -395,7 +395,7 @@ class TVRage:
 
                 if elm.tag in 'firstaired':
                     try:
-                        elm.text = re.sub("(0{4})([-]0{2}){1,}", str(dt.date.fromordinal(1)), elm.text)
+                        if elm.text is "0000-00-00": elm.text = str(dt.date.fromordinal(1))
                         elm.text = re.sub("([-]0{2}){1,}", "", elm.text)
                         fixDate = parse(elm.text, fuzzy=True).date()
                         elm.text = fixDate.strftime("%Y-%m-%d")
