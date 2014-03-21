@@ -1848,8 +1848,8 @@ class HomePostProcess:
     @cherrypy.expose
     def processEpisode(self, dir=None, dirName=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", indexer="auto"):
 
-        # backwards compatibility for original param 'dirName' that has been renamed to 'dir'
-        if dirName and dir is None: dir = dirName
+        # auto-detect dirParam style
+        dirParam = dir if dir is not None else dirName if not None else redirect("/home/postprocess/")
 
         if failed == "0":
             failed = False
@@ -1866,15 +1866,12 @@ class HomePostProcess:
         else:
             is_priority = False
 
-        if not dir:
-            redirect("/home/postprocess/")
-        else:
-            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type, indexer=indexer)
-            if quiet != None and int(quiet) == 1:
-                return result
+        result = processTV.processDir(dirParam, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type, indexer=indexer)
+        if quiet != None and int(quiet) == 1:
+            return result
 
-            result = result.replace("\n","<br />\n")
-            return _genericMessage("Postprocessing results", result)
+        result = result.replace("\n","<br />\n")
+        return _genericMessage("Postprocessing results", result)
 
 
 class NewHomeAddShows:
