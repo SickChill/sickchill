@@ -644,3 +644,21 @@ class AddSceneNumbering(AddArchiveFirstMatchOption):
             "CREATE TABLE scene_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
 
         self.incDBVersion()
+
+
+class ConvertIndexerToInteger(AddSceneNumbering):
+    def test(self):
+        return self.checkDBVersion() >= 28
+
+    def execute(self):
+        backupDatabase(28)
+
+        ql = []
+        logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
+        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        self.connection.mass_action(ql)
+
+        self.incDBVersion()

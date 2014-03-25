@@ -103,3 +103,11 @@ class ConvertSceneNamesToIndexerID(ConvertSceneExceptionsToIndexerID):
         self.connection.action("INSERT INTO scene_names(indexer_id, name) SELECT tvdb_id, name FROM tmp_scene_names")
         self.connection.action("DROP TABLE tmp_scene_names")
 
+class ConvertIndexerToInteger(ConvertSceneNamesToIndexerID):
+    def execute(self):
+        ql = []
+        ql.append(["UPDATE xem_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        ql.append(["UPDATE xem_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        ql.append(["UPDATE xem_refresh SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        ql.append(["UPDATE xem_refresh SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        self.connection.mass_action(ql)
