@@ -28,10 +28,8 @@ from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 from sickbeard import db
 
-from indexers.indexer_api import indexerApi
 
 class ShowUpdater():
-
     def __init__(self):
         self.updateInterval = datetime.timedelta(hours=1)
 
@@ -55,8 +53,8 @@ class ShowUpdater():
 
         # clean out cache directory, remove everything > 12 hours old
         if sickbeard.CACHE_DIR:
-            for indexer in indexerApi().indexers:
-                cache_dir = indexerApi(indexer=indexer).cache
+            for indexer in sickbeard.indexerApi().indexers:
+                cache_dir = sickbeard.indexerApi(indexer).config['api_params']['cache']
                 logger.log(u"Trying to clean cache folder " + cache_dir)
 
                 # Does our cache_dir exists
@@ -71,13 +69,15 @@ class ShowUpdater():
                         cache_file_path = ek.ek(os.path.join, cache_dir, cache_file)
 
                         if ek.ek(os.path.isfile, cache_file_path):
-                            cache_file_modified = datetime.datetime.fromtimestamp(ek.ek(os.path.getmtime, cache_file_path))
+                            cache_file_modified = datetime.datetime.fromtimestamp(
+                                ek.ek(os.path.getmtime, cache_file_path))
 
                             if update_datetime - cache_file_modified > max_age:
                                 try:
                                     ek.ek(os.remove, cache_file_path)
                                 except OSError, e:
-                                    logger.log(u"Unable to clean " + cache_dir + ": " + repr(e) + " / " + str(e), logger.WARNING)
+                                    logger.log(u"Unable to clean " + cache_dir + ": " + repr(e) + " / " + str(e),
+                                               logger.WARNING)
                                     break
 
         # select 10 'Ended' tv_shows updated more than 90 days ago to include in this update
@@ -86,10 +86,12 @@ class ShowUpdater():
 
         myDB = db.DBConnection()
         # last_update_date <= 90 days, sorted ASC because dates are ordinal
-        sql_result = myDB.select("SELECT indexer_id FROM tv_shows WHERE status = 'Ended' AND last_update_indexer <= ? ORDER BY last_update_indexer ASC LIMIT 10;", [stale_update_date])
+        sql_result = myDB.select(
+            "SELECT indexer_id FROM tv_shows WHERE status = 'Ended' AND last_update_indexer <= ? ORDER BY last_update_indexer ASC LIMIT 10;",
+            [stale_update_date])
 
         for cur_result in sql_result:
-            stale_should_update.append(cur_result['indexer_id'])
+            stale_should_update.append(int(cur_result['indexer_id']))
 
         # start update process
         piList = []
@@ -100,7 +102,9 @@ class ShowUpdater():
                 if curShow.should_update(update_date=update_date) or curShow.indexerid in stale_should_update:
                     curQueueItem = sickbeard.showQueueScheduler.action.updateShow(curShow, True)  # @UndefinedVariable
                 else:
-                    logger.log(u"Not updating episodes for show " + curShow.name + " because it's marked as ended and last/next episode is not within the grace period.", logger.DEBUG)
+                    logger.log(
+                        u"Not updating episodes for show " + curShow.name + " because it's marked as ended and last/next episode is not within the grace period.",
+                        logger.DEBUG)
                     curQueueItem = sickbeard.showQueueScheduler.action.refreshShow(curShow, True)  # @UndefinedVariable
 
                 piList.append(curQueueItem)

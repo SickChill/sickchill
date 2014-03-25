@@ -20,6 +20,7 @@ import sickbeard
 from sickbeard import logger
 from lib.trakt import *
 
+
 class TraktNotifier:
     """
     A "notifier" for trakt.tv which keeps track of what has and hasn't been added to your library.
@@ -30,7 +31,7 @@ class TraktNotifier:
 
     def notify_download(self, ep_name):
         pass
-    
+
     def notify_subtitle_download(self, ep_name, lang):
         pass
 
@@ -40,20 +41,20 @@ class TraktNotifier:
         
         ep_obj: The TVEpisode object to add to trakt
         """
-        
+
         if sickbeard.USE_TRAKT:
-            
+
             # URL parameters
             data = {
                 'indexer_id': ep_obj.show.indexerid,
                 'title': ep_obj.show.name,
                 'year': ep_obj.show.startyear,
-                'episodes': [ {
-                    'season': ep_obj.season,
-                    'episode': ep_obj.episode
-                    } ]
-                }
-            
+                'episodes': [{
+                                 'season': ep_obj.season,
+                                 'episode': ep_obj.episode
+                             }]
+            }
+
             if data is not None:
                 TraktCall("show/episode/library/%API%", self._api(), self._username(), self._password(), data)
                 if sickbeard.TRAKT_REMOVE_WATCHLIST:
@@ -70,7 +71,7 @@ class TraktNotifier:
         
         Returns: True if the request succeeded, False otherwise
         """
-        
+
         data = TraktCall("account/test/%API%", api, username, password, {})
         if data["status"] == "success":
             return True

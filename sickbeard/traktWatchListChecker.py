@@ -26,6 +26,7 @@ from sickbeard import search_queue
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from lib.trakt import *
 
+
 class TraktChecker():
     def __init__(self):
         self.todoWanted = []
@@ -43,7 +44,8 @@ class TraktChecker():
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
+                              sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
         if watchlist is None:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return
@@ -60,19 +62,20 @@ class TraktChecker():
                     self.startBacklog(newShow)
                 else:
                     self.todoWanted.append((int(show["indexer_id"]), 1, 1))
-            self.todoWanted.append((int(show["indexer_id"]), -1, -1)) #used to pause new shows if the settings say to
+            self.todoWanted.append((int(show["indexer_id"]), -1, -1))  #used to pause new shows if the settings say to
 
     def updateEpisodes(self):
         """
         Sets episodes to wanted that are in trakt watchlist
         """
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
+                              sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
         if watchlist is None:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return
         for show in watchlist:
-            self.addDefaultShow(show["indexer_id"], show["title"], SKIPPED)
+            self.addDefaultShow(int(show["indexer_id"]), show["title"], SKIPPED)
             newShow = helpers.findCertainShow(sickbeard.showList, int(show["indexer_id"]))
             for episode in show["episodes"]:
                 if newShow is not None:
@@ -88,7 +91,7 @@ class TraktChecker():
         showObj = helpers.findCertainShow(sickbeard.showList, int(indexerid))
         if showObj != None:
             return
-        logger.log(u"Adding show " + indexerid)
+        logger.log(u"Adding show " + str(indexerid))
         root_dirs = sickbeard.ROOT_DIRS.split('|')
         location = root_dirs[int(root_dirs[0]) + 1]
 
@@ -99,7 +102,9 @@ class TraktChecker():
             return
         else:
             helpers.chmodAsParent(showPath)
-        sickbeard.showQueueScheduler.action.addShow(int(indexerid), showPath, status, int(sickbeard.QUALITY_DEFAULT), int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
+        sickbeard.showQueueScheduler.action.addShow(int(showObj.indexer), int(indexerid), showPath, status,
+                                                    int(sickbeard.QUALITY_DEFAULT),
+                                                    int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
 
     def setEpisodeToWanted(self, show, s, e):
         """
@@ -111,7 +116,7 @@ class TraktChecker():
         with epObj.lock:
             if epObj.status != SKIPPED:
                 return
-            logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to wanted")
+            logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
             # figure out what segment the episode is in and remember it so we can backlog it
             if epObj.show.air_by_date:
                 ep_segment = str(epObj.airdate)[:7]
@@ -121,7 +126,7 @@ class TraktChecker():
             epObj.status = WANTED
             epObj.saveToDB()
             backlog = (show, ep_segment)
-            if self.todoBacklog.count(backlog)==0:
+            if self.todoBacklog.count(backlog) == 0:
                 self.todoBacklog.append(backlog)
 
 
@@ -140,7 +145,8 @@ class TraktChecker():
         for segment in segments:
             cur_backlog_queue_item = search_queue.BacklogQueueItem(show, segment[1])
             sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
-            logger.log(u"Starting backlog for " + show.name + " season " + str(segment[1]) + " because some eps were set to wanted")
+            logger.log(u"Starting backlog for " + show.name + " season " + str(
+                segment[1]) + " because some eps were set to wanted")
             self.todoBacklog.remove(segment)
 
 

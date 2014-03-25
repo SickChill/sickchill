@@ -21,56 +21,57 @@ import re
 import sickbeard
 from sickbeard.clients.generic import GenericClient
 
+
 class uTorrentAPI(GenericClient):
-    
     def __init__(self, host=None, username=None, password=None):
-        
+
         super(uTorrentAPI, self).__init__('uTorrent', host, username, password)
-      
+
         self.url = self.host + 'gui/'
-            
+
     def _request(self, method='get', params={}, files=None):
 
-        params.update({'token':self.auth})
+        params.update({'token': self.auth})
         return super(uTorrentAPI, self)._request(method=method, params=params, files=files)
 
     def _get_auth(self):
 
-        try: 
+        try:
             self.response = self.session.get(self.url + 'token.html')
             self.auth = re.findall("<div.*?>(.*?)</", self.response.text)[0]
-        except:    
+        except:
             return None
-            
+
         return self.auth if not self.response.status_code == 404 else None
-      
+
     def _add_torrent_uri(self, result):
 
-        params={'action':'add-url', 's': result.url}
+        params = {'action': 'add-url', 's': result.url}
         return self._request(params=params)
 
     def _add_torrent_file(self, result):
 
-        params = {'action':'add-file'}
-        files={'torrent_file': (result.name + '.torrent', result.content)}
-        return  self._request(method='post', params=params, files=files)
+        params = {'action': 'add-file'}
+        files = {'torrent_file': (result.name + '.torrent', result.content)}
+        return self._request(method='post', params=params, files=files)
 
     def _set_torrent_label(self, result):
-        
-        params = {'action':'setprops', 
-                  'hash':result.hash, 
-                  's':'label', 
-                  'v':sickbeard.TORRENT_LABEL
-                  }
+
+        params = {'action': 'setprops',
+                  'hash': result.hash,
+                  's': 'label',
+                  'v': sickbeard.TORRENT_LABEL
+        }
         return self._request(params=params)
-    
+
     def _set_torrent_pause(self, result):
 
         if sickbeard.TORRENT_PAUSED:
-            params = {'action':'pause', 'hash':result.hash}
+            params = {'action': 'pause', 'hash': result.hash}
         else:
-            params = {'action':'start', 'hash':result.hash}
-        
+            params = {'action': 'start', 'hash': result.hash}
+
         return self._request(params=params)
-        
+
+
 api = uTorrentAPI()       

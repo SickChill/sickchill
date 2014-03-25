@@ -31,14 +31,10 @@ from sickbeard import history
 
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality
 
-
-from sickbeard.indexers import indexer_api, indexer_exceptions
-
 from name_parser.parser import NameParser, InvalidNameException
 
 
 class ProperFinder():
-
     def __init__(self):
         self.updateInterval = datetime.timedelta(hours=1)
 
@@ -56,7 +52,7 @@ class ProperFinder():
         dayDiff = (datetime.date.today() - self._get_lastProperSearch()).days
 
         # if it's less than an interval after the update time then do an update
-        if hourDiff >= 0 and hourDiff < self.updateInterval.seconds / 3600 or dayDiff >=1:
+        if hourDiff >= 0 and hourDiff < self.updateInterval.seconds / 3600 or dayDiff >= 1:
             logger.log(u"Beginning the search for new propers")
         else:
             return
@@ -64,7 +60,7 @@ class ProperFinder():
         propers = self._getProperList()
 
         self._downloadPropers(propers)
-        
+
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
     def _getProperList(self):
@@ -110,7 +106,9 @@ class ProperFinder():
                 continue
 
             if not parse_result.episode_numbers:
-                logger.log(u"Ignoring " + curProper.name + " because it's for a full season rather than specific episode", logger.DEBUG)
+                logger.log(
+                    u"Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
+                    logger.DEBUG)
                 continue
 
             # populate our Proper instance
@@ -138,7 +136,9 @@ class ProperFinder():
 
                     # if it matches
                     if genericName == self._genericName(curSceneName):
-                        logger.log(u"Successful match! Result " + parse_result.series_name + " matched to show " + curShow.name, logger.DEBUG)
+                        logger.log(
+                            u"Successful match! Result " + parse_result.series_name + " matched to show " + curShow.name,
+                            logger.DEBUG)
 
                         # set the indexerid in the db to the show's indexerid
                         curProper.indexerid = curShow.indexerid
@@ -157,7 +157,8 @@ class ProperFinder():
                 continue
 
             if not show_name_helpers.filterBadReleases(curProper.name):
-                logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, igoring it", logger.DEBUG)
+                logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, igoring it",
+                           logger.DEBUG)
                 continue
 
             # if we have an air-by-date show then get the real season/episode numbers
@@ -175,18 +176,21 @@ class ProperFinder():
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
                 try:
-                    t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
 
                     epObj = t[curProper.indexerid].airedOn(curProper.episode)[0]
 
                     curProper.season = int(epObj["seasonnumber"])
                     curProper.episodes = [int(epObj["episodenumber"])]
-                except indexer_exceptions.indexer_episodenotfound:
-                    logger.log(u"Unable to find episode with date " + str(curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
+                except sickbeard.indexer_episodenotfound:
+                    logger.log(u"Unable to find episode with date " + str(
+                        curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
                     continue
 
             # check if we actually want this proper (if it's the right quality)
-            sqlResults = db.DBConnection().select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [curProper.indexerid, curProper.season, curProper.episode])
+            sqlResults = db.DBConnection().select(
+                "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                [curProper.indexerid, curProper.season, curProper.episode])
             if not sqlResults:
                 continue
             oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))
@@ -196,7 +200,8 @@ class ProperFinder():
                 continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
-            if curProper.indexerid != -1 and (curProper.indexerid, curProper.season, curProper.episode) not in map(operator.attrgetter('indexerid', 'season', 'episode'), finalPropers):
+            if curProper.indexerid != -1 and (curProper.indexerid, curProper.season, curProper.episode) not in map(
+                    operator.attrgetter('indexerid', 'season', 'episode'), finalPropers):
                 logger.log(u"Found a proper that we need: " + str(curProper.name))
                 finalPropers.append(curProper)
 
@@ -214,11 +219,13 @@ class ProperFinder():
                 "SELECT resource FROM history "
                 "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
                 "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED]) + ")",
-                        [curProper.indexerid, curProper.season, curProper.episode, curProper.quality, historyLimit.strftime(history.dateFormat)])
+                [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
+                 historyLimit.strftime(history.dateFormat)])
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if len(historyResults) == 0:
-                logger.log(u"Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
+                logger.log(
+                    u"Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
                 continue
 
             else:
@@ -237,7 +244,8 @@ class ProperFinder():
                 # get the episode object
                 showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
                 if showObj == None:
-                    logger.log(u"Unable to find the show with indexerid " + str(curProper.indexerid) + " so unable to download the proper", logger.ERROR)
+                    logger.log(u"Unable to find the show with indexerid " + str(
+                        curProper.indexerid) + " so unable to download the proper", logger.ERROR)
                     continue
                 epObj = showObj.getEpisode(curProper.season, curProper.episode)
 
@@ -263,7 +271,8 @@ class ProperFinder():
         sqlResults = myDB.select("SELECT * FROM info")
 
         if len(sqlResults) == 0:
-            myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)", [0, 0, str(when)])
+            myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
+                        [0, 0, str(when)])
         else:
             myDB.action("UPDATE info SET last_proper_search=" + str(when))
 

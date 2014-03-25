@@ -40,7 +40,6 @@ except ImportError:
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):
-
     def __init__(self):
         generic.NZBProvider.__init__(self, "omgwtfnzbs")
         self.cache = OmgwtfnzbsCache(self)
@@ -52,7 +51,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
     def _checkAuth(self):
 
-        if not sickbeard.OMGWTFNZBS_USERNAME  or not sickbeard.OMGWTFNZBS_APIKEY:
+        if not sickbeard.OMGWTFNZBS_USERNAME or not sickbeard.OMGWTFNZBS_APIKEY:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -73,8 +72,10 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
                 description_text = parsedJSON.get('notice')
 
                 if 'information is incorrect' in parsedJSON.get('notice'):
-                    logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text), logger.DEBUG)
-                    raise AuthException("Your authentication credentials for " + self.name + " are incorrect, check your config.")
+                    logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text),
+                               logger.DEBUG)
+                    raise AuthException(
+                        "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
                 elif '0 results matched your terms' in parsedJSON.get('notice'):
                     return True
@@ -156,7 +157,6 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
 
 class OmgwtfnzbsCache(tvcache.TVCache):
-
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 20
@@ -180,6 +180,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         return data
 
     def _checkAuth(self, parsedXML):
-            return self.provider._checkAuthFromData(parsedXML)
+        return self.provider._checkAuthFromData(parsedXML)
+
 
 provider = OmgwtfnzbsProvider()

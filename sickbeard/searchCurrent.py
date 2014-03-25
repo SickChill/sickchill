@@ -24,8 +24,8 @@ from sickbeard import search_queue
 
 import threading
 
-class CurrentSearcher():
 
+class CurrentSearcher():
     def __init__(self):
         self.lock = threading.Lock()
 
@@ -33,4 +33,4 @@ class CurrentSearcher():
 
     def run(self):
         search_queue_item = search_queue.RSSSearchQueueItem()
-        sickbeard.searchQueueScheduler.action.add_item(search_queue_item) #@UndefinedVariable
+        sickbeard.searchQueueScheduler.action.add_item(search_queue_item)  #@UndefinedVariable

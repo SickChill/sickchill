@@ -33,8 +33,8 @@ from sickbeard import logger, helpers
 
 from common import Quality
 
-def sendNZB(nzb, proper = False):
 
+def sendNZB(nzb, proper=False):
     addToTop = False
     nzbgetprio = 0
     nzbgetXMLrpc = "http://%(username)s:%(password)s@%(host)s/xmlrpc"
@@ -43,17 +43,21 @@ def sendNZB(nzb, proper = False):
         logger.log(u"No NZBget host found in configuration. Please configure it.", logger.ERROR)
         return False
 
-    url = nzbgetXMLrpc % {"host": sickbeard.NZBGET_HOST, "username": sickbeard.NZBGET_USERNAME, "password": sickbeard.NZBGET_PASSWORD}
+    url = nzbgetXMLrpc % {"host": sickbeard.NZBGET_HOST, "username": sickbeard.NZBGET_USERNAME,
+                          "password": sickbeard.NZBGET_PASSWORD}
 
     nzbGetRPC = xmlrpclib.ServerProxy(url)
     try:
         if nzbGetRPC.writelog("INFO", "Sickbeard connected to drop of %s any moment now." % (nzb.name + ".nzb")):
             logger.log(u"Successful connected to NZBget", logger.DEBUG)
         else:
-            logger.log(u"Successful connected to NZBget, but unable to send a message" % (nzb.name + ".nzb"), logger.ERROR)
+            logger.log(u"Successful connected to NZBget, but unable to send a message" % (nzb.name + ".nzb"),
+                       logger.ERROR)
 
     except httplib.socket.error:
-        logger.log(u"Please check your NZBget host and port (if it is running). NZBget is not responding to this combination", logger.ERROR)
+        logger.log(
+            u"Please check your NZBget host and port (if it is running). NZBget is not responding to this combination",
+            logger.ERROR)
         return False
 
     except xmlrpclib.ProtocolError, e:
@@ -102,10 +106,12 @@ def sendNZB(nzb, proper = False):
         if nzbget_version == 0:
             nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, addToTop, nzbcontent64)
         elif nzbget_version >= 12:
-            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False, nzbcontent64, False, dupekey, dupescore, "score")
+            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                             nzbcontent64, False, dupekey, dupescore, "score")
         else:
-            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False, nzbcontent64)
-        
+            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                             nzbcontent64)
+
         if nzbget_result:
             logger.log(u"NZB sent to NZBget successfully", logger.DEBUG)
             return True

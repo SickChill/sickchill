@@ -32,7 +32,6 @@ from xml.dom import minidom
 
 
 class PLEXNotifier:
-
     def _send_to_plex(self, command, host, username=None, password=None):
         """Handles communication to Plex hosts via HTTP API
             
@@ -127,16 +126,17 @@ class PLEXNotifier:
         for curHost in [x.strip() for x in host.split(",")]:
             logger.log(u"Sending Plex notification to '" + curHost + "' - " + message, logger.MESSAGE)
 
-            command = {'command': 'ExecBuiltIn', 'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode("utf-8") + ')'}
+            command = {'command': 'ExecBuiltIn',
+                       'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode("utf-8") + ')'}
             notifyResult = self._send_to_plex(command, curHost, username, password)
             if notifyResult:
                 result += curHost + ':' + str(notifyResult)
 
         return result
 
-##############################################################################
-# Public functions
-##############################################################################
+    ##############################################################################
+    # Public functions
+    ##############################################################################
 
     def notify_snatch(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONSNATCH:
@@ -149,9 +149,10 @@ class PLEXNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_pmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
-    
+
     def test_notify(self, host, username, password):
-        return self._notify_pmc("Testing Plex notifications from Sick Beard", "Test Notification", host, username, password, force=True)
+        return self._notify_pmc("Testing Plex notifications from Sick Beard", "Test Notification", host, username,
+                                password, force=True)
 
     def update_library(self):
         """Handles updating the Plex Media Server host via HTTP API
@@ -168,7 +169,8 @@ class PLEXNotifier:
                 logger.log(u"No Plex Server host specified, check your settings", logger.DEBUG)
                 return False
 
-            logger.log(u"Updating library for the Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST, logger.MESSAGE)
+            logger.log(u"Updating library for the Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST,
+                       logger.MESSAGE)
 
             url = "http://%s/library/sections" % sickbeard.PLEX_SERVER_HOST
             try:
@@ -192,5 +194,6 @@ class PLEXNotifier:
                         return False
 
             return True
+
 
 notifier = PLEXNotifier

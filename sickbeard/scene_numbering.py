@@ -35,7 +35,8 @@ from sickbeard import helpers
 from sickbeard.exceptions import ex
 from lib import requests
 
-MAX_XEM_AGE_SECS = 86400 # 1 day
+MAX_XEM_AGE_SECS = 86400  # 1 day
+
 
 def get_scene_numbering(indexer_id, season, episode, fallback_to_xem=True):
     """
@@ -62,7 +63,8 @@ def get_scene_numbering(indexer_id, season, episode, fallback_to_xem=True):
             if xem_result:
                 return xem_result
         return (season, episode)
-    
+
+
 def find_scene_numbering(indexer_id, season, episode):
     """
     Same as get_scene_numbering(), but returns None if scene numbering is not set
@@ -76,9 +78,12 @@ def find_scene_numbering(indexer_id, season, episode):
 
     myDB = db.DBConnection()
 
-    rows = myDB.select("SELECT scene_season, scene_episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?", [indexer, indexer_id, season, episode])
+    rows = myDB.select(
+        "SELECT scene_season, scene_episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?",
+        [indexer, indexer_id, season, episode])
     if rows:
         return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
+
 
 def get_indexer_numbering(indexer_id, sceneSeason, sceneEpisode, fallback_to_xem=True):
     """
@@ -93,15 +98,18 @@ def get_indexer_numbering(indexer_id, sceneSeason, sceneEpisode, fallback_to_xem
     indexer = showObj.indexer
 
     myDB = db.DBConnection()
-        
-    rows = myDB.select("SELECT season, episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? and scene_season = ? and scene_episode = ?", [indexer, indexer_id, sceneSeason, sceneEpisode])
+
+    rows = myDB.select(
+        "SELECT season, episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? and scene_season = ? and scene_episode = ?",
+        [indexer, indexer_id, sceneSeason, sceneEpisode])
     if rows:
         return (int(rows[0]["season"]), int(rows[0]["episode"]))
     else:
         if fallback_to_xem:
             return get_indexer_numbering_for_xem(indexer_id, sceneSeason, sceneEpisode)
         return (sceneSeason, sceneEpisode)
-    
+
+
 def get_scene_numbering_for_show(indexer_id):
     """
     Returns a dict of (season, episode) : (sceneSeason, sceneEpisode) mappings
@@ -116,16 +124,17 @@ def get_scene_numbering_for_show(indexer_id):
     indexer = showObj.indexer
 
     myDB = db.DBConnection()
-        
-    rows = myDB.select('''SELECT season, episode, scene_season, scene_episode 
-                        FROM scene_numbering WHERE indexer = ? and indexer_id = ?
-                        ORDER BY season, episode''', [indexer, indexer_id])
+
+    rows = myDB.select(
+        'SELECT season, episode, scene_season, scene_episode FROM scene_numbering WHERE indexer = ? and indexer_id = ? ORDER BY season, episode',
+        [indexer, indexer_id])
     result = {}
     for row in rows:
         result[(int(row['season']), int(row['episode']))] = (int(row['scene_season']), int(row['scene_episode']))
-        
+
     return result
-    
+
+
 def set_scene_numbering(indexer_id, season, episode, sceneSeason=None, sceneEpisode=None):
     """
     Set scene numbering for a season/episode.
@@ -140,19 +149,22 @@ def set_scene_numbering(indexer_id, season, episode, sceneSeason=None, sceneEpis
     indexer = showObj.indexer
 
     myDB = db.DBConnection()
-    
+
     # sanity
     #if sceneSeason == None: sceneSeason = season
     #if sceneEpisode == None: sceneEpisode = episode
-    
+
     # delete any existing record first
-    myDB.action('DELETE FROM scene_numbering where indexer = ? and indexer_id = ? and season = ? and episode = ?', [indexer, indexer_id, season, episode])
-    
+    myDB.action('DELETE FROM scene_numbering where indexer = ? and indexer_id = ? and season = ? and episode = ?',
+                [indexer, indexer_id, season, episode])
+
     # now, if the new numbering is not the default, we save a new record
     if sceneSeason is not None and sceneEpisode is not None:
-        myDB.action("INSERT INTO scene_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)", [indexer, indexer_id, season, episode, sceneSeason, sceneEpisode])
-            
-            
+        myDB.action(
+            "INSERT INTO scene_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
+            [indexer, indexer_id, season, episode, sceneSeason, sceneEpisode])
+
+
 def find_xem_numbering(indexer_id, season, episode):
     """
     Returns the scene numbering, as retrieved from xem.
@@ -172,14 +184,17 @@ def find_xem_numbering(indexer_id, season, episode):
 
     if _xem_refresh_needed(indexer_id):
         _xem_refresh(indexer_id)
-        
+
     cacheDB = db.DBConnection('cache.db')
-    rows = cacheDB.select("SELECT scene_season, scene_episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?", [indexer, indexer_id, season, episode])
+    rows = cacheDB.select(
+        "SELECT scene_season, scene_episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?",
+        [indexer, indexer_id, season, episode])
     if rows:
         return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
     else:
         return None
-    
+
+
 def get_indexer_numbering_for_xem(indexer_id, sceneSeason, sceneEpisode):
     """
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
@@ -199,12 +214,15 @@ def get_indexer_numbering_for_xem(indexer_id, sceneSeason, sceneEpisode):
     if _xem_refresh_needed(indexer_id):
         _xem_refresh(indexer_id)
     cacheDB = db.DBConnection('cache.db')
-    rows = cacheDB.select("SELECT season, episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? and scene_season = ? and scene_episode = ?", [indexer, indexer_id, sceneSeason, sceneEpisode])
+    rows = cacheDB.select(
+        "SELECT season, episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? and scene_season = ? and scene_episode = ?",
+        [indexer, indexer_id, sceneSeason, sceneEpisode])
     if rows:
         return (int(rows[0]["season"]), int(rows[0]["episode"]))
     else:
         return (sceneSeason, sceneEpisode)
-    
+
+
 def _xem_refresh_needed(indexer_id):
     """
     Is a refresh needed on a show?
@@ -220,12 +238,14 @@ def _xem_refresh_needed(indexer_id):
     indexer = showObj.indexer
 
     cacheDB = db.DBConnection('cache.db')
-    rows = cacheDB.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?", [indexer, indexer_id])
+    rows = cacheDB.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
+                          [indexer, indexer_id])
     if rows:
         return time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
     else:
         return True
-    
+
+
 def _xem_refresh(indexer_id):
     """
     Refresh data from xem for a tv show
@@ -240,54 +260,55 @@ def _xem_refresh(indexer_id):
     indexer = showObj.indexer
 
     try:
-        logger.log(u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, indexer,), logger.DEBUG)
-        data = None
-        if 'Tvdb' in indexer:
-            data = requests.get('http://thexem.de/map/all?id=%s&origin=tvdb&destination=scene' % (indexer_id,)).json()
-        elif 'TVRage' in indexer:
-            data = requests.get('http://thexem.de/map/all?id=%s&origin=rage&destination=scene' % (indexer_id,)).json()
+        logger.log(
+            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
+            logger.DEBUG)
+        data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
+            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],)).json()
 
         if data is None or data == '':
-            logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (indexer_id, indexer,), logger.MESSAGE)
-            if 'Tvdb' in indexer:
-                data = requests.get('http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=tvdb&destination=scene' % (indexer_id,)).json()
-            elif 'TVRage' in indexer:
-                data = requests.get('http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=rage&destination=scene' % (indexer_id,)).json()
-
+            logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
+                indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
+            data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
+                indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],)).json()
             if data is None or data == '':
-                logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,), logger.MESSAGE)
+                logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
+                           logger.MESSAGE)
                 return None
 
         result = data
         if result:
             cacheDB = db.DBConnection('cache.db')
-            cacheDB.action("INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)", [indexer, indexer_id, time.time()])
+            cacheDB.action("INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
+                           [indexer, indexer_id, time.time()])
             if 'success' in result['result']:
                 cacheDB.action("DELETE FROM xem_numbering where indexer = ? and indexer_id = ?", [indexer, indexer_id])
                 for entry in result['data']:
                     if 'scene' in entry:
-                        if 'Tvdb' in indexer:
-                            cacheDB.action("INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
-                                        [indexer, indexer_id, entry['tvdb']['season'], entry['tvdb']['episode'], entry['scene']['season'], entry['scene']['episode'] ])
-                        elif 'TVRage' in indexer:
-                            cacheDB.action("INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
-                                        [indexer, indexer_id, entry['rage']['season'], entry['rage']['episode'], entry['scene']['season'], entry['scene']['episode'] ])
-                    if 'scene_2' in entry: # for doubles
-                        if 'Tvdb' in indexer:
-                            cacheDB.action("INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
-                                        [indexer, indexer_id, entry['tvdb']['season'], entry['tvdb']['episode'], entry['scene_2']['season'], entry['scene_2']['episode'] ])
-                        elif 'TVRage' in indexer:
-                            cacheDB.action("INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
-                                        [indexer, indexer_id, entry['rage']['season'], entry['rage']['episode'], entry['scene_2']['season'], entry['scene_2']['episode'] ])
+                        cacheDB.action(
+                            "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
+                            [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
+                             entry['scene']['season'], entry['scene']['episode']])
+                    if 'scene_2' in entry:  # for doubles
+                        cacheDB.action(
+                            "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
+                            [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
+                             entry['scene_2']['season'], entry['scene_2']['episode']])
             else:
-                logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (indexer_id, indexer, result['message']), logger.MESSAGE)
+                logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
+                    indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.MESSAGE)
         else:
-            logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (indexer_id, indexer,), logger.MESSAGE)
+            logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
+                indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
     except Exception, e:
-        logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + indexer + ": " + ex(e), logger.WARNING)
+        logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
+            indexer).name + ": " + ex(e), logger.WARNING)
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
-    
+
+
 def get_xem_numbering_for_show(indexer_id):
     """
     Returns a dict of (season, episode) : (sceneSeason, sceneEpisode) mappings
@@ -303,16 +324,19 @@ def get_xem_numbering_for_show(indexer_id):
 
     if _xem_refresh_needed(indexer_id):
         _xem_refresh(indexer_id)
+
     cacheDB = db.DBConnection('cache.db')
-        
-    rows = cacheDB.select('''SELECT season, episode, scene_season, scene_episode 
-                        FROM xem_numbering WHERE indexer = ? and indexer_id = ?
-                        ORDER BY season, episode''', [indexer, indexer_id])
+
+    rows = cacheDB.select(
+        'SELECT season, episode, scene_season, scene_episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? ORDER BY season, episode',
+        [indexer, indexer_id])
+
     result = {}
     for row in rows:
         result[(int(row['season']), int(row['episode']))] = (int(row['scene_season']), int(row['scene_episode']))
-        
+
     return result
+
 
 def get_xem_numbering_for_season(indexer_id, season):
     """
@@ -332,14 +356,14 @@ def get_xem_numbering_for_season(indexer_id, season):
 
     cacheDB = db.DBConnection('cache.db')
 
-    rows = cacheDB.select('''SELECT season, scene_season
-                        FROM xem_numbering WHERE indexer = ? and indexer_id = ? AND season = ?
-                        ORDER BY season''', [indexer, indexer_id, season])
+    rows = cacheDB.select(
+        'SELECT season, scene_season FROM xem_numbering WHERE indexer = ? and indexer_id = ? AND season = ? ORDER BY season, [indexer, indexer_id, season]')
+
     result = {}
     if rows:
         for row in rows:
-            result.setdefault(int(row['season']),[]).append(int(row['scene_season']))
+            result.setdefault(int(row['season']), []).append(int(row['scene_season']))
     else:
-        result.setdefault(int(season),[]).append(int(season))
+        result.setdefault(int(season), []).append(int(season))
 
     return result

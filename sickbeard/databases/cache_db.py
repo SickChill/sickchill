@@ -19,7 +19,7 @@
 from sickbeard import db
 
 # Add new migrations at the bottom of the list; subclass the previous migration.
-class InitialSchema (db.SchemaUpgrade):
+class InitialSchema(db.SchemaUpgrade):
     def test(self):
         return self.hasTable("lastUpdate")
 
@@ -36,12 +36,15 @@ class InitialSchema (db.SchemaUpgrade):
             else:
                 self.connection.action(query[0], query[1:])
 
+
 class AddSceneExceptions(InitialSchema):
     def test(self):
         return self.hasTable("scene_exceptions")
 
     def execute(self):
-        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, tvdb_id INTEGER KEY, show_name TEXT)")
+        self.connection.action(
+            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, tvdb_id INTEGER KEY, show_name TEXT)")
+
 
 class AddSceneNameCache(AddSceneExceptions):
     def test(self):
@@ -50,6 +53,7 @@ class AddSceneNameCache(AddSceneExceptions):
     def execute(self):
         self.connection.action("CREATE TABLE scene_names (tvdb_id INTEGER, name TEXT)")
 
+
 class AddNetworkTimezones(AddSceneNameCache):
     def test(self):
         return self.hasTable("network_timezones")
@@ -57,19 +61,24 @@ class AddNetworkTimezones(AddSceneNameCache):
     def execute(self):
         self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT)")
 
+
 class AddXemNumbering(AddNetworkTimezones):
     def test(self):
         return self.hasTable("xem_numbering")
 
     def execute(self):
-        self.connection.action("CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
+        self.connection.action(
+            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
+
 
 class AddXemRefresh(AddXemNumbering):
     def test(self):
         return self.hasTable("xem_refresh")
 
     def execute(self):
-        self.connection.action("CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
+        self.connection.action(
+            "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
+
 
 class ConvertSceneExceptionsToIndexerID(AddXemRefresh):
     def test(self):
@@ -77,9 +86,12 @@ class ConvertSceneExceptionsToIndexerID(AddXemRefresh):
 
     def execute(self):
         self.connection.action("ALTER TABLE scene_exceptions RENAME TO tmp_scene_exceptions")
-        self.connection.action("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
-        self.connection.action("INSERT INTO scene_exceptions(exception_id, indexer_id, show_name) SELECT exception_id, tvdb_id, show_name FROM tmp_scene_exceptions")
+        self.connection.action(
+            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
+        self.connection.action(
+            "INSERT INTO scene_exceptions(exception_id, indexer_id, show_name) SELECT exception_id, tvdb_id, show_name FROM tmp_scene_exceptions")
         self.connection.action("DROP TABLE tmp_scene_exceptions")
+
 
 class ConvertSceneNamesToIndexerID(ConvertSceneExceptionsToIndexerID):
     def test(self):

@@ -21,25 +21,28 @@ __all__ = ['generic', 'helpers', 'xbmc', 'xbmc_12plus', 'mediabrowser', 'ps3', '
 import sys
 import xbmc, xbmc_12plus, mediabrowser, ps3, wdtv, tivo
 
+
 def available_generators():
     return filter(lambda x: x not in ('generic', 'helpers'), __all__)
+
 
 def _getMetadataModule(name):
     name = name.lower()
     prefix = "sickbeard.metadata."
-    if name in __all__ and prefix+name in sys.modules:
-        return sys.modules[prefix+name]
+    if name in __all__ and prefix + name in sys.modules:
+        return sys.modules[prefix + name]
     else:
         return None
 
-def _getMetadataClass(name):
 
+def _getMetadataClass(name):
     module = _getMetadataModule(name)
-    
+
     if not module:
         return None
-    
+
     return module.metadata_class()
+
 
 def get_metadata_generator_dict():
     result = {}
@@ -48,6 +51,6 @@ def get_metadata_generator_dict():
         if not cur_generator:
             continue
         result[cur_generator.name] = cur_generator
-    
+
     return result
         

@@ -30,9 +30,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
 
-from sickbeard.indexers import indexer_api, indexer_exceptions
-
-
 class TIVOMetadata(generic.GenericMetadata):
     """
     Metadata generation class for TIVO
@@ -179,20 +176,23 @@ class TIVOMetadata(generic.GenericMetadata):
             if ep_obj.show.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
-        except indexer_exceptions.indexer_shownotfound, e:
+        except sickbeard.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(str(e))
-        except indexer_exceptions.indexer_error, e:
-            logger.log(u"Unable to connect to " + ep_obj.show.indexer + " while creating meta files - skipping - " + str(e), logger.ERROR)
+        except sickbeard.indexer_error, e:
+            logger.log(u"Unable to connect to " + sickbeard.indexerApi(
+                ep_obj.show.indexer).name + " while creating meta files - skipping - " + str(e), logger.ERROR)
             return False
 
         for curEpToWrite in eps_to_write:
 
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on " + ep_obj.show.indexer + "... has it been removed? Should I delete from db?")
+            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
+                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
+                    ep_obj.show.indexer).name + "... has it been removed? Should I delete from db?")
                 return None
 
             if getattr(myEp, 'firstaired', None) is None and ep_obj.season == 0:
@@ -230,7 +230,8 @@ class TIVOMetadata(generic.GenericMetadata):
             # Replace double curly quotes
             sanitizedDescription = sanitizedDescription.replace(u"\u201c", "\"").replace(u"\u201d", "\"")
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(u"\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace(u"\u2018", "'").replace(u"\u2019", "'").replace(
+                u"\u02BC", "'")
 
             data += ("description : " + sanitizedDescription + "\n")
 
@@ -277,15 +278,15 @@ class TIVOMetadata(generic.GenericMetadata):
                     if genre:
                         data += ("vProgramGenre : " + str(genre) + "\n")
 
-            # NOTE: The following are metadata keywords are not used
-            # displayMajorNumber
-            # showingBits
-            # displayMinorNumber
-            # colorCode
-            # vSeriesGenre
-            # vGuestStar, vDirector, vExecProducer, vProducer, vWriter, vHost, vChoreographer
-            # partCount
-            # partIndex
+                        # NOTE: The following are metadata keywords are not used
+                        # displayMajorNumber
+                        # showingBits
+                        # displayMinorNumber
+                        # colorCode
+                        # vSeriesGenre
+                        # vGuestStar, vDirector, vExecProducer, vProducer, vWriter, vHost, vChoreographer
+                        # partCount
+                        # partIndex
 
         return data
 
@@ -324,7 +325,8 @@ class TIVOMetadata(generic.GenericMetadata):
             helpers.chmodAsParent(nfo_file_path)
 
         except EnvironmentError, e:
-            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e), logger.ERROR)
+            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+                       logger.ERROR)
             return False
 
         return True

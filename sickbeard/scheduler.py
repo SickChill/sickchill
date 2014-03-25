@@ -24,9 +24,10 @@ import traceback
 from sickbeard import logger
 from sickbeard.exceptions import ex
 
-class Scheduler:
 
-    def __init__(self, action, cycleTime=datetime.timedelta(minutes=10), runImmediately=True, threadName="ScheduledThread", silent=False):
+class Scheduler:
+    def __init__(self, action, cycleTime=datetime.timedelta(minutes=10), runImmediately=True,
+                 threadName="ScheduledThread", silent=False):
 
         if runImmediately:
             self.lastRun = datetime.datetime.fromordinal(1)
@@ -67,10 +68,10 @@ class Scheduler:
                 self.lastRun = currentTime
                 try:
                     if not self.silent:
-                        logger.log(u"Starting new thread: "+self.threadName, logger.DEBUG)
+                        logger.log(u"Starting new thread: " + self.threadName, logger.DEBUG)
                     self.action.run()
                 except Exception, e:
-                    logger.log(u"Exception generated in thread "+self.threadName+": " + ex(e), logger.ERROR)
+                    logger.log(u"Exception generated in thread " + self.threadName + ": " + ex(e), logger.ERROR)
                     logger.log(repr(traceback.format_exc()), logger.DEBUG)
 
             if self.abort:

@@ -21,7 +21,7 @@ __all__ = ['utorrent',
            'deluge',
            'download_station',
            'rtorrent'
-           ]
+]
 
 import sickbeard
 
@@ -62,24 +62,24 @@ http_error_code = {
     505: 'HTTP Version Not Supported',
 }
 
-default_host = {'utorrent':'http://localhost:8000', 
-                'transmission' :'http://localhost:9091', 
-                'deluge':'http://localhost:8112',
+default_host = {'utorrent': 'http://localhost:8000',
+                'transmission': 'http://localhost:9091',
+                'deluge': 'http://localhost:8112',
                 'download_station': 'http://localhost:5000',
                 'rtorrent': 'scgi://localhost:5000',
-                }
+}
+
 
 def getClientModule(name):
-
     name = name.lower()
     prefix = "sickbeard.clients."
-    
-    return __import__(prefix+name, fromlist=__all__)
+
+    return __import__(prefix + name, fromlist=__all__)
+
 
 def getClientIstance(name):
-    
     module = getClientModule(name)
     className = module.api.__class__.__name__
-    
+
     return getattr(module, className)
     

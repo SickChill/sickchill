@@ -29,6 +29,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
+from collections import defaultdict
 from lib.dateutil.parser import parse
 from lib import requests
 
@@ -318,8 +319,8 @@ class TVRage:
 
         self.config['base_url'] = "http://services.tvrage.com"
 
-        self.config['url_getSeries'] = u"%(base_url)s/myfeeds/search.php" % self.config
-        self.config['params_getSeries'] = {"key": self.config['apikey'], "show": ""}
+        self.config['url_getSeries'] = u"%(base_url)s/feeds/search.php" % self.config
+        self.config['params_getSeries'] = {"show": ""}
 
         self.config['url_epInfo'] = u"%(base_url)s/myfeeds/episode_list.php" % self.config
         self.config['params_epInfo'] = {"key": self.config['apikey'], "sid": ""}
@@ -473,28 +474,21 @@ class TVRage:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        data = data.replace(u"&amp;", u"&")
-        data = data.strip()
+        if isinstance(data, str):
+            data = data.replace(u"&amp;", u"&")
+            data = data.strip()
         return data
 
     def search(self, series):
         """This searches tvrage.com for the series name
         and returns the result list
         """
-        series = urllib.quote(series.encode("utf-8"))
+        series = series.encode("utf-8")
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['show'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = []
-        seriesResult = {}
-        for series in seriesEt:
-            for k in series.getchildren():
-                seriesResult.setdefault(k.tag.lower(), k.text)
+        allSeries = [dict((s.tag.lower(),s.text) for s in x.getchildren()) for x in seriesEt]
 
-            seriesResult['id'] = int(seriesResult['id'])
-            log().debug('Found series %s' % seriesResult['seriesname'])
-            allSeries.append(seriesResult)
-        
         return allSeries
 
     def _getSeries(self, series):
@@ -518,7 +512,7 @@ class TVRage:
 
         return ui.selectSeries(allSeries)
 
-    def _getShowData(self, sid):
+    def _getShowData(self, sid, seriesSearch=False):
         """Takes a series ID, gets the epInfo URL and parses the TVRAGE
         XML file into the shows dict in layout:
         shows[series_id][season_number][episode_number]
@@ -532,14 +526,22 @@ class TVRage:
             self.config['params_seriesInfo']
         )
 
+        if seriesInfoEt is None: return False
         for curInfo in seriesInfoEt:
             tag = curInfo.tag.lower()
             value = curInfo.text
+
+            if tag == 'seriesname' and value is None:
+                return False
+
+            if tag == 'id':
+                value = int(value)
 
             if value is not None:
                 value = self._cleanData(value)
 
             self._setShowData(sid, tag, value)
+        if seriesSearch: return True
 
         try:
             # Parse genre data
@@ -572,28 +574,32 @@ class TVRage:
 
                             value = cur_item.text
                             if value is not None:
+                                if tag == 'id':
+                                    value = int(value)
+
                                 value = self._cleanData(value)
 
                             self._setItem(sid, seas_no, ep_no, tag, value)
                 except:
                     continue
+        return True
 
     def _nameToSid(self, name):
         """Takes show name, returns the correct series ID (if the show has
         already been grabbed), or grabs all episodes and returns
         the correct SID.
         """
+        sid = set()
         if name in self.corrections:
             log().debug('Correcting %s to %s' % (name, self.corrections[name]) )
             sid = self.corrections[name]
         else:
             log().debug('Getting show %s' % (name))
             selected_series = self._getSeries( name )
-            sname, sid = selected_series['seriesname'], selected_series['id']
-            log().debug('Got %(seriesname)s, id %(id)s' % selected_series)
-
-            self.corrections[name] = sid
-            self._getShowData(selected_series['id'])
+            if isinstance(selected_series, dict):
+                selected_series = [selected_series]
+            [sid.add(int(x['id'])) for x in selected_series if self._getShowData(int(x['id']), seriesSearch=True)]
+            [self.corrections.update({x['seriesname']:int(x['id'])}) for x in selected_series]
 
         return sid
 
@@ -608,9 +614,8 @@ class TVRage:
             return self.shows[key]
         
         key = key.lower() # make key lower case
-        sid = self._nameToSid(key)
-        log().debug('Got series id %s' % (sid))
-        return self.shows[sid]
+        sids = self._nameToSid(key)
+        return [self.shows[sid] for sid in sids]
 
     def __repr__(self):
         return str(self.shows)

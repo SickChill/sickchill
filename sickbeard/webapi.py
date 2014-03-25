@@ -37,9 +37,8 @@ from sickbeard import search_queue
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
 from sickbeard import image_cache
-from sickbeard.common import indexerStrings
 
-from sickbeard.indexers import indexer_api, indexer_exceptions
+
 try:
     import json
 except ImportError:
@@ -52,26 +51,25 @@ from lib import subliminal
 dateFormat = "%Y-%m-%d"
 dateTimeFormat = "%Y-%m-%d %H:%M"
 
-
-RESULT_SUCCESS = 10 # only use inside the run methods
-RESULT_FAILURE = 20 # only use inside the run methods
-RESULT_TIMEOUT = 30 # not used yet :(
-RESULT_ERROR = 40 # only use outside of the run methods !
-RESULT_FATAL = 50 # only use in Api.default() ! this is the "we encountered an internal error" error
-RESULT_DENIED = 60 # only use in Api.default() ! this is the acces denied error
+RESULT_SUCCESS = 10  # only use inside the run methods
+RESULT_FAILURE = 20  # only use inside the run methods
+RESULT_TIMEOUT = 30  # not used yet :(
+RESULT_ERROR = 40  # only use outside of the run methods !
+RESULT_FATAL = 50  # only use in Api.default() ! this is the "we encountered an internal error" error
+RESULT_DENIED = 60  # only use in Api.default() ! this is the acces denied error
 result_type_map = {RESULT_SUCCESS: "success",
-                  RESULT_FAILURE: "failure",
-                  RESULT_TIMEOUT: "timeout",
-                  RESULT_ERROR: "error",
-                  RESULT_FATAL: "fatal",
-                  RESULT_DENIED: "denied",
-                  }
+                   RESULT_FAILURE: "failure",
+                   RESULT_TIMEOUT: "timeout",
+                   RESULT_ERROR: "error",
+                   RESULT_FATAL: "fatal",
+                   RESULT_DENIED: "denied",
+}
 # basically everything except RESULT_SUCCESS / success is bad
 
 
 class Api:
     """ api class that returns json results """
-    version = 4 # use an int since float-point is unpredictible
+    version = 4  # use an int since float-point is unpredictible
     intent = 4
 
     @cherrypy.expose
@@ -84,7 +82,7 @@ class Api:
         # default json
         outputCallbackDict = {'default': self._out_as_json,
                               'image': lambda x: x['image'],
-                              }
+        }
 
         # do we have acces ?
         if access:
@@ -98,24 +96,26 @@ class Api:
         # if profile was set wrap "_call_dispatcher" in the profile function
         if 'profile' in kwargs:
             from lib.profilehooks import profile
+
             _call_dispatcher = profile(_call_dispatcher, immediate=True)
             del kwargs["profile"]
 
         # if debug was set call the "_call_dispatcher"
         if 'debug' in kwargs:
-            outDict = _call_dispatcher(args, kwargs) # this way we can debug the cherry.py traceback in the browser
+            outDict = _call_dispatcher(args, kwargs)  # this way we can debug the cherry.py traceback in the browser
             del kwargs["debug"]
-        else:# if debug was not set we wrap the "call_dispatcher" in a try block to assure a json output
+        else:  # if debug was not set we wrap the "call_dispatcher" in a try block to assure a json output
             try:
                 outDict = _call_dispatcher(args, kwargs)
-            except cherrypy.HTTPRedirect: # seams like cherrypy uses exceptions for redirecting apparently this can happen when requesting images but it is ok so lets re raise it
+            except cherrypy.HTTPRedirect:  # seams like cherrypy uses exceptions for redirecting apparently this can happen when requesting images but it is ok so lets re raise it
                 raise
-            except Exception, e: # real internal error oohhh nooo :(
+            except Exception, e:  # real internal error oohhh nooo :(
                 logger.log(u"API :: " + ex(e), logger.ERROR)
                 errorData = {"error_msg": ex(e),
                              "args": args,
                              "kwargs": kwargs}
-                outDict = _responds(RESULT_FATAL, errorData, "SickBeard encountered an internal error! Please report to the Devs")
+                outDict = _responds(RESULT_FATAL, errorData,
+                                    "SickBeard encountered an internal error! Please report to the Devs")
 
         if 'outputType' in outDict:
             outputCallback = outputCallbackDict[outDict['outputType']]
@@ -147,10 +147,13 @@ class Api:
         episodeSQLResults = {}
 
         for curShow in t.sortedShowList:
-            seasonSQLResults[curShow.indexerid] = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
+            seasonSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
 
         for curShow in t.sortedShowList:
-            episodeSQLResults[curShow.indexerid] = myDB.select("SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC", [curShow.indexerid])
+            episodeSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
 
         t.seasonSQLResults = seasonSQLResults
         t.episodeSQLResults = episodeSQLResults
@@ -172,10 +175,11 @@ class Api:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
             callback = request.params.get('callback') or request.params.get('jsonp')
             if callback != None:
-                out = callback + '(' + out + ');' # wrap with JSONP call if requested
-        except Exception, e: # if we fail to generate the output fake an error
+                out = callback + '(' + out + ');'  # wrap with JSONP call if requested
+        except Exception, e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{"result":"' + result_type_map[RESULT_ERROR] + '", "message": "error while composing output: "' + ex(e) + '"}'
+            out = '{"result":"' + result_type_map[RESULT_ERROR] + '", "message": "error while composing output: "' + ex(
+                e) + '"}'
         return out
 
     def _grand_access(self, realKey, args, kwargs):
@@ -183,9 +187,9 @@ class Api:
         remoteIp = cherrypy.request.remote.ip
         apiKey = kwargs.get("apikey", None)
         if not apiKey:
-            if args: # if we have keyless vars we assume first one is the api key, always !
+            if args:  # if we have keyless vars we assume first one is the api key, always !
                 apiKey = args[0]
-                args = args[1:] # remove the apikey from the args tuple
+                args = args[1:]  # remove the apikey from the args tuple
         else:
             del kwargs["apikey"]
 
@@ -229,28 +233,29 @@ def call_dispatcher(args, kwargs):
         for cmd in cmds:
             curArgs, curKwargs = filter_params(cmd, args, kwargs)
             cmdIndex = None
-            if len(cmd.split("_")) > 1: # was a index used for this cmd ?
-                cmd, cmdIndex = cmd.split("_") # this gives us the clear cmd and the index
+            if len(cmd.split("_")) > 1:  # was a index used for this cmd ?
+                cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
 
             logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
-            if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')): # skip these cmd while chaining
+            if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')):  # skip these cmd while chaining
                 try:
                     if cmd in _functionMaper:
-                        curOutDict = _functionMaper.get(cmd)(curArgs, curKwargs).run() # get the cmd class, init it and run()
+                        curOutDict = _functionMaper.get(cmd)(curArgs,
+                                                             curKwargs).run()  # get the cmd class, init it and run()
                     elif _is_int(cmd):
                         curOutDict = TVDBShorthandWrapper(curArgs, curKwargs, cmd).run()
                     else:
                         curOutDict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
-                except ApiError, e: # Api errors that we raised, they are harmless
+                except ApiError, e:  # Api errors that we raised, they are harmless
                     curOutDict = _responds(RESULT_ERROR, msg=ex(e))
-            else: # if someone chained one of the forbiden cmds they will get an error for this one cmd
+            else:  # if someone chained one of the forbiden cmds they will get an error for this one cmd
                 curOutDict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
 
             if multiCmds:
                 # note: if multiple same cmds are issued but one has not an index defined it will override all others
                 # or the other way around, this depends on the order of the cmds
                 # this is not a bug
-                if cmdIndex is None: # do we need a index dict for this cmd ?
+                if cmdIndex is None:  # do we need a index dict for this cmd ?
                     outDict[cmd] = curOutDict
                 else:
                     if not cmd in outDict:
@@ -259,9 +264,9 @@ def call_dispatcher(args, kwargs):
             else:
                 outDict = curOutDict
 
-        if multiCmds: # if we had multiple cmds we have to wrap it in a response dict
+        if multiCmds:  # if we had multiple cmds we have to wrap it in a response dict
             outDict = _responds(RESULT_SUCCESS, outDict)
-    else: # index / no cmd given
+    else:  # index / no cmd given
         outDict = CMD_SickBeard(args, kwargs).run()
 
     return outDict
@@ -296,7 +301,7 @@ def filter_params(cmd, args, kwargs):
         if kwarg.find(cmd + ".") == 0:
             cleanKey = kwarg.rpartition(".")[2]
             curKwargs[cleanKey] = kwargs[kwarg].lower()
-        elif not "." in kwarg: # the kwarg was not namespaced therefore a "global"
+        elif not "." in kwarg:  # the kwarg was not namespaced therefore a "global"
             curKwargs[kwarg] = kwargs[kwarg]
     return curArgs, curKwargs
 
@@ -332,7 +337,7 @@ class ApiCall(object):
             self._optionalParams = []
 
         for paramDict, type in [(self._requiredParams, "requiredParameters"),
-                          (self._optionalParams, "optionalParameters")]:
+                                (self._optionalParams, "optionalParameters")]:
 
             if type in self._help:
                 for paramName in paramDict:
@@ -442,11 +447,14 @@ class ApiCall(object):
         elif type == "ignore":
             pass
         else:
-            logger.log(u"API :: Invalid param type set " + str(type) + " can not check or convert ignoring it", logger.ERROR)
+            logger.log(u"API :: Invalid param type set " + str(type) + " can not check or convert ignoring it",
+                       logger.ERROR)
 
         if error:
             # this is a real ApiError !!
-            raise ApiError(u"param: '" + str(name) + "' with given value: '" + str(value) + "' could not be parsed into '" + str(type) + "'")
+            raise ApiError(
+                u"param: '" + str(name) + "' with given value: '" + str(value) + "' could not be parsed into '" + str(
+                    type) + "'")
 
         return value
 
@@ -467,7 +475,8 @@ class ApiCall(object):
 
             if error:
                 # this is kinda a ApiError but raising an error is the only way of quitting here
-                raise ApiError(u"param: '" + str(name) + "' with given value: '" + str(value) + "' is out of allowed range '" + str(allowedValues) + "'")
+                raise ApiError(u"param: '" + str(name) + "' with given value: '" + str(
+                    value) + "' is out of allowed range '" + str(allowedValues) + "'")
 
 
 class TVDBShorthandWrapper(ApiCall):
@@ -667,14 +676,15 @@ class ApiError(Exception):
 class IntParseError(Exception):
     "A value could not be parsed into a int. But should be parsable to a int "
 
+
 #-------------------------------------------------------------------------------------#
 
 
 class CMD_Help(ApiCall):
     _help = {"desc": "display help information for a given subject/command",
              "optionalParameters": {"subject": {"desc": "command - the top level command"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -694,17 +704,20 @@ class CMD_Help(ApiCall):
 class CMD_ComingEpisodes(ApiCall):
     _help = {"desc": "display the coming episodes",
              "optionalParameters": {"sort": {"desc": "change the sort order"},
-                                   "type": {"desc": "one or more of allowedValues separated by |"},
-                                   "paused": {"desc": "0 to exclude paused shows, 1 to include them, or omitted to use the SB default"},
-                                   }
+                                    "type": {"desc": "one or more of allowedValues separated by |"},
+                                    "paused": {
+                                    "desc": "0 to exclude paused shows, 1 to include them, or omitted to use the SB default"},
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
         # optional
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ["date", "show", "network"])
-        self.type, args = self.check_params(args, kwargs, "type", "today|missed|soon|later", False, "list", ["missed", "later", "today", "soon"])
-        self.paused, args = self.check_params(args, kwargs, "paused", sickbeard.COMING_EPS_DISPLAY_PAUSED, False, "int", [0, 1])
+        self.type, args = self.check_params(args, kwargs, "type", "today|missed|soon|later", False, "list",
+                                            ["missed", "later", "today", "soon"])
+        self.paused, args = self.check_params(args, kwargs, "paused", sickbeard.COMING_EPS_DISPLAY_PAUSED, False, "int",
+                                              [0, 1])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -718,14 +731,23 @@ class CMD_ComingEpisodes(ApiCall):
         qualList = Quality.DOWNLOADED + Quality.SNATCHED + [ARCHIVED, IGNORED]
 
         myDB = db.DBConnection(row_type="dict")
-        sql_results = myDB.select("SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(['?'] * len(qualList)) + ")", [today, next_week] + qualList)
+        sql_results = myDB.select(
+            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
+                ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
         for cur_result in sql_results:
             done_show_list.append(int(cur_result["indexerid"]))
 
-        more_sql_results = myDB.select("SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(['?'] * len(done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")", done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
+        more_sql_results = myDB.select(
+            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
+                ['?'] * len(
+                    done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
+                ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
+            done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
         sql_results += more_sql_results
 
-        more_sql_results = myDB.select("SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
+        more_sql_results = myDB.select(
+            "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
+                ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
         sql_results += more_sql_results
 
         # sort by air date
@@ -790,12 +812,13 @@ class CMD_ComingEpisodes(ApiCall):
 class CMD_Episode(ApiCall):
     _help = {"desc": "display detailed info about an episode",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                   "season": {"desc": "the season number"},
-                                   "episode": {"desc": "the episode number"}
-                                  },
-             "optionalParameters": {"full_path": {"desc": "show the full absolute path (if valid) instead of a relative path for the episode location"}
-                                     }
+                                    "season": {"desc": "the season number"},
+                                    "episode": {"desc": "the episode number"}
+             },
+             "optionalParameters": {"full_path": {
+             "desc": "show the full absolute path (if valid) instead of a relative path for the episode location"}
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -814,7 +837,9 @@ class CMD_Episode(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         myDB = db.DBConnection(row_type="dict")
-        sqlResults = myDB.select("SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?", [self.indexerid, self.e, self.s])
+        sqlResults = myDB.select(
+            "SELECT name, description, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND episode = ? AND season = ?",
+            [self.indexerid, self.e, self.s])
         if not len(sqlResults) == 1:
             raise ApiError("Episode not found")
         episode = sqlResults[0]
@@ -830,9 +855,9 @@ class CMD_Episode(ApiCall):
             pass
         elif bool(self.fullPath) == False and showPath:
             # using the length because lstrip removes to much
-            showPathLength = len(showPath) + 1 # the / or \ yeah not that nice i know
+            showPathLength = len(showPath) + 1  # the / or \ yeah not that nice i know
             episode["location"] = episode["location"][showPathLength:]
-        elif not showPath: # show dir is broken ... episode path will be empty
+        elif not showPath:  # show dir is broken ... episode path will be empty
             episode["location"] = ""
         # convert stuff to human form
         episode["airdate"] = _ordinal_to_dateForm(episode["airdate"])
@@ -848,10 +873,10 @@ class CMD_Episode(ApiCall):
 class CMD_EpisodeSearch(ApiCall):
     _help = {"desc": "search for an episode. the response might take some time",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                   "season": {"desc": "the season number"},
-                                   "episode": {"desc": "the episode number"}
-                                  }
+                                    "season": {"desc": "the season number"},
+                                    "episode": {"desc": "the episode number"}
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -875,17 +900,18 @@ class CMD_EpisodeSearch(ApiCall):
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(epObj)
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item) #@UndefinedVariable
+        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  #@UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
-        while ep_queue_item.success == None: #@UndefinedVariable
+        while ep_queue_item.success == None:  #@UndefinedVariable
             time.sleep(1)
 
         # return the correct json value
         if ep_queue_item.success:
-            status, quality = Quality.splitCompositeStatus(epObj.status) #@UnusedVariable
+            status, quality = Quality.splitCompositeStatus(epObj.status)  #@UnusedVariable
             # TODO: split quality and status?
-            return _responds(RESULT_SUCCESS, {"quality": _get_quality_string(quality)}, "Snatched (" + _get_quality_string(quality) + ")")
+            return _responds(RESULT_SUCCESS, {"quality": _get_quality_string(quality)},
+                             "Snatched (" + _get_quality_string(quality) + ")")
 
         return _responds(RESULT_FAILURE, msg='Unable to find episode')
 
@@ -893,19 +919,20 @@ class CMD_EpisodeSearch(ApiCall):
 class CMD_EpisodeSetStatus(ApiCall):
     _help = {"desc": "set status of an episode or season (when no ep is provided)",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                   "season": {"desc": "the season number"},
-                                   "status": {"desc": "the status values: wanted, skipped, archived, ignored, failed"}
-                                  },
+                                    "season": {"desc": "the season number"},
+                                    "status": {"desc": "the status values: wanted, skipped, archived, ignored, failed"}
+             },
              "optionalParameters": {"episode": {"desc": "the episode number"},
                                     "force": {"desc": "should we replace existing (downloaded) episodes or not"}
-                                     }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
-        self.status, args = self.check_params(args, kwargs, "status", None, True, "string", ["wanted", "skipped", "archived", "ignored", "failed"])
+        self.status, args = self.check_params(args, kwargs, "status", None, True, "string",
+                                              ["wanted", "skipped", "archived", "ignored", "failed"])
         # optional
         self.e, args = self.check_params(args, kwargs, "episode", None, False, "int", [])
         self.force, args = self.check_params(args, kwargs, "force", 0, False, "bool", [])
@@ -923,7 +950,7 @@ class CMD_EpisodeSetStatus(ApiCall):
             if str(statusStrings[status]).lower() == str(self.status).lower():
                 self.status = status
                 break
-        else: # if we dont break out of the for loop we got here.
+        else:  # if we dont break out of the for loop we got here.
             # the allowed values has at least one item that could not be matched against the internal status strings
             raise ApiError("The status string could not be matched to a status. Report to Devs!")
 
@@ -938,7 +965,8 @@ class CMD_EpisodeSetStatus(ApiCall):
             ep_list = showObj.getAllEpisodes(season=self.s)
 
         def _epResult(result_code, ep, msg=""):
-            return {'season': ep.season, 'episode': ep.episode, 'status': _get_status_Strings(ep.status), 'result': result_type_map[result_code], 'message': msg}
+            return {'season': ep.season, 'episode': ep.episode, 'status': _get_status_Strings(ep.status),
+                    'result': result_type_map[result_code], 'message': msg}
 
         ep_results = []
         failure = False
@@ -955,14 +983,16 @@ class CMD_EpisodeSetStatus(ApiCall):
             with epObj.lock:
                 # don't let them mess up UNAIRED episodes
                 if epObj.status == UNAIRED:
-                    if self.e != None: # setting the status of a unaired is only considert a failure if we directly wanted this episode, but is ignored on a season request
-                        ep_results.append(_epResult(RESULT_FAILURE, epObj, "Refusing to change status because it is UNAIRED"))
+                    if self.e != None:  # setting the status of a unaired is only considert a failure if we directly wanted this episode, but is ignored on a season request
+                        ep_results.append(
+                            _epResult(RESULT_FAILURE, epObj, "Refusing to change status because it is UNAIRED"))
                         failure = True
                     continue
 
                 # allow the user to force setting the status for an already downloaded episode
                 if epObj.status in Quality.DOWNLOADED and not self.force:
-                    ep_results.append(_epResult(RESULT_FAILURE, epObj, "Refusing to change status because it is already marked as DOWNLOADED"))
+                    ep_results.append(_epResult(RESULT_FAILURE, epObj,
+                                                "Refusing to change status because it is already marked as DOWNLOADED"))
                     failure = True
                     continue
 
@@ -976,8 +1006,9 @@ class CMD_EpisodeSetStatus(ApiCall):
         extra_msg = ""
         if start_backlog:
             cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, ep_segment)
-            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item) #@UndefinedVariable
-            logger.log(u"API :: Starting backlog for " + showObj.name + " season " + str(ep_segment) + " because some episodes were set to WANTED")
+            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  #@UndefinedVariable
+            logger.log(u"API :: Starting backlog for " + showObj.name + " season " + str(
+                ep_segment) + " because some episodes were set to WANTED")
             extra_msg = " Backlog started"
 
         if failure:
@@ -985,13 +1016,14 @@ class CMD_EpisodeSetStatus(ApiCall):
         else:
             return _responds(RESULT_SUCCESS, msg='All status set successfully.' + extra_msg)
 
+
 class CMD_SubtitleSearch(ApiCall):
     _help = {"desc": "search episode subtitles. the response might take some time",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                   "season": {"desc": "the season number"},
-                                   "episode": {"desc": "the episode number"}
-                                  }
+                                    "season": {"desc": "the season number"},
+                                    "episode": {"desc": "the episode number"}
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1012,33 +1044,36 @@ class CMD_SubtitleSearch(ApiCall):
         epObj = showObj.getEpisode(int(self.s), int(self.e))
         if isinstance(epObj, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
-        
+
         # try do download subtitles for that episode
         previous_subtitles = epObj.subtitles
-        
+
         try:
             subtitles = epObj.downloadSubtitles()
         except:
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
-                    
+
         # return the correct json value
         if previous_subtitles != epObj.subtitles:
-            status = 'New subtitles downloaded: %s' % ' '.join(["<img src='"+sickbeard.WEB_ROOT+"/images/flags/"+subliminal.language.Language(x).alpha2+".png' alt='"+subliminal.language.Language(x).name+"'/>" for x in sorted(list(set(epObj.subtitles).difference(previous_subtitles)))])
+            status = 'New subtitles downloaded: %s' % ' '.join([
+                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + subliminal.language.Language(
+                    x).alpha2 + ".png' alt='" + subliminal.language.Language(x).name + "'/>" for x in
+                sorted(list(set(epObj.subtitles).difference(previous_subtitles)))])
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
             response = _responds(RESULT_FAILURE, msg='Unable to find subtitles')
-            
+
         ui.notifications.message('Subtitles Search', status)
-        
+
         return response
 
 
 class CMD_Exceptions(ApiCall):
     _help = {"desc": "display scene exceptions for all or a given show",
              "optionalParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1065,7 +1100,9 @@ class CMD_Exceptions(ApiCall):
             if not showObj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
-            sqlResults = myDB.select("SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions WHERE indexer_id = ?", [self.indexerid])
+            sqlResults = myDB.select(
+                "SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions WHERE indexer_id = ?",
+                [self.indexerid])
             scene_exceptions = []
             for row in sqlResults:
                 scene_exceptions.append(row["show_name"])
@@ -1078,8 +1115,8 @@ class CMD_History(ApiCall):
     _help = {"desc": "display sickbeard downloaded/snatched history",
              "optionalParameters": {"limit": {"desc": "limit returned results"},
                                     "type": {"desc": "only show a specific type of results"},
-                                   }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1106,9 +1143,13 @@ class CMD_History(ApiCall):
 
         ulimit = min(int(self.limit), 100)
         if ulimit == 0:
-            sqlResults = myDB.select("SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(['?'] * len(typeCodes)) + ") ORDER BY date DESC", typeCodes)
+            sqlResults = myDB.select(
+                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
+                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC", typeCodes)
         else:
-            sqlResults = myDB.select("SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(['?'] * len(typeCodes)) + ") ORDER BY date DESC LIMIT ?", typeCodes + [ulimit])
+            sqlResults = myDB.select(
+                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id AND action in (" + ','.join(
+                    ['?'] * len(typeCodes)) + ") ORDER BY date DESC LIMIT ?", typeCodes + [ulimit])
 
         results = []
         for row in sqlResults:
@@ -1131,7 +1172,7 @@ class CMD_History(ApiCall):
 
 class CMD_HistoryClear(ApiCall):
     _help = {"desc": "clear sickbeard's history",
-             }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1150,7 +1191,7 @@ class CMD_HistoryClear(ApiCall):
 
 class CMD_HistoryTrim(ApiCall):
     _help = {"desc": "trim sickbeard's history by removing entries greater than 30 days old"
-             }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1161,7 +1202,8 @@ class CMD_HistoryTrim(ApiCall):
     def run(self):
         """ trim sickbeard's history """
         myDB = db.DBConnection()
-        myDB.action("DELETE FROM history WHERE date < " + str((datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        myDB.action("DELETE FROM history WHERE date < " + str(
+            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
 
         myDB.connection.close()
         return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
@@ -1169,13 +1211,15 @@ class CMD_HistoryTrim(ApiCall):
 
 class CMD_Logs(ApiCall):
     _help = {"desc": "view sickbeard's log",
-             "optionalParameters": {"min_level ": {"desc": "the minimum level classification of log entries to show, with each level inherting its above level"} }
-             }
+             "optionalParameters": {"min_level ": {
+             "desc": "the minimum level classification of log entries to show, with each level inherting its above level"}}
+    }
 
     def __init__(self, args, kwargs):
         # required
         # optional
-        self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string", ["error", "warning", "info", "debug"])
+        self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string",
+                                                 ["error", "warning", "info", "debug"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1237,17 +1281,18 @@ class CMD_SickBeard(ApiCall):
 
     def run(self):
         """ display misc sickbeard related information """
-        data = {"sb_version": sickbeard.version.SICKBEARD_VERSION, "api_version": Api.version, "api_commands": sorted(_functionMaper.keys())}
+        data = {"sb_version": sickbeard.version.SICKBEARD_VERSION, "api_version": Api.version,
+                "api_commands": sorted(_functionMaper.keys())}
         return _responds(RESULT_SUCCESS, data)
 
 
 class CMD_SickBeardAddRootDir(ApiCall):
     _help = {"desc": "add a sickbeard user's parent directory",
              "requiredParameters": {"location": {"desc": "the full path to root (parent) directory"}
-                                    },
+             },
              "optionalParameters": {"default": {"desc": "make the location passed the default root (parent) directory"}
-                                    }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1278,13 +1323,13 @@ class CMD_SickBeardAddRootDir(ApiCall):
             # clean up the list - replace %xx escapes by their single-character equivalent
             root_dirs = [urllib.unquote_plus(x) for x in root_dirs]
             for x in root_dirs:
-                if(x == self.location):
+                if (x == self.location):
                     location_matched = 1
                     if (self.default == 1):
                         index = root_dirs.index(self.location)
                     break
 
-        if(location_matched == 0):
+        if (location_matched == 0):
             if (self.default == 1):
                 index = 0
                 root_dirs.insert(0, self.location)
@@ -1313,21 +1358,23 @@ class CMD_SickBeardCheckScheduler(ApiCall):
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT last_backlog FROM info")
 
-        backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused() #@UndefinedVariable
-        backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress() #@UndefinedVariable
-        searchStatus = sickbeard.currentSearchScheduler.action.amActive #@UndefinedVariable
+        backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  #@UndefinedVariable
+        backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  #@UndefinedVariable
+        searchStatus = sickbeard.currentSearchScheduler.action.amActive  #@UndefinedVariable
         nextSearch = str(sickbeard.currentSearchScheduler.timeLeft()).split('.')[0]
         nextBacklog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         myDB.connection.close()
-        data = {"backlog_is_paused": int(backlogPaused), "backlog_is_running": int(backlogRunning), "last_backlog": _ordinal_to_dateForm(sqlResults[0]["last_backlog"]), "search_is_running": int(searchStatus), "next_search": nextSearch, "next_backlog": nextBacklog}
+        data = {"backlog_is_paused": int(backlogPaused), "backlog_is_running": int(backlogRunning),
+                "last_backlog": _ordinal_to_dateForm(sqlResults[0]["last_backlog"]),
+                "search_is_running": int(searchStatus), "next_search": nextSearch, "next_backlog": nextBacklog}
         return _responds(RESULT_SUCCESS, data)
 
 
 class CMD_SickBeardDeleteRootDir(ApiCall):
     _help = {"desc": "delete a sickbeard user's parent directory",
-             "requiredParameters": {"location": {"desc": "the full path to root (parent) directory"} }
-             }
+             "requiredParameters": {"location": {"desc": "the full path to root (parent) directory"}}
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1371,7 +1418,7 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
 
 class CMD_SickBeardForceSearch(ApiCall):
     _help = {"desc": "force the episode search early"
-             }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1404,7 +1451,9 @@ class CMD_SickBeardGetDefaults(ApiCall):
 
         anyQualities, bestQualities = _mapQuality(sickbeard.QUALITY_DEFAULT)
 
-        data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(), "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": anyQualities, "archive": bestQualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED) }
+        data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
+                "flatten_folders": int(sickbeard.FLATTEN_FOLDERS_DEFAULT), "initial": anyQualities,
+                "archive": bestQualities, "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1421,8 +1470,8 @@ class CMD_SickBeardGetMessages(ApiCall):
         messages = []
         for cur_notification in ui.notifications.get_notifications():
             messages.append({"title": cur_notification.title,
-                           "message": cur_notification.message,
-                           "type": cur_notification.type})
+                             "message": cur_notification.message,
+                             "type": cur_notification.type})
         return _responds(RESULT_SUCCESS, messages)
 
 
@@ -1443,8 +1492,8 @@ class CMD_SickBeardGetRootDirs(ApiCall):
 
 class CMD_SickBeardPauseBacklog(ApiCall):
     _help = {"desc": "pause the backlog search",
-             "optionalParameters": {"pause ": {"desc": "pause or unpause the global backlog"} }
-             }
+             "optionalParameters": {"pause ": {"desc": "pause or unpause the global backlog"}}
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1456,10 +1505,10 @@ class CMD_SickBeardPauseBacklog(ApiCall):
     def run(self):
         """ pause the backlog search """
         if self.pause == True:
-            sickbeard.searchQueueScheduler.action.pause_backlog() #@UndefinedVariable
+            sickbeard.searchQueueScheduler.action.pause_backlog()  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
-            sickbeard.searchQueueScheduler.action.unpause_backlog() #@UndefinedVariable
+            sickbeard.searchQueueScheduler.action.unpause_backlog()  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog unpaused")
 
 
@@ -1499,16 +1548,16 @@ class CMD_SickBeardRestart(ApiCall):
 class CMD_SickBeardSearchTVDB(ApiCall):
     _help = {"desc": "search for show at tvdb with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
-                                   "indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
-                                     }
+                                    "indexerid": {"desc": "thetvdb.com unique id of a show"},
+                                    "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
+    }
 
     valid_languages = {
-            'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
-            'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
-            'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
-            'sv': 8, 'sl': 30}
+        'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
+        'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
+        'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
+        'sv': 8, 'sl': 30}
 
     def __init__(self, args, kwargs):
         # required
@@ -1523,7 +1572,7 @@ class CMD_SickBeardSearchTVDB(ApiCall):
 
     def run(self):
         """ search for show at tvdb with a given string and language """
-        if self.name and not self.indexerid: # only name was given
+        if self.name and not self.indexerid:  # only name was given
             baseURL = "http://thetvdb.com/api/GetSeries.php?"
             params = {"seriesname": str(self.name).encode('utf-8'), 'language': self.lang}
             finalURL = baseURL + urllib.urlencode(params)
@@ -1535,7 +1584,8 @@ class CMD_SickBeardSearchTVDB(ApiCall):
                 try:
                     seriesXML = etree.ElementTree(etree.XML(urlData))
                 except Exception, e:
-                    logger.log(u"API :: Unable to parse XML for some reason: " + ex(e) + " from XML: " + urlData, logger.ERROR)
+                    logger.log(u"API :: Unable to parse XML for some reason: " + ex(e) + " from XML: " + urlData,
+                               logger.ERROR)
                     return _responds(RESULT_FAILURE, msg="Unable to read result from tvdb")
 
                 series = seriesXML.getiterator('Series')
@@ -1555,21 +1605,23 @@ class CMD_SickBeardSearchTVDB(ApiCall):
             if self.lang and not self.lang == 'en':
                 lINDEXER_API_PARMS['language'] = self.lang
 
-            t = indexer_api.indexerApi(actors=False, **lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(actors=False, **lINDEXER_API_PARMS)
 
             try:
                 myShow = t[int(self.indexerid)]
-            except (indexer_exceptions.indexer_shownotfound, indexer_exceptions.indexer_error):
+            except (sickbeard.indexer_shownotfound, sickbeard.indexer_error):
                 logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                 return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
             if not myShow.data['seriesname']:
-                logger.log(u"API :: Found show with indexerid " + str(self.indexerid) + ", however it contained no show name", logger.DEBUG)
+                logger.log(
+                    u"API :: Found show with indexerid " + str(self.indexerid) + ", however it contained no show name",
+                    logger.DEBUG)
                 return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
             showOut = [{"indexerid": self.indexerid,
-                       "name": unicode(myShow.data['seriesname']),
-                       "first_aired": myShow.data['firstaired']}]
+                        "name": unicode(myShow.data['seriesname']),
+                        "first_aired": myShow.data['firstaired']}]
 
             return _responds(RESULT_SUCCESS, {"results": showOut, "langid": lang_id})
         else:
@@ -1582,17 +1634,22 @@ class CMD_SickBeardSetDefaults(ApiCall):
                                     "archive": {"desc": "archive quality for the show"},
                                     "flatten_folders": {"desc": "flatten subfolders within the show directory"},
                                     "status": {"desc": "status of missing episodes"}
-                                    }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
         # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
+                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
+                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
+                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl",
+                                                "hdbluray", "fullhdbluray"])
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", None, False, "bool", [])
-        self.status, args = self.check_params(args, kwargs, "status", None, False, "string", ["wanted", "skipped", "archived", "ignored"])
+        self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
+                                              ["wanted", "skipped", "archived", "ignored"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1664,8 +1721,8 @@ class CMD_SickBeardShutdown(ApiCall):
 class CMD_Show(ApiCall):
     _help = {"desc": "display information for a given show",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1726,23 +1783,29 @@ class CMD_ShowAddExisting(ApiCall):
     _help = {"desc": "add a show in sickbeard with an existing folder",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
                                     "location": {"desc": "full path to the existing folder for the show"}
-                                },
+             },
              "optionalParameters": {"initial": {"desc": "initial quality for the show"},
                                     "archive": {"desc": "archive quality for the show"},
                                     "flatten_folders": {"desc": "flatten subfolders for the show"},
                                     "subtitles": {"desc": "allow search episode subtitle"}
-                                    }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray"])
-        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
-        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES), False, "int", [])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
+                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
+                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
+                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl",
+                                                "hdbluray", "fullhdbluray"])
+        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                       str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES), False, "int",
+            [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1793,14 +1856,15 @@ class CMD_ShowAddExisting(ApiCall):
         if iqualityID or aqualityID:
             newQuality = Quality.combineQualities(iqualityID, aqualityID)
 
-        sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), self.location, SKIPPED, newQuality, int(self.flatten_folders)) #@UndefinedVariable
+        sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), self.location, SKIPPED, newQuality,
+                                                    int(self.flatten_folders))  #@UndefinedVariable
         return _responds(RESULT_SUCCESS, {"name": tvdbName}, tvdbName + " has been queued to be added")
 
 
 class CMD_ShowAddNew(ApiCall):
     _help = {"desc": "add a new show to sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                },
+             },
              "optionalParameters": {"initial": {"desc": "initial quality for the show"},
                                     "location": {"desc": "base path for where the show folder is to be created"},
                                     "archive": {"desc": "archive quality for the show"},
@@ -1808,26 +1872,33 @@ class CMD_ShowAddNew(ApiCall):
                                     "status": {"desc": "status of missing episodes"},
                                     "lang": {"desc": "the 2 letter lang abbreviation id"},
                                     "subtitles": {"desc": "allow search episode subtitle"}
-                                    }
              }
+    }
 
     valid_languages = {
-            'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
-            'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
-            'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
-            'sv': 8, 'sl': 30}
+        'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
+        'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
+        'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
+        'sv': 8, 'sl': 30}
 
     def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray"])
-        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders", str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
-        self.status, args = self.check_params(args, kwargs, "status", None, False, "string", ["wanted", "skipped", "archived", "ignored"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
+                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
+                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
+                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl",
+                                                "hdbluray", "fullhdbluray"])
+        self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
+                                                       str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False, "bool", [])
+        self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
+                                              ["wanted", "skipped", "archived", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
-        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES), False, "int", [])
+        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES), False, "int",
+            [])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -1913,19 +1984,22 @@ class CMD_ShowAddNew(ApiCall):
             dir_exists = helpers.makeDir(showPath)
             if not dir_exists:
                 logger.log(u"API :: Unable to create the folder " + showPath + ", can't add the show", logger.ERROR)
-                return _responds(RESULT_FAILURE, {"path": showPath}, "Unable to create the folder " + showPath + ", can't add the show")
+                return _responds(RESULT_FAILURE, {"path": showPath},
+                                 "Unable to create the folder " + showPath + ", can't add the show")
             else:
                 helpers.chmodAsParent(showPath)
 
-        sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), showPath, newStatus, newQuality, int(self.flatten_folders), self.subtitles, self.lang) #@UndefinedVariable
+        sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), showPath, newStatus, newQuality,
+                                                    int(self.flatten_folders), self.subtitles,
+                                                    self.lang)  #@UndefinedVariable
         return _responds(RESULT_SUCCESS, {"name": tvdbName}, tvdbName + " has been queued to be added")
 
 
 class CMD_ShowCache(ApiCall):
     _help = {"desc": "check sickbeard's cache to see if the banner or poster image for a show is valid",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                    }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1959,8 +2033,8 @@ class CMD_ShowCache(ApiCall):
 class CMD_ShowDelete(ApiCall):
     _help = {"desc": "delete a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -1975,7 +2049,8 @@ class CMD_ShowDelete(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        if sickbeard.showQueueScheduler.action.isBeingAdded(showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj): #@UndefinedVariable
+        if sickbeard.showQueueScheduler.action.isBeingAdded(
+                showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  #@UndefinedVariable
             return _responds(RESULT_FAILURE, msg="Show can not be deleted while being added or updated")
 
         showObj.deleteShow()
@@ -1985,8 +2060,8 @@ class CMD_ShowDelete(ApiCall):
 class CMD_ShowGetQuality(ApiCall):
     _help = {"desc": "get quality setting for a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2009,8 +2084,8 @@ class CMD_ShowGetQuality(ApiCall):
 class CMD_ShowGetPoster(ApiCall):
     _help = {"desc": "get the poster stored for a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2027,8 +2102,8 @@ class CMD_ShowGetPoster(ApiCall):
 class CMD_ShowGetBanner(ApiCall):
     _help = {"desc": "get the banner stored for a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2045,10 +2120,10 @@ class CMD_ShowGetBanner(ApiCall):
 class CMD_ShowPause(ApiCall):
     _help = {"desc": "set a show's paused state in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  },
+             },
              "optionalParameters": {"pause": {"desc": "set the pause state of the show"}
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2077,8 +2152,8 @@ class CMD_ShowPause(ApiCall):
 class CMD_ShowRefresh(ApiCall):
     _help = {"desc": "refresh a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2094,7 +2169,7 @@ class CMD_ShowRefresh(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.refreshShow(showObj) #@UndefinedVariable
+            sickbeard.showQueueScheduler.action.refreshShow(showObj)  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be refreshed")
         except exceptions.CantRefreshException:
             # TODO: log the excption
@@ -2104,16 +2179,17 @@ class CMD_ShowRefresh(ApiCall):
 class CMD_ShowSeasonList(ApiCall):
     _help = {"desc": "display the season list for a given show",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                    },
+             },
              "optionalParameters": {"sort": {"desc": "change the sort order from descending to ascending"}
-                                     }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
-        self.sort, args = self.check_params(args, kwargs, "sort", "desc", False, "string", ["asc", "desc"]) # "asc" and "desc" default and fallback is "desc"
+        self.sort, args = self.check_params(args, kwargs, "sort", "desc", False, "string",
+                                            ["asc", "desc"])  # "asc" and "desc" default and fallback is "desc"
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -2125,10 +2201,12 @@ class CMD_ShowSeasonList(ApiCall):
 
         myDB = db.DBConnection(row_type="dict")
         if self.sort == "asc":
-            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC", [self.indexerid])
+            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC",
+                                     [self.indexerid])
         else:
-            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [self.indexerid])
-        seasonList = [] # a list with all season numbers
+            sqlResults = myDB.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
+                                     [self.indexerid])
+        seasonList = []  # a list with all season numbers
         for row in sqlResults:
             seasonList.append(int(row["season"]))
 
@@ -2139,10 +2217,10 @@ class CMD_ShowSeasonList(ApiCall):
 class CMD_ShowSeasons(ApiCall):
     _help = {"desc": "display a listing of episodes for all or a given season",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  },
+             },
              "optionalParameters": {"season": {"desc": "the season number"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2161,7 +2239,8 @@ class CMD_ShowSeasons(ApiCall):
         myDB = db.DBConnection(row_type="dict")
 
         if self.season == None:
-            sqlResults = myDB.select("SELECT name, episode, airdate, status, season FROM tv_episodes WHERE showid = ?", [self.indexerid])
+            sqlResults = myDB.select("SELECT name, episode, airdate, status, season FROM tv_episodes WHERE showid = ?",
+                                     [self.indexerid])
             seasons = {}
             for row in sqlResults:
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
@@ -2177,7 +2256,9 @@ class CMD_ShowSeasons(ApiCall):
                 seasons[curSeason][curEpisode] = row
 
         else:
-            sqlResults = myDB.select("SELECT name, episode, airdate, status FROM tv_episodes WHERE showid = ? AND season = ?", [self.indexerid, self.season])
+            sqlResults = myDB.select(
+                "SELECT name, episode, airdate, status FROM tv_episodes WHERE showid = ? AND season = ?",
+                [self.indexerid, self.season])
             if len(sqlResults) is 0:
                 return _responds(RESULT_FAILURE, msg="Season not found")
             seasons = {}
@@ -2197,13 +2278,14 @@ class CMD_ShowSeasons(ApiCall):
 
 
 class CMD_ShowSetQuality(ApiCall):
-    _help = {"desc": "set desired quality of a show in sickbeard. if neither initial or archive are provided then the config default quality will be used",
-             "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
-                                },
-             "optionalParameters": {"initial": {"desc": "initial quality for the show"},
-                                    "archive": {"desc": "archive quality for the show"}
-                                    }
-             }
+    _help = {
+    "desc": "set desired quality of a show in sickbeard. if neither initial or archive are provided then the config default quality will be used",
+    "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
+    },
+    "optionalParameters": {"initial": {"desc": "initial quality for the show"},
+                           "archive": {"desc": "archive quality for the show"}
+    }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2211,8 +2293,12 @@ class CMD_ShowSetQuality(ApiCall):
         # optional
         # this for whatever reason removes hdbluray not sdtv... which is just wrong. reverting to previous code.. plus we didnt use the new code everywhere.
         # self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", _getQualityMap().values()[1:])
-        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list", ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
-        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list", ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl", "hdbluray", "fullhdbluray"])
+        self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
+                                               ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
+                                                "fullhdwebdl", "hdbluray", "fullhdbluray", "unknown"])
+        self.archive, args = self.check_params(args, kwargs, "archive", None, False, "list",
+                                               ["sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl", "fullhdwebdl",
+                                                "hdbluray", "fullhdbluray"])
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
 
@@ -2251,14 +2337,15 @@ class CMD_ShowSetQuality(ApiCall):
             newQuality = Quality.combineQualities(iqualityID, aqualityID)
         showObj.quality = newQuality
 
-        return _responds(RESULT_SUCCESS, msg=showObj.name + " quality has been changed to " + _get_quality_string(showObj.quality))
+        return _responds(RESULT_SUCCESS,
+                         msg=showObj.name + " quality has been changed to " + _get_quality_string(showObj.quality))
 
 
 class CMD_ShowStats(ApiCall):
     _help = {"desc": "display episode statistics for a given show",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2300,7 +2387,8 @@ class CMD_ShowStats(ApiCall):
             episode_qualities_counts_snatch[statusCode] = 0
 
         myDB = db.DBConnection(row_type="dict")
-        sqlResults = myDB.select("SELECT status, season FROM tv_episodes WHERE season != 0 AND showid = ?", [self.indexerid])
+        sqlResults = myDB.select("SELECT status, season FROM tv_episodes WHERE season != 0 AND showid = ?",
+                                 [self.indexerid])
         # the main loop that goes through all episodes
         for row in sqlResults:
             status, quality = Quality.splitCompositeStatus(int(row["status"]))
@@ -2313,7 +2401,7 @@ class CMD_ShowStats(ApiCall):
             elif status in Quality.SNATCHED + Quality.SNATCHED_PROPER:
                 episode_qualities_counts_snatch["total"] += 1
                 episode_qualities_counts_snatch[int(row["status"])] += 1
-            elif status == 0: # we dont count NONE = 0 = N/A
+            elif status == 0:  # we dont count NONE = 0 = N/A
                 pass
             else:
                 episode_status_counts_total[status] += 1
@@ -2350,7 +2438,8 @@ class CMD_ShowStats(ApiCall):
                 episodes_stats["total"] = episode_status_counts_total[statusCode]
                 continue
             status, quality = Quality.splitCompositeStatus(int(statusCode))
-            statusString = statusStrings.statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(")", "")
+            statusString = statusStrings.statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(
+                ")", "")
             episodes_stats[statusString] = episode_status_counts_total[statusCode]
 
         myDB.connection.close()
@@ -2360,8 +2449,8 @@ class CMD_ShowStats(ApiCall):
 class CMD_ShowUpdate(ApiCall):
     _help = {"desc": "update a show in sickbeard",
              "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                  }
              }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2377,7 +2466,7 @@ class CMD_ShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.updateShow(showObj, True) #@UndefinedVariable
+            sickbeard.showQueueScheduler.action.updateShow(showObj, True)  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has queued to be updated")
         except exceptions.CantUpdateException, e:
             logger.log(u"API:: Unable to update " + str(showObj.name) + ". " + str(ex(e)), logger.ERROR)
@@ -2388,8 +2477,8 @@ class CMD_Shows(ApiCall):
     _help = {"desc": "display all shows in sickbeard",
              "optionalParameters": {"sort": {"desc": "sort the list of shows by show name instead of indexerid"},
                                     "paused": {"desc": "only show the shows that are set to paused"},
-                                  },
-             }
+             },
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2432,7 +2521,7 @@ class CMD_Shows(ApiCall):
 
 class CMD_ShowsStats(ApiCall):
     _help = {"desc": "display the global shows and episode stats"
-             }
+    }
 
     def __init__(self, args, kwargs):
         # required
@@ -2447,9 +2536,16 @@ class CMD_ShowsStats(ApiCall):
         myDB = db.DBConnection()
         today = str(datetime.date.today().toordinal())
         stats["shows_total"] = len(sickbeard.showList)
-        stats["shows_active"] = len([show for show in sickbeard.showList if show.paused == 0 and show.status != "Ended"])
-        stats["ep_downloaded"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join([str(show) for show in Quality.DOWNLOADED + [ARCHIVED]]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][0]
-        stats["ep_total"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join([str(show) for show in (Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER) + [ARCHIVED]]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
+        stats["shows_active"] = len(
+            [show for show in sickbeard.showList if show.paused == 0 and show.status != "Ended"])
+        stats["ep_downloaded"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
+            [str(show) for show in
+             Quality.DOWNLOADED + [ARCHIVED]]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][
+            0]
+        stats["ep_total"] = myDB.select(
+            "SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join(
+                [str(show) for show in (Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER) + [
+                    ARCHIVED]]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
         myDB.connection.close()
         return _responds(RESULT_SUCCESS, stats)
 
@@ -2499,5 +2595,5 @@ _functionMaper = {"help": CMD_Help,
                   "show.stats": CMD_ShowStats,
                   "show.update": CMD_ShowUpdate,
                   "shows": CMD_Shows,
-                  "shows.stats": CMD_ShowsStats                  
-                  }
+                  "shows.stats": CMD_ShowsStats
+}

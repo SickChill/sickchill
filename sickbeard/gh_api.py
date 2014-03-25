@@ -69,7 +69,8 @@ class GitHub(object):
 
         Returns a deserialized json object containing the commit info. See http://developer.github.com/v3/repos/commits/
         """
-        access_API = self._access_API(['repos', self.github_repo_user, self.github_repo, 'commits'], params={'per_page': 100, 'sha': self.branch})
+        access_API = self._access_API(['repos', self.github_repo_user, self.github_repo, 'commits'],
+                                      params={'per_page': 100, 'sha': self.branch})
         return access_API
 
     def compare(self, base, head, per_page=1):
@@ -84,5 +85,7 @@ class GitHub(object):
 
         Returns a deserialized json object containing the compare info. See http://developer.github.com/v3/repos/commits/
         """
-        access_API = self._access_API(['repos', self.github_repo_user, self.github_repo, 'compare', base + '...' + head], params={'per_page': per_page})
+        access_API = self._access_API(
+            ['repos', self.github_repo_user, self.github_repo, 'compare', base + '...' + head],
+            params={'per_page': per_page})
         return access_API

@@ -1,5 +1,4 @@
 #import sickbeard
-#from sickbeard.common import indexerStrings
 #set global $header="Post Processing"
 #set global $title="Post Processing"
 
@@ -8,18 +7,18 @@
 #set global $topmenu="home"#
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-#if $varExists('header') 
+#if $varExists('header')
 	<h1 class="header">$header</h1>
-#else 
+#else
 	<h1 class="title">$title</h1>
 #end if
 <form name="processForm" method="post" action="processEpisode" style="line-height: 44px">
-<input type="hidden" id="type" name="type" value="manual"> 
+<input type="hidden" id="type" name="type" value="manual">
 <b>Enter the folder containing the episode:</b> <input type="text" name="dir" id="episodeDir" size="50" /><br/>
 <b>Show Indexer to be used:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <select name="indexer" id="indexer" class="indexer">
-    #for $curIndexer in sorted($indexerStrings.items(), key=lambda x: x[1]):
-        <option value="$curIndexer[0]" #if $curIndexer[0] in $indexerStrings then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
+    #for $curIndexer in sorted($sickbeard.indexerApi().indexers.items(), key=lambda x: x[1]):
+        <option value="$curIndexer[0]" #if $curIndexer[0] in $sickbeard.indexerApi().indexers then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
     #end for
 </select>
 <br/>
@@ -39,14 +38,12 @@
 <b>Mark Dir/Files as priority download:</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="is_priority" name="is_priority" type="checkbox">
 <span style="line-height: 0; font-size: 12px;"><i>(Check it to replace the file even if it exists at higher quality)</i></span><br/>
 #if $sickbeard.USE_FAILED_DOWNLOADS:
-
 <b>Mark download as failed:</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 	<input id="failed" name="failed" type="checkbox"><br />
 #end if
 <br/>
 <input id="submit" class="btn btn-primary" type="submit" value="Process" />
 </form>
-
 
 <script type="text/javascript" charset="utf-8">
 <!--

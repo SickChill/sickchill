@@ -33,8 +33,9 @@ from lib.unidecode import unidecode
 
 
 resultFilters = ["sub(pack|s|bed)", "swesub(bed)?",
-                 "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras", 
+                 "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
+
 
 def filterBadReleases(name):
     """
@@ -75,6 +76,7 @@ def filterBadReleases(name):
 
     return True
 
+
 def sceneToNormalShowNames(name):
     """
     Takes a show name from a scene dirname and converts it to a more "human-readable" format.
@@ -88,7 +90,7 @@ def sceneToNormalShowNames(name):
         return []
 
     name_list = [name]
-    
+
     # use both and and &
     new_name = re.sub('(?i)([\. ])and([\. ])', '\\1&\\2', name, re.I)
     if new_name not in name_list:
@@ -99,7 +101,7 @@ def sceneToNormalShowNames(name):
     for cur_name in name_list:
         # add brackets around the year
         results.append(re.sub('(\D)(\d{4})$', '\\1(\\2)', cur_name))
-    
+
         # add brackets around the country
         country_match_str = '|'.join(countryList.values())
         results.append(re.sub('(?i)([. _-])(' + country_match_str + ')$', '\\1(\\2)', cur_name))
@@ -108,8 +110,8 @@ def sceneToNormalShowNames(name):
 
     return list(set(results))
 
-def makeSceneShowSearchStrings(show):
 
+def makeSceneShowSearchStrings(show):
     showNames = allPossibleShowNames(show)
 
     # scenify the names
@@ -117,17 +119,18 @@ def makeSceneShowSearchStrings(show):
 
 
 def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
-
     myDB = db.DBConnection()
 
     if show.air_by_date:
         numseasons = 0
-        
+
         # the search string for air by date shows is just 
         seasonStrings = [segment]
-    
+
     else:
-        numseasonsSQlResult = myDB.select("SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0", [show.indexerid])
+        numseasonsSQlResult = myDB.select(
+            "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
+            [show.indexerid])
         numseasons = int(numseasonsSQlResult[0][0])
 
         seasonStrings = ["S%02d" % segment]
@@ -147,16 +150,19 @@ def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
             else:
                 for cur_season in seasonStrings:
                     toReturn.append(curShow + "." + cur_season)
-        
+
     return toReturn
 
 
 def makeSceneSearchString(episode):
-
     myDB = db.DBConnection()
-    numseasonsSQlResult = myDB.select("SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0", [episode.show.indexerid])
+    numseasonsSQlResult = myDB.select(
+        "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
+        [episode.show.indexerid])
     numseasons = int(numseasonsSQlResult[0][0])
-    numepisodesSQlResult = myDB.select("SELECT COUNT(episode) as numepisodes FROM tv_episodes WHERE showid = ? and season != 0", [episode.show.indexerid])
+    numepisodesSQlResult = myDB.select(
+        "SELECT COUNT(episode) as numepisodes FROM tv_episodes WHERE showid = ? and season != 0",
+        [episode.show.indexerid])
     numepisodes = int(numepisodesSQlResult[0][0])
 
     # see if we should use dates instead of episodes
@@ -164,7 +170,7 @@ def makeSceneSearchString(episode):
         epStrings = [str(episode.airdate)]
     else:
         epStrings = ["S%02iE%02i" % (int(episode.season), int(episode.episode)),
-                    "%ix%02i" % (int(episode.season), int(episode.episode))]
+                     "%ix%02i" % (int(episode.season), int(episode.episode))]
 
     # for single-season shows just search for the show name -- if total ep count (exclude s0) is less than 11
     # due to the amount of qualities and releases, it is easy to go over the 50 result limit on rss feeds otherwise
@@ -181,6 +187,7 @@ def makeSceneSearchString(episode):
 
     return toReturn
 
+
 def isGoodResult(name, show, log=True):
     """
     Use an automatically-created regex to make sure the result actually is the show it claims to be
@@ -188,7 +195,7 @@ def isGoodResult(name, show, log=True):
 
     all_show_names = allPossibleShowNames(show)
     showNames = map(sanitizeSceneName, all_show_names) + all_show_names
-    showNames += map(unidecode, all_show_names) 
+    showNames += map(unidecode, all_show_names)
 
     for curName in set(showNames):
         escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(curName))
@@ -205,8 +212,10 @@ def isGoodResult(name, show, log=True):
             return True
 
     if log:
-        logger.log(u"Provider gave result " + name + " but that doesn't seem like a valid result for "+show.name+" so I'm ignoring it")
+        logger.log(
+            u"Provider gave result " + name + " but that doesn't seem like a valid result for " + show.name + " so I'm ignoring it")
     return False
+
 
 def allPossibleShowNames(show):
     """
@@ -259,7 +268,8 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     for search in file_types:
 
         reg_expr = re.compile(fnmatch.translate(search), re.IGNORECASE)
-        files = [file_name for file_name in ek.ek(os.listdir, dir_name) if ek.ek(os.path.isfile, ek.ek(os.path.join, dir_name, file_name))]
+        files = [file_name for file_name in ek.ek(os.listdir, dir_name) if
+                 ek.ek(os.path.isfile, ek.ek(os.path.join, dir_name, file_name))]
         results = filter(reg_expr.search, files)
 
         if len(results) == 1:

@@ -23,91 +23,91 @@ from base64 import b64encode
 import sickbeard
 from sickbeard.clients.generic import GenericClient
 
+
 class TransmissionAPI(GenericClient):
-    
     def __init__(self, host=None, username=None, password=None):
-        
+
         super(TransmissionAPI, self).__init__('Transmission', host, username, password)
-      
+
         self.url = self.host + 'transmission/rpc'
 
     def _get_auth(self):
 
-        post_data = json.dumps({'method': 'session-get',})
+        post_data = json.dumps({'method': 'session-get', })
 
-        try: 
+        try:
             self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
             self.auth = re.search('X-Transmission-Session-Id:\s*(\w+)', self.response.text).group(1)
         except:
-            return None     
-        
+            return None
+
         self.session.headers.update({'x-transmission-session-id': self.auth})
-        
+
         #Validating Transmission authorization
         post_data = json.dumps({'arguments': {},
                                 'method': 'session-get',
-                                })       
-        self._request(method='post', data=post_data)            
-        
-        return self.auth     
+        })
+        self._request(method='post', data=post_data)
+
+        return self.auth
 
     def _add_torrent_uri(self, result):
 
-        arguments = { 'filename': result.url,
-                      'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
-                      'download-dir': sickbeard.TORRENT_PATH
-                      }
-        post_data = json.dumps({ 'arguments': arguments,
-                                 'method': 'torrent-add',
-                                 })        
+        arguments = {'filename': result.url,
+                     'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
+                     'download-dir': sickbeard.TORRENT_PATH
+        }
+        post_data = json.dumps({'arguments': arguments,
+                                'method': 'torrent-add',
+        })
         self._request(method='post', data=post_data)
 
         return self.response.json()['result'] == "success"
 
     def _add_torrent_file(self, result):
 
-        arguments = { 'metainfo': b64encode(result.content),
-                      'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
-                      'download-dir': sickbeard.TORRENT_PATH
-                      }        
+        arguments = {'metainfo': b64encode(result.content),
+                     'paused': 1 if sickbeard.TORRENT_PAUSED else 0,
+                     'download-dir': sickbeard.TORRENT_PATH
+        }
         post_data = json.dumps({'arguments': arguments,
                                 'method': 'torrent-add',
-                                })
+        })
         self._request(method='post', data=post_data)
-        
+
         return self.response.json()['result'] == "success"
 
     def _set_torrent_ratio(self, result):
-        
+
         torrent_id = self._get_torrent_hash(result)
-        
+
         if sickbeard.TORRENT_RATIO == '':
             # Use global settings
             ratio = None
             mode = 0
         elif float(sickbeard.TORRENT_RATIO) == 0:
             ratio = 0
-            mode  = 2    
+            mode = 2
         elif float(sickbeard.TORRENT_RATIO) > 0:
             ratio = float(sickbeard.TORRENT_RATIO)
-            mode = 1 # Stop seeding at seedRatioLimit
+            mode = 1  # Stop seeding at seedRatioLimit
 
-        arguments = { 'ids': [torrent_id],
-                      'seedRatioLimit': ratio,
-                      'seedRatioMode': mode
-                      } 
+        arguments = {'ids': [torrent_id],
+                     'seedRatioLimit': ratio,
+                     'seedRatioMode': mode
+        }
         post_data = json.dumps({'arguments': arguments,
                                 'method': 'torrent-set',
-                                })       
-        self._request(method='post', data=post_data)            
-        
-        return self.response.json()['result'] == "success"    
+        })
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == "success"
 
     def _set_torrent_priority(self, result):
 
         torrent_id = self._get_torrent_hash(result)
 
-        arguments = { 'ids': [torrent_id]}
+        arguments = {'ids': [torrent_id]}
 
         if result.priority == -1:
             arguments['priority-low'] = []
@@ -120,13 +120,13 @@ class TransmissionAPI(GenericClient):
                 arguments['bandwidthPriority'] = 1
         else:
             arguments['priority-normal'] = []
-        
+
         post_data = json.dumps({'arguments': arguments,
                                 'method': 'torrent-set',
-                                })       
-        self._request(method='post', data=post_data)            
-        
-        return self.response.json()['result'] == "success"    
-	
+        })
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == "success"
+
 
 api = TransmissionAPI()

@@ -30,7 +30,6 @@ except ImportError:
 
 
 class HDBitsProvider(generic.TorrentProvider):
-
     def __init__(self):
 
         generic.TorrentProvider.__init__(self, "HDBits")
@@ -49,7 +48,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _checkAuth(self):
 
-        if not sickbeard.HDBITS_USERNAME  or not sickbeard.HDBITS_PASSKEY:
+        if not sickbeard.HDBITS_USERNAME or not sickbeard.HDBITS_PASSKEY:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -61,8 +60,10 @@ class HDBitsProvider(generic.TorrentProvider):
 
         if 'status' in parsedJSON and 'message' in parsedJSON:
             if parsedJSON.get('status') == 5:
-                logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'], logger.DEBUG)
-                raise AuthException("Your authentication credentials for " + self.name + " are incorrect, check your config.")
+                logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
+                           logger.DEBUG)
+                raise AuthException(
+                    "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
 
@@ -115,16 +116,19 @@ class HDBitsProvider(generic.TorrentProvider):
 
                 if episode.show.air_by_date:
                     if parse_result.air_date != episode.airdate:
-                        logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it", logger.DEBUG)
+                        logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it",
+                                   logger.DEBUG)
                         continue
                 elif parse_result.season_number != episode.season or episode.episode not in parse_result.episode_numbers:
-                    logger.log(u"Episode " + title + " isn't " + str(episode.season) + "x" + str(episode.episode) + ", skipping it", logger.DEBUG)
+                    logger.log(u"Episode " + title + " isn't " + str(episode.season) + "x" + str(
+                        episode.episode) + ", skipping it", logger.DEBUG)
                     continue
 
                 quality = self.getQuality(item)
 
                 if not episode.show.wantEpisode(episode.season, episode.episode, quality, manualSearch):
-                    logger.log(u"Ignoring result " + title + " because we don't want an episode that is " + Quality.qualityStrings[quality], logger.DEBUG)
+                    logger.log(u"Ignoring result " + title + " because we don't want an episode that is " +
+                               Quality.qualityStrings[quality], logger.DEBUG)
                     continue
 
                 logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
@@ -170,7 +174,6 @@ class HDBitsProvider(generic.TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-
     def __init__(self, provider):
 
         tvcache.TVCache.__init__(self, provider)
@@ -206,7 +209,8 @@ class HDBitsCache(tvcache.TVCache):
                 if parsedJSON and 'data' in parsedJSON:
                     items = parsedJSON['data']
                 else:
-                    logger.log(u"Resulting JSON from " + self.provider.name + " isn't correct, not parsing it", logger.ERROR)
+                    logger.log(u"Resulting JSON from " + self.provider.name + " isn't correct, not parsing it",
+                               logger.ERROR)
                     return []
 
                 cl = []
@@ -214,13 +218,14 @@ class HDBitsCache(tvcache.TVCache):
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
-        
+
                 if len(cl) > 0:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
 
             else:
-                raise exceptions.AuthException("Your authentication info for " + self.provider.name + " is incorrect, check your config")
+                raise exceptions.AuthException(
+                    "Your authentication info for " + self.provider.name + " is incorrect, check your config")
 
         else:
             return []
@@ -236,10 +241,12 @@ class HDBitsCache(tvcache.TVCache):
             logger.log(u"Adding item to results: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
         else:
-            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable", logger.ERROR)
+            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable",
+                       logger.ERROR)
             return None
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
+
 
 provider = HDBitsProvider()

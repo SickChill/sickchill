@@ -21,7 +21,6 @@ from sickbeard import logger
 
 
 def getShowImage(url, imgNum=None):
-
     image_data = None  # @UnusedVariable
 
     if url == None:

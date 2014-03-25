@@ -39,9 +39,10 @@ sb_timezone = tz.tzlocal()
 # helper to remove failed temp download
 def _remove_zoneinfo_failed(filename):
     try:
-        ek.ek(os.remove,filename)
+        ek.ek(os.remove, filename)
     except:
         pass
+
 
 # helper to remove old unneeded zoneinfo files
 def _remove_old_zoneinfo():
@@ -49,23 +50,24 @@ def _remove_old_zoneinfo():
         cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
     else:
         return
-    
-    cur_file = helpers.real_path(ek.ek(join,ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
-    
-    for (path, dirs, files) in ek.ek(os.walk,helpers.real_path(ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__))):
+
+    cur_file = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
+
+    for (path, dirs, files) in ek.ek(os.walk,
+                                     helpers.real_path(ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__))):
         for filename in files:
             if filename.endswith('.tar.gz'):
-                file_w_path = ek.ek(join,path,filename)
-                if file_w_path != cur_file and ek.ek(isfile,file_w_path):
+                file_w_path = ek.ek(join, path, filename)
+                if file_w_path != cur_file and ek.ek(isfile, file_w_path):
                     try:
-                        ek.ek(os.remove,file_w_path)
+                        ek.ek(os.remove, file_w_path)
                         logger.log(u"Delete unneeded old zoneinfo File: " + file_w_path)
                     except:
-                        logger.log(u"Unable to delete: " + file_w_path,logger.ERROR)
+                        logger.log(u"Unable to delete: " + file_w_path, logger.ERROR)
+
 
 # update the dateutil zoneinfo
 def _update_zoneinfo():
-
     global sb_timezone
     sb_timezone = tz.tzlocal()
 
@@ -90,36 +92,37 @@ def _update_zoneinfo():
 
     # now load the new zoneinfo
     url_tar = u'https://github.com/Prinz23/sb_network_timezones/raw/master/' + new_zoneinfo
-    
-    zonefile = helpers.real_path(ek.ek(join,ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), new_zoneinfo))
-    zonefile_tmp = re.sub(r"\.tar\.gz$",'.tmp', zonefile)
 
-    if (ek.ek(os.path.exists,zonefile_tmp)):
+    zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), new_zoneinfo))
+    zonefile_tmp = re.sub(r"\.tar\.gz$", '.tmp', zonefile)
+
+    if (ek.ek(os.path.exists, zonefile_tmp)):
         try:
-            ek.ek(os.remove,zonefile_tmp)
+            ek.ek(os.remove, zonefile_tmp)
         except:
-            logger.log(u"Unable to delete: " + zonefile_tmp,logger.ERROR)
+            logger.log(u"Unable to delete: " + zonefile_tmp, logger.ERROR)
             return
 
     if not helpers.download_file(url_tar, zonefile_tmp):
         return
 
-    if not ek.ek(os.path.exists,zonefile_tmp):
-        logger.log(u"Download of " + zonefile_tmp + " failed.",logger.ERROR)
+    if not ek.ek(os.path.exists, zonefile_tmp):
+        logger.log(u"Download of " + zonefile_tmp + " failed.", logger.ERROR)
         return
 
     new_hash = str(helpers.md5_for_file(zonefile_tmp))
 
     if (zoneinfo_md5.upper() == new_hash.upper()):
-        logger.log(u"Updating timezone info with new one: " + new_zoneinfo,logger.MESSAGE)
+        logger.log(u"Updating timezone info with new one: " + new_zoneinfo, logger.MESSAGE)
         try:
             # remove the old zoneinfo file
             if (cur_zoneinfo is not None):
-                old_file = helpers.real_path(ek.ek(join,ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
-                if (ek.ek(os.path.exists,old_file)):
-                    ek.ek(os.remove,old_file)
+                old_file = helpers.real_path(
+                    ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
+                if (ek.ek(os.path.exists, old_file)):
+                    ek.ek(os.remove, old_file)
             # rename downloaded file
-            ek.ek(os.rename,zonefile_tmp,zonefile)
+            ek.ek(os.rename, zonefile_tmp, zonefile)
             # load the new zoneinfo
             reload(lib.dateutil.zoneinfo)
             sb_timezone = tz.tzlocal()
@@ -128,12 +131,12 @@ def _update_zoneinfo():
             return
     else:
         _remove_zoneinfo_failed(zonefile_tmp)
-        logger.log(u"MD5 HASH doesn't match: " + zoneinfo_md5.upper() + ' File: ' + new_hash.upper(),logger.ERROR)
+        logger.log(u"MD5 HASH doesn't match: " + zoneinfo_md5.upper() + ' File: ' + new_hash.upper(), logger.ERROR)
         return
+
 
 # update the network timezone table
 def update_network_dict():
-
     _remove_old_zoneinfo()
     _update_zoneinfo()
 
@@ -152,10 +155,10 @@ def update_network_dict():
 
     try:
         for line in url_data.splitlines():
-           (key, val) = line.decode('utf-8').strip().rsplit(u':',1)
-           if key is None or val is None:
-               continue
-           d[key] = val
+            (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
+            if key is None or val is None:
+                continue
+            d[key] = val
     except (IOError, OSError):
         pass
 
@@ -169,7 +172,8 @@ def update_network_dict():
         h_k = old_d.has_key(cur_d)
         if h_k and cur_t != old_d[cur_d]:
             # update old record
-            ql.append(["UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?", [cur_d, cur_t, cur_d]])
+            ql.append(
+                ["UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?", [cur_d, cur_t, cur_d]])
         elif not h_k:
             # add new record
             ql.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
@@ -178,11 +182,12 @@ def update_network_dict():
     # remove deleted records
     if len(old_d) > 0:
         L = list(va for va in old_d)
-        ql.append(["DELETE FROM network_timezones WHERE network_name IN ("+','.join(['?'] * len(L))+")", L])
+        ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
     # change all network timezone infos at once (much faster)
     if len(ql) > 0:
         myDB.mass_action(ql)
         load_network_dict()
+
 
 # load network timezones from db into dict
 def load_network_dict():
@@ -199,6 +204,7 @@ def load_network_dict():
     global network_dict
     network_dict = d
 
+
 # get timezone of a network or return default timezone
 def get_network_timezone(network, network_dict):
     if network is None:
@@ -206,7 +212,7 @@ def get_network_timezone(network, network_dict):
 
     try:
         if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
-            n_t =  tz.gettz(network_dict[network])
+            n_t = tz.gettz(network_dict[network])
             if n_t is not None:
                 return n_t
             else:
@@ -215,6 +221,7 @@ def get_network_timezone(network, network_dict):
             return sb_timezone
     except:
         return sb_timezone
+
 
 # parse date and time string into local time
 def parse_date_time(d, t, network):
@@ -256,6 +263,7 @@ def parse_date_time(d, t, network):
         return foreign_naive.astimezone(sb_timezone)
     except (ValueError):
         return foreign_naive
+
 
 def test_timeformat(t):
     mo = time_regex.search(t)

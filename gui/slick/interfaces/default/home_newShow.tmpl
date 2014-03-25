@@ -27,15 +27,11 @@
 <form id="addShowForm" method="post" action="$sbRoot/home/addShows/addNewShow" accept-charset="utf-8">
 
 <fieldset class="sectionwrap">
-    <legend class="legendStep">Find a show on the TVDB and TVRAGE</legend>
+    <legend class="legendStep">Find a show on the TVDB or TVRAGE</legend>
 
     <div class="stepDiv">
         #if $use_provided_info:
-            #if 'Tvdb' in $provided_indexer
-                Show retrieved from existing metadata: <a href="http://thetvdb.com/?tab=series&id=$provided_indexer_id">$provided_indexer_name</a>
-            #else
-                Show retrieved from existing metadata: <a href="http://tvrage.com/shows/id-$provided_indexer_id">$provided_indexer_name</a>
-            #end if
+            Show retrieved from existing metadata: <a href="$sickbeard.indexerApi($provided_indexer).config["show_url"]$provided_indexer_id">$provided_indexer_name</a>
             <input type="hidden" name="indexerLang" value="en" />
             <input type="hidden" name="whichSeries" value="$provided_indexer_id" />
             <input type="hidden" id="providedName" value="$provided_indexer_name" />

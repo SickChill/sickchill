@@ -27,7 +27,6 @@ import generic
 from sickbeard import logger, exceptions, helpers
 from sickbeard import encodingKludge as ek
 
-from sickbeard.indexers import indexer_api, indexer_exceptions
 from sickbeard.exceptions import ex
 
 import xml.etree.cElementTree as etree
@@ -135,7 +134,8 @@ class WDTVMetadata(generic.GenericMetadata):
         If no season folder exists, None is returned
         """
 
-        dir_list = [x for x in ek.ek(os.listdir, show_obj.location) if ek.ek(os.path.isdir, ek.ek(os.path.join, show_obj.location, x))]
+        dir_list = [x for x in ek.ek(os.listdir, show_obj.location) if
+                    ek.ek(os.path.isdir, ek.ek(os.path.join, show_obj.location, x))]
 
         season_dir_regex = '^Season\s+(\d+)$'
 
@@ -187,12 +187,13 @@ class WDTVMetadata(generic.GenericMetadata):
             if ep_obj.show.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
-        except indexer_exceptions.indexer_shownotfound, e:
+        except sickbeard.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(e.message)
-        except indexer_exceptions.indexer_error, e:
-            logger.log(u"Unable to connect to " + ep_obj.show.indexer + " while creating meta files - skipping - " + ex(e), logger.ERROR)
+        except sickbeard.indexer_error, e:
+            logger.log(u"Unable to connect to " + sickbeard.indexerApi(
+                ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)
             return False
 
         rootNode = etree.Element("details")
@@ -202,8 +203,10 @@ class WDTVMetadata(generic.GenericMetadata):
 
             try:
                 myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (indexer_exceptions.indexer_episodenotfound, indexer_exceptions.indexer_seasonnotfound):
-                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(curEpToWrite.episode) + " on " + ep_obj.show.indexer + "... has it been removed? Should I delete from db?")
+            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+                logger.log(u"Unable to find episode " + str(curEpToWrite.season) + "x" + str(
+                    curEpToWrite.episode) + " on " + sickbeard.indexerApi(
+                    ep_obj.show.indexer).name + "... has it been removed? Should I delete from db?")
                 return None
 
             if getattr(myEp, 'firstaired', None) is None and ep_obj.season == 0:

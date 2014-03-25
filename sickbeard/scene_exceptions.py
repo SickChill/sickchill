@@ -17,11 +17,13 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import sickbeard
 
 from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
+
 
 def get_scene_exceptions(indexer_id):
     """
@@ -42,7 +44,8 @@ def get_scene_exception_by_name(show_name):
     myDB = db.DBConnection("cache.db")
 
     # try the obvious case first
-    exception_result = myDB.select("SELECT indexer_id FROM scene_exceptions WHERE LOWER(show_name) = ?", [show_name.lower()])
+    exception_result = myDB.select("SELECT indexer_id FROM scene_exceptions WHERE LOWER(show_name) = ?",
+                                   [show_name.lower()])
     if exception_result:
         return int(exception_result[0]["indexer_id"])
 
@@ -52,8 +55,9 @@ def get_scene_exception_by_name(show_name):
         cur_exception_name = cur_exception["show_name"]
         cur_indexer_id = int(cur_exception["indexer_id"])
 
-        if show_name.lower() in (cur_exception_name.lower(), helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
-            logger.log(u"Scene exception lookup got indexer id "+str(cur_indexer_id)+u", using that", logger.DEBUG)
+        if show_name.lower() in (
+        cur_exception_name.lower(), helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
+            logger.log(u"Scene exception lookup got indexer id " + str(cur_indexer_id) + u", using that", logger.DEBUG)
             return cur_indexer_id
 
     return None
@@ -66,16 +70,13 @@ def retrieve_exceptions():
     """
 
     exception_dict = {}
-    url_data = ''
 
     # exceptions are stored on github pages
-    url_dict = {
-        'TheTVDB': 'http://midgetspy.github.com/sb_tvdb_scene_exceptions/exceptions.txt',
-        'TVRage': 'http://raw.github.com/echel0n/sb_tvrage_scene_exceptions/master/exceptions.txt'
-        }
 
-    for indexer, url in url_dict.iteritems():
-        logger.log(u"Checking for scene exception updates for " + indexer)
+    for indexer in sickbeard.indexerApi().indexers:
+        logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
+
+        url = sickbeard.indexerApi(indexer).config['scene_url']
 
         url_data = helpers.getURL(url)
 
@@ -88,7 +89,7 @@ def retrieve_exceptions():
             # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
             for cur_line in url_data.splitlines():
                 cur_line = cur_line.decode('utf-8')
-                indexer_id, sep, aliases = cur_line.partition(':') #@UnusedVariable
+                indexer_id, sep, aliases = cur_line.partition(':')  #@UnusedVariable
 
                 if not aliases:
                     continue
@@ -108,12 +109,14 @@ def retrieve_exceptions():
     for cur_indexer_id in exception_dict:
 
         # get a list of the existing exceptions for this ID
-        existing_exceptions = [x["show_name"] for x in myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
+        existing_exceptions = [x["show_name"] for x in
+                               myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
 
         for cur_exception in exception_dict[cur_indexer_id]:
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
-                myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [cur_indexer_id, cur_exception])
+                myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)",
+                            [cur_indexer_id, cur_exception])
                 changed_exceptions = True
 
     # since this could invalidate the results of the cache we clear it out after updating
@@ -122,17 +125,18 @@ def retrieve_exceptions():
         name_cache.clearCache()
     else:
         logger.log(u"No scene exceptions update needed")
-                    
+
+
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
-    
+
     myDB = db.DBConnection("cache.db")
-    
+
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
-    
+
     for cur_exception in scene_exceptions:
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [indexer_id, cur_exception])
-    
+
     name_cache.clearCache()        

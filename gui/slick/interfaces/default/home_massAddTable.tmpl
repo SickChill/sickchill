@@ -1,7 +1,5 @@
 #import sickbeard
-#from sickbeard.common import indexerStrings
 
-#set $rowidx = 0
 <table id="addRootDirTable" class="sickbeardTable tablesorter">
   <thead><tr><th width="1%"><input type="checkbox" id="checkAll" checked=checked></th><th>Directory</th><th width="20%">Show Name (tvshow.nfo)<th width="20%">Indexer</td></tr></thead>
   <tfoot>
@@ -16,27 +14,23 @@
 #end if
 
 #set $show_id = $curDir['dir']
-#set $indexer = 'Tvdb'
+#set $indexer = 1
 #if $curDir['existing_info'][0]:
-#set $show_id = $show_id + '|' + $str($curDir['existing_info'][0]) + '|' + str($curDir['existing_info'][1])
-#set $indexer = $str($curDir['existing_info'][2])
+#set $show_id = $show_id + '|' + $str($curDir['existing_info'][0]) + '|' + $str($curDir['existing_info'][1])
+#set $indexer = $curDir['existing_info'][2]
 #end if
 
-#set $rowidx = $rowidx + 1
-
-  <tr id=$rowidx>
+  <tr>
     <td><input type="checkbox" id="$show_id" class="dirCheck" checked=checked></td>
     <td><label for="$show_id">$curDir['display_dir']</label></td>
-    #if 'Tvdb' in $indexer
-        <td>#if $curDir['existing_info'][0] and $curDir['existing_info'][1] then '<a href="http://thetvdb.com/?tab=series&id='+$str($curDir['existing_info'][0])+'">'+$curDir['existing_info'][1]+'</a>' else "?"#</td>
-    #elif 'TVRage' in $indexer
-        <td>#if $curDir['existing_info'][1] then '<a href="http://tvrage.com/shows/id-'+$str($curDir['existing_info'][0])+'">'+$curDir['existing_info'][1]+'</a>' else "?"#</td>
-    #else
-    <td>$curDir['existing_info'][1]</td>
+    #if $curDir['existing_info'][1]:
+        <td><a href="$sickbeard.indexerApi($indexer).config["show_url"]$curDir['existing_info'][0]">$curDir['existing_info'][1]</a></td>
+    #else:
+        <td>?</td>
     #end if
     <td>
         <select name="indexer">
-            #for $curIndexer in sorted($indexerStrings.items(), key=lambda x: x[1]):
+            #for $curIndexer in $sickbeard.indexerApi().indexers.items():
                 <option value="$curIndexer[0]" #if $curIndexer[0] == $indexer then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
             #end for
         </select>

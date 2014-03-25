@@ -29,9 +29,9 @@ from sickbeard import db
 import sickbeard
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
-                    "s%(seasonnumber)02de%(episodenumber)02d",
-                    "S%(seasonnumber)02dE%(episodenumber)02d",
-                    "%(seasonnumber)02dx%(episodenumber)02d")
+                  "s%(seasonnumber)02de%(episodenumber)02d",
+                  "S%(seasonnumber)02dE%(episodenumber)02d",
+                  "%(seasonnumber)02dx%(episodenumber)02d")
 naming_ep_type_text = ("1x02", "s01e02", "S01E02", "01x02")
 
 naming_multi_ep_type = {0: ["-%(episodenumber)02d"] * len(naming_ep_type),
@@ -44,7 +44,6 @@ naming_sep_type_text = (" - ", "space")
 
 
 def change_HTTPS_CERT(https_cert):
-
     if https_cert == '':
         sickbeard.HTTPS_CERT = ''
         return True
@@ -60,7 +59,6 @@ def change_HTTPS_CERT(https_cert):
 
 
 def change_HTTPS_KEY(https_key):
-
     if https_key == '':
         sickbeard.HTTPS_KEY = ''
         return True
@@ -76,7 +74,6 @@ def change_HTTPS_KEY(https_key):
 
 
 def change_LOG_DIR(log_dir, web_log):
-
     log_dir_changed = False
     abs_log_dir = os.path.normpath(os.path.join(sickbeard.DATA_DIR, log_dir))
     web_log_value = checkbox_to_value(web_log)
@@ -110,7 +107,6 @@ def change_LOG_DIR(log_dir, web_log):
 
 
 def change_NZB_DIR(nzb_dir):
-
     if nzb_dir == '':
         sickbeard.NZB_DIR = ''
         return True
@@ -126,7 +122,6 @@ def change_NZB_DIR(nzb_dir):
 
 
 def change_TORRENT_DIR(torrent_dir):
-
     if torrent_dir == '':
         sickbeard.TORRENT_DIR = ''
         return True
@@ -142,7 +137,6 @@ def change_TORRENT_DIR(torrent_dir):
 
 
 def change_TV_DOWNLOAD_DIR(tv_download_dir):
-
     if tv_download_dir == '':
         sickbeard.TV_DOWNLOAD_DIR = ''
         return True
@@ -158,7 +152,6 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
 
 
 def change_SEARCH_FREQUENCY(freq):
-
     sickbeard.SEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
 
     if sickbeard.SEARCH_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
@@ -169,7 +162,6 @@ def change_SEARCH_FREQUENCY(freq):
 
 
 def change_VERSION_NOTIFY(version_notify):
-
     oldSetting = sickbeard.VERSION_NOTIFY
 
     sickbeard.VERSION_NOTIFY = version_notify
@@ -235,7 +227,6 @@ def clean_host(host, default_port=None):
 
 
 def clean_hosts(hosts, default_port=None):
-
     cleaned_hosts = []
 
     for cur_host in [x.strip() for x in hosts.split(",")]:
@@ -344,7 +335,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, log=True):
         encryption_version = sickbeard.ENCRYPTION_VERSION
     else:
         encryption_version = 0
-        
+
     try:
         my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
     except:
@@ -363,7 +354,6 @@ def check_setting_str(config, cfg_name, item_name, def_val, log=True):
 
 
 class ConfigMigrator():
-
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config
@@ -380,7 +370,7 @@ class ConfigMigrator():
                                 3: 'Rename omgwtfnzb variables',
                                 4: 'Add newznab catIDs',
                                 5: 'Metadata update'
-                                }
+        }
 
     def migrate_config(self):
         """
@@ -388,7 +378,9 @@ class ConfigMigrator():
         """
 
         if self.config_version > self.expected_config_version:
-            logger.log_error_and_exit(u"Your config version (" + str(self.config_version) + ") has been incremented past what this version of Sick Beard supports (" + str(self.expected_config_version) + ").\n" + \
+            logger.log_error_and_exit(u"Your config version (" + str(
+                self.config_version) + ") has been incremented past what this version of Sick Beard supports (" + str(
+                self.expected_config_version) + ").\n" + \
                                       "If you have used other forks or a newer version of Sick Beard, your config file may be unusable due to their modifications.")
 
         sickbeard.CONFIG_VERSION = self.config_version
@@ -452,7 +444,8 @@ class ConfigMigrator():
                     new_season_format = new_season_format.replace('09', '%0S')
                     new_season_format = new_season_format.replace('9', '%S')
 
-                    logger.log(u"Changed season folder format from " + old_season_format + " to " + new_season_format + ", prepending it to your naming config")
+                    logger.log(
+                        u"Changed season folder format from " + old_season_format + " to " + new_season_format + ", prepending it to your naming config")
                     sickbeard.NAMING_PATTERN = new_season_format + os.sep + sickbeard.NAMING_PATTERN
 
                 except (TypeError, ValueError):
@@ -552,7 +545,8 @@ class ConfigMigrator():
                 try:
                     name, url, key, enabled = cur_provider_data.split("|")
                 except ValueError:
-                    logger.log(u"Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format", logger.ERROR)
+                    logger.log(u"Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format",
+                               logger.ERROR)
                     continue
 
                 if name == 'Sick Beard Index':
@@ -623,7 +617,8 @@ class ConfigMigrator():
                 logger.log(u"Upgrading " + metadata_name + " metadata, new value: " + metadata)
 
             else:
-                logger.log(u"Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format", logger.ERROR)
+                logger.log(u"Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format",
+                           logger.ERROR)
                 metadata = '0|0|0|0|0|0|0|0|0|0'
                 logger.log(u"Setting " + metadata_name + " metadata, new value: " + metadata)
 

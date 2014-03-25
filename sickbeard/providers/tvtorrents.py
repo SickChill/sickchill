@@ -31,7 +31,6 @@ from sickbeard import tvcache
 
 
 class TvTorrentsProvider(generic.TorrentProvider):
-
     def __init__(self):
 
         generic.TorrentProvider.__init__(self, "TvTorrents")
@@ -63,23 +62,22 @@ class TvTorrentsProvider(generic.TorrentProvider):
         description_text = helpers.get_xml_text(parsedXML.find('.//channel/description'))
 
         if "User can't be found" in description_text or "Invalid Hash" in description_text:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text), logger.DEBUG)
-            raise AuthException(u"Your authentication credentials for " + self.name + " are incorrect, check your config")
+            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text),
+                       logger.DEBUG)
+            raise AuthException(
+                u"Your authentication credentials for " + self.name + " are incorrect, check your config")
 
         return True
 
 
 class TvTorrentsCache(tvcache.TVCache):
-
     def __init__(self, provider):
-
         tvcache.TVCache.__init__(self, provider)
 
         # only poll TvTorrents every 15 minutes max
         self.minTime = 15
 
     def _getRSSData(self):
-
         # These will be ignored on the serverside.
         ignore_regex = "all.month|month.of|season[\s\d]*complete"
 
@@ -95,6 +93,7 @@ class TvTorrentsCache(tvcache.TVCache):
         return data
 
     def _checkAuth(self, parsedXML):
-            return self.provider._checkAuthFromData(parsedXML)
+        return self.provider._checkAuthFromData(parsedXML)
+
 
 provider = TvTorrentsProvider()

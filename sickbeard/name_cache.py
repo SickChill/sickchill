@@ -19,6 +19,7 @@
 from sickbeard import db
 from sickbeard.helpers import sanitizeSceneName
 
+
 def addNameToCache(name, indexer_id):
     """
     Adds the show & tvdb id to the scene_names table in cache.db.
@@ -26,15 +27,16 @@ def addNameToCache(name, indexer_id):
     name: The show name to cache
     indexer_id: the TVDB and TVRAGE id that this show should be cached with (can be None/0 for unknown)
     """
-    
+
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
-    
+
     if not indexer_id:
         indexer_id = 0
-    
+
     cacheDB = db.DBConnection('cache.db')
     cacheDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+
 
 def retrieveNameFromCache(name):
     """
@@ -44,17 +46,18 @@ def retrieveNameFromCache(name):
     
     Returns: the TVDB and TVRAGE id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
-    
+
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
-    
+
     cacheDB = db.DBConnection('cache.db')
     cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
 
     if not cache_results:
         return None
-    
+
     return int(cache_results[0]["indexer_id"])
+
 
 def clearCache():
     """

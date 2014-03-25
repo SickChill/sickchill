@@ -24,7 +24,6 @@ from sickbeard import tvcache
 
 
 class WombleProvider(generic.NZBProvider):
-
     def __init__(self):
         generic.NZBProvider.__init__(self, "Womble's Index")
         self.cache = WombleCache(self)
@@ -35,7 +34,6 @@ class WombleProvider(generic.NZBProvider):
 
 
 class WombleCache(tvcache.TVCache):
-
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         # only poll Womble's Index every 15 minutes max
@@ -49,5 +47,6 @@ class WombleCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'
+
 
 provider = WombleProvider()

@@ -28,8 +28,8 @@ from sickbeard.exceptions import ex
 
 API_URL = "https://boxcar.io/devices/providers/fWc4sgSmpcN6JujtBmR6/notifications"
 
-class BoxcarNotifier:
 
+class BoxcarNotifier:
     def test_notify(self, email, title="Test"):
         return self._sendBoxcar("This is a test notification from SickBeard", title, email)
 
@@ -44,7 +44,7 @@ class BoxcarNotifier:
         
         returns: True if the message succeeded, False otherwise
         """
-        
+
         # build up the URL and parameters
         msg = msg.strip()
         curUrl = API_URL
@@ -53,7 +53,7 @@ class BoxcarNotifier:
         if subscribe:
             data = urllib.urlencode({'email': email})
             curUrl = curUrl + "/subscribe"
-        
+
         # for normal requests we need all these parameters
         else:
             data = urllib.urlencode({
@@ -61,7 +61,7 @@ class BoxcarNotifier:
                 'notification[from_screen_name]': title,
                 'notification[message]': msg.encode('utf-8'),
                 'notification[from_remote_service_id]': int(time.time())
-                })
+            })
 
 
         # send the request to boxcar
@@ -69,7 +69,7 @@ class BoxcarNotifier:
             req = urllib2.Request(curUrl)
             handle = urllib2.urlopen(req, data)
             handle.close()
-            
+
         except urllib2.URLError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
@@ -82,16 +82,16 @@ class BoxcarNotifier:
             if e.code == 404:
                 logger.log("Username is wrong/not a boxcar email. Boxcar will send an email to it", logger.WARNING)
                 return False
-            
+
             # For HTTP status code 401's, it is because you are passing in either an invalid token, or the user has not added your service.
             elif e.code == 401:
-                
+
                 # If the user has already added your service, we'll return an HTTP status code of 401.
                 if subscribe:
                     logger.log("Already subscribed to service", logger.ERROR)
                     # i dont know if this is true or false ... its neither but i also dont know how we got here in the first place
                     return False
-                
+
                 #HTTP status 401 if the user doesn't have the service added
                 else:
                     subscribeNote = self._sendBoxcar(msg, title, email, True)
@@ -101,7 +101,7 @@ class BoxcarNotifier:
                     else:
                         logger.log("Subscription could not be send", logger.ERROR)
                         return False
-            
+
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
             elif e.code == 400:
                 logger.log("Wrong data send to boxcar", logger.ERROR)
@@ -113,7 +113,7 @@ class BoxcarNotifier:
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         if sickbeard.BOXCAR_NOTIFY_ONSNATCH:
             self._notifyBoxcar(title, ep_name)
-            
+
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         if sickbeard.BOXCAR_NOTIFY_ONDOWNLOAD:
@@ -145,5 +145,6 @@ class BoxcarNotifier:
 
         self._sendBoxcar(message, title, username)
         return True
+
 
 notifier = BoxcarNotifier

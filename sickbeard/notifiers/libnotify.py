@@ -22,6 +22,7 @@ import sickbeard
 
 from sickbeard import logger, common
 
+
 def diagnose():
     '''
     Check the environment for reasons libnotify isn't working.  Return a
@@ -114,5 +115,6 @@ class LibnotifyNotifier:
             return n.show()
         except self.gobject.GError:
             return False
+
 
 notifier = LibnotifyNotifier

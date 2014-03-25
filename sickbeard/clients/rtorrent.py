@@ -23,8 +23,8 @@ from sickbeard.clients.generic import GenericClient
 from lib.rtorrent import RTorrent
 from lib.rtorrent.err import MethodError
 
-class rTorrentAPI(GenericClient):
 
+class rTorrentAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):
         super(rTorrentAPI, self).__init__('rTorrent', host, username, password)
 
@@ -112,8 +112,8 @@ class rTorrentAPI(GenericClient):
         if not result:
             return False
 
-        # group_name = 'sb_test'.lower() ##### Use provider instead of _test
-        # if not self._set_torrent_ratio(group_name):
+            # group_name = 'sb_test'.lower() ##### Use provider instead of _test
+            # if not self._set_torrent_ratio(group_name):
             # return False
 
         # Send request to rTorrent
@@ -145,36 +145,36 @@ class rTorrentAPI(GenericClient):
     def _set_torrent_ratio(self, name):
 
         # if not name:
-            # return False
+        # return False
         #
         # if not self.auth:
-            # return False
+        # return False
         #
         # views = self.auth.get_views()
         #
         # if name not in views:
-            # self.auth.create_group(name)
+        # self.auth.create_group(name)
 
         # group = self.auth.get_group(name)
 
         # ratio = int(float(sickbeard.TORRENT_RATIO) * 100)
         #
         # try:
-            # if ratio > 0:
-                #
-                # # Explicitly set all group options to ensure it is setup correctly
-                # group.set_upload('1M')
-                # group.set_min(ratio)
-                # group.set_max(ratio)
-                # group.set_command('d.stop')
-                # group.enable()
-            # else:
-                # # Reset group action and disable it
-                # group.set_command()
-                # group.disable()
+        # if ratio > 0:
+        #
+        # # Explicitly set all group options to ensure it is setup correctly
+        # group.set_upload('1M')
+        # group.set_min(ratio)
+        # group.set_max(ratio)
+        # group.set_command('d.stop')
+        # group.enable()
+        # else:
+        # # Reset group action and disable it
+        # group.set_command()
+        # group.disable()
         #
         # except:
-            # return False
+        # return False
 
         return True
 
@@ -187,6 +187,7 @@ class rTorrentAPI(GenericClient):
             else:
                 return False, 'Error: Unable to get ' + self.name + ' Authentication, check your config!'
         except Exception:
-            return False, 'Error: Unable to connect to '+ self.name
+            return False, 'Error: Unable to connect to ' + self.name
+
 
 api = rTorrentAPI()

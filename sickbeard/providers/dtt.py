@@ -31,8 +31,8 @@ from sickbeard.helpers import sanitizeSceneName, get_xml_text
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
 
-class DTTProvider(generic.TorrentProvider):
 
+class DTTProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "DailyTvTorrents")
         self.supportsBacklog = True
@@ -41,45 +41,45 @@ class DTTProvider(generic.TorrentProvider):
 
     def isEnabled(self):
         return sickbeard.DTT
-        
+
     def imageName(self):
         return 'dailytvtorrents.gif'
-      
+
     def getQuality(self, item):
         url = item.getElementsByTagName('enclosure')[0].getAttribute('url')
         quality = Quality.sceneQuality(url)
         return quality
 
     def findSeasonResults(self, show, season):
-        
+
         return generic.TorrentProvider.findSeasonResults(self, show, season)
-    
+
     def _dtt_show_id(self, show_name):
-        return sanitizeSceneName(show_name).replace('.','-').lower()
+        return sanitizeSceneName(show_name).replace('.', '-').lower()
 
     def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
         search_string = []
 
         for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-            show_string = sanitizeSceneName(show_name).replace('.','-').lower()
+            show_string = sanitizeSceneName(show_name).replace('.', '-').lower()
             search_string.append(show_string)
 
         return search_string
-    
+
     def _get_episode_search_strings(self, episode):
         return self._get_season_search_strings(episode.show, episode.season)
-  
-    def _doSearch(self, search_params, show=None):
-        
-#        show_id = self._dtt_show_id(show.name)
 
-        params = {"items" : "all"}
+    def _doSearch(self, search_params, show=None):
+
+        #        show_id = self._dtt_show_id(show.name)
+
+        params = {"items": "all"}
 
         if sickbeard.DTT_NORAR:
-            params.update({"norar" : "yes"})
+            params.update({"norar": "yes"})
 
         if sickbeard.DTT_SINGLE:
-            params.update({"single" : "yes"})
+            params.update({"single": "yes"})
 
         searchURL = self.url + "rss/show/" + search_params + "?" + urllib.urlencode(params)
 
@@ -89,13 +89,13 @@ class DTTProvider(generic.TorrentProvider):
 
         if not data:
             return []
-        
+
         try:
             parsedXML = parseString(data)
             items = parsedXML.getElementsByTagName('item')
         except Exception, e:
-            logger.log(u"Error trying to load DTT RSS feed: "+ex(e), logger.ERROR)
-            logger.log(u"RSS data: "+data, logger.DEBUG)
+            logger.log(u"Error trying to load DTT RSS feed: " + ex(e), logger.ERROR)
+            logger.log(u"RSS data: " + data, logger.DEBUG)
             return []
 
         results = []
@@ -114,8 +114,8 @@ class DTTProvider(generic.TorrentProvider):
 
         return (title, url)
 
-class DTTCache(tvcache.TVCache):
 
+class DTTCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
 
@@ -123,23 +123,24 @@ class DTTCache(tvcache.TVCache):
         self.minTime = 30
 
     def _getRSSData(self):
- 
-        params = {"items" : "all"}
+
+        params = {"items": "all"}
 
         if sickbeard.DTT_NORAR:
-            params.update({"norar" : "yes"})
+            params.update({"norar": "yes"})
 
         if sickbeard.DTT_SINGLE:
-            params.update({"single" : "yes"})
+            params.update({"single": "yes"})
 
         url = self.provider.url + 'rss/allshows?' + urllib.urlencode(params)
-        logger.log(u"DTT cache update URL: "+ url, logger.DEBUG)
+        logger.log(u"DTT cache update URL: " + url, logger.DEBUG)
         data = self.provider.getURL(url)
         return data
 
     def _parseItem(self, item):
         title, url = self.provider._get_title_and_url(item)
-        logger.log(u"Adding item from RSS to cache: "+title, logger.DEBUG)
+        logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url)
+
 
 provider = DTTProvider()

@@ -25,8 +25,10 @@ import datetime
 
 from common import USER_AGENT, Quality
 
+
 class SickBeardURLopener(urllib.FancyURLopener):
     version = USER_AGENT
+
 
 class AuthURLOpener(SickBeardURLopener):
     """
@@ -36,13 +38,14 @@ class AuthURLOpener(SickBeardURLopener):
     user: username to use for HTTP auth
     pw: password to use for HTTP auth
     """
+
     def __init__(self, user, pw):
         self.username = user
         self.password = pw
 
         # remember if we've tried the username/password before
         self.numTries = 0
-        
+
         # call the base class
         urllib.FancyURLopener.__init__(self)
 
@@ -56,7 +59,7 @@ class AuthURLOpener(SickBeardURLopener):
         if self.numTries == 0:
             self.numTries = 1
             return (self.username, self.password)
-        
+
         # if we've tried before then return blank which cancels the request
         else:
             return ('', '')
@@ -65,6 +68,7 @@ class AuthURLOpener(SickBeardURLopener):
     def openit(self, url):
         self.numTries = 0
         return SickBeardURLopener.open(self, url)
+
 
 class SearchResult:
     """
@@ -112,17 +116,20 @@ class SearchResult:
     def fileName(self):
         return self.episodes[0].prettyName() + "." + self.resultType
 
+
 class NZBSearchResult(SearchResult):
     """
     Regular NZB result with an URL to the NZB
     """
     resultType = "nzb"
 
+
 class NZBDataSearchResult(SearchResult):
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
     resultType = "nzbdata"
+
 
 class TorrentSearchResult(SearchResult):
     """
@@ -131,26 +138,46 @@ class TorrentSearchResult(SearchResult):
     resultType = "torrent"
 
 
+class AllShowsListUI:
+    """
+    This class is for tvdb-api. Instead of prompting with a UI to pick the
+    desired result out of a list of shows it tries to be smart about it
+    based on what shows are in SB.
+    """
+
+    def __init__(self, config, log=None):
+        self.config = config
+        self.log = log
+
+    def selectSeries(self, allSeries):
+        # get all available shows
+        if allSeries:
+            return allSeries
+
+
 class ShowListUI:
     """
     This class is for tvdb-api. Instead of prompting with a UI to pick the
     desired result out of a list of shows it tries to be smart about it
     based on what shows are in SB. 
     """
+
     def __init__(self, config, log=None):
         self.config = config
         self.log = log
 
     def selectSeries(self, allSeries):
-        idList = [x.indexerid for x in sickbeard.showList]
+        if sickbeard.showList:
+            idList = [x.indexerid for x in sickbeard.showList]
 
-        # try to pick a show that's in my show list
-        for curShow in allSeries:
-            if int(curShow['id']) in idList:
-                return curShow
+            # try to pick a show that's in my show list
+            for curShow in allSeries:
+                if int(curShow['id']) in idList:
+                    return curShow
 
-        # if nothing matches then just go with the first match I guess
+        # if nothing matches then return everything
         return allSeries[0]
+
 
 class Proper:
     def __init__(self, name, url, date):
@@ -166,7 +193,8 @@ class Proper:
         self.episode = -1
 
     def __str__(self):
-        return str(self.date)+" "+self.name+" "+str(self.season)+"x"+str(self.episode)+" of "+str(self.indexerid+" from "+self.indexer)
+        return str(self.date) + " " + self.name + " " + str(self.season) + "x" + str(self.episode) + " of " + str(
+            self.indexerid) + " from " + str(sickbeard.indexerApi(self.indexer).name)
 
 
 class ErrorViewer():
@@ -188,10 +216,12 @@ class ErrorViewer():
     def clear():
         ErrorViewer.errors = []
 
+
 class UIError():
     """
     Represents an error to be displayed in the web UI.
     """
+
     def __init__(self, message):
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')

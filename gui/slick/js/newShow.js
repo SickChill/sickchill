@@ -54,28 +54,28 @@ $(document).ready(function () {
 
                     var whichSeries = obj.join('|');
 
+
                     resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
-                    if (obj[0] == 'Tvdb' && data.langid && data.langid != "") {
-                        resultStr += '<a href="http://thetvdb.com/?tab=series&id=' + obj[1] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
-                    } else if (obj[0] == 'Tvdb') {
-                        resultStr += '<a href="http://thetvdb.com/?tab=series&id=' + obj[1] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
+                    if (data.langid && data.langid != "") {
+                        resultStr += '<a href="'+ obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                     } else {
-                        resultStr += '<a href="http://tvrage.com/shows/id-' + obj[1] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
+                        resultStr += '<a href="'+ obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
                     }
 
-                    if (obj[3] !== null) {
-                        var startDate = new Date(obj[3]);
+                    if (obj[5] !== null) {
+                        var startDate = new Date(obj[5]);
                         var today = new Date();
                         if (startDate > today) {
-                            resultStr += ' (will debut on ' + obj[3] + ')';
+                            resultStr += ' (will debut on ' + obj[5] + ')';
                         } else {
-                            resultStr += ' (started on ' + obj[3] + ')';
+                            resultStr += ' (started on ' + obj[5] + ')';
                         }
                     }
 
                     if (obj[0] !== null) {
                         resultStr += ' [' + obj[0] + ']';
                     }
+
                     resultStr += '<br />';
                 });
                 resultStr += '</ul>';
@@ -146,7 +146,7 @@ $(document).ready(function () {
         var show_name, sep_char;
         // if they've picked a radio button then use that
         if ($('input:radio[name=whichSeries]:checked').length) {
-            show_name = $('input:radio[name=whichSeries]:checked').val().split('|')[2];
+            show_name = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
         }
         // if we provided a show in the hidden field, use that
         else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) {

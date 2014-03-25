@@ -26,7 +26,7 @@ def show_info(indexer_id):
         if time.time() < (cachedResult['mtime'] + UPDATE_INTERVAL):
             # cached result is still considered current, use it
             return cachedResult['response']
-        # otherwise we just fall through to lookup
+            # otherwise we just fall through to lookup
     except KeyError:
         pass  # no cached value, just fall through to lookup
 
@@ -42,6 +42,6 @@ def show_info(indexer_id):
 
     # result is good, store it for later
     _tvtumber_cache[str(indexer_id)] = {'mtime': time.time(),
-                                    'response': result['show']}
+                                        'response': result['show']}
 
     return result['show']

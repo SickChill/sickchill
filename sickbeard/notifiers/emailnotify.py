@@ -31,10 +31,11 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard.exceptions import ex
 
+
 class EmailNotifier:
     def __init__(self):
         self.last_err = None
-        
+
     def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
         msg = MIMEText('This is a test message from Sick Beard.  If you\'re reading this, the test succeeded.')
         msg['Subject'] = 'Sick Beard: Test Message'
@@ -55,19 +56,25 @@ class EmailNotifier:
             if len(to) == 0:
                 logger.log('Skipping email notify because there are no configured recepients', logger.WARNING)
             else:
-            	try:
-	                msg = MIMEMultipart('alternative')
-	                msg.attach(MIMEText("<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Snatched</h3>\n<p>Show: <b>" + re.search("(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(".+ - (.+?-.+) -.+", ep_name).group(1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>", 'html'))
-            	except:
-	            	msg = MIMEText(ep_name)
-	            
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Snatched</h3>\n<p>Show: <b>" + re.search(
+                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
+                            ".+ - (.+?-.+) -.+", ep_name).group(
+                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                        'html'))
+                except:
+                    msg = MIMEText(ep_name)
+
                 msg['Subject'] = 'Snatched: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
-                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS, sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
+                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
+                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log("Snatch notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
-                    logger.log("Snatch notification ERROR: %s" % self.last_err, logger.ERROR)                
+                    logger.log("Snatch notification ERROR: %s" % self.last_err, logger.ERROR)
 
     def notify_download(self, ep_name, title="Completed:"):
         """
@@ -82,16 +89,22 @@ class EmailNotifier:
             if len(to) == 0:
                 logger.log('Skipping email notify because there are no configured recepients', logger.WARNING)
             else:
-            	try:
-	                msg = MIMEMultipart('alternative')
-	                msg.attach(MIMEText("<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Downloaded</h3>\n<p>Show: <b>" + re.search("(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(".+ - (.+?-.+) -.+", ep_name).group(1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>", 'html'))
-            	except:
-	            	msg = MIMEText(ep_name)
-	            
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Downloaded</h3>\n<p>Show: <b>" + re.search(
+                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
+                            ".+ - (.+?-.+) -.+", ep_name).group(
+                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                        'html'))
+                except:
+                    msg = MIMEText(ep_name)
+
                 msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
-                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS, sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
+                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
+                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
                     logger.log("Download notification ERROR: %s" % self.last_err, logger.ERROR)
@@ -109,16 +122,22 @@ class EmailNotifier:
             if len(to) == 0:
                 logger.log('Skipping email notify because there are no configured recepients', logger.WARNING)
             else:
-            	try:
-	                msg = MIMEMultipart('alternative')
-	                msg.attach(MIMEText("<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Subtitle Downloaded</h3>\n<p>Show: <b>" + re.search("(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(".+ - (.+?-.+) -.+", ep_name).group(1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>", 'html'))
-            	except:
-	            	msg = MIMEText(ep_name + ": " + lang)
-	            
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Subtitle Downloaded</h3>\n<p>Show: <b>" + re.search(
+                            "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
+                            ".+ - (.+?-.+) -.+", ep_name).group(
+                            1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                        'html'))
+                except:
+                    msg = MIMEText(ep_name + ": " + lang)
+
                 msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
-                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS, sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
+                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
+                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
                     logger.log("Download notification ERROR: %s" % self.last_err, logger.ERROR)
@@ -128,7 +147,7 @@ class EmailNotifier:
 
         # Grab the global recipients
         for addr in sickbeard.EMAIL_LIST.split(','):
-            if(len(addr.strip()) > 0):
+            if (len(addr.strip()) > 0):
                 addrs.append(addr)
 
         # Grab the recipients for the show
@@ -137,15 +156,16 @@ class EmailNotifier:
             for subs in mydb.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
                 if subs['notify_list']:
                     for addr in subs['notify_list'].split(','):
-                        if(len(addr.strip()) > 0):
+                        if (len(addr.strip()) > 0):
                             addrs.append(addr)
-                        
+
         addrs = set(addrs)
         logger.log('Notification recepients: %s' % addrs, logger.DEBUG)
         return addrs
-    
+
     def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
-        logger.log('HOST: %s; PORT: %s; FROM: %s, TLS: %s, USER: %s, PWD: %s, TO: %s' % (host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
+        logger.log('HOST: %s; PORT: %s; FROM: %s, TLS: %s, USER: %s, PWD: %s, TO: %s' % (
+        host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         srv = smtplib.SMTP(host, int(port))
         if smtpDebug:
             srv.set_debuglevel(1)
@@ -172,5 +192,6 @@ class EmailNotifier:
         titles.sort(key=len, reverse=True)
         logger.log("TITLES: %s" % titles, logger.DEBUG)
         return titles
-        
+
+
 notifier = EmailNotifier

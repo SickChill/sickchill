@@ -75,7 +75,7 @@ def loadShowsFromDB():
 
     for sqlShow in sqlResults:
         try:
-            curShow = TVShow(sqlShow["indexer"], int(sqlShow["indexer_id"]))
+            curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
             sickbeard.showList.append(curShow)
         except Exception, e:
             logger.log(u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'), logger.ERROR)

@@ -32,7 +32,6 @@ from sickbeard.exceptions import ex
 
 
 def getSeasonNZBs(name, urlData, season):
-
     try:
         showXML = etree.ElementTree(etree.XML(urlData))
     except SyntaxError:
@@ -78,7 +77,6 @@ def getSeasonNZBs(name, urlData, season):
 
 
 def createNZBString(fileElements, xmlns):
-
     rootElement = etree.Element("nzb")
     if xmlns:
         rootElement.set("xmlns", xmlns)
@@ -90,7 +88,6 @@ def createNZBString(fileElements, xmlns):
 
 
 def saveNZB(nzbName, nzbString):
-
     try:
         with ek.ek(open, nzbName + ".nzb", 'w') as nzb_fh:
             nzb_fh.write(nzbString)
@@ -108,7 +105,6 @@ def stripNS(element, ns):
 
 
 def splitResult(result):
-
     urlData = helpers.getURL(result.url)
 
     if urlData is None:
@@ -143,17 +139,23 @@ def splitResult(result):
             return False
 
         # make sure the result is sane
-        if (parse_result.season_number != None and parse_result.season_number != season) or (parse_result.season_number == None and season != 1):
-            logger.log(u"Found " + newNZB + " inside " + result.name + " but it doesn't seem to belong to the same season, ignoring it", logger.WARNING)
+        if (parse_result.season_number != None and parse_result.season_number != season) or (
+                parse_result.season_number == None and season != 1):
+            logger.log(
+                u"Found " + newNZB + " inside " + result.name + " but it doesn't seem to belong to the same season, ignoring it",
+                logger.WARNING)
             continue
         elif len(parse_result.episode_numbers) == 0:
-            logger.log(u"Found " + newNZB + " inside " + result.name + " but it doesn't seem to be a valid episode NZB, ignoring it", logger.WARNING)
+            logger.log(
+                u"Found " + newNZB + " inside " + result.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
+                logger.WARNING)
             continue
 
         wantEp = True
         for epNo in parse_result.episode_numbers:
             if not result.extraInfo[0].wantEpisode(season, epNo, result.quality):
-                logger.log(u"Ignoring result " + newNZB + " because we don't want an episode that is " + Quality.qualityStrings[result.quality], logger.DEBUG)
+                logger.log(u"Ignoring result " + newNZB + " because we don't want an episode that is " +
+                           Quality.qualityStrings[result.quality], logger.DEBUG)
                 wantEp = False
                 break
         if not wantEp:

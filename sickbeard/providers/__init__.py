@@ -22,7 +22,7 @@ __all__ = ['ezrss',
            'btn',
            'thepiratebay',
            'kat',
-           'publichd', 
+           'publichd',
            'torrentleech',
            'scc',
            'hdtorrents',
@@ -30,16 +30,16 @@ __all__ = ['ezrss',
            'hdbits',
            'iptorrents',
            'omgwtfnzbs',
-		   'nextgen'
-           ]
+           'nextgen'
+]
 
 import sickbeard
 from sickbeard import logger
 
 from os import sys
 
-def sortedProviderList():
 
+def sortedProviderList():
     initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
     providerDict = dict(zip([x.getID() for x in initialList], initialList))
 
@@ -57,12 +57,12 @@ def sortedProviderList():
 
     return newList
 
-def makeProviderList():
 
+def makeProviderList():
     return [x.provider for x in [getProviderModule(y) for y in __all__] if x]
 
-def getNewznabProviderList(data):
 
+def getNewznabProviderList(data):
     defaultList = [makeNewznabProvider(x) for x in getDefaultNewznabProviders().split('!!!')]
     providerList = filter(lambda x: x, [makeNewznabProvider(x) for x in data.split('!!!')])
 
@@ -80,12 +80,11 @@ def getNewznabProviderList(data):
             providerDict[curDefault.name].name = curDefault.name
             providerDict[curDefault.name].url = curDefault.url
             providerDict[curDefault.name].needs_auth = curDefault.needs_auth
-        
+
     return filter(lambda x: x, providerList)
 
 
 def makeNewznabProvider(configString):
-
     if not configString:
         return None
 
@@ -102,12 +101,13 @@ def makeNewznabProvider(configString):
 
     return newProvider
 
+
 def getTorrentRssProviderList(data):
     providerList = filter(lambda x: x, [makeTorrentRssProvider(x) for x in data.split('!!!')])
     return filter(lambda x: x, providerList)
 
-def makeTorrentRssProvider(configString):
 
+def makeTorrentRssProvider(configString):
     if not configString:
         return None
 
@@ -120,20 +120,24 @@ def makeTorrentRssProvider(configString):
 
     return newProvider
 
+
 def getDefaultNewznabProviders():
     return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0!!!NZBs.org|http://nzbs.org/||5030,5040,5060,5070,5090|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0'
+
 
 def getProviderModule(name):
     name = name.lower()
     prefix = "sickbeard.providers."
-    if name in __all__ and prefix+name in sys.modules:
-        return sys.modules[prefix+name]
+    if name in __all__ and prefix + name in sys.modules:
+        return sys.modules[prefix + name]
     else:
-        raise Exception("Can't find " + prefix+name + " in " + "Providers")
+        raise Exception("Can't find " + prefix + name + " in " + "Providers")
+
 
 def getProviderClass(id):
-
-    providerMatch = [x for x in sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if x.getID() == id]
+    providerMatch = [x for x in
+                     sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
+                     x.getID() == id]
 
     if len(providerMatch) != 1:
         return None

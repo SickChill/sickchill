@@ -30,7 +30,6 @@ from sickbeard import tvcache, show_name_helpers
 
 
 class NZBsRUSProvider(generic.NZBProvider):
-
     def __init__(self):
         generic.NZBProvider.__init__(self, "NZBs'R'US")
         self.cache = NZBsRUSCache(self)
@@ -55,12 +54,12 @@ class NZBsRUSProvider(generic.NZBProvider):
                   'key': sickbeard.NZBSRUS_HASH,
                   'xml': 1,
                   'age': sickbeard.USENET_RETENTION,
-                  'lang0': 1,   # English only from CouchPotato
+                  'lang0': 1,  # English only from CouchPotato
                   'lang1': 1,
                   'lang3': 1,
-                  'c91': 1,     # TV:HD
-                  'c104': 1,    # TV:SD-x264
-                  'c75': 1,     # TV:XviD
+                  'c91': 1,  # TV:HD
+                  'c104': 1,  # TV:SD-x264
+                  'c75': 1,  # TV:XviD
                   'searchtext': search}
 
         if not params['age']:
@@ -93,12 +92,11 @@ class NZBsRUSProvider(generic.NZBProvider):
             nzbID = element.find('id').text
             key = element.find('key').text
             url = self.url + 'nzbdownload_rss.php' + '/' + \
-                nzbID + '/' + sickbeard.NZBSRUS_UID + '/' + key + '/'
+                  nzbID + '/' + sickbeard.NZBSRUS_UID + '/' + key + '/'
         return (title, url)
 
 
 class NZBsRUSCache(tvcache.TVCache):
-
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         # only poll NZBs'R'US every 15 minutes max
@@ -118,5 +116,6 @@ class NZBsRUSCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'
+
 
 provider = NZBsRUSProvider()

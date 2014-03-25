@@ -36,7 +36,6 @@ import math
 
 
 class BTNProvider(generic.TorrentProvider):
-
     def __init__(self):
 
         generic.TorrentProvider.__init__(self, "BTN")
@@ -64,8 +63,10 @@ class BTNProvider(generic.TorrentProvider):
             return self._checkAuth()
 
         if 'api-error' in parsedJSON:
-                    logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['api-error'], logger.DEBUG)
-                    raise AuthException("Your authentication credentials for " + self.name + " are incorrect, check your config.")
+            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['api-error'],
+                       logger.DEBUG)
+            raise AuthException(
+                "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
 
@@ -150,7 +151,7 @@ class BTNProvider(generic.TorrentProvider):
 
         except Exception, error:
             errorstring = str(error)
-            if(errorstring.startswith('<') and errorstring.endswith('>')):
+            if (errorstring.startswith('<') and errorstring.endswith('>')):
                 errorstring = errorstring[1:-1]
             logger.log(u"Unknown error while accessing " + self.name + ": " + errorstring, logger.ERROR)
 
@@ -296,7 +297,6 @@ class BTNProvider(generic.TorrentProvider):
 
 
 class BTNCache(tvcache.TVCache):
-
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
 
@@ -328,13 +328,14 @@ class BTNCache(tvcache.TVCache):
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
-        
+
                 if len(cl) > 0:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
 
             else:
-                raise AuthException("Your authentication info for " + self.provider.name + " is incorrect, check your config")
+                raise AuthException(
+                    "Your authentication info for " + self.provider.name + " is incorrect, check your config")
 
         else:
             return []
@@ -350,7 +351,9 @@ class BTNCache(tvcache.TVCache):
 
         # Set maximum to 24 hours (24 * 60 * 60 = 86400 seconds) of "RSS" data search, older things will need to be done through backlog
         if seconds_since_last_update > 86400:
-            logger.log(u"The last known successful update on " + self.provider.name + " was more than 24 hours ago, only trying to fetch the last 24 hours!", logger.WARNING)
+            logger.log(
+                u"The last known successful update on " + self.provider.name + " was more than 24 hours ago, only trying to fetch the last 24 hours!",
+                logger.WARNING)
             seconds_since_last_update = 86400
 
         data = self.provider._doSearch(search_params=None, age=seconds_since_last_update)
@@ -364,10 +367,12 @@ class BTNCache(tvcache.TVCache):
             logger.log(u"Adding item to results: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
         else:
-            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable", logger.ERROR)
+            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable",
+                       logger.ERROR)
             return None
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
+
 
 provider = BTNProvider()

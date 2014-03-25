@@ -42,15 +42,18 @@ from lib import requests
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
-    tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
+                             tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
 
 # Cached Session Handler
 from lib.httpcache import CachingHTTPAdapter
+
 s = requests.Session()
 s.mount('http://', CachingHTTPAdapter())
 
+
 def log():
     return logging.getLogger("tvdb_api")
+
 
 class ShowContainer(dict):
     """Simple dict that holds a series of Show instances
@@ -74,13 +77,14 @@ class ShowContainer(dict):
 
             _lastgc = time.time()
             del tbd
-                    
+
         super(ShowContainer, self).__setitem__(key, value)
 
 
 class Show(dict):
     """Holds a dict of seasons, and show data.
     """
+
     def __init__(self):
         dict.__init__(self)
         self.data = {}
@@ -126,7 +130,7 @@ class Show(dict):
             raise tvdb_episodenotfound("Could not find any episodes that aired on %s" % date)
         return ret
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """
         Search all episodes in show. Can search all data, or a specific key (for
         example, episodename)
@@ -179,7 +183,7 @@ class Show(dict):
         """
         results = []
         for cur_season in self.values():
-            searchresult = cur_season.search(term = term, key = key)
+            searchresult = cur_season.search(term=term, key=key)
             if len(searchresult) != 0:
                 results.extend(searchresult)
 
@@ -187,7 +191,7 @@ class Show(dict):
 
 
 class Season(dict):
-    def __init__(self, show = None):
+    def __init__(self, show=None):
         """The show attribute points to the parent show
         """
         self.show = show
@@ -208,7 +212,7 @@ class Season(dict):
         else:
             return dict.__getitem__(self, episode_number)
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """Search all episodes in season, returns a list of matching Episode
         instances.
 
@@ -221,7 +225,7 @@ class Season(dict):
         """
         results = []
         for ep in self.values():
-            searchresult = ep.search(term = term, key = key)
+            searchresult = ep.search(term=term, key=key)
             if searchresult is not None:
                 results.append(
                     searchresult
@@ -230,7 +234,7 @@ class Season(dict):
 
 
 class Episode(dict):
-    def __init__(self, season = None):
+    def __init__(self, season=None):
         """The season attribute points to the parent season
         """
         self.season = season
@@ -255,7 +259,7 @@ class Episode(dict):
         except KeyError:
             raise tvdb_attributenotfound("Cannot find attribute %s" % (repr(key)))
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """Search episode data for term, if it matches, return the Episode (self).
         The key parameter can be used to limit the search to a specific element,
         for example, episodename.
@@ -286,7 +290,7 @@ class Episode(dict):
             if key is not None and cur_key != key:
                 # Do not search this key
                 continue
-            if cur_value.find( unicode(term).lower() ) > -1:
+            if cur_value.find(unicode(term).lower()) > -1:
                 return self
 
 
@@ -305,6 +309,7 @@ class Actor(dict):
     role,
     sortorder
     """
+
     def __repr__(self):
         return "<Actor \"%s\">" % (self.get("name"))
 
@@ -315,20 +320,21 @@ class Tvdb:
     >>> t['Scrubs'][1][24]['episodename']
     u'My Last Day'
     """
+
     def __init__(self,
-                interactive = False,
-                select_first = False,
-                debug = False,
-                cache = True,
-                banners = False,
-                actors = False,
-                custom_ui = None,
-                language = None,
-                search_all_languages = False,
-                apikey = None,
-                forceConnect=False,
-                useZip=False,
-                dvdorder=False):
+                 interactive=False,
+                 select_first=False,
+                 debug=False,
+                 cache=True,
+                 banners=False,
+                 actors=False,
+                 custom_ui=None,
+                 language=None,
+                 search_all_languages=False,
+                 apikey=None,
+                 forceConnect=False,
+                 useZip=False,
+                 dvdorder=False):
 
         """interactive (True/False):
             When True, uses built-in console UI is used to select the correct show.
@@ -402,21 +408,21 @@ class Tvdb:
             And only the main language xml is used, the actor and banner xml are lost.
         """
 
-        self.shows = ShowContainer() # Holds all Show classes
-        self.corrections = {} # Holds show-name to show_id mapping
+        self.shows = ShowContainer()  # Holds all Show classes
+        self.corrections = {}  # Holds show-name to show_id mapping
 
         self.config = {}
 
         if apikey is not None:
             self.config['apikey'] = apikey
         else:
-            self.config['apikey'] = "0629B785CE550C8D" # tvdb_api's API key
+            self.config['apikey'] = "0629B785CE550C8D"  # tvdb_api's API key
 
-        self.config['debug_enabled'] = debug # show debugging messages
+        self.config['debug_enabled'] = debug  # show debugging messages
 
         self.config['custom_ui'] = custom_ui
 
-        self.config['interactive'] = interactive # prompt for correct series?
+        self.config['interactive'] = interactive  # prompt for correct series?
 
         self.config['select_first'] = select_first
 
@@ -445,8 +451,8 @@ class Tvdb:
 
         if self.config['debug_enabled']:
             warnings.warn("The debug argument to tvdb_api.__init__ will be removed in the next version. "
-            "To enable debug messages, use the following code before importing: "
-            "import logging; logging.basicConfig(level=logging.DEBUG)")
+                          "To enable debug messages, use the following code before importing: "
+                          "import logging; logging.basicConfig(level=logging.DEBUG)")
             logging.basicConfig(level=logging.DEBUG)
 
 
@@ -454,8 +460,8 @@ class Tvdb:
         # Hard-coded here as it is realtively static, and saves another HTTP request, as
         # recommended on http://thetvdb.com/wiki/index.php/API:languages.xml
         self.config['valid_languages'] = [
-            "da", "fi", "nl", "de", "it", "es", "fr","pl", "hu","el","tr",
-            "ru","he","ja","pt","zh","cs","sl", "hr","ko","en","sv","no"
+            "da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr",
+            "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"
         ]
 
         # thetvdb.com should be based around numeric language codes,
@@ -463,9 +469,9 @@ class Tvdb:
         # requires the language ID, thus this mapping is required (mainly
         # for usage in tvdb_ui - internally tvdb_api will use the language abbreviations)
         self.config['langabbv_to_id'] = {'el': 20, 'en': 7, 'zh': 27,
-        'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
-        'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
-        'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
+                                         'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
+                                         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
+                                         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
         if language is None:
             self.config['language'] = 'en'
@@ -591,9 +597,9 @@ class Tvdb:
         if sid not in self.shows:
             self.shows[sid] = Show()
         if seas not in self.shows[sid]:
-            self.shows[sid][seas] = Season(show = self.shows[sid])
+            self.shows[sid][seas] = Season(show=self.shows[sid])
         if ep not in self.shows[sid][seas]:
-            self.shows[sid][seas][ep] = Episode(season = self.shows[sid][seas])
+            self.shows[sid][seas][ep] = Episode(season=self.shows[sid][seas])
         self.shows[sid][seas][ep][attrib] = value
 
     def _setShowData(self, sid, key, value):
@@ -610,28 +616,21 @@ class Tvdb:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        data = data.replace(u"&amp;", u"&")
-        data = data.strip()
+        if isinstance(data, str):
+            data = data.replace(u"&amp;", u"&")
+            data = data.strip()
         return data
 
     def search(self, series):
         """This searches TheTVDB.com for the series name
         and returns the result list
         """
-        series = urllib.quote(series.encode("utf-8"))
+        series = series.encode("utf-8")
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = []
-        for series in seriesEt:
-            result = dict((k.tag.lower(), k.text) for k in series.getchildren())
-            result['id'] = int(result['id'])
-            result['lid'] = self.config['langabbv_to_id'][result['language']]
-            if 'aliasnames' in result:
-                result['aliasnames'] = result['aliasnames'].split("|")
-            log().debug('Found series %(seriesname)s' % result)
-            allSeries.append(result)
-        
+        allSeries = [dict((s.tag.lower(), s.text) for s in x.getchildren()) for x in seriesEt]
+
         return allSeries
 
     def _getSeries(self, series):
@@ -648,14 +647,14 @@ class Tvdb:
 
         if self.config['custom_ui'] is not None:
             log().debug("Using custom UI %s" % (repr(self.config['custom_ui'])))
-            ui = self.config['custom_ui'](config = self.config)
+            ui = self.config['custom_ui'](config=self.config)
         else:
             if not self.config['interactive']:
                 log().debug('Auto-selecting first search result using BaseUI')
-                ui = BaseUI(config = self.config)
+                ui = BaseUI(config=self.config)
             else:
                 log().debug('Interactively selecting show using ConsoleUI')
-                ui = ConsoleUI(config = self.config)
+                ui = ConsoleUI(config=self.config)
 
         return ui.selectSeries(allSeries)
 
@@ -678,7 +677,7 @@ class Tvdb:
         This interface will be improved in future versions.
         """
         log().debug('Getting season banners for %s' % (sid))
-        bannersEt = self._getetsrc( self.config['url_seriesBanner'] % (sid) )
+        bannersEt = self._getetsrc(self.config['url_seriesBanner'] % (sid))
         banners = {}
         for cur_banner in bannersEt.findall('Banner'):
             bid = cur_banner.find('id').text
@@ -753,7 +752,7 @@ class Tvdb:
             cur_actors.append(curActor)
         self._setShowData(sid, '_actors', cur_actors)
 
-    def _getShowData(self, sid, language):
+    def _getShowData(self, sid, language, seriesSearch=False):
         """Takes a series ID, gets the epInfo URL and parses the TVDB
         XML file into the shows dict in layout:
         shows[series_id][season_number][episode_number]
@@ -778,17 +777,27 @@ class Tvdb:
         seriesInfoEt = self._getetsrc(
             self.config['url_seriesInfo'] % (sid, getShowInLanguage)
         )
+
+        if seriesInfoEt is None: return False
         for curInfo in seriesInfoEt.findall("Series")[0]:
             tag = curInfo.tag.lower()
             value = curInfo.text
 
+            if tag == 'seriesname' and value is None:
+                return False
+
             if value is not None:
+                if tag == 'id':
+                    value = int(value)
+
                 if tag in ['banner', 'fanart', 'poster']:
                     value = self.config['url_artworkPrefix'] % (value)
                 else:
                     value = self._cleanData(value)
 
             self._setShowData(sid, tag, value)
+        if seriesSearch:
+            return True
 
         # Parse banners
         if self.config['banners_enabled']:
@@ -806,7 +815,7 @@ class Tvdb:
         else:
             url = self.config['url_epInfo'] % (sid, language)
 
-        epsEt = self._getetsrc( url, language=language)
+        epsEt = self._getetsrc(url, language=language)
 
         for cur_ep in epsEt.findall("Episode"):
 
@@ -818,7 +827,7 @@ class Tvdb:
 
             if use_dvd:
                 seas_no = int(cur_ep.find('DVD_season').text)
-                ep_no   = int(float(cur_ep.find('DVD_episodenumber').text))
+                ep_no = int(float(cur_ep.find('DVD_episodenumber').text))
             else:
                 seas_no = int(cur_ep.find('SeasonNumber').text)
                 ep_no = int(cur_ep.find('EpisodeNumber').text)
@@ -834,7 +843,7 @@ class Tvdb:
             if (useDVD):
                 log().debug('Use DVD Order? Yes')
                 seas_no = int(cur_ep.find('DVD_season').text)
-                ep_no   = int(float(cur_ep.find('DVD_episodenumber').text))
+                ep_no = int(float(cur_ep.find('DVD_episodenumber').text))
             else:
                 log().debug('Use DVD Order? No')
                 seas_no = int(cur_ep.find('SeasonNumber').text)
@@ -844,28 +853,34 @@ class Tvdb:
                 tag = cur_item.tag.lower()
                 value = cur_item.text
                 if value is not None:
+                    if tag == 'id':
+                        value = int(value)
+
                     if tag == 'filename':
                         value = self.config['url_artworkPrefix'] % (value)
                     else:
                         value = self._cleanData(value)
                 self._setItem(sid, seas_no, ep_no, tag, value)
 
+        return True
+
     def _nameToSid(self, name):
         """Takes show name, returns the correct series ID (if the show has
         already been grabbed), or grabs all episodes and returns
         the correct SID.
         """
+        sid = set()
         if name in self.corrections:
-            log().debug('Correcting %s to %s' % (name, self.corrections[name]) )
+            log().debug('Correcting %s to %s' % (name, self.corrections[name]))
             sid = self.corrections[name]
         else:
             log().debug('Getting show %s' % (name))
-            selected_series = self._getSeries( name )
-            sname, sid = selected_series['seriesname'], selected_series['id']
-            log().debug('Got %(seriesname)s, id %(id)s' % selected_series)
-
-            self.corrections[name] = sid
-            self._getShowData(selected_series['id'], selected_series['language'])
+            selected_series = self._getSeries(name)
+            if isinstance(selected_series, dict):
+                selected_series = [selected_series]
+            [sid.add(int(x['id'])) for x in selected_series if
+             self._getShowData(int(x['id']), self.config['language'], seriesSearch=True)]
+            [self.corrections.update({x['seriesname']: int(x['id'])}) for x in selected_series]
 
         return sid
 
@@ -878,11 +893,10 @@ class Tvdb:
             if key not in self.shows:
                 self._getShowData(key, self.config['language'])
             return self.shows[key]
-        
-        key = key.lower() # make key lower case
-        sid = self._nameToSid(key)
-        log().debug('Got series id %s' % (sid))
-        return self.shows[sid]
+
+        key = key.lower()  # make key lower case
+        sids = self._nameToSid(key)
+        return [self.shows[sid] for sid in sids]
 
     def __repr__(self):
         return str(self.shows)
@@ -893,11 +907,13 @@ def main():
     grabs an episode name interactively.
     """
     import logging
+
     logging.basicConfig(level=logging.DEBUG)
 
     tvdb_instance = Tvdb(interactive=True, cache=False)
     print tvdb_instance['Lost']['seriesname']
     print tvdb_instance['Lost'][1][4]['episodename']
+
 
 if __name__ == '__main__':
     main()

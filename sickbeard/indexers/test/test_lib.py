@@ -25,6 +25,7 @@ import sqlite3
 
 import sys
 import os.path
+
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
 
@@ -42,7 +43,6 @@ from sickbeard.databases import cache_db
 TESTDIR = os.path.abspath('.')
 TESTDBNAME = "sickbeard.db"
 TESTCACHEDBNAME = "cache.db"
-
 
 SHOWNAME = u"show name"
 SEASON = 4
@@ -78,9 +78,9 @@ sickbeard.NAMING_PATTERN = ''
 sickbeard.NAMING_ABD_PATTERN = ''
 sickbeard.NAMING_MULTI_EP = 1
 
-
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = providers.getNewznabProviderList("Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0!!!NZBs.org|http://nzbs.org/||5030,5040,5070,5090|0!!!Usenet-Crawler|http://www.usenet-crawler.com/||5030,5040|0")
+sickbeard.newznabProviderList = providers.getNewznabProviderList(
+    "Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0!!!NZBs.org|http://nzbs.org/||5030,5040,5070,5090|0!!!Usenet-Crawler|http://www.usenet-crawler.com/||5030,5040|0")
 sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath('..')
@@ -95,6 +95,7 @@ sickbeard.logger.sb_log_instance.initLogging(False)
 #=================
 def _dummy_saveConfig():
     return True
+
 # this overrides the sickbeard save_config which gets called during a db upgrade
 # this might be considered a hack
 mainDB.sickbeard.save_config = _dummy_saveConfig
@@ -103,6 +104,7 @@ mainDB.sickbeard.save_config = _dummy_saveConfig
 # the real one tries to contact tvdb just stop it from getting more info on the ep
 def _fake_specifyEP(self, season, episode):
     pass
+
 
 sickbeard.tv.TVEpisode.specifyEpisode = _fake_specifyEP
 
@@ -125,14 +127,12 @@ class SickbeardTestDBCase(unittest.TestCase):
 
 
 class TestDBConnection(db.DBConnection, object):
-
     def __init__(self, dbFileName=TESTDBNAME):
         dbFileName = os.path.join(TESTDIR, dbFileName)
         super(TestDBConnection, self).__init__(dbFileName)
 
 
 class TestCacheDBConnection(TestDBConnection, object):
-
     def __init__(self, providerName):
         db.DBConnection.__init__(self, os.path.join(TESTDIR, TESTCACHEDBNAME))
 
@@ -209,6 +209,7 @@ def setUp_test_show_dir():
 
 def tearDown_test_show_dir():
     shutil.rmtree(SHOWDIR)
+
 
 tearDown_test_db()
 

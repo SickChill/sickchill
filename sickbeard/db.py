@@ -32,6 +32,7 @@ from sickbeard.exceptions import ex
 
 db_lock = threading.Lock()
 
+
 def dbFilename(filename="sickbeard.db", suffix=None):
     """
     @param filename: The sqlite database filename to use. If not specified,
@@ -43,6 +44,7 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     if suffix:
         filename = "%s.%s" % (filename, suffix)
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
+
 
 class DBConnection:
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
@@ -127,7 +129,7 @@ class DBConnection:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
                             sqlResult.append(self.connection.execute(qu[0], qu[1]))
                     self.connection.commit()
-                    logger.log(u"Transaction with "  + str(len(querylist)) + u" query's executed", logger.DEBUG)
+                    logger.log(u"Transaction with " + str(len(querylist)) + u" query's executed", logger.DEBUG)
                     return sqlResult
                 except sqlite3.OperationalError, e:
                     sqlResult = []
@@ -198,15 +200,16 @@ class DBConnection:
 
         changesBefore = self.connection.total_changes
 
-        genParams = lambda myDict : [x + " = ?" for x in myDict.keys()]
+        genParams = lambda myDict: [x + " = ?" for x in myDict.keys()]
 
-        query = "UPDATE " + tableName + " SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(genParams(keyDict))
+        query = "UPDATE " + tableName + " SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
+            genParams(keyDict))
 
         self.action(query, valueDict.values() + keyDict.values())
 
         if self.connection.total_changes == changesBefore:
             query = "INSERT INTO " + tableName + " (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
-                     " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
+                    " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
             self.action(query, valueDict.values() + keyDict.values())
 
     def tableInfo(self, tableName):
@@ -214,7 +217,7 @@ class DBConnection:
         cursor = self.connection.execute("PRAGMA table_info(%s)" % tableName)
         columns = {}
         for column in cursor:
-            columns[column['name']] = { 'type': column['type'] }
+            columns[column['name']] = {'type': column['type']}
         return columns
 
     # http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
@@ -224,8 +227,10 @@ class DBConnection:
             d[col[0]] = row[idx]
         return d
 
+
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
+
 
 class DBSanityCheck(object):
     def __init__(self, connection):
@@ -233,6 +238,7 @@ class DBSanityCheck(object):
 
     def check(self):
         pass
+
 
 # ===============
 # = Upgrade API =
@@ -242,8 +248,10 @@ def upgradeDatabase(connection, schema):
     logger.log(u"Checking database structure...", logger.MESSAGE)
     _processUpgrade(connection, schema)
 
+
 def prettyName(class_name):
     return ' '.join([x.group() for x in re.finditer("([A-Z])([a-z0-9]+)", class_name)])
+
 
 def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
@@ -262,8 +270,9 @@ def _processUpgrade(connection, upgradeClass):
     for upgradeSubClass in upgradeClass.__subclasses__():
         _processUpgrade(connection, upgradeSubClass)
 
+
 # Base migration class. All future DB changes should be subclassed from this class
-class SchemaUpgrade (object):
+class SchemaUpgrade(object):
     def __init__(self, connection):
         self.connection = connection
 

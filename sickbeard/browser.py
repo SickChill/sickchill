@@ -38,7 +38,7 @@ def getWinDrives():
     assert os.name == 'nt'
 
     drives = []
-    bitmask = windll.kernel32.GetLogicalDrives() #@UndefinedVariable
+    bitmask = windll.kernel32.GetLogicalDrives()  #@UndefinedVariable
     for letter in string.uppercase:
         if bitmask & 1:
             drives.append(letter)
@@ -79,26 +79,27 @@ def foldersAtPath(path, includeParent=False):
     if path == parentPath and os.name == 'nt':
         parentPath = ""
 
-    fileList = [{ 'name': filename, 'path': ek.ek(os.path.join, path, filename) } for filename in ek.ek(os.listdir, path)]
+    fileList = [{'name': filename, 'path': ek.ek(os.path.join, path, filename)} for filename in ek.ek(os.listdir, path)]
     fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
 
     # prune out directories to proect the user from doing stupid things (already lower case the dir to reduce calls)
-    hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler", "system volume information", "temporary internet files"] # windows specific
-    hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"] # osx specific
+    hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
+                "system volume information", "temporary internet files"]  # windows specific
+    hideList += [".fseventd", ".spotlight", ".trashes", ".vol", "cachedmessages", "caches", "trash"]  # osx specific
     fileList = filter(lambda entry: entry['name'].lower() not in hideList, fileList)
 
-    fileList = sorted(fileList, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
+    fileList = sorted(fileList,
+                      lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
 
     entries = [{'current_path': path}]
     if includeParent and parentPath != path:
-        entries.append({ 'name': "..", 'path': parentPath })
+        entries.append({'name': "..", 'path': parentPath})
     entries.extend(fileList)
 
     return entries
 
 
 class WebFileBrowser:
-
     @cherrypy.expose
     def index(self, path=''):
         cherrypy.response.headers['Content-Type'] = "application/json"
@@ -108,4 +109,4 @@ class WebFileBrowser:
     def complete(self, term):
         cherrypy.response.headers['Content-Type'] = "application/json"
         paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term)) if 'path' in entry]
-        return json.dumps( paths )
+        return json.dumps(paths)

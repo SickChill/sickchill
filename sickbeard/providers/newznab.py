@@ -42,7 +42,6 @@ from sickbeard.exceptions import ex, AuthException
 
 
 class NewznabProvider(generic.NZBProvider):
-
     def __init__(self, name, url, key='', catIDs='5030,5040,5060'):
 
         generic.NZBProvider.__init__(self, name)
@@ -73,7 +72,8 @@ class NewznabProvider(generic.NZBProvider):
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(int(self.enabled))
 
     def imageName(self):
-        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
+        if ek.ek(os.path.isfile,
+                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
             return self.getID() + '.png'
         return 'newznab.png'
 
@@ -155,7 +155,8 @@ class NewznabProvider(generic.NZBProvider):
     def _checkAuth(self):
 
         if self.needs_auth and not self.key:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + "API key is missing", logger.DEBUG)
+            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + "API key is missing",
+                       logger.DEBUG)
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -173,9 +174,11 @@ class NewznabProvider(generic.NZBProvider):
             elif code == '101':
                 raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
             elif code == '102':
-                raise AuthException("Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
+                raise AuthException(
+                    "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
-                logger.log(u"Unknown error given from " + self.name + ": " + parsedXML.attrib['description'], logger.ERROR)
+                logger.log(u"Unknown error given from " + self.name + ": " + parsedXML.attrib['description'],
+                           logger.ERROR)
                 return False
 
         return True
@@ -237,7 +240,9 @@ class NewznabProvider(generic.NZBProvider):
                     logger.log(u"Adding item from RSS to results: " + title, logger.DEBUG)
                     results.append(curItem)
                 else:
-                    logger.log(u"The XML returned from the " + self.name + " RSS feed is incomplete, this result is unusable", logger.DEBUG)
+                    logger.log(
+                        u"The XML returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
+                        logger.DEBUG)
 
             return results
 
@@ -248,7 +253,8 @@ class NewznabProvider(generic.NZBProvider):
         search_terms = ['.proper.', '.repack.']
 
         cache_results = self.cache.listPropers(search_date)
-        results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in cache_results]
+        results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in
+                   cache_results]
 
         for term in search_terms:
             for item in self._doSearch({'q': term}, max_age=4):
@@ -260,7 +266,8 @@ class NewznabProvider(generic.NZBProvider):
 
                 try:
                     # we could probably do dateStr = descriptionStr but we want date in this format
-                    date_text = re.search('(\w{3}, \d{1,2} \w{3} \d{4} \d\d:\d\d:\d\d) [\+\-]\d{4}', description_text).group(1)
+                    date_text = re.search('(\w{3}, \d{1,2} \w{3} \d{4} \d\d:\d\d:\d\d) [\+\-]\d{4}',
+                                          description_text).group(1)
                 except:
                     date_text = None
 
@@ -281,7 +288,6 @@ class NewznabProvider(generic.NZBProvider):
 
 
 class NewznabCache(tvcache.TVCache):
-
     def __init__(self, provider):
 
         tvcache.TVCache.__init__(self, provider)
@@ -314,4 +320,4 @@ class NewznabCache(tvcache.TVCache):
         return data
 
     def _checkAuth(self, parsedXML):
-            return self.provider._checkAuthFromData(parsedXML)
+        return self.provider._checkAuthFromData(parsedXML)

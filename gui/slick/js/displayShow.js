@@ -115,7 +115,7 @@ $(document).ready(function(){
     $("#checkboxControls input").change(function(e){
         var whichClass = $(this).attr('id')
         $(this).showHideRows(whichClass)
-        return
+
         $('tr.'+whichClass).each(function(i){
             $(this).toggle();
         });

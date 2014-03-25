@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib, urllib2,xml.dom.minidom
+import urllib, urllib2, xml.dom.minidom
 from xml.dom.minidom import parseString
 import sickbeard
 import telnetlib
@@ -33,7 +33,6 @@ except ImportError:
 
 
 class NMJv2Notifier:
-    
     def notify_snatch(self, ep_name):
         return False
         #Not implemented: Start the scanner when snatched does not make any sense
@@ -58,32 +57,35 @@ class NMJv2Notifier:
         Returns: True if the settings were retrieved successfully, False otherwise
         """
         try:
-            url_loc = "http://" + host + ":8008/file_operation?arg0=list_user_storage_file&arg1=&arg2="+instance+"&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false"
+            url_loc = "http://" + host + ":8008/file_operation?arg0=list_user_storage_file&arg1=&arg2=" + instance + "&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false"
             req = urllib2.Request(url_loc)
             handle1 = urllib2.urlopen(req)
             response1 = handle1.read()
             xml = parseString(response1)
-            time.sleep (300.0 / 1000.0)
+            time.sleep(300.0 / 1000.0)
             for node in xml.getElementsByTagName('path'):
-                xmlTag=node.toxml();
-                xmlData=xmlTag.replace('<path>','').replace('</path>','').replace('[=]','')
-                url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1="+ xmlData
+                xmlTag = node.toxml();
+                xmlData = xmlTag.replace('<path>', '').replace('</path>', '').replace('[=]', '')
+                url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1=" + xmlData
                 reqdb = urllib2.Request(url_db)
                 handledb = urllib2.urlopen(reqdb)
                 responsedb = handledb.read()
                 xmldb = parseString(responsedb)
-                returnvalue=xmldb.getElementsByTagName('returnValue')[0].toxml().replace('<returnValue>','').replace('</returnValue>','')
-                if returnvalue=="0":
-                    DB_path=xmldb.getElementsByTagName('database_path')[0].toxml().replace('<database_path>','').replace('</database_path>','').replace('[=]','')
-                    if dbloc=="local" and DB_path.find("localhost")>-1:
-                        sickbeard.NMJv2_HOST=host
-                        sickbeard.NMJv2_DATABASE=DB_path
+                returnvalue = xmldb.getElementsByTagName('returnValue')[0].toxml().replace('<returnValue>', '').replace(
+                    '</returnValue>', '')
+                if returnvalue == "0":
+                    DB_path = xmldb.getElementsByTagName('database_path')[0].toxml().replace('<database_path>',
+                                                                                             '').replace(
+                        '</database_path>', '').replace('[=]', '')
+                    if dbloc == "local" and DB_path.find("localhost") > -1:
+                        sickbeard.NMJv2_HOST = host
+                        sickbeard.NMJv2_DATABASE = DB_path
                         return True
-                    if dbloc=="network" and DB_path.find("://")>-1:
-                        sickbeard.NMJv2_HOST=host
-                        sickbeard.NMJv2_DATABASE=DB_path
+                    if dbloc == "network" and DB_path.find("://") > -1:
+                        sickbeard.NMJv2_HOST = host
+                        sickbeard.NMJv2_DATABASE = DB_path
                         return True
-                        
+
         except IOError, e:
             logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e))
             return False
@@ -99,52 +101,52 @@ class NMJv2Notifier:
         
         Returns: True if the request succeeded, False otherwise
         """
-        
+
         #if a host is provided then attempt to open a handle to that URL
         try:
-            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1="+ sickbeard.NMJv2_DATABASE +"&arg2=&arg3=update_all"
+            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
             logger.log(u"NMJ scan update command send to host: %s" % (host))
-            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1="+ sickbeard.NMJv2_DATABASE +"&arg2=background&arg3="
+            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
             logger.log(u"Try to mount network drive via url: %s" % (host), logger.DEBUG)
             prereq = urllib2.Request(url_scandir)
             req = urllib2.Request(url_updatedb)
             handle1 = urllib2.urlopen(prereq)
             response1 = handle1.read()
-            time.sleep (300.0 / 1000.0)
+            time.sleep(300.0 / 1000.0)
             handle2 = urllib2.urlopen(req)
             response2 = handle2.read()
         except IOError, e:
             logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e))
             return False
-        try:            
+        try:
             et = etree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError, e:
-             logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % (e), logger.ERROR)
-             return False
-        try:            
+            logger.log(u"Unable to parse XML returned from the Popcorn Hour: update_scandir, %s" % (e), logger.ERROR)
+            return False
+        try:
             et = etree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError, e:
             logger.log(u"Unable to parse XML returned from the Popcorn Hour: scanner_start, %s" % (e), logger.ERROR)
             return False
-                
+
         # if the result was a number then consider that an error
-        error_codes=["8","11","22","49","50","51","60"]
-        error_messages=["Invalid parameter(s)/argument(s)",
-                        "Invalid database path",
-                        "Insufficient size",
-                        "Database write error",
-                        "Database read error",
-                        "Open fifo pipe failed",
-                        "Read only file system"]
+        error_codes = ["8", "11", "22", "49", "50", "51", "60"]
+        error_messages = ["Invalid parameter(s)/argument(s)",
+                          "Invalid database path",
+                          "Insufficient size",
+                          "Database write error",
+                          "Database read error",
+                          "Open fifo pipe failed",
+                          "Read only file system"]
         if int(result1) > 0:
-            index=error_codes.index(result1)
+            index = error_codes.index(result1)
             logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]))
             return False
         else:
             if int(result2) > 0:
-                index=error_codes.index(result2)
+                index = error_codes.index(result2)
                 logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]))
                 return False
             else:
@@ -171,5 +173,6 @@ class NMJv2Notifier:
         logger.log(u"Sending scan command for NMJ ", logger.DEBUG)
 
         return self._sendNMJ(host)
+
 
 notifier = NMJv2Notifier

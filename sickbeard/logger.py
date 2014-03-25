@@ -39,27 +39,26 @@ ERROR = logging.ERROR
 WARNING = logging.WARNING
 MESSAGE = logging.INFO
 DEBUG = logging.DEBUG
-DB    = 5
+DB = 5
 
 reverseNames = {u'ERROR': ERROR,
                 u'WARNING': WARNING,
                 u'INFO': MESSAGE,
                 u'DEBUG': DEBUG,
-                u'DB' : DB}
+                u'DB': DB}
 
 
 class SBRotatingLogHandler(object):
-
     def __init__(self, log_file, num_files, num_bytes):
         self.num_files = num_files
         self.num_bytes = num_bytes
-        
+
         self.log_file = log_file
         self.log_file_path = log_file
         self.cur_handler = None
 
         self.writes_since_check = 0
-        
+
         self.console_logging = False
         self.log_lock = threading.Lock()
 
@@ -74,7 +73,7 @@ class SBRotatingLogHandler(object):
 
             sb_logger.removeHandler(handler)
             sub_logger.removeHandler(handler)
-            imdb_logger.removeHandler(handler)             
+            imdb_logger.removeHandler(handler)
 
             handler.flush()
             handler.close()
@@ -83,17 +82,17 @@ class SBRotatingLogHandler(object):
 
         if consoleLogging:
             self.console_logging = consoleLogging
-            
+
         old_handler = None
-        
+
         # get old handler in case we want to close it
         if self.cur_handler:
             old_handler = self.cur_handler
         else:
-            
+
             #Add a new logging level DB
-            logging.addLevelName(5,'DB')
-            
+            logging.addLevelName(5, 'DB')
+
             # only start consoleLogging on first initialize
             if self.console_logging:
                 # define a Handler which writes INFO messages or higher to the sys.stderr
@@ -102,19 +101,21 @@ class SBRotatingLogHandler(object):
                 console.setLevel(logging.INFO)
 
                 # set a format which is simpler for console use
-                console.setFormatter(DispatchingFormatter({'sickbeard'  : logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'),
-                                                           'subliminal' : logging.Formatter('%(asctime)s %(levelname)s::SUBLIMINAL :: %(message)s', '%H:%M:%S'),
-                                                           'imdbpy'     : logging.Formatter('%(asctime)s %(levelname)s::IMDBPY :: %(message)s', '%H:%M:%S')
-                                                           },
-                                                           logging.Formatter('%(message)s'),))
+                console.setFormatter(DispatchingFormatter(
+                    {'sickbeard': logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'),
+                     'subliminal': logging.Formatter('%(asctime)s %(levelname)s::SUBLIMINAL :: %(message)s',
+                                                     '%H:%M:%S'),
+                     'imdbpy': logging.Formatter('%(asctime)s %(levelname)s::IMDBPY :: %(message)s', '%H:%M:%S')
+                    },
+                    logging.Formatter('%(message)s'), ))
 
                 # add the handler to the root logger
-                logging.getLogger('sickbeard').addHandler(console)             
+                logging.getLogger('sickbeard').addHandler(console)
                 logging.getLogger('subliminal').addHandler(console)
                 logging.getLogger('imdbpy').addHandler(console)
 
         self.log_file_path = os.path.join(sickbeard.LOG_DIR, self.log_file)
-            
+
         self.cur_handler = self._config_handler()
         logging.getLogger('sickbeard').addHandler(self.cur_handler)
         logging.getLogger('subliminal').addHandler(self.cur_handler)
@@ -127,28 +128,30 @@ class SBRotatingLogHandler(object):
         # already logging in new log folder, close the old handler
         if old_handler:
             self.close_log(old_handler)
-#            old_handler.flush()
-#            old_handler.close()
-#            sb_logger = logging.getLogger('sickbeard')
-#            sub_logger = logging.getLogger('subliminal')
-#            imdb_logger = logging.getLogger('imdbpy')
-#            sb_logger.removeHandler(old_handler)
-#            subli_logger.removeHandler(old_handler)
-#            imdb_logger.removeHandler(old_handler) 
+        #            old_handler.flush()
+        #            old_handler.close()
+        #            sb_logger = logging.getLogger('sickbeard')
+        #            sub_logger = logging.getLogger('subliminal')
+        #            imdb_logger = logging.getLogger('imdbpy')
+        #            sb_logger.removeHandler(old_handler)
+        #            subli_logger.removeHandler(old_handler)
+        #            imdb_logger.removeHandler(old_handler)
 
     def _config_handler(self):
         """
         Configure a file handler to log at file_name and return it.
         """
-    
+
         file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
         file_handler.setLevel(DB)
-        file_handler.setFormatter(DispatchingFormatter({'sickbeard'  : logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'),
-                                                        'subliminal' : logging.Formatter('%(asctime)s %(levelname)-8s SUBLIMINAL :: %(message)s', '%Y-%m-%d %H:%M:%S'),
-                                                        'imdbpy'     : logging.Formatter('%(asctime)s %(levelname)-8s IMDBPY :: %(message)s', '%Y-%m-%d %H:%M:%S')
-                                                        },
-                                                        logging.Formatter('%(message)s'),))
-                                                            
+        file_handler.setFormatter(DispatchingFormatter(
+            {'sickbeard': logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'),
+             'subliminal': logging.Formatter('%(asctime)s %(levelname)-8s SUBLIMINAL :: %(message)s',
+                                             '%Y-%m-%d %H:%M:%S'),
+             'imdbpy': logging.Formatter('%(asctime)s %(levelname)-8s IMDBPY :: %(message)s', '%Y-%m-%d %H:%M:%S')
+            },
+            logging.Formatter('%(message)s'), ))
+
         return file_handler
 
     def _log_file_name(self, i):
@@ -160,7 +163,7 @@ class SBRotatingLogHandler(object):
         """
 
         return self.log_file_path + ('.' + str(i) if i else '')
-    
+
     def _num_logs(self):
         """
         Scans the log folder and figures out how many log files there are already on disk
@@ -174,15 +177,15 @@ class SBRotatingLogHandler(object):
         return cur_log - 1
 
     def _rotate_logs(self):
-        
+
         sb_logger = logging.getLogger('sickbeard')
         sub_logger = logging.getLogger('subliminal')
         imdb_logger = logging.getLogger('imdbpy')
-        
+
         # delete the old handler
         if self.cur_handler:
             self.close_log()
-    
+
         # rename or delete all the old log files
         for i in range(self._num_logs(), -1, -1):
             cur_file_name = self._log_file_name(i)
@@ -193,12 +196,12 @@ class SBRotatingLogHandler(object):
                     os.rename(cur_file_name, self._log_file_name(i + 1))
             except OSError:
                 pass
-        
+
         # the new log handler will always be on the un-numbered .log file
         new_file_handler = self._config_handler()
-        
+
         self.cur_handler = new_file_handler
-        
+
         sb_logger.addHandler(new_file_handler)
         sub_logger.addHandler(new_file_handler)
         imdb_logger.addHandler(new_file_handler)
@@ -254,7 +257,6 @@ class SBRotatingLogHandler(object):
 
 
 class DispatchingFormatter:
-
     def __init__(self, formatters, default_formatter):
         self._formatters = formatters
         self._default_formatter = default_formatter
@@ -266,11 +268,14 @@ class DispatchingFormatter:
 
 sb_log_instance = SBRotatingLogHandler('sickbeard.log', NUM_LOGS, LOG_SIZE)
 
+
 def log(toLog, logLevel=MESSAGE):
     sb_log_instance.log(toLog, logLevel)
 
+
 def log_error_and_exit(error_msg):
     sb_log_instance.log_error_and_exit(error_msg)
-    
+
+
 def close():
     sb_log_instance.close_log()    

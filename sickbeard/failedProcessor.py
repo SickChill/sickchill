@@ -76,7 +76,9 @@ class FailedProcessor(object):
 
         self._show_obj = helpers.findCertainShow(sickbeard.showList, show_id)
         if self._show_obj is None:
-            self._log(u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)", logger.WARNING)
+            self._log(
+                u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)",
+                logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
         for episode in parsed.episode_numbers:
@@ -105,7 +107,7 @@ class FailedProcessor(object):
         for show_name in show_names:
             found_info = helpers.searchDBForShow(show_name)
             if found_info is not None:
-                return(found_info[1])
+                return (found_info[1])
 
         return None
 

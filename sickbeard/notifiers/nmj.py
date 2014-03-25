@@ -38,7 +38,7 @@ class NMJNotifier:
         
         Returns: True if the settings were retrieved successfully, False otherwise
         """
-        
+
         # establish a terminal session to the PC
         terminal = False
         try:
@@ -68,7 +68,7 @@ class NMJNotifier:
         else:
             logger.log(u"Could not get current NMJ database on %s, NMJ is probably not running!" % (host), logger.ERROR)
             return False
-        
+
         # if the device is a remote host then try to parse the mounting URL and save it to the config
         if device.startswith("NETWORK_SHARE/"):
             match = re.search(".*(?=\r\n?%s)" % (re.escape(device[14:])), tnoutput)
@@ -78,11 +78,12 @@ class NMJNotifier:
                 logger.log(u"Found mounting url on the Popcorn Hour in configuration: %s" % (mount), logger.DEBUG)
                 sickbeard.NMJ_MOUNT = mount
             else:
-                logger.log(u"Detected a network share on the Popcorn Hour, but could not get the mounting url", logger.DEBUG)
+                logger.log(u"Detected a network share on the Popcorn Hour, but could not get the mounting url",
+                           logger.DEBUG)
                 return False
 
         return True
-    
+
     def notify_snatch(self, ep_name):
         return False
         #Not implemented: Start the scanner when snatched does not make any sense
@@ -94,7 +95,7 @@ class NMJNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.USE_NMJ:
             self._notifyNMJ()
-    
+
     def test_notify(self, host, database, mount):
         return self._sendNMJ(host, database, mount)
 
@@ -108,7 +109,7 @@ class NMJNotifier:
         
         Returns: True if the request succeeded, False otherwise
         """
-        
+
         # if a mount URL is provided then attempt to open a handle to that URL
         if mount:
             try:
@@ -146,7 +147,7 @@ class NMJNotifier:
         except SyntaxError, e:
             logger.log(u"Unable to parse XML returned from the Popcorn Hour: %s" % (e), logger.ERROR)
             return False
-        
+
         # if the result was a number then consider that an error
         if int(result) > 0:
             logger.log(u"Popcorn Hour returned an errorcode: %s" % (result))
@@ -179,5 +180,6 @@ class NMJNotifier:
         logger.log(u"Sending scan command for NMJ ", logger.DEBUG)
 
         return self._sendNMJ(host, database, mount)
+
 
 notifier = NMJNotifier

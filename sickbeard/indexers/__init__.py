@@ -16,20 +16,4 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ["generic","indexer_api","indexer_exceptions"]
-
-import indexer_api, indexer_exceptions
-
-def getClientModule(name):
-
-    name = name.lower()
-    prefix = "sickbeard.indexers."
-
-    return __import__(prefix+name, fromlist=__all__)
-
-def getClientIstance(name):
-
-    module = getClientModule(name)
-    className = module.__class__.__name__
-
-    return getattr(module, className)
+from . import indexer_api, indexer_exceptions

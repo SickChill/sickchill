@@ -23,14 +23,16 @@ import sickbeard
 MESSAGE = 'notice'
 ERROR = 'error'
 
+
 class Notifications(object):
     """
     A queue of Notification objects.
     """
+
     def __init__(self):
         self._messages = []
         self._errors = []
-        
+
     def message(self, title, message=''):
         """
         Add a regular notification to the queue
@@ -56,27 +58,28 @@ class Notifications(object):
         
         Returns: A list of Notification objects
         """
-        
+
         # filter out expired notifications 
         self._errors = [x for x in self._errors if not x.is_expired()]
         self._messages = [x for x in self._messages if not x.is_expired()]
-        
+
         # return any notifications that haven't been shown to the client already
         return [x.see() for x in self._errors + self._messages if x.is_new()]
 
 # static notification queue object
 notifications = Notifications()
 
-    
+
 class Notification(object):
     """
     Represents a single notification. Tracks its own timeout and a list of which clients have
     seen it before.
     """
+
     def __init__(self, title, message='', type=None, timeout=None):
         self.title = title
         self.message = message
-        
+
         self._when = datetime.datetime.now()
         self._seen = []
 
@@ -84,7 +87,7 @@ class Notification(object):
             self.type = type
         else:
             self.type = MESSAGE
-        
+
         if timeout:
             self._timeout = timeout
         else:
@@ -95,14 +98,14 @@ class Notification(object):
         Returns True if the notification hasn't been displayed to the current client (aka IP address).
         """
         return cherrypy.request.remote.ip not in self._seen
-    
+
     def is_expired(self):
         """
         Returns True if the notification is older than the specified timeout value.
         """
         return datetime.datetime.now() - self._when > self._timeout
 
-    
+
     def see(self):
         """
         Returns this notification object and marks it as seen by the client ip
@@ -110,17 +113,18 @@ class Notification(object):
         self._seen.append(cherrypy.request.remote.ip)
         return self
 
-class ProgressIndicator():
 
+class ProgressIndicator():
     def __init__(self, percentComplete=0, currentStatus={'title': ''}):
         self.percentComplete = percentComplete
         self.currentStatus = currentStatus
+
 
 class ProgressIndicators():
     _pi = {'massUpdate': [],
            'massAdd': [],
            'dailyUpdate': []
-           }
+    }
 
     @staticmethod
     def getIndicator(name):
@@ -139,10 +143,12 @@ class ProgressIndicators():
     def setIndicator(name, indicator):
         ProgressIndicators._pi[name].append(indicator)
 
+
 class QueueProgressIndicator():
     """
     A class used by the UI to show the progress of the queue or a part of it.
     """
+
     def __init__(self, name, queueItemList):
         self.queueItemList = queueItemList
         self.name = name
@@ -157,7 +163,8 @@ class QueueProgressIndicator():
         return len([x for x in self.queueItemList if x.isInQueue()])
 
     def nextName(self):
-        for curItem in [sickbeard.showQueueScheduler.action.currentItem]+sickbeard.showQueueScheduler.action.queue: #@UndefinedVariable
+        for curItem in [
+            sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  #@UndefinedVariable
             if curItem in self.queueItemList:
                 return curItem.name
 
@@ -170,7 +177,8 @@ class QueueProgressIndicator():
         if numTotal == 0:
             return 0
         else:
-            return int(float(numFinished)/float(numTotal)*100)
+            return int(float(numFinished) / float(numTotal) * 100)
+
 
 class LoadingTVShow():
     def __init__(self, dir):

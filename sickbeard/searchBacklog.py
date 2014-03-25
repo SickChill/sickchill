@@ -30,7 +30,6 @@ from sickbeard import ui
 #from sickbeard.common import *
 
 class BacklogSearchScheduler(scheduler.Scheduler):
-
     def forceSearch(self):
         self.action._set_lastBacklog(1)
         self.lastRun = datetime.datetime.fromordinal(1)
@@ -41,8 +40,8 @@ class BacklogSearchScheduler(scheduler.Scheduler):
         else:
             return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
-class BacklogSearcher:
 
+class BacklogSearcher:
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
@@ -65,7 +64,7 @@ class BacklogSearcher:
             return None
 
     def am_running(self):
-        logger.log(u"amWaiting: "+str(self.amWaiting)+", amActive: "+str(self.amActive), logger.DEBUG)
+        logger.log(u"amWaiting: " + str(self.amWaiting) + ", amActive: " + str(self.amActive), logger.DEBUG)
         return (not self.amWaiting) and self.amActive
 
     def searchBacklog(self, which_shows=None):
@@ -101,9 +100,9 @@ class BacklogSearcher:
         # figure out how many segments of air by date shows we're going to do
         air_by_date_segments = []
         for cur_id in [x.indexerid for x in air_by_date_shows]:
-            air_by_date_segments += self._get_air_by_date_segments(cur_id, fromDate) 
+            air_by_date_segments += self._get_air_by_date_segments(cur_id, fromDate)
 
-        logger.log(u"Air-by-date segments: "+str(air_by_date_segments), logger.DEBUG)
+        logger.log(u"Air-by-date segments: " + str(air_by_date_segments), logger.DEBUG)
 
         #totalSeasons = float(len(numSeasonResults) + len(air_by_date_segments))
         #numSeasonsDone = 0.0
@@ -121,12 +120,14 @@ class BacklogSearcher:
 
             for cur_segment in segments:
 
-                self.currentSearchInfo = {'title': curShow.name + " Season "+str(cur_segment)}
+                self.currentSearchInfo = {'title': curShow.name + " Season " + str(cur_segment)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, cur_segment)
 
                 if not backlog_queue_item.wantSeason:
-                    logger.log(u"Nothing in season "+str(cur_segment)+" needs to be downloaded, skipping this season", logger.DEBUG)
+                    logger.log(
+                        u"Nothing in season " + str(cur_segment) + " needs to be downloaded, skipping this season",
+                        logger.DEBUG)
                 else:
                     sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
 
@@ -159,14 +160,17 @@ class BacklogSearcher:
 
     def _get_season_segments(self, indexer_id, fromDate):
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?", [indexer_id, fromDate.toordinal()])
+        sqlResults = myDB.select(
+            "SELECT DISTINCT(season) as season FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
+            [indexer_id, fromDate.toordinal()])
         return [int(x["season"]) for x in sqlResults]
 
     def _get_air_by_date_segments(self, indexer_id, fromDate):
         # query the DB for all dates for this show
         myDB = db.DBConnection()
-        num_air_by_date_results = myDB.select("SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ?",
-                                 [fromDate.toordinal(), indexer_id])
+        num_air_by_date_results = myDB.select(
+            "SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ?",
+            [fromDate.toordinal(), indexer_id])
 
         # break them apart into month/year strings
         air_by_date_segments = []
@@ -174,11 +178,11 @@ class BacklogSearcher:
             cur_date = datetime.date.fromordinal(int(cur_result["airdate"]))
             cur_date_str = str(cur_date)[:7]
             cur_indexer_id = int(cur_result["showid"])
-            
+
             cur_result_tuple = (cur_indexer_id, cur_date_str)
             if cur_result_tuple not in air_by_date_segments:
                 air_by_date_segments.append(cur_result_tuple)
-        
+
         return air_by_date_segments
 
     def _set_lastBacklog(self, when):

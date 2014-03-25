@@ -120,7 +120,6 @@ class CheckVersion():
 
 
 class UpdateManager():
-
     def get_github_repo_user(self):
         return 'echel0n'
 
@@ -132,7 +131,6 @@ class UpdateManager():
 
 
 class WindowsUpdateManager(UpdateManager):
-
     def __init__(self):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
@@ -199,7 +197,8 @@ class WindowsUpdateManager(UpdateManager):
         if not self._cur_version:
             newest_text = "Unknown SickBeard Windows binary version. Not updating with original version."
         else:
-            newest_text = 'There is a <a href="' + self.gc_url + '" onclick="window.open(this.href); return false;">newer version available</a> (build ' + str(self._newest_version) + ')'
+            newest_text = 'There is a <a href="' + self.gc_url + '" onclick="window.open(this.href); return false;">newer version available</a> (build ' + str(
+                self._newest_version) + ')'
             newest_text += "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
@@ -248,10 +247,12 @@ class WindowsUpdateManager(UpdateManager):
             os.remove(zip_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sb_update_dir) if os.path.isdir(os.path.join(sb_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sb_update_dir) if
+                                   os.path.isdir(os.path.join(sb_update_dir, x))]
 
             if len(update_dir_contents) != 1:
-                logger.log(u"Invalid update data, update failed. Maybe try deleting your sb-update folder?", logger.ERROR)
+                logger.log(u"Invalid update data, update failed. Maybe try deleting your sb-update folder?",
+                           logger.ERROR)
                 return False
 
             content_dir = os.path.join(sb_update_dir, update_dir_contents[0])
@@ -268,7 +269,6 @@ class WindowsUpdateManager(UpdateManager):
 
 
 class GitUpdateManager(UpdateManager):
-
     def __init__(self):
         self._git_path = self._find_working_git()
         self.github_repo_user = self.get_github_repo_user()
@@ -345,7 +345,8 @@ class GitUpdateManager(UpdateManager):
 
         try:
             logger.log(u"Executing " + cmd + " with your shell in " + sickbeard.PROG_DIR, logger.DEBUG)
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=sickbeard.PROG_DIR)
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 shell=True, cwd=sickbeard.PROG_DIR)
             output, err = p.communicate()
             exit_status = p.returncode
 
@@ -397,7 +398,7 @@ class GitUpdateManager(UpdateManager):
             return False
 
     def _find_git_branch(self):
-        branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD') # @UnusedVariable
+        branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
         if exit_status == 0 and branch_info:
             branch = branch_info.strip().replace('refs/heads/', '', 1)
             if branch:
@@ -451,7 +452,8 @@ class GitUpdateManager(UpdateManager):
                 return
 
         logger.log(u"cur_commit = " + str(self._cur_commit_hash) + u", newest_commit = " + str(self._newest_commit_hash)
-                   + u", num_commits_behind = " + str(self._num_commits_behind) + u", num_commits_ahead = " + str(self._num_commits_ahead), logger.DEBUG)
+                   + u", num_commits_behind = " + str(self._num_commits_behind) + u", num_commits_ahead = " + str(
+            self._num_commits_ahead), logger.DEBUG)
 
     def set_newest_text(self):
 
@@ -515,7 +517,6 @@ class GitUpdateManager(UpdateManager):
 
 
 class SourceUpdateManager(UpdateManager):
-
     def __init__(self):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
@@ -532,7 +533,7 @@ class SourceUpdateManager(UpdateManager):
         if not os.path.isfile(version_file):
             self._cur_commit_hash = None
             return
-      
+
         try:
             with open(version_file, 'r') as fp:
                 self._cur_commit_hash = fp.read().strip(' \n\r')
@@ -610,17 +611,17 @@ class SourceUpdateManager(UpdateManager):
             newest_text += "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
 
         elif self._num_commits_behind > 0:
-                base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
-                if self._newest_commit_hash:
-                    url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
-                else:
-                    url = base_url + '/commits/'
+            base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
+            if self._newest_commit_hash:
+                url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
+            else:
+                url = base_url + '/commits/'
 
-                newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a>'
-                newest_text += " (you're " + str(self._num_commits_behind) + " commit"
-                if self._num_commits_behind > 1:
-                    newest_text += "s"
-                newest_text += " behind)" + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
+            newest_text = 'There is a <a href="' + url + '" onclick="window.open(this.href); return false;">newer version available</a>'
+            newest_text += " (you're " + str(self._num_commits_behind) + " commit"
+            if self._num_commits_behind > 1:
+                newest_text += "s"
+            newest_text += " behind)" + "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
         else:
             return
 
@@ -669,7 +670,8 @@ class SourceUpdateManager(UpdateManager):
             os.remove(tar_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sb_update_dir) if os.path.isdir(os.path.join(sb_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sb_update_dir) if
+                                   os.path.isdir(os.path.join(sb_update_dir, x))]
             if len(update_dir_contents) != 1:
                 logger.log(u"Invalid update data, update failed: " + str(update_dir_contents), logger.ERROR)
                 return False

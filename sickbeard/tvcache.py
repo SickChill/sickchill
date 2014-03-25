@@ -34,16 +34,12 @@ from sickbeard.exceptions import ex, AuthException
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
-    import elementtree.ElementTree as etree 
-
-
-from sickbeard.indexers import indexer_api, indexer_exceptions
+    import elementtree.ElementTree as etree
 
 from name_parser.parser import NameParser, InvalidNameException
 
 
 class CacheDBConnection(db.DBConnection):
-
     def __init__(self, providerName):
         db.DBConnection.__init__(self, "cache.db")
 
@@ -65,8 +61,8 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
-class TVCache():
 
+class TVCache():
     def __init__(self, provider):
 
         self.provider = provider
@@ -108,26 +104,26 @@ class TVCache():
                 self.setLastUpdate()
             else:
                 return []
-    
+
             # now that we've loaded the current RSS feed lets delete the old cache
             logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
             self._clearCache()
-    
+
             parsedXML = helpers.parse_xml(data)
-            
+
             if parsedXML is None:
                 logger.log(u"Error trying to load " + self.provider.name + " RSS feed", logger.ERROR)
                 return []
-            
+
             if self._checkAuth(parsedXML):
-                
+
                 if parsedXML.tag == 'rss':
                     items = parsedXML.findall('.//item')
-                    
+
                 else:
                     logger.log(u"Resulting XML from " + self.provider.name + " isn't RSS, not parsing it", logger.ERROR)
                     return []
-                
+
                 cl = []
                 for item in items:
                     ci = self._parseItem(item)
@@ -137,14 +133,15 @@ class TVCache():
                 if len(cl) > 0:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
-    
+
             else:
-                raise AuthException(u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
-        
+                raise AuthException(
+                    u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+
         return []
 
     def _translateTitle(self, title):
-        return title.replace(' ', '.') 
+        return title.replace(' ', '.')
 
     def _translateLinkURL(self, url):
         return url.replace('&amp;', '&')
@@ -153,19 +150,21 @@ class TVCache():
 
         title = helpers.get_xml_text(item.find('title'))
         url = helpers.get_xml_text(item.find('link'))
-        
+
         self._checkItemAuth(title, url)
 
         if title and url:
             title = self._translateTitle(title)
             url = self._translateLinkURL(url)
-            
+
             logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
-        
+
         else:
-             logger.log(u"The XML returned from the " + self.provider.name + " feed is incomplete, this result is unusable", logger.DEBUG)
-             return None
+            logger.log(
+                u"The XML returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
+                logger.DEBUG)
+            return None
 
 
     def _getLastUpdate(self):
@@ -196,7 +195,8 @@ class TVCache():
     def shouldUpdate(self):
         # if we've updated recently then skip the update
         if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
-            logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
+            logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
+                datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
             return False
 
         return True
@@ -217,7 +217,7 @@ class TVCache():
                 continue
 
         if not parse_result:
-            logger.log(u"Giving up because I'm unable to parse this name: "+name, logger.DEBUG)
+            logger.log(u"Giving up because I'm unable to parse this name: " + name, logger.DEBUG)
             return None
 
         if not parse_result.series_name:
@@ -242,9 +242,11 @@ class TVCache():
             else:
 
                 # check the name cache and see if we already know what show this is
-                logger.log(u"Checking the cache to see if we already know the indexer id of "+parse_result.series_name, logger.DEBUG)
+                logger.log(
+                    u"Checking the cache to see if we already know the indexer id of " + parse_result.series_name,
+                    logger.DEBUG)
                 indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
-                
+
                 # remember if the cache lookup worked or not so we know whether we should bother updating it later
                 if indexer_id == None:
                     logger.log(u"No cache results returned, continuing on with the search", logger.DEBUG)
@@ -252,21 +254,25 @@ class TVCache():
                 else:
                     logger.log(u"Cache lookup found " + repr(indexer_id) + ", using that", logger.DEBUG)
                     from_cache = True
-                
+
                 # if the cache failed, try looking up the show name in the database
                 if indexer_id == None:
                     logger.log(u"Trying to look the show up in the show database", logger.DEBUG)
                     showResult = helpers.searchDBForShow(parse_result.series_name)
                     if showResult:
-                        logger.log(u"" + parse_result.series_name + " was found to be show " + showResult[2] + " (" + str(showResult[1]) + ") in our DB.", logger.DEBUG)
+                        logger.log(
+                            u"" + parse_result.series_name + " was found to be show " + showResult[2] + " (" + str(
+                                showResult[1]) + ") in our DB.", logger.DEBUG)
                         indexer_id = showResult[1]
 
                 # if the DB lookup fails then do a comprehensive regex search
                 if indexer_id == None:
-                    logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead", logger.DEBUG)
+                    logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead",
+                               logger.DEBUG)
                     for curShow in sickbeard.showList:
                         if show_name_helpers.isGoodResult(name, curShow, False):
-                            logger.log(u"Successfully matched " + name + " to " + curShow.name + " with regex", logger.DEBUG)
+                            logger.log(u"Successfully matched " + name + " to " + curShow.name + " with regex",
+                                       logger.DEBUG)
                             indexer_id = curShow.indexerid
                             indexer_lang = curShow.lang
                             break
@@ -303,19 +309,21 @@ class TVCache():
                 if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
-                t = indexer_api.indexerApi(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
 
                 epObj = t[indexer_id].airedOn(parse_result.air_date)[0]
                 season = int(epObj["seasonnumber"])
                 episodes = [int(epObj["episodenumber"])]
-            except indexer_exceptions.indexer_episodenotfound:
-                logger.log(u"Unable to find episode with date " + str(parse_result.air_date) + " for show " + parse_result.series_name+", skipping", logger.WARNING)
+            except sickbeard.indexer_episodenotfound:
+                logger.log(u"Unable to find episode with date " + str(
+                    parse_result.air_date) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
                 return None
-            except indexer_exceptions.indexer_error, e:
-                logger.log(u"Unable to contact " + self.indexer + ": " + ex(e), logger.WARNING)
+            except sickbeard.indexer_error, e:
+                logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
+                           logger.WARNING)
                 return None
 
-        episodeText = "|"+"|".join(map(str, episodes))+"|"
+        episodeText = "|" + "|".join(map(str, episodes)) + "|"
 
         # get the current timestamp
         curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
@@ -326,8 +334,9 @@ class TVCache():
         if not isinstance(name, unicode):
             name = unicode(name, 'utf-8')
 
-        myDB.action("INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                    [name, season, episodeText, indexer_id, url, curTimestamp, quality])
+        myDB.action(
+            "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
+            [name, season, episodeText, indexer_id, url, curTimestamp, quality])
 
 
     def searchCache(self, episode, manualSearch=False):
@@ -357,7 +366,9 @@ class TVCache():
         if not episode:
             sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
         else:
-            sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?", [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
+            sqlResults = myDB.select(
+                "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
+                [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
 
         # for each cache entry
         for curResult in sqlResults:
@@ -386,7 +397,8 @@ class TVCache():
 
             # if the show says we want that episode then add it to the list
             if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
-                logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " + Quality.qualityStrings[curQuality], logger.DEBUG)
+                logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
+                           Quality.qualityStrings[curQuality], logger.DEBUG)
 
             else:
 
@@ -406,8 +418,8 @@ class TVCache():
                 result.name = title
                 result.quality = curQuality
                 result.content = self.provider.getURL(url) \
-                            if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                            and not url.startswith('magnet') else None
+                    if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
+                    and not url.startswith('magnet') else None
 
                 # add it to the list
                 if epObj not in neededEps:

@@ -78,7 +78,7 @@ class NextGenProvider(generic.TorrentProvider):
         return {
             'username': sickbeard.NEXTGEN_USERNAME,
             'password': sickbeard.NEXTGEN_PASSWORD,
-            }
+        }
 
     def loginSuccess(self, output):
         if "<title>NextGen - Login</title>" in output:
@@ -107,12 +107,13 @@ class NextGenProvider(generic.TorrentProvider):
         try:
             login_params = self.getLoginParams()
             self.session = requests.Session()
-            self.session.headers.update({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'})
+            self.session.headers.update(
+                {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'})
             data = self.session.get(self.urls['login_page'])
             bs = BeautifulSoup(data.content.decode('iso-8859-1'))
-            csrfraw = bs.find('form', attrs = {'id': 'login'})['action']
-            output = self.session.post(self.urls['base_url']+csrfraw, data=login_params)            
-            
+            csrfraw = bs.find('form', attrs={'id': 'login'})['action']
+            output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
+
             if self.loginSuccess(output):
                 self.last_login_check = now
                 self.login_opener = self.session
@@ -138,7 +139,7 @@ class NextGenProvider(generic.TorrentProvider):
         if searchSeason:
             search_string = {'Season': [], 'Episode': []}
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                ep_string = show_name + ' S%02d' % int(season) #1) ShowName SXX
+                ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
                 search_string['Season'].append(ep_string)
 
         for ep_obj in wantedEp:
@@ -158,8 +159,8 @@ class NextGenProvider(generic.TorrentProvider):
 
         if ep_obj.show.air_by_date:
             for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) +' '+ \
-                            str(ep_obj.airdate) +'|'+\
+                ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
+                            str(ep_obj.airdate) + '|' + \
                             helpers.custom_strftime('%Y %b {S}', ep_obj.airdate)
                 search_string['Episode'].append(ep_string)
         else:
@@ -193,16 +194,17 @@ class NextGenProvider(generic.TorrentProvider):
 
                     try:
                         html = BeautifulSoup(data.decode('iso-8859-1'), features=["html5lib", "permissive"])
-                        resultsTable = html.find('div', attrs = {'id' : 'torrent-table-wrapper'})
+                        resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
 
                         if not resultsTable:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent", logger.DEBUG)
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.DEBUG)
                             continue
 
                         # Collecting entries
-                        entries_std = html.find_all('div' , attrs = {'id' : 'torrent-std'})
-                        entries_sticky = html.find_all('div' , attrs = {'id' : 'torrent-sticky'})
-                        
+                        entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
+                        entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
+
                         entries = entries_std + entries_sticky
 
                         #Xirg STANDARD TORRENTS
@@ -210,10 +212,13 @@ class NextGenProvider(generic.TorrentProvider):
                         if len(entries) > 0:
 
                             for result in entries:
-    
+
                                 try:
-                                    torrentName = ((result.find('div', attrs = {'id' :'torrent-udgivelse2-users'})).find('a'))['title']
-                                    torrentId = (((result.find('div', attrs = {'id' :'torrent-download'})).find('a'))['href']).replace('download.php?id=','')
+                                    torrentName = \
+                                    ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
+                                    torrentId = (
+                                    ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
+                                        'download.php?id=', '')
                                     torrent_name = str(torrentName)
                                     torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
                                     torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
@@ -223,25 +228,28 @@ class NextGenProvider(generic.TorrentProvider):
                                     #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
                                 except (AttributeError, TypeError):
                                     continue
-    
+
                                 # Filter unseeded torrent and torrents with no name/url
                                 #if mode != 'RSS' and torrent_seeders == 0:
                                 #    continue
-    
+
                                 if not torrent_name or not torrent_download_url:
                                     continue
-    
+
                                 item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")", logger.DEBUG)
+                                logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
+                                           logger.DEBUG)
                                 items[mode].append(item)
-                        
+
                         else:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent", logger.WARNING)
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.WARNING)
                             continue
 
 
                     except Exception, e:
-                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                                   logger.ERROR)
 
             results += items[mode]
 
@@ -267,7 +275,7 @@ class NextGenProvider(generic.TorrentProvider):
         try:
             # Remove double-slashes from url
             parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2]) # replace two or more / with one
+            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
 
             response = self.session.get(url)
@@ -276,7 +284,8 @@ class NextGenProvider(generic.TorrentProvider):
             return None
 
         if response.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url +" returned status code is " + str(response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
+            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
+                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
             return None
 
         return response.content
@@ -285,12 +294,13 @@ class NextGenProvider(generic.TorrentProvider):
 
         results = []
 
-        sqlResults = db.DBConnection().select('SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-                                              ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-                                              ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-                                              ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-                                              ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-                                              )
+        sqlResults = db.DBConnection().select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+        )
         if not sqlResults:
             return []
 
