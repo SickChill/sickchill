@@ -322,19 +322,18 @@ def searchIndexersForShow(regShowName, indexer_id=None):
                         search = [search]
 
                     # add search results
-                    result = [[t.config['id'], x['id']] for x in search if name.lower() == x['seriesname'].lower()]
-                    if len(result) > 0:
-                        result = [item for sublist in result for item in sublist]
-                        return result
+                    for i in range(len(search)):
+                        part = search[i]
+                        seriesname = part['seriesname'].encode('UTF-8').lower()
+                        name = name.encode('UTF-8').lower()
+
+                        if (seriesname == name) or (indexer_id is not None and part['id'] == indexer_id):
+                            return [t.config['id'], part['id']]
 
                 except KeyError, e:
                     break
 
                 except Exception, e:
-                    logger.log(
-                        u"Error while auto-detecting show indexer and indexerid on indexer " + sickbeard.indexerApi(
-                            indexer).name + ", retrying: " + ex(e), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.DEBUG)
                     continue
 
         # search indexers for shows
