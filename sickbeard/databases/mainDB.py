@@ -655,10 +655,9 @@ class ConvertIndexerToInteger(AddSceneNumbering):
 
         ql = []
         logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
-        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
-        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
-        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
-        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
-        self.connection.mass_action(ql)
+        self.connection.action("UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"])
+        self.connection.action("UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"])
+        self.connection.action("UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"])
+        self.connection.action("UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"])
 
         self.incDBVersion()
