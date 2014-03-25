@@ -659,5 +659,7 @@ class ConvertIndexerToInteger(AddSceneNumbering):
         self.connection.action("UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"])
         self.connection.action("UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"])
         self.connection.action("UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"])
+        self.connection.action("UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"])
+        self.connection.action("UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"])
 
         self.incDBVersion()
