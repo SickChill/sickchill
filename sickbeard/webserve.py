@@ -1982,44 +1982,21 @@ class NewHomeAddShows:
 
         # Query Indexers for each search term and build the list of results
         for i in indexers:
-            def searchShows():
-                results = []
+            lINDEXER_API_PARMS = {'indexer': i, 'custom_ui': classes.AllShowsListUI}
+            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
 
-                lINDEXER_API_PARMS = {'indexer': i, 'custom_ui': classes.AllShowsListUI}
-                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            for searchTerm in keywords:
+                try:
+                    search = t[searchTerm]
+                    if isinstance(search, dict):
+                        search = [search]
 
-                for searchTerm in keywords:
-                    try:
-                        search = t[searchTerm]
-                        if isinstance(search, dict):
-                            search = [search]
+                    # add search results
+                    results += [[t.name, t.config['id'], t.config["show_url"], int(x['id']), x['seriesname'],
+                               x['firstaired']] for x in search]
 
-                        # add search results
-                        result = [[t.name, t.config['id'], t.config["show_url"], int(x['id']), x['seriesname'],
-                                   x['firstaired']] for x in search if nameUTF8.lower() in x['seriesname'].lower()]
-
-                        # see if we have any matches
-                        if len(result) > 0:
-                            # add result to list of found shows
-                            results += result
-
-                            # search through result to see if we have a exact match
-                            for show in result:
-                                # cleanup the series name
-                                seriesname = show[4].encode('utf-8').translate(None, string.punctuation)
-
-                                # check if we got a exact match
-                                if nameUTF8.lower() == seriesname.lower():
-                                    return results
-
-                    except Exception, e:
-                        continue
-
-                # finished searching a indexer so return the results
-                return results
-
-            # search indexers for shows
-            results += searchShows()
+                except Exception, e:
+                    continue
 
         # remove duplicates
         results = list(results for results, _ in itertools.groupby(results))
