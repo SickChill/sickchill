@@ -834,10 +834,16 @@ class PostProcessor(object):
         for indexer in sickbeard.indexerApi().indexers:
             self.indexer = int(indexer)
 
+            self._log(u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "
+                                                                                "show")
+
             # try to find the file info
             (indexer_id, season, episodes) = self._find_info()
             if indexer_id and season != None and episodes:
                 break
+
+            self._log(u"Can't find thhe show on " + sickbeard.indexerApi(self.indexer).name + ", trying next "
+                                                                                              "indexer", logger.WARNING)
 
         if not indexer_id or season == None or not episodes:
             self._log(u"Can't find thhe show on any of the Indexers, skipping",
