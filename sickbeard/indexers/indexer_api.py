@@ -34,13 +34,11 @@ class indexerApi(object):
             # set cache if exists
             if sickbeard.CACHE_DIR: indexerConfig[indexer]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR,
                                                                                                  self.name)
+            # update API params
+            indexerConfig[indexer]['api_params'].update(**kwargs)
 
-            if kwargs:
-                # update API params
-                indexerConfig[indexer]['api_params'].update(**kwargs)
-
-                # wrap the indexer API object and return it back
-                self._wrapped = indexerConfig[indexer]['module'](**indexerConfig[indexer]['api_params'])
+            # wrap the indexer API object and return it back
+            self._wrapped = indexerConfig[indexer]['module'](*args, **indexerConfig[indexer]['api_params'])
 
     def __getattr__(self, attr):
         return getattr(self._wrapped, attr)

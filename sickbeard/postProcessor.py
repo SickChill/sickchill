@@ -615,7 +615,7 @@ class PostProcessor(object):
                     episodes = [int(epObj["episodenumber"])]
 
                     self._log(u"Got season " + str(season) + " episodes " + str(episodes), logger.DEBUG)
-                except sickbeard.indexer_episodenotfound, e:
+                except (KeyError, sickbeard.indexer_episodenotfound), e:
                     self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
                         indexer_id) + u", skipping", logger.DEBUG)
                     # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
