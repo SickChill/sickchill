@@ -2068,15 +2068,18 @@ class NewHomeAddShows:
 
                 # default to TVDB if indexer was not detected
                 if show_name and (indexer is None or indexer_id is None):
-                    found_info = helpers.searchIndexersForShow(show_name, indexer_id=indexer_id)
+                    for idx in sickbeard.indexerApi().indexers:
+                        found_info = helpers.searchIndexerForShowID(show_name, idx, indexer_id)
+                        if found_info:
+                            # set indexer and indexer_id from found info
+                            if indexer is None:
+                                indexer = found_info[0]
 
-                    if found_info:
-                        # set indexer and indexer_id from found info
-                        if indexer is None:
-                            indexer = found_info[0]
+                            if indexer_id is None:
+                                indexer_id = found_info[1]
 
-                        if indexer_id is None:
-                            indexer_id = found_info[1]
+                            # found our info so continue
+                            break
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 

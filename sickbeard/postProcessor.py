@@ -518,22 +518,20 @@ class PostProcessor(object):
             self._log(u"Looking up " + cur_name + u" in the DB", logger.DEBUG)
             db_result = helpers.searchDBForShow(cur_name)
             if db_result:
-                self._log(u"Lookup successful, using " + db_result[0] + " id " + str(db_result[1]), logger.DEBUG)
+                self._log(u"Lookup successful, using " + sickbeard.indexerApi(db_result[0]).name + " id " + str(
+                    db_result[1]),
+                          logger.DEBUG)
                 _finalize(parse_result)
                 return (int(db_result[1]), season, episodes)
 
         # see if we can find the name on the Indexer
         for cur_name in name_list:
-            foundInfo = helpers.searchIndexersForShow(cur_name, indexer=self.indexer)
-
+            foundInfo = helpers.searchIndexerForShowID(cur_name, self.indexer)
             if foundInfo:
                 indexer_id = foundInfo[1]
-
                 self._log(
                     u"Lookup successful, using " + sickbeard.indexerApi(self.indexer).name + " id " + str(indexer_id),
                     logger.DEBUG)
-
-                # return found results
                 _finalize(parse_result)
                 return (indexer_id, season, episodes)
 
@@ -597,7 +595,6 @@ class PostProcessor(object):
                     if (showObj != None):
                         # set the language of the show
                         indexer_lang = showObj.lang
-                        self.indexer = int(showObj.indexer)
                 except exceptions.MultipleShowObjectsException:
                     raise  #TODO: later I'll just log this, for now I want to know about it ASAP
 

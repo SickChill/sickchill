@@ -300,52 +300,39 @@ def searchDBForShow(regShowName, indexer_id=None):
     return None
 
 
-def searchIndexersForShow(regShowName, indexer=None, indexer_id=None):
+def searchIndexerForShowID(regShowName, indexer, indexer_id=None):
     showNames = [re.sub('[. -]', ' ', regShowName), regShowName]
 
-    # check for indexer preset
-    try:
-        indexers = [int(indexer)]
-    except:
-        indexers = sickbeard.indexerApi().indexers
-
     # Query Indexers for each search term and build the list of results
-    for indexer in indexers:
-        def searchShows():
-            lINDEXER_API_PARMS = {'indexer': indexer}
-            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+    lINDEXER_API_PARMS = {'indexer': indexer}
+    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
 
-            for name in showNames:
-                logger.log(u"Trying to find " + name + " on " + sickbeard.indexerApi(indexer).name, logger.DEBUG)
-                try:
-                    if indexer_id:
-                        search = t[indexer_id]
-                    else:
-                        search = t[name]
+    for name in showNames:
+        logger.log(u"Trying to find " + name + " on " + sickbeard.indexerApi(indexer).name, logger.DEBUG)
+        try:
+            if indexer_id:
+                search = t[indexer_id]
+            else:
+                search = t[name]
 
-                    if isinstance(search, dict):
-                        search = [search]
+            if isinstance(search, dict):
+                search = [search]
 
-                    # add search results
-                    for i in range(len(search)):
-                        part = search[i]
-                        seriesname = part['seriesname'].encode('UTF-8').lower()
-                        name = name.encode('UTF-8').lower()
+            # add search results
+            for i in range(len(search)):
+                part = search[i]
+                seriesname = part['seriesname'].encode('UTF-8').lower()
+                name = name.encode('UTF-8').lower()
 
-                        if (seriesname == name) or (indexer_id is not None and part['id'] == indexer_id):
-                            return [t.config['id'], part['id']]
+                if (seriesname == name) or (indexer_id is not None and part['id'] == indexer_id):
+                    return [t.config['id'], part['id']]
 
-                except KeyError, e:
-                    break
+        except KeyError, e:
+            break
 
-                except Exception, e:
-                    continue
-
-        # search indexers for shows
-        found = searchShows()
-        if found: return found
-
+        except Exception, e:
+            continue
 
 def sizeof_fmt(num):
     '''
