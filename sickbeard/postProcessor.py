@@ -63,7 +63,7 @@ class PostProcessor(object):
     FOLDER_NAME = 2
     FILE_NAME = 3
 
-    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None, indexer=None):
+    def __init__(self, file_path, nzb_name=None, process_method=None, is_priority=None):
         """
         Creates a new post processor with the given file path and optionally an NZB name.
 
@@ -93,7 +93,7 @@ class PostProcessor(object):
 
         self.is_priority = is_priority
 
-        self.indexer = indexer
+        self.indexer = None
 
         self.good_results = {self.NZB_NAME: False,
                              self.FOLDER_NAME: False,
@@ -522,43 +522,20 @@ class PostProcessor(object):
                 _finalize(parse_result)
                 return (int(db_result[1]), season, episodes)
 
-        # see if we can find the name with a TVDB lookup
+        # see if we can find the name on the Indexer
         for cur_name in name_list:
-            try:
-                lINDEXER_API_PARMS = {'indexer': self.indexer}
+            foundInfo = helpers.searchIndexersForShow(cur_name, indexer=self.indexer)
 
-                lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+            if foundInfo:
+                indexer_id = foundInfo[1]
 
-                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                self._log(
+                    u"Lookup successful, using " + sickbeard.indexerApi(self.indexer).name + " id " + str(indexer_id),
+                    logger.DEBUG)
 
-                self._log(u"Looking up name " + cur_name + u" on " + sickbeard.indexerApi(self.indexer).name + "",
-                          logger.DEBUG)
-                showObj = t[cur_name]
-            except (sickbeard.indexer_exception, IOError):
-                # if none found, search on all languages
-                try:
-                    lINDEXER_API_PARMS = {'indexer': self.indexer}
-
-                    lINDEXER_API_PARMS['search_all_languages'] = True
-                    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-
-                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
-
-                    self._log(u"Looking up name " + cur_name + u" in all languages on " + sickbeard.indexerApi(
-                        self.indexer).name + "", logger.DEBUG)
-                    showObj = t[cur_name]
-                except (sickbeard.indexer_exception, IOError):
-                    pass
-
-                continue
-            except (IOError):
-                continue
-
-            self._log(
-                u"Lookup successful, using " + sickbeard.indexerApi(self.indexer).name + " id " + str(showObj["id"]),
-                logger.DEBUG)
-            _finalize(parse_result)
-            return (int(showObj["id"]), season, episodes)
+                # return found results
+                _finalize(parse_result)
+                return (indexer_id, season, episodes)
 
         _finalize(parse_result)
         return to_return
@@ -620,7 +597,7 @@ class PostProcessor(object):
                     if (showObj != None):
                         # set the language of the show
                         indexer_lang = showObj.lang
-                        self.indexer = showObj.indexer
+                        self.indexer = int(showObj.indexer)
                 except exceptions.MultipleShowObjectsException:
                     raise  #TODO: later I'll just log this, for now I want to know about it ASAP
 
@@ -857,22 +834,17 @@ class PostProcessor(object):
 
         # try to find the file info
         indexer_id = season = episodes = None
-        if 'auto' in self.indexer:
-            for indexer in sickbeard.indexerApi().indexers:
-                self.indexer = indexer
+        for indexer in sickbeard.indexerApi().indexers:
+            self.indexer = int(indexer)
 
-                # try to find the file info
-                (indexer_id, season, episodes) = self._find_info()
-                if indexer_id and season != None and episodes:
-                    break
-
-                self._log(u"Can't find show on " + sickbeard.indexerApi(
-                    self.indexer).name + ", auto trying next indexer in list", logger.WARNING)
-        else:
+            # try to find the file info
             (indexer_id, season, episodes) = self._find_info()
+            if indexer_id and season != None and episodes:
+                break
 
         if not indexer_id or season == None or not episodes:
-            self._log(u"Can't find show id from ANY of the indexers or season or episode, skipping", logger.WARNING)
+            self._log(u"Can't find thhe show on any of the Indexers, skipping",
+                      logger.WARNING)
             return False
 
         # retrieve/create the corresponding TVEpisode objects

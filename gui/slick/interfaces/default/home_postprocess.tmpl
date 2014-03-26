@@ -15,13 +15,6 @@
 <form name="processForm" method="post" action="processEpisode" style="line-height: 44px">
 <input type="hidden" id="type" name="type" value="manual">
 <b>Enter the folder containing the episode:</b> <input type="text" name="dir" id="episodeDir" size="50" /><br/>
-<b>Show Indexer to be used:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<select name="indexer" id="indexer" class="indexer">
-    #for $curIndexer in sorted($sickbeard.indexerApi().indexers.items(), key=lambda x: x[1]):
-        <option value="$curIndexer[0]" #if $curIndexer[0] in $sickbeard.indexerApi().indexers then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
-    #end for
-</select>
-<br/>
 <b>Process Method to be used:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <select name="process_method" id="process_method" class="input-medium" >
     #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}

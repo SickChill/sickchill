@@ -1905,7 +1905,7 @@ class HomePostProcess:
 
     @cherrypy.expose
     def processEpisode(self, dir=None, dirName=None, nzbName=None, jobName=None, quiet=None, process_method=None,
-                       force=None, is_priority=None, failed="0", type="auto", indexer="auto"):
+                       force=None, is_priority=None, failed="0", type="auto"):
 
         # auto-detect dirParam style
         dirParam = dir if dir is not None else dirName if not None else redirect("/home/postprocess/")
@@ -1926,7 +1926,7 @@ class HomePostProcess:
             is_priority = False
 
         result = processTV.processDir(dirParam, nzbName, process_method=process_method, force=force,
-                                      is_priority=is_priority, failed=failed, type=type, indexer=indexer)
+                                      is_priority=is_priority, failed=failed, type=type)
         if quiet is not None and int(quiet) == 1:
             return result
 
@@ -2068,7 +2068,7 @@ class NewHomeAddShows:
 
                 # default to TVDB if indexer was not detected
                 if show_name and (indexer is None or indexer_id is None):
-                    found_info = helpers.searchIndexersForShow(show_name, indexer_id)
+                    found_info = helpers.searchIndexersForShow(show_name, indexer_id=indexer_id)
 
                     if found_info:
                         # set indexer and indexer_id from found info

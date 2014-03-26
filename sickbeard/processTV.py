@@ -42,8 +42,7 @@ def logHelper(logMessage, logLevel=logger.MESSAGE):
     return logMessage + u"\n"
 
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto",
-               indexer="auto"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -52,7 +51,6 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     force: True to postprocess already postprocessed files
     failed: Boolean for whether or not the download failed
     type: Type of postprocessing auto or manual
-    indexer: Indexer for show can be Tvdb or TVRage or auto to auto-discover
     """
 
     global process_result, returnStr
@@ -108,13 +106,13 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     #Don't Link media when the media is extracted from a rar in the same path
     if process_method in ('hardlink', 'symlink') and videoInRar:
-        process_media(path, videoInRar, nzbName, 'move', force, is_priority, indexer)
+        process_media(path, videoInRar, nzbName, 'move', force, is_priority)
         delete_files(path, rarContent)
         for video in set(videoFiles) - set(videoInRar):
-            process_media(path, [video], nzbName, process_method, force, is_priority, indexer)
+            process_media(path, [video], nzbName, process_method, force, is_priority)
     else:
         for video in videoFiles:
-            process_media(path, [video], nzbName, process_method, force, is_priority, indexer)
+            process_media(path, [video], nzbName, process_method, force, is_priority)
 
     #Process Video File in all TV Subdir
     for dir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed)]:
@@ -132,12 +130,12 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
             #Don't Link media when the media is extracted from a rar in the same path
             if process_method in ('hardlink', 'symlink') and videoInRar:
-                process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, indexer)
+                process_media(processPath, videoInRar, nzbName, 'move', force, is_priority)
                 process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
-                              is_priority, indexer)
+                              is_priority)
                 delete_files(processPath, rarContent)
             else:
-                process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, indexer)
+                process_media(processPath, videoFiles, nzbName, process_method, force, is_priority)
 
                 #Delete all file not needed
                 if process_method != "move" or not process_result \
@@ -309,7 +307,7 @@ def already_postprocessed(dirName, videofile, force):
     return False
 
 
-def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, indexer):
+def process_media(processPath, videoFiles, nzbName, process_method, force, is_priority):
     global process_result, returnStr
 
     for cur_video_file in videoFiles:
@@ -320,7 +318,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
         cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
 
         try:
-            processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority, indexer)
+            processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
             process_result = processor.process()
             process_fail_message = ""
         except exceptions.PostProcessingFailed, e:

@@ -300,11 +300,17 @@ def searchDBForShow(regShowName, indexer_id=None):
     return None
 
 
-def searchIndexersForShow(regShowName, indexer_id=None):
+def searchIndexersForShow(regShowName, indexer=None, indexer_id=None):
     showNames = [re.sub('[. -]', ' ', regShowName), regShowName]
 
+    # check for indexer preset
+    try:
+        indexers = [int(indexer)]
+    except:
+        indexers = sickbeard.indexerApi().indexers
+
     # Query Indexers for each search term and build the list of results
-    for indexer in sickbeard.indexerApi().indexers:
+    for indexer in indexers:
         def searchShows():
             lINDEXER_API_PARMS = {'indexer': indexer}
             lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
