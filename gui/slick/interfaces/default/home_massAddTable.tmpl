@@ -30,7 +30,7 @@
     #end if
     <td>
         <select name="indexer">
-            #for $curIndexer in $sickbeard.indexerApi().indexers.items():
+            #for $curIndexer in $sickbeard.indexerApi.indexers().items():
                 <option value="$curIndexer[0]" #if $curIndexer[0] == $indexer then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
             #end for
         </select>

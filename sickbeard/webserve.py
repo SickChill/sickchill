@@ -1976,14 +1976,13 @@ class NewHomeAddShows:
             keywords.insert(0, nameUTF8)
 
         # check for indexer preset
-        indexers = [int(indexer)]
-        if 0 in indexers:
-            indexers = sickbeard.indexerApi().indexers
+        indexers = sickbeard.indexerApi.indexers if not int(indexer) else [int(indexer or 0)]
 
         # Query Indexers for each search term and build the list of results
-        for i in indexers:
-            lINDEXER_API_PARMS = {'indexer': i, 'custom_ui': classes.AllShowsListUI}
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+        for indexer in indexers():
+            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+            lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
+            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
             for searchTerm in keywords:
                 try:
@@ -1992,11 +1991,10 @@ class NewHomeAddShows:
                         search = [search]
 
                     # add search results
-                    results += [[t.name, t.config['id'], t.config["show_url"], int(x['id']), x['seriesname'],
-                               x['firstaired']] for x in search]
-
-                except Exception, e:
-                    continue
+                    results += [[sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
+                                 sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
+                                 x['firstaired']] for x in search if x['firstaired']]
+                except:continue
 
         # remove duplicates
         results = list(results for results, _ in itertools.groupby(results))
@@ -2068,7 +2066,7 @@ class NewHomeAddShows:
 
                 # default to TVDB if indexer was not detected
                 if show_name and (indexer is None or indexer_id is None):
-                    for idx in sickbeard.indexerApi().indexers:
+                    for idx in sickbeard.indexerApi.indexers():
                         found_info = helpers.searchIndexerForShowID(show_name, idx, indexer_id)
                         if found_info:
                             # set indexer and indexer_id from found info

@@ -169,14 +169,12 @@ class ProperFinder():
                     raise Exception("BAD STUFF HAPPENED")
 
                 indexer_lang = showObj.lang
-
-                lINDEXER_API_PARMS = {'indexer': showObj.indexer}
-
+                lINDEXER_API_PARMS = sickbeard.indexerApi(showObj.indexer).api_params.copy()
                 if indexer_lang and not indexer_lang == 'en':
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
                 try:
-                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                    t = sickbeard.indexerApi(showObj.indexer).indexer(**lINDEXER_API_PARMS)
 
                     epObj = t[curProper.indexerid].airedOn(curProper.episode)[0]
 

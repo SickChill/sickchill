@@ -166,7 +166,7 @@ class TIVOMetadata(generic.GenericMetadata):
         indexer_lang = ep_obj.show.lang
 
         try:
-            lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
 
             lINDEXER_API_PARMS['actors'] = True
 
@@ -176,7 +176,7 @@ class TIVOMetadata(generic.GenericMetadata):
             if ep_obj.show.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(str(e))

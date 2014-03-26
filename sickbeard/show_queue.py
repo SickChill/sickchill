@@ -240,14 +240,13 @@ class QueueItemAdd(ShowQueueItem):
         # make sure the indexer ids are valid
         try:
 
-            lINDEXER_API_PARMS = {'indexer': self.indexer}
-
+            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
             if self.lang:
                 lINDEXER_API_PARMS['language'] = self.lang
 
             logger.log(u"" + sickbeard.indexerApi(self.indexer).name + ": " + repr(lINDEXER_API_PARMS))
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
             s = t[self.indexer_id]
 
             # this usually only happens if they have an NFO in their show dir which gave us a indexer ID that has no proper english version of the show

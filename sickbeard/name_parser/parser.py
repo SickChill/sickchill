@@ -284,13 +284,13 @@ class NameParser(object):
         # see if we can find the name with a TVDB lookup
         if check_indexer:
             for cur_name in name_list:
-                for indexer in sickbeard.indexerApi().indexers:
+                for indexer in sickbeard.indexerApi.indexers():
                     try:
-                        lINDEXER_API_PARMS = {'indexer': indexer}
+                        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
 
                         lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
 
-                        t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
                         logger.log(u"Looking up name " + str(cur_name) + " on " + sickbeard.indexerApi(indexer).name,
                                    logger.DEBUG)
@@ -298,12 +298,12 @@ class NameParser(object):
                     except (sickbeard.indexer_exception):
                         # if none found, search on all languages
                         try:
-                            lINDEXER_API_PARMS = {'indexer': indexer}
+                            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
 
                             lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
                             lINDEXER_API_PARMS['search_all_languages'] = True
 
-                            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
                             logger.log(
                                 u"Looking up name " + str(cur_name) + " in all languages on " + sickbeard.indexerApi(

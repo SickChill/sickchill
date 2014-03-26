@@ -304,9 +304,9 @@ def searchIndexerForShowID(regShowName, indexer, indexer_id=None):
     showNames = [re.sub('[. -]', ' ', regShowName), regShowName]
 
     # Query Indexers for each search term and build the list of results
-    lINDEXER_API_PARMS = {'indexer': indexer}
+    lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
     lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+    t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
     for name in showNames:
         logger.log(u"Trying to find " + name + " on " + sickbeard.indexerApi(indexer).name, logger.DEBUG)
@@ -326,7 +326,7 @@ def searchIndexerForShowID(regShowName, indexer, indexer_id=None):
                 name = name.encode('UTF-8').lower()
 
                 if (seriesname == name) or (indexer_id is not None and part['id'] == indexer_id):
-                    return [t.config['id'], part['id']]
+                    return [sickbeard.indexerApi(indexer).config['id'], part['id']]
 
         except KeyError, e:
             break
@@ -942,37 +942,22 @@ def get_show_by_name(name, showList, useIndexer=False):
                 return show
 
     if useIndexer:
-        for indexer in sickbeard.indexerApi().indexers:
+        for indexer in sickbeard.indexerApi.indexers():
             try:
-                lINDEXER_API_PARMS = {'indexer': indexer}
-
+                lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
                 lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+                lINDEXER_API_PARMS['search_all_languages'] = True
 
-                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
                 showObj = t[name]
-            except (sickbeard.indexer_exception, IOError):
-                # if none found, search on all languages
-                try:
-                    lINDEXER_API_PARMS = {'indexer': indexer}
+            except:continue
 
-                    lINDEXER_API_PARMS['search_all_languages'] = True
-                    lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-
-                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
-                    showObj = t[name]
-                except (sickbeard.indexer_exception, IOError):
-                    pass
-
-                continue
-            except (IOError):
-                continue
-
-            showResult = findCertainShow(sickbeard.showList, int(showObj["id"]))
-            if showResult is not None:
-                return showResult
+            if showObj:
+                showResult = findCertainShow(sickbeard.showList, int(showObj["id"]))
+                if showResult is not None:
+                    return showResult
 
     return None
-
 
 def suffix(d):
     return 'th' if 11 <= d <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(d % 10, 'th')

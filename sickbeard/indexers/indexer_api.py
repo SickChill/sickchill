@@ -20,28 +20,37 @@ import sickbeard
 
 from indexer_config import initConfig, indexerConfig
 
-
 class indexerApi(object):
-    def __init__(self, indexer=None, *args, **kwargs):
-        self._wrapped = object
-        self.config = initConfig
-        self.indexers = {k: v if k is 'id' else v['name'] for k, v in indexerConfig.items()}
+    def __init__(self, indexerID=None):
+        self.indexerID = indexerID
 
-        if indexer in indexerConfig:
-            self.name = indexerConfig[indexer]['name']
-            self.config = indexerConfig[indexer]
+    def indexer(self, *args, **kwargs):
+        if self.indexerID:
+            return indexerConfig[self.indexerID]['module'](*args, **kwargs)
 
-            # set cache if exists
-            if sickbeard.CACHE_DIR: indexerConfig[indexer]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR,
-                                                                                                 self.name)
-            # update API params
-            indexerConfig[indexer]['api_params'].update(**kwargs)
+    @property
+    def config(self):
+        if self.indexerID:
+            return indexerConfig[self.indexerID]
+        return initConfig
 
-            # wrap the indexer API object and return it back
-            self._wrapped = indexerConfig[indexer]['module'](*args, **indexerConfig[indexer]['api_params'])
+    @property
+    def name(self):
+        if self.indexerID:
+            return indexerConfig[self.indexerID]['name']
 
-    def __getattr__(self, attr):
-        return getattr(self._wrapped, attr)
+    @property
+    def api_params(self):
+        if self.indexerID:
+            if sickbeard.CACHE_DIR:
+                    indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
+            return indexerConfig[self.indexerID]['api_params']
 
-    def __getitem__(self, attr):
-        return self._wrapped.__getitem__(attr)
+    @property
+    def cache(self):
+        if sickbeard.CACHE_DIR:
+            return self.api_params['cache']
+
+    @staticmethod
+    def indexers():
+        return {k: v if k is 'id' else v['name'] for k, v in indexerConfig.items()}

@@ -349,7 +349,7 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
 
             lINDEXER_API_PARMS['actors'] = True
 
@@ -359,7 +359,7 @@ class GenericMetadata():
             if ep_obj.show.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
 
             indexer_show_obj = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
@@ -739,7 +739,7 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
 
             lINDEXER_API_PARMS['banners'] = True
 
@@ -749,7 +749,7 @@ class GenericMetadata():
             if show_obj.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (sickbeard.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
@@ -804,7 +804,7 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
 
             lINDEXER_API_PARMS['banners'] = True
 
@@ -814,7 +814,7 @@ class GenericMetadata():
             if show_obj.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (sickbeard.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(
@@ -860,14 +860,14 @@ class GenericMetadata():
         try:
             # There's gotta be a better way of doing this but we don't wanna
             # change the language value elsewhere
-            lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
 
             lINDEXER_API_PARMS['banners'] = True
 
             if indexer_lang and not indexer_lang == 'en':
                 lINDEXER_API_PARMS['language'] = indexer_lang
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
             indexer_show_obj = t[show_obj.indexerid]
         except (sickbeard.indexer_error, IOError), e:
             logger.log(u"Unable to look up show on " + sickbeard.indexerApi(

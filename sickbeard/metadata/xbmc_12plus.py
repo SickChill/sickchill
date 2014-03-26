@@ -97,7 +97,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         show_ID = show_obj.indexerid
 
         indexer_lang = show_obj.lang
-        lINDEXER_API_PARMS = {'indexer': show_obj.indexer}
+        lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
 
         lINDEXER_API_PARMS['actors'] = True
 
@@ -107,7 +107,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
         if show_obj.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
-        t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+        t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
 
         tv_node = etree.Element("tvshow")
 
@@ -221,7 +221,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
         indexer_lang = ep_obj.show.lang
 
-        lINDEXER_API_PARMS = {'indexer': ep_obj.show.indexer}
+        lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
 
         lINDEXER_API_PARMS['actors'] = True
 
@@ -232,7 +232,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
             lINDEXER_API_PARMS['dvdorder'] = True
 
         try:
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
             myShow = t[ep_obj.show.indexerid]
         except sickbeard.indexer_shownotfound, e:
             raise exceptions.ShowNotFoundException(e.message)

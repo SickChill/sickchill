@@ -599,12 +599,11 @@ class PostProcessor(object):
                     raise  #TODO: later I'll just log this, for now I want to know about it ASAP
 
                 try:
-                    lINDEXER_API_PARMS = {'indexer': self.indexer}
-
+                    lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
                     if indexer_lang and not indexer_lang == 'en':
                         lINDEXER_API_PARMS = {'language': indexer_lang}
 
-                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                    t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
                     epObj = t[indexer_id].airedOn(episodes[0])[0]
 
@@ -831,7 +830,7 @@ class PostProcessor(object):
 
         # try to find the file info
         indexer_id = season = episodes = None
-        for indexer in sickbeard.indexerApi().indexers:
+        for indexer in sickbeard.indexerApi.indexers():
             self.indexer = int(indexer)
 
             self._log(u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "

@@ -304,12 +304,12 @@ class TVCache():
         # if we have an air-by-date show then get the real season/episode numbers
         if parse_result.air_by_date and indexer_id:
             try:
-                lINDEXER_API_PARMS = {'indexer': self.indexer}
+                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
                 if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
-                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
                 epObj = t[indexer_id].airedOn(parse_result.air_date)[0]
                 season = int(epObj["seasonnumber"])

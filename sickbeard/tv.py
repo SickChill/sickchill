@@ -98,10 +98,8 @@ class TVShow(object):
 
         if ek.ek(os.path.isdir, self._location):
             return self._location
-        elif self._isDirGood:
-            return self._location
         else:
-            raise exceptions.NoNFOException("Show folder doesn't exist, you shouldn't be using it")
+            raise exceptions.ShowDirNotFoundException("Show folder doesn't exist, you shouldn't be using it")
 
     def _setLocation(self, newLocation):
         logger.log(u"Setter sets location to " + newLocation, logger.DEBUG)
@@ -358,7 +356,7 @@ class TVShow(object):
 
         scannedEps = {}
 
-        lINDEXER_API_PARMS = {'indexer': self.indexer}
+        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
         if self.lang:
             lINDEXER_API_PARMS['language'] = self.lang
@@ -366,7 +364,7 @@ class TVShow(object):
         if self.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
-        t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+        t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
         cachedShow = t[self.indexerid]
         cachedSeasons = {}
@@ -409,7 +407,7 @@ class TVShow(object):
 
     def loadEpisodesFromIndexer(self, cache=True):
 
-        lINDEXER_API_PARMS = {'indexer': self.indexer}
+        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
         if not cache:
             lINDEXER_API_PARMS['cache'] = False
@@ -421,7 +419,7 @@ class TVShow(object):
             lINDEXER_API_PARMS['dvdorder'] = True
 
         try:
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
             showObj = t[self.indexerid]
         except sickbeard.indexer_error:
             logger.log(u"" + sickbeard.indexerApi(
@@ -522,7 +520,7 @@ class TVShow(object):
         # if we have an air-by-date show then get the real season/episode numbers
         if parse_result.air_by_date:
             try:
-                lINDEXER_API_PARMS = {'indexer': self.indexer}
+                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
                 if self.lang:
                     lINDEXER_API_PARMS['language'] = self.lang
@@ -530,7 +528,7 @@ class TVShow(object):
                 if self.dvdorder != 0:
                     lINDEXER_API_PARMS['dvdorder'] = True
 
-                t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
                 epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
                 season = int(epObj["seasonnumber"])
@@ -731,7 +729,7 @@ class TVShow(object):
         # There's gotta be a better way of doing this but we don't wanna
         # change the cache value elsewhere
         if tvapi is None:
-            lINDEXER_API_PARMS = {'indexer': self.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
             if not cache:
                 lINDEXER_API_PARMS['cache'] = False
@@ -742,7 +740,7 @@ class TVShow(object):
             if self.dvdorder != 0:
                 lINDEXER_API_PARMS['dvdorder'] = True
 
-            t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
         else:
             t = tvapi
@@ -1373,7 +1371,7 @@ class TVEpisode(object):
         try:
             if cachedSeason is None:
                 if tvapi is None:
-                    lINDEXER_API_PARMS = {'indexer': self.indexer}
+                    lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
                     if not cache:
                         lINDEXER_API_PARMS['cache'] = False
@@ -1384,7 +1382,7 @@ class TVEpisode(object):
                     if self.show.dvdorder != 0:
                         lINDEXER_API_PARMS['dvdorder'] = True
 
-                    t = sickbeard.indexerApi(**lINDEXER_API_PARMS)
+                    t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
                 else:
                     t = tvapi
                 myEp = t[self.show.indexerid][season][episode]

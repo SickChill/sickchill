@@ -1599,13 +1599,15 @@ class CMD_SickBeardSearchTVDB(ApiCall):
                 return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            lINDEXER_API_PARMS = {'indexer': self.indexer}
+            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
             lang_id = self.valid_languages[self.lang]
             if self.lang and not self.lang == 'en':
                 lINDEXER_API_PARMS['language'] = self.lang
 
-            t = sickbeard.indexerApi(actors=False, **lINDEXER_API_PARMS)
+            lINDEXER_API_PARMS['actors'] = False
+
+            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
             try:
                 myShow = t[int(self.indexerid)]
