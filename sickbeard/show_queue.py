@@ -269,7 +269,7 @@ class QueueItemAdd(ShowQueueItem):
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + "on Indexer: " + sickbeard.indexerApi(
+            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + sickbeard.indexerApi(
                 self.indexer).name, logger.ERROR)
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + sickbeard.indexerApi(
