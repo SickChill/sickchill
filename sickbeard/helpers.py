@@ -328,11 +328,8 @@ def searchIndexerForShowID(regShowName, indexer, indexer_id=None):
                 if (seriesname == name) or (indexer_id is not None and part['id'] == indexer_id):
                     return [sickbeard.indexerApi(indexer).config['id'], part['id']]
 
-        except KeyError, e:
-            break
-
-        except Exception, e:
-            continue
+        except KeyError:break
+        except Exception:continue
 
 def sizeof_fmt(num):
     '''

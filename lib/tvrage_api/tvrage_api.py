@@ -30,7 +30,9 @@ except ImportError:
     import xml.etree.ElementTree as ElementTree
 
 from lib.dateutil.parser import parse
+
 from lib import requests
+from lib import requests_cache
 
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
@@ -270,10 +272,12 @@ class TVRage:
 
         if cache is True:
             self.config['cache_enabled'] = True
+            requests_cache.install_cache(self._getTempDir())
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
+            requests_cache.install_cache(cache)
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -366,12 +370,10 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
-                s = requests.Session()
-                s.mount('http://', CachingHTTPAdapter())
-
-                resp = s.get(url, params=params)
-            else:
                 resp = requests.get(url, params=params)
+            else:
+                with requests_cache.disabled():
+                    resp = requests.get(url, params=params)
 
         except requests.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))

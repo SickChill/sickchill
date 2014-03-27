@@ -19,13 +19,11 @@ __version__ = "1.9"
 
 import os
 import time
-import urllib
 import getpass
 import StringIO
 import tempfile
 import warnings
 import logging
-import datetime
 import zipfile
 
 try:
@@ -39,6 +37,7 @@ except ImportError:
     gzip = None
 
 from lib import requests
+from lib import requests_cache
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
@@ -430,15 +429,12 @@ class Tvdb:
 
         if cache is True:
             self.config['cache_enabled'] = True
-            self.config['cache_location'] = self._getTempDir()
-
+            requests_cache.install_cache(self._getTempDir())
         elif cache is False:
             self.config['cache_enabled'] = False
-
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
-            self.config['cache_location'] = cache
-
+            requests_cache.install_cache(cache)
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -541,12 +537,10 @@ class Tvdb:
 
             # get response from TVDB
             if self.config['cache_enabled']:
-                s = requests.Session()
-                s.mount('http://', CachingHTTPAdapter())
-
-                resp = s.get(url, params=params)
-            else:
                 resp = requests.get(url, params=params)
+            else:
+                with requests_cache.disabled():
+                    resp = requests.get(url, params=params)
 
         except requests.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
