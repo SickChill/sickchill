@@ -37,14 +37,12 @@ except ImportError:
     gzip = None
 
 from lib import requests
-from lib import requests_cache
+from lib import cachecontrol
+from lib.cachecontrol import caches
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
                              tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
-
-# Cached Session Handler
-from lib.httpcache import CachingHTTPAdapter
 
 def log():
     return logging.getLogger("tvdb_api")
@@ -429,12 +427,14 @@ class Tvdb:
 
         if cache is True:
             self.config['cache_enabled'] = True
-            requests_cache.install_cache(self._getTempDir())
+            self.sess = cachecontrol.CacheControl(requests.Session(),
+                                cache=caches.FileCache(self._getTempDir()), cache_all=True)
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
-            requests_cache.install_cache(cache)
+            self.sess = cachecontrol.CacheControl(requests.Session(),
+                                cache=caches.FileCache(cache), cache_all=True)
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -537,10 +537,9 @@ class Tvdb:
 
             # get response from TVDB
             if self.config['cache_enabled']:
-                resp = requests.get(url, params=params)
+                resp = self.sess.get(url, params=sorted(params))
             else:
-                with requests_cache.disabled():
-                    resp = requests.get(url, params=params)
+                resp = requests.get(url, params=params)
 
         except requests.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))

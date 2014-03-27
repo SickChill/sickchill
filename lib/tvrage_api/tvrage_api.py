@@ -32,14 +32,12 @@ except ImportError:
 from lib.dateutil.parser import parse
 
 from lib import requests
-from lib import requests_cache
+from lib import cachecontrol
+from lib.cachecontrol import caches
 
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
     tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
-
-# Cached Session Handler
-from lib.httpcache import CachingHTTPAdapter
 
 def log():
     return logging.getLogger("tvrage_api")
@@ -272,12 +270,14 @@ class TVRage:
 
         if cache is True:
             self.config['cache_enabled'] = True
-            requests_cache.install_cache(self._getTempDir())
+            self.sess = cachecontrol.CacheControl(requests.Session(),
+                                cache=caches.FileCache(self._getTempDir()), cache_all=True)
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
-            requests_cache.install_cache(cache)
+            self.sess = cachecontrol.CacheControl(requests.Session(),
+                                cache=caches.FileCache(cache), cache_all=True)
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -370,10 +370,9 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
-                resp = requests.get(url, params=params)
+                resp = self.sess.get(url, params=params)
             else:
-                with requests_cache.disabled():
-                    resp = requests.get(url, params=params)
+                resp = requests.get(url, params=params)
 
         except requests.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
