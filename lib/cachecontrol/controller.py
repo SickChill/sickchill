@@ -200,12 +200,17 @@ class CacheController(object):
             self.cache.set(cache_url, resp)
 
         # If we want to cache sites not setup with cache headers then add the proper headers and keep the response
-        if self.cache_all:
-            expires = datetime.datetime.utcnow() + datetime.timedelta(days=(25 * 365))
-            expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-            headers = {'Cache-Control': 'public,max-age=%d' % int(3600),
-                       'Expires': expires}
+        elif self.cache_all and getattr(resp.headers, 'cache-control', None) is None:
+            headers = {'Cache-Control': 'public,max-age=%d' % int(3600)}
             resp.headers.update(headers)
+
+            if getattr(resp.headers, 'expires', None) is None:
+                expires = datetime.datetime.utcnow() + datetime.timedelta(days=(25 * 365))
+                expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+                headers = {'Expires': expires}
+                resp.headers.update(headers)
+
+            # Add resp to cache
             self.cache.set(cache_url, resp)
 
         # Add to the cache if the response headers demand it. If there

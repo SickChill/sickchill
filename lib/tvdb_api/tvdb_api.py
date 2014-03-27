@@ -428,13 +428,15 @@ class Tvdb:
         if cache is True:
             self.config['cache_enabled'] = True
             self.sess = cachecontrol.CacheControl(requests.Session(),
-                                cache=caches.FileCache(self._getTempDir()), cache_all=True)
+                                                  cache_all=True,
+                                                  cache=caches.FileCache(self._getTempDir()))
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.sess = cachecontrol.CacheControl(requests.Session(),
-                                cache=caches.FileCache(cache), cache_all=True)
+                                                  cache_all=True,
+                                                  cache=caches.FileCache(cache))
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -537,7 +539,7 @@ class Tvdb:
 
             # get response from TVDB
             if self.config['cache_enabled']:
-                resp = self.sess.get(url, params=sorted(params))
+                resp = self.sess.get(url, params=params)
             else:
                 resp = requests.get(url, params=params)
 
