@@ -1979,7 +1979,7 @@ class NewHomeAddShows:
         indexers = sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer or 0)]
 
         # Query Indexers for each search term and build the list of results
-        for indexer in indexers():
+        for indexer in indexers:
             lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
