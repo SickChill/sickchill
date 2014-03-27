@@ -1424,13 +1424,13 @@ class TVEpisode(object):
         self.description = getattr(myEp, 'overview', "")
 
         firstaired = getattr(myEp, 'firstaired', None)
-        if firstaired is None or firstaired is "0000-00-00":
+        if firstaired is None or firstaired in "0000-00-00":
             firstaired = str(datetime.date.fromordinal(1))
         rawAirdate = [int(x) for x in firstaired.split("-")]
 
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
-        except ValueError:
+        except (ValueError, IndexError):
             logger.log(u"Malformed air date retrieved from " + sickbeard.indexerApi(
                 self.indexer).name + " (" + self.show.name + " - " + str(season) + "x" + str(episode) + ")",
                        logger.ERROR)

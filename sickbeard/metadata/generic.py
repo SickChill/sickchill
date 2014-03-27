@@ -875,6 +875,10 @@ class GenericMetadata():
             return result
 
         # if we have no season banners then just finish
+        if getattr(indexer_show_obj, '_banners', None) is None:
+            return result
+
+        # if we have no season banners then just finish
         if 'season' not in indexer_show_obj['_banners'] or 'seasonwide' not in indexer_show_obj['_banners']['season']:
             return result
 

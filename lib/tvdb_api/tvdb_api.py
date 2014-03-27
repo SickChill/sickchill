@@ -47,10 +47,6 @@ from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
 # Cached Session Handler
 from lib.httpcache import CachingHTTPAdapter
 
-s = requests.Session()
-s.mount('http://', CachingHTTPAdapter())
-
-
 def log():
     return logging.getLogger("tvdb_api")
 
@@ -518,12 +514,36 @@ class Tvdb:
 
         return os.path.join(tempfile.gettempdir(), "tvdb_api-%s" % (uid))
 
+
+    def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):
+        def deco_retry(f):
+            def f_retry(*args, **kwargs):
+                mtries, mdelay = tries, delay
+                while mtries > 0:
+                    try:
+                        return f(*args, **kwargs)
+                    except ExceptionToCheck, e:
+                        print "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                        time.sleep(mdelay)
+                        mtries -= 1
+                        mdelay *= backoff
+                        lastException = e
+                raise lastException
+
+            return f_retry  # true decorator
+
+        return deco_retry
+
+    @retry(tvdb_error, tries=4)
     def _loadUrl(self, url, params=None, language=None):
         try:
             log().debug("Retrieving URL %s" % url)
 
             # get response from TVDB
             if self.config['cache_enabled']:
+                s = requests.Session()
+                s.mount('http://', CachingHTTPAdapter())
+
                 resp = s.get(url, params=params)
             else:
                 resp = requests.get(url, params=params)
@@ -629,7 +649,7 @@ class Tvdb:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = [dict((s.tag.lower(), s.text) for s in x.getchildren()) for x in seriesEt]
+        allSeries = list(dict((s.tag.lower(), s.text) for s in x.getchildren()) for x in seriesEt)
 
         return allSeries
 
@@ -869,20 +889,17 @@ class Tvdb:
         already been grabbed), or grabs all episodes and returns
         the correct SID.
         """
-        sid = set()
         if name in self.corrections:
             log().debug('Correcting %s to %s' % (name, self.corrections[name]))
-            sid = self.corrections[name]
+            return self.corrections[name]
         else:
             log().debug('Getting show %s' % (name))
             selected_series = self._getSeries(name)
             if isinstance(selected_series, dict):
                 selected_series = [selected_series]
-            [sid.add(int(x['id'])) for x in selected_series if
-             self._getShowData(int(x['id']), self.config['language'], seriesSearch=True)]
-            [self.corrections.update({x['seriesname']: int(x['id'])}) for x in selected_series]
-
-        return sid
+            sids = list(int(x['id']) for x in selected_series if self._getShowData(int(x['id']), self.config['language'], seriesSearch=True))
+            self.corrections.update(dict((x['seriesname'], int(x['id'])) for x in selected_series))
+            return sids
 
     def __getitem__(self, key):
         """Handles tvdb_instance['seriesname'] calls.
@@ -896,7 +913,7 @@ class Tvdb:
 
         key = key.lower()  # make key lower case
         sids = self._nameToSid(key)
-        return [self.shows[sid] for sid in sids]
+        return list(self.shows[sid] for sid in sids)
 
     def __repr__(self):
         return str(self.shows)

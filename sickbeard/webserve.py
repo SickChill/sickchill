@@ -29,7 +29,7 @@ import random
 import locale
 import logging
 import itertools
-import string
+import operator
 
 from Cheetah.Template import Template
 import cherrypy.lib
@@ -1991,13 +1991,14 @@ class NewHomeAddShows:
                         search = [search]
 
                     # add search results
-                    results += [[sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
+                    results += list([sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
                                  sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
-                                 x['firstaired']] for x in search if x['firstaired']]
+                                 x['firstaired']] for x in search if x['firstaired'])
                 except:
                     continue
 
-        # remove duplicates
+        # remove duplicates and sort by firstaired
+        results = sorted(results, reverse=True, key=operator.itemgetter(5))
         results = list(results for results, _ in itertools.groupby(results))
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]

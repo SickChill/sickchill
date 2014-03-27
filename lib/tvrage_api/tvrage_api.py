@@ -29,7 +29,6 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from collections import defaultdict
 from lib.dateutil.parser import parse
 from lib import requests
 
@@ -39,8 +38,6 @@ from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfou
 
 # Cached Session Handler
 from lib.httpcache import CachingHTTPAdapter
-s = requests.Session()
-s.mount('http://', CachingHTTPAdapter())
 
 def log():
     return logging.getLogger("tvrage_api")
@@ -343,12 +340,35 @@ class TVRage:
 
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
+    def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):
+        def deco_retry(f):
+            def f_retry(*args, **kwargs):
+                mtries, mdelay = tries, delay
+                while mtries > 0:
+                    try:
+                        return f(*args, **kwargs)
+                    except ExceptionToCheck, e:
+                        print "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                        time.sleep(mdelay)
+                        mtries -= 1
+                        mdelay *= backoff
+                        lastException = e
+                raise lastException
+
+            return f_retry  # true decorator
+
+        return deco_retry
+
+    @retry(tvrage_error, tries=4)
     def _loadUrl(self, url, params=None):
         try:
             log().debug("Retrieving URL %s" % url)
 
             # get response from TVRage
             if self.config['cache_enabled']:
+                s = requests.Session()
+                s.mount('http://', CachingHTTPAdapter())
+
                 resp = s.get(url, params=params)
             else:
                 resp = requests.get(url, params=params)
@@ -396,7 +416,8 @@ class TVRage:
 
                 if elm.tag in 'firstaired':
                     try:
-                        if elm.text is "0000-00-00": elm.text = str(dt.date.fromordinal(1))
+                        if elm.text in "0000-00-00":
+                            elm.text = str(dt.date.fromordinal(1))
                         elm.text = re.sub("([-]0{2}){1,}", "", elm.text)
                         fixDate = parse(elm.text, fuzzy=True).date()
                         elm.text = fixDate.strftime("%Y-%m-%d")
@@ -487,7 +508,7 @@ class TVRage:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['show'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = [dict((s.tag.lower(),s.text) for s in x.getchildren()) for x in seriesEt]
+        allSeries = list(dict((s.tag.lower(),s.text) for s in x.getchildren()) for x in seriesEt)
 
         return allSeries
 
@@ -589,19 +610,17 @@ class TVRage:
         already been grabbed), or grabs all episodes and returns
         the correct SID.
         """
-        sid = set()
         if name in self.corrections:
             log().debug('Correcting %s to %s' % (name, self.corrections[name]) )
-            sid = self.corrections[name]
+            return self.corrections[name]
         else:
             log().debug('Getting show %s' % (name))
-            selected_series = self._getSeries( name )
+            selected_series = self._getSeries(name)
             if isinstance(selected_series, dict):
                 selected_series = [selected_series]
-            [sid.add(int(x['id'])) for x in selected_series if self._getShowData(int(x['id']), seriesSearch=True)]
-            [self.corrections.update({x['seriesname']:int(x['id'])}) for x in selected_series]
-
-        return sid
+            sids = list(int(x['id']) for x in selected_series if self._getShowData(int(x['id']), seriesSearch=True))
+            self.corrections.update(dict((x['seriesname'], int(x['id'])) for x in selected_series))
+            return sids
 
     def __getitem__(self, key):
         """Handles tvrage_instance['seriesname'] calls.
@@ -615,7 +634,7 @@ class TVRage:
         
         key = key.lower() # make key lower case
         sids = self._nameToSid(key)
-        return [self.shows[sid] for sid in sids]
+        return list(self.shows[sid] for sid in sids)
 
     def __repr__(self):
         return str(self.shows)
