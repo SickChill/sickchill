@@ -942,7 +942,7 @@ def get_show_by_name(name, showList, useIndexer=False):
                 return show
 
     if useIndexer:
-        for indexer in sickbeard.indexerApi.indexers():
+        for indexer in sickbeard.indexerApi().indexers:
             try:
                 lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
                 lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI

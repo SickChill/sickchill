@@ -830,7 +830,7 @@ class PostProcessor(object):
 
         # try to find the file info
         indexer_id = season = episodes = None
-        for indexer in sickbeard.indexerApi.indexers():
+        for indexer in sickbeard.indexerApi().indexers:
             self.indexer = int(indexer)
 
             self._log(u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "

@@ -284,7 +284,7 @@ class NameParser(object):
         # see if we can find the name with a TVDB lookup
         if check_indexer:
             for cur_name in name_list:
-                for indexer in sickbeard.indexerApi.indexers():
+                for indexer in sickbeard.indexerApi().indexers:
                     try:
                         lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
 

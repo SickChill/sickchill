@@ -20,6 +20,7 @@ import sickbeard
 
 from indexer_config import initConfig, indexerConfig
 
+
 class indexerApi(object):
     def __init__(self, indexerID=None):
         self.indexerID = indexerID
@@ -43,7 +44,7 @@ class indexerApi(object):
     def api_params(self):
         if self.indexerID:
             if sickbeard.CACHE_DIR:
-                    indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
+                indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
             return indexerConfig[self.indexerID]['api_params']
 
     @property
@@ -51,6 +52,6 @@ class indexerApi(object):
         if sickbeard.CACHE_DIR:
             return self.api_params['cache']
 
-    @staticmethod
-    def indexers():
+    @property
+    def indexers(self):
         return {k: v if k is 'id' else v['name'] for k, v in indexerConfig.items()}

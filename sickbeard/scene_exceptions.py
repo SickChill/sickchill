@@ -73,7 +73,7 @@ def retrieve_exceptions():
 
     # exceptions are stored on github pages
 
-    for indexer in sickbeard.indexerApi.indexers():
+    for indexer in sickbeard.indexerApi().indexers:
         logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
 
         url = sickbeard.indexerApi(indexer).config['scene_url']

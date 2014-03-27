@@ -53,7 +53,7 @@ class ShowUpdater():
 
         # clean out cache directory, remove everything > 12 hours old
         if sickbeard.CACHE_DIR:
-            for indexer in sickbeard.indexerApi.indexers():
+            for indexer in sickbeard.indexerApi().indexers:
                 cache_dir = sickbeard.indexerApi(indexer).cache
                 logger.log(u"Trying to clean cache folder " + cache_dir)
 

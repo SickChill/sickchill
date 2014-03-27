@@ -179,7 +179,7 @@ def ManageMenu():
 
     if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
             and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
-                         or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
+                 or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
         manageMenu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/'})
 
     if sickbeard.USE_SUBTITLES:
@@ -381,7 +381,7 @@ class Manage:
 
             result[cur_season][cur_episode]["subtitles"] = ",".join(
                 subliminal.language.Language(subtitle).alpha2 for subtitle in cur_result["subtitles"].split(',')) if not \
-            cur_result["subtitles"] == '' else ''
+                cur_result["subtitles"] == '' else ''
 
         return json.dumps(result)
 
@@ -1976,7 +1976,7 @@ class NewHomeAddShows:
             keywords.insert(0, nameUTF8)
 
         # check for indexer preset
-        indexers = sickbeard.indexerApi.indexers if not int(indexer) else [int(indexer or 0)]
+        indexers = sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer or 0)]
 
         # Query Indexers for each search term and build the list of results
         for indexer in indexers():
@@ -1994,7 +1994,8 @@ class NewHomeAddShows:
                     results += [[sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
                                  sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
                                  x['firstaired']] for x in search if x['firstaired']]
-                except:continue
+                except:
+                    continue
 
         # remove duplicates
         results = list(results for results, _ in itertools.groupby(results))
@@ -2066,7 +2067,7 @@ class NewHomeAddShows:
 
                 # default to TVDB if indexer was not detected
                 if show_name and (indexer is None or indexer_id is None):
-                    for idx in sickbeard.indexerApi.indexers():
+                    for idx in sickbeard.indexerApi().indexers:
                         found_info = helpers.searchIndexerForShowID(show_name, idx, indexer_id)
                         if found_info:
                             # set indexer and indexer_id from found info
@@ -2573,7 +2574,7 @@ class Home:
         result = notifiers.nmj_notifier.notify_settings(urllib.unquote_plus(host))
         if result:
             return '{"message": "Got settings from %(host)s", "database": "%(database)s", "mount": "%(mount)s"}' % {
-            "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT}
+                "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT}
         else:
             return '{"message": "Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)", "database": "", "mount": ""}'
 
@@ -2599,7 +2600,7 @@ class Home:
                                                                                                    "database": sickbeard.NMJv2_DATABASE}
         else:
             return '{"message": "Unable to find NMJ Database at location: %(dbloc)s. Is the right location selected and PCH running?", "database": ""}' % {
-            "dbloc": dbloc}
+                "dbloc": dbloc}
 
     @cherrypy.expose
     def testTrakt(self, api=None, username=None, password=None):
@@ -3633,7 +3634,7 @@ class WebInterface:
         #        paused_item['title'] = 'Hide Paused' if sickbeard.COMING_EPS_DISPLAY_PAUSED else 'Show Paused'
         paused_item = {'title': 'View Paused:', 'path': {'': ''}}
         paused_item['path'] = {'Hide': 'toggleComingEpsDisplayPaused'} if sickbeard.COMING_EPS_DISPLAY_PAUSED else {
-        'Show': 'toggleComingEpsDisplayPaused'}
+            'Show': 'toggleComingEpsDisplayPaused'}
         t.submenu = [
             {'title': 'Sort by:', 'path': {'Date': 'setComingEpsSort/?sort=date',
                                            'Show': 'setComingEpsSort/?sort=show',
