@@ -68,7 +68,7 @@ class AddXemNumbering(AddNetworkTimezones):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
+            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer, indexer_id, season, episode))")
 
 
 class AddXemRefresh(AddXemNumbering):
