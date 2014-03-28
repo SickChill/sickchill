@@ -132,14 +132,20 @@ class PublicHDProvider(generic.TorrentProvider):
 
                 if mode == 'RSS':
                     searchURL = self.url + 'index.php?page=torrents&active=1&category=%s' % (
-                    ';'.join(self.categories[mode]))
+                        ';'.join(self.categories[mode]))
                     logger.log(u"PublicHD cache update URL: " + searchURL, logger.DEBUG)
                 else:
                     searchURL = self.searchurl % (
-                    urllib.quote(unidecode(search_string)), ';'.join(self.categories[mode]))
+                        urllib.quote(unidecode(search_string)), ';'.join(self.categories[mode]))
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
+
                 html = self.getURL(searchURL)
+
+                #remove unneccecary <option> lines which are slowing down BeautifulSoup
+                optreg = re.compile(r'<option.*</option>')
+                html = os.linesep.join([s for s in html.splitlines() if not optreg.search(s)])
+
                 if not html:
                     continue
 
