@@ -54,4 +54,4 @@ class indexerApi(object):
 
     @property
     def indexers(self):
-        return {k: v if k is 'id' else v['name'] for k, v in indexerConfig.items()}
+        return dict({x['id'], x['name']} for x in indexerConfig.values())
