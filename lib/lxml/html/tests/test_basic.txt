@@ -1,0 +1,162 @@
+lxml.html adds a find_class method to elements::
+
+    >>> from lxml.etree import Comment
+    >>> from lxml.html import document_fromstring, fragment_fromstring, tostring
+    >>> from lxml.html import fragments_fromstring, fromstring
+    >>> from lxml.html.clean import clean, clean_html
+    >>> from lxml.html import usedoctest
+    >>> try: unicode = unicode
+    ... except NameError: unicode = str
+
+    >>> h = document_fromstring('''
+    ... <html><head></head>
+    ... <body>
+    ...   <a class="vcard
+    ... fn   url" href="foobar">P1</a>
+    ...   <a class="not-fn vcard" href="baz">P2</a>
+    ... </body></html>''')
+    >>> print(tostring(h, encoding=unicode))
+    <html>
+      <head></head>
+      <body>
+        <a class="vcard
+    fn   url" href="foobar">P1</a>
+        <a class="not-fn vcard" href="baz">P2</a>
+      </body>
+    </html>
+    >>> print([e.text for e in h.find_class('fn')])
+    ['P1']
+    >>> print([e.text for e in h.find_class('vcard')])
+    ['P1', 'P2']
+
+Also added is a get_rel_links, which you can use to search for links
+like ``<a rel="$something">``::
+
+    >>> h = document_fromstring('''
+    ... <a href="1">test 1</a>
+    ... <a href="2" rel="tag">item 2</a>
+    ... <a href="3" rel="tagging">item 3</a>
+    ... <a href="4" rel="TAG">item 4</a>''')
+    >>> print([e.attrib['href'] for e in h.find_rel_links('tag')])
+    ['2', '4']
+    >>> print([e.attrib['href'] for e in h.find_rel_links('nofollow')])
+    []
+
+Another method is ``get_element_by_id`` that does what it says::
+
+    >>> print(tostring(fragment_fromstring('''
+    ... <div>
+    ...  <span id="test">stuff</span>
+    ... </div>''').get_element_by_id('test'), encoding=unicode))
+    <span id="test">stuff</span>
+
+Or to get the content of an element without the tags, use text_content()::
+
+    >>> el = fragment_fromstring('''
+    ... <div>This is <a href="foo">a <b>bold</b> link</a></div>''')
+    >>> el.text_content()
+    'This is a bold link'
+
+Or drop an element (leaving its content) or the entire tree, like::
+
+    >>> doc = document_fromstring('''
+    ... <html>
+    ...  <body>
+    ...   <div id="body">
+    ...    This is a <a href="foo" id="link">test</a> of stuff.
+    ...   </div>
+    ...   <!-- a comment -->
+    ...   <div>footer</div>
+    ...  </body>
+    ... </html>''')
+    >>> doc.get_element_by_id('link').drop_tag()
+    >>> print(tostring(doc, encoding=unicode))
+    <html>
+     <body>
+      <div id="body">
+       This is a test of stuff.
+      </div>
+      <!-- a comment -->
+      <div>footer</div>
+     </body>
+    </html>
+    >>> doc.get_element_by_id('body').drop_tree()
+    >>> print(tostring(doc, encoding=unicode))
+    <html>
+     <body>
+      <!-- a comment -->
+      <div>footer</div>
+     </body>
+    </html>
+
+Note, however, that comment text will not be merged into the tree when you
+drop the comment.  Here, ``drop_tag()`` behaves exactly like ``drop_tree()``:
+
+    >>> for comment in doc.getiterator(Comment):
+    ...     comment.drop_tag()
+    >>> print(tostring(doc, encoding=unicode))
+    <html>
+     <body>
+      <div>footer</div>
+     </body>
+    </html>
+
+In Python3 it should be possible to parse strings given as bytes objects, at
+least if an encoding is given.
+
+    >>> from lxml.html import HTMLParser
+    >>> enc = 'utf-8'
+    >>> html_parser = HTMLParser(encoding=enc)
+    >>> src = '<html><body>Test</body></html>'.encode(enc)
+
+    >>> doc = fromstring(src, parser=html_parser)
+    >>> print(tostring(doc, encoding=unicode))
+    <html><body>Test</body></html>
+
+    >>> docs = fragments_fromstring(src, parser=html_parser)
+    >>> len(docs)
+    1
+    >>> print(docs[0])
+    Test
+
+Bug 599318: Call fromstring with a frameset fragment should not raise an error,
+the whole document is returned.
+
+    >>> import lxml.html
+    >>> content='''
+    ... <frameset>
+    ...  <frame src="main.php" name="srcpg">
+    ... </frameset>'''
+    >>> etree_document = lxml.html.fromstring(content)
+    >>> print(tostring(etree_document, encoding=unicode))
+    <html><frameset><frame src="main.php" name="srcpg"></frameset></html>
+
+Bug 599318: Call fromstring with a div fragment should not raise an error,
+only the element is returned
+
+    >>> import lxml.html
+    >>> content='<div></div>'
+    >>> etree_document = lxml.html.fromstring(content)
+    >>> print(tostring(etree_document, encoding=unicode))
+    <div></div>
+
+Bug 599318: Call fromstring with a head fragment should not raise an error,
+the whole document is returned.
+
+    >>> import lxml.html
+    >>> content='<head></head>'
+    >>> etree_document = lxml.html.fromstring(content)
+    >>> print(tostring(etree_document, encoding=unicode))
+    <html><head></head></html>
+
+Bug 690319: Leading whitespace before doctype declaration should not raise an error.
+
+    >>> import lxml.html
+    >>> content='''
+    ...     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+    ...     <html>
+    ...     </html>'''
+    >>> etree_document = lxml.html.fromstring(content)
+    >>> print(tostring(etree_document, encoding=unicode))
+    <html></html>
+

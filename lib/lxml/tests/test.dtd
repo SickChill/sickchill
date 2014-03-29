@@ -1,0 +1,11 @@
+<!ELEMENT a (b)>
+<!ATTLIST a
+    default (valueA|valueB) "valueA"
+>
+
+<!ELEMENT b EMPTY>
+<!ATTLIST b
+    default (valueA|valueB) "valueB"
+>
+
+<!ENTITY c "&#42;">
