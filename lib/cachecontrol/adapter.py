@@ -2,13 +2,14 @@ from requests.adapters import HTTPAdapter
 
 from cachecontrol.controller import CacheController
 from cachecontrol.cache import DictCache
-
+from cachecontrol.session import CacheControlSession
 
 class CacheControlAdapter(HTTPAdapter):
     invalidating_methods = set(['PUT', 'DELETE'])
 
     def __init__(self, sess=None, cache=None, cache_etags=True, *args, **kw):
         super(CacheControlAdapter, self).__init__(*args, **kw)
+        self.sess = sess or CacheControlSession()
         self.cache = cache or DictCache()
         self.controller = CacheController(sess=sess, cache=cache, cache_etags=cache_etags)
 

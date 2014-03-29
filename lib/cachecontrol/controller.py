@@ -8,7 +8,7 @@ import datetime
 
 from cachecontrol.cache import DictCache
 from cachecontrol.compat import parsedate_tz
-
+from cachecontrol.session import CacheControlSession
 
 URI = re.compile(r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?")
 
@@ -28,7 +28,7 @@ class CacheController(object):
     def __init__(self, sess=None, cache=None, cache_etags=True):
         self.cache = cache or DictCache()
         self.cache_etags = cache_etags
-        self.sess = sess
+        self.sess = sess or CacheControlSession()
 
     def _urlnorm(self, uri):
         """Normalize the URL to create a safe key for the cache"""
