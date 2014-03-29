@@ -410,7 +410,7 @@ class TVRage:
             # remove it to avoid errors. Change from SickBeard, from will14m
             xml = ElementTree.fromstring(src.rstrip("\r"))
             tree = ElementTree.ElementTree(xml)
-            for elm in tree.iter():
+            for elm in tree.findall('.//*'):
                 elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                 if elm.tag in 'firstaired':
@@ -428,7 +428,7 @@ class TVRage:
             try:
                 xml = ElementTree.fromstring(src.rstrip("\r"))
                 tree = ElementTree.ElementTree(xml)
-                for elm in tree.iter():
+                for elm in tree.findall('.//*'):
                     elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                     if elm.tag in 'firstaired' and elm.text:
