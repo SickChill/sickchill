@@ -34,3 +34,4 @@ class DictCache(BaseCache):
         with self.lock:
             if key in self.data:
                 self.data.pop(key)
+0

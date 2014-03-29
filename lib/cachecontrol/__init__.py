@@ -11,3 +11,4 @@ import cachecontrol.patch_requests
 from cachecontrol.wrapper import CacheControl
 from cachecontrol.adapter import CacheControlAdapter
 from cachecontrol.controller import CacheController
+from cachecontrol.session import CacheControlSession

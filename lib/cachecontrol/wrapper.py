@@ -1,10 +1,11 @@
+from cachecontrol.session import CacheControlSession
 from cachecontrol.adapter import CacheControlAdapter
 from cachecontrol.cache import DictCache
 
-
-def CacheControl(sess, cache=None, cache_etags=True, cache_all=False):
+def CacheControl(sess=None, cache=None, cache_etags=True):
+    sess = sess or CacheControlSession()
     cache = cache or DictCache()
-    adapter = CacheControlAdapter(cache, cache_etags=cache_etags, cache_all=cache_all)
+    adapter = CacheControlAdapter(sess, cache, cache_etags=cache_etags)
     sess.mount('http://', adapter)
 
     return sess

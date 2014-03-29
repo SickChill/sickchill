@@ -270,16 +270,12 @@ class TVRage:
 
         if cache is True:
             self.config['cache_enabled'] = True
-            self.sess = cachecontrol.CacheControl(requests.Session(),
-                                                  cache_all=True,
-                                                  cache=caches.FileCache(self._getTempDir()))
+            self.sess = cachecontrol.CacheControl(cache=caches.FileCache(self._getTempDir()))
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
-            self.sess = cachecontrol.CacheControl(requests.Session(),
-                                                  cache_all=True,
-                                                  cache=caches.FileCache(cache))
+            self.sess = cachecontrol.CacheControl(cache=caches.FileCache(cache))
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -372,7 +368,7 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
-                resp = self.sess.get(url, params=params)
+                resp = self.sess.get(url, cache_auto=True, params=params)
             else:
                 resp = requests.get(url, params=params)
 
