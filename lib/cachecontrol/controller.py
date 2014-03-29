@@ -191,7 +191,7 @@ class CacheController(object):
             return
 
         if self.sess.cache_auto and ('cache-control' not in resp.headers or 'Cache-Control' not in resp.headers):
-            cache_max_age = int(self.sess.cache_max_age) or 900
+            cache_max_age = int(self.sess.cache_max_age or 900)
             headers = {'Cache-Control': 'public,max-age=%d' % int(cache_max_age)}
             resp.headers.update(headers)
 
