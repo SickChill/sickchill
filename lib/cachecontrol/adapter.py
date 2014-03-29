@@ -11,7 +11,7 @@ class CacheControlAdapter(HTTPAdapter):
         super(CacheControlAdapter, self).__init__(*args, **kw)
         self.sess = sess or CacheControlSession()
         self.cache = cache or DictCache()
-        self.controller = CacheController(sess=sess, cache=cache, cache_etags=cache_etags)
+        self.controller = CacheController(self.sess, self.cache, cache_etags=cache_etags)
 
     def send(self, request, **kw):
         """Send a request. Use the request information to see if it
