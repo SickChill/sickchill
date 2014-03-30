@@ -4,7 +4,6 @@ dictionary, which in turns means it is not threadsafe for writing.
 """
 from threading import Lock
 
-
 class BaseCache(object):
 
     def get(self, key):
@@ -15,7 +14,6 @@ class BaseCache(object):
 
     def delete(self, key):
         raise NotImplemented()
-
 
 class DictCache(BaseCache):
 
