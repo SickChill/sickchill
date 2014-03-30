@@ -218,6 +218,8 @@ class CacheController(object):
                     headers = {'Expires': expires}
                     resp.headers.update(headers)
 
+            self.cache.set(cache_url, resp)
+
         # Add to the cache if the response headers demand it. If there
         # is no date header then we can't do anything about expiring
         # the cache.
