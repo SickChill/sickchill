@@ -225,7 +225,7 @@ class CacheController(object):
             # cache when there is a max-age > 0
             if cc and cc.get('max-age'):
                 if int(cc['max-age']) > 0:
-                    if isinstance(cache_max_age, (int, long)):
+                    if isinstance(cache_max_age, (int)):
                         cc['max-age'] = int(cache_max_age)
                         resp.headers['cache-control'] = ''.join(['%s=%s' % (key, value) for (key, value) in cc.items()])
                     self.cache.set(cache_url, resp)
