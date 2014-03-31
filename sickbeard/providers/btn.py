@@ -137,7 +137,7 @@ class BTNProvider(generic.TorrentProvider):
         try:
             parsedJSON = server.getTorrents(apikey, params, int(results_per_page), int(offset))
 
-        except jsonrpclib.jsonrpc.ProtocolError, error:
+        except jsonrpclib.ProtocolError, error:
             logger.log(u"JSON-RPC protocol error while accessing " + self.name + ": " + ex(error), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
             return parsedJSON
@@ -193,7 +193,7 @@ class BTNProvider(generic.TorrentProvider):
 
     def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
         if not show:
-            return [{}]
+            return []
 
         search_params = []
 
@@ -202,8 +202,14 @@ class BTNProvider(generic.TorrentProvider):
 
             current_params = {}
 
-            # Search by name if we don't have indexer ID
-            current_params['series'] = sanitizeSceneName(name)
+
+            if show.indexer is 1:
+                current_params['tvdb'] = show.indexerid
+            elif show.indexer is 2:
+                current_params['tvrage'] = show.indexerid
+            else:
+                # Search by name if we don't have tvdb or tvrage id
+                current_params['series'] = sanitizeSceneName(name)
 
             if searchSeason:
                 whole_season_params = current_params.copy()
@@ -225,7 +231,6 @@ class BTNProvider(generic.TorrentProvider):
                     partial_season_params['name'] = 'S%02d' % int(season)
 
                 search_params.append(partial_season_params)
-
             else:
                 search_params.append(current_params)
 
@@ -373,6 +378,5 @@ class BTNCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
-
 
 provider = BTNProvider()
