@@ -1904,11 +1904,8 @@ class HomePostProcess:
         return _munge(t)
 
     @cherrypy.expose
-    def processEpisode(self, dir=None, dirName=None, nzbName=None, jobName=None, quiet=None, process_method=None,
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None,
                        force=None, is_priority=None, failed="0", type="auto"):
-
-        # auto-detect dirParam style
-        dirParam = dir if dir is not None else dirName if not None else redirect("/home/postprocess/")
 
         if failed == "0":
             failed = False
@@ -1925,13 +1922,15 @@ class HomePostProcess:
         else:
             is_priority = False
 
-        result = processTV.processDir(dirParam, nzbName, process_method=process_method, force=force,
-                                      is_priority=is_priority, failed=failed, type=type)
-        if quiet is not None and int(quiet) == 1:
-            return result
+        if not dir:
+            redirect("/home/postprocess/")
+        else:
+            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type)
+            if quiet is not None and int(quiet) == 1:
+                return result
 
-        result = result.replace("\n", "<br />\n")
-        return _genericMessage("Postprocessing results", result)
+            result = result.replace("\n", "<br />\n")
+            return _genericMessage("Postprocessing results", result)
 
 
 class NewHomeAddShows:
