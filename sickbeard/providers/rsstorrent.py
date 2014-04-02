@@ -32,6 +32,7 @@ from sickbeard import clients
 from sickbeard.exceptions import ex
 
 from lib import requests
+from lib.requests import exceptions
 from bs4 import BeautifulSoup
 from lib.bencode import bdecode
 

@@ -32,6 +32,7 @@ except ImportError:
 from lib.dateutil.parser import parse
 
 from lib import requests
+from lib.requests import exceptions
 from lib import cachecontrol
 from lib.cachecontrol import caches
 

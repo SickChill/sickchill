@@ -37,6 +37,7 @@ except ImportError:
     gzip = None
 
 from lib import requests
+from lib.requests import exceptions
 from lib import cachecontrol
 from lib.cachecontrol import caches
 

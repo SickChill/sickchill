@@ -9,7 +9,7 @@ from sickbeard.exceptions import ex
 from sickbeard.clients import http_error_code
 from lib.bencode import bencode, bdecode
 from lib import requests
-
+from lib.requests import exceptions
 
 class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):

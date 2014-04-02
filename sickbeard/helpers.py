@@ -34,6 +34,7 @@ import base64
 import string
 
 from lib import requests
+from lib.requests import exceptions
 from itertools import izip, cycle
 
 try:

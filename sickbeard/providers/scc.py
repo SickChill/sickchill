@@ -34,6 +34,7 @@ from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
+from lib.requests import exceptions
 from bs4 import BeautifulSoup
 from lib.unidecode import unidecode
 
