@@ -2413,7 +2413,7 @@ class CMD_ShowStats(ApiCall):
         episodes_stats["downloaded"] = {}
         # truning codes into strings
         for statusCode in episode_qualities_counts_download:
-            if statusCode is "total":
+            if statusCode == "total":
                 episodes_stats["downloaded"]["total"] = episode_qualities_counts_download[statusCode]
                 continue
             status, quality = Quality.splitCompositeStatus(int(statusCode))
@@ -2424,7 +2424,7 @@ class CMD_ShowStats(ApiCall):
         # truning codes into strings
         # and combining proper and normal
         for statusCode in episode_qualities_counts_snatch:
-            if statusCode is "total":
+            if statusCode == "total":
                 episodes_stats["snatched"]["total"] = episode_qualities_counts_snatch[statusCode]
                 continue
             status, quality = Quality.splitCompositeStatus(int(statusCode))
@@ -2436,7 +2436,7 @@ class CMD_ShowStats(ApiCall):
 
         #episodes_stats["total"] = {}
         for statusCode in episode_status_counts_total:
-            if statusCode is "total":
+            if statusCode == "total":
                 episodes_stats["total"] = episode_status_counts_total[statusCode]
                 continue
             status, quality = Quality.splitCompositeStatus(int(statusCode))

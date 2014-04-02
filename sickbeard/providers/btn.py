@@ -203,9 +203,9 @@ class BTNProvider(generic.TorrentProvider):
             current_params = {}
 
 
-            if show.indexer is 1:
+            if show.indexer == 1:
                 current_params['tvdb'] = show.indexerid
-            elif show.indexer is 2:
+            elif show.indexer == 2:
                 current_params['tvrage'] = show.indexerid
             else:
                 # Search by name if we don't have tvdb or tvrage id

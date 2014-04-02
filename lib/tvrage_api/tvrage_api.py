@@ -433,7 +433,7 @@ class TVRage:
                     elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
 
                     if elm.tag in 'firstaired' and elm.text:
-                        if elm.text is "0000-00-00":
+                        if elm.text == "0000-00-00":
                             elm.text = str(dt.date.fromordinal(1))
                         try:
                             #month = strptime(match.group('air_month')[:3],'%b').tm_mon

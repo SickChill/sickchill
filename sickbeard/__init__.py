@@ -29,10 +29,10 @@ import urllib
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
-from sickbeard import providers, metadata
+from sickbeard import providers, metadata, config
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen
-from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator
+from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator, naming_ep_type
 from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktWatchListChecker
 from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
