@@ -1001,7 +1001,7 @@ class PostProcessor(object):
                 self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
-                logger.log(u"Unknown process method: " + sickbeard.PROCESS_METHOD, logger.ERROR)
+                logger.log(u"Unknown process method: " + str(self.process_method), logger.ERROR)
                 raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
         except (OSError, IOError):
             raise exceptions.PostProcessingFailed("Unable to move the files to their new home")
