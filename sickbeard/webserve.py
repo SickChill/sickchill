@@ -947,6 +947,8 @@ class ConfigGeneral:
         sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(defaultFlattenFolders)
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
+        sickbeard.save_config()
+        
     @cherrypy.expose
     def generateKey(self):
         """ Return a new randomized API_KEY
