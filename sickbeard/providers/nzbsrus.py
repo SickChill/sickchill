@@ -49,7 +49,7 @@ class NZBsRUSProvider(generic.NZBProvider):
     def _get_episode_search_strings(self, ep_obj):
         return ['^' + x for x in show_name_helpers.makeSceneSearchString(ep_obj)]
 
-    def _doSearch(self, search, show=None):
+    def _doSearch(self, search, show=None, age=None):
         params = {'uid': sickbeard.NZBSRUS_UID,
                   'key': sickbeard.NZBSRUS_HASH,
                   'xml': 1,
