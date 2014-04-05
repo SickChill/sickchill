@@ -278,7 +278,7 @@ class NewzbinProvider(generic.NZBProvider):
             searchStr = " OR ".join(['^"' + x + ' - ' + str(ep_obj.airdate) + '"' for x in nameList])
         return [searchStr]
 
-    def _doSearch(self, searchStr, show=None):
+    def _doSearch(self, searchStr, show=None, age=None):
 
         data = self._getRSSData(searchStr.encode('utf-8'))
 

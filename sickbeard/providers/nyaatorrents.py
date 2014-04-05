@@ -77,7 +77,7 @@ class NyaaProvider(generic.TorrentProvider):
     def _get_episode_search_strings(self, ep_obj):
         return self._get_season_search_strings(ep_obj.show, ep_obj.season)
 
-    def _doSearch(self, search_string, show=None):
+    def _doSearch(self, search_string, show=None, age=None):
 
         params = {"term": search_string.encode('utf-8'),
                   "sort": '2',  #Sort Descending By Seeders

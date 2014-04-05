@@ -226,7 +226,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, show=None):
+    def _doSearch(self, search_params, show=None, age=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
