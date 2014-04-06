@@ -210,6 +210,7 @@ PROCESS_AUTOMATICALLY = False
 KEEP_PROCESSED_DIR = False
 PROCESS_METHOD = None
 MOVE_ASSOCIATED_FILES = False
+NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
 UNPACK = False
 SKIP_REMOVED_FILES = False
@@ -468,7 +469,7 @@ def initialize(consoleLogging=True):
             USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, \
             USE_LISTVIEW, METADATA_XBMC, METADATA_XBMC_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
-            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, CLEAR_CACHE, dailySearchScheduler, \
+            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, CLEAR_CACHE, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
@@ -657,6 +658,7 @@ def initialize(consoleLogging=True):
         KEEP_PROCESSED_DIR = check_setting_int(CFG, 'General', 'keep_processed_dir', 1)
         PROCESS_METHOD = check_setting_str(CFG, 'General', 'process_method', 'copy' if KEEP_PROCESSED_DIR else 'move')
         MOVE_ASSOCIATED_FILES = check_setting_int(CFG, 'General', 'move_associated_files', 0)
+        NFO_RENAME = check_setting_int(CFG, 'General', 'nfo_rename', 1)
         CREATE_MISSING_SHOW_DIRS = check_setting_int(CFG, 'General', 'create_missing_show_dirs', 0)
         ADD_SHOWS_WO_DIR = check_setting_int(CFG, 'General', 'add_shows_wo_dir', 0)
 
@@ -1449,6 +1451,7 @@ def save_config():
     new_config['General']['keep_processed_dir'] = int(KEEP_PROCESSED_DIR)
     new_config['General']['process_method'] = PROCESS_METHOD
     new_config['General']['move_associated_files'] = int(MOVE_ASSOCIATED_FILES)
+    new_config['General']['nfo_rename'] = int(NFO_RENAME)
     new_config['General']['process_automatically'] = int(PROCESS_AUTOMATICALLY)
     new_config['General']['unpack'] = int(UNPACK)
     new_config['General']['rename_episodes'] = int(RENAME_EPISODES)

@@ -275,7 +275,7 @@ class PostProcessor(object):
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts
-            if cur_extension == 'nfo':
+            if cur_extension == 'nfo' and sickbeard.NFO_RENAME == True:
                 cur_extension = 'nfo-orig'
 
             # If new base name then convert name

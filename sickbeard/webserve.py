@@ -1563,7 +1563,7 @@ class ConfigPostProcessing(IndexHandler):
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, process_automatically=None,
                            rename_episodes=None, airdate_episodes=None, unpack=None,
-                           move_associated_files=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
+                           move_associated_files=None, nfo_rename=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
                            naming_custom_sports=None, naming_sports_pattern=None, autopostprocesser_frequency=None):
@@ -1602,6 +1602,7 @@ class ConfigPostProcessing(IndexHandler):
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
+        sickbeard.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         sickbeard.METADATA_XBMC = xbmc_data
         sickbeard.METADATA_XBMC_12PLUS = xbmc_12plus_data
