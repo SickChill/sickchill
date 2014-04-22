@@ -330,7 +330,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
             director = etree.SubElement(episode, "director")
             director_text = getattr(myEp, 'director', None)
-            if director_text != None:
+            if director_text is not None:
                 director.text = director_text
 
             rating = etree.SubElement(episode, "rating")

@@ -49,7 +49,7 @@ else:
     HTTPBasicAuthHandler = urllib2.HTTPBasicAuthHandler
 
 
-def processEpisode(dir_to_process, org_NZB_name=None):
+def processEpisode(dir_to_process, org_NZB_name=None, status=None):
     # Default values
     host = "localhost"
     port = "8081"
@@ -116,6 +116,9 @@ def processEpisode(dir_to_process, org_NZB_name=None):
     params['dir'] = dir_to_process
     if org_NZB_name != None:
         params['nzbName'] = org_NZB_name
+
+    if status != None:
+        params['failed'] = status
 
     if ssl:
         protocol = "https://"
