@@ -32,6 +32,7 @@ MAX_DB_VERSION = 28
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
+        self.fix_missing_table_indexes()
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
@@ -98,6 +99,22 @@ class MainSanityCheck(db.DBSanityCheck):
         else:
             logger.log(u"No orphan episodes, check passed")
 
+    def fix_missing_table_indexes(self):
+
+        try:
+            self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
+            logger.log(u"Missing idx_indexer_id for TV Shows table added!")
+        except:pass
+
+        try:
+            self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
+            logger.log(u"Missing idx_tv_episodes_showid_airdate for TV Episodes table added!")
+        except:pass
+
+        try:
+            self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
+            logger.log(u"Missing idx_showid for TV Episodes table added!")
+        except:pass
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
@@ -566,6 +583,8 @@ class ConvertTVShowsToIndexerScheme(AddIndicesToTvEpisodes):
             "INSERT INTO tv_shows(show_id, indexer_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_indexer, dvdorder) SELECT show_id, tvdb_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_tvdb, dvdorder FROM tmp_tv_shows")
         self.connection.action("DROP TABLE tmp_tv_shows")
 
+        self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
+
         self.incDBVersion()
 
 
@@ -589,6 +608,9 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
         self.connection.action(
             "INSERT INTO tv_episodes(episode_id, showid, indexerid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper) SELECT episode_id, showid, tvdbid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper FROM tmp_tv_episodes")
         self.connection.action("DROP TABLE tmp_tv_episodes")
+
+        self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
+        self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
 
         self.incDBVersion()
 
