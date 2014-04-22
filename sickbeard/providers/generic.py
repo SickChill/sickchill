@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -308,7 +309,7 @@ class GenericProvider:
             searchSeason = True
 
         for sceneSeason, sceneEpisodes in sceneSeasons.iteritems():
-            for curString in self._get_season_search_strings(show, str(sceneSeason), sceneEpisodes, searchSeason):
+            for curString in self._get_season_search_strings(show, sceneSeason, sceneEpisodes, searchSeason):
                 itemList += self._doSearch(curString)
 
         for item in itemList:

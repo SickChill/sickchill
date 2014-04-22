@@ -133,7 +133,7 @@ def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
             [show.indexerid])
         numseasons = int(numseasonsSQlResult[0][0])
 
-        seasonStrings = ["S%02d" % segment]
+        seasonStrings = ["S%02d" % int(segment)]
 
     showNames = set(makeSceneShowSearchStrings(show))
 

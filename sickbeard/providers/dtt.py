@@ -57,7 +57,7 @@ class DTTProvider(generic.TorrentProvider):
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
+    def _get_season_search_strings(self, show, season, wantedEp=None, searchSeason=False):
         search_string = []
 
         for show_name in set(show_name_helpers.allPossibleShowNames(show)):

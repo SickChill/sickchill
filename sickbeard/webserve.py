@@ -1364,9 +1364,8 @@ class ConfigProviders:
             return providerDict[name].getID() + '|' + providerDict[name].configStr()
 
         else:
-
             newProvider = rsstorrent.TorrentRssProvider(name, url)
-            sickbeard.TorrentRssProviderList.append(newProvider)
+            sickbeard.torrentRssProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
     @cherrypy.expose

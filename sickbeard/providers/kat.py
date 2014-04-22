@@ -1,3 +1,4 @@
+# coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -174,8 +175,7 @@ class KATProvider(generic.TorrentProvider):
         if searchSeason:
             search_string = {'Season': [], 'Episode': []}
             for show_name in set(allPossibleShowNames(show)):
-                ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(
-                    season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
+                ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
                 search_string['Season'].append(ep_string)
 
                 ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) ShowName Season X
@@ -305,7 +305,7 @@ class KATProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, headers=None):
+    def getURL(self, url, post_data=None, headers=None):
 
         try:
             # Remove double-slashes from url

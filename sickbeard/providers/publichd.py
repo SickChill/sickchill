@@ -204,7 +204,7 @@ class PublicHDProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, headers=None):
+    def getURL(self, url, post_data=None, headers=None):
 
         try:
             # Remove double-slashes from url

@@ -51,8 +51,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         return self.name + '|' + self.url + '|' + str(int(self.enabled))
 
     def imageName(self):
-        if ek.ek(os.path.isfile,
-                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
+        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
             return self.getID() + '.png'
         return 'torrentrss.png'
 
@@ -114,7 +113,6 @@ class TorrentRssProvider(generic.TorrentProvider):
             if url.startswith('magnet:') and re.search('urn:btih:([\w]{32,40})', url):
                 return (True, 'RSS feed Parsed correctly')
             else:
-
                 torrent_file = self.getURL(url)
                 try:
                     bdecode(torrent_file)

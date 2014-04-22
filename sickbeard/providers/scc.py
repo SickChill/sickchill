@@ -224,7 +224,7 @@ class SCCProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, headers=None):
+    def getURL(self, url, post_data=None, headers=None):
 
         if not self.session:
             self._doLogin()
