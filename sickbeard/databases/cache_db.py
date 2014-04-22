@@ -68,11 +68,7 @@ class AddXemNumbering(AddNetworkTimezones):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER PRIMARY KEY, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER)")
-
-        self.connection.action(
-            "CREATE UNIQUE INDEX idx_xem_numbering_indexer_id ON xem_numbering (indexer_id);")
-
+            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER)")
 class AddXemRefresh(AddXemNumbering):
     def test(self):
         return self.hasTable("xem_refresh")
@@ -80,10 +76,6 @@ class AddXemRefresh(AddXemNumbering):
     def execute(self):
         self.connection.action(
             "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
-
-        self.connection.action(
-            "CREATE INDEX idx_xem_refresh_indexer_id ON xem_refresh (indexer_id);")
-
 
 class ConvertSceneExceptionsToIndexerID(AddXemRefresh):
     def test(self):
