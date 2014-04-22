@@ -102,17 +102,17 @@ class MainSanityCheck(db.DBSanityCheck):
     def fix_missing_table_indexes(self):
 
         try:
-            self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
+            sqlResults = self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
             logger.log(u"Missing idx_indexer_id for TV Shows table added!")
         except:pass
 
         try:
-            self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
+            sqlResults = self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
             logger.log(u"Missing idx_tv_episodes_showid_airdate for TV Episodes table added!")
         except:pass
 
         try:
-            self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
+            sqlResults = self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
             logger.log(u"Missing idx_showid for TV Episodes table added!")
         except:pass
 
