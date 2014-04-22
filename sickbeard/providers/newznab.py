@@ -99,11 +99,11 @@ class NewznabProvider(generic.NZBProvider):
 
             # air-by-date means &season=2010&q=2010.03, no other way to do it atm
             if show.air_by_date:
-                cur_params['season'] = season.split('-')[0]
+                cur_params['season'] = str(season).split('-')[0]
                 if 'q' in cur_params:
-                    cur_params['q'] += '.' + season.replace('-', '.')
+                    cur_params['q'] += '.' + str(season).replace('-', '.')
                 else:
-                    cur_params['q'] = season.replace('-', '.')
+                    cur_params['q'] = str(season).replace('-', '.')
             else:
                 cur_params['season'] = str(season)
 

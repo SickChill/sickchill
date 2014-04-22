@@ -33,6 +33,7 @@ from sickbeard import classes
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers
+from sickbeard import clients
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
 from sickbeard.common import Overview
 from sickbeard.exceptions import ex
@@ -296,7 +297,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, headers=None):
+    def getURL(self, url, post_data=None, headers=None):
 
         if not headers:
             headers = {}
@@ -316,7 +317,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         if r.status_code != 200:
             logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                r.status_code) + ': ' + requests.clients.http_error_code[r.status_code], logger.WARNING)
+                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
             return None
 
         return r.content

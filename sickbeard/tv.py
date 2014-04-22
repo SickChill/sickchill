@@ -136,7 +136,7 @@ class TVShow(object):
             if not self.air_by_date:
                 sql_selection = sql_selection + " AND season = " + str(season)
             else:
-                segment_year, segment_month = map(int, season.split('-'))
+                segment_year, segment_month = map(int, str(season).split('-'))
                 min_date = datetime.date(segment_year, segment_month, 1)
 
                 # it's easier to just hard code this than to worry about rolling the year over or making a month length map

@@ -1,3 +1,5 @@
+# Author: Nic Wolfe <nic@wolfeden.ca>
+# URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of Sick Beard.
 #
@@ -34,7 +36,6 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard.exceptions import ex
 from lib import requests
-from lib.requests import exceptions
 
 MAX_XEM_AGE_SECS = 86400  # 1 day
 
