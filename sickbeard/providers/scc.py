@@ -236,7 +236,7 @@ class SCCProvider(generic.TorrentProvider):
         headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'})
 
         try:
-		    # Remove double-slashes from url
+            # Remove double-slashes from url
             parsed = list(urlparse.urlparse(url))
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
