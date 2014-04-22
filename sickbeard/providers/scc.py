@@ -62,6 +62,8 @@ class SCCProvider(generic.TorrentProvider):
 
         self.session = None
 
+        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
+
     def isEnabled(self):
         return sickbeard.SCC
 
@@ -83,7 +85,7 @@ class SCCProvider(generic.TorrentProvider):
         self.session = requests.Session()
 
         try:
-            response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
+            response = self.session.post(self.urls['login'], data=login_params, headers=self.headers, timeout=30, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
@@ -162,7 +164,7 @@ class SCCProvider(generic.TorrentProvider):
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                data = self.getURL(searchURL, headers=self.headers)
                 if not data:
                     continue
 
@@ -230,7 +232,7 @@ class SCCProvider(generic.TorrentProvider):
             self._doLogin()
 
         if not headers:
-            headers = []
+            headers = {}
 
         try:
             # Remove double-slashes from url
@@ -238,7 +240,7 @@ class SCCProvider(generic.TorrentProvider):
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
 
-            response = self.session.get(url, verify=False)
+            response = self.session.get(url, headers=headers, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None
