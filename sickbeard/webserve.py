@@ -1976,8 +1976,6 @@ class NewHomeAddShows:
         # check for indexer preset
         indexers = sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer or 0)]
 
-        print repr(indexers)
-
         # Query Indexers for each search term and build the list of results
         for indexer in indexers:
             results = []
