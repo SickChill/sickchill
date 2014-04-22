@@ -202,7 +202,6 @@ class BTNProvider(generic.TorrentProvider):
 
             current_params = {}
 
-
             if show.indexer == 1:
                 current_params['tvdb'] = show.indexerid
             elif show.indexer == 2:
@@ -242,7 +241,13 @@ class BTNProvider(generic.TorrentProvider):
             return [{}]
 
         search_params = {'category': 'Episode'}
-        search_params['series'] = sanitizeSceneName(ep_obj.show.name)
+
+        if ep_obj.show.indexer == 1:
+            search_params['tvdb'] = ep_obj.show.indexerid
+        elif ep_obj.show.indexer == 2:
+            search_params['tvrage'] = ep_obj.show.indexerid
+        else:
+            search_params['series'] = sanitizeSceneName(ep_obj.show.name)
 
         if ep_obj.show.air_by_date:
             date_str = str(ep_obj.airdate)
@@ -341,7 +346,6 @@ class BTNCache(tvcache.TVCache):
             else:
                 raise AuthException(
                     "Your authentication info for " + self.provider.name + " is incorrect, check your config")
-
         else:
             return []
 
