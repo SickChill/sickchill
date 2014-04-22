@@ -127,7 +127,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         except Exception, e:
             return (False, 'Error when trying to load RSS: ' + ex(e))
 
-    def getURL(self, url, headers=None):
+    def getURL(self, url, post_data=None, headers=None):
 
         if not self.session:
             self.session = requests.Session()
