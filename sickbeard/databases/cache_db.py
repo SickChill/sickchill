@@ -108,3 +108,8 @@ class ConvertIndexerToInteger(ConvertSceneNamesToIndexerID):
         ql.append(["UPDATE xem_refresh SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
         ql.append(["UPDATE xem_refresh SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
         self.connection.mass_action(ql)
+
+class RemoveKeysFromXemNumbering(ConvertIndexerToInteger):
+    def execute(self):
+        self.connection.action("ALTER TABLE xem_numbering DROP UNIQUE (indexer, indexer_id, season, episode)")
+        self.connection.action("ALTER TABLE xem_numbering DROP PRIMARY KEY")
