@@ -1961,7 +1961,7 @@ class NewHomeAddShows:
         if not lang or lang == 'null':
             lang = "en"
 
-        results = []
+        final_results = []
 
         nameUTF8 = name.encode('utf-8')
 
@@ -1978,6 +1978,8 @@ class NewHomeAddShows:
 
         # Query Indexers for each search term and build the list of results
         for indexer in indexers:
+            results = []
+
             lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
@@ -1989,18 +1991,20 @@ class NewHomeAddShows:
                         search = [search]
 
                     # add search results
-                    results += list([sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
-                                 sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
-                                 x['firstaired']] for x in search if x['firstaired'])
+                    results += search
                 except:
                     continue
 
+            final_results += list([sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
+                            sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
+                            x['firstaired']] for x in results if re.search(keywords[0], x['seriesname'], flags=re.I) and x['firstaired'])
+
         # remove duplicates and sort by firstaired
-        results = sorted(results, reverse=True, key=operator.itemgetter(5))
-        results = list(results for results, _ in itertools.groupby(results))
+        final_results = sorted(final_results, reverse=True, key=operator.itemgetter(5))
+        final_results = list(final_results for final_results, _ in itertools.groupby(final_results))
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
-        return json.dumps({'results': results, 'langid': lang_id})
+        return json.dumps({'results': final_results, 'langid': lang_id})
 
     @cherrypy.expose
     def massAddTable(self, rootDir=None):
