@@ -550,7 +550,12 @@ class ConvertTVShowsToIndexerScheme(AddIndicesToTvEpisodes):
     def execute(self):
         backupDatabase(22)
 
+
         logger.log(u"Converting TV Shows table to Indexer Scheme...")
+        if self.hasTable('tmp_tv_shows'):
+            logger.log(u"Removing temp tables left behind from previous updates...")
+            self.connection.action("DROP TABLE tmp_tv_shows")
+
         self.connection.action("ALTER TABLE tv_shows RENAME TO tmp_tv_shows")
         self.connection.action(
             "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMBERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC)")
