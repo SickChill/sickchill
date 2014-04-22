@@ -30,6 +30,7 @@
     #end if
     <td>
         <select name="indexer">
+            <option value="0" #if $indexer == 0 then "selected=\"selected\"" else ""#>All Indexers</option>
             #for $curIndexer in $sickbeard.indexerApi().indexers.items():
                 <option value="$curIndexer[0]" #if $curIndexer[0] == $indexer then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
             #end for

@@ -2132,6 +2132,7 @@ class NewHomeAddShows:
         t.provided_show_dir = show_dir
         t.other_shows = other_shows
         t.provided_indexer = int(indexer or 0)
+        t.indexers = sickbeard.indexerApi().indexers
 
         return _munge(t)
 
@@ -2148,7 +2149,7 @@ class NewHomeAddShows:
     @cherrypy.expose
     def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                   fullShowPath=None, other_shows=None, skipShow=None):
+                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.

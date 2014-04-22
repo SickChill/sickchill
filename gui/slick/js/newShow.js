@@ -29,61 +29,75 @@ $(document).ready(function () {
         }
     }
 
+    var searchRequestXhr = null;
+
     function searchIndexers() {
         if (!$('#nameToSearch').val().length) {
             return;
         }
 
-        $('#searchResults').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching...');
+        if (searchRequestXhr) searchRequestXhr.abort();
 
-        $.getJSON(sbRoot + '/home/addShows/searchIndexersForShowName', {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()}, function (data) {
-            var firstResult = true;
-            var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
-            var checked = '';
+        var searchingFor = $('#nameToSearch').val() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+        $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
-            if (data.results.length === 0) {
-                resultStr += '<b>No results found, try a different search.</b>';
-            } else {
-                $.each(data.results, function (index, obj) {
-                    if (firstResult) {
-                        checked = ' checked';
-                        firstResult = false;
-                    } else {
-                        checked = '';
-                    }
+        searchRequestXhr = $.ajax({
+            url: sbRoot + '/home/addShows/searchIndexersForShowName',
+            data: {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()}, 
+            timeout: 10000,
+            dataType: 'json',
+            error: function () {
+                $('#searchResults').empty().html('search timed out, try again or try another indexer');
+            },
+            success: function (data) {
+                var firstResult = true;
+                var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
+                var checked = '';
 
-                    var whichSeries = obj.join('|');
-
-
-                    resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
-                    if (data.langid && data.langid != "") {
-                        resultStr += '<a href="'+ obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
-                    } else {
-                        resultStr += '<a href="'+ obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
-                    }
-
-                    if (obj[5] !== null) {
-                        var startDate = new Date(obj[5]);
-                        var today = new Date();
-                        if (startDate > today) {
-                            resultStr += ' (will debut on ' + obj[5] + ')';
+                if (data.results.length === 0) {
+                    resultStr += '<b>No results found, try a different search.</b>';
+                } else {
+                    $.each(data.results, function (index, obj) {
+                        if (firstResult) {
+                            checked = ' checked';
+                            firstResult = false;
                         } else {
-                            resultStr += ' (started on ' + obj[5] + ')';
+                            checked = '';
                         }
-                    }
 
-                    if (obj[0] !== null) {
-                        resultStr += ' [' + obj[0] + ']';
-                    }
+                        var whichSeries = obj.join('|');
 
-                    resultStr += '<br />';
-                });
-                resultStr += '</ul>';
+
+                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
+                        if (data.langid && data.langid != "") {
+                            resultStr += '<a href="'+ obj[2] + obj[3] + '&lid=' + data.langid + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                        } else {
+                            resultStr += '<a href="'+ obj[2] + obj[3] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[4] + '</b></a>';
+                        }
+
+                        if (obj[5] !== null) {
+                            var startDate = new Date(obj[5]);
+                            var today = new Date();
+                            if (startDate > today) {
+                                resultStr += ' (will debut on ' + obj[5] + ')';
+                            } else {
+                                resultStr += ' (started on ' + obj[5] + ')';
+                            }
+                        }
+
+                        if (obj[0] !== null) {
+                            resultStr += ' [' + obj[0] + ']';
+                        }
+
+                        resultStr += '<br />';
+                    });
+                    resultStr += '</ul>';
+                }
+                resultStr += '</fieldset>';
+                $('#searchResults').html(resultStr);
+                updateSampleText();
+                myform.loadsection(0);
             }
-            resultStr += '</fieldset>';
-            $('#searchResults').html(resultStr);
-            updateSampleText();
-            myform.loadsection(0);
         });
     }
 
