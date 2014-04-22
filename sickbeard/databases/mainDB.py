@@ -100,21 +100,17 @@ class MainSanityCheck(db.DBSanityCheck):
             logger.log(u"No orphan episodes, check passed")
 
     def fix_missing_table_indexes(self):
+        if not self.connection.select("PRAGMA index_info('idx_indexer_id')"):
+            logger.log(u"Missing idx_indexer_id for TV Shows table detected!, fixing...")
+            self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
 
-        try:
-            sqlResults = self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
-            logger.log(u"Missing idx_indexer_id for TV Shows table added!")
-        except:pass
+        if not self.connection.select("PRAGMA index_info('idx_tv_episodes_showid_airdate')"):
+            logger.log(u"Missing idx_tv_episodes_showid_airdate for TV Episodes table detected!, fixing...")
+            self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
 
-        try:
-            sqlResults = self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
-            logger.log(u"Missing idx_tv_episodes_showid_airdate for TV Episodes table added!")
-        except:pass
-
-        try:
-            sqlResults = self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
-            logger.log(u"Missing idx_showid for TV Episodes table added!")
-        except:pass
+        if not self.connection.select("PRAGMA index_info('idx_showid')"):
+            logger.log(u"Missing idx_showid for TV Episodes table detected!, fixing...")
+            self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
@@ -534,7 +530,7 @@ class AddDvdOrderOption(AddLastProperSearch):
     def execute(self):
         backupDatabase(20)
 
-        self.connection.action("ALTER TABLE tv_shows ADD dvdorder NUMERIC")
+        self.connection.action("ALTER TABLE tv_shows ADD COLUMN dvdorder NUMERIC")
 
         self.incDBVersion()
 
