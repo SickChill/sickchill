@@ -7,6 +7,8 @@ import ConfigParser
 import logging
 
 #Needed for importing logging & requests module
+from sickbeard.exceptions import ex
+
 sickbeardPath = os.path.split(os.path.split(sys.argv[0])[0])[0]
 sys.path.append(os.path.join( sickbeardPath, 'lib'))
 sys.path.append(sickbeardPath)
