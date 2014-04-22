@@ -552,8 +552,9 @@ class ConvertTVShowsToIndexerScheme(AddIndicesToTvEpisodes):
 
 
         logger.log(u"Converting TV Shows table to Indexer Scheme...")
-        if self.hasTable('tmp_tv_shows'):
-            logger.log(u"Removing temp tables left behind from previous updates...")
+
+        if self.hasTable("tmp_tv_shows"):
+            logger.log(u"Removing temp tv show tables left behind from previous updates...")
             self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.connection.action("ALTER TABLE tv_shows RENAME TO tmp_tv_shows")
@@ -576,6 +577,11 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
         backupDatabase(23)
 
         logger.log(u"Converting TV Episodes table to Indexer Scheme...")
+
+        if self.hasTable("tmp_tv_episodes"):
+            logger.log(u"Removing temp tv episode tables left behind from previous updates...")
+            self.connection.action("DROP TABLE tmp_tv_episodes")
+
         self.connection.action("ALTER TABLE tv_episodes RENAME TO tmp_tv_episodes")
         self.connection.action(
             "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer NUMERIC, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC)")
@@ -595,6 +601,11 @@ class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
         backupDatabase(24)
 
         logger.log(u"Converting IMDB Info table to Indexer Scheme...")
+
+        if self.hasTable("tmp_imdb_info"):
+            logger.log(u"Removing temp imdb info tables left behind from previous updates...")
+            self.connection.action("DROP TABLE tmp_imdb_info")
+
         self.connection.action("ALTER TABLE imdb_info RENAME TO tmp_imdb_info")
         self.connection.action(
             "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)")
@@ -613,6 +624,11 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
         backupDatabase(25)
 
         logger.log(u"Converting Info table to Indexer Scheme...")
+
+        if self.hasTable("tmp_info"):
+            logger.log(u"Removing temp info tables left behind from previous updates...")
+            self.connection.action("DROP TABLE tmp_info")
+
         self.connection.action("ALTER TABLE info RENAME TO tmp_info")
         self.connection.action(
             "CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)")
