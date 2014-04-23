@@ -89,7 +89,7 @@ class CheckVersion():
 
         return install_type
 
-    def check_for_new_version(self, force=False):
+    def check_for_new_version(self, force=False, silent=False):
         """
         Checks the internet for a newer version.
 
@@ -102,10 +102,12 @@ class CheckVersion():
             logger.log(u"Version checking is disabled, not checking for the newest version")
             return False
 
-        logger.log(u"Checking if " + self.install_type + " needs an update")
+        if not silent:
+            logger.log(u"Checking if " + self.install_type + " needs an update")
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
-            logger.log(u"No update needed")
+            if not silent:
+                logger.log(u"No update needed")
 
             if force:
                 ui.notifications.message('No update needed')
@@ -118,6 +120,14 @@ class CheckVersion():
         if self.updater.need_update():
             return self.updater.update()
 
+class AutoUpdate():
+    def run(self):
+        if CheckVersion().check_for_new_version(silent=True):
+            logger.log(u"New update found for SickBeard, starting auto-updater ...")
+            updated = sickbeard.versionCheckScheduler.action.update()
+            if updated:
+                logger.log(u"Update was successfull, restarting SickBeard ...")
+                sickbeard.restart()
 
 class UpdateManager():
     def get_github_repo_user(self):

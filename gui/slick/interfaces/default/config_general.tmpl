@@ -72,6 +72,18 @@
                         </div>
 
                         <div class="field-pair">
+                            <input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="auto_update">
+                                <span class="component-title">Automatic Updates</span>
+                                <span class="component-desc">Automatically get and install updates for Sick Beard when available.</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Automatic Updates runs on startup and in the background.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <input type="checkbox" name="sort_article" id="sort_article" #if $sickbeard.SORT_ARTICLE then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="sort_article"> 
                                 <span class="component-title">Sort articles</span> 

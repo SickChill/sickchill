@@ -77,6 +77,7 @@ backlogSearchScheduler = None
 currentSearchScheduler = None
 showUpdateScheduler = None
 versionCheckScheduler = None
+autoUpdateScheduler = None
 showQueueScheduler = None
 searchQueueScheduler = None
 properFinderScheduler = None
@@ -95,6 +96,7 @@ metadata_provider_dict = {}
 NEWEST_VERSION = None
 NEWEST_VERSION_STRING = None
 VERSION_NOTIFY = None
+AUTO_UPDATE = None
 
 INIT_LOCK = Lock()
 __INITIALIZED__ = False
@@ -469,7 +471,7 @@ def initialize(consoleLogging=True):
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
-            versionCheckScheduler, VERSION_NOTIFY, PROCESS_AUTOMATICALLY, UNPACK, \
+            versionCheckScheduler, autoUpdateScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_STRIP_YEAR, \
@@ -584,6 +586,7 @@ def initialize(consoleLogging=True):
         QUALITY_DEFAULT = check_setting_int(CFG, 'General', 'quality_default', SD)
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         VERSION_NOTIFY = check_setting_int(CFG, 'General', 'version_notify', 1)
+        AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 1)
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
@@ -975,6 +978,12 @@ def initialize(consoleLogging=True):
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 
+        autoUpdateScheduler = scheduler.Scheduler(versionChecker.AutoUpdate(),
+                                                    cycleTime=datetime.timedelta(seconds=3),
+                                                    threadName="AUTOUPDATER",
+                                                    runImmediately=True,
+                                                    silent=True)
+
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE",
@@ -1032,7 +1041,7 @@ def initialize(consoleLogging=True):
 
 def start():
     global __INITIALIZED__, currentSearchScheduler, backlogSearchScheduler, \
-        showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
+        showUpdateScheduler, versionCheckScheduler, autoUpdateScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, USE_SUBTITLES, \
         traktWatchListCheckerSchedular, started
@@ -1052,6 +1061,9 @@ def start():
 
             # start the version checker
             versionCheckScheduler.thread.start()
+
+            # start the version checker
+            autoUpdateScheduler.thread.start()
 
             # start the queue checker
             showQueueScheduler.thread.start()
@@ -1114,6 +1126,13 @@ def halt():
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
                 versionCheckScheduler.thread.join(10)
+            except:
+                pass
+
+            autoUpdateScheduler.abort = True
+            logger.log(u"Waiting for the AUTOUPDATER thread to exit")
+            try:
+                autoUpdateScheduler.thread.join(10)
             except:
                 pass
 
@@ -1289,6 +1308,7 @@ def save_config():
     new_config['General']['flatten_folders_default'] = int(FLATTEN_FOLDERS_DEFAULT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
+    new_config['General']['auto_update'] = int(AUTO_UPDATE)
     new_config['General']['naming_strip_year'] = int(NAMING_STRIP_YEAR)
     new_config['General']['naming_pattern'] = NAMING_PATTERN
     new_config['General']['naming_custom_abd'] = int(NAMING_CUSTOM_ABD)
