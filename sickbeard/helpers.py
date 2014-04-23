@@ -184,7 +184,13 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
+
+        proxies = {
+            "http": "http://192.168.1.11:8118",
+            "https": "http://192.168.1.11:8118",
+        }
+
+        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies)
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
