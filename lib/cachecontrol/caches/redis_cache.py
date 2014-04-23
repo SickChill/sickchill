@@ -2,11 +2,6 @@ from __future__ import division
 
 from datetime import datetime
 
-try:
-    from cPickle import loads, dumps
-except ImportError:  # Python 3.x
-    from pickle import loads, dumps
-
 
 def total_seconds(td):
     """Python 2.6 compatability"""
@@ -24,14 +19,11 @@ class RedisCache(object):
         self.conn = conn
 
     def get(self, key):
-        val = self.conn.get(key)
-        if val:
-            return loads(val)
-        return None
+        return self.conn.get(key)
 
     def set(self, key, value, expires=None):
         if not expires:
-            self.conn.set(key, dumps(value))
+            self.conn.set(key, value)
         else:
             expires = expires - datetime.now()
             self.conn.setex(key, total_seconds(expires), value)

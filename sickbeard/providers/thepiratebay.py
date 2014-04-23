@@ -307,8 +307,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
         if self.proxy.isEnabled():
             headers.update({'referer': self.proxy.getProxyURL()})
 
-        result = None
-
         try:
             r = requests.get(url, headers=headers)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:

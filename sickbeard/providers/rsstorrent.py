@@ -45,7 +45,6 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.url = re.sub('\/$', '', url)
         self.enabled = True
         self.supportsBacklog = False
-        self.session = None
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + str(int(self.enabled))
@@ -127,12 +126,9 @@ class TorrentRssProvider(generic.TorrentProvider):
 
     def getURL(self, url, post_data=None, headers=None):
 
-        if not self.session:
-            self.session = requests.Session()
-
         try:
             url = urljoin(url, urlparse(url).path.replace('//', '/'))
-            response = self.session.get(url, verify=False)
+            response = requests.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None
