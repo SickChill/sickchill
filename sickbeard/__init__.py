@@ -77,7 +77,6 @@ backlogSearchScheduler = None
 currentSearchScheduler = None
 showUpdateScheduler = None
 versionCheckScheduler = None
-autoUpdateScheduler = None
 showQueueScheduler = None
 searchQueueScheduler = None
 properFinderScheduler = None
@@ -471,7 +470,7 @@ def initialize(consoleLogging=True):
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
-            versionCheckScheduler, autoUpdateScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, \
+            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_STRIP_YEAR, \
@@ -974,15 +973,9 @@ def initialize(consoleLogging=True):
                                                   runImmediately=False)
 
         versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
-                                                    cycleTime=datetime.timedelta(hours=12),
+                                                    cycleTime=datetime.timedelta(minutes=5),
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
-
-        autoUpdateScheduler = scheduler.Scheduler(versionChecker.AutoUpdate(),
-                                                    cycleTime=datetime.timedelta(minutes=5),
-                                                    threadName="AUTOUPDATER",
-                                                    runImmediately=True,
-                                                    silent=True)
 
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
@@ -1041,7 +1034,7 @@ def initialize(consoleLogging=True):
 
 def start():
     global __INITIALIZED__, currentSearchScheduler, backlogSearchScheduler, \
-        showUpdateScheduler, versionCheckScheduler, autoUpdateScheduler, showQueueScheduler, \
+        showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, USE_SUBTITLES, \
         traktWatchListCheckerSchedular, started
@@ -1061,9 +1054,6 @@ def start():
 
             # start the version checker
             versionCheckScheduler.thread.start()
-
-            # start the version checker
-            autoUpdateScheduler.thread.start()
 
             # start the queue checker
             showQueueScheduler.thread.start()
@@ -1126,13 +1116,6 @@ def halt():
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
                 versionCheckScheduler.thread.join(10)
-            except:
-                pass
-
-            autoUpdateScheduler.abort = True
-            logger.log(u"Waiting for the AUTOUPDATER thread to exit")
-            try:
-                autoUpdateScheduler.thread.join(10)
             except:
                 pass
 

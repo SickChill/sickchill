@@ -57,7 +57,13 @@ class CheckVersion():
             self.updater = None
 
     def run(self):
-        self.check_for_new_version()
+        if self.check_for_new_version():
+           if sickbeard.AUTO_UPDATE:
+            logger.log(u"New update found for SickBeard, starting auto-updater ...")
+            updated = sickbeard.versionCheckScheduler.action.update()
+            if updated:
+                logger.log(u"Update was successfull, restarting SickBeard ...")
+                sickbeard.restart()
 
         # refresh scene exceptions too
         scene_exceptions.retrieve_exceptions()
@@ -89,7 +95,7 @@ class CheckVersion():
 
         return install_type
 
-    def check_for_new_version(self, force=False, silent=False):
+    def check_for_new_version(self, force=False):
         """
         Checks the internet for a newer version.
 
@@ -98,18 +104,18 @@ class CheckVersion():
         force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
         """
 
-        if not sickbeard.VERSION_NOTIFY and not force:
+        if not sickbeard.VERSION_NOTIFY and not sickbeard.AUTO_UPDATE and not force:
             logger.log(u"Version checking is disabled, not checking for the newest version")
             return False
 
-        if not silent:
+        if not sickbeard.AUTO_UPDATE:
             logger.log(u"Checking if " + self.install_type + " needs an update")
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
-            if not silent:
+            if not sickbeard.AUTO_UPDATE:
                 logger.log(u"No update needed")
 
-            if force and not silent:
+            if force and not sickbeard.AUTO_UPDATE:
                 ui.notifications.message('No update needed')
             return False
 
@@ -119,15 +125,6 @@ class CheckVersion():
     def update(self):
         if self.updater.need_update():
             return self.updater.update()
-
-class AutoUpdate():
-    def run(self):
-        if CheckVersion().check_for_new_version(force=True, silent=True):
-            logger.log(u"New update found for SickBeard, starting auto-updater ...")
-            updated = sickbeard.versionCheckScheduler.action.update()
-            if updated:
-                logger.log(u"Update was successfull, restarting SickBeard ...")
-                sickbeard.restart()
 
 class UpdateManager():
     def get_github_repo_user(self):
