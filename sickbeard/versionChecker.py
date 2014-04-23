@@ -63,7 +63,7 @@ class CheckVersion():
             updated = sickbeard.versionCheckScheduler.action.update()
             if updated:
                 logger.log(u"Update was successfull, restarting SickBeard ...")
-                sickbeard.restart()
+                sickbeard.restart(False)
 
         # refresh scene exceptions too
         scene_exceptions.retrieve_exceptions()
