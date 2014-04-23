@@ -109,7 +109,7 @@ class CheckVersion():
             if not silent:
                 logger.log(u"No update needed")
 
-            if force:
+            if force and not silent:
                 ui.notifications.message('No update needed')
             return False
 
@@ -122,7 +122,7 @@ class CheckVersion():
 
 class AutoUpdate():
     def run(self):
-        if CheckVersion().check_for_new_version(silent=True):
+        if CheckVersion().check_for_new_version(force=True, silent=True):
             logger.log(u"New update found for SickBeard, starting auto-updater ...")
             updated = sickbeard.versionCheckScheduler.action.update()
             if updated:

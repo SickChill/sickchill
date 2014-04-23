@@ -979,7 +979,7 @@ def initialize(consoleLogging=True):
                                                     runImmediately=True)
 
         autoUpdateScheduler = scheduler.Scheduler(versionChecker.AutoUpdate(),
-                                                    cycleTime=datetime.timedelta(seconds=3),
+                                                    cycleTime=datetime.timedelta(minutes=5),
                                                     threadName="AUTOUPDATER",
                                                     runImmediately=True,
                                                     silent=True)
