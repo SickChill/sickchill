@@ -831,10 +831,10 @@ class History:
 
         for sql_result in sqlResults:
 
-            if not any((history['show_id'] == sql_result['showid'] \
-                                and history['season'] == sql_result['season'] \
-                                and history['episode'] == sql_result['episode'] \
-                                and history['quality'] == sql_result['quality']) \
+            if not any((history['show_id'] == sql_result['showid']
+                                and history['season'] == sql_result['season']
+                                and history['episode'] == sql_result['episode']
+                                and history['quality'] == sql_result['quality'])
                        for history in compact):
 
                 history = {}
@@ -3382,6 +3382,7 @@ class Home:
             logger.log(u"setEpisodeSceneNumbering for %s from %sx%s to %sx%s" %
                        (show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
 
+            show = int(show)
             forSeason = int(forSeason)
             forEpisode = int(forEpisode)
             if sceneSeason is not None: sceneSeason = int(sceneSeason)
@@ -3510,6 +3511,7 @@ class WebInterface:
 
         cache_obj = image_cache.ImageCache()
 
+        image_file_name = None
         if which == 'poster':
             image_file_name = cache_obj.poster_path(showObj.indexerid)
         if which == 'poster_thumb':
