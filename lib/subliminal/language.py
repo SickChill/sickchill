@@ -20,7 +20,7 @@ import re
 import logging
 
 
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 COUNTRIES = [('AF', 'AFG', '004', u'Afghanistan'),
@@ -619,7 +619,6 @@ LANGUAGES = [('aar', '', 'aa', u'Afar', u'afar'),
              ('pli', '', 'pi', u'Pali', u'pali'),
              ('pol', '', 'pl', u'Polish', u'polonais'),
              ('pon', '', '', u'Pohnpeian', u'pohnpei'),
-             ('pob', '', 'pb', u'Brazilian Portuguese', u'brazilian portuguese'),
              ('por', '', 'pt', u'Portuguese', u'portugais'),
              ('pra', '', '', u'Prakrit languages', u'prâkrit, langues'),
              ('pro', '', '', u'Provençal, Old (to 1500)', u'provençal ancien (jusqu\'à 1500)'),

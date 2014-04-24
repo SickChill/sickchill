@@ -27,7 +27,7 @@ except ImportError:
 
 
 __all__ = ['Cache', 'cachedmethod']
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 class Cache(object):

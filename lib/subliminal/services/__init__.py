@@ -27,7 +27,7 @@ import zipfile
 
 
 __all__ = ['ServiceBase', 'ServiceConfig']
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 class ServiceBase(object):
@@ -82,7 +82,7 @@ class ServiceBase(object):
         """Initialize connection"""
         logger.debug(u'Initializing %s' % self.__class__.__name__)
         self.session = requests.session()
-        self.session.headers.update({'User-Agent': self.user_agent}) 
+        self.session.headers.update({'User-Agent': self.user_agent})
 
     def init_cache(self):
         """Initialize cache, make sure it is loaded from disk"""
@@ -220,16 +220,14 @@ class ServiceBase(object):
                 # TODO: could check if maybe we already have a text file and
                 # download it directly
                 raise DownloadFailedError('Downloaded file is not a zip file')
-            zipsub = zipfile.ZipFile(zippath)
-            for subfile in zipsub.namelist():
-                if os.path.splitext(subfile)[1] in EXTENSIONS:
-                    with open(filepath, 'wb') as f:
-                        f.write(zipsub.open(subfile).read())
-                    break
-            else:
-                zipsub.close()
-                raise DownloadFailedError('No subtitles found in zip file')
-            zipsub.close()
+            with zipfile.ZipFile(zippath) as zipsub:
+                for subfile in zipsub.namelist():
+                    if os.path.splitext(subfile)[1] in EXTENSIONS:
+                        with open(filepath, 'w') as f:
+                            f.write(zipsub.open(subfile).read())
+                        break
+                else:
+                    raise DownloadFailedError('No subtitles found in zip file')
             os.remove(zippath)
         except Exception as e:
             logger.error(u'Download %s failed: %s' % (url, e))

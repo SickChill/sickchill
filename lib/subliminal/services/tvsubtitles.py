@@ -26,7 +26,7 @@ import logging
 import re
 
 
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 def match(pattern, string):
@@ -39,14 +39,13 @@ def match(pattern, string):
 
 class TvSubtitles(ServiceBase):
     server_url = 'http://www.tvsubtitles.net'
-    site_url = 'http://www.tvsubtitles.net'
     api_based = False
     languages = language_set(['ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'es', 'fi', 'fr', 'hu',
                               'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ro', 'ru', 'sv', 'tr', 'uk',
-                              'zh', 'pb'])
+                              'zh', 'pt-br'])
     #TODO: Find more exceptions
     language_map = {'gr': Language('gre'), 'cz': Language('cze'), 'ua': Language('ukr'),
-                    'cn': Language('chi'), 'br': Language('pob')}
+                    'cn': Language('chi')}
     videos = [Episode]
     require_video = False
     required_features = ['permissive']

@@ -23,7 +23,7 @@ import logging
 
 
 __all__ = ['list_subtitles', 'download_subtitles']
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 def list_subtitles(paths, languages=None, services=None, force=True, multi=False, cache_dir=None, max_depth=3, scan_filter=None):
@@ -94,10 +94,7 @@ def download_subtitles(paths, languages=None, services=None, force=True, multi=F
     order = order or [LANGUAGE_INDEX, SERVICE_INDEX, SERVICE_CONFIDENCE, MATCHING_CONFIDENCE]
     subtitles_by_video = list_subtitles(paths, languages, services, force, multi, cache_dir, max_depth, scan_filter)
     for video, subtitles in subtitles_by_video.iteritems():
-        try:
-            subtitles.sort(key=lambda s: key_subtitles(s, video, languages, services, order), reverse=True)
-        except StopIteration:
-            break
+        subtitles.sort(key=lambda s: key_subtitles(s, video, languages, services, order), reverse=True)
     results = []
     service_instances = {}
     tasks = create_download_tasks(subtitles_by_video, languages, multi)

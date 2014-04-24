@@ -2889,7 +2889,7 @@ class Home:
         air_by_date = config.checkbox_to_value(air_by_date)
         subtitles = config.checkbox_to_value(subtitles)
 
-        indexer_lang = showObj.lang
+        indexer_lang = indexerLang
 
         # if we changed the language then kick off an update
         if indexer_lang == showObj.lang:

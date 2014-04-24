@@ -1545,8 +1545,8 @@ class CMD_SickBeardRestart(ApiCall):
         return _responds(RESULT_SUCCESS, msg="SickBeard is restarting...")
 
 
-class CMD_SickBeardSearchTVDB(ApiCall):
-    _help = {"desc": "search for show at tvdb with a given string and language",
+class CMD_SickBeardSearchIndexers(ApiCall):
+    _help = {"desc": "search for show on the indexers with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
                                     "indexerid": {"desc": "thetvdb.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
@@ -1820,17 +1820,17 @@ class CMD_ShowAddExisting(ApiCall):
         if not ek.ek(os.path.isdir, self.location):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
-        tvdbName = None
-        tvdbResult = CMD_SickBeardSearchTVDB([], {"indexerid": self.indexerid}).run()
+        indexerName = None
+        indexerResult = CMD_SickBeardSearchIndexers([], {"indexerid": self.indexerid}).run()
 
-        if tvdbResult['result'] == result_type_map[RESULT_SUCCESS]:
-            if not tvdbResult['data']['results']:
+        if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexerResult['data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(tvdbResult['data']['results']) == 1 and 'name' in tvdbResult['data']['results'][0]:
-                tvdbName = tvdbResult['data']['results'][0]['name']
+            if len(indexerResult['data']['results']) == 1 and 'name' in indexerResult['data']['results'][0]:
+                indexerName = indexerResult['data']['results'][0]['name']
 
-        if not tvdbName:
-            return _responds(RESULT_FAILURE, msg="Unable to retrieve information from tvdb")
+        if not indexerName:
+            return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         quality_map = {'sdtv': Quality.SDTV,
                        'sddvd': Quality.SDDVD,
@@ -1860,12 +1860,12 @@ class CMD_ShowAddExisting(ApiCall):
 
         sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), self.location, SKIPPED, newQuality,
                                                     int(self.flatten_folders))  #@UndefinedVariable
-        return _responds(RESULT_SUCCESS, {"name": tvdbName}, tvdbName + " has been queued to be added")
+        return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
 
 class CMD_ShowAddNew(ApiCall):
     _help = {"desc": "add a new show to sickbeard",
-             "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"}
+             "requiredParameters": {"indexerid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
              },
              "optionalParameters": {"initial": {"desc": "initial quality for the show"},
                                     "location": {"desc": "base path for where the show folder is to be created"},
@@ -1964,20 +1964,20 @@ class CMD_ShowAddNew(ApiCall):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             newStatus = self.status
 
-        tvdbName = None
-        tvdbResult = CMD_SickBeardSearchTVDB([], {"indexerid": self.indexerid}).run()
+        indexerName = None
+        indexerResult = CMD_SickBeardSearchTVDB([], {"indexerid": self.indexerid}).run()
 
-        if tvdbResult['result'] == result_type_map[RESULT_SUCCESS]:
-            if not tvdbResult['data']['results']:
+        if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexerResult['data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(tvdbResult['data']['results']) == 1 and 'name' in tvdbResult['data']['results'][0]:
-                tvdbName = tvdbResult['data']['results'][0]['name']
+            if len(indexerResult['data']['results']) == 1 and 'name' in indexerResult['data']['results'][0]:
+                indexerName = indexerResult['data']['results'][0]['name']
 
-        if not tvdbName:
-            return _responds(RESULT_FAILURE, msg="Unable to retrieve information from tvdb")
+        if not indexerName:
+            return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        showPath = ek.ek(os.path.join, self.location, helpers.sanitizeFileName(tvdbName))
+        showPath = ek.ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -1994,7 +1994,7 @@ class CMD_ShowAddNew(ApiCall):
         sickbeard.showQueueScheduler.action.addShow(int(self.indexerid), showPath, newStatus, newQuality,
                                                     int(self.flatten_folders), self.subtitles,
                                                     self.lang)  #@UndefinedVariable
-        return _responds(RESULT_SUCCESS, {"name": tvdbName}, tvdbName + " has been queued to be added")
+        return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
 
 class CMD_ShowCache(ApiCall):
@@ -2578,7 +2578,7 @@ _functionMaper = {"help": CMD_Help,
                   "sb.pausebacklog": CMD_SickBeardPauseBacklog,
                   "sb.ping": CMD_SickBeardPing,
                   "sb.restart": CMD_SickBeardRestart,
-                  "sb.searchtvdb": CMD_SickBeardSearchTVDB,
+                  "sb.searchtvdb": CMD_SickBeardSearchIndexers,
                   "sb.setdefaults": CMD_SickBeardSetDefaults,
                   "sb.shutdown": CMD_SickBeardShutdown,
                   "show": CMD_Show,

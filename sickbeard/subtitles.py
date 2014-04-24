@@ -31,7 +31,7 @@ SINGLE = 'und'
 
 
 def sortedServiceList():
-    servicesMapping = dict([(x.lower(), x) for x in subliminal.core.SERVICES])
+    servicesMapping = dict([(x.lower(), x) for x in subliminal.Subtitle.core.Providers])
 
     newList = []
 

@@ -1194,8 +1194,10 @@ class TVEpisode(object):
         previous_subtitles = self.subtitles
 
         try:
+            subliminal.cache_region.configure('dogpile.cache.dbm', arguments={'filename': os.path.join(sickbeard.CACHE_DIR, '/path/to/cachefile.dbm')})
+            videos = subliminal.scan_videos([self.location], subtitles=True, embedded_subtitles=True)
             need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
-            subtitles = subliminal.download_subtitles([self.location], languages=need_languages,
+            subtitles = subliminal.download_best_subtitles([self.location], languages=need_languages,
                                                       services=sickbeard.subtitles.getEnabledServiceList(), force=force,
                                                       multi=True, cache_dir=sickbeard.CACHE_DIR)
 

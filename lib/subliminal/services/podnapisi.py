@@ -26,21 +26,20 @@ import logging
 import xmlrpclib
 
 
-logger = logging.getLogger("subliminal")
+logger = logging.getLogger(__name__)
 
 
 class Podnapisi(ServiceBase):
     server_url = 'http://ssp.podnapisi.net:8000'
-    site_url = 'http://www.podnapisi.net'
     api_based = True
     languages = language_set(['ar', 'be', 'bg', 'bs', 'ca', 'ca', 'cs', 'da', 'de', 'el', 'en',
                               'es', 'et', 'fa', 'fi', 'fr', 'ga', 'he', 'hi', 'hr', 'hu', 'id',
                               'is', 'it', 'ja', 'ko', 'lt', 'lv', 'mk', 'ms', 'nl', 'nn', 'pl',
                               'pt', 'ro', 'ru', 'sk', 'sl', 'sq', 'sr', 'sv', 'th', 'tr', 'uk',
-                              'vi', 'zh', 'es-ar', 'pb'])
+                              'vi', 'zh', 'es-ar', 'pt-br'])
     language_map = {'jp': Language('jpn'), Language('jpn'): 'jp',
                     'gr': Language('gre'), Language('gre'): 'gr',
-#                    'pb': Language('por-BR'), Language('por-BR'): 'pb',
+                    'pb': Language('por-BR'), Language('por-BR'): 'pb',
                     'ag': Language('spa-AR'), Language('spa-AR'): 'ag',
                     'cyr': Language('srp')}
     videos = [Episode, Movie]
