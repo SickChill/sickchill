@@ -313,12 +313,15 @@ class KATProvider(generic.TorrentProvider):
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
             
-            proxies = {
-                "http": "http://192.168.1.11:8118",
-                "https": "http://192.168.1.11:8118",
-            }
+            if sickbeard.PROXY_SETTING:
+                proxies = {
+                    "http": sickbeard.PROXY_SETTING,
+                    "https": sickbeard.PROXY_SETTING,
+                }
 
-            r = requests.get(url, proxies=proxies)
+                r = requests.get(url, proxies=proxies)
+            else:
+                r = requests.get(url)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
             return None

@@ -185,12 +185,15 @@ Returns a byte-string retrieved from the url provider.
 
         it = iter(req_headers)
 
-        proxies = {
-            "http": "http://192.168.1.11:8118",
-            "https": "http://192.168.1.11:8118",
-        }
+        if sickbeard.PROXY_SETTING:
+            proxies = {
+                "http": sickbeard.PROXY_SETTING,
+                "https": sickbeard.PROXY_SETTING,
+            }
 
-        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies)
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies)
+        else:
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
