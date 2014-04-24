@@ -306,12 +306,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         # We have to fake a search on the proxy site to get data
         if self.proxy.isEnabled():
             headers.update({'referer': self.proxy.getProxyURL()})
-
-        proxies = {
-            "http": "http://192.168.1.11:8118",
-            "https": "http://192.168.1.11:8118",
-        }
-
+        
         try:
             if sickbeard.PROXY_SETTING:
                 proxies = {
