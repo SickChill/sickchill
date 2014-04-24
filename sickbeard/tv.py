@@ -784,7 +784,7 @@ class TVShow(object):
                      'runtimes': '',
                      'genres': [],
                      'countries': '',
-                     'country_codes': '',
+                     'country_codes': [],
                      'certificates': [],
                      'rating': '',
                      'votes': '',
@@ -797,12 +797,13 @@ class TVShow(object):
             i = imdb.IMDb()
             imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
 
-            for key in filter(lambda x: x in imdbTv.keys(), imdb_info.keys()):
+            test = imdbTv.keys()
+            for key in filter(lambda x: x.replace('_', ' ') in imdbTv.keys(), imdb_info.keys()):
                 # Store only the first value for string type
                 if type(imdb_info[key]) == type('') and type(imdbTv.get(key)) == type([]):
-                    imdb_info[key] = imdbTv.get(key)[0]
+                    imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
                 else:
-                    imdb_info[key] = imdbTv.get(key)
+                    imdb_info[key] = imdbTv.get(key.replace('_', ' '))
 
             #Filter only the value
             if imdb_info['runtimes']:
@@ -820,6 +821,11 @@ class TVShow(object):
                 imdb_info['genres'] = '|'.join(imdb_info['genres'])
             else:
                 imdb_info['genres'] = ''
+
+            if imdb_info['country_codes']:
+                imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
+            else:
+                imdb_info['country_codes'] = ''
 
                 #Get only the production country certificate if any
             if imdb_info['certificates'] and imdb_info['countries']:
@@ -839,8 +845,7 @@ class TVShow(object):
 
             #Rename dict keys without spaces for DB upsert
             self.imdb_info = dict(
-                (k.replace(' ', '_'), float(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
-
+                (k.replace(' ', '_'), f(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
