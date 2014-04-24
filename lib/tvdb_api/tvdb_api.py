@@ -914,9 +914,15 @@ class Tvdb:
                 self._getShowData(key, self.config['language'])
             return self.shows[key]
 
-        key = key.lower()  # make key lower case
-        sids = self._nameToSid(key)
-        return list(self.shows[sid] for sid in sids)
+        key = str(key).lower()
+        self.config['searchterm'] = key
+        selected_series = self._getSeries(key)
+        if isinstance(selected_series, dict):
+            selected_series = [selected_series]
+        return selected_series
+        #test = self._getSeries(key)
+        #sids = self._nameToSid(key)
+        #return list(self.shows[sid] for sid in sids)
 
     def __repr__(self):
         return str(self.shows)

@@ -1656,7 +1656,7 @@ class TVEpisode(object):
         """
 
         if not self.dirty and not forceSave:
-            logger.log(str(self.show.indexeridid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
+            logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
             return
 
         # use a custom update/insert method to get the data into the DB

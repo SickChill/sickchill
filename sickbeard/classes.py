@@ -15,8 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
-
-
+import re
 
 import sickbeard
 
@@ -140,7 +139,7 @@ class TorrentSearchResult(SearchResult):
 
 class AllShowsListUI:
     """
-    This class is for tvdb-api. Instead of prompting with a UI to pick the
+    This class is for indexer api. Instead of prompting with a UI to pick the
     desired result out of a list of shows it tries to be smart about it
     based on what shows are in SB.
     """
@@ -150,10 +149,20 @@ class AllShowsListUI:
         self.log = log
 
     def selectSeries(self, allSeries):
+        searchResults = []
         # get all available shows
         if allSeries:
-            return allSeries
+            if 'searchterm' in self.config:
+                searchterm = self.config['searchterm']
 
+                # try to pick a show that's in my show list
+                for curShow in allSeries:
+                    if curShow in searchResults:
+                        continue
+                    if re.search(searchterm, curShow['seriesname'], flags=re.I) and 'firstaired' in curShow:
+                        searchResults.append(curShow)
+
+            return searchResults
 
 class ShowListUI:
     """

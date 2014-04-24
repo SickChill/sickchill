@@ -973,7 +973,7 @@ def initialize(consoleLogging=True):
                                                   runImmediately=False)
 
         versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
-                                                    cycleTime=datetime.timedelta(minutes=5),
+                                                    cycleTime=datetime.timedelta(hours=12),
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 

@@ -1958,51 +1958,31 @@ class NewHomeAddShows:
         return helpers.sanitizeFileName(name)
 
     @cherrypy.expose
-    def searchIndexersForShowName(self, name, lang="en", indexer=None):
+    def searchIndexersForShowName(self, search_term, lang="en", indexer=None):
         if not lang or lang == 'null':
             lang = "en"
 
+        results = {}
         final_results = []
 
-        nameUTF8 = name.encode('utf-8')
-
-        # Use each word in the show's name as a possible search term
-        keywords = nameUTF8.split(' ')
-
-        # Insert the whole show's name as the first search term so best results are first
-        # ex: keywords = ['Some Show Name', 'Some', 'Show', 'Name']
-        if len(keywords) > 1:
-            keywords.insert(0, nameUTF8)
-
-        # check for indexer preset
-        indexers = sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer or 0)]
-
         # Query Indexers for each search term and build the list of results
-        for indexer in indexers:
-            results = []
-
+        for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
             lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+            lINDEXER_API_PARMS['language'] = lang
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            for searchTerm in keywords:
-                try:
-                    search = t[searchTerm]
-                    if isinstance(search, dict):
-                        search = [search]
+            logger.log("Searching for Show with searchterm: %s on Indexer: %s" % (search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+            try:
+                # add search results
+                results.setdefault(indexer, []).extend(t[search_term])
+            except:continue
 
-                    # add search results
-                    results += search
-                except:
-                    continue
 
-            final_results += list([sickbeard.indexerApi(indexer).name, int(sickbeard.indexerApi(indexer).config['id']),
-                            sickbeard.indexerApi(indexer).config["show_url"], int(x['id']), x['seriesname'],
-                            x['firstaired']] for x in results if re.search(keywords[0], x['seriesname'], flags=re.I) and x['firstaired'])
-
-        # remove duplicates and sort by firstaired
-        final_results = sorted(final_results, reverse=True, key=operator.itemgetter(5))
-        final_results = list(final_results for final_results, _ in itertools.groupby(final_results))
+        map(final_results.extend,
+            ([[sickbeard.indexerApi(id).name, id, sickbeard.indexerApi(id).config["show_url"], int(show['id']),
+               show['seriesname'], show['firstaired']] for show in shows] for id, shows in
+             results.items()))
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id})

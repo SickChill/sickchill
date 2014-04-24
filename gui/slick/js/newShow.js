@@ -36,15 +36,15 @@ $(document).ready(function () {
             return;
         }
 
-        if (searchRequestXhr) searchRequestXhr.abort();
+        if (searchRequestXhr) {searchRequestXhr.abort()};
 
         var searchingFor = $('#nameToSearch').val() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
         $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
         searchRequestXhr = $.ajax({
             url: sbRoot + '/home/addShows/searchIndexersForShowName',
-            data: {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()}, 
-            timeout: 10000,
+            data: {'search_term': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
+            timeout: 20000,
             dataType: 'json',
             error: function () {
                 $('#searchResults').empty().html('search timed out, try again or try another indexer');
