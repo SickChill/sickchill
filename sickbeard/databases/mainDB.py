@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 28
+MAX_DB_VERSION = 29
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -538,10 +538,14 @@ class AddProperSearch(AddUpdateTVDB):
 
 class AddDvdOrderOption(AddProperSearch):
     def test(self):
-        return self.hasColumn("tv_shows", "dvdorder")
+        return self.checkDBVersion() >= 20
 
     def execute(self):
-        self.connection.action("ALTER TABLE tv_shows ADD COLUMN dvdorder NUMERIC DEFAULT 0")
+        backupDatabase(20)
+
+        logger.log(u"Adding column dvdorder to tvshows")
+        if not self.hasColumn("tv_shows", "dvdorder"):
+            self.addColumn("tv_shows", "dvdorder", "NUMERIC", "0")
 
         self.incDBVersion()
 
@@ -551,6 +555,10 @@ class ConvertTVShowsToIndexerScheme(AddDvdOrderOption):
 
     def execute(self):
         backupDatabase(22)
+
+        logger.log(u"Adding column dvdorder to tvshows")
+        if not self.hasColumn("tv_shows", "dvdorder"):
+            self.addColumn("tv_shows", "dvdorder", "NUMERIC", "0")
 
         logger.log(u"Converting TV Shows table to Indexer Scheme...")
 
@@ -657,7 +665,9 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
     def execute(self):
         backupDatabase(26)
 
-        self.connection.action("ALTER TABLE tv_shows ADD COLUMN archive_firstmatch NUMERIC DEFAULT 0")
+        logger.log(u"Adding column archive_firstmatch to tvshows")
+        if not self.hasColumn("tv_shows", "archive_firstmatch"):
+            self.addColumn("tv_shows", "archive_firstmatch", "NUMERIC", "0")
 
         self.incDBVersion()
 
@@ -695,5 +705,24 @@ class ConvertIndexerToInteger(AddSceneNumbering):
         ql.append(["UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
 
         self.connection.mass_action(ql)
+
+        self.incDBVersion()
+
+class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
+    """ Adding column rls_require_words and rls_ignore_words to tv_shows """
+
+    def test(self):
+        return self.checkDBVersion() >= 29
+
+    def execute(self):
+        backupDatabase(29)
+
+        logger.log(u"Adding column rls_require_words to tvshows")
+        if not self.hasColumn("tv_shows", "rls_require_words"):
+            self.addColumn("tv_shows", "rls_require_words", "TEXT", "")
+
+        logger.log(u"Adding column rls_ignore_words to tvshows")
+        if not self.hasColumn("tv_shows", "rls_ignore_words"):
+            self.addColumn("tv_shows", "rls_ignore_words", "TEXT", "")
 
         self.incDBVersion()

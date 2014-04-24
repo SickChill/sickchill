@@ -80,6 +80,9 @@ class TVShow(object):
         self.lang = lang
         self.last_update_indexer = 1
 
+        self.rls_ignore_words = ""
+        self.rls_require_words = ""
+
         self.lock = threading.Lock()
         self._isDirGood = False
 
@@ -710,10 +713,13 @@ class TVShow(object):
 
             self.last_update_indexer = sqlResults[0]["last_update_indexer"]
 
+            self.rls_ignore_words = sqlResults[0]["rls_ignore_words"]
+            self.rls_require_words = sqlResults[0]["rls_require_words"]
+
             if not self.imdbid:
                 self.imdbid = sqlResults[0]["imdb_id"]
 
-                #Get IMDb_info from database
+        #Get IMDb_info from database
         sqlResults = myDB.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
         if len(sqlResults) == 0:
@@ -976,7 +982,9 @@ class TVShow(object):
                         "startyear": self.startyear,
                         "lang": self.lang,
                         "imdb_id": self.imdbid,
-                        "last_update_indexer": self.last_update_indexer
+                        "last_update_indexer": self.last_update_indexer,
+                        "rls_ignore_words": self.rls_ignore_words,
+                        "rls_require_words": self.rls_require_words
         }
         myDB.upsert("tv_shows", newValueDict, controlValueDict)
 

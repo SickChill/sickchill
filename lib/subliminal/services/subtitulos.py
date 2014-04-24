@@ -27,15 +27,16 @@ import unicodedata
 import urllib
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("subliminal")
 
 
 class Subtitulos(ServiceBase):
     server_url = 'http://www.subtitulos.es'
+    site_url = 'http://www.subtitulos.es'
     api_based = False
-    languages = language_set(['eng-US', 'eng-GB', 'eng', 'fre', 'por-BR', 'por', 'spa-ES', u'spa', u'ita', u'cat'])
-    language_map = {u'Español': Language('spa'), u'Español (España)': Language('spa'), u'Español (Latinoamérica)': Language('spa'),
-                    u'Català': Language('cat'), u'Brazilian': Language('por-BR'), u'English (US)': Language('eng-US'),
+    languages = language_set(['eng-US', 'eng-GB', 'eng', 'fre', 'pob', 'por', 'spa-ES', u'spa', u'ita', u'cat'])
+    language_map = {u'Español': Language('spa'), u'Español (España)': Language('spa'), #u'Español (Latinoamérica)': Language('spa'),
+                    u'Català': Language('cat'), u'Brazilian': Language('pob'), u'English (US)': Language('eng-US'),
                     u'English (UK)': Language('eng-GB'), 'Galego': Language('glg')}
     language_code = 'name'
     videos = [Episode]
@@ -45,12 +46,13 @@ class Subtitulos(ServiceBase):
     # and the 'ó' char directly. This is because now BS4 converts the html
     # code chars into their equivalent unicode char
     release_pattern = re.compile('Versi.+n (.+) ([0-9]+).([0-9])+ megabytes')
-
+    extra_keywords_pattern = re.compile("(?:con|para)\s(?:720p)?(?:\-|\s)?([A-Za-z]+)(?:\-|\s)?(?:720p)?(?:\s|\.)(?:y\s)?(?:720p)?(?:\-\s)?([A-Za-z]+)?(?:\-\s)?(?:720p)?(?:\.)?");
+    
     def list_checked(self, video, languages):
         return self.query(video.path or video.release, languages, get_keywords(video.guess), video.series, video.season, video.episode)
 
     def query(self, filepath, languages, keywords, series, season, episode):
-        request_series = series.lower().replace(' ', '_')
+        request_series = series.lower().replace(' ', '-').replace('&', '@').replace('(','').replace(')','')
         if isinstance(request_series, unicode):
             request_series = unicodedata.normalize('NFKD', request_series).encode('ascii', 'ignore')
         logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
@@ -65,7 +67,7 @@ class Subtitulos(ServiceBase):
         subtitles = []
         for sub in soup('div', {'id': 'version'}):
             sub_keywords = split_keyword(self.release_pattern.search(sub.find('p', {'class': 'title-sub'}).contents[1]).group(1).lower())
-            if not keywords & sub_keywords:
+            if keywords and not keywords & sub_keywords:
                 logger.debug(u'None of subtitle keywords %r in %r' % (sub_keywords, keywords))
                 continue
             for html_language in sub.findAllNext('ul', {'class': 'sslist'}):

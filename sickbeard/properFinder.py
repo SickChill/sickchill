@@ -161,13 +161,23 @@ class ProperFinder():
                            logger.DEBUG)
                 continue
 
+            showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
+            if not showObj:
+                logger.log(u"Unable to find the show with indexerID " + str(curProper.indexerid), logger.ERROR)
+                continue
+
+            if showObj.rls_ignore_words and search.filter_release_name(curProper.name, showObj.rls_ignore_words):
+                logger.log(u"Ignoring " + curProper.name + " based on ignored words filter: " + showObj.rls_ignore_words,
+                           logger.MESSAGE)
+                continue
+
+            if showObj.rls_require_words and not search.filter_release_name(curProper.name, showObj.rls_require_words):
+                logger.log(u"Ignoring " + curProper.name + " based on required words filter: " + showObj.rls_require_words,
+                           logger.MESSAGE)
+                continue
+
             # if we have an air-by-date show then get the real season/episode numbers
             if curProper.season == -1 and curProper.indexerid:
-                showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
-                if not showObj:
-                    logger.log(u"This should never have happened, post a bug about this!", logger.ERROR)
-                    raise Exception("BAD STUFF HAPPENED")
-
                 indexer_lang = showObj.lang
                 lINDEXER_API_PARMS = sickbeard.indexerApi(showObj.indexer).api_params.copy()
                 if indexer_lang and not indexer_lang == 'en':

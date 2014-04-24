@@ -26,10 +26,13 @@ import mimetypes
 import os
 import struct
 
+from sickbeard import encodingKludge as ek
+import sickbeard
+
 
 __all__ = ['EXTENSIONS', 'MIMETYPES', 'Video', 'Episode', 'Movie', 'UnknownVideo',
            'scan', 'hash_opensubtitles', 'hash_thesubdb']
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("subliminal")
 
 #: Video extensions
 EXTENSIONS = ['.avi', '.mkv', '.mpg', '.mp4', '.m4v', '.mov', '.ogm', '.ogv', '.wmv',
@@ -55,6 +58,10 @@ class Video(object):
         self.imdbid = imdbid
         self._path = None
         self.hashes = {}
+        
+        if isinstance(path, unicode):
+            path = path.encode('utf-8')
+        
         if os.path.exists(path):
             self._path = path
             self.size = os.path.getsize(self._path)
@@ -138,6 +145,10 @@ class Video(object):
         if folder == '':
             folder = '.'
         existing = [f for f in os.listdir(folder) if f.startswith(basename)]
+        if sickbeard.SUBTITLES_DIR:
+            subsDir = ek.ek(os.path.join, folder, sickbeard.SUBTITLES_DIR)
+            if ek.ek(os.path.isdir, subsDir):
+                existing.extend([f for f in os.listdir(subsDir) if f.startswith(basename)])
         for path in existing:
             for ext in subtitles.EXTENSIONS:
                 if path.endswith(ext):
@@ -214,6 +225,9 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
     :rtype: list of (:class:`Video`, [:class:`~subliminal.subtitles.Subtitle`])
 
     """
+    if isinstance(entry, unicode):
+        entry = entry.encode('utf-8')
+    
     if depth > max_depth and max_depth != 0:  # we do not want to search the whole file system except if max_depth = 0
         return []
     if os.path.isdir(entry):  # a dir? recurse

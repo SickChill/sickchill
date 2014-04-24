@@ -2850,7 +2850,7 @@ class Home:
     @cherrypy.expose
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, archive_firstmatch=None):
+                 subtitles=None, archive_firstmatch=None, rls_ignore_words=None, rls_require_words=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -2934,6 +2934,9 @@ class Home:
             showObj.lang = indexer_lang
             showObj.dvdorder = dvdorder
             showObj.archive_firstmatch = archive_firstmatch
+
+            showObj.rls_ignore_words = rls_ignore_words
+            showObj.rls_require_words = rls_require_words
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):

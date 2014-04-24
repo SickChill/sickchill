@@ -26,7 +26,7 @@ import threading
 
 
 __all__ = ['Worker', 'Pool']
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("subliminal")
 
 
 class Worker(threading.Thread):

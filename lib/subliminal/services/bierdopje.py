@@ -31,11 +31,12 @@ except ImportError:
     import pickle
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("subliminal")
 
 
 class BierDopje(ServiceBase):
     server_url = 'http://api.bierdopje.com/A2B638AC5D804C2E/'
+    site_url = 'http://www.bierdopje.com'
     user_agent = 'Subliminal/0.6'
     api_based = True
     languages = language_set(['eng', 'dut'])
