@@ -70,7 +70,7 @@ def filterBadReleases(name):
 
     # if any of the bad strings are in the name then say no
     for x in resultFilters + sickbeard.IGNORE_WORDS.split(','):
-        if re.search('(^|[\s_])' + x.strip() + '($|[\s_])', name, re.I):
+        if re.search('(^|[\W_]|[\s_])' + x.strip() + '($|[\W_]|[\s_])', name, re.I):
             logger.log(u"Invalid scene release: " + name + " contains " + x + ", ignoring it", logger.DEBUG)
             return False
 
