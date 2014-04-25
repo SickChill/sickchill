@@ -3162,7 +3162,7 @@ class Home:
                     myDB.mass_action(sql_l)
 
         if int(status) == WANTED:
-            msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br /><ul>"
+            msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             for cur_segment in wanted_segments:
                 msg += "<li>Season " + str(cur_segment) + "</li>"
                 logger.log(u"Sending backlog for " + showObj.name + " season " + str(
