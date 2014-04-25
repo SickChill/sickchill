@@ -125,9 +125,7 @@ class TorrentRssProvider(generic.TorrentProvider):
             return (False, 'Error when trying to load RSS: ' + ex(e))
 
     def getURL(self, url, post_data=None, headers=None):
-
         try:
-            url = urljoin(url, urlparse(url).path.replace('//', '/'))
             response = requests.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
