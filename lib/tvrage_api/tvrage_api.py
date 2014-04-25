@@ -30,7 +30,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 
-from dateutil.parser import parse
+from lib.dateutil.parser import parse
 from cachecontrol import caches
 
 from tvrage_ui import BaseUI
@@ -658,6 +658,7 @@ class TVRage:
         selected_series = self._getSeries(key)
         if isinstance(selected_series, dict):
             selected_series = [selected_series]
+        [[self._setShowData(show['id'], k, v) for k, v in show.items()] for show in selected_series]
         return selected_series
         #test = self._getSeries(key)
         #sids = self._nameToSid(key)

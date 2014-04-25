@@ -21,6 +21,7 @@ import sickbeard
 
 import urllib
 import datetime
+from lib.dateutil import parser
 
 from common import USER_AGENT, Quality
 
@@ -154,16 +155,20 @@ class AllShowsListUI:
         if allSeries:
             if 'searchterm' in self.config:
                 searchterm = self.config['searchterm']
-
                 # try to pick a show that's in my show list
                 for curShow in allSeries:
                     if curShow in searchResults:
                         continue
-                    searchterm = re.escape(searchterm)
-                    if re.search(searchterm, curShow['seriesname'], flags=re.I) and 'firstaired' in curShow:
-                        searchResults.append(curShow)
+                    if 'seriesname' in curShow:
+                        if searchterm.lower() in curShow['seriesname'].lower():
+                            if 'firstaired' not in curShow:
+                                curShow['firstaired'] = str(datetime.date.fromordinal(1))
+                                curShow['firstaired'] = re.sub("([-]0{2}){1,}", "", curShow['firstaired'])
+                                fixDate = parser.parse(curShow['firstaired'], fuzzy=True).date()
+                                curShow['firstaired'] = fixDate.strftime("%Y-%m-%d")
+                            searchResults.append(curShow)
 
-            return searchResults
+        return searchResults
 
 class ShowListUI:
     """

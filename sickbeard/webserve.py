@@ -1977,7 +1977,8 @@ class NewHomeAddShows:
             try:
                 # add search results
                 results.setdefault(indexer, []).extend(t[search_term])
-            except:continue
+            except Exception, e:
+                continue
 
 
         map(final_results.extend,

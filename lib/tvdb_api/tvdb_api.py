@@ -919,6 +919,7 @@ class Tvdb:
         selected_series = self._getSeries(key)
         if isinstance(selected_series, dict):
             selected_series = [selected_series]
+        [[self._setShowData(show['id'], k, v) for k,v in show.items()] for show in selected_series]
         return selected_series
         #test = self._getSeries(key)
         #sids = self._nameToSid(key)
