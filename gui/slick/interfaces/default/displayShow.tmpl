@@ -141,9 +141,18 @@
 <i>Replace with:</i> <b><%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%></b>
 #end if
 #end if
-
 	<tr><td class="showLegend">Scene Name:</td><td>#if $show.exceptions then $exceptions_string else $show.name#</td></tr>
     </td></tr>
+#if $all_scene_exceptions:
+	<tr>
+		<td class="showLegend">Alternate Scene Names:</td>
+		<td>
+			#for $one_exception in sorted($all_scene_exceptions)
+				$one_exception<br />
+			#end for
+		</td>
+	</tr>
+#end if
     </table>
     <td style="float: right;">
     <table>
@@ -157,16 +166,6 @@
     <tr><td class="showLegend">DVD Order: </td><td><img src="$sbRoot/images/#if int($show.dvdorder) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 #if $bestQualities
     <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-#end if
-#if $all_scene_exceptions:
-	<tr>
-		<td class="showLegend">Alternate Scene Names:</td>
-		<td>
-			#for $one_exception in sorted($all_scene_exceptions)
-				$one_exception<br />
-			#end for
-		</td>
-	</tr>
 #end if
 </table>
 </td>
