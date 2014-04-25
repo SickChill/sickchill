@@ -176,7 +176,7 @@ a{
 #header .wrapper {
   margin: 0 auto;
   position: relative;
-  width: 960px;
+  width: 1250px;
 }
 #header a:hover {
   background: none;
@@ -185,7 +185,7 @@ a{
 #header .showInfo .checkboxControls {
   margin: 0 auto;
   position: relative;
-  width: 960px;
+  width: 1250px;
 }
 
 #logo {
@@ -354,7 +354,7 @@ input:not(.btn){margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4
 /* --------------------------------------------- */
 .footer {
   clear: both;
-  width: 960px;
+  width: 1250px;
   text-align: center;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -667,7 +667,7 @@ tr.snatched {
   height: 35px;
 }
 .showInfo {
-  width: 745px;
+  width: 1000px;
   float: right;
   padding-top: 10px;
 }
@@ -737,7 +737,7 @@ div#summary tr td {
   line-height: 24px;
   margin: 0 auto;
   padding: 105px 0 0;
-  width: 960px;
+  width: 1250px;
 }
 .showLegend {
   font-weight: 700;
