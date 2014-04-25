@@ -3123,15 +3123,22 @@ class Home:
                 if epObj is None:
                     return _genericMessage("Error", "Episode couldn't be retrieved")
 
-                if int(status) in (WANTED, FAILED):
+                if int(status) == WANTED:
                     # figure out what episodes are wanted so we can backlog them
                     if epObj.show.air_by_date:
-                        wanted_segments.append(str(epObj.airdate)[:7])
+                        segment = str(epObj.airdate)[:7]
                     else:
-                        wanted_segments.append(epObj.season)
+                        segment = epObj.season
 
+                    if segment not in wanted_segments:
+                        wanted_segments.append(segment)
+
+                elif int(status) == FAILED:
                     # figure out what episodes failed so we can retry them
-                    failed_segments.setdefault(epObj.season, []).append(epObj.episode)
+                    if epObj.season not in failed_segments:
+                        failed_segments[epObj.season] = []
+                    if epObj.episode not in failed_segments[epObj.season]:
+                        failed_segments[epObj.season].append(epObj.episode)
 
                 with epObj.lock:
                     # don't let them mess up UNAIRED episodes
