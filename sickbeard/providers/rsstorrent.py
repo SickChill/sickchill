@@ -19,7 +19,7 @@
 import os
 import xml.dom.minidom
 import re
-from urlparse import urlparse, urljoin
+import urlparse
 
 import sickbeard
 import generic
@@ -126,6 +126,8 @@ class TorrentRssProvider(generic.TorrentProvider):
 
     def getURL(self, url, post_data=None, headers=None):
         try:
+            parsed = list(urlparse.urlparse(url))
+            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             response = requests.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
