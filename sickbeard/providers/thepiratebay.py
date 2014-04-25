@@ -314,9 +314,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     "https": sickbeard.PROXY_SETTING,
                 }
 
-                r = requests.get(url, headers=headers, proxies=proxies)
+                r = requests.get(url, headers=headers, proxies=proxies, verify=False)
             else:
-                r = requests.get(url, headers=headers)
+                r = requests.get(url, headers=headers, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
             return None
@@ -340,7 +340,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             return False
 
         try:
-            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent')
+            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
         except Exception, e:
             logger.log("Unable to connect to Torcache: " + ex(e), logger.ERROR)
             return False

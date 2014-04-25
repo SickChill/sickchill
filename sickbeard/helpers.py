@@ -191,9 +191,9 @@ Returns a byte-string retrieved from the url provider.
                 "https": sickbeard.PROXY_SETTING,
             }
 
-            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies)
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies, verify=False)
         else:
-            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), verify=False)
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None
@@ -218,7 +218,7 @@ def _remove_file_failed(file):
 
 def download_file(url, filename):
     try:
-        r = requests.get(url, stream=True)
+        r = requests.get(url, stream=True, verify=False)
         with open(filename, 'wb') as fp:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:

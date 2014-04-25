@@ -236,7 +236,7 @@ class PublicHDProvider(generic.TorrentProvider):
             return False
 
         try:
-            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent')
+            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
         except Exception, e:
             logger.log("Unable to connect to Torcache: " + ex(e), logger.ERROR)
             return False

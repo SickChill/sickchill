@@ -266,13 +266,13 @@ def _xem_refresh(indexer_id):
             u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
             logger.DEBUG)
         data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
-            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],)).json()
+            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
 
         if data is None or data == '':
             logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
                 indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
             data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
-                indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],)).json()
+                indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
             if data is None or data == '':
                 logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
                            logger.MESSAGE)
