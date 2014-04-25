@@ -53,7 +53,10 @@
 		<a href="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid" onclick="window.open(this.href, '_blank'); return false;" title="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid"><img alt="$sickbeard.indexerApi($show.indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($show.indexer).config["icon"] "style="margin-top: -1px;"/></a>
 	</span>
 #else
-	<img src="$sbRoot/images/flags/${$show.imdb_info['country_codes']}.png" width="16" height="11" style="margin-top: 3px; margin-left: 3px" /> ($show.imdb_info['year']) - $show.imdb_info['runtimes'] min - $show.imdb_info['genres'].replace('|',' | ')
+    #for $country in $show.imdb_info['country_codes'].split('|')
+    <img src="$sbRoot/images/flags/${$country}.png" width="16" height="11" style="margin-top: 3px; margin-left: 3px" />
+    #end for
+    ($show.imdb_info['year']) - $show.imdb_info['runtimes'] min - $show.imdb_info['genres'].replace('|',' | ')
 	<span class="tvshowLink" style="vertical-align: text-top">
 		<a href="http://www.imdb.com/title/$show.imdbid" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/$show.imdbid"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" style="margin-top: -1px;"/>
 		<a href="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid"><img alt="$sickbeard.indexerApi($show.indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($show.indexer).config["icon"] "style="margin-top: -1px;"/></a>

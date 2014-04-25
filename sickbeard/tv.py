@@ -822,11 +822,6 @@ class TVShow(object):
             else:
                 imdb_info['genres'] = ''
 
-            if imdb_info['country_codes']:
-                imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
-            else:
-                imdb_info['country_codes'] = ''
-
                 #Get only the production country certificate if any
             if imdb_info['certificates'] and imdb_info['countries']:
                 dct = {}
@@ -840,6 +835,11 @@ class TVShow(object):
 
             else:
                 imdb_info['certificates'] = ''
+
+            if imdb_info['country_codes']:
+                imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
+            else:
+                imdb_info['country_codes'] = ''
 
             imdb_info['last_update'] = datetime.date.today().toordinal()
 
