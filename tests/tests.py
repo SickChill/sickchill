@@ -31,7 +31,7 @@ from sickbeard import classes
 class APICheck(unittest.TestCase):
 
     lang = "en"
-    search_term = 'american dad'
+    search_term = 'Reign (2013)'
 
     results = {}
     final_results = []

@@ -159,6 +159,7 @@ class AllShowsListUI:
                 for curShow in allSeries:
                     if curShow in searchResults:
                         continue
+                    searchterm = re.escape(searchterm)
                     if re.search(searchterm, curShow['seriesname'], flags=re.I) and 'firstaired' in curShow:
                         searchResults.append(curShow)
 
