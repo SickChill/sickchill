@@ -184,7 +184,16 @@ Returns a byte-string retrieved from the url provider.
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-        resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
+
+        if sickbeard.PROXY_SETTING:
+            proxies = {
+                "http": sickbeard.PROXY_SETTING,
+                "https": sickbeard.PROXY_SETTING,
+            }
+
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies)
+        else:
+            resp = requests.get(url, params=params, data=post_data, headers=dict(zip(it, it)))
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None

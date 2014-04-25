@@ -31,16 +31,23 @@ from sickbeard import classes
 class APICheck(unittest.TestCase):
 
     lang = "en"
-    search_term = 'american'
+    search_term = 'american dad'
 
     results = {}
     final_results = []
+
+    lINDEXER_API_PARMS = indexerApi(1).api_params.copy()
+    lINDEXER_API_PARMS['language'] = lang
+    lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
+    t = indexerApi(1).indexer(**lINDEXER_API_PARMS)
+    test = t[search_term]
 
     for indexer in indexerApi().indexers:
         lINDEXER_API_PARMS = indexerApi(indexer).api_params.copy()
         lINDEXER_API_PARMS['language'] = lang
         lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
         t = indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+        t[search_term]
 
         print("Searching for Show with searchterm: %s on Indexer: %s" % (search_term, indexerApi(indexer).name))
         try:
