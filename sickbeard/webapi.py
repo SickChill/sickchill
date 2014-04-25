@@ -1800,6 +1800,9 @@ class CMD_ShowAddExisting(ApiCall):
         elif "tvrageid" in args or "tvrageid" in kwargs:
             _INDEXER_INT = 2
             _INDEXER = "tvrageid"
+        else:
+            _INDEXER_INT = None
+            _INDEXER = None            
         # required
         self.indexerid, args = self.check_params(args, kwargs, _INDEXER, None, True, "int", [])
         self.indexer = _INDEXER_INT
@@ -1897,6 +1900,9 @@ class CMD_ShowAddNew(ApiCall):
         elif "tvrageid" in args or "tvrageid" in kwargs:
             _INDEXER_INT = 2
             _INDEXER = "tvrageid"
+        else:
+            _INDEXER_INT = None
+            _INDEXER = None 
         # required
         self.indexerid, args = self.check_params(args, kwargs, _INDEXER, None, True, "int", [])
         self.indexer = _INDEXER_INT
