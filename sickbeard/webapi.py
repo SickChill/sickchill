@@ -1783,8 +1783,7 @@ class CMD_Show(ApiCall):
 
 class CMD_ShowAddExisting(ApiCall):
     _help = {"desc": "add a show in sickbeard with an existing folder",
-             "requiredParameters": {"indexerid": {"desc": "thetvdb.com unique id of a show"},
-                                    "indexer": {"desc": "Indexer to use 1:thetvdb.com 2:tvrage.com"},
+             "requiredParameters": {"tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com id"},
                                     "location": {"desc": "full path to the existing folder for the show"}
              },
              "optionalParameters": {"initial": {"desc": "initial quality for the show"},
@@ -1795,10 +1794,16 @@ class CMD_ShowAddExisting(ApiCall):
     }
 
     def __init__(self, args, kwargs):
+        if "tvdbid" in args or "tvdbid" in kwargs:
+            _INDEXER_INT = 1
+            _INDEXER = "tvdbid"
+        elif "tvrageid" in args or "tvrageid" in kwargs:
+            _INDEXER_INT = 2
+            _INDEXER = "tvrageid"
         # required
+        self.indexerid, args = self.check_params(args, kwargs, _INDEXER, None, True, "int", [])
+        self.indexer = _INDEXER_INT
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
-        self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        self.indexer, args = self.check_params(args, kwargs, "indexer", None, True, "int", [])
         # optional
         self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
                                                ["sdtv", "sddvd", "hdtv", "rawhdtv", "fullhdtv", "hdwebdl",
@@ -1867,8 +1872,7 @@ class CMD_ShowAddExisting(ApiCall):
 
 class CMD_ShowAddNew(ApiCall):
     _help = {"desc": "add a new show to sickbeard",
-             "requiredParameters": {"indexerid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
-                                    "indexer": {"desc": "Indexer to use 1:thetvdb.com 2:tvrage.com"}
+             "requiredParameters": {"tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com id"}
              },
              "optionalParameters": {"initial": {"desc": "initial quality for the show"},
                                     "location": {"desc": "base path for where the show folder is to be created"},
@@ -1887,9 +1891,15 @@ class CMD_ShowAddNew(ApiCall):
         'sv': 8, 'sl': 30}
 
     def __init__(self, args, kwargs):
+        if "tvdbid" in args or "tvdbid" in kwargs:
+            _INDEXER_INT = 1
+            _INDEXER = "tvdbid"
+        elif "tvrageid" in args or "tvrageid" in kwargs:
+            _INDEXER_INT = 2
+            _INDEXER = "tvrageid"
         # required
-        self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
-        self.indexer, args = self.check_params(args, kwargs, "indexer", None, True, "int", [])
+        self.indexerid, args = self.check_params(args, kwargs, _INDEXER, None, True, "int", [])
+        self.indexer = _INDEXER_INT
         # optional
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
         self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
