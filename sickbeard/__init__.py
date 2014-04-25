@@ -114,6 +114,8 @@ WEB_PASSWORD = None
 WEB_HOST = None
 WEB_IPV6 = None
 
+PROXY_SETTING = None
+
 LOCALHOST_IP = None
 ANON_REDIRECT = None
 
@@ -1302,7 +1304,7 @@ def save_config():
     new_config['General']['launch_browser'] = int(LAUNCH_BROWSER)
     new_config['General']['update_shows_on_start'] = int(UPDATE_SHOWS_ON_START)
     new_config['General']['sort_article'] = int(SORT_ARTICLE)
-    new_config['General']['proxy_setting'] = PROXY_SETTING if PROXY_SETTING else ''
+    new_config['General']['proxy_setting'] = PROXY_SETTING
 
     new_config['General']['use_listview'] = int(USE_LISTVIEW)
     new_config['General']['metadata_xbmc'] = METADATA_XBMC
