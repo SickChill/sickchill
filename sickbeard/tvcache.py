@@ -31,11 +31,6 @@ from sickbeard import name_cache
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard.exceptions import ex, AuthException
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import elementtree.ElementTree as etree
-
 from name_parser.parser import NameParser, InvalidNameException
 
 
@@ -109,23 +104,9 @@ class TVCache():
             logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
             self._clearCache()
 
-            parsedXML = helpers.parse_xml(data)
-
-            if parsedXML is None:
-                logger.log(u"Error trying to load " + self.provider.name + " RSS feed", logger.ERROR)
-                return []
-
-            if self._checkAuth(parsedXML):
-
-                if parsedXML.tag == 'rss':
-                    items = parsedXML.findall('.//item')
-
-                else:
-                    logger.log(u"Resulting XML from " + self.provider.name + " isn't RSS, not parsing it", logger.ERROR)
-                    return []
-
+            if self._checkAuth(data):
                 cl = []
-                for item in items:
+                for item in data:
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
@@ -148,8 +129,8 @@ class TVCache():
 
     def _parseItem(self, item):
 
-        title = helpers.get_xml_text(item.find('title'))
-        url = helpers.get_xml_text(item.find('link'))
+        title = item.title
+        url = item.link
 
         self._checkItemAuth(title, url)
 

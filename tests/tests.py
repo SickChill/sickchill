@@ -25,42 +25,16 @@ import sys, os.path
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
 
-from sickbeard import indexerApi
-from sickbeard import classes
+from lib.feedparser import feedparser
 
 class APICheck(unittest.TestCase):
+    data = feedparser.parse('http://pirateproxy.net/tv/latest/')
 
     lang = "en"
     search_term = 'Gold Rush South America'
 
     results = {}
     final_results = []
-
-    lINDEXER_API_PARMS = indexerApi(1).api_params.copy()
-    lINDEXER_API_PARMS['language'] = lang
-    lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-    t = indexerApi(1).indexer(**lINDEXER_API_PARMS)
-    test = t[search_term]
-
-    for indexer in indexerApi().indexers:
-        lINDEXER_API_PARMS = indexerApi(indexer).api_params.copy()
-        lINDEXER_API_PARMS['language'] = lang
-        lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-        t = indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-        t[search_term]
-
-        print("Searching for Show with searchterm: %s on Indexer: %s" % (search_term, indexerApi(indexer).name))
-        try:
-            # add search results
-            results.setdefault(indexer, []).extend(t[search_term])
-        except Exception, e:
-            continue
-
-
-    map(final_results.extend,
-        ([[indexerApi(id).name, id, indexerApi(id).config["show_url"], int(show['id']),
-           show['seriesname'], show['firstaired']] for show in shows] for id, shows in
-         results.items()))
 
 
     if __name__ == "__main__":

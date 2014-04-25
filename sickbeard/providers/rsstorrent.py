@@ -17,7 +17,6 @@
 
 
 import os
-import xml.dom.minidom
 import re
 import urlparse
 
@@ -33,9 +32,8 @@ from sickbeard.exceptions import ex
 
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
 from lib.bencode import bdecode
-
+from lib.feedparser import feedparser
 
 class TorrentRssProvider(generic.TorrentProvider):
     def __init__(self, name, url):
@@ -61,15 +59,13 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         title, url = None, None
 
-        self.cache._remove_namespace(item)
+        title = item.title
 
-        title = helpers.get_xml_text(item.find('title'))
+        attempt_list = [lambda: item.torrent_magneturi,
 
-        attempt_list = [lambda: helpers.get_xml_text(item.find('magnetURI')),
+                        lambda: item.enclosures[0].href,
 
-                        lambda: item.find('enclosure').get('url'),
-
-                        lambda: helpers.get_xml_text(item.find('link'))]
+                        lambda: item.link]
 
         for cur_attempt in attempt_list:
             try:
@@ -91,17 +87,10 @@ class TorrentRssProvider(generic.TorrentProvider):
             if not data:
                 return (False, 'No data returned from url: ' + self.url)
 
-            parsedXML = helpers.parse_xml(data)
-
-            if not parsedXML:
-                return (False, 'Unable to parse RSS, is it a real RSS? ')
-
-            items = parsedXML.findall('.//item')
-
-            if not items:
+            if not len(data) > 0:
                 return (False, 'No items found in the RSS feed ' + self.url)
 
-            (title, url) = self._get_title_and_url(items[0])
+            (title, url) = self._get_title_and_url(data[0])
 
             if not title:
                 return (False, 'Unable to get title from first item')
@@ -163,10 +152,16 @@ class TorrentRssCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
+        url = self.provider.url
+        parsed = list(urlparse.urlparse(url))
+        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
-        data = self.provider.getURL(self.provider.url)
-        return data
+        try:
+            data = feedparser.parse(url)
+            return data.entries
+        except Exception, e:
+            logger.log(u"Error loading " + self.provider + " URL: " + ex(e), logger.ERROR)
 
     def _parseItem(self, item):
 
@@ -177,11 +172,3 @@ class TorrentRssCache(tvcache.TVCache):
 
         logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url)
-
-    def _remove_namespace(self, item):
-        """Remove namespace from the xml document in place"""
-        for elem in item.getiterator():
-            name_space = re.search('\{(.*)\}', elem.tag)
-            if name_space:
-                ns_len = len(name_space.group(0))
-                elem.tag = elem.tag[ns_len:]
