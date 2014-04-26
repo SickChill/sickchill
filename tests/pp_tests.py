@@ -47,13 +47,13 @@ class PPPrivateTests(test.SickbeardTestDBCase):
     def setUp(self):
         super(PPPrivateTests, self).setUp()
 
-        sickbeard.showList = [TVShow(0000), TVShow(0001)]
+        sickbeard.showList = [TVShow(1,0000), TVShow(1,0001)]
 
         self.pp = PostProcessor(test.FILEPATH)
-        self.show_obj = TVShow(0002)
+        self.show_obj = TVShow(1,0002)
 
         self.db = test.db.DBConnection()
-        newValueDict = {"tvdbid": 1002,
+        newValueDict = {"indexerid": 1002,
                         "name": test.SHOWNAME,
                         "description": "description",
                         "airdate": 1234,
@@ -69,20 +69,21 @@ class PPPrivateTests(test.SickbeardTestDBCase):
         self.db.upsert("tv_episodes", newValueDict, controlValueDict)
 
         self.ep_obj = TVEpisode(self.show_obj, test.SEASON, test.EPISODE, test.FILEPATH)
+        print
 
     def test__find_ep_destination_folder(self):
         self.show_obj.location = test.FILEDIR
         self.ep_obj.show.seasonfolders = 1
         sickbeard.SEASON_FOLDERS_FORMAT = 'Season %02d'
-        calculatedPath = self.pp._find_ep_destination_folder(self.ep_obj)
-        ecpectedPath = os.path.join(test.FILEDIR, "Season 0" + str(test.SEASON))
-        self.assertEqual(calculatedPath, ecpectedPath)
+        calculatedPath = self.ep_obj.proper_path()
+        expectedPath = os.path.join(test.FILEDIR, "Season 0" + str(test.SEASON))
+        self.assertEqual(calculatedPath, expectedPath)
 
 
 class PPBasicTests(test.SickbeardTestDBCase):
 
     def test_process(self):
-        show = TVShow(3)
+        show = TVShow(1,3)
         show.name = test.SHOWNAME
         show.location = test.SHOWDIR
         show.saveToDB()

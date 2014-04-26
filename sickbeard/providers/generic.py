@@ -25,7 +25,7 @@ import sys
 import re
 import urllib
 import urllib2
-import copy
+
 import itertools
 import operator
 import collections
@@ -41,7 +41,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from lib.hachoir_parser import createParser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
-from sickbeard import scene_numbering
 from sickbeard.common import Quality, Overview
 
 
@@ -243,13 +242,8 @@ class GenericProvider:
 
         self._checkAuth()
 
-        # XEM episode scene numbering
-        with episode.lock:
-            sceneEpisode = copy.deepcopy(episode)
-        sceneEpisode.convertToSceneNumbering()
-
         logger.log(u'Searching "%s" for "%s" as "%s"'
-                   % (self.name, episode.prettyName(), sceneEpisode.prettyName()))
+                   % (self.name, episode.prettyName(), episode.scene_prettyName()))
 
         self.cache.updateCache()
         results = self.cache.searchCache(episode, manualSearch)
@@ -264,7 +258,7 @@ class GenericProvider:
 
         itemList = []
 
-        for cur_search_string in self._get_episode_search_strings(sceneEpisode):
+        for cur_search_string in self._get_episode_search_strings(episode):
             itemList += self._doSearch(cur_search_string, show=episode.show)
 
         for item in itemList:
@@ -314,21 +308,20 @@ class GenericProvider:
 
         itemList = []
         results = {}
-        sceneSeasons = {}
+        seasons = {}
         searchSeason = False
 
 
         # convert wanted seasons and episodes to XEM scene numbering
         seasonEp = show.getAllEpisodes(season)
         wantedEp = [x for x in seasonEp if show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
-        map(lambda x: x.convertToSceneNumbering(), wantedEp)
-        for x in wantedEp: sceneSeasons.setdefault(x.season, []).append(x)
+        [seasons.setdefault(x.scene_season, []).append(x) for x in wantedEp]
 
-        if wantedEp == seasonEp and not show.air_by_date:
+        if wantedEp == seasonEp:
             searchSeason = True
 
-        for sceneSeason, sceneEpisodes in sceneSeasons.iteritems():
-            for curString in self._get_season_search_strings(show, sceneSeason, sceneEpisodes, searchSeason):
+        for season, episodes in seasons.iteritems():
+            for curString in self._get_season_search_strings(show, season, episodes, searchSeason):
                 itemList += self._doSearch(curString)
 
         for item in itemList:

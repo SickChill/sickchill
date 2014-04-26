@@ -54,6 +54,8 @@ class TVEpisode(tv.TVEpisode):
         self._name = name
         self._season = season
         self._episode = episode
+        self._scene_season = season
+        self._scene_episode = episode
         self._airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)

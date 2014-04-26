@@ -67,7 +67,7 @@ class NyaaProvider(generic.TorrentProvider):
         return names
 
     def _get_episode_search_strings(self, ep_obj):
-        return self._get_season_search_strings(ep_obj.show, ep_obj.season)
+        return self._get_season_search_strings(ep_obj.show, ep_obj.scene_season)
 
     def _doSearch(self, search_string, show=None, age=None):
 
@@ -136,8 +136,8 @@ class NyaaProvider(generic.TorrentProvider):
 
             # parse the file name
             try:
-                myParser = NameParser(show=episode.show)
-                parse_result = myParser.parse(title)
+                myParser = NameParser(False)
+                parse_result = myParser.parse(title, True)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                 continue

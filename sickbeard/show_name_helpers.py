@@ -170,8 +170,8 @@ def makeSceneSearchString(episode):
     if episode.show.air_by_date and episode.airdate != datetime.date.fromordinal(1):
         epStrings = [str(episode.airdate)]
     else:
-        epStrings = ["S%02iE%02i" % (int(episode.season), int(episode.episode)),
-                     "%ix%02i" % (int(episode.season), int(episode.episode))]
+        epStrings = ["S%02iE%02i" % (int(episode.scene_season), int(episode.scene_episode)),
+                     "%ix%02i" % (int(episode.scene_season), int(episode.scene_episode))]
 
     # for single-season shows just search for the show name -- if total ep count (exclude s0) is less than 11
     # due to the amount of qualities and releases, it is easy to go over the 50 result limit on rss feeds otherwise

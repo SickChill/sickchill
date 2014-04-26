@@ -153,8 +153,8 @@ class HDBitsProvider(generic.TorrentProvider):
         if episode:
             post_data['tvdb'] = {
                 'id': show.indexerid,
-                'season': episode.season,
-                'episode': episode.episode
+                'season': episode.scene_season,
+                'episode': episode.scene_episode
             }
 
         if season:
