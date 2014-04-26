@@ -168,7 +168,7 @@ class NewznabProvider(generic.NZBProvider):
 
         status = data.status
         if status:
-            if status == 200:
+            if status in [200, 301]:
                 return True
             if status == 100:
                 raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
