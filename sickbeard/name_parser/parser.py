@@ -193,7 +193,7 @@ class NameParser(object):
 
         if cached:
             if fix_scene_numbering:
-                cached_fixed = copy.copy(cached)
+                cached_fixed = copy.deepcopy(cached)
                 cached_fixed.fix_scene_numbering()
                 return cached_fixed
             return cached
@@ -248,7 +248,7 @@ class NameParser(object):
         name_parser_cache.add(name, final_result)
 
         if fix_scene_numbering:
-            result_fixed = copy.copy(final_result)
+            result_fixed = copy.deepcopy(final_result)
             result_fixed.fix_scene_numbering()
             return result_fixed
 

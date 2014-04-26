@@ -994,3 +994,123 @@ def real_path(path):
     Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
     """
     return ek.ek(os.path.normpath, ek.ek(os.path.normcase, ek.ek(os.path.realpath, path)))
+
+def _copy(self, obj, objectmap=None):
+    """
+    <Purpose>
+      Create a deep copy of an object without using the python 'copy' module.
+      Using copy.deepcopy() doesn't work because builtins like id and hasattr
+      aren't available when this is called.
+    <Arguments>
+      self
+      obj
+        The object to make a deep copy of.
+      objectmap
+        A mapping between original objects and the corresponding copy. This is
+        used to handle circular references.
+    <Exceptions>
+      TypeError
+        If an object is encountered that we don't know how to make a copy of.
+      NamespaceViolationError
+        If an unexpected error occurs while copying. This isn't the greatest
+        solution, but in general the idea is we just need to abort the wrapped
+        function call.
+    <Side Effects>
+      A new reference is created to every non-simple type of object. That is,
+      everything except objects of type str, unicode, int, etc.
+    <Returns>
+      The deep copy of obj with circular/recursive references preserved.
+    """
+    try:
+      # If this is a top-level call to _copy, create a new objectmap for use
+      # by recursive calls to _copy.
+      if objectmap is None:
+        objectmap = {}
+      # If this is a circular reference, use the copy we already made.
+      elif _saved_id(obj) in objectmap:
+        return objectmap[_saved_id(obj)]
+
+      # types.InstanceType is included because the user can provide an instance
+      # of a class of their own in the list of callback args to settimer.
+      if _is_in(type(obj), [str, unicode, int, long, float, complex, bool, frozenset,
+                            types.NoneType, types.FunctionType, types.LambdaType,
+                            types.MethodType, types.InstanceType]):
+        return obj
+
+      elif type(obj) is list:
+        temp_list = []
+        # Need to save this in the objectmap before recursing because lists
+        # might have circular references.
+        objectmap[_saved_id(obj)] = temp_list
+
+        for item in obj:
+          temp_list.append(self._copy(item, objectmap))
+
+        return temp_list
+
+      elif type(obj) is tuple:
+        temp_list = []
+
+        for item in obj:
+          temp_list.append(self._copy(item, objectmap))
+
+        # I'm not 100% confident on my reasoning here, so feel free to point
+        # out where I'm wrong: There's no way for a tuple to directly contain
+        # a circular reference to itself. Instead, it has to contain, for
+        # example, a dict which has the same tuple as a value. In that
+        # situation, we can avoid infinite recursion and properly maintain
+        # circular references in our copies by checking the objectmap right
+        # after we do the copy of each item in the tuple. The existence of the
+        # dictionary would keep the recursion from being infinite because those
+        # are properly handled. That just leaves making sure we end up with
+        # only one copy of the tuple. We do that here by checking to see if we
+        # just made a copy as a result of copying the items above. If so, we
+        # return the one that's already been made.
+        if _saved_id(obj) in objectmap:
+          return objectmap[_saved_id(obj)]
+
+        retval = tuple(temp_list)
+        objectmap[_saved_id(obj)] = retval
+        return retval
+
+      elif type(obj) is set:
+        temp_list = []
+        # We can't just store this list object in the objectmap because it isn't
+        # a set yet. If it's possible to have a set contain a reference to
+        # itself, this could result in infinite recursion. However, sets can
+        # only contain hashable items so I believe this can't happen.
+
+        for item in obj:
+          temp_list.append(self._copy(item, objectmap))
+
+        retval = set(temp_list)
+        objectmap[_saved_id(obj)] = retval
+        return retval
+
+      elif type(obj) is dict:
+        temp_dict = {}
+        # Need to save this in the objectmap before recursing because dicts
+        # might have circular references.
+        objectmap[_saved_id(obj)] = temp_dict
+
+        for key, value in obj.items():
+          temp_key = self._copy(key, objectmap)
+          temp_dict[temp_key] = self._copy(value, objectmap)
+
+        return temp_dict
+
+      # We don't copy certain objects. This is because copying an emulated file
+      # object, for example, will cause the destructor of the original one to
+      # be invoked, which will close the actual underlying file. As the object
+      # is wrapped and the client does not have access to it, it's safe to not
+      # wrap it.
+      elif isinstance(obj, (NamespaceObjectWrapper, emulfile.emulated_file,
+                            emulcomm.emulated_socket, thread.LockType,
+                            virtual_namespace.VirtualNamespace)):
+        return obj
+
+      else:
+        raise TypeError("_copy is not implemented for objects of type " + str(type(obj)))
+
+    except Exception, e:
+      self._handle_violation("_copy failed on " + str(obj) + " with message " + str(e))

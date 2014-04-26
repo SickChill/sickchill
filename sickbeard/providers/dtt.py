@@ -63,7 +63,7 @@ class DTTProvider(generic.TorrentProvider):
         return search_string
 
     def _get_episode_search_strings(self, episode):
-        return self._get_season_search_strings(episode.show, episode.season)
+        return self._get_season_search_strings(episode.show, episode.scene_season)
 
     def _doSearch(self, search_params, show=None, age=None):
 

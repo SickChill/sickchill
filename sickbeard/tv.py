@@ -1125,10 +1125,14 @@ def dirty_setter(attr_name):
 
 class TVEpisode(object):
     def __init__(self, show, season, episode, file=""):
+        # Convert season/episode to XEM scene numbering
+        scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid, season, episode)
 
         self._name = ""
         self._season = season
         self._episode = episode
+        self._scene_season = scene_season
+        self._scene_episode = scene_episode
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1162,6 +1166,8 @@ class TVEpisode(object):
     name = property(lambda self: self._name, dirty_setter("_name"))
     season = property(lambda self: self._season, dirty_setter("_season"))
     episode = property(lambda self: self._episode, dirty_setter("_episode"))
+    scene_season = property(lambda self: self._scene_season, dirty_setter("_scene_season"))
+    scene_episode = property(lambda self: self._scene_episode, dirty_setter("_scene_episode"))
     description = property(lambda self: self._description, dirty_setter("_description"))
     subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
     subtitles_searchcount = property(lambda self: self._subtitles_searchcount, dirty_setter("_subtitles_searchcount"))
@@ -1728,6 +1734,16 @@ class TVEpisode(object):
 
         return self._format_pattern('%SN - %Sx%0E - %EN')
 
+    def scene_prettyName(self):
+        """
+        Returns the name of this episode in a "pretty" human-readable format. Used for logging
+        and notifications and such.
+
+        Returns: A string representing the episode's name and season/ep numbers
+        """
+
+        return self._format_pattern('%SN - %SSx%0SE - %EN')
+
     def _ep_name(self):
         """
         Returns the name of the episode to use during renaming. Combines the names of related episodes.
@@ -1827,6 +1843,10 @@ class TVEpisode(object):
             '%0S': '%02d' % self.season,
             '%E': str(self.episode),
             '%0E': '%02d' % self.episode,
+            '%SS': str(self.scene_season),
+            '%0SS': '%02d' % self.scene_season,
+            '%SE': str(self.scene_episode),
+            '%0SE': '%02d' % self.scene_episode,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),
@@ -2105,25 +2125,3 @@ class TVEpisode(object):
             self.saveToDB()
             for relEp in self.relatedEps:
                 relEp.saveToDB()
-
-    def convertToSceneNumbering(self):
-        if self.show.air_by_date: return
-
-        if self.season is None: return  # can't work without a season
-        if self.episode is None: return  # need to know the episode
-
-        indexer_id = self.show.indexerid
-
-        (self.season, self.episode) = sickbeard.scene_numbering.get_scene_numbering(indexer_id, self.season,
-                                                                                    self.episode)
-
-    def convertToIndexer(self):
-        if self.show.air_by_date: return
-
-        if self.season is None: return  # can't work without a season
-        if self.episode is None: return  # need to know the episode
-
-        indexer_id = self.show.indexerid
-
-        (self.season, self.episode) = sickbeard.scene_numbering.get_indexer_numbering(indexer_id, self.season,
-                                                                                      self.episode)
