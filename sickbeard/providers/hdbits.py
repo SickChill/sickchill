@@ -18,7 +18,6 @@ import generic
 import sickbeard
 
 from sickbeard import logger, tvcache, exceptions
-from sickbeard import helpers
 from sickbeard.common import Quality
 from sickbeard.exceptions import ex, AuthException
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
@@ -53,16 +52,17 @@ class HDBitsProvider(generic.TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, data):
+    def _checkAuthFromData(self, parsedJSON):
 
-        if data is None:
+        if parsedJSON is None:
             return self._checkAuth()
 
-        if data.status == 5:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + data.feed.title,
-                       logger.DEBUG)
-            raise AuthException(
-                "Your authentication credentials for " + self.name + " are incorrect, check your config.")
+        if 'status' in parsedJSON and 'message' in parsedJSON:
+            if parsedJSON.get('status') == 5:
+                logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
+                           logger.DEBUG)
+                raise AuthException(
+                    "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
 
@@ -80,19 +80,20 @@ class HDBitsProvider(generic.TorrentProvider):
         if results or not manualSearch:
             return results
 
-        data = self.getRSSFeed(self.search_url, post_data=self._make_post_data_JSON(show=episode.show, episode=episode))
+        parsedJSON = self.getURL(self.search_url, post_data=self._make_post_data_JSON(show=episode.show, episode=episode), json=True)
 
-        if not data:
+        if not parsedJSON:
             logger.log(u"No data returned from " + self.search_url, logger.ERROR)
             return []
 
-        if self._checkAuthFromData(data):
+        if self._checkAuthFromData(parsedJSON):
             results = []
 
-            items = data.entries
-            if not len(items) > 0:
+            if parsedJSON and 'data' in parsedJSON:
+                items = parsedJSON['data']
+            else:
                 logger.log(u"Resulting JSON from " + self.name + " isn't correct, not parsing it", logger.ERROR)
-                return []
+                items = []
 
             for item in items:
 
@@ -136,8 +137,8 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item.title
-        url = self.download_url + urllib.urlencode({'id': item.id, 'passkey': sickbeard.HDBITS_PASSKEY})
+        title = item['name']
+        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': sickbeard.HDBITS_PASSKEY})
 
         return (title, url)
 
@@ -180,10 +181,10 @@ class HDBitsCache(tvcache.TVCache):
 
         if self._checkAuth(None):
 
-            data = self._getRSSData()
+            parsedJSON = self._getRSSData()
 
             # As long as we got something from the provider we count it as an update
-            if data:
+            if parsedJSON:
                 self.setLastUpdate()
             else:
                 return []
@@ -191,9 +192,16 @@ class HDBitsCache(tvcache.TVCache):
             logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
             self._clearCache()
 
-            if self._checkAuth(data):
-                items = data.entries
-                if not len(items) > 0:
+            if parsedJSON is None:
+                logger.log(u"Error trying to load " + self.provider.name + " JSON feed", logger.ERROR)
+                return []
+
+            if self._checkAuth(parsedJSON):
+                if parsedJSON and 'data' in parsedJSON:
+                    items = parsedJSON['data']
+                else:
+                    logger.log(u"Resulting JSON from " + self.provider.name + " isn't correct, not parsing it",
+                               logger.ERROR)
                     return []
 
                 cl = []
@@ -214,7 +222,7 @@ class HDBitsCache(tvcache.TVCache):
             return []
 
     def _getRSSData(self):
-        return self.provider.getRSSFeed(self.provider.rss_url, post_data=self.provider._make_post_data_JSON())
+        return self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
 
     def _parseItem(self, item):
 
@@ -230,5 +238,6 @@ class HDBitsCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
+
 
 provider = HDBitsProvider()
