@@ -176,7 +176,8 @@ a{
 #header .wrapper {
   margin: 0 auto;
   position: relative;
-  width: 960px;
+  width: 850px;
+  float: left;
 }
 #header a:hover {
   background: none;
@@ -192,7 +193,7 @@ a{
   float: left;
   position: relative;
   top: 0px;
-  left: -5px;
+  left: 5px;
 }
 #versiontext {
   color: #FFFFFF;
@@ -201,7 +202,7 @@ a{
   position: relative;
 /*  text-transform: lowercase;*/
   top: 42px;
-  left: -5px
+  left: 5px;
 }
 
 .update {
