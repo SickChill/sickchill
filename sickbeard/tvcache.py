@@ -144,7 +144,7 @@ class TVCache():
 
         else:
             logger.log(
-                u"The XML returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
+                u"The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
                 logger.DEBUG)
             return None
 
