@@ -1742,7 +1742,7 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        return self._format_pattern('%SN - %SSx%0SE - %EN')
+        return self._format_pattern('%SN - %XMSx%0XME - %EN')
 
     def _ep_name(self):
         """
@@ -1843,10 +1843,10 @@ class TVEpisode(object):
             '%0S': '%02d' % self.season,
             '%E': str(self.episode),
             '%0E': '%02d' % self.episode,
-            '%XS': str(self.scene_season),
-            '%0XS': '%02d' % self.scene_season,
-            '%XE': str(self.scene_episode),
-            '%0XE': '%02d' % self.scene_episode,
+            '%XMS': str(self.scene_season),
+            '%0XMS': '%02d' % self.scene_season,
+            '%XME': str(self.scene_episode),
+            '%0XME': '%02d' % self.scene_episode,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),

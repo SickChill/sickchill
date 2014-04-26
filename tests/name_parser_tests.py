@@ -109,10 +109,6 @@ simple_test_cases = {
               '2010-11-23 - Ep Name': parser.ParseResult(None, extra_info = 'Ep Name', air_date = datetime.date(2010,11,23)),
               'Show.Name.2010.11.23.WEB-DL': parser.ParseResult(None, 'Show Name', None, [], 'WEB-DL', None, datetime.date(2010,11,23)),
                },
-
-              'scene_sports_date_format': {
-              'UFC 165 Jones vs Gustafsson 21st Sept 2013 HDTV x264-Sir Paul': parser.ParseResult(None, 'UFC', None, [], 'HDTV x264-Sir Paul', 'Group', datetime.date(2013,11,23))
-               }
               }
 
 combination_test_cases = [
@@ -334,10 +330,6 @@ class BasicTests(unittest.TestCase):
     #def test_scene_date_format_file_names(self):
     #    np = parser.NameParser()
     #    self._test_names(np, 'scene_date_format', lambda x: x + '.avi')
-
-    def test_scene_sports_date_format_file_names(self):
-        np = parser.NameParser()
-        self._test_names(np, 'scene_sports_date_format', lambda x: x + '.avi')
 
     def test_combination_names(self):
         pass
