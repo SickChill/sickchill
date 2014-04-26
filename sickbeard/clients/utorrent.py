@@ -37,7 +37,7 @@ class uTorrentAPI(GenericClient):
     def _get_auth(self):
 
         try:
-            self.response = self.session.get(self.url + 'token.html')
+            self.response = self.session.get(self.url + 'token.html', verify=False)
             self.auth = re.findall("<div.*?>(.*?)</", self.response.text)[0]
         except:
             return None

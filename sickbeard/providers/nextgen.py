@@ -110,7 +110,7 @@ class NextGenProvider(generic.TorrentProvider):
             self.session = requests.Session()
             self.session.headers.update(
                 {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'})
-            data = self.session.get(self.urls['login_page'])
+            data = self.session.get(self.urls['login_page'], verify=False)
             bs = BeautifulSoup(data.content.decode('iso-8859-1'))
             csrfraw = bs.find('form', attrs={'id': 'login'})['action']
             output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
@@ -279,7 +279,7 @@ class NextGenProvider(generic.TorrentProvider):
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
 
-            response = self.session.get(url)
+            response = self.session.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None

@@ -232,7 +232,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
 
-            response = self.session.get(url)
+            response = self.session.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None

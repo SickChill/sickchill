@@ -18,24 +18,32 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import re
 
 import unittest
 
 import sys, os.path
+
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
 
+import sickbeard
 from lib.feedparser import feedparser
 
 class APICheck(unittest.TestCase):
-    data = feedparser.parse('http://pirateproxy.net/tv/latest/')
+    resultFilters = ["sub(pack|s|bed)", "swesub(bed)?",
+                     "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
+                     "dub(bed)?"]
 
-    lang = "en"
-    search_term = 'Gold Rush South America'
+    search_term = u'Watershed.-.Exploring.a.New.Water.Ethic.for.the.New.West.1080i.HDTV.DD2.0.H.264-TrollHD'
+    #search_term = re.escape(search_term)
 
-    results = {}
-    final_results = []
+    filters = [re.compile('(^|[\W_]|[\s_])%s($|[\W_]|[\s_])' % filter.strip(), re.I) for filter in resultFilters + sickbeard.IGNORE_WORDS.split(',')]
+    for regfilter in filters:
+        if regfilter.search(search_term):
+            print 'bad'
 
+    print 'good'
 
     if __name__ == "__main__":
         unittest.main()

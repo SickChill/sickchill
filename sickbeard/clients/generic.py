@@ -37,10 +37,15 @@ class GenericClient(object):
                 params) + ' Data=' + str(data if data else 'None')[0:99] + (
             '...' if len(data if data else 'None') > 200 else ''), logger.DEBUG)
 
+        logger.log(
+            self.name + u': Requested a ' + method.upper() + ' connection to url ' + self.url + ' with Params= ' + str(
+                params) + (
+                (' Data=' + str(data)[0:100] + ('...' if len(data) > 100 else '')) if data is not None else ""),
+            logger.DEBUG)
+
         if not self.auth:
             logger.log(self.name + u': Authentication Failed', logger.ERROR)
             return False
-
         try:
             self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files,
                                                                   timeout=10, verify=False)
@@ -81,28 +86,28 @@ class GenericClient(object):
 
     def _add_torrent_uri(self, result):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is added via url (magnet or .torrent link)
         """
         return False
 
     def _add_torrent_file(self, result):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is added via result.content (only .torrent file)
         """
         return False
 
     def _set_torrent_label(self, result):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is set with label
         """
         return True
 
     def _set_torrent_ratio(self, result):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is set with ratio
         """
         return True
@@ -116,14 +121,14 @@ class GenericClient(object):
 
     def _set_torrent_path(self, torrent_path):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is set with path
         """
         return True
 
     def _set_torrent_pause(self, result):
         """
-        This should be overridden should return the True/False from the client 
+        This should be overridden should return the True/False from the client
         when a torrent is set with pause
         """
         return True
