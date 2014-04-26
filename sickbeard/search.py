@@ -242,13 +242,11 @@ def filter_release_name(name, filter_words):
     Returns: False if the release name is OK, True if it contains one of the filter_words
     """
     if filter_words:
-        for test_word in filter_words.split(','):
-            test_word = test_word.strip()
-
-            if test_word:
-                if re.search('(^|[\W_]|[\s_])' + test_word + '($|[\W_]|[\s_])', name, re.I):
-                    logger.log(u"" + name + " contains word: " + test_word, logger.DEBUG)
-                    return True
+        filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in filter_words.split(',')]
+        for regfilter in filters:
+            if regfilter.search(name):
+                logger.log(u"" + name + " contains pattern: " + regfilter.pattern, logger.DEBUG)
+                return True
 
     return False
 

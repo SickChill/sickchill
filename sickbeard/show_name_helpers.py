@@ -69,10 +69,10 @@ def filterBadReleases(name):
     # if any of the bad strings are in the name then say no
     if sickbeard.IGNORE_WORDS:
         resultFilters + sickbeard.IGNORE_WORDS.split(',')
-    filters = [re.compile('(^|[\W_]|[\s_])%s($|[\W_]|[\s_])' % filter.strip(), re.I) for filter in resultFilters]
+    filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in resultFilters]
     for regfilter in filters:
         if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contains " + regfilter.pattern + ", ignoring it", logger.DEBUG)
+            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it", logger.DEBUG)
             return False
 
     return True
