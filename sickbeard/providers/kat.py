@@ -246,7 +246,7 @@ class KATProvider(generic.TorrentProvider):
 
                     #Continue only if one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                        logger.log(u"The data returned from " + self.name + " does not contain any torrents",
                                    logger.WARNING)
                         continue
 
@@ -255,7 +255,8 @@ class KATProvider(generic.TorrentProvider):
                         try:
                             link = urlparse.urljoin(self.url,(tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
                             id = tr.get('id')[-7:]
-                            title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text
+                            title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
+                                or (tr.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
                             url = tr.find('a', 'imagnet')['href']
                             verified = True if tr.find('a', 'iverify') else False
                             trusted = True if tr.find('img', {'alt': 'verified'}) else False
