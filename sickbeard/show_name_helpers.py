@@ -31,11 +31,9 @@ from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException
 from lib.unidecode import unidecode
 
-
 resultFilters = ["sub(pack|s|bed)", "swesub(bed)?",
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
-
 
 def filterBadReleases(name):
     """
@@ -69,10 +67,12 @@ def filterBadReleases(name):
     #    return True
 
     # if any of the bad strings are in the name then say no
-    for ignore_word in resultFilters + sickbeard.IGNORE_WORDS.split(','):
-        ignore_word = ignore_word.strip()
-        if re.search('(^|[\W_]|[\s_])' + ignore_word + '($|[\W_]|[\s_])', name, re.I):
-            logger.log(u"Invalid scene release: " + name + " contains " + ignore_word + ", ignoring it", logger.DEBUG)
+    if sickbeard.IGNORE_WORDS:
+        resultFilters + sickbeard.IGNORE_WORDS.split(',')
+    filters = [re.compile('(^|[\W_]|[\s_])%s($|[\W_]|[\s_])' % filter.strip(), re.I) for filter in resultFilters]
+    for regfilter in filters:
+        if regfilter.search(name):
+            logger.log(u"Invalid scene release: " + name + " contains " + regfilter.pattern + ", ignoring it", logger.DEBUG)
             return False
 
     return True
@@ -80,7 +80,7 @@ def filterBadReleases(name):
 
 def sceneToNormalShowNames(name):
     """
-    Takes a show name from a scene dirname and converts it to a more "human-readable" format.
+        Takes a show name from a scene dirname and converts it to a more "human-readable" format.
     
     name: The show name to convert
     
