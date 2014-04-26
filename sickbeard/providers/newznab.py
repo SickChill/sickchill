@@ -166,21 +166,21 @@ class NewznabProvider(generic.NZBProvider):
         if data is None:
             return self._checkAuth()
 
-        status = data.status
-        if status:
-            if status in [200, 301]:
+        if 'status' in data:
+            if data.status in [200, 301]:
                 return True
-            if status == 100:
+            if data.status == 100:
                 raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
-            elif status == 101:
+            elif data.status == 101:
                 raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
-            elif status == 102:
+            elif data.status == 102:
                 raise AuthException(
                     "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
                 logger.log(u"Unknown error given from " + self.name + ": " + data.feed.title,
                            logger.ERROR)
-                return False
+            return False
+        return True
 
     def _doSearch(self, search_params, show=None, max_age=0):
 
