@@ -208,74 +208,71 @@ class TVCache():
 
         indexer_lang = None
 
-        # if we need indexer_id then search the DB for them
-        if not indexer_id:
-
+        if indexer_id:
             # if we have only the indexer_id, use the database
+            showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
+            if showObj:
+                self.indexer = int(showObj.indexer)
+                indexer_lang = showObj.lang
+            else:
+                logger.log(u"We were given a Indexer ID " + str(indexer_id) + " but it doesn't match a show we have in our list, so leaving indexer_id empty",logger.DEBUG)
+                indexer_id = 0
+
+        # if no indexerID then fill out as much info as possible by searching the show name
+        if not indexer_id:
+            # check the name cache and see if we already know what show this is
+            logger.log(
+                u"Checking the cache to see if we already know the indexer id of " + parse_result.series_name,
+                logger.DEBUG)
+            indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
+
+            # remember if the cache lookup worked or not so we know whether we should bother updating it later
+            if indexer_id == None:
+                logger.log(u"No cache results returned, continuing on with the search", logger.DEBUG)
+                from_cache = False
+            else:
+                logger.log(u"Cache lookup found " + repr(indexer_id) + ", using that", logger.DEBUG)
+                from_cache = True
+
+            # if the cache failed, try looking up the show name in the database
+            if indexer_id == None:
+                logger.log(u"Trying to look the show up in the show database", logger.DEBUG)
+                showResult = helpers.searchDBForShow(parse_result.series_name)
+                if showResult:
+                    logger.log(
+                        u"" + parse_result.series_name + " was found to be show " + showResult[2] + " (" + str(
+                            showResult[1]) + ") in our DB.", logger.DEBUG)
+                    indexer_id = showResult[1]
+
+            # if the DB lookup fails then do a comprehensive regex search
+            if indexer_id == None:
+                logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead",
+                           logger.DEBUG)
+                for curShow in sickbeard.showList:
+                    if show_name_helpers.isGoodResult(name, curShow, False):
+                        logger.log(u"Successfully matched " + name + " to " + curShow.name + " with regex",
+                                   logger.DEBUG)
+                        indexer_id = curShow.indexerid
+                        indexer_lang = curShow.lang
+                        break
+
+            # if indexer_id was anything but None (0 or a number) then
+            if not from_cache:
+                name_cache.addNameToCache(parse_result.series_name, indexer_id)
+
+            # if we came out with indexer_id = None it means we couldn't figure it out at all, just use 0 for that
+            if indexer_id == None:
+                indexer_id = 0
+
+            # if we found the show then retrieve the show object
             if indexer_id:
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
                 except (MultipleShowObjectsException):
                     showObj = None
                 if showObj:
+                    self.indexer = int(showObj.indexer)
                     indexer_lang = showObj.lang
-
-            # if they're both empty then fill out as much info as possible by searching the show name
-            else:
-
-                # check the name cache and see if we already know what show this is
-                logger.log(
-                    u"Checking the cache to see if we already know the indexer id of " + parse_result.series_name,
-                    logger.DEBUG)
-                indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
-
-                # remember if the cache lookup worked or not so we know whether we should bother updating it later
-                if indexer_id == None:
-                    logger.log(u"No cache results returned, continuing on with the search", logger.DEBUG)
-                    from_cache = False
-                else:
-                    logger.log(u"Cache lookup found " + repr(indexer_id) + ", using that", logger.DEBUG)
-                    from_cache = True
-
-                # if the cache failed, try looking up the show name in the database
-                if indexer_id == None:
-                    logger.log(u"Trying to look the show up in the show database", logger.DEBUG)
-                    showResult = helpers.searchDBForShow(parse_result.series_name)
-                    if showResult:
-                        logger.log(
-                            u"" + parse_result.series_name + " was found to be show " + showResult[2] + " (" + str(
-                                showResult[1]) + ") in our DB.", logger.DEBUG)
-                        indexer_id = showResult[1]
-
-                # if the DB lookup fails then do a comprehensive regex search
-                if indexer_id == None:
-                    logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead",
-                               logger.DEBUG)
-                    for curShow in sickbeard.showList:
-                        if show_name_helpers.isGoodResult(name, curShow, False):
-                            logger.log(u"Successfully matched " + name + " to " + curShow.name + " with regex",
-                                       logger.DEBUG)
-                            indexer_id = curShow.indexerid
-                            indexer_lang = curShow.lang
-                            break
-
-                # if indexer_id was anything but None (0 or a number) then
-                if not from_cache:
-                    name_cache.addNameToCache(parse_result.series_name, indexer_id)
-
-                # if we came out with indexer_id = None it means we couldn't figure it out at all, just use 0 for that
-                if indexer_id == None:
-                    indexer_id = 0
-
-                # if we found the show then retrieve the show object
-                if indexer_id:
-                    try:
-                        showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                    except (MultipleShowObjectsException):
-                        showObj = None
-                    if showObj:
-                        self.indexer = int(showObj.indexer)
-                        indexer_lang = showObj.lang
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
         if not season:
@@ -287,7 +284,6 @@ class TVCache():
         if parse_result.air_by_date and indexer_id:
             try:
                 lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-
                 if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
                     lINDEXER_API_PARMS['language'] = indexer_lang
 
