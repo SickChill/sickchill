@@ -23,6 +23,7 @@ import datetime
 import os
 import sys
 import re
+import urllib
 import urllib2
 import copy
 import itertools
@@ -119,18 +120,20 @@ class GenericProvider:
 
         return data
 
-    def getRSSFeed(self, url):
+    def getRSSFeed(self, url, post_data=None):
         parsed = list(urlparse.urlparse(url))
         parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
-        f = feedparser.parse(url)
-        data = f.entries
+        if post_data:
+            url = url + 'api?' + urllib.urlencode(post_data)
 
-        if not data:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
+        f = feedparser.parse(url)
+
+        if not f:
+            logger.log(u"Error loading " + self.name + " URL: " + url, logger.ERROR)
             return None
 
-        return data
+        return f
 
     def downloadResult(self, result):
         """
@@ -226,11 +229,11 @@ class GenericProvider:
 
         Returns: A tuple containing two strings representing title and URL respectively
         """
-        title = helpers.get_xml_text(item.find('title'))
+        title = item.title
         if title:
             title = title.replace(' ', '.')
 
-        url = helpers.get_xml_text(item.find('link'))
+        url = item.link
         if url:
             url = url.replace('&amp;', '&')
 

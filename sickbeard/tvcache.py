@@ -105,8 +105,9 @@ class TVCache():
             self._clearCache()
 
             if self._checkAuth(data):
+                items = data.entries
                 cl = []
-                for item in data:
+                for item in items:
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)

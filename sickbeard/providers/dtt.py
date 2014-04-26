@@ -85,14 +85,13 @@ class DTTProvider(generic.TorrentProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-        data = self.getURL(searchURL)
+        data = self.getRSSFeed(searchURL)
 
         if not data:
             return []
 
         try:
-            parsedXML = parseString(data)
-            items = parsedXML.getElementsByTagName('item')
+            items = data.entries
         except Exception, e:
             logger.log(u"Error trying to load DTT RSS feed: " + ex(e), logger.ERROR)
             logger.log(u"RSS data: " + data, logger.DEBUG)
@@ -107,10 +106,8 @@ class DTTProvider(generic.TorrentProvider):
         return results
 
     def _get_title_and_url(self, item):
-        description_node = item.getElementsByTagName('description')[0]
-
-        title = get_xml_text(description_node).replace('_', '.').split(' (')[0]
-        url = item.getElementsByTagName('enclosure')[0].getAttribute('url')
+        title = item.title
+        url = item.enclosures[0].href
 
         return (title, url)
 
@@ -134,7 +131,7 @@ class DTTCache(tvcache.TVCache):
 
         url = self.provider.url + 'rss/allshows?' + urllib.urlencode(params)
         logger.log(u"DTT cache update URL: " + url, logger.DEBUG)
-        data = self.provider.getURL(url)
+        data = self.provider.getRSSFeed(url)
         return data
 
     def _parseItem(self, item):

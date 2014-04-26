@@ -285,14 +285,13 @@ class NewzbinProvider(generic.NZBProvider):
         item_list = []
 
         try:
-            parsedXML = parseString(data)
-            items = parsedXML.getElementsByTagName('item')
+            items = data.entries
         except Exception, e:
             logger.log("Error trying to load Newzbin RSS feed: " + ex(e), logger.ERROR)
             return []
 
         for cur_item in items:
-            title = helpers.get_xml_text(cur_item.getElementsByTagName('title')[0])
+            title = cur_item.title
             if title == 'Feeds Error':
                 raise exceptions.AuthException("The feed wouldn't load, probably because of invalid auth info")
             if sickbeard.USENET_RETENTION is not None:
@@ -345,7 +344,7 @@ class NewzbinProvider(generic.NZBProvider):
         url = self.url + "search/?%s" % urllib.urlencode(params)
         logger.log("Newzbin search URL: " + url, logger.DEBUG)
 
-        data = self.getURL(url)
+        data = self.getRSSFeed(url)
 
         return data
 

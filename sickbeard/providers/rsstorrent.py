@@ -86,10 +86,11 @@ class TorrentRssProvider(generic.TorrentProvider):
             if not data:
                 return (False, 'No data returned from url: ' + self.url)
 
-            if not len(data) > 0:
+            items = data.entries
+            if not len(items) > 0:
                 return (False, 'No items found in the RSS feed ' + self.url)
 
-            (title, url) = self._get_title_and_url(data[0])
+            (title, url) = self._get_title_and_url(items[0])
 
             if not title:
                 return (False, 'Unable to get title from first item')

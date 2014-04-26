@@ -166,22 +166,21 @@ class NewznabProvider(generic.NZBProvider):
         if parsedXML is None:
             return self._checkAuth()
 
-        if parsedXML.tag == 'error':
-            code = parsedXML.attrib['code']
-
-            if code == '100':
+        status = parsedXML.status
+        if status:
+            if status == 200:
+                return True
+            if status == 100:
                 raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
-            elif code == '101':
+            elif status == 101:
                 raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
-            elif code == '102':
+            elif status == 102:
                 raise AuthException(
                     "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
                 logger.log(u"Unknown error given from " + self.name + ": " + parsedXML.attrib['description'],
                            logger.ERROR)
                 return False
-
-        return True
 
     def _doSearch(self, search_params, show=None, max_age=0):
 
@@ -206,31 +205,15 @@ class NewznabProvider(generic.NZBProvider):
 
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
-        data = self.getURL(search_url)
+        data = self.getRSSFeed(search_url)
 
         if not data:
             logger.log(u"No data returned from " + search_url, logger.ERROR)
             return []
 
-        # hack this in until it's fixed server side
-        if not data.startswith('<?xml'):
-            data = '<?xml version="1.0" encoding="ISO-8859-1" ?>' + data
+        if self._checkAuthFromData(data):
 
-        parsedXML = helpers.parse_xml(data)
-
-        if parsedXML is None:
-            logger.log(u"Error trying to load " + self.name + " XML data", logger.ERROR)
-            return []
-
-        if self._checkAuthFromData(parsedXML):
-
-            if parsedXML.tag == 'rss':
-                items = parsedXML.findall('.//item')
-
-            else:
-                logger.log(u"Resulting XML from " + self.name + " isn't RSS, not parsing it", logger.ERROR)
-                return []
-
+            items = data.entries
             results = []
 
             for curItem in items:
@@ -307,15 +290,15 @@ class NewznabCache(tvcache.TVCache):
 
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.provider.getURL(rss_url)
+        data = self.provider.getRSSFeed(rss_url)
 
         if not data:
             logger.log(u"No data returned from " + rss_url, logger.ERROR)
             return None
 
         # hack this in until it's fixed server side
-        if data and not data.startswith('<?xml'):
-            data = '<?xml version="1.0" encoding="ISO-8859-1" ?>' + data
+        #if data and not data.startswith('<?xml'):
+        #    data = '<?xml version="1.0" encoding="ISO-8859-1" ?>' + data
 
         return data
 

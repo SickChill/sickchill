@@ -231,7 +231,7 @@ class HDBitsCache(tvcache.TVCache):
             return []
 
     def _getRSSData(self):
-        return self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON())
+        return self.provider.getRSSFeed(self.provider.rss_url, post_data=self.provider._make_post_data_JSON())
 
     def _parseItem(self, item):
 
