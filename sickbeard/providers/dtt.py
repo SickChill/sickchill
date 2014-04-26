@@ -17,17 +17,13 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import re
-
-from xml.dom.minidom import parseString
-
 import sickbeard
 import generic
 
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.helpers import sanitizeSceneName, get_xml_text
+from sickbeard.helpers import sanitizeSceneName
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
 
@@ -46,7 +42,7 @@ class DTTProvider(generic.TorrentProvider):
         return 'dailytvtorrents.gif'
 
     def getQuality(self, item):
-        url = item.getElementsByTagName('enclosure')[0].getAttribute('url')
+        url = item.enclosures[0].href
         quality = Quality.sceneQuality(url)
         return quality
 

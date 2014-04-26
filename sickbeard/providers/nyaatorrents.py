@@ -17,25 +17,17 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-
-from xml.dom.minidom import parseString
-
 import re
-import sys
-
 import sickbeard
 import generic
 
-from sickbeard import show_name_helpers, helpers
-
+from sickbeard import show_name_helpers
 from sickbeard import logger
 from sickbeard.common import Quality
-from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 from sickbeard import tvcache
 
 REMOTE_DBG = False
-
 
 class NyaaProvider(generic.TorrentProvider):
     def __init__(self):
@@ -58,7 +50,7 @@ class NyaaProvider(generic.TorrentProvider):
 
     def getQuality(self, item, anime=False):
         self.debug()
-        title = helpers.get_xml_text(item.getElementsByTagName('title')[0]).replace("/", " ")
+        title = item.title
         quality = Quality.sceneQuality(title)
         return quality
 
@@ -87,18 +79,15 @@ class NyaaProvider(generic.TorrentProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
+
         data = self.getURL(searchURL)
 
         if not data:
-            return []
-
-        try:
-            parsedXML = parseString(data)
-            items = parsedXML.getElementsByTagName('item')
-        except Exception, e:
-            logger.log(u"Error trying to load NyaaTorrents RSS feed: " + ex(e), logger.ERROR)
+            logger.log(u"Error trying to load NyaaTorrents RSS feed: " + searchURL, logger.ERROR)
             logger.log(u"RSS data: " + data, logger.DEBUG)
             return []
+
+        items = data.entries
 
         results = []
 

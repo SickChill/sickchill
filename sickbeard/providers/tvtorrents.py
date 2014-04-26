@@ -54,12 +54,12 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsedXML):
+    def _checkAuthFromData(self, data):
 
-        if parsedXML is None:
+        if data is None:
             return self._checkAuth()
 
-        description_text = helpers.get_xml_text(parsedXML.find('.//channel/description'))
+        description_text = data.description
 
         if "User can't be found" in description_text or "Invalid Hash" in description_text:
             logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text),
@@ -92,8 +92,8 @@ class TvTorrentsCache(tvcache.TVCache):
 
         return data
 
-    def _checkAuth(self, parsedXML):
-        return self.provider._checkAuthFromData(parsedXML)
+    def _checkAuth(self, data):
+        return self.provider._checkAuthFromData(data)
 
 
 provider = TvTorrentsProvider()

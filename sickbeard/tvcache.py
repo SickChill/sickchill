@@ -80,7 +80,7 @@ class TVCache():
 
         return data
 
-    def _checkAuth(self, parsedXML):
+    def _checkAuth(self, data):
         return True
 
     def _checkItemAuth(self, title, url):

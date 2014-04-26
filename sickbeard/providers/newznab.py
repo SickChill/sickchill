@@ -161,12 +161,12 @@ class NewznabProvider(generic.NZBProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsedXML):
+    def _checkAuthFromData(self, data):
 
-        if parsedXML is None:
+        if data is None:
             return self._checkAuth()
 
-        status = parsedXML.status
+        status = data.status
         if status:
             if status == 200:
                 return True
@@ -178,7 +178,7 @@ class NewznabProvider(generic.NZBProvider):
                 raise AuthException(
                     "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
-                logger.log(u"Unknown error given from " + self.name + ": " + parsedXML.attrib['description'],
+                logger.log(u"Unknown error given from " + self.name + ": " + data.description,
                            logger.ERROR)
                 return False
 
@@ -302,5 +302,5 @@ class NewznabCache(tvcache.TVCache):
 
         return data
 
-    def _checkAuth(self, parsedXML):
-        return self.provider._checkAuthFromData(parsedXML)
+    def _checkAuth(self, data):
+        return self.provider._checkAuthFromData(data)

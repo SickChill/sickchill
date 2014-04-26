@@ -179,8 +179,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         return data
 
-    def _checkAuth(self, parsedXML):
-        return self.provider._checkAuthFromData(parsedXML)
-
+    def _checkAuth(self, data):
+        return self.provider._checkAuthFromData(data)
 
 provider = OmgwtfnzbsProvider()

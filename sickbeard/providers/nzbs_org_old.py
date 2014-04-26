@@ -76,20 +76,16 @@ class NZBsProvider(generic.NZBProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-        data = self.getURL(searchURL)
+        data = self.getRSSFeed(searchURL)
 
         # Pause to avoid 503's
         time.sleep(5)
 
         if data == None:
+            logger.log(u"Error trying to load NZBs.org RSS feed: " + searchURL, logger.ERROR)
             return []
 
-        try:
-            parsedXML = parseString(data)
-            items = parsedXML.getElementsByTagName('item')
-        except Exception, e:
-            logger.log(u"Error trying to load NZBs.org RSS feed: " + ex(e), logger.ERROR)
-            return []
+        items = data.entries
 
         results = []
 
