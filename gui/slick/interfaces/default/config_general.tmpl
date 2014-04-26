@@ -67,7 +67,29 @@
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Checking for updates runs on startup and every 12 hours.</span>
+                                <span class="component-desc">Checking for updates runs on startup and on the interval specified below.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Update Frequency</span>
+                                <input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" size="5" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Time in hours to check for software updates (eg. 12)</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Update Frequency</span>
+                                <input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" size="5" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Time in hours to check for software updates (eg. 12)</span>
                             </label>
                         </div>
 
@@ -284,6 +306,7 @@
                                 <span class="component-desc">Proxy to use for connecting to providers.  Leave empty to not use proxy</b></span>
                             </label>
                         </div>
+
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
                 </div><!-- /component-group4 //-->
