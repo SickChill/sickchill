@@ -178,7 +178,7 @@ class NewznabProvider(generic.NZBProvider):
                 raise AuthException(
                     "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
-                logger.log(u"Unknown error given from " + self.name + ": " + data.description,
+                logger.log(u"Unknown error given from " + self.name + ": " + data.feed.title,
                            logger.ERROR)
                 return False
 
@@ -224,7 +224,7 @@ class NewznabProvider(generic.NZBProvider):
                     results.append(curItem)
                 else:
                     logger.log(
-                        u"The XML returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
+                        u"The data returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
                         logger.DEBUG)
 
             return results
@@ -244,22 +244,11 @@ class NewznabProvider(generic.NZBProvider):
 
                 (title, url) = self._get_title_and_url(item)
 
-                description_node = item.find('pubDate')
-                description_text = helpers.get_xml_text(description_node)
-
-                try:
-                    # we could probably do dateStr = descriptionStr but we want date in this format
-                    date_text = re.search('(\w{3}, \d{1,2} \w{3} \d{4} \d\d:\d\d:\d\d) [\+\-]\d{4}',
-                                          description_text).group(1)
-                except:
-                    date_text = None
-
-                if not date_text:
+                if not item.published_parsed:
                     logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
                     continue
                 else:
-
-                    result_date = email.utils.parsedate(date_text)
+                    result_date = item.published_parsed
                     if result_date:
                         result_date = datetime.datetime(*result_date[0:6])
 
@@ -295,10 +284,6 @@ class NewznabCache(tvcache.TVCache):
         if not data:
             logger.log(u"No data returned from " + rss_url, logger.ERROR)
             return None
-
-        # hack this in until it's fixed server side
-        #if data and not data.startswith('<?xml'):
-        #    data = '<?xml version="1.0" encoding="ISO-8859-1" ?>' + data
 
         return data
 

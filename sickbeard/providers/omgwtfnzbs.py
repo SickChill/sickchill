@@ -64,7 +64,6 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         if is_XML:
             # provider doesn't return xml on error
             return True
-
         else:
             parsedJSON = parsed_data
 
@@ -112,23 +111,17 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         search_url = 'https://api.omgwtfnzbs.org/json/?' + urllib.urlencode(params)
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
-        data = self.getURL(search_url)
+        data = self.getURL(search_url, json=True)
 
         if not data:
             logger.log(u"No data returned from " + search_url, logger.ERROR)
             return []
 
-        parsedJSON = helpers.parse_json(data)
-
-        if parsedJSON is None:
-            logger.log(u"Error trying to load " + self.name + " JSON data", logger.ERROR)
-            return []
-
-        if self._checkAuthFromData(parsedJSON, is_XML=False):
+        if self._checkAuthFromData(data, is_XML=False):
 
             results = []
 
-            for item in parsedJSON:
+            for item in data:
                 if 'release' in item and 'getnzb' in item:
                     results.append(item)
 
@@ -171,7 +164,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.provider.getURL(rss_url)
+        data = self.provider.getRSSFeed(rss_url)
 
         if not data:
             logger.log(u"No data returned from " + rss_url, logger.ERROR)

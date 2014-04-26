@@ -81,7 +81,7 @@ class NewzbinProvider(generic.NZBProvider):
         return sickbeard.NEWZBIN
 
     def getQuality(self, item):
-        attributes = item.getElementsByTagName('report:attributes')[0]
+        attributes = item.report[0]
         attr_dict = {}
 
         for attribute in attributes.getElementsByTagName('report:attribute'):

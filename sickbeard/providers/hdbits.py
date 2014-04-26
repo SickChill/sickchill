@@ -53,17 +53,16 @@ class HDBitsProvider(generic.TorrentProvider):
 
         return True
 
-    def _checkAuthFromData(self, parsedJSON):
+    def _checkAuthFromData(self, data):
 
-        if parsedJSON is None:
+        if data is None:
             return self._checkAuth()
 
-        if 'status' in parsedJSON and 'message' in parsedJSON:
-            if parsedJSON.get('status') == 5:
-                logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
-                           logger.DEBUG)
-                raise AuthException(
-                    "Your authentication credentials for " + self.name + " are incorrect, check your config.")
+        if data.status == 5:
+            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + data.feed.title,
+                       logger.DEBUG)
+            raise AuthException(
+                "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
 
@@ -81,26 +80,19 @@ class HDBitsProvider(generic.TorrentProvider):
         if results or not manualSearch:
             return results
 
-        data = self.getURL(self.search_url, post_data=self._make_post_data_JSON(show=episode.show, episode=episode))
+        data = self.getRSSFeed(self.search_url, post_data=self._make_post_data_JSON(show=episode.show, episode=episode))
 
         if not data:
             logger.log(u"No data returned from " + self.search_url, logger.ERROR)
             return []
 
-        parsedJSON = helpers.parse_json(data)
-
-        if parsedJSON is None:
-            logger.log(u"Error trying to load " + self.name + " JSON data", logger.ERROR)
-            return []
-
-        if self._checkAuthFromData(parsedJSON):
+        if self._checkAuthFromData(data):
             results = []
 
-            if parsedJSON and 'data' in parsedJSON:
-                items = parsedJSON['data']
-            else:
+            items = data.entries
+            if not len(items) > 0:
                 logger.log(u"Resulting JSON from " + self.name + " isn't correct, not parsing it", logger.ERROR)
-                items = []
+                return []
 
             for item in items:
 
@@ -144,8 +136,8 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item['name']
-        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': sickbeard.HDBITS_PASSKEY})
+        title = item.title
+        url = self.download_url + urllib.urlencode({'id': item.id, 'passkey': sickbeard.HDBITS_PASSKEY})
 
         return (title, url)
 
@@ -199,18 +191,9 @@ class HDBitsCache(tvcache.TVCache):
             logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
             self._clearCache()
 
-            parsedJSON = helpers.parse_json(data)
-
-            if parsedJSON is None:
-                logger.log(u"Error trying to load " + self.provider.name + " JSON feed", logger.ERROR)
-                return []
-
-            if self._checkAuth(parsedJSON):
-                if parsedJSON and 'data' in parsedJSON:
-                    items = parsedJSON['data']
-                else:
-                    logger.log(u"Resulting JSON from " + self.provider.name + " isn't correct, not parsing it",
-                               logger.ERROR)
+            if self._checkAuth(data):
+                items = data.entries
+                if not len(items) > 0:
                     return []
 
                 cl = []
@@ -247,6 +230,5 @@ class HDBitsCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
-
 
 provider = HDBitsProvider()

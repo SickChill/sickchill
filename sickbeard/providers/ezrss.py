@@ -52,8 +52,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
     def getQuality(self, item):
 
-        filename = helpers.get_xml_text(
-            item.find('{http://xmlns.ezrss.it/0.1/}torrent/{http://xmlns.ezrss.it/0.1/}fileName'))
+        filename = item.filename
         quality = Quality.nameQuality(filename)
 
         return quality
@@ -121,7 +120,6 @@ class EZRSSProvider(generic.TorrentProvider):
         items = data.entries
 
         results = []
-
         for curItem in items:
 
             (title, url) = self._get_title_and_url(curItem)
@@ -139,9 +137,7 @@ class EZRSSProvider(generic.TorrentProvider):
     def _get_title_and_url(self, item):
         (title, url) = generic.TorrentProvider._get_title_and_url(self, item)
 
-        filename = helpers.get_xml_text(
-            item.find('{http://xmlns.ezrss.it/0.1/}torrent/{http://xmlns.ezrss.it/0.1/}fileName'))
-
+        filename = item.filename
         if filename:
             new_title = self._extract_name_from_filename(filename)
             if new_title:

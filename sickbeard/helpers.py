@@ -167,7 +167,7 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, params=None, timeout=None):
+def getURL(url, post_data=None, headers=None, params=None, json=False):
     """
 Returns a byte-string retrieved from the url provider.
 """
@@ -205,6 +205,9 @@ Returns a byte-string retrieved from the url provider.
     except requests.Timeout, e:
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
+
+    if json:
+        return resp.json() if resp.ok else None
 
     return resp.content if resp.ok else None
 

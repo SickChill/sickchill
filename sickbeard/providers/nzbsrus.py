@@ -28,7 +28,6 @@ except ImportError:
 from sickbeard import exceptions, logger
 from sickbeard import tvcache, show_name_helpers
 
-
 class NZBsRUSProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "NZBs'R'US")
@@ -68,29 +67,26 @@ class NZBsRUSProvider(generic.NZBProvider):
         searchURL = self.url + 'api.php?' + urllib.urlencode(params)
         logger.log(u"NZBS'R'US search url: " + searchURL, logger.DEBUG)
 
-        data = self.getURL(searchURL)
+        data = self.getRSSFeed(searchURL)
         if not data:
             return []
 
-        if not data.startswith('<?xml'):  # Error will be a single line of text
-            logger.log(u"NZBs'R'US error: " + data, logger.ERROR)
-            return []
-
-        root = etree.fromstring(data)
-        if root is None:
+        items = data.entries
+        if not len(items) > 0:
             logger.log(u"Error trying to parse NZBS'R'US XML data.", logger.ERROR)
             logger.log(u"RSS data: " + data, logger.DEBUG)
             return []
-        return root.findall('./results/result')
 
-    def _get_title_and_url(self, element):
-        if element.find('title'):  # RSS feed
-            title = element.find('title').text
-            url = element.find('link').text.replace('&amp;', '&')
+        return items
+
+    def _get_title_and_url(self, item):
+        if item.title:  # RSS feed
+            title = item.title
+            url = item.link
         else:  # API item
-            title = element.find('name').text
-            nzbID = element.find('id').text
-            key = element.find('key').text
+            title = item.name
+            nzbID = item.id
+            key = item.key
             url = self.url + 'nzbdownload_rss.php' + '/' + \
                   nzbID + '/' + sickbeard.NZBSRUS_UID + '/' + key + '/'
         return (title, url)
@@ -111,7 +107,7 @@ class NZBsRUSCache(tvcache.TVCache):
         url += urllib.urlencode(urlArgs)
         logger.log(u"NZBs'R'US cache update URL: " + url, logger.DEBUG)
 
-        data = self.provider.getURL(url)
+        data = self.provider.getRSSFeed(url)
         return data
 
     def _checkAuth(self, data):
