@@ -31,7 +31,7 @@ from threading import Lock
 # apparently py2exe won't build these unless they're imported somewhere
 from sickbeard import providers, metadata, config
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator, naming_ep_type
 from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktWatchListChecker
@@ -464,7 +464,7 @@ def initialize(consoleLogging=True):
             THEPIRATEBAY, THEPIRATEBAY_TRUSTED, THEPIRATEBAY_PROXY, THEPIRATEBAY_PROXY_URL, THEPIRATEBAY_BLACKLIST, THEPIRATEBAY_OPTIONS, TORRENTLEECH, TORRENTLEECH_USERNAME, TORRENTLEECH_PASSWORD, TORRENTLEECH_OPTIONS, \
             IPTORRENTS, IPTORRENTS_USERNAME, IPTORRENTS_PASSWORD, IPTORRENTS_FREELEECH, IPTORRENTS_OPTIONS, KAT, KAT_VERIFIED, KAT_OPTIONS, PUBLICHD, PUBLICHD_OPTIONS, SCC, SCC_USERNAME, SCC_PASSWORD, SCC_OPTIONS, HDTORRENTS, HDTORRENTS_USERNAME, HDTORRENTS_PASSWORD, HDTORRENTS_UID, HDTORRENTS_HASH, HDTORRENTS_OPTIONS, TORRENTDAY, TORRENTDAY_USERNAME, TORRENTDAY_PASSWORD, TORRENTDAY_UID, TORRENTDAY_HASH, TORRENTDAY_FREELEECH, TORRENTDAY_OPTIONS, \
             HDBITS, HDBITS_USERNAME, HDBITS_PASSKEY, HDBITS_OPTIONS, TORRENT_DIR, USENET_RETENTION, SOCKET_TIMEOUT, SEARCH_FREQUENCY, DEFAULT_SEARCH_FREQUENCY, BACKLOG_SEARCH_FREQUENCY, \
-            NEXTGEN, NEXTGEN_USERNAME, NEXTGEN_PASSWORD, NEXTGEN_FREELEECH, NEXTGEN_OPTIONS, \
+            NEXTGEN, NEXTGEN_USERNAME, NEXTGEN_PASSWORD, NEXTGEN_FREELEECH, NEXTGEN_OPTIONS, SPEEDCD, SPEEDCD_USERNAME, SPEEDCD_PASSWORD, SPEEDCD_FREELEECH,\
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROG_DIR, \
@@ -698,6 +698,11 @@ def initialize(consoleLogging=True):
         HDBITS_USERNAME = check_setting_str(CFG, 'HDBITS', 'hdbits_username', '')
         HDBITS_PASSKEY = check_setting_str(CFG, 'HDBITS', 'hdbits_passkey', '')
         HDBITS_OPTIONS = check_setting_str(CFG, 'HDBITS', 'hdbits_options', '')
+
+        SPEEDCD = bool(check_setting_int(CFG, 'SPEEDCD', 'speedcd', 0))
+        SPEEDCD_USERNAME = check_setting_str(CFG, 'SPEEDCD', 'speedcd_username', '')
+        SPEEDCD_PASSWORD = check_setting_str(CFG, 'SPEEDCD', 'speedcd_password', '')
+        SPEEDCD_FREELEECH = bool(check_setting_int(CFG, 'SPEEDCD', 'speedcd_freeleech', 0))
 
         NZBS = bool(check_setting_int(CFG, 'NZBs', 'nzbs', 0))
         NZBS_UID = check_setting_str(CFG, 'NZBs', 'nzbs_uid', '')
@@ -1409,6 +1414,12 @@ def save_config():
     new_config['HDBITS']['hdbits_username'] = HDBITS_USERNAME
     new_config['HDBITS']['hdbits_passkey'] = HDBITS_PASSKEY
     new_config['HDBITS']['hdbits_options'] = HDBITS_OPTIONS
+
+    new_config['SPEEDCD'] = {}
+    new_config['SPEEDCD']['speedcd'] = int(SPEEDCD)
+    new_config['SPEEDCD']['speedcd_username'] = SPEEDCD_USERNAME
+    new_config['SPEEDCD']['speedcd_password'] = helpers.encrypt(SPEEDCD_PASSWORD, ENCRYPTION_VERSION)
+    new_config['SPEEDCD']['speedcd_freeleech'] = int(SPEEDCD_FREELEECH)
 
     new_config['NZBs'] = {}
     new_config['NZBs']['nzbs'] = int(NZBS)
