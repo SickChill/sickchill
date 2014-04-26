@@ -18,7 +18,6 @@
 
 from sickbeard.encodingKludge import fixStupidEncodings
 
-
 def ex(e):
     """
     Returns a unicode string from the exception text if it exists.

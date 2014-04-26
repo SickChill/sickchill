@@ -1,13 +1,9 @@
 #!/usr/bin/env python2
-
 import sys
 import os
 import time
 import ConfigParser
 import logging
-
-#Needed for importing logging & requests module
-from sickbeard.exceptions import ex
 
 sickbeardPath = os.path.split(os.path.split(sys.argv[0])[0])[0]
 sys.path.append(os.path.join( sickbeardPath, 'lib'))
@@ -37,6 +33,7 @@ logdirsetting = config.get("General", "log_dir") if config.get("General", "log_d
 logdir = os.path.normpath(os.path.join(sickbeardPath, logdirsetting))
 logfile = os.path.join(logdir, 'sickbeard.log')
 
+
 try:
     handler = logging.FileHandler(logfile)
 except:
@@ -47,7 +44,6 @@ except:
 handler.setFormatter(formatter)
 scriptlogger.addHandler(handler)
 scriptlogger.setLevel(logging.DEBUG)
-
 
 def utorrent():
 #    print 'Calling utorrent'
@@ -128,7 +124,6 @@ def blackhole():
 #    return (dirName, nzbName)    
 
 def main():
-
     scriptlogger.info(u'Starting external PostProcess script ' + __file__)
 
     host = config.get("General", "web_host")
@@ -202,7 +197,7 @@ def main():
     try:
         response = requests.get(url, auth=(username, password), params=params, verify=False)
     except Exception, e:
-        scriptlogger.error(u': Unknown exception raised when opening url: ' + ex(e))
+        scriptlogger.error(u': Unknown exception raised when opening url: ' + str(e))
         time.sleep(3)
         sys.exit()
     
