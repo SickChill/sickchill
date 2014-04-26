@@ -244,7 +244,8 @@ class GenericProvider:
         self._checkAuth()
 
         # XEM episode scene numbering
-        sceneEpisode = copy.deepcopy(episode)
+        with episode.lock:
+            sceneEpisode = copy.deepcopy(episode)
         sceneEpisode.convertToSceneNumbering()
 
         logger.log(u'Searching "%s" for "%s" as "%s"'
