@@ -37,7 +37,6 @@ from lib.feedparser import feedparser
 
 class TorrentRssProvider(generic.TorrentProvider):
     def __init__(self, name, url):
-
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
         self.url = re.sub('\/$', '', url)
@@ -147,21 +146,13 @@ class TorrentRssProvider(generic.TorrentProvider):
 
 class TorrentRssCache(tvcache.TVCache):
     def __init__(self, provider):
-
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 15
 
     def _getRSSData(self):
         url = self.provider.url
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
-        try:
-            data = feedparser.parse(url)
-            return data.entries
-        except Exception, e:
-            logger.log(u"Error loading " + self.provider + " URL: " + ex(e), logger.ERROR)
+        return self.provider.getRSSFeed(url)
 
     def _parseItem(self, item):
 

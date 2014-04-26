@@ -28,6 +28,8 @@ import copy
 import itertools
 import operator
 import collections
+import urlparse
+from lib.feedparser import feedparser
 
 import sickbeard
 
@@ -113,6 +115,19 @@ class GenericProvider:
 
         if not data:
             logger.log(u"Error loading " + self.name + " URL: " + url, logger.ERROR)
+            return None
+
+        return data
+
+    def getRSSFeed(self, url):
+        parsed = list(urlparse.urlparse(url))
+        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
+
+        f = feedparser.parse(url)
+        data = f.entries
+
+        if not data:
+            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None
 
         return data
