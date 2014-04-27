@@ -98,10 +98,11 @@ class NewznabProvider(generic.NZBProvider):
 
             # season
             cur_params['season'] = str(season)
-            to_return.append(cur_params)
 
             # episode
-            to_return['episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['ep']
+            cur_params['episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['ep']
+
+            to_return.append(cur_params)
 
         return to_return
 

@@ -628,6 +628,10 @@ def initialize(consoleLogging=True):
         if SEARCH_FREQUENCY < MIN_SEARCH_FREQUENCY:
             SEARCH_FREQUENCY = MIN_SEARCH_FREQUENCY
 
+        UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
+        if UPDATE_FREQUENCY < UPDATE_FREQUENCY:
+            UPDATE_FREQUENCY = UPDATE_FREQUENCY
+
         NZB_DIR = check_setting_str(CFG, 'Blackhole', 'nzb_dir', '')
         TORRENT_DIR = check_setting_str(CFG, 'Blackhole', 'torrent_dir', '')
 
@@ -976,7 +980,7 @@ def initialize(consoleLogging=True):
 
         # initialize newznab providers
         currentSearchScheduler = scheduler.Scheduler(searchCurrent.CurrentSearcher(),
-                                                     cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY or DEFAULT_SEARCH_FREQUENCY),
+                                                     cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),
                                                      threadName="SEARCH",
                                                      runImmediately=True)
 
@@ -988,7 +992,7 @@ def initialize(consoleLogging=True):
                                                   runImmediately=False)
 
         versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
-                                                    cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY or DEFAULT_UPDATE_FREQUENCY),
+                                                    cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 

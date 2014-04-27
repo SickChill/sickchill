@@ -246,8 +246,9 @@ class GenericProvider:
         self._checkAuth()
 
         for ep_obj in ep_objs:
-            logger.log(u'Searching "%s" for "%s" as "%s"'
-                       % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
+            if not seasonSearch:
+                logger.log(u'Searching "%s" for "%s" as "%s"'
+                           % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
             self.cache.updateCache()
             results = self.cache.searchCache(ep_obj, manualSearch)
