@@ -102,7 +102,7 @@ class TraktChecker():
             return
         else:
             helpers.chmodAsParent(showPath)
-        sickbeard.showQueueScheduler.action.addShow(int(sickbeard.INDEXER_DEFAULT), int(indexerid), showPath, status,
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
                                                     int(sickbeard.QUALITY_DEFAULT),
                                                     int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
 
