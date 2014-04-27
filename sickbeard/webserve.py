@@ -977,7 +977,7 @@ class ConfigGeneral:
                     update_shows_on_start=None, launch_browser=None, web_username=None, use_api=None, api_key=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None):
 
         results = []
 
@@ -1005,6 +1005,9 @@ class ConfigGeneral:
 
         if date_preset:
             sickbeard.DATE_PRESET = date_preset
+
+        if indexer_default:
+            sickbeard.INDEXER_DEFAULT = indexer_default
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
