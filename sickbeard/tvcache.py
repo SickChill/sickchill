@@ -222,7 +222,7 @@ class TVCache():
         if not indexer_id:
             # check the name cache and see if we already know what show this is
             logger.log(
-                u"Checking the cache to see if we already know the indexer id of " + parse_result.series_name,
+                u"Checking the cache to see if we already know the Indexer ID of " + parse_result.series_name,
                 logger.DEBUG)
             indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
 

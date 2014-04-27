@@ -237,7 +237,7 @@ class QueueItemAdd(ShowQueueItem):
         ShowQueueItem.execute(self)
 
         logger.log(u"Starting to add show " + self.showDir)
-        # make sure the indexer ids are valid
+        # make sure the Indexer IDs are valid
         try:
 
             lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
@@ -249,7 +249,7 @@ class QueueItemAdd(ShowQueueItem):
             t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
             s = t[self.indexer_id]
 
-            # this usually only happens if they have an NFO in their show dir which gave us a indexer ID that has no proper english version of the show
+            # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, 'seriesname', None) is None:
                 logger.log(u"Show in " + self.showDir + " has no name on " + sickbeard.indexerApi(
                     self.indexer).name + ", probably the wrong language used to search with.", logger.ERROR)

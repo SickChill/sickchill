@@ -2164,7 +2164,7 @@ class NewHomeAddShows:
 
         # sanity check on our inputs
         if (not rootDir and not fullShowPath) or not whichSeries:
-            return "Missing params, no indexer id or folder:" + repr(whichSeries) + " and " + repr(
+            return "Missing params, no Indexer ID or folder:" + repr(whichSeries) + " and " + repr(
                 rootDir) + "/" + repr(fullShowPath)
 
         # figure out what show we're adding and where

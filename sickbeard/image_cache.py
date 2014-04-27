@@ -47,9 +47,9 @@ class ImageCache:
 
     def poster_path(self, indexer_id):
         """
-        Builds up the path to a poster cache for a given indexer id
+        Builds up the path to a poster cache for a given Indexer ID
 
-        returns: a full path to the cached poster file for the given indexer id 
+        returns: a full path to the cached poster file for the given Indexer ID
         
         indexer_id: ID of the show to use in the file name
         """
@@ -58,9 +58,9 @@ class ImageCache:
 
     def banner_path(self, indexer_id):
         """
-        Builds up the path to a banner cache for a given indexer id
+        Builds up the path to a banner cache for a given Indexer ID
 
-        returns: a full path to the cached banner file for the given indexer id 
+        returns: a full path to the cached banner file for the given Indexer ID
         
         indexer_id: ID of the show to use in the file name
         """
@@ -69,9 +69,9 @@ class ImageCache:
 
     def poster_thumb_path(self, indexer_id):
         """
-        Builds up the path to a poster cache for a given indexer id
+        Builds up the path to a poster cache for a given Indexer ID
 
-        returns: a full path to the cached poster file for the given indexer id 
+        returns: a full path to the cached poster file for the given Indexer ID
         
         indexer_id: ID of the show to use in the file name
         """
@@ -80,9 +80,9 @@ class ImageCache:
 
     def banner_thumb_path(self, indexer_id):
         """
-        Builds up the path to a poster cache for a given indexer id
+        Builds up the path to a poster cache for a given Indexer ID
 
-        returns: a full path to the cached poster file for the given indexer id 
+        returns: a full path to the cached poster file for the given Indexer ID
         
         indexer_id: ID of the show to use in the file name
         """
@@ -91,7 +91,7 @@ class ImageCache:
 
     def has_poster(self, indexer_id):
         """
-        Returns true if a cached poster exists for the given indexer id
+        Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
         logger.log(u"Checking if file " + str(poster_path) + " exists", logger.DEBUG)
@@ -99,7 +99,7 @@ class ImageCache:
 
     def has_banner(self, indexer_id):
         """
-        Returns true if a cached banner exists for the given indexer id
+        Returns true if a cached banner exists for the given Indexer ID
         """
         banner_path = self.banner_path(indexer_id)
         logger.log(u"Checking if file " + str(banner_path) + " exists", logger.DEBUG)
@@ -107,7 +107,7 @@ class ImageCache:
 
     def has_poster_thumbnail(self, indexer_id):
         """
-        Returns true if a cached poster thumbnail exists for the given indexer id
+        Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
         poster_thumb_path = self.poster_thumb_path(indexer_id)
         logger.log(u"Checking if file " + str(poster_thumb_path) + " exists", logger.DEBUG)
@@ -115,7 +115,7 @@ class ImageCache:
 
     def has_banner_thumbnail(self, indexer_id):
         """
-        Returns true if a cached banner exists for the given indexer id
+        Returns true if a cached banner exists for the given Indexer ID
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
         logger.log(u"Checking if file " + str(banner_thumb_path) + " exists", logger.DEBUG)

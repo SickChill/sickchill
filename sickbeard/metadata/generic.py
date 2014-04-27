@@ -917,7 +917,7 @@ class GenericMetadata():
                 return empty_return
 
             if indexer_id is None:
-                logger.log(u"Invalid indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)
+                logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)
                 return empty_return
 
         except Exception, e:

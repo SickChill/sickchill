@@ -509,7 +509,7 @@ class PostProcessor(object):
             self._log(u"Checking scene exceptions for a match on " + cur_name, logger.DEBUG)
             scene_id = scene_exceptions.get_scene_exception_by_name(cur_name)
             if scene_id:
-                self._log(u"Scene exception lookup got a indexer id " + str(scene_id) + ", using that", logger.DEBUG)
+                self._log(u"Scene exception lookup got a Indexer ID " + str(scene_id) + ", using that", logger.DEBUG)
                 _finalize(parse_result)
                 return (scene_id, season, episodes)
 
