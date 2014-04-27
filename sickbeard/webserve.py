@@ -991,7 +991,7 @@ class ConfigGeneral:
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         sickbeard.ANON_REDIRECT = anon_redirect
-        sickbeard.PROXY_SETTINGS = proxy_setting
+        sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.GIT_PATH = git_path
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
