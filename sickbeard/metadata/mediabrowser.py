@@ -458,7 +458,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
                 if not ep_obj.relatedEps:
                     absolute_number = etree.SubElement(episode, "absolute_number")
-                    absolute_number.text = myEp['absolute_number']
+                    if getattr(myEp, 'absolute_number', None) is not None:
+                        absolute_number.text = myEp['absolute_number']
 
                 FirstAired = etree.SubElement(episode, "FirstAired")
                 if curEpToWrite.airdate != datetime.date.fromordinal(1):
