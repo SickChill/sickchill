@@ -988,7 +988,7 @@ class ConfigGeneral:
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
 
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
-        sickbeard.UPDATE_FREQUENCY = config.to_int(update_frequency)
+        config.change_UPDATE_FREQUENCY(update_frequency)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         sickbeard.ANON_REDIRECT = anon_redirect

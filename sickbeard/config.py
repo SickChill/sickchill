@@ -166,6 +166,14 @@ def change_SEARCH_FREQUENCY(freq):
     sickbeard.currentSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.SEARCH_FREQUENCY)
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.get_backlog_cycle_time())
 
+def change_UPDATE_FREQUENCY(freq):
+    sickbeard.UPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)
+
+    if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
+        sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+
+    sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+
 def change_VERSION_NOTIFY(version_notify):
     oldSetting = sickbeard.VERSION_NOTIFY
 
