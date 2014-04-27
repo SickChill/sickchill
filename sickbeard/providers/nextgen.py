@@ -129,46 +129,38 @@ class NextGenProvider(generic.TorrentProvider):
         logger.log(u'Failed to login:' + str(error), logger.ERROR)
         return False
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
-        search_string = {'Episode': []}
+    def _get_season_search_strings(self, show, season, episode, abd=False):
 
         if not show:
             return []
 
-        self.show = show
+        search_string = {'Season': [], 'Episode': []}
+        for show_name in set(show_name_helpers.allPossibleShowNames(show)):
+            ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
+            search_string['Season'].append(ep_string)
 
-        if searchSeason:
-            search_string = {'Season': [], 'Episode': []}
-            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
-                search_string['Season'].append(ep_string)
-
-        for ep_obj in wantedEp:
-            search_string['Episode'] += self._get_episode_search_strings(ep_obj)[0]['Episode']
-
-        if not search_string['Episode']:
-            return []
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
+    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
 
         search_string = {'Episode': []}
 
-        if not ep_obj:
+        if not episode:
             return []
 
-        if ep_obj.show.air_by_date:
-            for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
+        if abd:
+            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
                 ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate) + '|' + \
-                            helpers.custom_strftime('%Y %b {S}', ep_obj.airdate)
+                            str(episode) + '|' + \
+                            helpers.custom_strftime('%Y %b {S}', episode)
                 search_string['Episode'].append(ep_string)
         else:
-            for show_name in set(show_name_helpers.allPossibleShowNames(ep_obj.show)):
+            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
                 ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
+                                                                  'episodenumber': episode}
 
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 

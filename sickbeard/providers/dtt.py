@@ -46,14 +46,13 @@ class DTTProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(url)
         return quality
 
-    def findSeasonResults(self, show, season):
-
-        return generic.TorrentProvider.findSeasonResults(self, show, season)
+    def getSearchResults(self, show, season, ep_objs, seasonSearch=False, manualSearch=False):
+        return generic.TorrentProvider.getSearchResults(self, show, season, ep_objs, seasonSearch, manualSearch)
 
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()
 
-    def _get_season_search_strings(self, show, season, wantedEp=None, searchSeason=False):
+    def _get_season_search_strings(self, show, season, episode, abd=False):
         search_string = []
 
         for show_name in set(show_name_helpers.allPossibleShowNames(show)):
@@ -62,8 +61,8 @@ class DTTProvider(generic.TorrentProvider):
 
         return search_string
 
-    def _get_episode_search_strings(self, episode):
-        return self._get_season_search_strings(episode.show, episode.scene_season)
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
+        return self._get_season_search_strings(show, season, episode, abd)
 
     def _doSearch(self, search_params, show=None, age=None):
 

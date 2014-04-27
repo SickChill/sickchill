@@ -18,7 +18,7 @@ import generic
 import sickbeard
 
 from sickbeard import logger, tvcache, exceptions
-from sickbeard.common import Quality
+from sickbeard.common import Quality, Overview
 from sickbeard.exceptions import ex, AuthException
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
@@ -66,72 +66,87 @@ class HDBitsProvider(generic.TorrentProvider):
 
         return True
 
-    def findEpisode(self, episode, manualSearch=False):
+    def searchProviders(self, show, season, episode=None, manualSearch=False):
+        itemList = []
+        results = {}
 
-        logger.log(u"Searching " + self.name + " for " + episode.prettyName())
+        logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
 
-        self.cache.updateCache()
-        results = self.cache.searchCache(episode, manualSearch)
-        logger.log(u"Cache results: " + str(results), logger.DEBUG)
+        # gather all episodes for season and then pick out the wanted episodes and compare to determin if we want whole season or just a few episodes
+        if episode is None:
+            seasonEps = show.getAllEpisodes(season)
+            wantedEps = [x for x in seasonEps if show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
+        else:
+            wantedEps = [show.getEpisode(season, episode)]
 
-        # if we got some results then use them no matter what.
-        # OR
-        # return anyway unless we're doing a manual search
-        if results or not manualSearch:
-            return results
+        for ep_obj in wantedEps:
+            season = ep_obj.scene_season
+            episode = ep_obj.scene_episode
 
-        parsedJSON = self.getURL(self.search_url, post_data=self._make_post_data_JSON(show=episode.show, episode=episode), json=True)
+            self.cache.updateCache()
+            results = self.cache.searchCache(episode, manualSearch)
+            logger.log(u"Cache results: " + str(results), logger.DEBUG)
 
-        if not parsedJSON:
-            logger.log(u"No data returned from " + self.search_url, logger.ERROR)
-            return []
+            # if we got some results then use them no matter what.
+            # OR
+            # return anyway unless we're doing a manual search
+            if results or not manualSearch:
+                return results
 
-        if self._checkAuthFromData(parsedJSON):
-            results = []
+            itemList += self.getURL(self.search_url, post_data=self._make_post_data_JSON(show=show, season=season, episode=episode), json=True)
 
-            if parsedJSON and 'data' in parsedJSON:
-                items = parsedJSON['data']
-            else:
-                logger.log(u"Resulting JSON from " + self.name + " isn't correct, not parsing it", logger.ERROR)
-                items = []
 
-            for item in items:
+        for parsedJSON in itemList:
+            if not parsedJSON:
+                logger.log(u"No data returned from " + self.search_url, logger.ERROR)
+                return []
 
-                (title, url) = self._get_title_and_url(item)
+            if self._checkAuthFromData(parsedJSON):
+                results = []
 
-                # parse the file name
-                try:
-                    myParser = NameParser()
-                    parse_result = myParser.parse(title)
-                except InvalidNameException:
-                    logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
-                    continue
+                if parsedJSON and 'data' in parsedJSON:
+                    items = parsedJSON['data']
+                else:
+                    logger.log(u"Resulting JSON from " + self.name + " isn't correct, not parsing it", logger.ERROR)
+                    items = []
 
-                if episode.show.air_by_date:
-                    if parse_result.air_date != episode.airdate:
-                        logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it",
-                                   logger.DEBUG)
+                for item in items:
+
+                    (title, url) = self._get_title_and_url(item)
+
+                    # parse the file name
+                    try:
+                        myParser = NameParser()
+                        parse_result = myParser.parse(title, True)
+                    except InvalidNameException:
+                        logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                         continue
-                elif parse_result.season_number != episode.season or episode.episode not in parse_result.episode_numbers:
-                    logger.log(u"Episode " + title + " isn't " + str(episode.season) + "x" + str(
-                        episode.episode) + ", skipping it", logger.DEBUG)
-                    continue
 
-                quality = self.getQuality(item)
+                    if episode.show.air_by_date:
+                        if parse_result.air_date != episode.airdate:
+                            logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it",
+                                       logger.DEBUG)
+                            continue
+                    elif parse_result.season_number != episode.season or episode.episode not in parse_result.episode_numbers:
+                        logger.log(u"Episode " + title + " isn't " + str(episode.season) + "x" + str(
+                            episode.episode) + ", skipping it", logger.DEBUG)
+                        continue
 
-                if not episode.show.wantEpisode(episode.season, episode.episode, quality, manualSearch):
-                    logger.log(u"Ignoring result " + title + " because we don't want an episode that is " +
-                               Quality.qualityStrings[quality], logger.DEBUG)
-                    continue
+                    quality = self.getQuality(item)
 
-                logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
+                    if not episode.show.wantEpisode(episode.season, episode.episode, quality, manualSearch):
+                        logger.log(u"Ignoring result " + title + " because we don't want an episode that is " +
+                                   Quality.qualityStrings[quality], logger.DEBUG)
+                        continue
 
-                result = self.getResult([episode])
-                result.url = url
-                result.name = title
-                result.quality = quality
+                    logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
 
-                results.append(result)
+                    result = self.getResult([episode])
+                    result.url = url
+                    result.name = title
+                    result.quality = quality
+
+                    results.append(result)
 
         return results
 
@@ -153,8 +168,8 @@ class HDBitsProvider(generic.TorrentProvider):
         if episode:
             post_data['tvdb'] = {
                 'id': show.indexerid,
-                'season': episode.scene_season,
-                'episode': episode.scene_episode
+                'season': season,
+                'episode': episode
             }
 
         if season:

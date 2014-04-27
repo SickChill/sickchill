@@ -251,32 +251,11 @@ class NewzbinProvider(generic.NZBProvider):
 
         return data
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
+    def _get_season_search_strings(self, show, season, episode, abd=False):
+        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(show, season, episode, abd)]
 
-        nameList = set(show_name_helpers.allPossibleShowNames(show))
-
-        if show.air_by_date:
-            suffix = ''
-        else:
-            suffix = 'x'
-        searchTerms = ['^"' + x + ' - ' + str(season) + suffix + '"' for x in nameList]
-        #searchTerms += ['^"'+x+' - Season '+str(season)+'"' for x in nameList]
-        searchStr = " OR ".join(searchTerms)
-
-        searchStr += " -subpack -extras"
-
-        logger.log("Searching newzbin for string " + searchStr, logger.DEBUG)
-
-        return [searchStr]
-
-    def _get_episode_search_strings(self, ep_obj):
-
-        nameList = set(show_name_helpers.allPossibleShowNames(ep_obj.show))
-        if not ep_obj.show.air_by_date:
-            searchStr = " OR ".join(['^"' + x + ' - %dx%02d"' % (ep_obj.scene_season, ep_obj.scene_episode) for x in nameList])
-        else:
-            searchStr = " OR ".join(['^"' + x + ' - ' + str(ep_obj.airdate) + '"' for x in nameList])
-        return [searchStr]
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
+        return ['^' + x for x in show_name_helpers.makeSceneSearchString(show, season, episode, abd)]
 
     def _doSearch(self, searchStr, show=None, age=None):
 

@@ -61,6 +61,8 @@ class KATProvider(generic.TorrentProvider):
 
         self.searchurl = self.url + 'usearch/%s/?field=seeders&sorder=desc'  #order by seed
 
+        self.session = requests.Session()
+
     def isEnabled(self):
         return sickbeard.KAT
 
@@ -164,56 +166,40 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
-        search_string = {'Episode': []}
+    def _get_season_search_strings(self, show, season, episode, abd=False):
+        search_string = {'Season': [], 'Episode': []}
 
         if not show:
             return []
 
-        self.show = show
+        for show_name in set(allPossibleShowNames(show)):
+            ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
+            search_string['Season'].append(ep_string)
 
-        if searchSeason:
-            search_string = {'Season': [], 'Episode': []}
-            for show_name in set(allPossibleShowNames(show)):
-                ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
-                search_string['Season'].append(ep_string)
+            ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) ShowName Season X
+            search_string['Season'].append(ep_string)
 
-                ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) ShowName Season X
-                search_string['Season'].append(ep_string)
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
 
-        for ep_obj in wantedEp:
-            search_string['Episode'] += self._get_episode_search_strings(ep_obj)[0]['Episode']
-
-        if not search_string['Episode']:
-            return []
-
-        return [search_string]
-
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
-
+    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
         search_string = {'Episode': []}
 
-        if not ep_obj:
-            return []
-
-        self.show = ep_obj.show
-
-        if ep_obj.show.air_by_date:
-            for show_name in set(allPossibleShowNames(ep_obj.show)):
+        if abd:
+            for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate) + '|' + \
-                            helpers.custom_strftime('%Y %b {S}', ep_obj.airdate)
+                            str(episode) + '|' + \
+                            helpers.custom_strftime('%Y %b {S}', episode)
 
                 search_string['Episode'].append(ep_string)
         else:
-            for show_name in set(allPossibleShowNames(ep_obj.show)):
+            for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
-                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
-                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s category:tv' % add_string
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
+                                                                  'episodenumber': episode} + '|' + \
+                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': season,
+                                                                  'episodenumber': episode} + '|' + \
+                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': season,
+                                                                  'episodenumber': episode} + ' %s category:tv' % add_string
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
         return [search_string]
@@ -308,21 +294,24 @@ class KATProvider(generic.TorrentProvider):
 
     def getURL(self, url, post_data=None, headers=None):
 
+        if not self.session:
+            self.session = requests.Session()
+
         try:
             # Remove double-slashes from url
             parsed = list(urlparse.urlparse(url))
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
             url = urlparse.urlunparse(parsed)
-            
+
             if sickbeard.PROXY_SETTING:
                 proxies = {
                     "http": sickbeard.PROXY_SETTING,
                     "https": sickbeard.PROXY_SETTING,
-                }
+                    }
 
-                r = requests.get(url, proxies=proxies, verify=False)
+                r = self.session.get(url, proxies=proxies, verify=False)
             else:
-                r = requests.get(url, verify=False)
+                r = self.session.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
             return None
@@ -339,6 +328,9 @@ class KATProvider(generic.TorrentProvider):
         Save the result to disk.
         """
 
+        if not self.session:
+            self.session = requests.Session()
+
         torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
 
         if not torrent_hash:
@@ -346,7 +338,7 @@ class KATProvider(generic.TorrentProvider):
             return False
 
         try:
-            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
+            r = self.session.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
         except Exception, e:
             logger.log("Unable to connect to Torcache: " + ex(e), logger.ERROR)
             return False

@@ -1397,6 +1397,7 @@ class ConfigProviders:
                       hdbits_username=None, hdbits_passkey=None,
                       nextgen_username=None, nextgen_password=None,
                       newzbin_username=None, newzbin_password=None,
+                      speedcd_username=None, speedcd_password=None, speedcd_freeleech=None,
                       provider_order=None):
 
         results = []

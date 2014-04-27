@@ -119,14 +119,14 @@ def makeSceneShowSearchStrings(show):
     return map(sanitizeSceneName, showNames)
 
 
-def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
+def makeSceneSeasonSearchString(show, season, episode, abd=False, extraSearchType=None):
     myDB = db.DBConnection()
 
     if show.air_by_date:
         numseasons = 0
 
         # the search string for air by date shows is just 
-        seasonStrings = [segment]
+        seasonStrings = [season]
 
     else:
         numseasonsSQlResult = myDB.select(
@@ -134,7 +134,7 @@ def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
             [show.indexerid])
         numseasons = int(numseasonsSQlResult[0][0])
 
-        seasonStrings = ["S%02d" % int(segment)]
+        seasonStrings = ["S%02d" % int(season)]
 
     showNames = set(makeSceneShowSearchStrings(show))
 
@@ -152,33 +152,36 @@ def makeSceneSeasonSearchString(show, segment, extraSearchType=None):
                 for cur_season in seasonStrings:
                     toReturn.append(curShow + "." + cur_season)
 
+    # episode
+    toReturn.extend(makeSceneSearchString(show, season, episode, abd))
+
     return toReturn
 
 
-def makeSceneSearchString(episode):
+def makeSceneSearchString(show, season, episode, abd=False):
     myDB = db.DBConnection()
     numseasonsSQlResult = myDB.select(
         "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
-        [episode.show.indexerid])
+        [show.indexerid])
     numseasons = int(numseasonsSQlResult[0][0])
     numepisodesSQlResult = myDB.select(
         "SELECT COUNT(episode) as numepisodes FROM tv_episodes WHERE showid = ? and season != 0",
-        [episode.show.indexerid])
+        [show.indexerid])
     numepisodes = int(numepisodesSQlResult[0][0])
 
     # see if we should use dates instead of episodes
-    if episode.show.air_by_date and episode.airdate != datetime.date.fromordinal(1):
+    if abd and episode != datetime.date.fromordinal(1):
         epStrings = [str(episode.airdate)]
     else:
-        epStrings = ["S%02iE%02i" % (int(episode.scene_season), int(episode.scene_episode)),
-                     "%ix%02i" % (int(episode.scene_season), int(episode.scene_episode))]
+        epStrings = ["S%02iE%02i" % (int(season), int(episode)),
+                     "%ix%02i" % (int(season), int(episode))]
 
     # for single-season shows just search for the show name -- if total ep count (exclude s0) is less than 11
     # due to the amount of qualities and releases, it is easy to go over the 50 result limit on rss feeds otherwise
     if numseasons == 1 and numepisodes < 11:
         epStrings = ['']
 
-    showNames = set(makeSceneShowSearchStrings(episode.show))
+    showNames = set(makeSceneShowSearchStrings(show))
 
     toReturn = []
 

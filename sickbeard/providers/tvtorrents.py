@@ -56,7 +56,7 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
     def _checkAuthFromData(self, data):
 
-        if data is None:
+        if data is None or data.feed is None:
             return self._checkAuth()
 
         description_text = data.feed.title
@@ -84,7 +84,7 @@ class TvTorrentsCache(tvcache.TVCache):
         rss_url = self.provider.url + 'RssServlet?digest=' + sickbeard.TVTORRENTS_DIGEST + '&hash=' + sickbeard.TVTORRENTS_HASH + '&fname=true&exclude=(' + ignore_regex + ')'
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.provider.getURL(rss_url)
+        data = self.provider.getRSSFeed(rss_url)
 
         if not data:
             logger.log(u"No data returned from " + rss_url, logger.ERROR)

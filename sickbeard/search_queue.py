@@ -93,28 +93,29 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         logger.log("Beginning manual search for " + self.ep_obj.prettyName())
 
-        foundEpisode = search.findEpisode(self.ep_obj, manualSearch=True)
+        foundResults = search.searchProviders(self.ep_obj.show, self.ep_obj.season, self.ep_obj.episode, manualSearch=True)
         result = False
 
-        if not foundEpisode:
+        if not foundResults:
             ui.notifications.message('No downloads were found',
                                      "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
             logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
 
+            self.success = result
         else:
+            for foundResult in foundResults:
+                # just use the first result for now
+                logger.log(u"Downloading " + foundResult.name + " from " + foundResult.provider.name)
 
-            # just use the first result for now
-            logger.log(u"Downloading episode from " + foundEpisode.url)
+                result = search.snatchEpisode(foundResult)
 
-            result = search.snatchEpisode(foundEpisode)
+                providerModule = foundResult.provider
+                if not result:
+                    ui.notifications.error('Error while attempting to snatch ' + foundResult.name + ', check your logs')
+                elif providerModule == None:
+                    ui.notifications.error('Provider is configured incorrectly, unable to download')
 
-            providerModule = foundEpisode.provider
-            if not result:
-                ui.notifications.error('Error while attempting to snatch ' + foundEpisode.name + ', check your logs')
-            elif providerModule == None:
-                ui.notifications.error('Provider is configured incorrectly, unable to download')
-
-        self.success = result
+                self.success = result
 
     def finish(self):
         # don't let this linger if something goes wrong
@@ -195,14 +196,14 @@ class BacklogQueueItem(generic_queue.QueueItem):
             statusResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ?",
                                         [self.show.indexerid, self.segment])
         else:
-            segment_year, segment_month = map(int, self.segment.split('-'))
-            min_date = datetime.date(segment_year, segment_month, 1)
+            season_year, season_month = map(int, self.segment.split('-'))
+            min_date = datetime.date(season_year, season_month, 1)
 
             # it's easier to just hard code this than to worry about rolling the year over or making a month length map
-            if segment_month == 12:
-                max_date = datetime.date(segment_year, 12, 31)
+            if season_month == 12:
+                max_date = datetime.date(season_year, 12, 31)
             else:
-                max_date = datetime.date(segment_year, segment_month + 1, 1) - datetime.timedelta(days=1)
+                max_date = datetime.date(season_year, season_month + 1, 1) - datetime.timedelta(days=1)
 
             statusResults = myDB.select(
                 "SELECT status FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ?",
@@ -215,7 +216,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         generic_queue.QueueItem.execute(self)
 
-        results = search.findSeason(self.show, self.segment)
+        results = search.searchProviders(self.show, self.segment)
 
         # download whatever we find
         for curResult in results:
@@ -273,13 +274,8 @@ class FailedQueueItem(generic_queue.QueueItem):
 
             failed_history.revertEpisode(self.show, season, episode)
 
-        for season, episode in self.segment.iteritems():
-            epObj = self.show.getEpisode(season, episode)
-
-            if self.show.air_by_date:
-                results = search.findSeason(self.show, str(epObj.airdate)[:7])
-            else:
-                results = search.findSeason(self.show, season)
+            # get search results
+            results = search.searchProviders(self.show, season, episode)
 
             # download whatever we find
             for curResult in results:

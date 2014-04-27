@@ -72,6 +72,8 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         self.re_title_url = '/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
+        self.session = requests.Session()
+
     def isEnabled(self):
         return sickbeard.THEPIRATEBAY
 
@@ -170,56 +172,45 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return title
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
-
-        search_string = {'Episode': []}
+    def _get_season_search_strings(self, show, season, episode, abd=False):
 
         if not show:
             return []
 
-        self.show = show
+        search_string = {'Season': [], 'Episode': []}
+        for show_name in set(allPossibleShowNames(show)):
+            ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
+            search_string['Season'].append(ep_string)
 
-        if searchSeason:
-            search_string = {'Season': [], 'Episode': []}
-            for show_name in set(allPossibleShowNames(show)):
-                ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
-                search_string['Season'].append(ep_string)
+            ep_string = show_name + ' Season ' + str(season) + ' -Ep*'  #2) ShowName Season X
+            search_string['Season'].append(ep_string)
 
-                ep_string = show_name + ' Season ' + str(season) + ' -Ep*'  #2) ShowName Season X
-                search_string['Season'].append(ep_string)
-
-        for ep_obj in wantedEp:
-            search_string['Episode'] += self._get_episode_search_strings(ep_obj)[0]['Episode']
-
-        if not search_string['Episode']:
-            return []
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
+    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
 
         search_string = {'Episode': []}
 
-        if not ep_obj:
+        if not episode:
             return []
 
-        self.show = ep_obj.show
-
-        if ep_obj.show.air_by_date:
-            for show_name in set(allPossibleShowNames(ep_obj.show)):
+        if abd:
+            for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate) + '|' + \
-                            helpers.custom_strftime('%Y %b {S}', ep_obj.airdate)
+                            str(episode) + '|' + \
+                            helpers.custom_strftime('%Y %b {S}', episode)
                 search_string['Episode'].append(ep_string)
         else:
-            for show_name in set(allPossibleShowNames(ep_obj.show)):
+            for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
-                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
-                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
+                                                                  'episodenumber': episode} + '|' + \
+                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': season,
+                                                                  'episodenumber': episode} + '|' + \
+                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': season,
+                                                                  'episodenumber': episode}
 
                 ep_string += ' %s' % add_string
 
@@ -302,6 +293,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
         if not headers:
             headers = {}
 
+        if not self.session:
+            self.session = requests.Session()
+
         # Glype Proxies does not support Direct Linking.
         # We have to fake a search on the proxy site to get data
         if self.proxy.isEnabled():
@@ -314,9 +308,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     "https": sickbeard.PROXY_SETTING,
                 }
 
-                r = requests.get(url, headers=headers, proxies=proxies, verify=False)
+                r = self.session.get(url, headers=headers, proxies=proxies, verify=False)
             else:
-                r = requests.get(url, headers=headers, verify=False)
+                r = self.session.get(url, headers=headers, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
             return None
@@ -332,6 +326,8 @@ class ThePirateBayProvider(generic.TorrentProvider):
         """
         Save the result to disk.
         """
+        if not self.session:
+            self.session = requests.Session()
 
         torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
 
@@ -340,7 +336,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
             return False
 
         try:
-            r = requests.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
+            r = self.session.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
         except Exception, e:
             logger.log("Unable to connect to Torcache: " + ex(e), logger.ERROR)
             return False

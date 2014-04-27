@@ -23,7 +23,9 @@ import datetime
 import threading
 import re
 import glob
+from time import sleep
 import traceback
+import shutil
 
 import sickbeard
 
@@ -242,6 +244,7 @@ class TVShow(object):
         last_update_indexer = datetime.date.fromordinal(self.last_update_indexer)
 
         # in the first year after ended (last airdate), update every 30 days
+        # in the first year after ended (last airdate), update every 30 days
         if (update_date - last_airdate) < datetime.timedelta(days=450) and (
             update_date - last_update_indexer) > datetime.timedelta(days=30):
             return True
@@ -307,8 +310,49 @@ class TVShow(object):
 
         # create TVEpisodes from each media file (if possible)
         for mediaFile in mediaFiles:
-
+            sceneConvert = False
+            parse_result = None
             curEpisode = None
+            i = 0
+
+            try:
+                while i < 2:
+                    i+=1
+
+                    np = NameParser(False)
+                    parse_result = np.parse(mediaFile, sceneConvert)
+                    if helpers.validateShow(self, parse_result.season_number, parse_result.episode_numbers[0]):
+                        ep = TVEpisode(self, parse_result.season_number, parse_result.episode_numbers[0])
+                        proper_path = ep.proper_path()
+                        proper_absolute_path = ek.ek(os.path.join, self._location, proper_path)
+                        src_path = ek.ek(os.path.dirname, mediaFile)
+                        dest_path = ek.ek(os.path.dirname, proper_absolute_path)
+                        orig_extension = mediaFile.rpartition('.')[-1]
+                        new_base_name = ek.ek(os.path.basename, proper_path)
+
+                        new_file_name = new_base_name + '.' + orig_extension
+                        old_file_name = ek.ek(os.path.basename, mediaFile)
+                        new_mediaFile = os.path.join(dest_path, new_file_name)
+                        if old_file_name == new_file_name or os.path.exists(new_mediaFile):break
+
+                        if os.path.exists(os.path.join(src_path, old_file_name)):
+                            old_mediaFile = os.path.join(src_path, old_file_name)
+                        elif os.path.exists(os.path.join(dest_path, old_file_name)):
+                            old_mediaFile = os.path.join(dest_path, old_file_name)
+                        else:break
+
+                        logger.log(u"Scene Converting file %s to %s" % (old_file_name, new_file_name), logger.MESSAGE)
+                        if not os.path.exists(dest_path):
+                            shutil.move(src_path, dest_path)
+                        shutil.move(old_mediaFile, new_mediaFile)
+                        mediaFile = new_mediaFile
+
+                        # converted
+                        break
+
+                    sceneConvert = True
+            except Exception:
+                continue
 
             logger.log(str(self.indexerid) + u": Creating episode from " + mediaFile, logger.DEBUG)
             try:
@@ -326,7 +370,6 @@ class TVShow(object):
             ep_file_name = ek.ek(os.path.basename, curEpisode.location)
             ep_file_name = ek.ek(os.path.splitext, ep_file_name)[0]
 
-            parse_result = None
             try:
                 np = NameParser(False)
                 parse_result = np.parse(ep_file_name)
@@ -2087,8 +2130,7 @@ class TVEpisode(object):
             self.location)
 
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
-            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
-                sickbeard.SUBTITLES_DIR, subtitles_only=True)
+            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR, subtitles_only=True)
             absolute_proper_subs_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
 
         logger.log(u"Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
@@ -2104,8 +2146,7 @@ class TVEpisode(object):
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_file, logger.ERROR)
 
         for cur_related_sub in related_subs:
-            cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
-                                                absolute_current_path_no_ext_length)
+            cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,absolute_current_path_no_ext_length)
             if cur_result == False:
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_sub, logger.ERROR)
 

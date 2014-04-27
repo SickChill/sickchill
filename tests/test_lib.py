@@ -179,7 +179,7 @@ def tearDown_test_db():
         although this seams not to work on my system it leaves me with an zero kb file
     """
     # uncomment next line so leave the db intact between test and at the end
-    #return False
+    return False
     if os.path.exists(os.path.join(TESTDIR, TESTDBNAME)):
         os.remove(os.path.join(TESTDIR, TESTDBNAME))
     if os.path.exists(os.path.join(TESTDIR, TESTCACHEDBNAME)):

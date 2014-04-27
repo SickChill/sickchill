@@ -32,6 +32,12 @@ naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
                   "S%(seasonnumber)02dE%(episodenumber)02d",
                   "%(seasonnumber)02dx%(episodenumber)02d")
+
+sports_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
+                  "s%(seasonnumber)02de%(episodenumber)02d",
+                  "S%(seasonnumber)02dE%(episodenumber)02d",
+                  "%(seasonnumber)02dx%(episodenumber)02d")
+
 naming_ep_type_text = ("1x02", "s01e02", "S01E02", "01x02")
 
 naming_multi_ep_type = {0: ["-%(episodenumber)02d"] * len(naming_ep_type),

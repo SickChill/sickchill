@@ -25,7 +25,7 @@ import datetime
 
 import sickbeard
 
-from common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT
+from common import SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Quality, SEASON_RESULT, MULTI_EP_RESULT, Overview
 
 from sickbeard import logger, db, show_name_helpers, exceptions, helpers
 from sickbeard import sab
@@ -349,67 +349,23 @@ def isFirstBestMatch(result):
 
     return False
 
-
-def findEpisode(episode, manualSearch=False):
-    logger.log(u"Searching for " + episode.prettyName())
-
-    foundResults = []
-
-    didSearch = False
-
-    for curProvider in providers.sortedProviderList():
-
-        if not curProvider.isActive():
-            continue
-
-        try:
-            curFoundResults = curProvider.findEpisode(episode, manualSearch=manualSearch)
-        except exceptions.AuthException, e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-            continue
-        except Exception, e:
-            logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            continue
-
-        didSearch = True
-
-        # skip non-tv crap
-        curFoundResults = filter(
-            lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                     episode.show),
-            curFoundResults)
-
-        # loop all results and see if any of them are good enough that we can stop searching
-        done_searching = False
-        for cur_result in curFoundResults:
-            done_searching = isFinalResult(cur_result)
-            logger.log(u"Should we stop searching after finding " + cur_result.name + ": " + str(done_searching),
-                       logger.DEBUG)
-            if done_searching:
-                break
-
-        foundResults += curFoundResults
-
-        # if we did find a result that's good enough to stop then don't continue
-        if done_searching:
-            break
-
-    if not didSearch:
-        logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
-                   logger.ERROR)
-
-    bestResult = pickBestResult(foundResults, episode.show)
-
-    return bestResult
-
-
-def findSeason(show, season):
+def searchProviders(show, season, episode=None, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
 
     foundResults = {}
 
     didSearch = False
+    seasonSearch = False
+
+    # gather all episodes for season and then pick out the wanted episodes and compare to determin if we want whole season or just a few episodes
+    if episode is None:
+        seasonEps = show.getAllEpisodes(season)
+        wantedEps = [x for x in seasonEps if show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
+        if len(seasonEps) == len(wantedEps):
+            seasonSearch = True
+    else:
+        ep_obj = show.getEpisode(season, episode)
+        wantedEps = [ep_obj]
 
     for curProvider in providers.sortedProviderList():
 
@@ -417,7 +373,7 @@ def findSeason(show, season):
             continue
 
         try:
-            curResults = curProvider.findSeasonResults(show, season)
+            curResults = curProvider.getSearchResults(show, season, wantedEps, seasonSearch, manualSearch)
 
             # make a list of all the results for this provider
             for curEp in curResults:

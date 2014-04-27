@@ -80,7 +80,7 @@ class NewznabProvider(generic.NZBProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
+    def _get_season_search_strings(self, show, season, episode, abd=False):
 
         if not show:
             return [{}]
@@ -94,41 +94,35 @@ class NewznabProvider(generic.NZBProvider):
             cur_params = {}
 
             # search
-
             cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
 
-            # air-by-date means &season=2010&q=2010.03, no other way to do it atm
-            if show.air_by_date:
-                cur_params['season'] = str(season).split('-')[0]
-                if 'q' in cur_params:
-                    cur_params['q'] += '.' + str(season).replace('-', '.')
-                else:
-                    cur_params['q'] = str(season).replace('-', '.')
-            else:
-                cur_params['season'] = str(season)
+            # season
+            cur_params['season'] = str(season)
+            to_return.append(cur_params)
 
-                to_return.append(cur_params)
+            # episode
+            to_return['episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['ep']
 
         return to_return
 
-    def _get_episode_search_strings(self, ep_obj):
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
 
         params = {}
 
-        if not ep_obj:
+        if not episode:
             return [params]
 
         # search
-        params['q'] = helpers.sanitizeSceneName(ep_obj.show.name)
+        params['q'] = helpers.sanitizeSceneName(show.name)
 
-        if ep_obj.show.air_by_date:
-            date_str = str(ep_obj.airdate)
+        if abd:
+            date_str = str(episode)
 
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
         else:
-            params['season'] = ep_obj.scene_season
-            params['ep'] = ep_obj.scene_episode
+            params['season'] = season
+            params['ep'] = episode
 
         to_return = [params]
 
@@ -136,11 +130,11 @@ class NewznabProvider(generic.NZBProvider):
         if 'q' in params:
 
             # add new query strings for exceptions
-            name_exceptions = scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)
+            name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid)
             for cur_exception in name_exceptions:
 
                 # don't add duplicates
-                if cur_exception == ep_obj.show.name:
+                if cur_exception == show.name:
                     continue
 
                 cur_return = params.copy()

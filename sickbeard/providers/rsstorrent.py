@@ -42,6 +42,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.url = re.sub('\/$', '', url)
         self.enabled = True
         self.supportsBacklog = False
+        self.session = requests.Session()
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + str(int(self.enabled))
@@ -114,20 +115,24 @@ class TorrentRssProvider(generic.TorrentProvider):
             return (False, 'Error when trying to load RSS: ' + ex(e))
 
     def getURL(self, url, post_data=None, headers=None):
+
+        if not self.session:
+            self.session = requests.Session()
+
         try:
             parsed = list(urlparse.urlparse(url))
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            response = requests.get(url, verify=False)
+            r = self.session.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None
 
-        if response.status_code != 200:
+        if r.status_code != 200:
             logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
+                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
             return None
 
-        return response.content
+        return r.content
 
     def dumpHTML(self, data):
 

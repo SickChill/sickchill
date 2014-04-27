@@ -214,10 +214,10 @@ class GenericProvider:
     def _doSearch(self, search_params, show=None, age=None):
         return []
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
+    def _get_season_search_strings(self, show, season, episode, abd=False):
         return []
 
-    def _get_episode_search_strings(self, ep_obj):
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
         return []
 
     def _get_title_and_url(self, item):
@@ -238,91 +238,38 @@ class GenericProvider:
 
         return (title, url)
 
-    def findEpisode(self, episode, manualSearch=False):
-
-        self._checkAuth()
-
-        logger.log(u'Searching "%s" for "%s" as "%s"'
-                   % (self.name, episode.prettyName(), episode.scene_prettyName()))
-
-        self.cache.updateCache()
-        results = self.cache.searchCache(episode, manualSearch)
-        logger.log(u"Cache results: " + str(results), logger.DEBUG)
-        logger.log(u"manualSearch: " + str(manualSearch), logger.DEBUG)
-
-        # if we got some results then use them no matter what.
-        # OR
-        # return anyway unless we're doing a manual search
-        if results or not manualSearch:
-            return results
-
-        itemList = []
-
-        for cur_search_string in self._get_episode_search_strings(episode):
-            itemList += self._doSearch(cur_search_string, show=episode.show)
-
-        for item in itemList:
-
-            (title, url) = self._get_title_and_url(item)
-
-            # parse the file name
-            try:
-                myParser = NameParser(False)
-                parse_result = myParser.parse(title, True)
-            except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
-                continue
-
-            if episode.show.air_by_date:
-                if parse_result.air_date != episode.airdate:
-                    logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it",
-                               logger.DEBUG)
-                    continue
-            elif parse_result.season_number != episode.season or episode.episode not in parse_result.episode_numbers:
-                logger.log(u"Episode " + title + " isn't " + str(episode.season) + "x" + str(
-                    episode.episode) + ", skipping it", logger.DEBUG)
-                continue
-
-            quality = self.getQuality(item)
-
-            if not episode.show.wantEpisode(episode.season, episode.episode, quality, manualSearch):
-                logger.log(
-                    u"Ignoring result " + title + " because we don't want an episode that is " + Quality.qualityStrings[
-                        quality], logger.DEBUG)
-                continue
-
-            logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
-
-            result = self.getResult([episode])
-            result.url = url
-            result.name = title
-            result.quality = quality
-            result.provider = self
-            result.content = None
-
-            results.append(result)
-
-        return results
-
-    def findSeasonResults(self, show, season):
+    def getSearchResults(self, show, season, ep_objs, seasonSearch=False, manualSearch=False):
 
         itemList = []
         results = {}
-        seasons = {}
-        searchSeason = False
 
+        self._checkAuth()
 
-        # convert wanted seasons and episodes to XEM scene numbering
-        seasonEp = show.getAllEpisodes(season)
-        wantedEp = [x for x in seasonEp if show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
-        [seasons.setdefault(x.scene_season, []).append(x) for x in wantedEp]
+        for ep_obj in ep_objs:
+            logger.log(u'Searching "%s" for "%s" as "%s"'
+                       % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
-        if wantedEp == seasonEp:
-            searchSeason = True
+            self.cache.updateCache()
+            results = self.cache.searchCache(ep_obj, manualSearch)
+            logger.log(u"Cache results: " + str(results), logger.DEBUG)
+            logger.log(u"manualSearch: " + str(manualSearch), logger.DEBUG)
 
-        for season, episodes in seasons.iteritems():
-            for curString in self._get_season_search_strings(show, season, episodes, searchSeason):
-                itemList += self._doSearch(curString)
+            # if we got some results then use them no matter what.
+            # OR
+            # return anyway unless we're doing a manual search
+            if results or not manualSearch:
+                return results
+
+            abd = False
+            if show.air_by_date:
+                abd = True
+
+            if seasonSearch:
+                for curString in self._get_season_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, abd=abd):
+                    itemList += self._doSearch(curString)
+            else:
+                for curString in self._get_episode_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, abd=abd):
+                    itemList += self._doSearch(curString, show=show)
 
         for item in itemList:
 
@@ -373,7 +320,7 @@ class GenericProvider:
             # make sure we want the episode
             wantEp = True
             for epNo in actual_episodes:
-                if not show.wantEpisode(actual_season, epNo, quality):
+                if not show.wantEpisode(actual_season, epNo, quality, manualSearch=manualSearch):
                     wantEp = False
                     break
 
@@ -411,7 +358,7 @@ class GenericProvider:
             if epNum in results:
                 results[epNum].append(result)
             else:
-                results[epNum] = [result]
+                results = {epNum:[result]}
 
         return results
 

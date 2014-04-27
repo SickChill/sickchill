@@ -42,11 +42,11 @@ class NZBsRUSProvider(generic.NZBProvider):
         if sickbeard.NZBSRUS_UID in (None, "") or sickbeard.NZBSRUS_HASH in (None, ""):
             raise exceptions.AuthException("NZBs'R'US authentication details are empty, check your config")
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
-        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(show, season)]
+    def _get_season_search_strings(self, show, season, episode, abd=False):
+        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(show, season, episode, abd)]
 
-    def _get_episode_search_strings(self, ep_obj):
-        return ['^' + x for x in show_name_helpers.makeSceneSearchString(ep_obj)]
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
+        return ['^' + x for x in show_name_helpers.makeSceneSearchString(show, season, episode, abd)]
 
     def _doSearch(self, search, show=None, age=None):
         params = {'uid': sickbeard.NZBSRUS_UID,

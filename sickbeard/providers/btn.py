@@ -191,7 +191,7 @@ class BTNProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def _get_season_search_strings(self, show, season, wantedEp, searchSeason=False):
+    def _get_season_search_strings(self, show, season, episode, abd=False):
         if not show:
             return []
 
@@ -210,47 +210,35 @@ class BTNProvider(generic.TorrentProvider):
                 # Search by name if we don't have tvdb or tvrage id
                 current_params['series'] = sanitizeSceneName(name)
 
-            if searchSeason:
-                whole_season_params = current_params.copy()
-                partial_season_params = current_params.copy()
-                # Search for entire seasons: no need to do special things for air by date shows
-                whole_season_params['category'] = 'Season'
-                whole_season_params['name'] = 'Season ' + str(season)
+            whole_season_params = current_params.copy()
+            partial_season_params = current_params.copy()
+            # Search for entire seasons: no need to do special things for air by date shows
+            whole_season_params['category'] = 'Season'
+            whole_season_params['name'] = 'Season ' + str(season)
 
-                search_params.append(whole_season_params)
+            search_params.append(whole_season_params)
 
-                # Search for episodes in the season
-                partial_season_params['category'] = 'Episode'
-
-                if show.air_by_date:
-                    # Search for the year of the air by date show
-                    partial_season_params['name'] = str(season).split('-')[0]
-                else:
-                    # Search for any result which has Sxx in the name
-                    partial_season_params['name'] = 'S%02d' % int(season)
-
-                search_params.append(partial_season_params)
-            else:
-                search_params.append(current_params)
+            # Search for episodes in the season
+            search_params.append(self._get_episode_search_strings(show, season, episode, abd)[0])
 
         return search_params
 
-    def _get_episode_search_strings(self, ep_obj):
+    def _get_episode_search_strings(self, show, season, episode, abd=False):
 
-        if not ep_obj:
+        if not episode:
             return [{}]
 
         search_params = {'category': 'Episode'}
 
-        if ep_obj.show.indexer == 1:
-            search_params['tvdb'] = ep_obj.show.indexerid
-        elif ep_obj.show.indexer == 2:
-            search_params['tvrage'] = ep_obj.show.indexerid
+        if show.indexer == 1:
+            search_params['tvdb'] = show.indexerid
+        elif show.indexer == 2:
+            search_params['tvrage'] = show.indexerid
         else:
-            search_params['series'] = sanitizeSceneName(ep_obj.show.name)
+            search_params['series'] = sanitizeSceneName(show.name)
 
-        if ep_obj.show.air_by_date:
-            date_str = str(ep_obj.airdate)
+        if abd:
+            date_str = str(episode)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
@@ -258,7 +246,7 @@ class BTNProvider(generic.TorrentProvider):
 
         else:
             # Do a general name search for the episode, formatted like SXXEYY
-            search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)
+            search_params['name'] = "S%02dE%02d" % (season, episode)
 
         to_return = [search_params]
 
@@ -266,11 +254,11 @@ class BTNProvider(generic.TorrentProvider):
         if 'series' in search_params:
 
             # add new query string for every exception
-            name_exceptions = scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid)
+            name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid)
             for cur_exception in name_exceptions:
 
                 # don't add duplicates
-                if cur_exception == ep_obj.show.name:
+                if cur_exception == show.name:
                     continue
 
                 # copy all other parameters before setting the show name for this exception
