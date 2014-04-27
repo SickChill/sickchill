@@ -21,14 +21,14 @@ from __future__ import with_statement
 
 import unittest
 import sys, os.path
+import datetime
 
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
 
 import test_lib as test
 import sickbeard
-from sickbeard.helpers import sanitizeSceneName
-from sickbeard.show_name_helpers import allPossibleShowNames
+from sickbeard.helpers import sanitizeSceneName, custom_strftime
 from sickbeard.tv import TVShow
 
 class XEMBasicTests(test.SickbeardTestDBCase):
@@ -49,8 +49,18 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
     def test_formating(self):
         self.loadFromDB()
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 111051)
-        ep = show.getEpisode(2014, 34)
+        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 24749)
+        ep = show.getEpisode(21, 17)
+        ep.airdate = datetime.datetime.now()
+
+        search_string = {'Episode':[]}
+        episode = ep.airdate
+        str(episode).replace('-', '|')
+        ep_string = sanitizeSceneName(show.name) + ' ' + \
+                    str(episode).replace('-', '|') + '|' + \
+                    sickbeard.helpers.custom_strftime('%b', episode)
+
+        search_string['Episode'].append(ep_string)
 
         scene_ep_string = sanitizeSceneName(show.name) + ' ' + \
                     sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep.scene_season,
@@ -68,12 +78,6 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         print('Scene episode search strings: %s' % (scene_ep_string))
 
         print('Scene season search strings: %s' % (scene_season_string))
-
-    def test_renaming(self):
-        self.file_name = 'American Pickers - S04E01 - Jurassic Pick.avi'
-        orig_extension = self.file_name.rpartition('.')[-1]
-        new_base_name = os.path.basename(proper_path)
-        new_file_name = new_base_name + '.' + orig_extension
 
 if __name__ == "__main__":
     print "=================="
