@@ -297,7 +297,7 @@ class TVShow(object):
 
 
     # find all media files in the show folder and create episodes for as many as possible
-    def loadEpisodesFromDir(self):
+    def loadEpisodesFromDir(self, sceneConvert=False):
 
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, not loading episodes from disk")
@@ -310,49 +310,47 @@ class TVShow(object):
 
         # create TVEpisodes from each media file (if possible)
         for mediaFile in mediaFiles:
-            sceneConvert = False
             parse_result = None
             curEpisode = None
-            i = 0
 
-            try:
-                while i < 2:
-                    i+=1
+            if sceneConvert:
+                try:
+                    i = 0
+                    while i < 2:
+                        i+=1
+                        np = NameParser(False)
+                        parse_result = np.parse(mediaFile, True if i > 1 else False)
+                        if helpers.validateShow(self, parse_result.season_number, parse_result.episode_numbers[0]):
+                            ep = TVEpisode(self, parse_result.season_number, parse_result.episode_numbers[0])
+                            proper_path = ep.proper_path()
+                            proper_absolute_path = ek.ek(os.path.join, self._location, proper_path)
+                            src_path = ek.ek(os.path.dirname, mediaFile)
+                            dest_path = ek.ek(os.path.dirname, proper_absolute_path)
+                            orig_extension = mediaFile.rpartition('.')[-1]
+                            new_base_name = ek.ek(os.path.basename, proper_path)
 
-                    np = NameParser(False)
-                    parse_result = np.parse(mediaFile, sceneConvert)
-                    if helpers.validateShow(self, parse_result.season_number, parse_result.episode_numbers[0]):
-                        ep = TVEpisode(self, parse_result.season_number, parse_result.episode_numbers[0])
-                        proper_path = ep.proper_path()
-                        proper_absolute_path = ek.ek(os.path.join, self._location, proper_path)
-                        src_path = ek.ek(os.path.dirname, mediaFile)
-                        dest_path = ek.ek(os.path.dirname, proper_absolute_path)
-                        orig_extension = mediaFile.rpartition('.')[-1]
-                        new_base_name = ek.ek(os.path.basename, proper_path)
+                            new_file_name = new_base_name + '.' + orig_extension
+                            old_file_name = ek.ek(os.path.basename, mediaFile)
+                            new_mediaFile = os.path.join(dest_path, new_file_name)
+                            if old_file_name == new_file_name or os.path.exists(new_mediaFile):break
 
-                        new_file_name = new_base_name + '.' + orig_extension
-                        old_file_name = ek.ek(os.path.basename, mediaFile)
-                        new_mediaFile = os.path.join(dest_path, new_file_name)
-                        if old_file_name == new_file_name or os.path.exists(new_mediaFile):break
+                            if os.path.exists(os.path.join(src_path, old_file_name)):
+                                old_mediaFile = os.path.join(src_path, old_file_name)
+                            elif os.path.exists(os.path.join(dest_path, old_file_name)):
+                                old_mediaFile = os.path.join(dest_path, old_file_name)
+                            else:break
 
-                        if os.path.exists(os.path.join(src_path, old_file_name)):
-                            old_mediaFile = os.path.join(src_path, old_file_name)
-                        elif os.path.exists(os.path.join(dest_path, old_file_name)):
-                            old_mediaFile = os.path.join(dest_path, old_file_name)
-                        else:break
+                            logger.log(u"Scene Converting file %s to %s" % (old_file_name, new_file_name), logger.MESSAGE)
+                            if not os.path.exists(dest_path):
+                                shutil.move(src_path, dest_path)
+                            shutil.move(old_mediaFile, new_mediaFile)
+                            mediaFile = new_mediaFile
 
-                        logger.log(u"Scene Converting file %s to %s" % (old_file_name, new_file_name), logger.MESSAGE)
-                        if not os.path.exists(dest_path):
-                            shutil.move(src_path, dest_path)
-                        shutil.move(old_mediaFile, new_mediaFile)
-                        mediaFile = new_mediaFile
+                            # converted
+                            break
 
-                        # converted
-                        break
-
-                    sceneConvert = True
-            except Exception:
-                continue
+                except Exception:
+                    continue
 
             logger.log(str(self.indexerid) + u": Creating episode from " + mediaFile, logger.DEBUG)
             try:
@@ -371,6 +369,7 @@ class TVShow(object):
             ep_file_name = ek.ek(os.path.splitext, ep_file_name)[0]
 
             try:
+                parse_result = None
                 np = NameParser(False)
                 parse_result = np.parse(ep_file_name)
             except InvalidNameException:
