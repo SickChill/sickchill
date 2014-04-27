@@ -34,6 +34,8 @@ from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
+from sickbeard.helpers import sanitizeSceneName
+
 
 class SpeedCDProvider(generic.TorrentProvider):
 
@@ -118,7 +120,9 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         if abd:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) +' '+ str(episode)
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(episode).replace('-', '|') + '|' + \
+                            helpers.custom_strftime('%b', episode)
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):

@@ -36,6 +36,7 @@ from lib import requests
 from lib.requests import exceptions
 from bs4 import BeautifulSoup
 from lib.unidecode import unidecode
+from sickbeard.helpers import sanitizeSceneName
 
 
 class IPTorrentsProvider(generic.TorrentProvider):
@@ -114,9 +115,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         if abd:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
-                            str(episode) + '|' + \
-                            helpers.custom_strftime('%Y %b {S}', episode)
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(episode).replace('-', '|') + '|' + \
+                            helpers.custom_strftime('%b', episode)
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):

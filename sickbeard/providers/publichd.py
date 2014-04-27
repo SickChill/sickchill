@@ -101,8 +101,8 @@ class PublicHDProvider(generic.TorrentProvider):
         if abd:
             for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(episode) + '|' + \
-                            helpers.custom_strftime('%Y %b {S}', episode)
+                            str(episode).replace('-', '|') + '|' + \
+                            helpers.custom_strftime('%b', episode)
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(allPossibleShowNames(show)):

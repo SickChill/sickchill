@@ -83,17 +83,6 @@
                         </div>
 
                         <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Update Frequency</span>
-                                <input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" size="5" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in hours to check for software updates (eg. 12)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
                             <input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="auto_update">
                                 <span class="component-title">Automatic Updates</span>
@@ -101,7 +90,7 @@
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Automatic Updates run on startup and in the background every 12 hours.</span>
+                                <span class="component-desc">Automatic Updates run on startup and in the background on the interval specified above.</span>
                             </label>
                         </div>
 
