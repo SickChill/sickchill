@@ -268,10 +268,10 @@ class BTNProvider(generic.TorrentProvider):
 
         return to_return
 
-    def _doGeneralSearch(self, search_string):
+    def _doGeneralSearch(self, search_string, show=None):
         # 'search' looks as broad is it can find. Can contain episode overview and title for example,
         # use with caution!
-        return self._doSearch({'search': search_string})
+        return self._doSearch({'search': search_string}, show=show)
 
     def findPropers(self, search_date=None):
         results = []

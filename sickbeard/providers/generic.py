@@ -261,15 +261,11 @@ class GenericProvider:
             if results:
                 return results
 
-            abd = False
-            if show.air_by_date:
-                abd = True
-
             if seasonSearch:
-                for curString in self._get_season_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode if not abd else ep_obj._airdate, abd=abd):
-                    itemList += self._doSearch(curString)
+                for curString in self._get_season_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, show.air_by_date):
+                    itemList += self._doSearch(curString, show=show)
             else:
-                for curString in self._get_episode_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode if not abd else ep_obj._airdate, abd=abd):
+                for curString in self._get_episode_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, show.air_by_date):
                     itemList += self._doSearch(curString, show=show)
 
         for item in itemList:

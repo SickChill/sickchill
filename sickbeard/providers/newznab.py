@@ -144,8 +144,8 @@ class NewznabProvider(generic.NZBProvider):
 
         return to_return
 
-    def _doGeneralSearch(self, search_string):
-        return self._doSearch({'q': search_string})
+    def _doGeneralSearch(self, search_string, show=None):
+        return self._doSearch({'q': search_string}, show=show)
 
     def _checkAuth(self):
 
