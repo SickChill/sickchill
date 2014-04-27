@@ -168,9 +168,12 @@ ALLOW_HIGH_PRIORITY = None
 SEARCH_FREQUENCY = None
 BACKLOG_SEARCH_FREQUENCY = 21
 
+UPDATE_FREQUENCY = None
+
 MIN_SEARCH_FREQUENCY = 10
 
 DEFAULT_SEARCH_FREQUENCY = 40
+DEFAULT_UPDATE_FREQUENCY = 12
 
 EZRSS = False
 
@@ -476,7 +479,7 @@ def initialize(consoleLogging=True):
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, \
-            KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, \
+            KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY,\
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
@@ -973,7 +976,7 @@ def initialize(consoleLogging=True):
 
         # initialize newznab providers
         currentSearchScheduler = scheduler.Scheduler(searchCurrent.CurrentSearcher(),
-                                                     cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),
+                                                     cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY or DEFAULT_SEARCH_FREQUENCY),
                                                      threadName="SEARCH",
                                                      runImmediately=True)
 
@@ -985,7 +988,7 @@ def initialize(consoleLogging=True):
                                                   runImmediately=False)
 
         versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
-                                                    cycleTime=datetime.timedelta(hours=12),
+                                                    cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY or DEFAULT_UPDATE_FREQUENCY),
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 
@@ -1296,6 +1299,7 @@ def save_config():
     new_config['General']['torrent_method'] = TORRENT_METHOD
     new_config['General']['usenet_retention'] = int(USENET_RETENTION)
     new_config['General']['search_frequency'] = int(SEARCH_FREQUENCY)
+    new_config['General']['update_frequency'] = int(UPDATE_FREQUENCY)
     new_config['General']['download_propers'] = int(DOWNLOAD_PROPERS)
     new_config['General']['allow_high_priority'] = int(ALLOW_HIGH_PRIORITY)
     new_config['General']['quality_default'] = int(QUALITY_DEFAULT)
