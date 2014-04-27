@@ -382,7 +382,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         for sqlShow in sqlResults:
             curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
             curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
-            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+            searchString = self._get_episode_search_strings(curShow, curEp.scene_season, curEp.scene_episode, curShow.air_by_date, add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0]):
                 title, url = self._get_title_and_url(item)
