@@ -165,10 +165,10 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, params=None, json=False):
+def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False):
     """
-Returns a byte-string retrieved from the url provider.
-"""
+    Returns a byte-string retrieved from the url provider.
+    """
 
     global session
     if not session:
@@ -191,11 +191,11 @@ Returns a byte-string retrieved from the url provider.
             proxies = {
                 "http": sickbeard.PROXY_SETTING,
                 "https": sickbeard.PROXY_SETTING,
-            }
+                }
 
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies, verify=False)
+            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies, timeout=timeout, verify=False)
         else:
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), verify=False)
+            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), timeout=timeout, verify=False)
     except requests.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return None

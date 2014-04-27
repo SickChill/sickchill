@@ -51,8 +51,7 @@ def sendNZB(nzb, proper=False):
         if nzbGetRPC.writelog("INFO", "Sickbeard connected to drop of %s any moment now." % (nzb.name + ".nzb")):
             logger.log(u"Successful connected to NZBget", logger.DEBUG)
         else:
-            logger.log(u"Successful connected to NZBget, but unable to send a message" % (nzb.name + ".nzb"),
-                       logger.ERROR)
+            logger.log(u"Successful connected to NZBget, but unable to send a message", logger.ERROR)
 
     except httplib.socket.error:
         logger.log(
