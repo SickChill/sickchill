@@ -177,7 +177,6 @@ a{
   margin: 0 auto;
   position: relative;
   width: 850px;
-  float: left;
 }
 #header a:hover {
   background: none;
