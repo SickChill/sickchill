@@ -257,7 +257,7 @@ class GenericProvider:
             # if we got some results then use them no matter what.
             # OR
             # return anyway unless we're doing a manual search
-            if results or not manualSearch:
+            if results:
                 return results
 
             abd = False
