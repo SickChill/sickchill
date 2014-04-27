@@ -43,7 +43,7 @@ $(document).ready(function () {
 
         searchRequestXhr = $.ajax({
             url: sbRoot + '/home/addShows/searchIndexersForShowName',
-            data: {'name': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()}, 
+            data: {'search_term': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
             timeout: 10000,
             dataType: 'json',
             error: function () {
