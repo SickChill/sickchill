@@ -172,6 +172,8 @@ class KATProvider(generic.TorrentProvider):
         if not show:
             return []
 
+        self.show = show
+
         for show_name in set(allPossibleShowNames(show)):
             ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
             search_string['Season'].append(ep_string)
@@ -183,6 +185,11 @@ class KATProvider(generic.TorrentProvider):
 
     def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
         search_string = {'Episode': []}
+
+        if not show:
+            return []
+
+        self.show = show
 
         if abd:
             for show_name in set(allPossibleShowNames(show)):

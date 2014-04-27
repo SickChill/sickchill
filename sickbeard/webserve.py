@@ -3166,7 +3166,10 @@ class Home:
                         continue
 
                     epObj.status = int(status)
-                    sql_l.append(epObj.get_sql())
+
+                    # mass add to database
+                    if epObj.dirty:
+                        sql_l.append(epObj.get_sql())
 
                 if len(sql_l) > 0:
                     myDB = db.DBConnection()
