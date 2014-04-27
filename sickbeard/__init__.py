@@ -624,11 +624,11 @@ def initialize(consoleLogging=True):
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        SEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'search_frequency', DEFAULT_SEARCH_FREQUENCY)
+        SEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'search_frequency', 40)
         if SEARCH_FREQUENCY < MIN_SEARCH_FREQUENCY:
             SEARCH_FREQUENCY = MIN_SEARCH_FREQUENCY
 
-        UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
+        UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', 12)
         if UPDATE_FREQUENCY < UPDATE_FREQUENCY:
             UPDATE_FREQUENCY = UPDATE_FREQUENCY
 
