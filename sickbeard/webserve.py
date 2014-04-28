@@ -3711,18 +3711,22 @@ class WebInterface:
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
                 (past_date, future_date, int(show["indexer_id"])))
 
+            utc = tz.gettz('GMT')
+
             for episode in episode_list:
 
-                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"], show['network'])
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"], show['network']).astimezone(utc)
+                air_date_time_end = air_date_time + datetime.timedelta(minutes=helpers.tryInt(show["runtime"],60))
 
                 # Create event for episode
                 ical = ical + 'BEGIN:VEVENT\r\n'
-                ical = ical + 'DTSTART;VALUE=DATE:' + str(air_date_time.date()).replace("-", "") + '\r\n'
+                ical = ical + 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime("%H%M%S") + 'Z\r\n'
+                ical = ical + 'DTEND:' + air_date_time_end.strftime("%Y%m%d") + 'T' + air_date_time_end.strftime("%H%M%S") + 'Z\r\n'
                 ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
                     'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
                     episode['season']) + '\r\n'
-                if (episode['description'] != ''):
+                if (episode['description'] is not None and episode['description'] != ''):
                     ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
                            episode['description'].splitlines()[0] + '\r\n'
                 else:
