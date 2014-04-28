@@ -373,6 +373,10 @@ class ApiCall(object):
         """ function to check passed params for the shorthand wrapper
             and to detect missing/required param
         """
+		# Fix for applications that send tvdbid instead of indexerid
+        if key == "indexerid" and "indexerid" not in kwargs:
+            key = "tvdbid"
+			
         missing = True
         orgDefault = default
 
