@@ -44,11 +44,12 @@ $(document).ready(function(){
         } else if (selectedProvider == "utorrent") {
             $('#t_blackhole_settings').hide();
             $('#torrent_settings').show();
-            $('#Torrent_username').show()
+            $('#Torrent_username').show();
             $('#Torrent_Path').hide();
-            $('#Torrent_Ratio').hide();
+            $('#Torrent_Ratio').show();
+			$('#Torrent_Seed_Time').show();
             $('#Torrent_High_Bandwidth').hide();
-            $('#Torrent_Label').show()
+            $('#Torrent_Label').show();
             $('#host_desc').text('uTorrent Host');
             $('#username_desc').text('uTorrent Username');
             $('#password_desc').text('uTorrent Password');
@@ -59,6 +60,7 @@ $(document).ready(function(){
             $('#Torrent_username').show();
             $('#Torrent_Path').show();
             $('#Torrent_Ratio').show();
+			$('#Torrent_Seed_Time').hide();
             $('#Torrent_High_Bandwidth').show();
             $('#Torrent_Label').hide();
             $('#host_desc').html('Transmission Host');
@@ -72,6 +74,7 @@ $(document).ready(function(){
             $('#Torrent_username').hide();
             $('#Torrent_Path').show();
             $('#Torrent_Ratio').show();
+			$('#Torrent_Seed_Time').hide();
             $('#Torrent_High_Bandwidth').hide();
             $('#host_desc').text('Deluge Host');
             $('#username_desc').text('Deluge Username');
@@ -86,6 +89,7 @@ $(document).ready(function(){
             $('#Torrent_Paused').hide();
             $('#Torrent_Path').hide();
             $('#Torrent_Ratio').hide();
+			$('#Torrent_Seed_Time').hide();
             $('#Torrent_High_Bandwidth').hide();
             $('#host_desc').text('Synology Host');
             $('#username_desc').text('Synology Username');
@@ -100,6 +104,7 @@ $(document).ready(function(){
             $('#Torrent_Paused').hide();
             $('#Torrent_Path').show();
             $('#Torrent_Ratio').show();
+			$('#Torrent_Seed_Time').hide();
             $('#Torrent_High_Bandwidth').hide();
             $('#host_desc').text('rTorrent Host');
             $('#username_desc').text('rTorrent Username');

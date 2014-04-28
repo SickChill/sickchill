@@ -112,6 +112,13 @@ class GenericClient(object):
         """
         return True
 
+    def _set_torrent_seed_time(self, result):
+        """
+        This should be overridden should return the True/False from the client
+        when a torrent is set with a seed time
+        """
+        return True
+
     def _set_torrent_priority(self, result):
         """
         This should be overriden should return the True/False from the client
@@ -175,6 +182,9 @@ class GenericClient(object):
 
             if not self._set_torrent_ratio(result):
                 logger.log(self.name + u': Unable to set the ratio for Torrent', logger.ERROR)
+
+            if not self._set_torrent_seed_time(result):
+                logger.log(self.name + u': Unable to set the seed time for Torrent', logger.ERROR)
 
             if not self._set_torrent_path(result):
                 logger.log(self.name + u': Unable to set the path for Torrent', logger.ERROR)
