@@ -803,6 +803,8 @@ class CMD_ComingEpisodes(ApiCall):
             ep["airs"] = str(ep["airs"]).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             # start day of the week on 1 (monday)
             ep["weekday"] = 1 + datetime.date.fromordinal(ordinalAirdate).weekday()
+			# Add tvdbid for backward compability
+            ep["tvdbid"] = ep['indexerid']
 
             # TODO: check if this obsolete
             if not status in finalEpResults:
@@ -1168,6 +1170,8 @@ class CMD_History(ApiCall):
             _rename_element(row, "showid", "indexerid")
             row["resource_path"] = os.path.dirname(row["resource"])
             row["resource"] = os.path.basename(row["resource"])
+			# Add tvdbid for backward compability
+            ep["tvdbid"] = ep['indexerid']
             results.append(row)
 
         myDB.connection.close()
@@ -1596,6 +1600,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                 results = []
                 for curSeries in series:
                     results.append({"indexerid": int(curSeries.findtext('seriesid')),
+									"tvdbid": int(curSeries.findtext('seriesid')),
                                     "name": curSeries.findtext('SeriesName'),
                                     "first_aired": curSeries.findtext('FirstAired')})
 
@@ -1626,6 +1631,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                 return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
             showOut = [{"indexerid": self.indexerid,
+						"tvdbid": self.indexerid,
                         "name": unicode(myShow.data['seriesname']),
                         "first_aired": myShow.data['firstaired']}]
 
@@ -2533,6 +2539,7 @@ class CMD_Shows(ApiCall):
                         "air_by_date": curShow.air_by_date,
                         "sports": curShow.sports,
                         "indexerid": curShow.indexerid,
+						"tvdbid": curShow.indexerid,
                         "network": curShow.network,
                         "show_name": curShow.name,
                         "status": curShow.status,
