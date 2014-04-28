@@ -96,19 +96,6 @@ ep_regexes = [
      -(?P<release_group>[^- ]+))?)?$              # Group
      '''),
 
-    ('scene_sports_date_format',
-     # Show.Name.2010.Nov.23rd.Source.Quality.Etc-Group
-     # Show Name - 2010-Nov-23rd - Ep Name
-     '''
-     ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
-     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+            # Parts
-     (?P<air_day>\d{1,2}[a-zA-Z]{2})[. _-]+         # 23rd and seperator
-     (?P<air_month>[a-zA-Z]{3,})[. _-]+             # Nov and seperator
-     (?P<air_year>\d{4})[. _-]+                     # 2010
-     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+  # Make sure this is really the release group
-     (?P<release_group>.*?)$                        # Group
-     '''),
-
     ('stupid',
      # tpz-abc102
      '''
@@ -197,4 +184,31 @@ ep_regexes = [
      -(?P<release_group>[^- ]+))?)?$              # Group
      '''
     ),
+]
+
+sports_regexs = [
+    ('sports_event',
+     # Show.Name.123.Event.Nov.23rd.2010.Source.Quality.Etc-Group
+     '''
+     ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
+     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+
+     (?P<event>.*?)[. _-]+
+     (?P<air_day>\d{1,2}[a-zA-Z]{2})[. _-]+
+     (?P<air_month>[a-zA-Z]{3,})[. _-]+
+     (?P<air_year>\d{4})[. _-]+
+     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     (?P<release_group>.*?)$
+     '''),
+
+    ('sports_event_without_parts',
+     # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
+     '''
+     ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
+     (?P<event>.*?)[. _-]+
+     (?P<air_day>\d{1,2}[a-zA-Z]{2})[. _-]+
+     (?P<air_month>[a-zA-Z]{3,})[. _-]+
+     (?P<air_year>\d{4})[. _-]+
+     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     (?P<release_group>.*?)$
+     '''),
 ]

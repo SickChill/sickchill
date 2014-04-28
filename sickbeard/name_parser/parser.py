@@ -33,11 +33,16 @@ from time import strptime
 
 
 class NameParser(object):
-    def __init__(self, file_name=True):
+    ALL_REGEX = -1
+    NORMAL_REGEX = 0
+    SPORTS_REGEX = 1
+
+    def __init__(self, file_name=True, regexMode=0):
 
         self.file_name = file_name
+        self.regexMode = regexMode
         self.compiled_regexes = []
-        self._compile_regexes()
+        self._compile_regexes(regexMode)
 
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
@@ -63,8 +68,24 @@ class NameParser(object):
         series_name = re.sub("^\[.*\]", "", series_name)
         return series_name.strip()
 
-    def _compile_regexes(self):
-        for (cur_pattern_name, cur_pattern) in regexes.ep_regexes:
+    def _compile_regexes(self, regexMode):
+        if regexMode <= self.ALL_REGEX:
+            logger.log(u"Using ALL regexs" , logger.DEBUG)
+            uncompiled_regex = regexes.sports_regexs+regexes.ep_regexes
+
+        elif regexMode == self.NORMAL_REGEX:
+            logger.log(u"Using NORMAL regexs" , logger.DEBUG)
+            uncompiled_regex = regexes.ep_regexes
+
+        elif regexMode == self.SPORTS_REGEX:
+            logger.log(u"Using SPORTS regexs" , logger.DEBUG)
+            uncompiled_regex = regexes.sports_regexs
+
+        else:
+            logger.log(u"This is a programing ERROR. Fallback Using NORMAL regexs" , logger.ERROR)
+            uncompiled_regex = regexes.ep_regexes
+
+        for (cur_pattern_name, cur_pattern) in uncompiled_regex:
             try:
                 cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
             except re.error, errormsg:
@@ -107,18 +128,22 @@ class NameParser(object):
                     result.episode_numbers = [ep_num]
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
-                if 'scene_sports_date_format' in cur_regex_name:
-                    year = match.group('air_year')
-                    month = strptime(match.group('air_month')[:3], '%b').tm_mon
-                    day = re.sub("(st|nd|rd|th)", "", match.group('air_day'))
+                if 'sports' in cur_regex_name:
+                    year = int(match.group('air_year'))
+                    month = match.group('air_month')
+                    day = int(re.sub("(st|nd|rd|th)", "", match.group('air_day')))
                 else:
                     year = int(match.group('air_year'))
                     month = int(match.group('air_month'))
                     day = int(match.group('air_day'))
 
                 try:
-                    dtStr = '%s-%s-%s' % (year, month, day)
-                    result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                    if 'sports' in cur_regex_name:
+                        dtStr = '%s-%s-%s' % (day, month, year)
+                        result.air_date = result.sports_date = datetime.datetime.strptime(dtStr, "%d-%b-%Y").date()
+                    else:
+                        dtStr = '%s-%s-%s' % (year, month, day)
+                        result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
                 except ValueError, e:
                     raise InvalidNameException(e.message)
 
@@ -220,6 +245,7 @@ class NameParser(object):
 
         # build the ParseResult object
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
+        final_result.sports_date = self._combine_results(file_name_result, dir_name_result, 'sports_date')
 
         if not final_result.air_date:
             final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
@@ -255,71 +281,19 @@ class NameParser(object):
         return final_result
 
     @classmethod
-    def series_name_to_indexer_id(cls, series_name, check_scene_exceptions=True, check_database=True,
-                                  check_indexer=False):
-        """
-        Given a series name, return it's tvdbd_id.
-        Returns None if not found.
-        
-        This is mostly robbed from postProcessor._analyze_name
-        """
-
+    def series_name_to_indexer_id(cls, series_name):
         # do a scene reverse-lookup to get a list of all possible names
         name_list = sickbeard.show_name_helpers.sceneToNormalShowNames(series_name)
 
         # for each possible interpretation of that scene name
-        if check_scene_exceptions:
-            for cur_name in name_list:
-                logger.log(u"Checking scene exceptions for a match on " + cur_name, logger.DEBUG)
-                scene_id = sickbeard.scene_exceptions.get_scene_exception_by_name(cur_name)
-                if scene_id: return scene_id
-
-        # see if we can find the name directly in the DB, if so use it
-        if check_database:
-            for cur_name in name_list:
-                logger.log(u"Looking up " + str(cur_name) + " in the DB", logger.DEBUG)
-                db_result = sickbeard.helpers.searchDBForShow(cur_name)
-                if db_result: return db_result[1]
-
-        # see if we can find the name with a TVDB lookup
-        if check_indexer:
-            for cur_name in name_list:
-                for indexer in sickbeard.indexerApi().indexers:
-                    try:
-                        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-
-                        lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-
-                        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
-                        logger.log(u"Looking up name " + str(cur_name) + " on " + sickbeard.indexerApi(indexer).name,
-                                   logger.DEBUG)
-                        showObj = t[cur_name]
-                    except (sickbeard.indexer_exception):
-                        # if none found, search on all languages
-                        try:
-                            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-
-                            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-                            lINDEXER_API_PARMS['search_all_languages'] = True
-
-                            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
-                            logger.log(
-                                u"Looking up name " + str(cur_name) + " in all languages on " + sickbeard.indexerApi(
-                                    indexer).name, logger.DEBUG)
-                            showObj = t[cur_name]
-                        except (sickbeard.indexer_exception, IOError):
-                            pass
-
-                        continue
-                    except (IOError):
-                        continue
-
-                    return showObj["id"]
-
-        return None
-
+        for cur_name in name_list:
+            logger.log(u"Checking scene exceptions and database for a match on " + cur_name, logger.DEBUG)
+            scene_id = sickbeard.scene_exceptions.get_scene_exception_by_name(cur_name)
+            db_result = sickbeard.helpers.searchDBForShow(cur_name)
+            if scene_id:
+                return scene_id
+            elif db_result:
+                return db_result[1]
 
 class ParseResult(object):
     def __init__(self,
@@ -329,7 +303,8 @@ class ParseResult(object):
                  episode_numbers=None,
                  extra_info=None,
                  release_group=None,
-                 air_date=None
+                 air_date=None,
+                 sports_date=None
     ):
 
         self.original_name = original_name
@@ -345,6 +320,7 @@ class ParseResult(object):
         self.release_group = release_group
 
         self.air_date = air_date
+        self.sports_date = sports_date
 
         self.which_regex = None
 
@@ -364,6 +340,8 @@ class ParseResult(object):
             return False
         if self.air_date != other.air_date:
             return False
+        if self.sports_date != other.sports_date:
+            return False
 
         return True
 
@@ -380,6 +358,8 @@ class ParseResult(object):
 
         if self.air_by_date:
             to_return += str(self.air_date)
+        if self.sports:
+            to_return += str(self.sports_date)
 
         if self.extra_info:
             to_return += ' - ' + self.extra_info
@@ -387,26 +367,33 @@ class ParseResult(object):
             to_return += ' (' + self.release_group + ')'
 
         to_return += ' [ABD: ' + str(self.air_by_date) + ']'
+        to_return += ' [SPORTS: ' + str(self.sports) + ']'
+        to_return += ' [whichReg: ' + str(self.which_regex) + ']'
 
         return to_return.encode('utf-8')
 
     def _is_air_by_date(self):
-        if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
+        if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date and not self.sports_date:
             return True
         return False
-
     air_by_date = property(_is_air_by_date)
+
+    def _is_sports(self):
+        if self.season_number == None and len(self.episode_numbers) == 0 and self.sports_date:
+            return True
+        return False
+    sports = property(_is_sports)
 
     def fix_scene_numbering(self):
         """
         The changes the parsed result (which is assumed to be scene numbering) to
         tvdb numbering, if necessary.
         """
-        if self.air_by_date: return self  # scene numbering does not apply to air-by-date
+        if self.air_by_date or self.sports: return self  # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
-        indexer_id = NameParser.series_name_to_indexer_id(self.series_name, True, True, False)
+        indexer_id = NameParser.series_name_to_indexer_id(self.series_name)
 
         new_episode_numbers = []
         new_season_numbers = []

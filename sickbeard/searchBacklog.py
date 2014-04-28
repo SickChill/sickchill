@@ -96,6 +96,7 @@ class BacklogSearcher:
         # get separate lists of the season/date shows
         #season_shows = [x for x in show_list if not x.air_by_date]
         air_by_date_shows = [x for x in show_list if x.air_by_date]
+        sports_shows = [x for x in show_list if x.sports]
 
         # figure out how many segments of air by date shows we're going to do
         air_by_date_segments = []
@@ -103,6 +104,12 @@ class BacklogSearcher:
             air_by_date_segments += self._get_air_by_date_segments(cur_id, fromDate)
 
         logger.log(u"Air-by-date segments: " + str(air_by_date_segments), logger.DEBUG)
+
+        sports_segments = []
+        for cur_id in [x.indexerid for x in sports_shows]:
+            sports_segments += self._get_sports_segments(cur_id, fromDate)
+
+        logger.log(u"Sports segments: " + str(sports_segments), logger.DEBUG)
 
         #totalSeasons = float(len(numSeasonResults) + len(air_by_date_segments))
         #numSeasonsDone = 0.0
@@ -115,6 +122,8 @@ class BacklogSearcher:
 
             if curShow.air_by_date:
                 segments = [x[1] for x in self._get_air_by_date_segments(curShow.indexerid, fromDate)]
+            elif curShow.sports:
+                segments = [x[1] for x in self._get_sports_segments(curShow.indexerid, fromDate)]
             else:
                 segments = self._get_season_segments(curShow.indexerid, fromDate)
 
@@ -169,7 +178,7 @@ class BacklogSearcher:
         # query the DB for all dates for this show
         myDB = db.DBConnection()
         num_air_by_date_results = myDB.select(
-            "SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ?",
+            "SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.air_by_date = 1",
             [fromDate.toordinal(), indexer_id])
 
         # break them apart into month/year strings
@@ -184,6 +193,26 @@ class BacklogSearcher:
                 air_by_date_segments.append(cur_result_tuple)
 
         return air_by_date_segments
+
+    def _get_sports_segments(self, indexer_id, fromDate):
+        # query the DB for all dates for this show
+        myDB = db.DBConnection()
+        num_sports_results = myDB.select(
+            "SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.sports = 1",
+            [fromDate.toordinal(), indexer_id])
+
+        # break them apart into month/year strings
+        sports_segments = []
+        for cur_result in num_sports_results:
+            cur_date = datetime.date.fromordinal(int(cur_result["airdate"]))
+            cur_date_str = str(cur_date)[:7]
+            cur_indexer_id = int(cur_result["showid"])
+
+            cur_result_tuple = (cur_indexer_id, cur_date_str)
+            if cur_result_tuple not in sports_segments:
+                sports_segments.append(cur_result_tuple)
+
+        return sports_segments
 
     def _set_lastBacklog(self, when):
 

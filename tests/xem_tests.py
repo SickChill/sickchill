@@ -28,8 +28,9 @@ sys.path.append(os.path.abspath('../lib'))
 
 import test_lib as test
 import sickbeard
-from sickbeard.helpers import sanitizeSceneName, custom_strftime
+from sickbeard.helpers import sanitizeSceneName
 from sickbeard.tv import TVShow
+from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 class XEMBasicTests(test.SickbeardTestDBCase):
     def loadFromDB(self):
@@ -53,12 +54,31 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         ep = show.getEpisode(21, 17)
         ep.airdate = datetime.datetime.now()
 
+        ep_date_formated = ep.airdate.strftime('%b')
+
+        show_name = 'UFC'
+        if show_name.lower() in sickbeard.showList:
+            print 'good'
+        else:
+            print 'bad'
+
+        # parse the file name
+        parse_result = None
+        title = u'UFC 155 Dos Santos vs Velasquez 29th Dec 2012 HDTV x264-Sir Paul'
+        try:
+            myParser = NameParser(False, 1)
+            parse_result = myParser.parse(title, True)
+        except InvalidNameException:
+            print(u"Unable to parse the filename " + title + " into a valid episode")
+
+        print parse_result
+
         search_string = {'Episode':[]}
         episode = ep.airdate
         str(episode).replace('-', '|')
         ep_string = sanitizeSceneName(show.name) + ' ' + \
                     str(episode).replace('-', '|') + '|' + \
-                    sickbeard.helpers.custom_strftime('%b', episode)
+                    episode.strftime('%b')
 
         search_string['Episode'].append(ep_string)
 

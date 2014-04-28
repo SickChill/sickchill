@@ -294,8 +294,11 @@ class QueueItemAdd(ShowQueueItem):
             self.show.paused = False
 
             # be smartish about this
-            if self.show.genre and "talk show" in self.show.genre.lower() or "sports" in self.show.classification.lower():
+            if self.show.genre and "talk show" in self.show.genre.lower():
                 self.show.air_by_date = 1
+            elif self.show.genre and "sports" in self.show.genre.lower():
+                self.show.sports = 1
+
 
         except sickbeard.indexer_exception, e:
             logger.log(

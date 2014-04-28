@@ -238,6 +238,7 @@ class BasicTests(unittest.TestCase):
             
             if DEBUG or verbose:
                 print 'air_by_date:', test_result.air_by_date, 'air_date:', test_result.air_date
+                print 'sports:', test_result.sports, 'air_date:', test_result.air_date
                 print test_result
                 print result
             self.assertEqual(test_result.which_regex, [section])

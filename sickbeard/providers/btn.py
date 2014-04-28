@@ -191,7 +191,7 @@ class BTNProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
         if not show:
             return []
 
@@ -215,15 +215,14 @@ class BTNProvider(generic.TorrentProvider):
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
             whole_season_params['name'] = 'Season ' + str(season)
-
             search_params.append(whole_season_params)
 
             # Search for episodes in the season
-            search_params.append(self._get_episode_search_strings(show, season, episode, abd)[0])
+            search_params.append(self._get_episode_search_strings(show, season, episode)[0])
 
         return search_params
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         if not episode:
             return [{}]
@@ -237,13 +236,18 @@ class BTNProvider(generic.TorrentProvider):
         else:
             search_params['series'] = sanitizeSceneName(show.name)
 
-        if abd:
+        if show.air_by_date:
             date_str = str(episode)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
+        if show.sports:
+            date_str = str(episode)
 
+            # BTN uses dots in dates, we just search for the date since that
+            # combined with the series identifier should result in just one episode
+            search_params['name'] = date_str.replace('-', '.')
         else:
             # Do a general name search for the episode, formatted like SXXEYY
             search_params['name'] = "S%02dE%02d" % (season, episode)

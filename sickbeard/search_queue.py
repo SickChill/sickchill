@@ -192,7 +192,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         myDB = db.DBConnection()
 
         # see if there is anything in this season worth searching for
-        if not self.show.air_by_date:
+        if not self.show.air_by_date and not self.show.sports:
             statusResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ?",
                                         [self.show.indexerid, self.segment])
         else:

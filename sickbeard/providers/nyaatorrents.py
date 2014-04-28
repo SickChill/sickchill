@@ -58,13 +58,13 @@ class NyaaProvider(generic.TorrentProvider):
         results = generic.TorrentProvider.getSearchResults(self, show, season, ep_objs, seasonSearch, manualSearch)
         return results
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
         names = []
         names.extend(show_name_helpers.makeSceneShowSearchStrings(show))
         return names
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False):
-        return self._get_season_search_strings(show, season, episode, abd)
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
+        return self._get_season_search_strings(show, season, episode)
 
     def _doSearch(self, search_string, show=None, age=None):
 

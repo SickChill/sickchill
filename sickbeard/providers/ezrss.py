@@ -61,8 +61,8 @@ class EZRSSProvider(generic.TorrentProvider):
 
         results = {}
 
-        if show.air_by_date:
-            logger.log(self.name + u" doesn't support air-by-date backlog because of limitations on their RSS search.",
+        if show.air_by_date or show.sports:
+            logger.log(self.name + u" doesn't support air-by-date or sports backloging because of limitations on their RSS search.",
                        logger.WARNING)
             return results
 
@@ -70,7 +70,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return results
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
 
         params = {}
 
@@ -81,11 +81,11 @@ class EZRSSProvider(generic.TorrentProvider):
 
         params['season'] = season
 
-        params['episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['episode']
+        params['episode'] = self._get_episode_search_strings(show, season, episode)[0]['episode']
 
         return [params]
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         params = {}
 
@@ -94,7 +94,9 @@ class EZRSSProvider(generic.TorrentProvider):
 
         params['show_name'] = helpers.sanitizeSceneName(show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
-        if abd:
+        if show.air_by_date:
+            params['date'] = str(episode)
+        if show.sports:
             params['date'] = str(episode)
         else:
             params['season'] = season

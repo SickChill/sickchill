@@ -464,6 +464,9 @@ class PostProcessor(object):
         if parse_result.air_by_date:
             season = -1
             episodes = [parse_result.air_date]
+        elif parse_result.sports:
+            season = -1
+            episodes = [parse_result.sports_date]
         else:
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
@@ -585,7 +588,7 @@ class PostProcessor(object):
 
             # for air-by-date shows we need to look up the season/episode from tvdb
             if season == -1 and indexer_id and episodes:
-                self._log(u"Looks like this is an air-by-date show, attempting to convert the date to season/episode",
+                self._log(u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                           logger.DEBUG)
 
                 # try to get language set for this show

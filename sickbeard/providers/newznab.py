@@ -80,7 +80,7 @@ class NewznabProvider(generic.NZBProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
 
         if not show:
             return [{}]
@@ -100,13 +100,13 @@ class NewznabProvider(generic.NZBProvider):
             cur_params['season'] = str(season)
 
             # episode
-            cur_params['episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['ep']
+            cur_params['episode'] = self._get_episode_search_strings(show, season, episode)[0]['ep']
 
             to_return.append(cur_params)
 
         return to_return
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         params = {}
 
@@ -116,7 +116,12 @@ class NewznabProvider(generic.NZBProvider):
         # search
         params['q'] = helpers.sanitizeSceneName(show.name)
 
-        if abd:
+        if show.air_by_date:
+            date_str = str(episode)
+
+            params['season'] = date_str.partition('-')[0]
+            params['ep'] = date_str.partition('-')[2].replace('-', '/')
+        elif show.sports:
             date_str = str(episode)
 
             params['season'] = date_str.partition('-')[0]

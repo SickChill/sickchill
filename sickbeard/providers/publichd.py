@@ -61,8 +61,6 @@ class PublicHDProvider(generic.TorrentProvider):
 
         self.categories = {'Season': ['23'], 'Episode': ['7', '14', '24'], 'RSS': ['7', '14', '23', '24']}
 
-        self.session = requests.Session()
-
     def isEnabled(self):
         return sickbeard.PUBLICHD
 
@@ -74,7 +72,7 @@ class PublicHDProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(item[0])
         return quality
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
 
         if not show:
             return []
@@ -87,22 +85,28 @@ class PublicHDProvider(generic.TorrentProvider):
             ep_string = show_name + ' Season ' + str(season)  #2) ShowName Season X
             search_string['Season'].append(ep_string)
 
-        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         search_string = {'Episode': []}
 
         if not episode:
             return []
 
-        if abd:
+        if show.air_by_date:
             for show_name in set(allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(episode).replace('-', '|') + '|' + \
-                            helpers.custom_strftime('%b', str(episode))
+                            episode.strftime('%b')
+                search_string['Episode'].append(ep_string)
+        elif show.sports:
+            for show_name in set(allPossibleShowNames(show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(episode).replace('-', '|') + '|' + \
+                            episode.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(allPossibleShowNames(show)):
@@ -276,7 +280,13 @@ class PublicHDProvider(generic.TorrentProvider):
         for sqlShow in sqlResults:
             curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
             curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
-            searchString = self._get_episode_search_strings(curShow, curEp.scene_season, curEp.scene_episode, curShow.air_by_date, add_string='PROPER|REPACK')
+
+            season = curEp.scene_season
+            episode = curEp.scene_episode
+            if curShow.air_by_date or curShow.sports:
+                episode = curEp.airdate
+
+            searchString = self._get_episode_search_strings(curShow, season, episode, add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0], show=curShow):
                 title, url = self._get_title_and_url(item)

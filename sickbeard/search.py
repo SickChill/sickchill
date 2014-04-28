@@ -380,9 +380,7 @@ def searchProviders(show, season, episode=None, manualSearch=False):
 
                 # skip non-tv crap
                 curResults[curEp] = filter(
-                    lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                             show),
-                    curResults[curEp])
+                    lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,show),curResults[curEp])
 
                 if curEp in foundResults:
                     foundResults[curEp] += curResults[curEp]

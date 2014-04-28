@@ -119,7 +119,7 @@ def makeSceneShowSearchStrings(show):
     return map(sanitizeSceneName, showNames)
 
 
-def makeSceneSeasonSearchString(show, season, episode, abd=False, extraSearchType=None):
+def makeSceneSeasonSearchString(show, season, episode, extraSearchType=None):
     myDB = db.DBConnection()
 
     if show.air_by_date:
@@ -127,7 +127,11 @@ def makeSceneSeasonSearchString(show, season, episode, abd=False, extraSearchTyp
 
         # the search string for air by date shows is just 
         seasonStrings = [season]
+    elif show.sports:
+        numseasons = 0
 
+        # the search string for air by date shows is just
+        seasonStrings = [season]
     else:
         numseasonsSQlResult = myDB.select(
             "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
@@ -153,12 +157,12 @@ def makeSceneSeasonSearchString(show, season, episode, abd=False, extraSearchTyp
                     toReturn.append(curShow + "." + cur_season)
 
     # episode
-    toReturn.extend(makeSceneSearchString(show, season, episode, abd))
+    toReturn.extend(makeSceneSearchString(show, season, episode))
 
     return toReturn
 
 
-def makeSceneSearchString(show, season, episode, abd=False):
+def makeSceneSearchString(show, season, episode):
     myDB = db.DBConnection()
     numseasonsSQlResult = myDB.select(
         "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
@@ -170,8 +174,10 @@ def makeSceneSearchString(show, season, episode, abd=False):
     numepisodes = int(numepisodesSQlResult[0][0])
 
     # see if we should use dates instead of episodes
-    if abd and episode != datetime.date.fromordinal(1):
-        epStrings = [str(episode.airdate)]
+    if show.air_by_date and episode != datetime.date.fromordinal(1):
+        epStrings = [str(episode)]
+    if show.sports and episode != datetime.date.fromordinal(1):
+        epStrings = [str(episode)]
     else:
         epStrings = ["S%02iE%02i" % (int(season), int(episode)),
                      "%ix%02i" % (int(season), int(episode))]

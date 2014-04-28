@@ -975,7 +975,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         for epObj in ep_list:
             if ep_segment == None and self.status == WANTED:
                 # figure out what segment the episode is in and remember it so we can backlog it
-                if showObj.air_by_date:
+                if showObj.air_by_date or showObj.sports:
                     ep_segment = str(epObj.airdate)[:7]
                 else:
                     ep_segment = epObj.season
@@ -1764,6 +1764,7 @@ class CMD_Show(ApiCall):
         showDict["show_name"] = showObj.name
         showDict["paused"] = showObj.paused
         showDict["air_by_date"] = showObj.air_by_date
+        showDict["sports"] = showObj.sports
         showDict["flatten_folders"] = showObj.flatten_folders
         #clean up tvdb horrible airs field
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
@@ -2526,6 +2527,7 @@ class CMD_Shows(ApiCall):
                         "quality": _get_quality_string(curShow.quality),
                         "language": curShow.lang,
                         "air_by_date": curShow.air_by_date,
+                        "sports": curShow.sports,
                         "indexerid": curShow.indexerid,
                         "network": curShow.network,
                         "show_name": curShow.name,

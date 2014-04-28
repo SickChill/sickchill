@@ -42,7 +42,6 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.url = re.sub('\/$', '', url)
         self.enabled = True
         self.supportsBacklog = False
-        self.session = requests.Session()
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + str(int(self.enabled))

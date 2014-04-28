@@ -119,6 +119,47 @@ $(document).ready(function () {
 
     }
 
+    function fill_sports_examples() {
+        var pattern = $('#naming_sports_pattern').val();
+
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'},
+            function (data) {
+                if (data) {
+                    $('#naming_sports_example').text(data + '.ext');
+                    $('#naming_sports_example_div').show();
+                } else {
+                    $('#naming_sports_example_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'},
+            function (data) {
+                if (data == "invalid") {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern is invalid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', true);
+                    $('#naming_sports_pattern').css('background-color', '#FFDDDD');
+                } else if (data == "seasonfolders") {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', true);
+                    $('#naming_sports_pattern').css('background-color', '#FFFFDD');
+                } else {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern is valid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', false);
+                    $('#naming_sports_pattern').css('background-color', '#FFFFFF');
+                }
+            });
+
+    }
+
     function setup_naming() {
         // if it is a custom selection then show the text box
         if ($('#name_presets :selected').val() == "Custom...") {
@@ -141,12 +182,23 @@ $(document).ready(function () {
         fill_abd_examples();
     }
 
+    function setup_sports_naming() {
+        // if it is a custom selection then show the text box
+        if ($('#name_sports_presets :selected').val() == "Custom...") {
+            $('#naming_sports_custom').show();
+        } else {
+            $('#naming_sports_custom').hide();
+            $('#naming_sports_pattern').val($('#name_sports_presets :selected').attr('id'));
+        }
+        fill_sports_examples();
+    }
+
     $('#unpack').change(function () {
     	if(this.checked) {
         	israr_supported();
         } else {
         	$('#unpack').qtip('toggle', false);
-		}  
+		}
     });
 
     $('#name_presets').change(function () {
@@ -161,6 +213,14 @@ $(document).ready(function () {
         setup_abd_naming();
     });
 
+    $('#name_sports_presets').change(function () {
+        setup_sports_naming();
+    });
+
+    $('#naming_custom_sports').change(function () {
+        setup_sports_naming();
+    });
+    
     $('#naming_multi_ep').change(fill_examples);
     $('#naming_pattern').focusout(fill_examples);
     $('#naming_pattern').keyup(function () {
@@ -176,11 +236,21 @@ $(document).ready(function () {
         }, 500);
     });
 
+    $('#naming_sports_pattern').focusout(fill_examples);
+    $('#naming_sports_pattern').keyup(function () {
+        typewatch(function () {
+            fill_sports_examples();
+        }, 500);
+    });
+
     $('#show_naming_key').click(function () {
         $('#naming_key').toggle();
     });
     $('#show_naming_abd_key').click(function () {
         $('#naming_abd_key').toggle();
+    });
+    $('#show_naming_sports_key').click(function () {
+        $('#naming_sports_key').toggle();
     });
     $('#do_custom').click(function () {
         $('#naming_pattern').val($('#name_presets :selected').attr('id'));
@@ -189,6 +259,7 @@ $(document).ready(function () {
     });
     setup_naming();
     setup_abd_naming();
+    setup_sports_naming();
 
     // -- start of metadata options div toggle code --
     $('#metadataType').on('change keyup', function () {
@@ -295,7 +366,7 @@ $(document).ready(function () {
         position: {
             viewport: $(window),
             at: 'top center',
-            my: 'bottom center',
+            my: 'bottom center'
         },
         style: {
             tip: {
@@ -315,7 +386,7 @@ $(document).ready(function () {
         position: {
             viewport: $(window),
             at: 'center left',
-            my: 'center right',
+            my: 'center right'
         },
         style: {
             tip: {

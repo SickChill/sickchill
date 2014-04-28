@@ -122,7 +122,7 @@ class HDBitsProvider(generic.TorrentProvider):
                         logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                         continue
 
-                    if episode.show.air_by_date:
+                    if episode.show.air_by_date or episode.sports:
                         if parse_result.air_date != episode.airdate:
                             logger.log(u"Episode " + title + " didn't air on " + str(episode.airdate) + ", skipping it",
                                        logger.DEBUG)

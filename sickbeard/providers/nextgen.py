@@ -63,6 +63,7 @@ class NextGenProvider(generic.TorrentProvider):
         self.categories = '&c7=1&c24=1&c17=1&c22=1&c42=1&c46=1&c26=1&c28=1&c43=1&c4=1&c31=1&c45=1&c33=1'
 
         self.last_login_check = None
+
         self.login_opener = None
 
     def isEnabled(self):
@@ -130,7 +131,7 @@ class NextGenProvider(generic.TorrentProvider):
         logger.log(u'Failed to login:' + str(error), logger.ERROR)
         return False
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
 
         if not show:
             return []
@@ -140,22 +141,28 @@ class NextGenProvider(generic.TorrentProvider):
             ep_string = show_name + ' S%02d' % int(season)  #1) ShowName SXX
             search_string['Season'].append(ep_string)
 
-        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         search_string = {'Episode': []}
 
         if not episode:
             return []
 
-        if abd:
+        if show.air_by_date:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(episode).replace('-', '|') + '|' + \
-                            helpers.custom_strftime('%b', str(episode))
+                            episode.strftime('%b')
+                search_string['Episode'].append(ep_string)
+        elif show.sports:
+            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(episode).replace('-', '|') + '|' + \
+                            episode.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
@@ -301,7 +308,7 @@ class NextGenProvider(generic.TorrentProvider):
         for sqlShow in sqlResults:
             curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
             curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
-            searchString = self._get_episode_search_strings(curShow, curEp.scene_season, curEp.scene_episode, curShow.air_by_date, add_string='PROPER|REPACK')
+            searchString = self._get_episode_search_strings(curShow, curEp.scene_season, curEp.scene_episode, add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0], show=curShow):
                 title, url = self._get_title_and_url(item)

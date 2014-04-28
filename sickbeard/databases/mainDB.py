@@ -27,8 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 29
-
+MAX_DB_VERSION = 30
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -657,7 +656,6 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
 
         self.incDBVersion()
 
-
 class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
     def test(self):
         return self.checkDBVersion() >= 26
@@ -670,7 +668,6 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
             self.addColumn("tv_shows", "archive_firstmatch", "NUMERIC", "0")
 
         self.incDBVersion()
-
 
 class AddSceneNumbering(AddArchiveFirstMatchOption):
     def test(self):
@@ -724,5 +721,28 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
         logger.log(u"Adding column rls_ignore_words to tvshows")
         if not self.hasColumn("tv_shows", "rls_ignore_words"):
             self.addColumn("tv_shows", "rls_ignore_words", "TEXT", "")
+
+        self.incDBVersion()
+
+class AddSportsOption(AddRequireAndIgnoreWords):
+    def test(self):
+        return self.checkDBVersion() >= 30
+
+    def execute(self):
+        backupDatabase(30)
+
+        logger.log(u"Adding column sports to tvshows")
+        if not self.hasColumn("tv_shows", "sports"):
+            self.addColumn("tv_shows", "sports", "NUMERIC", "0")
+
+        if self.hasColumn("tv_shows", "air_by_date") and self.hasColumn("tv_shows", "sports"):
+            # update sports column
+            logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.MESSAGE)
+            ql = []
+            historyQuality = self.connection.select("SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")
+            for cur_entry in historyQuality:
+                ql.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?", [cur_entry["air_by_date"], cur_entry["show_id"]]])
+                ql.append(["UPDATE tv_shows SET air_by_date = 0 WHERE show_id = ?", [cur_entry["show_id"]]])
+            self.connection.mass_action(ql)
 
         self.incDBVersion()

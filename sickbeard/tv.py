@@ -76,6 +76,7 @@ class TVShow(object):
         self.startyear = 0
         self.paused = 0
         self.air_by_date = 0
+        self.sports = 0
         self.subtitles = int(sickbeard.SUBTITLES_DEFAULT if sickbeard.SUBTITLES_DEFAULT else 0)
         self.dvdorder = 0
         self.archive_firstmatch = 0
@@ -138,7 +139,7 @@ class TVShow(object):
         sql_selection = sql_selection + " FROM tv_episodes tve WHERE showid = " + str(self.indexerid)
 
         if season is not None:
-            if not self.air_by_date:
+            if not self.air_by_date and not self.sports:
                 sql_selection = sql_selection + " AND season = " + str(season)
             else:
                 segment_year, segment_month = map(int, str(season).split('-'))
@@ -552,7 +553,7 @@ class TVShow(object):
             logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.ERROR)
             return None
 
-        if len(parse_result.episode_numbers) == 0 and not parse_result.air_by_date:
+        if len(parse_result.episode_numbers) == 0 and not (parse_result.air_by_date or parse_result.sports):
             logger.log("parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.ERROR)
             return None
@@ -563,7 +564,7 @@ class TVShow(object):
         rootEp = None
 
         # if we have an air-by-date show then get the real season/episode numbers
-        if parse_result.air_by_date:
+        if parse_result.air_by_date or parse_result.sports:
             try:
                 lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
 
@@ -575,7 +576,12 @@ class TVShow(object):
 
                 t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
-                epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
+                epObj = None
+                if parse_result.air_by_date:
+                    epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
+                elif parse_result.sports:
+                    epObj = t[self.indexerid].airedOn(parse_result.sports_date)[0]
+
                 season = int(epObj["seasonnumber"])
                 episodes = [int(epObj["episodenumber"])]
             except sickbeard.indexer_episodenotfound:
@@ -729,6 +735,10 @@ class TVShow(object):
             self.air_by_date = sqlResults[0]["air_by_date"]
             if not self.air_by_date:
                 self.air_by_date = 0
+
+            self.sports = sqlResults[0]["sports"]
+            if not self.sports:
+                self.sports = 0
 
             self.subtitles = sqlResults[0]["subtitles"]
             if self.subtitles:
@@ -1023,6 +1033,7 @@ class TVShow(object):
                         "flatten_folders": self.flatten_folders,
                         "paused": self.paused,
                         "air_by_date": self.air_by_date,
+                        "sports": self.sports,
                         "subtitles": self.subtitles,
                         "dvdorder": self.dvdorder,
                         "archive_firstmatch": self.archive_firstmatch,
@@ -1935,7 +1946,7 @@ class TVEpisode(object):
 
         # if there's no release group then replace it with a reasonable facsimile
         if not replace_map['%RN']:
-            if self.show.air_by_date:
+            if self.show.air_by_date or self.show.sports:
                 result_name = result_name.replace('%RN', '%S.N.%A.D.%E.N-SiCKBEARD')
                 result_name = result_name.replace('%rn', '%s.n.%A.D.%e.n-sickbeard')
             else:
@@ -2066,6 +2077,8 @@ class TVEpisode(object):
             # we only use ABD if it's enabled, this is an ABD show, AND this is not a multi-ep
             if self.show.air_by_date and sickbeard.NAMING_CUSTOM_ABD and not self.relatedEps:
                 pattern = sickbeard.NAMING_ABD_PATTERN
+            elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
+                pattern = sickbeard.NAMING_SPORTS_PATTERN
             else:
                 pattern = sickbeard.NAMING_PATTERN
 
@@ -2086,6 +2099,8 @@ class TVEpisode(object):
             # we only use ABD if it's enabled, this is an ABD show, AND this is not a multi-ep
             if self.show.air_by_date and sickbeard.NAMING_CUSTOM_ABD and not self.relatedEps:
                 pattern = sickbeard.NAMING_ABD_PATTERN
+            elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
+                pattern = sickbeard.NAMING_CUSTOM_SPORTS
             else:
                 pattern = sickbeard.NAMING_PATTERN
 

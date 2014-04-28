@@ -58,10 +58,6 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.categories = {'Season': {'c14':1}, 'Episode': {'c2':1, 'c49':1}, 'RSS': {'c14':1, 'c2':1, 'c49':1}}
 
-        self.session = requests.Session()
-
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
-
     def isEnabled(self):
         return sickbeard.SPEEDCD
 
@@ -80,7 +76,6 @@ class SpeedCDProvider(generic.TorrentProvider):
                         }
 
         self.session = requests.Session()
-        self.session.headers.update(self.headers)
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -95,7 +90,7 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         return True
 
-    def _get_season_search_strings(self, show, season, episode, abd=False):
+    def _get_season_search_strings(self, show, season, episode):
 
         if not show:
             return []
@@ -107,22 +102,28 @@ class SpeedCDProvider(generic.TorrentProvider):
             search_string['Season'].append(ep_string)
 
         #Building the search string with the episodes we need
-        search_string['Episode'] = self._get_episode_search_strings(show, season, episode, abd)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(show, season, episode)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, show, season, episode, abd=False, add_string=''):
+    def _get_episode_search_strings(self, show, season, episode, add_string=''):
 
         search_string = {'Episode': []}
 
         if not episode:
             return []
 
-        if abd:
+        if show.air_by_date:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(episode).replace('-', '|') + '|' + \
-                            helpers.custom_strftime('%b', str(episode))
+                            episode.strftime('%b')
+                search_string['Episode'].append(ep_string)
+        elif show.sports:
+            for show_name in set(show_name_helpers.allPossibleShowNames(show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            str(episode).replace('-', '|') + '|' + \
+                            episode.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(show)):
@@ -237,7 +238,13 @@ class SpeedCDProvider(generic.TorrentProvider):
         for sqlShow in sqlResults:
             curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
             curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
-            searchString = self._get_episode_search_strings(curShow, curEp.scene_season, curEp.scene_episode, curShow.air_by_date, add_string='PROPER|REPACK')
+
+            season = curEp.scene_season
+            episode = curEp.scene_episode
+            if curShow.air_by_date or curShow.sports:
+                episode = curEp.airdate
+
+            searchString = self._get_episode_search_strings(curShow, season, episode,add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0], show=curShow):
                 title, url = self._get_title_and_url(item)

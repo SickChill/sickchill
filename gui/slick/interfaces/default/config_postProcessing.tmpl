@@ -627,6 +627,183 @@
 
                         </div><!-- /naming_abd_different -->
 
+                        <div class="field-pair clearfix">
+                            <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" #if $sickbeard.NAMING_CUSTOM_SPORTS then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="naming_custom_sports">
+                                <span class="component-title">Custom Sports</span>
+                                <span class="component-desc">Name Sports shows differently than regular shows?</span>
+                            </label>
+                        </div>
+
+                        <div id="content_naming_custom_sports">
+                            <div class="field-pair">
+                                <label class="nocheck clearfix" for="name_sports_presets">
+                                    <span class="component-title">Name Pattern:</span>
+                                    <span class="component-desc">
+                                        <select id="name_sports_presets">
+                                            #set is_sports_custom = True
+                                            #for $cur_preset in $naming.name_sports_presets:
+                                                #set $tmp = $naming.test_name($cur_preset)
+                                                #if $cur_preset == $sickbeard.NAMING_SPORTS_PATTERN:
+                                                    #set is_sports_custom = False
+                                                #end if
+                                                <option id="$cur_preset" #if $cur_preset == $sickbeard.NAMING_SPORTS_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                            #end for
+                                            <option id="$sickbeard.NAMING_SPORTS_PATTERN" #if $is_sports_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                        </select>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div id="naming_sports_custom">
+                                <div class="field-pair clearfix" style="padding-top: 0;">
+                                    <label class="nocheck clearfix">
+                                        <span class="component-title">
+                                            &nbsp;
+                                        </span>
+                                        <span class="component-desc">
+                                            <input type="text" size="45" name="naming_sports_pattern" id="naming_sports_pattern" class="custom-pattern" value="$sickbeard.NAMING_SPORTS_PATTERN" style="font-size: 13px; height: 18px; margin-top: -8px"/>
+                                            <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_sports_key" title="Toggle sports Naming Legend" style="padding: 0 0 0 3px; margin-top: -2px;" />
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div id="naming_sports_key" class="nocheck clearfix" style="display: none;">
+                                      <table class="Key">
+                                        <thead>
+                                            <tr>
+                                              <th class="align-right">Meaning</th>
+                                              <th>Pattern</th>
+                                              <th width="60%">Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                              <th colspan="3">Use lower case if you want lower case names (eg. %sn, %e.n, %q_n etc)</th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <tr>
+                                              <td class="align-right"><b>Show Name:</b></td>
+                                              <td>%SN</td>
+                                              <td>Show Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%S.N</td>
+                                              <td>Show.Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%S_N</td>
+                                              <td>Show_Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Sports:</b></td>
+                                              <td>%AD</td>
+                                              <td>9th Mar 2010</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%A.D</td>
+                                              <td>9th.Mar.2010</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%A_D</td>
+                                              <td>9th_Mar_2010</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%A-D</td>
+                                              <td>9th-Mar-2010</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Episode Name:</b></td>
+                                              <td>%EN</td>
+                                              <td>Episode Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%E.N</td>
+                                              <td>Episode.Name</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%E_N</td>
+                                              <td>Episode_Name</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Quality:</b></td>
+                                              <td>%QN</td>
+                                              <td>720p BluRay</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td>&nbsp;</td>
+                                              <td>%Q.N</td>
+                                              <td>720p.BluRay</td>
+                                            </tr>
+                                            <tr>
+                                              <td>&nbsp;</td>
+                                              <td>%Q_N</td>
+                                              <td>720p_BluRay</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><b>Year:</b></td>
+                                              <td>%Y</td>
+                                              <td>2010</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Month:</b></td>
+                                              <td>%M</td>
+                                              <td>3</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right">&nbsp;</td>
+                                              <td>%0M</td>
+                                              <td>03</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><b>Day:</b></td>
+                                              <td>%D</td>
+                                              <td>9</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right">&nbsp;</td>
+                                              <td>%0D</td>
+                                              <td>09</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><i class="icon-info-sign" title="Multi-EP style is ignored"></i> <b>Release Name:</b></td>
+                                              <td>%RN</td>
+                                              <td>Show.Name.9th.Mar.2010.HDTV.XviD-RLSGROUP</td>
+                                            </tr>
+                                            <tr class="even">
+                                              <td class="align-right"><i class="icon-info-sign" title="'SiCKBEARD' is used in place of RLSGROUP if it could not be properly detected"></i> <b>Release Group:</b></td>
+                                              <td>%RG</td>
+                                              <td>RLSGROUP</td>
+                                            </tr>
+                                            <tr>
+                                              <td class="align-right"><i class="icon-info-sign" title="If episode is proper/repack add 'proper' to name."></i> <b>Release Type:</b></td>
+                                              <td>%RT</td>
+                                              <td>PROPER</td>
+                                            </tr>
+                                        </tbody>
+                                      </table>
+                                      <br/>
+                                </div>
+                            </div><!-- /naming_sports_custom -->
+                            
+                            <div id="naming_sports_example_div">
+                                <h2>Sample:</h2>
+                                <div class="example">
+                                    <span class="jumbo" id="naming_sports_example">&nbsp;</span>
+                                </div>
+                                <br/>
+                            </div>
+
+                        </div><!-- /naming_sports_different -->
+
                         <div class="clearfix"></div>
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
 

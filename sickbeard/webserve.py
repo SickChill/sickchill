@@ -1134,7 +1134,8 @@ class ConfigPostProcessing:
                            rename_episodes=None, unpack=None,
                            move_associated_files=None, tv_download_dir=None, naming_custom_abd=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
-                           delete_failed=None, extra_scripts=None):
+                           delete_failed=None, extra_scripts=None,
+                           naming_custom_sports=None, naming_sports_pattern=None):
 
         results = []
 
@@ -1163,16 +1164,10 @@ class ConfigPostProcessing:
         sickbeard.RENAME_EPISODES = config.checkbox_to_value(rename_episodes)
         sickbeard.MOVE_ASSOCIATED_FILES = config.checkbox_to_value(move_associated_files)
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
+        sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
-
-        sickbeard.METADATA_XBMC = xbmc_data
-        sickbeard.METADATA_XBMC_12PLUS = xbmc_12plus_data
-        sickbeard.METADATA_MEDIABROWSER = mediabrowser_data
-        sickbeard.METADATA_PS3 = sony_ps3_data
-        sickbeard.METADATA_WDTV = wdtv_data
-        sickbeard.METADATA_TIVO = tivo_data
 
         sickbeard.metadata_provider_dict['XBMC'].set_config(sickbeard.METADATA_XBMC)
         sickbeard.metadata_provider_dict['XBMC 12+'].set_config(sickbeard.METADATA_XBMC_12PLUS)
@@ -1188,11 +1183,17 @@ class ConfigPostProcessing:
         else:
             results.append("You tried saving an invalid naming config, not saving your naming settings")
 
-        if self.isNamingValid(naming_abd_pattern, None, True) != "invalid":
+        if self.isNamingValid(naming_abd_pattern, None, abd=True) != "invalid":
             sickbeard.NAMING_ABD_PATTERN = naming_abd_pattern
         else:
             results.append(
                 "You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
+
+        if self.isNamingValid(naming_sports_pattern, None, sports=True) != "invalid":
+            sickbeard.NAMING_SPORTS_PATTERN = naming_sports_pattern
+        else:
+            results.append(
+                "You tried saving an invalid sports naming config, not saving your sports settings")
 
         sickbeard.save_config()
 
@@ -1207,25 +1208,30 @@ class ConfigPostProcessing:
         redirect("/config/postProcessing/")
 
     @cherrypy.expose
-    def testNaming(self, pattern=None, multi=None, abd=False):
+    def testNaming(self, pattern=None, multi=None, abd=False, sports=False):
 
         if multi is not None:
             multi = int(multi)
 
-        result = naming.test_name(pattern, multi, abd)
+        result = naming.test_name(pattern, multi, abd, sports)
 
         result = ek.ek(os.path.join, result['dir'], result['name'])
 
         return result
 
     @cherrypy.expose
-    def isNamingValid(self, pattern=None, multi=None, abd=False):
+    def isNamingValid(self, pattern=None, multi=None, abd=False, sports=False):
         if pattern is None:
             return "invalid"
 
         # air by date shows just need one check, we don't need to worry about season folders
         if abd:
             is_valid = naming.check_valid_abd_naming(pattern)
+            require_season_folders = False
+
+        # sport shows just need one check, we don't need to worry about season folders
+        elif sports:
+            is_valid = naming.check_valid_sports_naming(pattern)
             require_season_folders = False
 
         else:
@@ -2829,13 +2835,13 @@ class Home:
     def plotDetails(self, show, season, episode):
         result = db.DBConnection().action(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-            (show, season, episode)).fetchone()
+            (int(show), int(season), int(episode))).fetchone()
         return result['description'] if result else 'Episode not found.'
 
     @cherrypy.expose
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
-                 flatten_folders=None, paused=None, directCall=False, air_by_date=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, archive_firstmatch=None, rls_ignore_words=None, rls_require_words=None):
+                 flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
+                 indexerLang=None,subtitles=None, archive_firstmatch=None, rls_ignore_words=None, rls_require_words=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -2872,6 +2878,7 @@ class Home:
         archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
         air_by_date = config.checkbox_to_value(air_by_date)
+        sports = config.checkbox_to_value(sports)
         subtitles = config.checkbox_to_value(subtitles)
 
         indexer_lang = indexerLang
@@ -2915,6 +2922,7 @@ class Home:
 
             showObj.paused = paused
             showObj.air_by_date = air_by_date
+            showObj.sports = sports
             showObj.subtitles = subtitles
             showObj.lang = indexer_lang
             showObj.dvdorder = dvdorder
@@ -3129,7 +3137,7 @@ class Home:
 
                 if int(status) == WANTED:
                     # figure out what episodes are wanted so we can backlog them
-                    if epObj.show.air_by_date:
+                    if epObj.show.air_by_date or epObj.show.sports:
                         segment = str(epObj.airdate)[:7]
                     else:
                         segment = epObj.season
@@ -3406,7 +3414,7 @@ class Home:
             return json.dumps({'result': 'failure'})
 
         # figure out what segment the episode is in and remember it so we can backlog it
-        if ep_obj.show.air_by_date:
+        if ep_obj.show.air_by_date or ep_obj.show.sports:
             segment = str(ep_obj.airdate)[:7]
         else:
             segment = ep_obj.season

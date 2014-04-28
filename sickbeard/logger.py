@@ -98,7 +98,7 @@ class SBRotatingLogHandler(object):
                 # define a Handler which writes INFO messages or higher to the sys.stderr
                 console = logging.StreamHandler()
 
-                console.setLevel(logging.INFO)
+                console.setLevel(logging.DEBUG)
 
                 # set a format which is simpler for console use
                 console.setFormatter(DispatchingFormatter(

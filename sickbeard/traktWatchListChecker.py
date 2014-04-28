@@ -118,7 +118,7 @@ class TraktChecker():
                 return
             logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
             # figure out what segment the episode is in and remember it so we can backlog it
-            if epObj.show.air_by_date:
+            if epObj.show.air_by_date or epObj.show.sports:
                 ep_segment = str(epObj.airdate)[:7]
             else:
                 ep_segment = epObj.season
