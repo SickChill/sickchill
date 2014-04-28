@@ -60,7 +60,7 @@ http_error_code = {
     503: 'Service Unavailable',
     504: 'Gateway Timeout',
     505: 'HTTP Version Not Supported',
-    542: 'Request to host timedout waiting for reply back'
+    524: 'Request to host timedout waiting for reply back'
 }
 
 default_host = {'utorrent': 'http://localhost:8000',
