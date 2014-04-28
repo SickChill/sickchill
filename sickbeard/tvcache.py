@@ -236,7 +236,7 @@ class TVCache():
             # if the cache failed, try looking up the show name in the database
             if not indexer_id:
                 logger.log(
-                    u"Checking the database for Indexer ID of " + parse_result.series_name,
+                    u"Checking the database for Indexer ID of " + str(parse_result.series_name),
                     logger.DEBUG)
 
                 showResult = helpers.searchDBForShow(parse_result.series_name)
@@ -254,13 +254,13 @@ class TVCache():
                 sceneResult = sickbeard.scene_exceptions.get_scene_exception_by_name(parse_result.series_name)
                 if sceneResult:
                     logger.log(
-                        u"" + parse_result.series_name + " was found in scene exceptions list with Indexer ID: " + sceneResult, logger.DEBUG)
+                        u"" + str(parse_result.series_name) + " was found in scene exceptions list with Indexer ID: " + str(sceneResult), logger.DEBUG)
                     indexer_id = sceneResult
 
             # if the DB lookup fails then do a comprehensive regex search
             if not indexer_id:
                 logger.log(
-                    u"Checking the shows list for Indexer ID of " + parse_result.series_name,
+                    u"Checking the shows list for Indexer ID of " + str(parse_result.series_name),
                     logger.DEBUG)
                 for curShow in sickbeard.showList:
                     if show_name_helpers.isGoodResult(name, curShow, False):
