@@ -246,6 +246,12 @@ class GenericProvider:
         self._checkAuth()
 
         for ep_obj in ep_objs:
+            # get scene season/episode info
+            scene_season = ep_obj.scene_season
+            scene_episode = ep_obj.scene_episode
+            if show.air_by_date:
+                scene_episode = ep_obj.airdate
+
             if not seasonSearch:
                 logger.log(u'Searching "%s" for "%s" as "%s"'
                            % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
@@ -262,10 +268,10 @@ class GenericProvider:
                 return results
 
             if seasonSearch:
-                for curString in self._get_season_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, show.air_by_date):
+                for curString in self._get_season_search_strings(show, scene_season, scene_episode, show.air_by_date):
                     itemList += self._doSearch(curString, show=show)
             else:
-                for curString in self._get_episode_search_strings(show, ep_obj.scene_season, ep_obj.scene_episode, show.air_by_date):
+                for curString in self._get_episode_search_strings(show, scene_season, scene_episode, show.air_by_date):
                     itemList += self._doSearch(curString, show=show)
 
         for item in itemList:
