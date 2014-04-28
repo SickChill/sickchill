@@ -132,6 +132,7 @@ ACTUAL_CACHE_DIR = None
 ROOT_DIRS = None
 UPDATE_SHOWS_ON_START = None
 SORT_ARTICLE = None
+DEBUG = False
 
 USE_LISTVIEW = None
 METADATA_XBMC = None
@@ -497,8 +498,7 @@ def initialize(consoleLogging=True):
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, \
-            PROXY_SETTING 
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING
 
         if __INITIALIZED__:
             return False
@@ -562,6 +562,8 @@ def initialize(consoleLogging=True):
 
         USE_API = bool(check_setting_int(CFG, 'General', 'use_api', 0))
         API_KEY = check_setting_str(CFG, 'General', 'api_key', '')
+
+        DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
@@ -1299,6 +1301,7 @@ def save_config():
     new_config['General']['anon_redirect'] = ANON_REDIRECT
     new_config['General']['use_api'] = int(USE_API)
     new_config['General']['api_key'] = API_KEY
+    new_config['General']['debug'] = int(DEBUG)
     new_config['General']['enable_https'] = int(ENABLE_HTTPS)
     new_config['General']['https_cert'] = HTTPS_CERT
     new_config['General']['https_key'] = HTTPS_KEY

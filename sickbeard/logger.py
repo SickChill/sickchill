@@ -99,6 +99,8 @@ class SBRotatingLogHandler(object):
                 console = logging.StreamHandler()
 
                 console.setLevel(logging.INFO)
+                if sickbeard.DEBUG:
+                    console.setLevel(logging.DEBUG)
 
                 # set a format which is simpler for console use
                 console.setFormatter(DispatchingFormatter(
