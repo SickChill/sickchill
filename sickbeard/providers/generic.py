@@ -44,7 +44,6 @@ from lib.hachoir_parser import createParser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 from sickbeard.common import Quality, Overview
 
-
 class GenericProvider:
     NZB = "nzb"
     TORRENT = "torrent"
@@ -136,6 +135,12 @@ class GenericProvider:
 
         if not f:
             logger.log(u"Error loading " + self.name + " URL: " + url, logger.ERROR)
+            return None
+        elif 'error' in f.feed:
+            logger.log(u"Newznab ERROR:[%s] CODE:[%s]" % (f.feed['error']['description'], f.feed['error']['code']), logger.DEBUG)
+            return None
+        elif not f.entries:
+            logger.log(u"Error loading RSS feed items for " + self.name + " using URL: " + url, logger.ERROR)
             return None
 
         return f

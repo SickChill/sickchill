@@ -151,9 +151,7 @@ class NZBsCache(tvcache.TVCache):
 
         logger.log(u"NZBs cache update URL: " + url, logger.DEBUG)
 
-        data = self.provider.getURL(url)
-
-        return data
+        return self.provider.getURL(url)
 
     def _checkItemAuth(self, title, url):
         if "&i=" not in url and "&h=" not in url:

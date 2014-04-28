@@ -122,7 +122,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
         fileURL = self.proxy._buildURL(self.url + 'ajax_details_filelist.php?id=' + str(torrent_id))
 
         data = self.getURL(fileURL)
-
         if not data:
             return None
 

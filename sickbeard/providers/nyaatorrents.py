@@ -133,9 +133,7 @@ class NyaaCache(tvcache.TVCache):
 
         logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
 
-        data = self.provider.getRSSFeed(url)
-
-        return data
+        return self.provider.getRSSFeed(url)
 
     def _parseItem(self, item):
         (title, url) = self.provider._get_title_and_url(item)

@@ -82,7 +82,6 @@ class TorrentRssProvider(generic.TorrentProvider):
         try:
 
             data = self.cache._getRSSData()
-
             if not data:
                 return (False, 'No data returned from url: ' + self.url)
 

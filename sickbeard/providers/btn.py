@@ -357,9 +357,7 @@ class BTNCache(tvcache.TVCache):
                 logger.WARNING)
             seconds_since_last_update = 86400
 
-        data = self.provider._doSearch(search_params=None, age=seconds_since_last_update)
-
-        return data
+        return self.provider._doSearch(search_params=None, age=seconds_since_last_update)
 
     def _parseItem(self, item):
         (title, url) = self.provider._get_title_and_url(item)

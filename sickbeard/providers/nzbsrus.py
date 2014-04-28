@@ -107,8 +107,7 @@ class NZBsRUSCache(tvcache.TVCache):
         url += urllib.urlencode(urlArgs)
         logger.log(u"NZBs'R'US cache update URL: " + url, logger.DEBUG)
 
-        data = self.provider.getRSSFeed(url)
-        return data
+        return self.provider.getRSSFeed(url)
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'

@@ -118,7 +118,6 @@ class EZRSSProvider(generic.TorrentProvider):
         data = self.getRSSFeed(search_url)
 
         if not data:
-            logger.log(u"No data returned from " + search_url, logger.ERROR)
             return []
 
         items = data.entries
@@ -172,13 +171,7 @@ class EZRSSCache(tvcache.TVCache):
         rss_url = self.provider.url + 'feed/'
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.provider.getRSSFeed(rss_url)
-
-        if not data:
-            logger.log(u"No data returned from " + rss_url, logger.ERROR)
-            return None
-
-        return data
+        return self.provider.getRSSFeed(rss_url)
 
     def _parseItem(self, item):
 

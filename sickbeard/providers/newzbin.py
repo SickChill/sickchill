@@ -323,9 +323,7 @@ class NewzbinProvider(generic.NZBProvider):
         url = self.url + "search/?%s" % urllib.urlencode(params)
         logger.log("Newzbin search URL: " + url, logger.DEBUG)
 
-        data = self.getRSSFeed(url)
-
-        return data
+        return self.getRSSFeed(url)
 
     def _checkAuth(self):
         if sickbeard.NEWZBIN_USERNAME in (None, "") or sickbeard.NEWZBIN_PASSWORD in (None, ""):
@@ -342,9 +340,7 @@ class NewzbinCache(tvcache.TVCache):
 
     def _getRSSData(self):
 
-        data = self.provider._getRSSData()
-
-        return data
+        return self.provider._getRSSData()
 
     def _parseItem(self, item):
 

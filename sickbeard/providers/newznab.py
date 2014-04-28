@@ -166,19 +166,9 @@ class NewznabProvider(generic.NZBProvider):
         if data is None:
             return self._checkAuth()
 
-        if len(data.feed) > 0:
-            if 'error' in data.feed:
-                if data.feed.error == 100:
-                    raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
-                elif data.feed.error == 101:
-                    raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
-                elif data.feed.error == 102:
-                    raise AuthException(
-                        "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
-                else:
-                    logger.log(u"Unknown error given from " + self.name + ": " + data.feed.title,
-                               logger.ERROR)
-                return False
+        if 'error' in data.feed:
+            logger.log(u"Newznab ERROR:[%s] CODE:[%s]" % (data.feed['error']['description'], data.feed['error']['code']), logger.DEBUG)
+            raise AuthException("%s" % data.feed['error']['description'])
 
         return True
 
@@ -206,9 +196,7 @@ class NewznabProvider(generic.NZBProvider):
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
         data = self.getRSSFeed(search_url)
-
         if not data:
-            logger.log(u"No data returned from " + search_url, logger.ERROR)
             return []
 
         if self._checkAuthFromData(data):
@@ -279,13 +267,7 @@ class NewznabCache(tvcache.TVCache):
 
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.provider.getRSSFeed(rss_url)
-
-        if not data:
-            logger.log(u"No data returned from " + rss_url, logger.ERROR)
-            return None
-
-        return data
+        return self.provider.getRSSFeed(rss_url)
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)

@@ -211,4 +211,25 @@ sports_regexs = [
      (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
      (?P<release_group>.*?)$
      '''),
+
+    ('sports_parts_without_event',
+     # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
+     '''
+     ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
+     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+
+     (?P<air_day>\d{1,2}[a-zA-Z]{2})[. _-]+
+     (?P<air_month>[a-zA-Z]{3,})[. _-]+
+     (?P<air_year>\d{4})[. _-]+
+     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     (?P<release_group>.*?)$
+     '''),
+
+    ('sports_bare',
+     # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
+     '''
+     ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
+     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+
+     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     (?P<release_group>.*?)$
+     '''),
 ]

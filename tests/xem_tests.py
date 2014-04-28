@@ -56,8 +56,8 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         ep_date_formated = ep.airdate.strftime('%b')
 
-        show_name = 'UFC'
-        if show_name.lower() in sickbeard.showList:
+        show_name = None
+        if show_name:
             print 'good'
         else:
             print 'bad'
