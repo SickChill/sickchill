@@ -27,7 +27,7 @@ from sickbeard import logger
 from sickbeard.common import Quality
 
 from sickbeard import helpers, show_name_helpers
-from sickbeard import name_cache
+from sickbeard import name_cache, scene_exceptions
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard.exceptions import ex, AuthException
 
@@ -220,23 +220,25 @@ class TVCache():
 
         # if no indexerID then fill out as much info as possible by searching the show name
         if not indexer_id:
+            from_cache = False
+
             # check the name cache and see if we already know what show this is
             logger.log(
-                u"Checking the cache to see if we already know the Indexer ID of " + parse_result.series_name,
+                u"Checking the cache for Indexer ID of " + parse_result.series_name,
                 logger.DEBUG)
-            indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
 
             # remember if the cache lookup worked or not so we know whether we should bother updating it later
-            if indexer_id == None:
-                logger.log(u"No cache results returned, continuing on with the search", logger.DEBUG)
-                from_cache = False
-            else:
+            indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
+            if indexer_id:
                 logger.log(u"Cache lookup found " + repr(indexer_id) + ", using that", logger.DEBUG)
                 from_cache = True
 
             # if the cache failed, try looking up the show name in the database
-            if indexer_id == None:
-                logger.log(u"Trying to look the show up in the show database", logger.DEBUG)
+            if not indexer_id:
+                logger.log(
+                    u"Checking the database for Indexer ID of " + parse_result.series_name,
+                    logger.DEBUG)
+
                 showResult = helpers.searchDBForShow(parse_result.series_name)
                 if showResult:
                     logger.log(
@@ -244,13 +246,25 @@ class TVCache():
                             showResult[1]) + ") in our DB.", logger.DEBUG)
                     indexer_id = showResult[1]
 
+            # if the database failed, try looking up the show name from scene exceptions list
+            if not indexer_id:
+                logger.log(
+                    u"Checking the scene exceptions list for Indexer ID of " + parse_result.series_name,
+                    logger.DEBUG)
+                sceneResult = sickbeard.scene_exceptions.get_scene_exception_by_name(parse_result.series_name)
+                if sceneResult:
+                    logger.log(
+                        u"" + parse_result.series_name + " was found in scene exceptions list with Indexer ID: " + sceneResult, logger.DEBUG)
+                    indexer_id = sceneResult
+
             # if the DB lookup fails then do a comprehensive regex search
-            if indexer_id == None:
-                logger.log(u"Couldn't figure out a show name straight from the DB, trying a regex search instead",
-                           logger.DEBUG)
+            if not indexer_id:
+                logger.log(
+                    u"Checking the shows list for Indexer ID of " + parse_result.series_name,
+                    logger.DEBUG)
                 for curShow in sickbeard.showList:
                     if show_name_helpers.isGoodResult(name, curShow, False):
-                        logger.log(u"Successfully matched " + name + " to " + curShow.name + " with regex",
+                        logger.log(u"Successfully matched " + name + " to " + curShow.name + " from shows list",
                                    logger.DEBUG)
                         indexer_id = curShow.indexerid
                         indexer_lang = curShow.lang
