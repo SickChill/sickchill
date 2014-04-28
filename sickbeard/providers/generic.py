@@ -140,7 +140,7 @@ class GenericProvider:
             logger.log(u"Newznab ERROR:[%s] CODE:[%s]" % (f.feed['error']['description'], f.feed['error']['code']), logger.DEBUG)
             return None
         elif not f.entries:
-            logger.log(u"Error loading RSS feed items for " + self.name + " using URL: " + url, logger.ERROR)
+            logger.log(u"No items found on " + self.name + " using URL: " + url, logger.WARNING)
             return None
 
         return f
