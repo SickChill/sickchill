@@ -260,6 +260,9 @@ class GenericProvider:
         if show.sports:
             regexMethod = 1
 
+        # update cache
+        self.cache.updateCache()
+
         for ep_obj in ep_objs:
             # get scene season/episode info
             scene_season = ep_obj.scene_season
@@ -271,7 +274,6 @@ class GenericProvider:
                 logger.log(u'Searching "%s" for "%s" as "%s"'
                            % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
-            self.cache.updateCache()
             results = self.cache.searchCache(ep_obj, manualSearch)
             logger.log(u"Cache results: " + str(results), logger.DEBUG)
             logger.log(u"manualSearch: " + str(manualSearch), logger.DEBUG)
@@ -298,7 +300,7 @@ class GenericProvider:
             # parse the file name
             try:
                 myParser = NameParser(False, regexMethod)
-                parse_result = myParser.parse(title, True)
+                parse_result = myParser.parse(title)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                 continue
@@ -312,7 +314,7 @@ class GenericProvider:
                     continue
 
                 # we just use the existing info for normal searches
-                actual_season = season
+                actual_season = parse_result.season_number
                 actual_episodes = parse_result.episode_numbers
 
             else:
@@ -348,9 +350,14 @@ class GenericProvider:
             # make sure we want the episode
             wantEp = True
             for epNo in actual_episodes:
-                if not show.wantEpisode(actual_season, epNo, quality, manualSearch=manualSearch):
+                epObj = show.getEpisode(actual_season, epNo)
+                if not epObj or not show.wantEpisode(epObj.season, epObj.episode, quality, manualSearch=manualSearch):
                     wantEp = False
                     break
+
+            if not epObj:
+                logger.log(u"Ignoring result " + title + " because episode scene info is invalid.")
+                continue
 
             if not wantEp:
                 logger.log(
@@ -361,24 +368,23 @@ class GenericProvider:
             logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
 
             # make a result object
-            epObj = []
-            for curEp in actual_episodes:
-                epObj.append(show.getEpisode(actual_season, curEp))
+            epObjs = []
+            epObjs.append(epObj)
 
-            result = self.getResult(epObj)
+            result = self.getResult(epObjs)
             result.url = url
             result.name = title
             result.quality = quality
             result.provider = self
             result.content = None
 
-            if len(epObj) == 1:
-                epNum = epObj[0].episode
-            elif len(epObj) > 1:
+            if len(epObjs) == 1:
+                epNum = epObjs[0].episode
+            elif len(epObjs) > 1:
                 epNum = MULTI_EP_RESULT
                 logger.log(u"Separating multi-episode result to check for later - result contains episodes: " + str(
                     parse_result.episode_numbers), logger.DEBUG)
-            elif len(epObj) == 0:
+            elif len(epObjs) == 0:
                 epNum = SEASON_RESULT
                 result.extraInfo = [show]
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)

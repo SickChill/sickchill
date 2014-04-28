@@ -277,7 +277,7 @@ def makeDir(path):
 
 
 def searchDBForShow(regShowName, indexer_id=None):
-    showNames = [re.sub('[. -]', ' ', regShowName), regShowName]
+    showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
 
     myDB = db.DBConnection()
 

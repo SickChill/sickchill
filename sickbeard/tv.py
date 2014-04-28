@@ -182,9 +182,16 @@ class TVShow(object):
         return ep_list
 
 
-    def getEpisode(self, season, episode, file=None, noCreate=False):
+    def getEpisode(self, season, episode, file=None, noCreate=False, sceneConvert=False):
 
         #return TVEpisode(self, season, episode)
+        if sceneConvert:
+            for curSeason in self.episodes:
+                for curEp in self.episodes[curSeason]:
+                    myEp = self.episodes[curSeason][curEp]
+                    if season == myEp.scene_season and episode == myEp.scene_episode:
+                        season = myEp.season
+                        episode = myEp.episode
 
         if not season in self.episodes:
             self.episodes[season] = {}

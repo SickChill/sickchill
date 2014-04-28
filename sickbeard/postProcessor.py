@@ -672,14 +672,12 @@ class PostProcessor(object):
 
         root_ep = None
         for cur_episode in episodes:
-            # convert episode from scene numbering to Indexer numbering
-            (s, e) = sickbeard.scene_numbering.get_indexer_numbering(indexer_id, season, int(cur_episode))
-
-            self._log(u"Retrieving episode object for " + str(s) + "x" + str(e), logger.DEBUG)
+            self._log(u"Retrieving episode object for " + str(season) + "x" + str(cur_episode), logger.DEBUG)
 
             # now that we've figured out which episode this file is just load it manually
             try:
-                curEp = show_obj.getEpisode(s, e)
+                # convert scene numbered release and load episode from database
+                curEp = show_obj.getEpisode(season, cur_episode, sceneConvert=True)
             except exceptions.EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise exceptions.PostProcessingFailed()

@@ -192,8 +192,8 @@ class TVCache():
         # if we don't have complete info then parse the filename to get it
         for curName in [name] + extraNames:
             try:
-                myParser = NameParser()
-                parse_result = myParser.parse(curName, True)
+                myParser = NameParser(regexMode=-1)
+                parse_result = myParser.parse(curName)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curName + " into a valid episode", logger.DEBUG)
                 continue
@@ -358,6 +358,10 @@ class TVCache():
 
         # for each cache entry
         for curResult in sqlResults:
+            # skip if we don't have a indexerid
+            indexerid = int(curResult["indexerid"])
+            if not indexerid:
+                continue
 
             # skip non-tv crap (but allow them for Newzbin cause we assume it's filtered well)
             if self.providerID != 'newzbin' and not show_name_helpers.filterBadReleases(curResult["name"]):
@@ -368,6 +372,7 @@ class TVCache():
                 showObj = helpers.findCertainShow(sickbeard.showList, int(curResult["indexerid"]))
             except (MultipleShowObjectsException):
                 showObj = None
+
             if not showObj:
                 continue
 
@@ -381,13 +386,14 @@ class TVCache():
             curEp = int(curEp)
             curQuality = int(curResult["quality"])
 
+            # items stored in cache are scene numbered, convert before lookups
+            epObj = showObj.getEpisode(curSeason, curEp, sceneConvert=True)
+
             # if the show says we want that episode then add it to the list
-            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
+            if not showObj.wantEpisode(epObj.season, epObj.episode, curQuality, manualSearch):
                 logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
                            Quality.qualityStrings[curQuality], logger.DEBUG)
-
             else:
-
                 if episode:
                     epObj = episode
                 else:
