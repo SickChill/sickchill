@@ -137,7 +137,7 @@ class BTNProvider(generic.TorrentProvider):
         try:
             parsedJSON = server.getTorrents(apikey, params, int(results_per_page), int(offset))
 
-        except jsonrpclib.ProtocolError, error:
+        except jsonrpclib.jsonrpc.ProtocolError, error:
             logger.log(u"JSON-RPC protocol error while accessing " + self.name + ": " + ex(error), logger.ERROR)
             parsedJSON = {'api-error': ex(error)}
             return parsedJSON
