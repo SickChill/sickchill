@@ -80,7 +80,7 @@ class HTTPConnection(_HTTPConnection, object):
 
     def _prepare_conn(self, conn):
         self.sock = conn
-        if self._tunnel_host:
+        if getattr(self, '_tunnel_host', None):
             # TODO: Fix tunnel so it doesn't depend on self.sock state.
             self._tunnel()
 
