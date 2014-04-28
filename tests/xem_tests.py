@@ -50,8 +50,9 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
     def test_formating(self):
         self.loadFromDB()
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 24749)
-        ep = show.getEpisode(21, 17)
+        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 111051)
+        show.loadEpisodesFromDB()
+        ep = show.getEpisode(8, 56, sceneConvert=True)
         ep.airdate = datetime.date.today()
 
         # parse the file name
