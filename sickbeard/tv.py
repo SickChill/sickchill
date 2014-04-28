@@ -1902,12 +1902,12 @@ class TVEpisode(object):
             '%0XME': '%02d' % self.scene_episode,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
-            '%AD': str(self.airdate).replace('-', ' '),
-            '%A.D': str(self.airdate).replace('-', '.'),
-            '%A_D': us(str(self.airdate)),
-            '%A-D': str(self.airdate),
+            '%AD': self.airdate.strftime('%d %b %Y') if self.show.sports else str(self.airdate).replace('-', ' '),
+            '%A.D': self.airdate.strftime('%d.%b.%Y') if self.show.sports else str(self.airdate).replace('-', '.'),
+            '%A_D': us(self.airdate.strftime('%d-%b-%Y')) if self.show.sports else us(str(self.airdate)),
+            '%A-D': self.airdate.strftime('%d-%b-%Y') if self.show.sports else str(self.airdate),
             '%Y': str(self.airdate.year),
-            '%M': str(self.airdate.month),
+            '%M': self.airdate.strftime('%b') if self.show.sports else str(self.airdate.month),
             '%D': str(self.airdate.day),
             '%0M': '%02d' % self.airdate.month,
             '%0D': '%02d' % self.airdate.day,
@@ -2100,7 +2100,7 @@ class TVEpisode(object):
             if self.show.air_by_date and sickbeard.NAMING_CUSTOM_ABD and not self.relatedEps:
                 pattern = sickbeard.NAMING_ABD_PATTERN
             elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
-                pattern = sickbeard.NAMING_CUSTOM_SPORTS
+                pattern = sickbeard.NAMING_SPORTS_PATTERN
             else:
                 pattern = sickbeard.NAMING_PATTERN
 

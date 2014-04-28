@@ -153,7 +153,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
     logger.log(u"Trying to parse " + new_name, logger.DEBUG)
 
     try:
-        result = parser.parse(new_name, regexMode)
+        result = parser.parse(new_name)
     except InvalidNameException:
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
@@ -187,8 +187,10 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
 
     if abd:
         ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
+        ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.09.03.2011.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.9th.Mar.2011.HDTV.XviD-RLSGROUP'
+        ep.show.sports = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
 

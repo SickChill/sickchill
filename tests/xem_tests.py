@@ -52,24 +52,16 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         self.loadFromDB()
         show = sickbeard.helpers.findCertainShow(sickbeard.showList, 24749)
         ep = show.getEpisode(21, 17)
-        ep.airdate = datetime.datetime.now()
-
-        ep_date_formated = ep.airdate.strftime('%b')
-
-        show_name = None
-        if show_name:
-            print 'good'
-        else:
-            print 'bad'
+        ep.airdate = datetime.date.today()
 
         # parse the file name
-        parse_result = None
-        title = u'UFC 155 Dos Santos vs Velasquez 29th Dec 2012 HDTV x264-Sir Paul'
+        pattern = u'%SN - %A-D - %EN'
+        title = 'Show.Name.9th.Mar.2010.HDTV.XviD-RLSGROUP'
         try:
             myParser = NameParser(False, 1)
             parse_result = myParser.parse(title, True)
         except InvalidNameException:
-            print(u"Unable to parse the filename " + title + " into a valid episode")
+            print(u"Unable to parse the filename " + ep.name + " into a valid episode")
 
         print parse_result
 
