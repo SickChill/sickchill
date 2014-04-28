@@ -42,6 +42,7 @@ if sys.hexversion >= 0x020600F0:
     from multiprocessing import freeze_support # @UnresolvedImport
 
 import locale
+import datetime
 import threading
 import time
 import signal
@@ -64,6 +65,7 @@ from lib.configobj import ConfigObj
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
+throwaway = datetime.datetime.strptime('20110101','%Y%m%d')
 
 def loadShowsFromDB():
     """
