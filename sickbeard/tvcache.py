@@ -275,7 +275,11 @@ class TVCache():
                 logger.log(
                     u"Checking Indexers for Indexer ID of " + parse_result.series_name,
                     logger.DEBUG)
-                indexerResult = helpers.searchIndexerForShowID(parse_result.series_name)
+
+                # check indexers
+                try:indexerResult = helpers.searchIndexerForShowID(parse_result.series_name)
+                except:indexerResult = None
+
                 if indexerResult:
                     logger.log(
                         u"" + str(parse_result.series_name) + " was found on " + str(sickbeard.indexerApi(indexerResult[0]).name) + " with Indexer ID: " + str(indexerResult[1]), logger.DEBUG)
