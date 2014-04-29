@@ -155,13 +155,13 @@ class SCCProvider(generic.TorrentProvider):
 
                 if mode == 'Season':
                     searchURL = self.urls['archive'] % (search_string)
-                    data = self.getURL(searchURL, headers=self.headers)
+                    data = [self.getURL(searchURL, headers=self.headers)]
                 else:
                     searchURL = self.urls['search'] % (search_string, self.categories)
                     nonsceneSearchURL = self.urls['nonscene'] % (search_string)
                     foreignSearchURL = self.urls['foreign'] % (search_string)
                     data = [self.getURL(searchURL, headers=self.headers),
-                            self.getURL(nonsceneSearchURL, headers=self.headers), 
+                            self.getURL(nonsceneSearchURL, headers=self.headers),
                             self.getURL(foreignSearchURL, headers=self.headers)]
                     logger.log(u"Search string: " + nonsceneSearchURL, logger.DEBUG)
                     logger.log(u"Search string: " + foreignSearchURL, logger.DEBUG)
@@ -174,10 +174,10 @@ class SCCProvider(generic.TorrentProvider):
                 try:
                     for dataItem in data:
                         html = BeautifulSoup(dataItem, features=["html5lib", "permissive"])
-    
+
                         torrent_table = html.find('table', attrs={'id': 'torrents-table'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-    
+
                         #Continue only if one Release is found
                         if len(torrent_rows) < 2:
                             if html.title:
@@ -186,31 +186,34 @@ class SCCProvider(generic.TorrentProvider):
                                 source = self.name
                             logger.log(u"The Data returned from " + source + " does not contain any torrent", logger.DEBUG)
                             continue
-    
+
                         for result in torrent_table.find_all('tr')[1:]:
-    
+
                             try:
                                 link = result.find('td', attrs={'class': 'ttr_name'}).find('a')
                                 url = result.find('td', attrs={'class': 'td_dl'}).find('a')
                                 title = link.string
+                                if re.search('\.\.\.', title):
+                                    details_html = BeautifulSoup(self.getURL(self.url + "/" + link['href']))
+                                    title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
                                 download_url = self.urls['download'] % url['href']
                                 id = int(link['href'].replace('details?id=', ''))
                                 seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
                                 leechers = int(result.find('td', attrs={'class': 'ttr_leechers'}).string)
                             except (AttributeError, TypeError):
                                 continue
-    
+
                             if mode != 'RSS' and seeders == 0:
                                 continue
-    
+
                             if not title or not download_url:
                                 continue
-    
+
                             item = title, download_url, id, seeders, leechers
 
                             if re.search('<title>SceneAccess \| Non-Scene</title>', dataItem):
                                 logger.log(u"Found result: " + title + "(" + nonsceneSearchURL + ")", logger.DEBUG)
-                            elif re.search('<title>SceneAccess \| Non-Scene</title>', dataItem):
+                            elif re.search('<title>SceneAccess \| Foreign</title>', dataItem):
                                 logger.log(u"Found result: " + title + "(" + foreignSearchURL + ")", logger.DEBUG)
                             else:
                                 logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
