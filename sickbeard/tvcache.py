@@ -56,18 +56,13 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
-        # Delete any entries missing a Indexer ID
+        # Clear out records missing there Indexer IDs
         try:
-            sqlResults = self.connection.execute(
-                "SELECT * FROM [" + providerName + "] WHERE indexerid is NULL OR indexerid = 0")
-            for cur_orphan in sqlResults:
-                logger.log(u"Missing IndexerID detected! name: " + str(cur_orphan["name"]), logger.DEBUG)
-                logger.log(u"Deleting orphaned cache entry with name: " + str(cur_orphan["name"]))
-                self.connection.action("DELETE FROM [" + providerName + "] WHERE name = ?", [cur_orphan["name"]])
-        except sqlite3.OperationalError, e:
-            if str(e) != "table [" + providerName + "] cleanup failed":
-                raise
-
+            sql = "DELETE FROM [" + providerName + "] WHERE indexerid is NULL or indexerid is 0"
+            self.connection.execute(sql)
+            self.connection.commit()
+        except:
+            pass
 
 class TVCache():
     def __init__(self, provider):

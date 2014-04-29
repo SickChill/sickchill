@@ -190,7 +190,7 @@ sports_regexs = [
     ('sports_event',
      # Show.Name.123.Event.Nov.23rd.2010.Source.Quality.Etc-Group
      '''
-     ^((?P<series_name>.+?)[. _-]+)?
+/////////////////////p,.l..................      ^((?P<series_name>.+?)[. _-]+)?
      ((?P<air_day>\d{1,2}).+)[. _-]+
      (?P<air_month>\w{3,})[. _-]+
      (?P<air_year>\d{4})
