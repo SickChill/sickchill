@@ -59,7 +59,7 @@ class CacheDBConnection(db.DBConnection):
         # Delete any entries missing a Indexer ID
         try:
             sqlResults = self.connection.execute(
-                "SELECT * FROM [" + providerName + "] WHERE indexerid is NULL or 0 or None")
+                "SELECT * FROM [" + providerName + "] WHERE indexerid is NULL OR indexerid = 0")
             for cur_orphan in sqlResults:
                 logger.log(u"Missing IndexerID detected! name: " + str(cur_orphan["name"]), logger.DEBUG)
                 logger.log(u"Deleting orphaned cache entry with name: " + str(cur_orphan["name"]))
