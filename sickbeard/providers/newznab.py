@@ -80,15 +80,12 @@ class NewznabProvider(generic.NZBProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, show, season, episode):
-
-        if not show:
-            return [{}]
+    def _get_season_search_strings(self, season, episode):
 
         to_return = []
 
         # add new query strings for exceptions
-        name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid) + [show.name]
+        name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
         for cur_exception in name_exceptions:
 
             cur_params = {}
@@ -100,13 +97,13 @@ class NewznabProvider(generic.NZBProvider):
             cur_params['season'] = str(season)
 
             # episode
-            cur_params['episode'] = self._get_episode_search_strings(show, season, episode)[0]['ep']
+            cur_params['episode'] = self._get_episode_search_strings(season, episode)[0]['ep']
 
             to_return.append(cur_params)
 
         return to_return
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
+    def _get_episode_search_strings(self, season, episode, add_string=''):
 
         params = {}
 
@@ -114,14 +111,14 @@ class NewznabProvider(generic.NZBProvider):
             return [params]
 
         # search
-        params['q'] = helpers.sanitizeSceneName(show.name)
+        params['q'] = helpers.sanitizeSceneName(self.show.name)
 
-        if show.air_by_date:
+        if self.show.air_by_date:
             date_str = str(episode)
 
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
-        elif show.sports:
+        elif self.show.sports:
             date_str = str(episode)
 
             params['season'] = date_str.partition('-')[0]
@@ -136,11 +133,11 @@ class NewznabProvider(generic.NZBProvider):
         if 'q' in params:
 
             # add new query strings for exceptions
-            name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid)
+            name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid)
             for cur_exception in name_exceptions:
 
                 # don't add duplicates
-                if cur_exception == show.name:
+                if cur_exception == self.show.name:
                     continue
 
                 cur_return = params.copy()

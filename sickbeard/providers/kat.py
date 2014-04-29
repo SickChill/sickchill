@@ -164,46 +164,36 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
 
-    def _get_season_search_strings(self, show, season, episode):
+    def _get_season_search_strings(self, season, episode):
         search_string = {'Season': [], 'Episode': []}
 
-        if not show:
-            return []
-
-        self.show = show
-
-        for show_name in set(allPossibleShowNames(show)):
-            ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
+        for show_name in set(allPossibleShowNames(self.show)):
+            ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
             search_string['Season'].append(ep_string)
 
-            ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) ShowName Season X
+            ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) showName Season X
             search_string['Season'].append(ep_string)
 
-        search_string['Episode'] = self._get_episode_search_strings(show, season, episode)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(season, episode)[0]['Episode']
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
+    def _get_episode_search_strings(self, season, episode, add_string=''):
         search_string = {'Episode': []}
 
-        if not show:
-            return []
-
-        self.show = show
-
-        if show.air_by_date:
-            for show_name in set(allPossibleShowNames(show)):
+        if self.show.air_by_date:
+            for show_name in set(allPossibleShowNames(self.show)):
 
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(episode).replace('-','|') + '|' + \
                             episode.strftime('%b')
                 search_string['Episode'].append(ep_string)
-        if show.sports:
-            for show_name in set(allPossibleShowNames(show)):
+        elif self.show.sports:
+            for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(episode).replace('-', '|') + '|' + \
                             episode.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
-            for show_name in set(allPossibleShowNames(show)):
+            for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
                                                                   'episodenumber': episode} + '|' + \
@@ -389,18 +379,13 @@ class KATProvider(generic.TorrentProvider):
         if not sqlResults:
             return []
 
-        for sqlShow in sqlResults:
-            curShow = helpers.findCertainShow(sickbeard.showList, int(sqlShow["showid"]))
-            curEp = curShow.getEpisode(int(sqlShow["season"]), int(sqlShow["episode"]))
+        for sqlshow in sqlResults:
+            curshow = helpers.findCertainshow(sickbeard.showList, int(sqlshow["showid"]))
+            curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
-            season = curEp.scene_season
-            episode = curEp.scene_episode
-            if curShow.air_by_date or curShow.sports:
-                episode = curEp.airdate
+            searchString = self._get_episode_search_strings(curshow, curEp.scene_season, curEp.scene_episode, add_string='PROPER|REPACK')
 
-            searchString = self._get_episode_search_strings(curShow, season, episode, add_string='PROPER|REPACK')
-
-            for item in self._doSearch(searchString[0], show=curShow):
+            for item in self._doSearch(searchString[0], show=curshow):
                 title, url = self._get_title_and_url(item)
                 results.append(classes.Proper(title, url, datetime.datetime.today()))
 

@@ -39,8 +39,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import providers
 from sickbeard import failed_history
 from sickbeard.exceptions import ex
-from sickbeard.providers.generic import GenericProvider
-
+from sickbeard.providers.generic import GenericProvider, tvcache
 
 def _downloadResult(result):
     """
@@ -351,7 +350,7 @@ def isFirstBestMatch(result):
 
 def searchProviders(show, season, episode=None, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
-
+    curResults = {}
     foundResults = {}
 
     didSearch = False
@@ -367,35 +366,56 @@ def searchProviders(show, season, episode=None, manualSearch=False):
         ep_obj = show.getEpisode(season, episode)
         wantedEps = [ep_obj]
 
-    for curProvider in providers.sortedProviderList():
 
+
+    for curProvider in providers.sortedProviderList():
         if not curProvider.isActive():
             continue
 
-        try:
-            curResults = curProvider.getSearchResults(show, season, wantedEps, seasonSearch, manualSearch)
+        # update cache
+        if manualSearch:
+            curProvider.cache.updateCache()
 
-            # make a list of all the results for this provider
-            for curEp in curResults:
+        # search cache first for wanted episodes
+        for ep_obj in wantedEps:
+            curResults.update(curProvider.cache.searchCache(ep_obj, manualSearch))
 
-                # skip non-tv crap
-                curResults[curEp] = filter(
-                    lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,show),curResults[curEp])
+        # did we find our results ?
+        if curResults:
+            logger.log(u"Cache results: " + str(curResults), logger.DEBUG)
+            didSearch = True
+            break
 
-                if curEp in foundResults:
-                    foundResults[curEp] += curResults[curEp]
-                else:
-                    foundResults[curEp] = curResults[curEp]
+    if not curResults:
+        for curProvider in providers.sortedProviderList():
+            if not curProvider.isActive():
+                continue
 
-        except exceptions.AuthException, e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-            continue
-        except Exception, e:
-            logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            continue
+            try:
+                if not curResults:
+                    curResults = curProvider.getSearchResults(show, season, wantedEps, seasonSearch, manualSearch)
 
-        didSearch = True
+                # make a list of all the results for this provider
+                for curEp in curResults:
+
+                    # skip non-tv crap
+                    curResults[curEp] = filter(
+                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,show),curResults[curEp])
+
+                    if curEp in foundResults:
+                        foundResults[curEp] += curResults[curEp]
+                    else:
+                        foundResults[curEp] = curResults[curEp]
+
+            except exceptions.AuthException, e:
+                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+                continue
+            except Exception, e:
+                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
+                continue
+
+            didSearch = True
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",

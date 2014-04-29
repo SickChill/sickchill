@@ -37,7 +37,6 @@ import math
 
 class BTNProvider(generic.TorrentProvider):
     def __init__(self):
-
         generic.TorrentProvider.__init__(self, "BTN")
 
         self.supportsBacklog = True
@@ -191,58 +190,55 @@ class BTNProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def _get_season_search_strings(self, show, season, episode):
-        if not show:
-            return []
-
+    def _get_season_search_strings(self, season, episode):
         search_params = []
 
-        name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid) + [show.name]
+        name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
         for name in name_exceptions:
 
             current_params = {}
 
-            if show.indexer == 1:
-                current_params['tvdb'] = show.indexerid
-            elif show.indexer == 2:
-                current_params['tvrage'] = show.indexerid
+            if self.show.indexer == 1:
+                current_params['tvdb'] = self.show.indexerid
+            elif self.show.indexer == 2:
+                current_params['tvrage'] = self.show.indexerid
             else:
                 # Search by name if we don't have tvdb or tvrage id
                 current_params['series'] = sanitizeSceneName(name)
 
             whole_season_params = current_params.copy()
-            partial_season_params = current_params.copy()
+
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
             whole_season_params['name'] = 'Season ' + str(season)
             search_params.append(whole_season_params)
 
             # Search for episodes in the season
-            search_params.append(self._get_episode_search_strings(show, season, episode)[0])
+            search_params.append(self._get_episode_search_strings(season, episode)[0])
 
         return search_params
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
+    def _get_episode_search_strings(self, season, episode, add_string=''):
 
         if not episode:
             return [{}]
 
         search_params = {'category': 'Episode'}
 
-        if show.indexer == 1:
-            search_params['tvdb'] = show.indexerid
-        elif show.indexer == 2:
-            search_params['tvrage'] = show.indexerid
+        if self.show.indexer == 1:
+            search_params['tvdb'] = self.show.indexerid
+        elif self.show.indexer == 2:
+            search_params['tvrage'] = self.show.indexerid
         else:
-            search_params['series'] = sanitizeSceneName(show.name)
+            search_params['series'] = sanitizeSceneName(self.show.name)
 
-        if show.air_by_date:
+        if self.show.air_by_date:
             date_str = str(episode)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
-        if show.sports:
+        if self.show.sports:
             date_str = str(episode)
 
             # BTN uses dots in dates, we just search for the date since that
@@ -258,11 +254,11 @@ class BTNProvider(generic.TorrentProvider):
         if 'series' in search_params:
 
             # add new query string for every exception
-            name_exceptions = scene_exceptions.get_scene_exceptions(show.indexerid)
+            name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid)
             for cur_exception in name_exceptions:
 
                 # don't add duplicates
-                if cur_exception == show.name:
+                if cur_exception == self.show.name:
                     continue
 
                 # copy all other parameters before setting the show name for this exception

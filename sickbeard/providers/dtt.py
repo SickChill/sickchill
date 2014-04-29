@@ -52,21 +52,21 @@ class DTTProvider(generic.TorrentProvider):
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()
 
-    def _get_season_search_strings(self, show, season, episode):
+    def _get_season_search_strings(self, season, episode):
         search_string = []
 
-        for show_name in set(show_name_helpers.allPossibleShowNames(show)):
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
             show_string = sanitizeSceneName(show_name).replace('.', '-').lower()
             search_string.append(show_string)
 
         return search_string
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
-        return self._get_season_search_strings(show, season, episode)
+    def _get_episode_search_strings(self, season, episode, add_string=''):
+        return self._get_season_search_strings(season, episode)
 
     def _doSearch(self, search_params, show=None, age=None):
 
-        #        show_id = self._dtt_show_id(show.name)
+        #        show_id = self._dtt_show_id(self.show.name)
 
         params = {"items": "all"}
 

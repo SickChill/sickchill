@@ -538,7 +538,7 @@ class PostProcessor(object):
 
         # see if we can find the name on the Indexer
         for cur_name in name_list:
-            foundInfo = helpers.searchIndexerForShowID(cur_name)
+            foundInfo = helpers.searchIndexerForShowID(cur_name, ui=classes.ShowListUI)
             if foundInfo:
                 indexer_id = foundInfo[1]
                 self._log(

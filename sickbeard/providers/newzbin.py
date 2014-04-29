@@ -251,11 +251,11 @@ class NewzbinProvider(generic.NZBProvider):
 
         return data
 
-    def _get_season_search_strings(self, show, season, episode):
-        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(show, season, episode)]
+    def _get_season_search_strings(self, season, episode):
+        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, season, episode)]
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
-        return ['^' + x for x in show_name_helpers.makeSceneSearchString(show, season, episode)]
+    def _get_episode_search_strings(self, season, episode, add_string=''):
+        return ['^' + x for x in show_name_helpers.makeSceneSearchString(self.show, season, episode)]
 
     def _doSearch(self, searchStr, show=None, age=None):
 

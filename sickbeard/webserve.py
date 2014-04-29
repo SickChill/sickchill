@@ -2064,7 +2064,7 @@ class NewHomeAddShows:
                 # default to TVDB if indexer was not detected
                 if show_name and (indexer is None or indexer_id is None):
                     for idx in sickbeard.indexerApi().indexers:
-                        found_info = helpers.searchIndexerForShowID(show_name, idx, indexer_id)
+                        found_info = helpers.searchIndexerForShowID(show_name, idx, indexer_id, ui=classes.ShowListUI)
                         if found_info:
                             # set indexer and indexer_id from found info
                             if indexer is None:
@@ -3414,12 +3414,6 @@ class Home:
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
-        # figure out what segment the episode is in and remember it so we can backlog it
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            segment = str(ep_obj.airdate)[:7]
-        else:
-            segment = ep_obj.season
-
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, {ep_obj.season: ep_obj.episode})
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
@@ -3443,28 +3437,6 @@ class Home:
             })
 
         return json.dumps({'result': 'failure'})
-
-
-#        try:
-#
-#
-#            ui.notifications.message('Info', pp.log)
-#        except exceptions.FailedHistoryNotFoundException:
-#            ui.notifications.error('Not Found Error', 'Couldn\'t find release in history. (Has it been over 30 days?)\n'
-#                                   'Can\'t mark it as bad.')
-#            return json.dumps({'result': 'failure'})
-#        except exceptions.FailedHistoryMultiSnatchException:
-#            ui.notifications.error('Multi-Snatch Error', 'The same episode was snatched again before the first one was done.\n'
-#                                   'Please cancel any downloads of this episode and then set it back to wanted.\n Can\'t continue.')
-#            return json.dumps({'result': 'failure'})
-#        except exceptions.FailedProcessingFailed:
-#            ui.notifications.error('Processing Failed', pp.log)
-#            return json.dumps({'result': 'failure'})
-#        except Exception as e:
-#            ui.notifications.error('Unknown Error', 'Unknown exception: ' + str(e))
-#            return json.dumps({'result': 'failure'})
-#
-#        return json.dumps({'result': 'success'})
 
 class UI:
     @cherrypy.expose

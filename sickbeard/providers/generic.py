@@ -21,14 +21,8 @@ from __future__ import with_statement
 
 import datetime
 import os
-import sys
 import re
 import urllib
-import urllib2
-
-import itertools
-import operator
-import collections
 import urlparse
 
 import sickbeard
@@ -36,13 +30,13 @@ import sickbeard
 from lib import requests
 from lib.feedparser import feedparser
 from sickbeard import helpers, classes, logger, db
-from sickbeard.common import Quality, MULTI_EP_RESULT, SEASON_RESULT  #, SEED_POLICY_TIME, SEED_POLICY_RATIO
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT  #, SEED_POLICY_TIME, SEED_POLICY_RATIO
 from sickbeard import tvcache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from lib.hachoir_parser import createParser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
-from sickbeard.common import Quality, Overview
+from sickbeard.common import Quality
 
 class GenericProvider:
     NZB = "nzb"
@@ -54,8 +48,8 @@ class GenericProvider:
         self.providerType = None
         self.name = name
         self.url = ''
-        self.session = None
 
+        self.show = None
         self.supportsBacklog = False
 
         self.cache = tvcache.TVCache(self)
@@ -63,6 +57,7 @@ class GenericProvider:
         self.session = requests.session()
         self.session.verify = False
         self.session.headers.update({'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'})
+
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -225,10 +220,10 @@ class GenericProvider:
     def _doSearch(self, search_params, show=None, age=None):
         return []
 
-    def _get_season_search_strings(self, show, season, episode):
+    def _get_season_search_strings(self, season, episode):
         return []
 
-    def _get_episode_search_strings(self, show, season, episode, add_string=''):
+    def _get_episode_search_strings(self, season, episode, add_string=''):
         return []
 
     def _get_title_and_url(self, item):
@@ -255,40 +250,24 @@ class GenericProvider:
         results = {}
 
         self._checkAuth()
+        self.show = show
 
         regexMode = 0
         if show.sports:
-            regexMode = 1
-
-        # update cache
-        self.cache.updateCache()
+            regexMode = 2
 
         for ep_obj in ep_objs:
-            # get scene season/episode info
-            scene_season = ep_obj.scene_season
-            scene_episode = ep_obj.scene_episode
-            if show.air_by_date or show.sports:
-                scene_episode = ep_obj.airdate
-
-            if not seasonSearch:
-                logger.log(u'Searching "%s" for "%s" as "%s"'
-                           % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
-
-            results = self.cache.searchCache(ep_obj, manualSearch)
-            logger.log(u"Cache results: " + str(results), logger.DEBUG)
-            logger.log(u"manualSearch: " + str(manualSearch), logger.DEBUG)
-
-            # if we got some results then use them no matter what.
-            # OR
-            # return anyway unless we're doing a manual search
-            if results:
-                return results
+            if show.sports:
+                logger.log(
+                    u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.sports_prettyName()))
+            else:
+                logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
             if seasonSearch:
-                for curString in self._get_season_search_strings(show, scene_season, scene_episode):
+                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.scene_episode):
                     itemList += self._doSearch(curString, show=show)
             else:
-                for curString in self._get_episode_search_strings(show, scene_season, scene_episode):
+                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.scene_episode):
                     itemList += self._doSearch(curString, show=show)
 
         for item in itemList:

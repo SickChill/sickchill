@@ -1815,6 +1815,16 @@ class TVEpisode(object):
 
         return self._format_pattern('%SN - %XMSx%0XME - %EN')
 
+    def sports_prettyName(self):
+        """
+        Returns the name of this episode in a "pretty" human-readable format. Used for logging
+        and notifications and such.
+
+        Returns: A string representing the episode's name and season/ep numbers
+        """
+
+        return self._format_pattern('%SN - %A-D - %EN')
+
     def _ep_name(self):
         """
         Returns the name of the episode to use during renaming. Combines the names of related episodes.

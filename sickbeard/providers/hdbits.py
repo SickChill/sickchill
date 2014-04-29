@@ -74,8 +74,8 @@ class HDBitsProvider(generic.TorrentProvider):
 
         # gather all episodes for season and then pick out the wanted episodes and compare to determin if we want whole season or just a few episodes
         if episode is None:
-            seasonEps = show.getAllEpisodes(season)
-            wantedEps = [x for x in seasonEps if show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
+            seasonEps = self.show.getAllEpisodes(season)
+            wantedEps = [x for x in seasonEps if self.show.getOverview(x.status) in (Overview.WANTED, Overview.QUAL)]
         else:
             wantedEps = [show.getEpisode(season, episode)]
 

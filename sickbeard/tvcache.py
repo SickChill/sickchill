@@ -183,175 +183,109 @@ class TVCache():
 
         return True
 
-    def _addCacheEntry(self, name, url, season=None, episodes=None, indexer_id=0, quality=None, extraNames=[]):
+    def _addCacheEntry(self, name, url):
 
-        myDB = self._getDB()
-
+        cacheDB = self._getDB()
         parse_result = None
+        from_cache = False
+        indexer_id = None
 
         # if we don't have complete info then parse the filename to get it
-        for curName in [name] + extraNames:
+        while(True):
             try:
                 myParser = NameParser()
-                parse_result = myParser.parse(curName)
+                parse_result = myParser.parse(name)
             except InvalidNameException:
-                logger.log(u"Unable to parse the filename " + curName + " into a valid episode", logger.DEBUG)
-                continue
+                logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
+                return None
 
-        if not parse_result:
-            logger.log(u"Giving up because I'm unable to parse this name: " + name, logger.DEBUG)
-            return None
+            if not parse_result:
+                logger.log(u"Giving up because I'm unable to parse this name: " + name, logger.DEBUG)
+                return None
 
-        if not parse_result.series_name:
-            logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
-            return None
+            if not parse_result.series_name:
+                logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
+                return None
 
-        indexer_lang = None
-
-        if indexer_id:
-            # if we have only the indexer_id, use the database
-            showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-            if showObj:
-                self.indexer = int(showObj.indexer)
-                indexer_lang = showObj.lang
-            else:
-                logger.log(u"We were given a Indexer ID " + str(indexer_id) + " but it doesn't match a show we have in our list, so leaving indexer_id empty",logger.DEBUG)
-                indexer_id = 0
-
-        # if no indexerID then fill out as much info as possible by searching the show name
-        if not indexer_id:
-            from_cache = False
-
-            # check the name cache and see if we already know what show this is
             logger.log(
-                u"Checking the cache for Indexer ID of " + parse_result.series_name,
+                u"Checking the cahe for show:" + str(parse_result.series_name),
                 logger.DEBUG)
 
             # remember if the cache lookup worked or not so we know whether we should bother updating it later
-            indexer_id = name_cache.retrieveNameFromCache(parse_result.series_name)
-            if indexer_id:
-                logger.log(u"Cache lookup found " + repr(indexer_id) + ", using that", logger.DEBUG)
+            cache_id = name_cache.retrieveNameFromCache(parse_result.series_name)
+            if cache_id:
+                logger.log(u"Cache lookup found Indexer ID:" + repr(indexer_id) + ", using that for " + parse_result.series_name, logger.DEBUG)
                 from_cache = True
+                indexer_id = cache_id
+                break
 
             # if the cache failed, try looking up the show name in the database
-            if not indexer_id:
+            logger.log(
+                u"Checking the database for show:" + str(parse_result.series_name),
+                logger.DEBUG)
+
+            showResult = helpers.searchDBForShow(parse_result.series_name)
+            if showResult:
                 logger.log(
-                    u"Checking the database for Indexer ID of " + str(parse_result.series_name),
-                    logger.DEBUG)
+                    u"Database lookup found Indexer ID:" + str(showResult[1]) + ", using that for " + parse_result.series_name, logger.DEBUG)
+                indexer_id = showResult[1]
+            break
 
-                showResult = helpers.searchDBForShow(parse_result.series_name)
-                if showResult:
-                    logger.log(
-                        u"" + parse_result.series_name + " was found to be show " + showResult[2] + " (" + str(
-                            showResult[1]) + ") in our DB.", logger.DEBUG)
-                    indexer_id = showResult[1]
+        # if we didn't find a Indexer ID return None
+        if not indexer_id:
+            return None
 
-            # if the database failed, try looking up the show name from scene exceptions list
-            if not indexer_id:
-                logger.log(
-                    u"Checking the scene exceptions list for Indexer ID of " + parse_result.series_name,
-                    logger.DEBUG)
-                sceneResult = sickbeard.scene_exceptions.get_scene_exception_by_name(parse_result.series_name)
-                if sceneResult:
-                    logger.log(
-                        u"" + str(parse_result.series_name) + " was found in scene exceptions list with Indexer ID: " + str(sceneResult), logger.DEBUG)
-                    indexer_id = sceneResult
-
-            # if the DB lookup fails then do a comprehensive regex search
-            if not indexer_id:
-                logger.log(
-                    u"Checking the shows list for Indexer ID of " + str(parse_result.series_name),
-                    logger.DEBUG)
-                for curShow in sickbeard.showList:
-                    if show_name_helpers.isGoodResult(name, curShow, False):
-                        logger.log(u"Successfully matched " + name + " to " + curShow.name + " from shows list",
-                                   logger.DEBUG)
-                        indexer_id = curShow.indexerid
-                        indexer_lang = curShow.lang
-                        break
-
-            # if the database failed, try looking up the show name from scene exceptions list
-            if not indexer_id:
-                logger.log(
-                    u"Checking Indexers for Indexer ID of " + parse_result.series_name,
-                    logger.DEBUG)
-
-                # check indexers
-                try:indexerResult = helpers.searchIndexerForShowID(parse_result.series_name)
-                except:indexerResult = None
-
-                if indexerResult:
-                    logger.log(
-                        u"" + str(parse_result.series_name) + " was found on " + str(sickbeard.indexerApi(indexerResult[0]).name) + " with Indexer ID: " + str(indexerResult[1]), logger.DEBUG)
-                    indexer_id = indexerResult[1]
-
-            # if indexer_id was anything but None (0 or a number) then
-            if not from_cache:
-                name_cache.addNameToCache(parse_result.series_name, indexer_id)
-
-            # if we came out with indexer_id = None it means we couldn't figure it out at all, just use 0 for that
-            if indexer_id == None:
-                indexer_id = 0
-
-            # if we found the show then retrieve the show object
-            if indexer_id:
-                try:
-                    showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                except (MultipleShowObjectsException):
-                    showObj = None
-                if showObj:
-                    self.indexer = int(showObj.indexer)
-                    indexer_lang = showObj.lang
+        # if the show isn't in out database then return None
+        try:showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
+        except:return None
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
-        if not season:
-            season = parse_result.season_number if parse_result.season_number != None else 1
-        if not episodes:
+        season = None
+        episodes = None
+        myDB = db.DBConnection()
+        if parse_result.air_by_date:
+            sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                                      [showObj.indexerid, parse_result.air_date.toordinal()])
+            if sql_results > 0:
+                season = int(sql_results[0]["season"])
+                episodes = [int(sql_results[0]["episode"])]
+        elif parse_result.sports:
+            sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                                      [showObj.indexerid, parse_result.sports_date.toordinal()])
+            if sql_results > 0:
+                season = int(sql_results[0]["season"])
+                episodes = [int(sql_results[0]["episode"])]
+        else:
+            season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        # if we have an air-by-date show then get the real season/episode numbers
-        if (parse_result.air_by_date or parse_result.sports) and indexer_id:
-            try:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-                if not (indexer_lang == "" or indexer_lang == "en" or indexer_lang == None):
-                    lINDEXER_API_PARMS['language'] = indexer_lang
+        if not (season and episodes):
+            return None
 
-                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-                epObj = None
-                if parse_result.air_by_date:
-                    epObj = t[indexer_id].airedOn(parse_result.air_date)[0]
-                elif parse_result.sports:
-                    epObj = t[indexer_id].airedOn(parse_result.sports_date)[0]
-
-                if epObj is None:
-                    return None
-
-                season = int(epObj["seasonnumber"])
-                episodes = [int(epObj["episodenumber"])]
-            except sickbeard.indexer_episodenotfound:
-                logger.log(u"Unable to find episode with date " + str(
-                    parse_result.air_date) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
+        # convert scene numbered releases before storing to cache
+        convertedEps = {}
+        for curEp in episodes:
+            epObj = showObj.getEpisode(season, curEp, sceneConvert=True)
+            if not epObj:
                 return None
-            except sickbeard.indexer_error, e:
-                logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
-                           logger.WARNING)
-                return None
-
-        episodeText = "|" + "|".join(map(str, episodes)) + "|"
+            if not epObj.season in convertedEps:
+                convertedEps[epObj.season] = []
+            convertedEps[epObj.season].append(epObj.episode)
 
         # get the current timestamp
         curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
-        if not quality:
-            quality = Quality.sceneQuality(name)
+        # get quality of release
+        quality = Quality.sceneQuality(name)
 
         if not isinstance(name, unicode):
             name = unicode(name, 'utf-8')
 
-        myDB.action(
-            "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-            [name, season, episodeText, indexer_id, url, curTimestamp, quality])
+        for season, episodes in convertedEps.items():
+            episodeText = "|" + "|".join(map(str, episodes)) + "|"
+            cacheDB.action(
+                "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
+                [name, season, episodeText, indexer_id, url, curTimestamp, quality])
 
 
     def searchCache(self, episode, manualSearch=False):
@@ -415,35 +349,34 @@ class TVCache():
             curEp = int(curEp)
             curQuality = int(curResult["quality"])
 
-            # items stored in cache are scene numbered, convert before lookups
-            epObj = showObj.getEpisode(curSeason, curEp, sceneConvert=True)
-
             # if the show says we want that episode then add it to the list
-            if not showObj.wantEpisode(epObj.season, epObj.episode, curQuality, manualSearch):
+            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
                 logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
                            Quality.qualityStrings[curQuality], logger.DEBUG)
             else:
+                epObj = None
                 if episode:
                     epObj = episode
 
-                # build a result object
-                title = curResult["name"]
-                url = curResult["url"]
+                if epObj:
+                    # build a result object
+                    title = curResult["name"]
+                    url = curResult["url"]
 
-                logger.log(u"Found result " + title + " at " + url)
+                    logger.log(u"Found result " + title + " at " + url)
 
-                result = self.provider.getResult([epObj])
-                result.url = url
-                result.name = title
-                result.quality = curQuality
-                result.content = self.provider.getURL(url) \
-                    if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                    and not url.startswith('magnet') else None
+                    result = self.provider.getResult([epObj])
+                    result.url = url
+                    result.name = title
+                    result.quality = curQuality
+                    result.content = self.provider.getURL(url) \
+                        if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
+                        and not url.startswith('magnet') else None
 
-                # add it to the list
-                if epObj not in neededEps:
-                    neededEps[epObj] = [result]
-                else:
-                    neededEps[epObj].append(result)
+                    # add it to the list
+                    if epObj not in neededEps:
+                        neededEps[epObj] = [result]
+                    else:
+                        neededEps[epObj].append(result)
 
         return neededEps

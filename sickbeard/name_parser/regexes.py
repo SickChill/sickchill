@@ -190,48 +190,49 @@ sports_regexs = [
     ('sports_event',
      # Show.Name.123.Event.Nov.23rd.2010.Source.Quality.Etc-Group
      '''
-     ^(?P<series_name>.*?)[. _-]+
-     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+
-     (?P<event>.*?)[. _-]+
-     (?P<air_day>\d{1,2}).+
-     (?P<air_month>[a-zA-Z]{3,})[. _-]+
-     (?P<air_year>\d{4})[. _-]+
-     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     ^(?P<series_name>.*?)\W
+     (?P<parts>\d{1,3})\W
+     (?P<event>.*?)\W
+     (?P<air_day>\d{1,2})(\w{2})\W
+     (?P<air_month>\w{3,})\W
+     (?P<air_year>\d{4})\W
+     (?P<extra_info>.*?)\W
      (?P<release_group>.*?)$
      '''),
 
     ('sports_event_without_parts',
      # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
      '''
-     ^(?P<series_name>.*?)[. _-]+
-     (?P<event>.*?)[. _-]+
-     (?P<air_day>\d{1,2}).+
-     (?P<air_month>[a-zA-Z]{3,})[. _-]+
-     (?P<air_year>\d{4})[. _-]+
-     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     ^(?P<series_name>.*?)\W
+     (?P<event>.*?)\W
+     (?P<air_day>\d{1,2})(\w{2})\W
+     (?P<air_month>\w{3,})\W
+     (?P<air_year>\d{4})\W
+     (?P<extra_info>.*?)\W
      (?P<release_group>.*?)$
+
      '''),
 
     ('sports_parts_without_event',
      # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
      '''
-     ^(?P<series_name>.*?)[. _-]+
-     (?P<parts>\d{1,3}\d{1,3}.*?)[. _-]+
-     (?P<air_day>\d{1,2}).+
-     (?P<air_month>[a-zA-Z]{3,})[. _-]+
-     (?P<air_year>\d{4})[. _-]+
-     (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
+     ^(?P<series_name>.*?)\W
+     (?P<parts>\d{1,3})\W
+     (?P<air_day>\d{1,2})(\w{2})\W
+     (?P<air_month>\w{3,})\W
+     (?P<air_year>\d{4})\W
+     (?P<extra_info>.*?)\W
      (?P<release_group>.*?)$
      '''),
 
     ('sports_date_only',
      # Show.Name.Event.Nov.23rd.2010.Source.Quality.Etc-Group
      '''
-    ^(?P<series_name>.*?)[. _-]+
-    (?P<air_day>\d{1,2})[. _-]+
-    (?P<air_month>[a-zA-Z]{3,})[. _-]+
-    (?P<air_year>\d{4})[. _-]+
-    (?P<extra_info>.*?(?<![. _-])(?<!WEB))[. _-]+
-    (?P<release_group>.*?)$
+     ^(?P<series_name>.*?)\W
+     (?P<air_day>\d{1,2})(\w{2})\W
+     (?P<air_month>\w{3,})\W
+     (?P<air_year>\d{4})\W
+     (?P<extra_info>.*?)\W
+     (?P<release_group>.*?)$
      '''),
 ]
