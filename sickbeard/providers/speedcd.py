@@ -233,7 +233,7 @@ class SpeedCDProvider(generic.TorrentProvider):
             return []
 
         for sqlshow in sqlResults:
-            curshow = helpers.findCertainshow(sickbeard.showList, int(sqlshow["showid"]))
+            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
             season = curEp.scene_season

@@ -277,7 +277,7 @@ class SCCProvider(generic.TorrentProvider):
             return []
 
         for sqlshow in sqlResults:
-            curshow = helpers.findCertainshow(sickbeard.showList, int(sqlshow["showid"]))
+            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
             season = curEp.scene_season
@@ -285,7 +285,7 @@ class SCCProvider(generic.TorrentProvider):
             if curshow.air_by_date or curshow.sports:
                 episode = curEp.airdate
 
-            searchString = self._get_episode_search_strings(curshow, curEp.scene_season, curEp.scene_episode, add_string='PROPER|REPACK')
+            searchString = self._get_episode_search_strings(curEp.scene_season, curEp.airdate if curshow.air_by_date or curshow.sports else curEp.scene_episode, add_string='PROPER|REPACK')
 
             for item in self._doSearch(searchString[0], show=curshow):
                 title, url = self._get_title_and_url(item)

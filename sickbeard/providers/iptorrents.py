@@ -255,7 +255,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
             return []
 
         for sqlshow in sqlResults:
-            curshow = helpers.findCertainshow(sickbeard.showList, int(sqlshow["showid"]))
+            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
             searchString = self._get_episode_search_strings(curshow, curEp.scene_season, curEp.scene_episode, curshow.air_by_date or curshow.sports, add_string='PROPER|REPACK')
 

@@ -264,10 +264,10 @@ class GenericProvider:
                 logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
             if seasonSearch:
-                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.scene_episode):
+                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date or show.sports else ep_obj.scene_episode):
                     itemList += self._doSearch(curString, show=show)
             else:
-                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.scene_episode):
+                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date or show.sports else ep_obj.scene_episode):
                     itemList += self._doSearch(curString, show=show)
 
         for item in itemList:
