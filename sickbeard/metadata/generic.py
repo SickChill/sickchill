@@ -965,16 +965,17 @@ class GenericMetadata():
             return None
 
         images = result.images()
-        # get backdrop urls
-        if backdrop:
-            rel_path = images['backdrops'][0]['file_path']
-            url = "{0}{1}{2}".format(base_url, max_size, rel_path)
-            return url
+        if len(images) > 0:
+            # get backdrop urls
+            if backdrop:
+                rel_path = images['backdrops'][0]['file_path']
+                url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+                return url
 
-        # get poster urls
-        if poster:
-            rel_path = images['posters'][0]['file_path']
-            url = "{0}{1}{2}".format(base_url, max_size, rel_path)
-            return url
+            # get poster urls
+            if poster:
+                rel_path = images['posters'][0]['file_path']
+                url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+                return url
 
         return None
