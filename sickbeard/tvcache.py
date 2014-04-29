@@ -244,12 +244,15 @@ class TVCache():
             break
 
         # if we didn't find a Indexer ID return None
-        if indexer_id is None or indexer_id == None:
+        if not indexer_id:
             return None
 
         # if the show isn't in out database then return None
         try:showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
         except:return None
+
+        if not showObj:
+            return None
 
         # if we weren't provided with season/episode information then get it from the name that we parsed
         season = None
