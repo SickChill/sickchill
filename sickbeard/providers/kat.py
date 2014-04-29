@@ -148,7 +148,7 @@ class KATProvider(generic.TorrentProvider):
 
             try:
                 myParser = NameParser()
-                parse_result = myParser.parse(fileName, True)
+                parse_result = myParser.parse(fileName)
             except InvalidNameException:
                 return None
 

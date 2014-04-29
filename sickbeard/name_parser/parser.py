@@ -33,9 +33,9 @@ from time import strptime
 
 
 class NameParser(object):
-    ALL_REGEX = -1
-    NORMAL_REGEX = 0
-    SPORTS_REGEX = 1
+    ALL_REGEX = 0
+    NORMAL_REGEX = 1
+    SPORTS_REGEX = 2
 
     def __init__(self, file_name=True, regexMode=0):
 
@@ -139,7 +139,7 @@ class NameParser(object):
 
                 try:
                     if 'sports' in cur_regex_name:
-                        dtStr = '%s-%s-%s' % (day, month, year)
+                        dtStr = '%s-%s-%s' % (year, month, day)
                         result.air_date = result.sports_date = datetime.datetime.strptime(dtStr, "%Y-%b-%d").date()
                     else:
                         dtStr = '%s-%s-%s' % (year, month, day)

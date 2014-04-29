@@ -39,7 +39,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import scene_exceptions
 from sickbeard import failed_history
-from sickbeard import scene_numbering
+from sickbeard import name_cache
 
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
@@ -509,6 +509,15 @@ class PostProcessor(object):
 
         # for each possible interpretation of that scene name
         for cur_name in name_list:
+            self._log(u"Checking cache for " + cur_name, logger.DEBUG)
+            cache_id = name_cache.retrieveNameFromCache(parse_result.series_name)
+            if cache_id:
+                self._log(u"Cache lookup got a Indexer ID " + str(cache_id) + ", using that", logger.DEBUG)
+                _finalize(parse_result)
+                return (cache_id, season, episodes)
+
+        # for each possible interpretation of that scene name
+        for cur_name in name_list:
             self._log(u"Checking scene exceptions for a match on " + cur_name, logger.DEBUG)
             scene_id = scene_exceptions.get_scene_exception_by_name(cur_name)
             if scene_id:
@@ -529,7 +538,7 @@ class PostProcessor(object):
 
         # see if we can find the name on the Indexer
         for cur_name in name_list:
-            foundInfo = helpers.searchIndexerForShowID(cur_name, self.indexer)
+            foundInfo = helpers.searchIndexerForShowID(cur_name)
             if foundInfo:
                 indexer_id = foundInfo[1]
                 self._log(
@@ -588,43 +597,55 @@ class PostProcessor(object):
 
             # for air-by-date shows we need to look up the season/episode from tvdb
             if season == -1 and indexer_id and episodes:
-                self._log(u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
-                          logger.DEBUG)
+                self._log(
+                    u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
+                    logger.DEBUG)
 
                 # try to get language set for this show
                 indexer_lang = None
                 try:
                     showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                    if (showObj != None):
-                        # set the language of the show
+                    if showObj:
                         indexer_lang = showObj.lang
                 except exceptions.MultipleShowObjectsException:
-                    raise  #TODO: later I'll just log this, for now I want to know about it ASAP
-
-                try:
-                    lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-                    if indexer_lang and not indexer_lang == 'en':
-                        lINDEXER_API_PARMS = {'language': indexer_lang}
-
-                    t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-                    epObj = t[indexer_id].airedOn(episodes[0])[0]
-
-                    season = int(epObj["seasonnumber"])
-                    episodes = [int(epObj["episodenumber"])]
-
-                    self._log(u"Got season " + str(season) + " episodes " + str(episodes), logger.DEBUG)
-                except (KeyError, sickbeard.indexer_episodenotfound), e:
-                    self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
-                        indexer_id) + u", skipping", logger.DEBUG)
-                    # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
-                    episodes = []
                     continue
-                except sickbeard.indexer_error, e:
-                    logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
-                               logger.WARNING)
+
+                for indexer in sickbeard.indexerApi().indexers:
+                    self.indexer = int(indexer)
+                    self._log(
+                        u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "
+                                                                                  "show")
+                    try:
+                        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+                        if indexer_lang and not indexer_lang == 'en':
+                            lINDEXER_API_PARMS = {'language': indexer_lang}
+
+                        t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
+
+                        epObj = t[indexer_id].airedOn(episodes[0])[0]
+
+                        season = int(epObj["seasonnumber"])
+                        episodes = [int(epObj["episodenumber"])]
+
+                        self._log(u"Got season " + str(season) + " episodes " + str(episodes), logger.DEBUG)
+                    except (KeyError, sickbeard.indexer_episodenotfound), e:
+                        self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
+                            indexer_id) + u", skipping", logger.DEBUG)
+                        # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
+                        continue
+                    except sickbeard.indexer_error, e:
+                        logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
+                                   logger.WARNING)
+                        continue
+
+                    # try to find the file info
+                    if indexer_id and season and episodes:
+                        break
+
                     episodes = []
-                    continue
+                    self._log(
+                        u"Can't find thhe show on " + sickbeard.indexerApi(
+                            self.indexer).name + ", trying next ""indexer", logger.WARNING)
 
             # if there's no season then we can hopefully just use 1 automatically
             elif season == None and indexer_id:
@@ -638,7 +659,7 @@ class PostProcessor(object):
                         logger.DEBUG)
                     season = 1
 
-            if indexer_id and season != None and episodes:
+            if indexer_id and season and episodes:
                 return (indexer_id, season, episodes)
 
         return (indexer_id, season, episodes)
@@ -830,22 +851,8 @@ class PostProcessor(object):
         self.in_history = False
 
         # try to find the file info
-        indexer_id = season = episodes = None
-        for indexer in sickbeard.indexerApi().indexers:
-            self.indexer = int(indexer)
-
-            self._log(u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "
-                                                                                "show")
-
-            # try to find the file info
-            (indexer_id, season, episodes) = self._find_info()
-            if indexer_id and season != None and episodes:
-                break
-
-            self._log(u"Can't find thhe show on " + sickbeard.indexerApi(self.indexer).name + ", trying next "
-                                                                                              "indexer", logger.WARNING)
-
-        if not indexer_id or season == None or not episodes:
+        (indexer_id, season, episodes) = self._find_info()
+        if not (indexer_id or season or episodes):
             self._log(u"Can't find thhe show on any of the Indexers, skipping",
                       logger.WARNING)
             return False

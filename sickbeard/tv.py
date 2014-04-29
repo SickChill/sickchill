@@ -1892,7 +1892,7 @@ class TVEpisode(object):
         else:
             show_name = self.show.name
 
-        return {
+        normal = {
             '%SN': show_name,
             '%S.N': dot(show_name),
             '%S_N': us(show_name),
@@ -1912,10 +1912,10 @@ class TVEpisode(object):
             '%0XME': '%02d' % self.scene_episode,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
-            '%AD': self.airdate.strftime('%Y-%b-%d') if self.show.sports else str(self.airdate).replace('-', ' '),
-            '%A.D': self.airdate.strftime('%Y-%b-%d') if self.show.sports else str(self.airdate).replace('-', '.'),
-            '%A_D': us(self.airdate.strftime('%Y-%b-%d')) if self.show.sports else us(str(self.airdate)),
-            '%A-D': self.airdate.strftime('%Y-%b-%d') if self.show.sports else str(self.airdate),
+            '%AD': self.airdate.strftime('%d %b %Y') if self.show.sports else str(self.airdate).replace('-', ' '),
+            '%A.D': self.airdate.strftime('%d.%b.%Y') if self.show.sports else str(self.airdate).replace('-', '.'),
+            '%A_D': us(self.airdate.strftime('%d-%b-%Y')) if self.show.sports else us(str(self.airdate)),
+            '%A-D': self.airdate.strftime('%d-%b-%Y') if self.show.sports else str(self.airdate),
             '%Y': str(self.airdate.year),
             '%M': self.airdate.strftime('%b') if self.show.sports else str(self.airdate.month),
             '%D': str(self.airdate.day),
@@ -1923,6 +1923,43 @@ class TVEpisode(object):
             '%0D': '%02d' % self.airdate.day,
             '%RT': "PROPER" if self.is_proper else "",
         }
+
+        sports = {
+            '%SN': show_name,
+            '%S.N': dot(show_name),
+            '%S_N': us(show_name),
+            '%EN': ep_name,
+            '%E.N': dot(ep_name),
+            '%E_N': us(ep_name),
+            '%QN': Quality.qualityStrings[epQual],
+            '%Q.N': dot(Quality.qualityStrings[epQual]),
+            '%Q_N': us(Quality.qualityStrings[epQual]),
+            '%S': str(self.season),
+            '%0S': '%02d' % self.season,
+            '%E': str(self.episode),
+            '%0E': '%02d' % self.episode,
+            '%XMS': str(self.scene_season),
+            '%0XMS': '%02d' % self.scene_season,
+            '%XME': str(self.scene_episode),
+            '%0XME': '%02d' % self.scene_episode,
+            '%RN': release_name(self.release_name),
+            '%RG': release_group(self.release_name),
+            '%AD': self.airdate.strftime('%d %b %Y'),
+            '%A.D': self.airdate.strftime('%d.%b.%Y'),
+            '%A_D': us(self.airdate.strftime('%d-%b-%Y')),
+            '%A-D': self.airdate.strftime('%d-%b-%Y'),
+            '%Y': str(self.airdate.year),
+            '%M': self.airdate.strftime('%b'),
+            '%D': str(self.airdate.day),
+            '%0M': '%02d' % self.airdate.month,
+            '%0D': '%02d' % self.airdate.day,
+            '%RT': "PROPER" if self.is_proper else "",
+        }
+
+        if self.show.sports:
+            return sports
+
+        return normal
 
     def _format_string(self, pattern, replace_map):
         """

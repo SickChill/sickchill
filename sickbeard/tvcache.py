@@ -192,7 +192,7 @@ class TVCache():
         # if we don't have complete info then parse the filename to get it
         for curName in [name] + extraNames:
             try:
-                myParser = NameParser(regexMode=-1)
+                myParser = NameParser()
                 parse_result = myParser.parse(curName)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curName + " into a valid episode", logger.DEBUG)
@@ -269,6 +269,17 @@ class TVCache():
                         indexer_id = curShow.indexerid
                         indexer_lang = curShow.lang
                         break
+
+            # if the database failed, try looking up the show name from scene exceptions list
+            if not indexer_id:
+                logger.log(
+                    u"Checking Indexers for Indexer ID of " + parse_result.series_name,
+                    logger.DEBUG)
+                indexerResult = helpers.searchIndexerForShowID(parse_result.series_name)
+                if indexerResult:
+                    logger.log(
+                        u"" + str(parse_result.series_name) + " was found on " + str(sickbeard.indexerApi(indexerResult[0]).name) + " with Indexer ID: " + str(indexerResult[1]), logger.DEBUG)
+                    indexer_id = indexerResult[1]
 
             # if indexer_id was anything but None (0 or a number) then
             if not from_cache:
@@ -410,8 +421,6 @@ class TVCache():
             else:
                 if episode:
                     epObj = episode
-                else:
-                    epObj = showObj.getEpisode(curSeason, curEp)
 
                 # build a result object
                 title = curResult["name"]

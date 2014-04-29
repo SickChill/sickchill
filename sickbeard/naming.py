@@ -189,7 +189,7 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
         ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.2011.Mar.9th.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.2011.Mar.09.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'

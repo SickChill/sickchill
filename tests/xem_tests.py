@@ -59,7 +59,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         pattern = u'%SN - %A-D - %EN'
         title = 'UFC.166.Velasquez.v.Dos Santos.III.19th.Oct.2013.HDTV.x264-Sir.Paul'
         try:
-            myParser = NameParser(False, -1)
+            myParser = NameParser(False, 1)
             parse_result = myParser.parse(title)
         except InvalidNameException:
             print(u"Unable to parse the filename " + ep.name + " into a valid episode")
