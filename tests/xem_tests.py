@@ -57,10 +57,10 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         # parse the file name
         pattern = u'%SN - %A-D - %EN'
-        title = 'Show.Name.9th.Mar.2010.HDTV.XviD-RLSGROUP'
+        title = 'Pawn.Stars.S08E56.HDTV.XviD-RLSGROUP'
         try:
-            myParser = NameParser(False, 1)
-            parse_result = myParser.parse(title, True)
+            myParser = NameParser(False, -1)
+            parse_result = myParser.parse(title)
         except InvalidNameException:
             print(u"Unable to parse the filename " + ep.name + " into a valid episode")
 

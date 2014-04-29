@@ -256,9 +256,9 @@ class GenericProvider:
 
         self._checkAuth()
 
-        regexMethod = 0
+        regexMode = 0
         if show.sports:
-            regexMethod = 1
+            regexMode = 1
 
         # update cache
         self.cache.updateCache()
@@ -299,7 +299,7 @@ class GenericProvider:
 
             # parse the file name
             try:
-                myParser = NameParser(False, regexMethod)
+                myParser = NameParser(False, regexMode=regexMode, show=show)
                 parse_result = myParser.parse(title)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)

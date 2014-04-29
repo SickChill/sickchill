@@ -908,6 +908,9 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
+        if 'ended' in str(self.status).lower():
+            logger.log(str(self.indexerid) + u": Show Status: " + str(self.status) + ", skipping ...", logger.DEBUG)
+            return []
 
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 

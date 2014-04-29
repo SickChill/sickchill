@@ -47,24 +47,10 @@ def filterBadReleases(name):
 
     try:
         fp = NameParser()
-        parse_result = fp.parse(name)
+        fp.parse(name)
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.WARNING)
         return False
-
-    ## use the extra info and the scene group to filter against
-    #check_string = ''
-    #if parse_result.extra_info:
-    #    check_string = parse_result.extra_info
-    #if parse_result.release_group:
-    #    if check_string:
-    #        check_string = check_string + '-' + parse_result.release_group
-    #    else:
-    #        check_string = parse_result.release_group
-    #
-    ## if there's no info after the season info then assume it's fine
-    #if not check_string:
-    #    return True
 
     # if any of the bad strings are in the name then say no
     if sickbeard.IGNORE_WORDS:
