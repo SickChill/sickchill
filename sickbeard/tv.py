@@ -189,6 +189,8 @@ class TVShow(object):
             for curSeason in self.episodes:
                 for curEp in self.episodes[curSeason]:
                     myEp = self.episodes[curSeason][curEp]
+                    if not myEp:
+                        continue
                     if season == myEp.scene_season and episode == myEp.scene_episode:
                         season = myEp.season
                         episode = myEp.episode
