@@ -165,7 +165,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
             logger.log(u"Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
     elif sports:
-        if result.sports_date != ep.airdate:
+        if result.air_date != ep.airdate:
             logger.log(u"Sports air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
     else:
@@ -189,7 +189,7 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
         ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.2011.Mar.09.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.09.Mar.2011.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'

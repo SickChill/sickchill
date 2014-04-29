@@ -128,22 +128,17 @@ class NameParser(object):
                     result.episode_numbers = [ep_num]
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
-                if 'sports' in cur_regex_name:
-                    year = int(match.group('air_year'))
-                    month = match.group('air_month')
-                    day = int(re.sub("(st|nd|rd|th)", "", match.group('air_day')))
-                else:
-                    year = int(match.group('air_year'))
-                    month = int(match.group('air_month'))
-                    day = int(match.group('air_day'))
+                year = int(match.group('air_year'))
+                month = match.group('air_month')
+                day = int(match.group('air_day'))
 
                 try:
-                    if 'sports' in cur_regex_name:
-                        dtStr = '%s-%s-%s' % (year, month, day)
-                        result.air_date = result.sports_date = datetime.datetime.strptime(dtStr, "%Y-%b-%d").date()
-                    else:
+                    try:
                         dtStr = '%s-%s-%s' % (year, month, day)
                         result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                    except:
+                        dtStr = '%s-%s-%s' % (day, month, year)
+                        result.air_date = datetime.datetime.strptime(dtStr, "%d-%b-%Y").date()
                 except ValueError, e:
                     raise InvalidNameException(e.message)
 
