@@ -299,7 +299,7 @@ class GenericProvider:
 
             # parse the file name
             try:
-                myParser = NameParser(False, regexMode=regexMode, show=show)
+                myParser = NameParser(False, regexMode=regexMode)
                 parse_result = myParser.parse(title)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
