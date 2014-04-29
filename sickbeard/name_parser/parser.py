@@ -140,7 +140,7 @@ class NameParser(object):
                 try:
                     if 'sports' in cur_regex_name:
                         dtStr = '%s-%s-%s' % (day, month, year)
-                        result.air_date = result.sports_date = datetime.datetime.strptime(dtStr, "%d-%b-%Y").date()
+                        result.air_date = result.sports_date = datetime.datetime.strptime(dtStr, "%Y-%b-%d").date()
                     else:
                         dtStr = '%s-%s-%s' % (year, month, day)
                         result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()

@@ -100,7 +100,7 @@ class ProperFinder():
             # parse the file name
             try:
                 myParser = NameParser(False)
-                parse_result = myParser.parse(curProper.name, True)
+                parse_result = myParser.parse(curProper.name)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
@@ -121,6 +121,7 @@ class ProperFinder():
             else:
                 curProper.season = parse_result.season_number if parse_result.season_number != None else 1
                 curProper.episode = parse_result.episode_numbers[0]
+
             curProper.quality = Quality.nameQuality(curProper.name)
 
             # for each show in our list
@@ -197,6 +198,11 @@ class ProperFinder():
                     logger.log(u"Unable to find episode with date " + str(
                         curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
                     continue
+            else:
+                # items stored in cache are scene numbered, convert before lookups
+                epObj = showObj.getEpisode(curProper.season, curProper.episode, sceneConvert=True)
+                curProper.season = epObj.season
+                curProper.episode = epObj.episode
 
             # check if we actually want this proper (if it's the right quality)
             sqlResults = db.DBConnection().select(

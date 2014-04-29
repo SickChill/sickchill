@@ -57,7 +57,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         # parse the file name
         pattern = u'%SN - %A-D - %EN'
-        title = 'Pawn.Stars.S08E56.HDTV.XviD-RLSGROUP'
+        title = 'UFC.166.Velasquez.v.Dos Santos.III.19th.Oct.2013.HDTV.x264-Sir.Paul'
         try:
             myParser = NameParser(False, -1)
             parse_result = myParser.parse(title)
