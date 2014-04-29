@@ -137,7 +137,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
 
     regexMode = 0
     if sports:
-        regexMode = 1
+        regexMode = 2
 
     parser = NameParser(True, regexMode)
 

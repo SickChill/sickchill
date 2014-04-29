@@ -119,3 +119,4 @@ class RemoveKeysFromXemNumbering(ConvertIndexerToInteger):
     def execute(self):
         self.connection.action("ALTER TABLE xem_numbering DROP UNIQUE (indexer, indexer_id, season, episode)")
         self.connection.action("ALTER TABLE xem_numbering DROP PRIMARY KEY")
+
