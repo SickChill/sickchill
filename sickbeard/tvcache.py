@@ -59,7 +59,7 @@ class CacheDBConnection(db.DBConnection):
         # Delete any entries missing a Indexer ID
         try:
             sqlResults = self.connection.execute(
-                "SELECT * FROM [" + providerName + "] WHERE indexerid is NULL or 0")
+                "SELECT * FROM [" + providerName + "] WHERE indexerid is NULL or 0 or None")
             for cur_orphan in sqlResults:
                 logger.log(u"Missing IndexerID detected! name: " + str(cur_orphan["name"]), logger.DEBUG)
                 logger.log(u"Deleting orphaned cache entry with name: " + str(cur_orphan["name"]))
@@ -244,7 +244,7 @@ class TVCache():
             break
 
         # if we didn't find a Indexer ID return None
-        if indexer_id is None:
+        if indexer_id is None or indexer_id == None:
             return None
 
         # if the show isn't in out database then return None
