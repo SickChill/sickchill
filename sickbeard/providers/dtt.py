@@ -52,7 +52,7 @@ class DTTProvider(generic.TorrentProvider):
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
         search_string = []
 
         for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
@@ -61,8 +61,8 @@ class DTTProvider(generic.TorrentProvider):
 
         return search_string
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
-        return self._get_season_search_strings(season, episode)
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+        return self._get_season_search_strings(ep_obj)
 
     def _doSearch(self, search_params, show=None, age=None):
 

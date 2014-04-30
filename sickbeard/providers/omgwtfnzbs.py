@@ -85,11 +85,11 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
             return True
 
-    def _get_season_search_strings(self, season, episode):
-        return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, season, episode)]
+    def _get_season_search_strings(self, ep_obj):
+        return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
-        return [x for x in show_name_helpers.makeSceneSearchString(self.show, season, episode)]
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+        return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _get_title_and_url(self, item):
         return (item['release'], item['getnzb'])

@@ -190,7 +190,7 @@ class BTNProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
         search_params = []
 
         name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
@@ -210,17 +210,17 @@ class BTNProvider(generic.TorrentProvider):
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
-            whole_season_params['name'] = 'Season ' + str(season)
+            whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
             search_params.append(whole_season_params)
 
             # Search for episodes in the season
-            search_params.append(self._get_episode_search_strings(season, episode)[0])
+            search_params.append(self._get_episode_search_strings(ep_obj)[0])
 
         return search_params
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
 
-        if not episode:
+        if not ep_obj:
             return [{}]
 
         search_params = {'category': 'Episode'}
@@ -233,20 +233,20 @@ class BTNProvider(generic.TorrentProvider):
             search_params['series'] = sanitizeSceneName(self.show.name)
 
         if self.show.air_by_date:
-            date_str = str(episode)
+            date_str = str(ep_obj.airdate)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
         if self.show.sports:
-            date_str = str(episode)
+            date_str = str(ep_obj.airdate)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
         else:
             # Do a general name search for the episode, formatted like SXXEYY
-            search_params['name'] = "S%02dE%02d" % (season, episode)
+            search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)
 
         to_return = [search_params]
 
@@ -268,10 +268,10 @@ class BTNProvider(generic.TorrentProvider):
 
         return to_return
 
-    def _doGeneralSearch(self, search_string, show=None):
+    def _doGeneralSearch(self, search_string):
         # 'search' looks as broad is it can find. Can contain episode overview and title for example,
         # use with caution!
-        return self._doSearch({'search': search_string}, show=show)
+        return self._doSearch({'search': search_string})
 
     def findPropers(self, search_date=None):
         results = []

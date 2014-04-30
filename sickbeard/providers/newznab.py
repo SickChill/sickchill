@@ -80,7 +80,7 @@ class NewznabProvider(generic.NZBProvider):
     def isEnabled(self):
         return self.enabled
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
 
         to_return = []
 
@@ -94,36 +94,35 @@ class NewznabProvider(generic.NZBProvider):
             cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
 
             # season
-            cur_params['season'] = str(season)
+            cur_params['season'] = str(ep_obj.scene_season)
 
             # episode
-            cur_params['episode'] = self._get_episode_search_strings(season, episode)[0]['ep']
+            cur_params['episode'] = self._get_episode_search_strings(ep_obj)[0]['ep']
 
             to_return.append(cur_params)
 
         return to_return
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
 
         params = {}
 
-        if not episode:
+        if not ep_obj:
             return [params]
 
         # search
         params['q'] = helpers.sanitizeSceneName(self.show.name)
 
+        date_str = str(ep_obj.airdate)
         if self.show.air_by_date:
-            date_str = str(episode)
-
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
-#        elif self.show.sports:
-#            params['season']
-#            params['ep']
+        elif self.show.sports:
+            params['season'] = date_str.partition('-')[0]
+            params['ep'] = date_str.partition('-')[0]
         else:
-            params['season'] = season
-            params['ep'] = episode
+            params['season'] = ep_obj.scene_season
+            params['ep'] = ep_obj.scene_episode
 
         to_return = [params]
 
@@ -144,8 +143,8 @@ class NewznabProvider(generic.NZBProvider):
 
         return to_return
 
-    def _doGeneralSearch(self, search_string, show=None):
-        return self._doSearch({'q': search_string}, show=show)
+    def _doGeneralSearch(self, search_string):
+        return self._doSearch({'q': search_string})
 
     def _checkAuth(self):
 

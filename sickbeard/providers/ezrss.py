@@ -70,34 +70,34 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return results
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
 
         params = {}
 
         params['show_name'] = helpers.sanitizeSceneName(self.show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
-        params['season'] = season
+        params['season'] = ep_obj.scene_season
 
-        params['episode'] = self._get_episode_search_strings(season, episode)[0]['episode']
+        params['episode'] = self._get_episode_search_strings(ep_obj)[0]['episode']
 
         return [params]
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
 
         params = {}
 
-        if not episode:
+        if not ep_obj:
             return params
 
         params['show_name'] = helpers.sanitizeSceneName(self.show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
         if self.show.air_by_date:
-            params['date'] = str(episode)
+            params['date'] = str(ep_obj.airdate)
         if self.show.sports:
-            params['date'] = str(episode)
+            params['date'] = str(ep_obj.airdate)
         else:
-            params['season'] = season
-            params['episode'] = episode
+            params['season'] = ep_obj.scene_season
+            params['episode'] = ep_obj.scene_episode
 
         return [params]
 

@@ -149,7 +149,7 @@ class GenericProvider:
 
         data = self.getURL(result.url)
 
-        if data == None:
+        if data is None:
             return False
 
         # use the appropriate watch folder
@@ -220,10 +220,10 @@ class GenericProvider:
     def _doSearch(self, search_params, show=None, age=None):
         return []
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, episode):
         return []
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, eb_obj, add_string=''):
         return []
 
     def _get_title_and_url(self, item):
@@ -260,10 +260,10 @@ class GenericProvider:
             logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
             if seasonSearch:
-                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date else ep_obj.scene_episode):
+                for curString in self._get_season_search_strings(ep_obj):
                     itemList += self._doSearch(curString)
             else:
-                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date else ep_obj.scene_episode):
+                for curString in self._get_episode_search_strings(ep_obj):
                     itemList += self._doSearch(curString)
 
         for item in itemList:
@@ -282,8 +282,8 @@ class GenericProvider:
 
             if not show.air_by_date:
                 # this check is meaningless for non-season searches
-                if (parse_result.season_number != None and parse_result.season_number != season) or (
-                                parse_result.season_number == None and season != 1):
+                if (parse_result.season_number is not None and parse_result.season_number != season) or (
+                                parse_result.season_number is None and season != 1):
                     logger.log(u"The result " + title + " doesn't seem to be a valid episode for season " + str(
                         season) + ", ignoring", logger.DEBUG)
                     continue
@@ -334,8 +334,7 @@ class GenericProvider:
             logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
 
             # make a result object
-            epObjs = []
-            epObjs.append(epObj)
+            epObjs = [epObj]
 
             result = self.getResult(epObjs)
             result.url = url

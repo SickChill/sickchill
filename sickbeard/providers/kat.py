@@ -139,7 +139,7 @@ class KATProvider(generic.TorrentProvider):
                 quality = Quality.sceneQuality(os.path.basename(fileName))
                 if quality != Quality.UNKNOWN: break
 
-            if fileName != None and quality == Quality.UNKNOWN:
+            if fileName is not None and quality == Quality.UNKNOWN:
                 quality = Quality.assumeQuality(os.path.basename(fileName))
 
             if quality == Quality.UNKNOWN:
@@ -164,43 +164,42 @@ class KATProvider(generic.TorrentProvider):
             logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
         search_string = {'Season': [], 'Episode': []}
 
         for show_name in set(allPossibleShowNames(self.show)):
-            ep_string = show_name + ' S%02d' % int(season) + ' -S%02d' % int(season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
+            ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
             search_string['Season'].append(ep_string)
 
-            ep_string = show_name + ' Season ' + str(season) + ' -Ep*' + ' category:tv'  #2) showName Season X
+            ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*' + ' category:tv'  #2) showName Season X
             search_string['Season'].append(ep_string)
 
-        search_string['Episode'] = self._get_episode_search_strings(season, episode)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
         search_string = {'Episode': []}
 
         if self.show.air_by_date:
             for show_name in set(allPossibleShowNames(self.show)):
-
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(episode).replace('-','|') + '|' + \
-                            episode.strftime('%b')
+                            str(ep_obj.airdate).replace('-','|') + '|' + \
+                            ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
         elif self.show.sports:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(episode).replace('-', '|') + '|' + \
-                            episode.strftime('%b')
+                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
-                                                                  'episodenumber': episode} + '|' + \
-                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': season,
-                                                                  'episodenumber': episode} + '|' + \
-                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': season,
-                                                                  'episodenumber': episode} + ' %s category:tv' % add_string
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
+                            sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode} + '|' + \
+                            sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode} + ' %s category:tv' % add_string
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
         return [search_string]
@@ -293,7 +292,7 @@ class KATProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, post_data=None, headers=None):
+    def getURL(self, url, post_data=None, headers=None, json=False):
 
         if not self.session:
             self.session = requests.Session()
@@ -383,9 +382,9 @@ class KATProvider(generic.TorrentProvider):
             self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
-            searchString = self._get_episode_search_strings(curEp.scene_season, curEp.airdate if curshow.air_by_date else curEp.scene_episode, add_string='PROPER|REPACK')
+            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-            for item in self._doSearch(searchString[0], show=curshow):
+            for item in self._doSearch(searchString[0]):
                 title, url = self._get_title_and_url(item)
                 results.append(classes.Proper(title, url, datetime.datetime.today()))
 

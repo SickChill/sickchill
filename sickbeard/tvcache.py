@@ -190,7 +190,7 @@ class TVCache():
 
         return True
 
-    def _addCacheEntry(self, name, url):
+    def _addCacheEntry(self, name, url, quality=None):
 
         cacheDB = self._getDB()
         parse_result = None
@@ -264,7 +264,8 @@ class TVCache():
                     curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
                     # get quality of release
-                    quality = Quality.sceneQuality(name)
+                    if quality is None:
+                        quality = Quality.sceneQuality(name)
 
                     if not isinstance(name, unicode):
                         name = unicode(name, 'utf-8')

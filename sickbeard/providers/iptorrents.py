@@ -92,41 +92,41 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         return True
 
-    def _get_season_search_strings(self, season, episode):
+    def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': [], 'Episode': []}
         for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            ep_string = show_name + ' S%02d' % int(season)  #1) showName SXX
+            ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
             search_string['Season'].append(ep_string)
 
-        search_string['Episode'] = self._get_episode_search_strings(season, episode)[0]['Episode']
+        search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
 
         return [search_string]
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
 
         search_string = {'Episode': []}
 
-        if not episode:
+        if not ep_obj:
             return []
 
         if self.show.air_by_date:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(episode).replace('-', '|') + '|' + \
-                            episode.strftime('%b')
+                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
-        if self.show.sports:
+        elif self.show.sports:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(episode).replace('-', '|') + '|' + \
-                            episode.strftime('%b')
+                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
-                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': season,
-                                                                  'episodenumber': episode} + ' %s' % add_string
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
 
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
@@ -216,7 +216,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def getURL(self, url, post_data=None, headers=None):
+    def getURL(self, url, post_data=None, headers=None, json=False):
 
         if not self.session:
             self._doLogin()
@@ -257,11 +257,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
         for sqlshow in sqlResults:
             self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-            searchString = self._get_episode_search_strings(curEp.scene_season,
-                                                            curEp.airdate if curshow.air_by_date else curEp.scene_episode,
-                                                            add_string='PROPER|REPACK')
+            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-            for item in self._doSearch(searchString[0], show=curshow):
+            for item in self._doSearch(searchString[0]):
                 title, url = self._get_title_and_url(item)
                 results.append(classes.Proper(title, url, datetime.datetime.today()))
 

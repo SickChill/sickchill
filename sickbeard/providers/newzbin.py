@@ -50,19 +50,15 @@ class NewzbinDownloader(urllib.FancyURLopener):
             if newzbinErrCode == 450:
                 rtext = str(headers.getheader('X-DNZB-RText'))
                 result = re.search("wait (\d+) seconds", rtext)
+                logger.log("Newzbin throttled our NZB downloading, pausing for " + result.group(1) + "seconds")
+                time.sleep(int(result.group(1)))
+                raise exceptions.NewzbinAPIThrottled()
 
             elif newzbinErrCode == 401:
                 raise exceptions.AuthException("Newzbin username or password incorrect")
 
             elif newzbinErrCode == 402:
                 raise exceptions.AuthException("Newzbin account not premium status, can't download NZBs")
-
-            logger.log("Newzbin throttled our NZB downloading, pausing for " + result.group(1) + "seconds")
-
-            time.sleep(int(result.group(1)))
-
-            raise exceptions.NewzbinAPIThrottled()
-
 
 class NewzbinProvider(generic.NZBProvider):
     def __init__(self):
@@ -232,7 +228,7 @@ class NewzbinProvider(generic.NZBProvider):
 
         return True
 
-    def getURL(self, url):
+    def getURL(self, url, post_data=None, headers=None, json=False):
 
         myOpener = classes.AuthURLOpener(sickbeard.NEWZBIN_USERNAME, sickbeard.NEWZBIN_PASSWORD)
         try:
@@ -251,11 +247,11 @@ class NewzbinProvider(generic.NZBProvider):
 
         return data
 
-    def _get_season_search_strings(self, season, episode):
-        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, season, episode)]
+    def _get_season_search_strings(self, ep_obj):
+        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
-        return ['^' + x for x in show_name_helpers.makeSceneSearchString(self.show, season, episode)]
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+        return ['^' + x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _doSearch(self, searchStr, show=None, age=None):
 

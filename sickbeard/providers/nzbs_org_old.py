@@ -53,11 +53,11 @@ class NZBsProvider(generic.NZBProvider):
         if sickbeard.NZBS_UID in (None, "") or sickbeard.NZBS_HASH in (None, ""):
             raise exceptions.AuthException("NZBs.org authentication details are empty, check your config")
 
-    def _get_season_search_strings(self, season, episode):
-        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, season, episode)]
+    def _get_season_search_strings(self, ep_obj):
+        return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 
-    def _get_episode_search_strings(self, season, episode, add_string=''):
-        return ['^' + x for x in show_name_helpers.makeSceneSearchString(self.show, season, episode)]
+    def _get_episode_search_strings(self, ep_obj, add_string=''):
+        return ['^' + x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
     def _doSearch(self, curString, show=None, age=None):
 
@@ -81,7 +81,7 @@ class NZBsProvider(generic.NZBProvider):
         # Pause to avoid 503's
         time.sleep(5)
 
-        if data == None:
+        if data is None:
             logger.log(u"Error trying to load NZBs.org RSS feed: " + searchURL, logger.ERROR)
             return []
 
@@ -125,7 +125,7 @@ class NZBsProvider(generic.NZBProvider):
 
                 resultDate = datetime.datetime.strptime(match.group(1), "%a, %d %b %Y %H:%M:%S")
 
-                if date == None or resultDate > date:
+                if date is None or resultDate > date:
                     results.append(classes.Proper(title, url, resultDate))
 
         return results
