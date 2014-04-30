@@ -816,8 +816,8 @@ class PostProcessor(object):
 
         # try to find the file info
         (indexer_id, season, episodes) = self._find_info()
-        if not (indexer_id or season or episodes):
-            self._log(u"Can't find thhe show on any of the Indexers, skipping",
+        if not (indexer_id and season and len(episodes)):
+            self._log(u"Can't find the show on any of the Indexers, skipping",
                       logger.WARNING)
             return False
 
