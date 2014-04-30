@@ -242,6 +242,10 @@ class TVCache():
 
         # if we didn't find a Indexer ID return None
         if indexer_id:
+            # add to name cache if we didn't get it from the cache
+            if not from_cache:
+                name_cache.addNameToCache(parse_result.series_name, indexer_id)
+
             # if the show isn't in out database then return None
             try:
                 showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)

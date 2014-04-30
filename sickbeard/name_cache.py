@@ -28,14 +28,11 @@ def addNameToCache(name, indexer_id):
     indexer_id: the TVDB and TVRAGE id that this show should be cached with (can be None/0 for unknown)
     """
 
-    # standardize the name we're using to account for small differences in providers
-    name = sanitizeSceneName(name)
-
-    if not indexer_id:
-        indexer_id = 0
-
-    cacheDB = db.DBConnection('cache.db')
-    cacheDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+    if indexer_id:
+        # standardize the name we're using to account for small differences in providers
+        name = sanitizeSceneName(name)
+        cacheDB = db.DBConnection('cache.db')
+        cacheDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
 def retrieveNameFromCache(name):
@@ -53,10 +50,8 @@ def retrieveNameFromCache(name):
     cacheDB = db.DBConnection('cache.db')
     cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
 
-    if not cache_results:
-        return None
-
-    return int(cache_results[0]["indexer_id"])
+    if cache_results:
+        return int(cache_results[0]["indexer_id"])
 
 
 def clearCache():
