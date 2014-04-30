@@ -506,7 +506,7 @@ class PostProcessor(object):
 
         # for each possible interpretation of that scene name
         for cur_name in name_list:
-            showObj = helpers.get_show_by_name(parse_result.series_name)
+            showObj = helpers.get_show_by_name(cur_name)
             if showObj:
                 _finalize(parse_result)
                 return (showObj.indexerid, season, episodes)
