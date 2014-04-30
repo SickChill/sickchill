@@ -506,43 +506,10 @@ class PostProcessor(object):
 
         # for each possible interpretation of that scene name
         for cur_name in name_list:
-            self._log(u"Checking cache for " + cur_name, logger.DEBUG)
-            cache_id = name_cache.retrieveNameFromCache(parse_result.series_name)
-            if cache_id:
-                self._log(u"Cache lookup got a Indexer ID " + str(cache_id) + ", using that", logger.DEBUG)
+            showObj = helpers.get_show_by_name(parse_result.series_name)
+            if showObj:
                 _finalize(parse_result)
-                return (cache_id, season, episodes)
-
-        # for each possible interpretation of that scene name
-        for cur_name in name_list:
-            self._log(u"Checking scene exceptions for a match on " + cur_name, logger.DEBUG)
-            scene_id = scene_exceptions.get_scene_exception_by_name(cur_name)
-            if scene_id:
-                self._log(u"Scene exception lookup got a Indexer ID " + str(scene_id) + ", using that", logger.DEBUG)
-                _finalize(parse_result)
-                return (scene_id, season, episodes)
-
-        # see if we can find the name directly in the DB, if so use it
-        for cur_name in name_list:
-            self._log(u"Looking up " + cur_name + u" in the DB", logger.DEBUG)
-            db_result = helpers.searchDBForShow(cur_name)
-            if db_result:
-                self._log(u"Lookup successful, using " + sickbeard.indexerApi(db_result[0]).name + " id " + str(
-                    db_result[1]),
-                          logger.DEBUG)
-                _finalize(parse_result)
-                return (int(db_result[1]), season, episodes)
-
-        # see if we can find the name on the Indexer
-        for cur_name in name_list:
-            foundInfo = helpers.searchIndexerForShowID(cur_name, ui=classes.ShowListUI)
-            if foundInfo:
-                indexer_id = foundInfo[1]
-                self._log(
-                    u"Lookup successful, using " + sickbeard.indexerApi(self.indexer).name + " id " + str(indexer_id),
-                    logger.DEBUG)
-                _finalize(parse_result)
-                return (indexer_id, season, episodes)
+                return (showObj.indexerid, season, episodes)
 
         _finalize(parse_result)
         return to_return

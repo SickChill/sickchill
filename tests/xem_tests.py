@@ -28,7 +28,7 @@ sys.path.append(os.path.abspath('../lib'))
 
 import test_lib as test
 import sickbeard
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.helpers import get_show_by_name
 from sickbeard.tv import TVShow
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
@@ -64,6 +64,28 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         print scene_parsse_results1
         print scene_parsse_results2
+
+        sports_release = 'UFC.168.Weidman.vs.Silva.II.28th.Dec.2013.HDTV.x264-Sir.Paul'
+        try:
+            myParser = NameParser(False, 2)
+            parse_result = myParser.parse(sports_release)
+
+            test = sickbeard.show_name_helpers.allPossibleShowNames(parse_result.series_name)
+            show = get_show_by_name(parse_result.series_name)
+            if show:
+                sql_results = test.db.DBConnection().select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                    [show.indexerid, parse_result.sports_event_date.toordinal()])
+
+                actual_season = int(sql_results[0]["season"])
+                actual_episodes = [int(sql_results[0]["episode"])]
+
+                print actual_season
+                print actual_episodes
+        except InvalidNameException:
+            print(u"Unable to parse the filename " + scene_release + " into a valid episode")
+
+        print scene_parsse_results1
 
 if __name__ == "__main__":
     print "=================="

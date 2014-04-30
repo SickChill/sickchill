@@ -59,9 +59,11 @@ class EZRSSProvider(generic.TorrentProvider):
 
     def getSearchResults(self, show, season, ep_objs, seasonSearch=False, manualSearch=False):
 
+        self.show = show
+
         results = {}
 
-        if self.show.air_by_date or self.show.sports:
+        if show.air_by_date or show.sports:
             logger.log(self.name + u" doesn't support air-by-date or sports backloging because of limitations on their RSS search.",
                        logger.WARNING)
             return results

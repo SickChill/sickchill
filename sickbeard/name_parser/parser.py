@@ -21,21 +21,21 @@ import os.path
 import re
 import regexes
 import sickbeard
-import calendar
 
 from sickbeard import logger, helpers, scene_numbering
+from dateutil import parser
 
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1
     SPORTS_REGEX = 2
 
-    def __init__(self, file_name=True, regexMode=0):
+    def __init__(self, file_name=True, regexMode=1):
 
         self.file_name = file_name
         self.regexMode = regexMode
         self.compiled_regexes = []
-        self._compile_regexes(regexMode)
+        self._compile_regexes(self.regexMode)
 
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
@@ -124,6 +124,14 @@ class NameParser(object):
                     result.episode_numbers = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
                 else:
                     result.episode_numbers = [ep_num]
+
+            if 'sports_event_date' in named_groups:
+                sports_event_date = match.group('sports_event_date')
+                if sports_event_date:
+                    try:
+                        result.sports_event_date = parser.parse(sports_event_date, fuzzy=True).date()
+                    except ValueError, e:
+                        raise InvalidNameException(e.message)
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                 year = int(match.group('air_year'))
@@ -232,6 +240,7 @@ class NameParser(object):
 
         # sports event title
         final_result.sports_event_title = self._combine_results(file_name_result, dir_name_result, 'sports_event_title')
+        final_result.sports_event_date = self._combine_results(file_name_result, dir_name_result, 'sports_event_date')
 
         if not final_result.air_date:
             final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
@@ -265,6 +274,7 @@ class ParseResult(object):
                  original_name,
                  series_name=None,
                  sports_event_title=None,
+                 sports_event_date=None,
                  season_number=None,
                  episode_numbers=None,
                  extra_info=None,
@@ -287,6 +297,7 @@ class ParseResult(object):
         self.air_date = air_date
 
         self.sports_event_title = sports_event_title
+        self.sports_event_date = sports_event_date
 
         self.which_regex = None
 
@@ -308,6 +319,8 @@ class ParseResult(object):
             return False
         if self.sports_event_title != other.sports_event_title:
             return False
+        if self.sports_event_date != other.sports_event_date:
+            return False
 
         return True
 
@@ -326,6 +339,7 @@ class ParseResult(object):
             to_return += str(self.air_date)
         if self.sports:
             to_return += str(self.sports_event_title)
+            to_return += str(self.sports_event_date)
 
         if self.extra_info:
             to_return += ' - ' + self.extra_info
@@ -344,12 +358,12 @@ class ParseResult(object):
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
         # convert scene numbered releases before storing to cache
-        indexer_id = helpers.searchDBForShow(self.series_name)
-        if indexer_id:
+        showObj = helpers.get_show_by_name(self.series_name)
+        if showObj:
             new_episode_numbers = []
             new_season_numbers = []
             for epNo in self.episode_numbers:
-                (s, e) = scene_numbering.get_indexer_numbering(indexer_id, self.season_number, epNo)
+                (s, e) = scene_numbering.get_indexer_numbering(showObj.indexerid, self.season_number, epNo)
                 new_episode_numbers.append(e)
                 new_season_numbers.append(s)
 
@@ -380,7 +394,7 @@ class ParseResult(object):
     air_by_date = property(_is_air_by_date)
 
     def _is_sports(self):
-        if self.sports_event_title:
+        if self.sports_event_title or self.sports_event_date:
             return True
         return False
     sports = property(_is_sports)
