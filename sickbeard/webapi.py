@@ -1171,7 +1171,7 @@ class CMD_History(ApiCall):
             row["resource_path"] = os.path.dirname(row["resource"])
             row["resource"] = os.path.basename(row["resource"])
 			# Add tvdbid for backward compability
-            ep["tvdbid"] = ep['indexerid']
+            row['tvdbid'] = row['indexerid']
             results.append(row)
 
         myDB.connection.close()
