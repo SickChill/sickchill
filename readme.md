@@ -55,7 +55,7 @@ To run Sick Beard from source you will need Python 2.6+ and Cheetah 2.1.0+. The 
 
 ## Bugs
 
-If you find a bug please report here on Github [githubissue]. Verify that it hasn't already been submitted and then [log a new bug]. Be sure to provide a sickbeard log in debug mode where is the error evidence or it'll never get fixed.
+If you find a bug please report [here][githubissues] on Github. Verify that it hasn't already been submitted and then [log a new bug][githubnewissue]. Be sure to provide a sickbeard log in debug mode where is the error evidence or it'll never get fixed.
 [cherrypy]: http://www.cherrypy.org
 [cheetah]: http://www.cheetahtemplate.org/
 [simplejson]: http://code.google.com/p/simplejson/ 
