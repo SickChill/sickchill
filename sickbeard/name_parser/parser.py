@@ -371,7 +371,7 @@ class ParseResult(object):
             self.episode_numbers = new_episode_numbers
             self.season_number = new_season_numbers[0]
 
-            return self
+        return self
 
     def _is_air_by_date(self):
         if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
