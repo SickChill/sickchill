@@ -215,7 +215,7 @@ class TVCache():
                 return None
 
             logger.log(
-                u"Checking the cahe for show:" + str(parse_result.series_name),
+                u"Checking the cache for show:" + str(parse_result.series_name),
                 logger.DEBUG)
 
             # remember if the cache lookup worked or not so we know whether we should bother updating it later
