@@ -118,11 +118,9 @@ class NewznabProvider(generic.NZBProvider):
 
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
-        elif self.show.sports:
-            date_str = str(episode)
-
-            params['season'] = date_str.partition('-')[0]
-            params['ep'] = date_str.partition('-')[2].replace('-', '/')
+#        elif self.show.sports:
+#            params['season']
+#            params['ep']
         else:
             params['season'] = season
             params['ep'] = episode

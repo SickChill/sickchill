@@ -194,14 +194,16 @@ class TVCache():
 
         cacheDB = self._getDB()
         parse_result = None
-        from_cache = False
         indexer_id = None
+        season = None
+        episodes = None
+        from_cache = False
 
         # if we don't have complete info then parse the filename to get it
         while(True):
             try:
                 myParser = NameParser()
-                parse_result = myParser.parse(name)
+                parse_result = myParser.parse(name).convert()
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
                 return None
@@ -239,64 +241,39 @@ class TVCache():
             break
 
         # if we didn't find a Indexer ID return None
-        if not indexer_id:
-            return None
+        if indexer_id:
+            # if the show isn't in out database then return None
+            try:
+                showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
+                myDB = db.DBConnection()
+                if parse_result.air_by_date:
+                    sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                                              [showObj.indexerid, parse_result.air_date.toordinal()])
+                    if sql_results > 0:
+                        season = int(sql_results[0]["season"])
+                        episodes = [int(sql_results[0]["episode"])]
+                else:
+                    season = parse_result.season_number
+                    episodes = parse_result.episode_numbers
 
-        # if the show isn't in out database then return None
-        try:showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-        except:return None
+                if season and episodes:
+                    # store episodes as a seperated string
+                    episodeText = "|" + "|".join(map(str, episodes)) + "|"
 
-        if not showObj:
-            return None
+                    # get the current timestamp
+                    curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
-        # if we weren't provided with season/episode information then get it from the name that we parsed
-        season = None
-        episodes = None
-        myDB = db.DBConnection()
-        if parse_result.air_by_date:
-            sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                      [showObj.indexerid, parse_result.air_date.toordinal()])
-            if sql_results > 0:
-                season = int(sql_results[0]["season"])
-                episodes = [int(sql_results[0]["episode"])]
-        elif parse_result.sports:
-            sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                      [showObj.indexerid, parse_result.sports_date.toordinal()])
-            if sql_results > 0:
-                season = int(sql_results[0]["season"])
-                episodes = [int(sql_results[0]["episode"])]
-        else:
-            season = parse_result.season_number
-            episodes = parse_result.episode_numbers
+                    # get quality of release
+                    quality = Quality.sceneQuality(name)
 
-        if not (season and episodes):
-            return None
+                    if not isinstance(name, unicode):
+                        name = unicode(name, 'utf-8')
 
-        # convert scene numbered releases before storing to cache
-        convertedEps = {}
-        for curEp in episodes:
-            epObj = showObj.getEpisode(season, curEp, sceneConvert=True)
-            if not epObj:
-                return None
-            if not epObj.season in convertedEps:
-                convertedEps[epObj.season] = []
-            convertedEps[epObj.season].append(epObj.episode)
-
-        # get the current timestamp
-        curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
-
-        # get quality of release
-        quality = Quality.sceneQuality(name)
-
-        if not isinstance(name, unicode):
-            name = unicode(name, 'utf-8')
-
-        for season, episodes in convertedEps.items():
-            episodeText = "|" + "|".join(map(str, episodes)) + "|"
-            cacheDB.action(
-                "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                [name, season, episodeText, indexer_id, url, curTimestamp, quality])
-
+                    cacheDB.action(
+                        "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
+                        [name, season, episodeText, indexer_id, url, curTimestamp, quality])
+            except:
+                return
 
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)

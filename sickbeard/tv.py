@@ -182,24 +182,7 @@ class TVShow(object):
         return ep_list
 
 
-    def getEpisode(self, season, episode, file=None, noCreate=False, sceneConvert=False):
-
-        #return TVEpisode(self, season, episode)
-        if sceneConvert:
-            for curSeason in self.episodes:
-                for curEp in self.episodes[curSeason]:
-                    myEp = self.episodes[curSeason][curEp]
-                    try:
-                        scene_season = myEp.scene_season
-                        scene_episode = myEp.scene_episode
-                    except:continue
-
-                    if season != scene_season or episode != scene_episode:
-                        continue
-
-                    # found correct ep info
-                    season = int(myEp.season)
-                    episode = int(myEp.episode)
+    def getEpisode(self, season, episode, file=None, noCreate=False):
 
         if not season in self.episodes:
             self.episodes[season] = {}
@@ -594,8 +577,6 @@ class TVShow(object):
                 epObj = None
                 if parse_result.air_by_date:
                     epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
-                elif parse_result.sports:
-                    epObj = t[self.indexerid].airedOn(parse_result.sports_date)[0]
 
                 season = int(epObj["seasonnumber"])
                 episodes = [int(epObj["episodenumber"])]
@@ -1910,70 +1891,37 @@ class TVEpisode(object):
         else:
             show_name = self.show.name
 
-        if self.show.sports:
-            return {
-                '%SN': show_name,
-                '%S.N': dot(show_name),
-                '%S_N': us(show_name),
-                '%EN': ep_name,
-                '%E.N': dot(ep_name),
-                '%E_N': us(ep_name),
-                '%QN': Quality.qualityStrings[epQual],
-                '%Q.N': dot(Quality.qualityStrings[epQual]),
-                '%Q_N': us(Quality.qualityStrings[epQual]),
-                '%S': str(self.season),
-                '%0S': '%02d' % self.season,
-                '%E': str(self.episode),
-                '%0E': '%02d' % self.episode,
-                '%XMS': str(self.scene_season),
-                '%0XMS': '%02d' % self.scene_season,
-                '%XME': str(self.scene_episode),
-                '%0XME': '%02d' % self.scene_episode,
-                '%RN': release_name(self.release_name),
-                '%RG': release_group(self.release_name),
-                '%AD': self.airdate.strftime('%d %b %Y'),
-                '%A.D': self.airdate.strftime('%d.%b.%Y'),
-                '%A_D': us(self.airdate.strftime('%d-%b-%Y')),
-                '%A-D': self.airdate.strftime('%d-%b-%Y'),
-                '%Y': str(self.airdate.year),
-                '%M': self.airdate.strftime('%b'),
-                '%D': str(self.airdate.day),
-                '%0M': '%02d' % self.airdate.month,
-                '%0D': '%02d' % self.airdate.day,
-                '%RT': "PROPER" if self.is_proper else "",
-            }
-        else:
-            return {
-                '%SN': show_name,
-                '%S.N': dot(show_name),
-                '%S_N': us(show_name),
-                '%EN': ep_name,
-                '%E.N': dot(ep_name),
-                '%E_N': us(ep_name),
-                '%QN': Quality.qualityStrings[epQual],
-                '%Q.N': dot(Quality.qualityStrings[epQual]),
-                '%Q_N': us(Quality.qualityStrings[epQual]),
-                '%S': str(self.season),
-                '%0S': '%02d' % self.season,
-                '%E': str(self.episode),
-                '%0E': '%02d' % self.episode,
-                '%XMS': str(self.scene_season),
-                '%0XMS': '%02d' % self.scene_season,
-                '%XME': str(self.scene_episode),
-                '%0XME': '%02d' % self.scene_episode,
-                '%RN': release_name(self.release_name),
-                '%RG': release_group(self.release_name),
-                '%AD': str(self.airdate).replace('-', ' '),
-                '%A.D': str(self.airdate).replace('-', '.'),
-                '%A_D': us(str(self.airdate)),
-                '%A-D': str(self.airdate),
-                '%Y': str(self.airdate.year),
-                '%M': str(self.airdate.month),
-                '%D': str(self.airdate.day),
-                '%0M': '%02d' % self.airdate.month,
-                '%0D': '%02d' % self.airdate.day,
-                '%RT': "PROPER" if self.is_proper else "",
-            }
+        return {
+            '%SN': show_name,
+            '%S.N': dot(show_name),
+            '%S_N': us(show_name),
+            '%EN': ep_name,
+            '%E.N': dot(ep_name),
+            '%E_N': us(ep_name),
+            '%QN': Quality.qualityStrings[epQual],
+            '%Q.N': dot(Quality.qualityStrings[epQual]),
+            '%Q_N': us(Quality.qualityStrings[epQual]),
+            '%S': str(self.season),
+            '%0S': '%02d' % self.season,
+            '%E': str(self.episode),
+            '%0E': '%02d' % self.episode,
+            '%XMS': str(self.scene_season),
+            '%0XMS': '%02d' % self.scene_season,
+            '%XME': str(self.scene_episode),
+            '%0XME': '%02d' % self.scene_episode,
+            '%RN': release_name(self.release_name),
+            '%RG': release_group(self.release_name),
+            '%AD': str(self.airdate).replace('-', ' '),
+            '%A.D': str(self.airdate).replace('-', '.'),
+            '%A_D': us(str(self.airdate)),
+            '%A-D': str(self.airdate),
+            '%Y': str(self.airdate.year),
+            '%M': str(self.airdate.month),
+            '%D': str(self.airdate.day),
+            '%0M': '%02d' % self.airdate.month,
+            '%0D': '%02d' % self.airdate.day,
+            '%RT': "PROPER" if self.is_proper else "",
+        }
 
     def _format_string(self, pattern, replace_map):
         """

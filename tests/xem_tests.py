@@ -48,49 +48,22 @@ class XEMBasicTests(test.SickbeardTestDBCase):
             except Exception, e:
                 print "There was an error creating the show"
 
-    def test_formating(self):
+    def test_parsing_scene_release(self):
         self.loadFromDB()
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 111051)
-        show.loadEpisodesFromDB()
-        ep = show.getEpisode(8, 56, sceneConvert=True)
-        ep.airdate = datetime.date.today()
 
         # parse the file name
-        pattern = u'%SN - %A-D - %EN'
-        title = 'UFC.166.Velasquez.v.Dos Santos.III.19th.Oct.2013.HDTV.x264-Sir.Paul'
+        scene_parsse_results1 = ''
+        scene_parsse_results2 = ''
+        scene_release = 'Pawn Stars S08E41 Field Trip HDTV x264-tNe'
         try:
             myParser = NameParser(False, 1)
-            parse_result = myParser.parse(title)
+            scene_parsse_results1 = myParser.parse(scene_release)
+            scene_parsse_results2 = myParser.parse(scene_release).convert()
         except InvalidNameException:
-            print(u"Unable to parse the filename " + ep.name + " into a valid episode")
+            print(u"Unable to parse the filename " + scene_release + " into a valid episode")
 
-        print parse_result
-
-        search_string = {'Episode':[]}
-        episode = ep.airdate
-        str(episode).replace('-', '|')
-        ep_string = sanitizeSceneName(show.name) + ' ' + \
-                    str(episode).replace('-', '|') + '|' + \
-                    episode.strftime('%b')
-
-        search_string['Episode'].append(ep_string)
-
-        scene_ep_string = sanitizeSceneName(show.name) + ' ' + \
-                    sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + '|' + \
-                    sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + '|' + \
-                    sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + ' %s category:tv' % ''
-
-        scene_season_string = show.name + ' S%02d' % int(ep.scene_season) + ' -S%02d' % int(ep.scene_season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
-
-        print(
-            u'Searching "%s" for "%s" as "%s"' % (show.name, ep.prettyName(), ep.scene_prettyName()))
-
-        print('Scene episode search strings: %s' % (scene_ep_string))
-
-        print('Scene season search strings: %s' % (scene_season_string))
+        print scene_parsse_results1
+        print scene_parsse_results2
 
 if __name__ == "__main__":
     print "=================="

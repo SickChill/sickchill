@@ -40,9 +40,11 @@ name_abd_presets = ('%SN - %A-D - %EN',
                     '%Y/%0M/%S.N.%A.D.%E.N-%RG'
 )
 
-name_sports_presets = ('%SN - %A-D - %EN',
-                    '%S.N.%A.D.%E.N.%Q.N',
-                    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
+name_sports_presets = ('%SN - %Sx%0E - %EN',
+                '%S.N.S%0SE%0E.%E.N',
+                '%Sx%0E - %EN',
+                'S%0SE%0E - %EN',
+                'Season %0S/%S.N.S%0SE%0E.%Q.N-%RG'
 )
 
 class TVShow():
@@ -135,11 +137,7 @@ def check_valid_sports_naming(pattern=None):
 def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False):
     ep = _generate_sample_ep(multi, abd, sports)
 
-    regexMode = 0
-    if sports:
-        regexMode = 2
-
-    parser = NameParser(True, regexMode)
+    parser = NameParser(True)
 
     new_name = ep.formatted_filename(pattern, multi) + '.ext'
     new_path = ep.formatted_dir(pattern, multi)
@@ -164,10 +162,6 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
         if result.air_date != ep.airdate:
             logger.log(u"Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
-    elif sports:
-        if result.air_date != ep.airdate:
-            logger.log(u"Sports air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
     else:
         if result.season_number != ep.season:
             logger.log(u"Season incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
@@ -182,6 +176,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
 def _generate_sample_ep(multi=None, abd=False, sports=False):
     # make a fake episode object
     ep = TVEpisode(2, 3, "Ep Name")
+
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
 
@@ -189,7 +184,7 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
         ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.09.Mar.2011.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.100.Fighter.vs.Fighter.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'

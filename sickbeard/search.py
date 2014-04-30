@@ -378,7 +378,9 @@ def searchProviders(show, season, episode=None, manualSearch=False):
 
         # search cache first for wanted episodes
         for ep_obj in wantedEps:
-            curResults.update(curProvider.cache.searchCache(ep_obj, manualSearch))
+            results = curProvider.cache.searchCache(ep_obj, manualSearch)
+            if results:
+                curResults.update(results)
 
         # did we find our results ?
         if curResults:

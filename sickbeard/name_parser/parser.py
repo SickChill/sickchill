@@ -19,18 +19,11 @@
 import datetime
 import os.path
 import re
-import copy
 import regexes
 import sickbeard
 import calendar
 
-from sickbeard import logger, classes
-from sickbeard import scene_numbering, scene_exceptions
-
-from lib.dateutil.parser import parse
-
-from time import strptime
-
+from sickbeard import logger, helpers, scene_numbering
 
 class NameParser(object):
     ALL_REGEX = 0
@@ -114,6 +107,11 @@ class NameParser(object):
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
 
+            if 'sports_event_title' in named_groups:
+                result.sports_event_title = match.group('sports_event_title')
+                if result.sports_event_title:
+                    result.sports_event_title = self.clean_series_name(result.sports_event_title)
+
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
                 if cur_regex_name == 'bare' and tmp_season in (19, 20):
@@ -129,16 +127,12 @@ class NameParser(object):
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                 year = int(match.group('air_year'))
-                month = match.group('air_month')
+                month = int(match.group('air_month'))
                 day = int(match.group('air_day'))
 
                 try:
-                    try:
-                        dtStr = '%s-%s-%s' % (year, month, day)
-                        result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
-                    except:
-                        dtStr = '%s-%s-%s' % (day, month, year)
-                        result.air_date = datetime.datetime.strptime(dtStr, "%d-%b-%Y").date()
+                    dtStr = '%s-%s-%s' % (year, month, day)
+                    result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
                 except ValueError, e:
                     raise InvalidNameException(e.message)
 
@@ -235,7 +229,9 @@ class NameParser(object):
 
         # build the ParseResult object
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
-        final_result.sports_date = self._combine_results(file_name_result, dir_name_result, 'sports_date')
+
+        # sports event title
+        final_result.sports_event_title = self._combine_results(file_name_result, dir_name_result, 'sports_event_title')
 
         if not final_result.air_date:
             final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
@@ -268,12 +264,12 @@ class ParseResult(object):
     def __init__(self,
                  original_name,
                  series_name=None,
+                 sports_event_title=None,
                  season_number=None,
                  episode_numbers=None,
                  extra_info=None,
                  release_group=None,
                  air_date=None,
-                 sports_date=None
     ):
 
         self.original_name = original_name
@@ -289,7 +285,8 @@ class ParseResult(object):
         self.release_group = release_group
 
         self.air_date = air_date
-        self.sports_date = sports_date
+
+        self.sports_event_title = sports_event_title
 
         self.which_regex = None
 
@@ -309,7 +306,7 @@ class ParseResult(object):
             return False
         if self.air_date != other.air_date:
             return False
-        if self.sports_date != other.sports_date:
+        if self.sports_event_title != other.sports_event_title:
             return False
 
         return True
@@ -328,7 +325,7 @@ class ParseResult(object):
         if self.air_by_date:
             to_return += str(self.air_date)
         if self.sports:
-            to_return += str(self.sports_date)
+            to_return += str(self.sports_event_title)
 
         if self.extra_info:
             to_return += ' - ' + self.extra_info
@@ -341,14 +338,47 @@ class ParseResult(object):
 
         return to_return.encode('utf-8')
 
+    def convert(self):
+        if self.air_by_date: return # scene numbering does not apply to air-by-date
+        if self.season_number == None: return self  # can't work without a season
+        if len(self.episode_numbers) == 0: return self  # need at least one episode
+
+        # convert scene numbered releases before storing to cache
+        indexer_id = helpers.searchDBForShow(self.series_name)
+        if indexer_id:
+            new_episode_numbers = []
+            new_season_numbers = []
+            for epNo in self.episode_numbers:
+                (s, e) = scene_numbering.get_indexer_numbering(indexer_id, self.season_number, epNo)
+                new_episode_numbers.append(e)
+                new_season_numbers.append(s)
+
+            # need to do a quick sanity check here.  It's possible that we now have episodes
+            # from more than one season (by tvdb numbering), and this is just too much
+            # for sickbeard, so we'd need to flag it.
+            new_season_numbers = list(set(new_season_numbers))  # remove duplicates
+            if len(new_season_numbers) > 1:
+                raise InvalidNameException("Scene numbering results episodes from "
+                                           "seasons %s, (i.e. more than one) and "
+                                           "sickbeard does not support this.  "
+                                           "Sorry." % (str(new_season_numbers)))
+
+            # I guess it's possible that we'd have duplicate episodes too, so lets
+            # eliminate them
+            new_episode_numbers = list(set(new_episode_numbers))
+            new_episode_numbers.sort()
+
+            self.episode_numbers = new_episode_numbers
+            self.season_number = new_season_numbers[0]
+
     def _is_air_by_date(self):
-        if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date and not self.sports_date:
+        if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
             return True
         return False
     air_by_date = property(_is_air_by_date)
 
     def _is_sports(self):
-        if self.season_number == None and len(self.episode_numbers) == 0 and self.sports_date:
+        if self.sports_event_title:
             return True
         return False
     sports = property(_is_sports)
@@ -359,14 +389,14 @@ class NameParserCache(object):
     _previous_parsed = {}
     _cache_size = 100
 
-    def add(self, name, parse_result):
+    def add(self, name, parse_result, convert=False):
         self._previous_parsed[name] = parse_result
         self._previous_parsed_list.append(name)
         while len(self._previous_parsed_list) > self._cache_size:
             del_me = self._previous_parsed_list.pop(0)
             self._previous_parsed.pop(del_me)
 
-    def get(self, name):
+    def get(self, name, convert=False):
         if name in self._previous_parsed:
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
             return self._previous_parsed[name]

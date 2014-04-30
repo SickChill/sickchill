@@ -187,16 +187,13 @@ ep_regexes = [
 ]
 
 sports_regexs = [
-    ('sports_event',
-     # Show.Name.123.Event.Nov.23rd.2010.Source.Quality.Etc-Group
-     '''
-     ^((?P<series_name>.+?)[. _-]+)?
-     ^((?P<event>.+?)[. _-]+)?
-     ((?P<air_day>\d{1,2}))[. _-]+
-     (?P<air_month>\w{3,})[. _-]+
-     (?P<air_year>\d{4})
-     [. _-]*((?P<extra_info>.+?)
-     ((?<![. _-])(?<!WEB)
-     -(?P<release_group>[^- ]+))?)?$
-     '''),
+    ('sports_event_mma',
+     # Show.Name.123.Event.23rd.Nov.2010.Source.Quality.Etc-Group
+      '''
+      ^(?P<series_name>.+?)[. _-]+
+      (?P<sports_event_title>\d{3}[. _-]+\w+[. _-]vs[. _-]\w+)
+      ([. _-]*(?P<extra_info>.+?)((?<![. _-])(?<!WEB)
+      -(?P<release_group>[^- ]+))?)?$
+      '''
+    ),
 ]

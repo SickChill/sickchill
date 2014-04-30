@@ -257,18 +257,14 @@ class GenericProvider:
             regexMode = 2
 
         for ep_obj in ep_objs:
-            if show.sports:
-                logger.log(
-                    u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.sports_prettyName()))
-            else:
-                logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
+            logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
             if seasonSearch:
-                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date or show.sports else ep_obj.scene_episode):
-                    itemList += self._doSearch(curString, show=show)
+                for curString in self._get_season_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date else ep_obj.scene_episode):
+                    itemList += self._doSearch(curString)
             else:
-                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date or show.sports else ep_obj.scene_episode):
-                    itemList += self._doSearch(curString, show=show)
+                for curString in self._get_episode_search_strings(ep_obj.scene_season, ep_obj.airdate if show.air_by_date else ep_obj.scene_episode):
+                    itemList += self._doSearch(curString)
 
         for item in itemList:
 
@@ -279,12 +275,12 @@ class GenericProvider:
             # parse the file name
             try:
                 myParser = NameParser(False, regexMode=regexMode)
-                parse_result = myParser.parse(title)
+                parse_result = myParser.parse(title).convert()
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                 continue
 
-            if not show.air_by_date and not show.sports:
+            if not show.air_by_date:
                 # this check is meaningless for non-season searches
                 if (parse_result.season_number != None and parse_result.season_number != season) or (
                                 parse_result.season_number == None and season != 1):
@@ -303,19 +299,10 @@ class GenericProvider:
                         logger.DEBUG)
                     continue
 
-                if show.sports and not parse_result.sports:
-                    logger.log(
-                        u"This is supposed to be an sports search but the result " + title + " didn't parse as one, skipping it",
-                        logger.DEBUG)
-                    continue
-
                 myDB = db.DBConnection()
                 if parse_result.air_by_date:
                     sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
                                               [show.indexerid, parse_result.air_date.toordinal()])
-                elif parse_result.sports:
-                    sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                              [show.indexerid, parse_result.sports_date.toordinal()])
 
                 if len(sql_results) != 1:
                     logger.log(
