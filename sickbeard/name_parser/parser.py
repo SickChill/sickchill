@@ -339,7 +339,7 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
-        if self.air_by_date: return # scene numbering does not apply to air-by-date
+        if self.air_by_date: return self # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
@@ -370,6 +370,8 @@ class ParseResult(object):
 
             self.episode_numbers = new_episode_numbers
             self.season_number = new_season_numbers[0]
+
+            return self
 
     def _is_air_by_date(self):
         if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
