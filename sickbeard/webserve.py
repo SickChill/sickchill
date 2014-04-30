@@ -3677,7 +3677,7 @@ class WebInterface:
 
         # Get all the shows that are not paused and are currently on air (from kjoconnor Fork)
         calendar_shows = myDB.select(
-            "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE status = 'Continuing' OR status = 'Returning Series' AND paused != '1'")
+            "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE ( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
         for show in calendar_shows:
             # Get all episodes of this show airing between today and next month
             episode_list = myDB.select(
