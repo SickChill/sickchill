@@ -48,7 +48,7 @@ class GenericClient(object):
             return False
         try:
             self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files,
-                                                                  timeout=10, verify=False)
+                                                                  timeout=20, verify=False)
         except requests.exceptions.ConnectionError, e:
             logger.log(self.name + u': Unable to connect ' + ex(e), logger.ERROR)
             return False
