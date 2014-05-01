@@ -338,6 +338,7 @@ class GenericProvider:
 
 
             # make sure we want the episode
+            epObj = None
             wantEp = True
             for epNo in actual_episodes:
                 epObj = self.show.getEpisode(actual_season, epNo)
