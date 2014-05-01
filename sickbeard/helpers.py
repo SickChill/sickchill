@@ -943,7 +943,7 @@ def get_show_by_name(name, useIndexer=False):
     foundResult = None
 
     logger.log(
-        u"Checking the cahe for:" + str(name),
+        u"Checking the cache for:" + str(name),
         logger.DEBUG)
 
     cacheResult = sickbeard.name_cache.retrieveNameFromCache(name)
