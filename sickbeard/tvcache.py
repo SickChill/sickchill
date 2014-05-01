@@ -251,7 +251,7 @@ class TVCache():
 
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)
-        return neededEps[episode]
+        return neededEps
 
     def listPropers(self, date=None, delimiter="."):
 
@@ -267,9 +267,6 @@ class TVCache():
 
     def findNeededEpisodes(self, episode=None, manualSearch=False):
         neededEps = {}
-
-        if episode:
-            neededEps[episode] = []
 
         myDB = self._getDB()
 

@@ -383,32 +383,18 @@ def searchProviders(show, season, episode=None, manualSearch=False):
                 curResults.update(results)
 
         # did we find our results ?
-        if curResults:
-            logger.log(u"Cache results: " + str(curResults), logger.DEBUG)
+        if len(curResults):
+            logger.log(u"Cache results: " + repr(curResults), logger.DEBUG)
             didSearch = True
             break
 
-    if not curResults:
+    if not len(curResults):
         for curProvider in providers.sortedProviderList():
             if not curProvider.isActive():
                 continue
 
             try:
-                if not curResults:
-                    curResults = curProvider.getSearchResults(show, season, wantedEps, seasonSearch, manualSearch)
-
-                # make a list of all the results for this provider
-                for curEp in curResults:
-
-                    # skip non-tv crap
-                    curResults[curEp] = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,show),curResults[curEp])
-
-                    if curEp in foundResults:
-                        foundResults[curEp] += curResults[curEp]
-                    else:
-                        foundResults[curEp] = curResults[curEp]
-
+                curResults.update(curProvider.getSearchResults(show, season, wantedEps, seasonSearch, manualSearch))
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 continue
@@ -418,6 +404,17 @@ def searchProviders(show, season, episode=None, manualSearch=False):
                 continue
 
             didSearch = True
+
+    # make a list of all the results for this provider
+    for curEp in curResults:
+        # skip non-tv crap
+        curResults[curEp] = filter(
+            lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,show),curResults[curEp])
+
+        if curEp in foundResults:
+            foundResults[curEp] += curResults[curEp]
+        else:
+            foundResults[curEp] = curResults[curEp]
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
