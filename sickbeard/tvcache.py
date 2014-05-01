@@ -218,10 +218,10 @@ class TVCache():
 
         try:
             myDB = db.DBConnection()
-            if showObj.air_by_date:
-                airdate = parse_result.sports_event_date.toordinal() if showObj.sports else parse_result.air_date.toordinal()
+            if parse_result.show.air_by_date:
+                airdate = parse_result.sports_event_date.toordinal() if parse_result.show.sports else parse_result.air_date.toordinal()
                 sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                          [showObj.indexerid, airdate])
+                                          [parse_result.show.indexerid, airdate])
                 if sql_results > 0:
                     season = int(sql_results[0]["season"])
                     episodes = [int(sql_results[0]["episode"])]
@@ -245,7 +245,7 @@ class TVCache():
 
                 cacheDB.action(
                     "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                    [name, season, episodeText, showObj.indexerid, url, curTimestamp, quality])
+                    [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality])
         except:
             return
 
