@@ -213,7 +213,7 @@ class TVCache():
             return None
 
         if not parse_result.show:
-            logger.log(u"Couldn't find a show in our databases from " + name + ", unable to cache it", logger.DEBUG)
+            logger.log(u"Couldn't find a show in our databases matching " + name + ", unable to cache it", logger.DEBUG)
             return None
 
         try:
