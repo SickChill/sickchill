@@ -975,9 +975,10 @@ def get_show_by_name(name, useIndexer=False):
         dbResult = searchDBForShow(name)
         if dbResult:
             foundResult = findCertainShow(sickbeard.showList, dbResult[1])
-            logger.log(
-                u"Database lookup found Indexer ID:" + str(
-                    foundResult.indexerid) + ", using that for " + name, logger.DEBUG)
+            if foundResult:
+                logger.log(
+                    u"Database lookup found Indexer ID:" + str(
+                        foundResult.indexerid) + ", using that for " + name, logger.DEBUG)
 
     if not foundResult and useIndexer:
         logger.log(
