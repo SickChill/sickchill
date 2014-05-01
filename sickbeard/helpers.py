@@ -283,7 +283,7 @@ def makeDir(path):
 
 
 def searchDBForShow(regShowName):
-    showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
+    showNames = list({re.sub('[. -]', ' ', regShowName), regShowName})
 
     myDB = db.DBConnection()
 
@@ -309,36 +309,40 @@ def searchDBForShow(regShowName):
                 return (int(sqlResults[0]["indexer"]), int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
-    showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
+    showNames = list({re.sub('[. -]', ' ', regShowName), regShowName})
 
     # Query Indexers for each search term and build the list of results
-    for indexer in sickbeard.indexerApi().indexers if not indexer else [int(indexer)]:
+    for i in sickbeard.indexerApi().indexers if not indexer else int(indexer or []):
         # Query Indexers for each search term and build the list of results
-        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-        if ui: lINDEXER_API_PARMS['custom_ui'] = ui
-        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+        lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
+        if ui is not None: lINDEXER_API_PARMS['custom_ui'] = ui
+        t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
 
         for name in showNames:
-            logger.log(u"Trying to find " + name + " on " + sickbeard.indexerApi(indexer).name, logger.DEBUG)
+            logger.log(u"Trying to find " + name + " on " + sickbeard.indexerApi(i).name, logger.DEBUG)
+
+            search = t[indexer_id] if indexer_id else t[name]
             try:
-                search = t[indexer_id] if indexer_id else t[name]
+                seriesname = search.seriesname
+            except:
+                seriesname = None
+            try:
+                series_id = search.id
+            except:
+                series_id = None
 
-                # add search results
-                for i in range(len(search)):
-                    part = search[i]
-                    seriesname = part['seriesname'].lower()
-
-                    if str(name).lower() == seriesname or (indexer_id and part['id'] == indexer_id):
-                        return [sickbeard.indexerApi(indexer).config['id'], part['id']]
-
-            except KeyError:
-                if indexer:
-                    break
-                else:
-                    continue
-            except Exception:
+            if not (seriesname and series_id):
                 continue
 
+            if str(name).lower() == str(seriesname).lower and not indexer_id:
+                return (seriesname, int(sickbeard.indexerApi(i).config['id']), int(series_id))
+            elif int(indexer_id) == int(series_id):
+                return (seriesname, int(sickbeard.indexerApi(i).config['id']), int(indexer_id))
+
+        if indexer:
+            break
+
+    return (None, None, None)
 
 def sizeof_fmt(num):
     '''
