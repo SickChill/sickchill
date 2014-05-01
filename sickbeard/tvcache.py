@@ -198,7 +198,7 @@ class TVCache():
 
         # if we don't have complete info then parse the filename to get it
         try:
-            myParser = NameParser()
+            myParser = NameParser(0)
             parse_result = myParser.parse(name).convert()
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
@@ -212,22 +212,16 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        try:
-            showObj = helpers.get_show_by_name(parse_result.series_name)
-            if showObj is None:
-                return None
+        if not parse_result.show:
+            logger.log(u"Couldn't find a show in our databases from " + name + ", unable to cache it", logger.DEBUG)
+            return None
 
+        try:
             myDB = db.DBConnection()
             if showObj.air_by_date:
+                airdate = parse_result.sports_event_date.toordinal() if showObj.sports else parse_result.air_date.toordinal()
                 sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                          [showObj.indexerid, parse_result.air_date.toordinal()])
-                if sql_results > 0:
-                    season = int(sql_results[0]["season"])
-                    episodes = [int(sql_results[0]["episode"])]
-            elif showObj.sports:
-                sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                          [showObj.indexerid, parse_result.sports_event_date.toordinal()])
-
+                                          [showObj.indexerid, airdate])
                 if sql_results > 0:
                     season = int(sql_results[0]["season"])
                     episodes = [int(sql_results[0]["episode"])]

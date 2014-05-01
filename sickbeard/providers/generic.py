@@ -249,11 +249,15 @@ class GenericProvider:
 
     def getSearchResults(self, show, season, ep_objs, seasonSearch=False, manualSearch=False):
 
+        self._checkAuth()
+        self.show = show
+
         itemList = []
         results = {}
 
-        self._checkAuth()
-        self.show = show
+        useDate = False
+        if self.show.air_by_date or self.show.sports:
+            useDate = True
 
         regexMode = 0
         if self.show.sports:
@@ -283,7 +287,8 @@ class GenericProvider:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                 continue
 
-            if not (self.show.air_by_date, self.show.sports):
+
+            if not useDate:
                 # this check is meaningless for non-season searches
                 if (parse_result.season_number is not None and parse_result.season_number != season) or (
                                 parse_result.season_number is None and season != 1):
@@ -291,41 +296,46 @@ class GenericProvider:
                         season) + ", ignoring", logger.DEBUG)
                     continue
 
+                if manualSearch and (parse_result.season_number != season or ep_objs[0].episode not in parse_result.episode_numbers):
+                    logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(
+                        ep_objs[0].episode) + ", skipping it", logger.DEBUG)
+                    continue
+
                 # we just use the existing info for normal searches
-                actual_season = parse_result.season_number
-                actual_episodes = parse_result.episode_numbers
-
+                actual_season = season if manualSearch else parse_result.season_number
+                actual_episodes = [ep_objs[0].episode] if manualSearch else parse_result.episode_numbers
             else:
-                if self.show.air_by_date and not parse_result.air_by_date:
+                if not (parse_result.air_by_date,parse_result.sports_event_date):
                     logger.log(
-                        u"This is supposed to be an air-by-date search but the result " + title + " didn't parse as one, skipping it",
+                        u"This is supposed to be an date search but the result " + title + " didn't parse as one, skipping it",
                         logger.DEBUG)
                     continue
 
-                if self.show.sports and not parse_result.sports_event_date:
-                    logger.log(
-                        u"This is supposed to be an sports-event-date search but the result " + title + " didn't parse as one, skipping it",
-                        logger.DEBUG)
+                if manualSearch and parse_result.air_date != ep_objs[0].airdate:
+                    logger.log(u"Episode " + title + " didn't air on " + str(ep_objs[0].airdate) + ", skipping it",
+                               logger.DEBUG)
                     continue
 
-                myDB = db.DBConnection()
-                if parse_result.air_by_date:
-                    sql_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                        [self.show.indexerid, parse_result.air_date.toordinal()])
-                elif parse_result.sports:
-                    sql_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                        [self.show.indexerid, parse_result.sports_event_date.toordinal()])
+                if not manualSearch:
+                    myDB = db.DBConnection()
+                    if parse_result.air_by_date:
+                        sql_results = myDB.select(
+                            "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                            [self.show.indexerid, parse_result.air_date.toordinal()])
+                    elif parse_result.sports:
+                        sql_results = myDB.select(
+                            "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                            [self.show.indexerid, parse_result.sports_event_date.toordinal()])
 
-                if len(sql_results) != 1:
-                    logger.log(
-                        u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
-                        logger.WARNING)
-                    continue
+                    if len(sql_results) != 1:
+                        logger.log(
+                            u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
+                            logger.WARNING)
+                        continue
 
-                actual_season = int(sql_results[0]["season"])
-                actual_episodes = [int(sql_results[0]["episode"])]
+                actual_season = season if manualSearch else int(sql_results[0]["season"])
+                actual_episodes = [ep_objs[0].episode] if manualSearch else [int(sql_results[0]["episode"])]
+
 
             # make sure we want the episode
             wantEp = True

@@ -280,7 +280,10 @@ class ParseResult(object):
                  extra_info=None,
                  release_group=None,
                  air_date=None,
+                 show=None,
     ):
+
+        self.show = show
 
         self.original_name = original_name
 
@@ -360,6 +363,8 @@ class ParseResult(object):
         # convert scene numbered releases before storing to cache
         showObj = helpers.get_show_by_name(self.series_name)
         if showObj:
+            self.show = showObj
+
             new_episode_numbers = []
             new_season_numbers = []
             for epNo in self.episode_numbers:
