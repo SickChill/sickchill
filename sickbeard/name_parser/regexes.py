@@ -193,7 +193,7 @@ sports_regexs = [
      # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
      '''
      ^(?P<series_name>.+?)[. _-]+
-     (?P<sports_event_date>(\d{4}[. _-]+\d{2}[. _-]+\d{2})|(\d{2}\w{2}[. _-]+\w+[. _-]+\d{4}))
+     (?P<sports_event_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
      -(?P<release_group>[^- ]+))?)?$
      '''

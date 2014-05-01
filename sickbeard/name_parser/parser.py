@@ -30,7 +30,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     SPORTS_REGEX = 2
 
-    def __init__(self, file_name=True, regexMode=1):
+    def __init__(self, file_name=True, regexMode=0):
 
         self.file_name = file_name
         self.regexMode = regexMode

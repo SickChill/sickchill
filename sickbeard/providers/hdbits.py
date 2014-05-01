@@ -117,7 +117,7 @@ class HDBitsProvider(generic.TorrentProvider):
                     # parse the file name
                     try:
                         myParser = NameParser()
-                        parse_result = myParser.parse(title)
+                        parse_result = myParser.parse(title).convert()
                     except InvalidNameException:
                         logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                         continue

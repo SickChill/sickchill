@@ -114,7 +114,7 @@ def splitResult(result):
     # parse the season ep name
     try:
         np = NameParser(False)
-        parse_result = np.parse(result.name)
+        parse_result = np.parse(result.name).convert()
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + result.name + " into a valid episode", logger.WARNING)
         return False

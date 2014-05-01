@@ -157,7 +157,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         try:
             myParser = NameParser()
-            parse_result = myParser.parse(fileName)
+            parse_result = myParser.parse(fileName).convert()
         except InvalidNameException:
             return None
 
