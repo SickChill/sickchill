@@ -1170,6 +1170,13 @@ class ConfigPostProcessing:
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 
+        sickbeard.METADATA_XBMC = xbmc_data
+        sickbeard.METADATA_XBMC_12PLUS = xbmc_12plus_data
+        sickbeard.METADATA_MEDIABROWSER = mediabrowser_data
+        sickbeard.METADATA_PS3 = sony_ps3_data
+        sickbeard.METADATA_WDTV = wdtv_data
+        sickbeard.METADATA_TIVO = tivo_data
+
         sickbeard.metadata_provider_dict['XBMC'].set_config(sickbeard.METADATA_XBMC)
         sickbeard.metadata_provider_dict['XBMC 12+'].set_config(sickbeard.METADATA_XBMC_12PLUS)
         sickbeard.metadata_provider_dict['MediaBrowser'].set_config(sickbeard.METADATA_MEDIABROWSER)
