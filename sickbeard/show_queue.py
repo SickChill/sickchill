@@ -244,35 +244,32 @@ class QueueItemAdd(ShowQueueItem):
             if self.lang:
                 lINDEXER_API_PARMS['language'] = self.lang
 
-            logger.log(u"" + sickbeard.indexerApi(self.indexer).name + ": " + repr(lINDEXER_API_PARMS))
+            logger.log(u"" + str(sickbeard.indexerApi(self.indexer).name) + ": " + repr(lINDEXER_API_PARMS))
 
             t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
             s = t[self.indexer_id]
 
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, 'seriesname', None) is None:
-                logger.log(u"Show in " + self.showDir + " has no name on " + sickbeard.indexerApi(
-                    self.indexer).name + ", probably the wrong language used to search with.", logger.ERROR)
+                logger.log(u"Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(self.indexer).name) + ", probably the wrong language used to search with.", logger.ERROR)
                 ui.notifications.error("Unable to add show",
-                                       "Show in " + self.showDir + " has no name on " + sickbeard.indexerApi(
-                                           self.indexer).name + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
+                                       "Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(
+                                           self.indexer).name) + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
                 self._finishEarly()
                 return
             # if the show has no episodes/seasons
             if not s:
-                logger.log(u"Show " + str(s['seriesname']) + " is on " + sickbeard.indexerApi(
-                    self.indexer).name + " but contains no season/episode data.", logger.ERROR)
+                logger.log(u"Show " + str(s['seriesname']) + " is on " + str(sickbeard.indexerApi(self.indexer).name) + " but contains no season/episode data.", logger.ERROR)
                 ui.notifications.error("Unable to add show",
-                                       "Show " + str(s['seriesname']) + " is on " + sickbeard.indexerApi(
-                                           self.indexer).name + " but contains no season/episode data.")
+                                       "Show " + str(s['seriesname']) + " is on " + str(sickbeard.indexerApi(
+                                           self.indexer).name) + " but contains no season/episode data.")
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + sickbeard.indexerApi(
-                self.indexer).name, logger.ERROR)
+            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + str(sickbeard.indexerApi(self.indexer).name), logger.ERROR)
             ui.notifications.error("Unable to add show",
-                                   "Unable to look up the show in " + self.showDir + " on " + sickbeard.indexerApi(
-                                       self.indexer).name + " using ID " + str(
+                                   "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
+                                       self.indexer).name) + " using ID " + str(
                                        self.indexer_id) + ", not using the NFO. Delete .nfo and try adding manually again.")
             self._finishEarly()
             return
