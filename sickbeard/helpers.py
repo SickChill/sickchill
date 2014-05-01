@@ -942,7 +942,7 @@ def _check_against_names(name, show):
     return False
 
 
-def get_show_by_name(name, checkExceptions=False, checkIndexers=False):
+def get_show_by_name(name, checkIndexers=False):
     in_cache = False
     foundResult = None
 
@@ -973,18 +973,17 @@ def get_show_by_name(name, checkExceptions=False, checkIndexers=False):
                     u"Database lookup found Indexer ID:" + str(
                         foundResult.indexerid) + ", using that for " + name, logger.DEBUG)
 
-    if not foundResult and checkExceptions:
-        if not foundResult:
-            logger.log(
-                u"Checking the scene exceptions list for:" + str(name),
-                logger.DEBUG)
+    if not foundResult:
+        logger.log(
+            u"Checking the scene exceptions list for:" + str(name),
+            logger.DEBUG)
 
-            for show in sickbeard.showList:
-                if _check_against_names(name, show):
-                    logger.log(
-                        u"Scene exceptions lookup found Indexer ID:" + str(show.indexerid) + ", using that for " + name,
-                        logger.DEBUG)
-                    foundResult = show
+        for show in sickbeard.showList:
+            if _check_against_names(name, show):
+                logger.log(
+                    u"Scene exceptions lookup found Indexer ID:" + str(show.indexerid) + ", using that for " + name,
+                    logger.DEBUG)
+                foundResult = show
 
     if not foundResult and checkIndexers:
         logger.log(
@@ -1003,7 +1002,7 @@ def get_show_by_name(name, checkExceptions=False, checkIndexers=False):
                 continue
 
             if showObj:
-                foundResult = findCertainShow(sickbeard.showList, int(showObj["id"]))
+                foundResult = findCertainShow(sickbeard.showList, int(showObj[0]['id']))
                 if foundResult:
                     logger.log(
                         u"Indexers lookup found Indexer ID:" + str(

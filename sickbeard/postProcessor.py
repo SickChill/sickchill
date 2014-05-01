@@ -464,6 +464,9 @@ class PostProcessor(object):
         if parse_result.air_by_date:
             season = -1
             episodes = [parse_result.air_date]
+        elif parse_result.sports:
+            season = -1
+            episodes = [parse_result.sports_event_date]
         else:
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
@@ -506,7 +509,7 @@ class PostProcessor(object):
 
         # for each possible interpretation of that scene name
         for cur_name in name_list:
-            showObj = helpers.get_show_by_name(cur_name)
+            showObj = helpers.get_show_by_name(cur_name, checkIndexers=True)
             if showObj:
                 _finalize(parse_result)
                 return (showObj.indexerid, season, episodes)
@@ -624,7 +627,7 @@ class PostProcessor(object):
                     season = 1
 
             if indexer_id and season and episodes:
-                return (indexer_id, season, episodes)
+                break
 
         return (indexer_id, season, episodes)
 
@@ -817,7 +820,7 @@ class PostProcessor(object):
         # try to find the file info
         (indexer_id, season, episodes) = self._find_info()
         if not (indexer_id and season and len(episodes)):
-            self._log(u"Can't find the show on any of the Indexers, skipping",
+            self._log(u"Unable to find enough info to post-process this show, skipping",
                       logger.WARNING)
             return False
 

@@ -239,7 +239,6 @@ class NameParser(object):
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
 
         # sports event title
-        final_result.sports_event_title = self._combine_results(file_name_result, dir_name_result, 'sports_event_title')
         final_result.sports_event_date = self._combine_results(file_name_result, dir_name_result, 'sports_event_date')
 
         if not final_result.air_date:
@@ -248,6 +247,9 @@ class NameParser(object):
 
         # if the dirname has a release group/show name I believe it over the filename
         final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
+        if final_result.sports:
+            final_result.series_name = str(final_result.series_name).partition(" ")[0]
+
         final_result.extra_info = self._combine_results(dir_name_result, file_name_result, 'extra_info')
         final_result.release_group = self._combine_results(dir_name_result, file_name_result, 'release_group')
 
@@ -320,8 +322,6 @@ class ParseResult(object):
             return False
         if self.air_date != other.air_date:
             return False
-        if self.sports_event_title != other.sports_event_title:
-            return False
         if self.sports_event_date != other.sports_event_date:
             return False
 
@@ -341,7 +341,6 @@ class ParseResult(object):
         if self.air_by_date:
             to_return += str(self.air_date)
         if self.sports:
-            to_return += str(self.sports_event_title)
             to_return += str(self.sports_event_date)
 
         if self.extra_info:
@@ -410,14 +409,14 @@ class NameParserCache(object):
     _previous_parsed = {}
     _cache_size = 100
 
-    def add(self, name, parse_result, convert=False):
+    def add(self, name, parse_result):
         self._previous_parsed[name] = parse_result
         self._previous_parsed_list.append(name)
         while len(self._previous_parsed_list) > self._cache_size:
             del_me = self._previous_parsed_list.pop(0)
             self._previous_parsed.pop(del_me)
 
-    def get(self, name, convert=False):
+    def get(self, name):
         if name in self._previous_parsed:
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
             return self._previous_parsed[name]
