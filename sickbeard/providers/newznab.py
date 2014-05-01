@@ -226,13 +226,13 @@ class NewznabProvider(generic.NZBProvider):
 
                 (title, url) = self._get_title_and_url(item)
 
-                if not item.published_parsed:
-                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                    continue
-                else:
+                if item.has_key('published_parsed') and item['published_parsed']:
                     result_date = item.published_parsed
                     if result_date:
                         result_date = datetime.datetime(*result_date[0:6])
+                else:
+                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
+                    continue
 
                 if not search_date or result_date > search_date:
                     search_result = classes.Proper(title, url, result_date)
