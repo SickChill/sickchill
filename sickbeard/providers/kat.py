@@ -176,6 +176,8 @@ class KATProvider(generic.TorrentProvider):
 
         search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
 
+        return [search_string]
+
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         search_string = {'Episode': []}
 
