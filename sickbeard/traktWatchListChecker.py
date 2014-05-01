@@ -51,18 +51,18 @@ class TraktChecker():
             return
         for show in watchlist:
             if int(sickbeard.TRAKT_METHOD_ADD) != 2:
-                self.addDefaultShow(show["indexer_id"], show["title"], SKIPPED)
+                self.addDefaultShow(show["tvdb_id"], show["title"], SKIPPED)
             else:
-                self.addDefaultShow(show["indexer_id"], show["title"], WANTED)
+                self.addDefaultShow(show["tvdb_id"], show["title"], WANTED)
 
             if int(sickbeard.TRAKT_METHOD_ADD) == 1:
-                newShow = helpers.findCertainShow(sickbeard.showList, int(show["indexer_id"]))
+                newShow = helpers.findCertainShow(sickbeard.showList, int(show["tvdb_id"]))
                 if newShow is not None:
                     self.setEpisodeToWanted(newShow, 1, 1)
                     self.startBacklog(newShow)
                 else:
-                    self.todoWanted.append((int(show["indexer_id"]), 1, 1))
-            self.todoWanted.append((int(show["indexer_id"]), -1, -1))  #used to pause new shows if the settings say to
+                    self.todoWanted.append((int(show["tvdb_id"]), 1, 1))
+            self.todoWanted.append((int(show["tvdb_id"]), -1, -1))  #used to pause new shows if the settings say to
 
     def updateEpisodes(self):
         """
@@ -75,13 +75,13 @@ class TraktChecker():
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return
         for show in watchlist:
-            self.addDefaultShow(int(show["indexer_id"]), show["title"], SKIPPED)
-            newShow = helpers.findCertainShow(sickbeard.showList, int(show["indexer_id"]))
+            self.addDefaultShow(int(show["tvdb_id"]), show["title"], SKIPPED)
+            newShow = helpers.findCertainShow(sickbeard.showList, int(show["tvdb_id"]))
             for episode in show["episodes"]:
                 if newShow is not None:
                     self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
                 else:
-                    self.todoWanted.append((int(show["indexer_id"]), episode["season"], episode["number"]))
+                    self.todoWanted.append((int(show["tvdb_id"]), episode["season"], episode["number"]))
             self.startBacklog(newShow)
 
     def addDefaultShow(self, indexerid, name, status):
@@ -102,7 +102,7 @@ class TraktChecker():
             return
         else:
             helpers.chmodAsParent(showPath)
-        sickbeard.showQueueScheduler.action.addShow(int(showObj.indexer), int(indexerid), showPath, status,
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
                                                     int(sickbeard.QUALITY_DEFAULT),
                                                     int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
 

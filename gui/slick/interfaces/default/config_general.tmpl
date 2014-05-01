@@ -101,7 +101,20 @@
                                 <span class="component-desc">Include articles (The, A, An) when sorting show lists.</span>
                             </label>
                         </div>
-
+                        
+                        <div class="field-pair">
+                            <label class="nocheck clearfix" for="indexer_default">
+                                <span class="component-title">Default Indexer:</span>
+                                <span class="component-desc">
+                                    <select id="indexer_default" name="indexer_default">
+                                        #for $indexer in $sickbeard.indexerApi().indexers
+                                        <option value="$indexer" #if $indexer == $sickbeard.INDEXER_DEFAULT then "selected=\"selected\"" else ""#>$sickbeard.indexerApi().indexers[$indexer]</option>
+                                        #end for
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        
                         <div class="field-pair">
                             <label class="nocheck clearfix" for="log_dir">
                                 <span class="component-title">Logging Directory</span>
