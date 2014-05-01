@@ -2624,7 +2624,7 @@ class Home:
         cherrypy.response.headers['Cache-Control'] = "max-age=0,no-cache,no-store"
 
         mydb = db.DBConnection()
-        rows = mydb.select("SELECT show_id, show_name, notify_list FROM tv_shows")
+        rows = mydb.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
         data = {}
         size = 0
         for r in rows:
