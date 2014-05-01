@@ -950,10 +950,11 @@ def get_show_by_name(name, useIndexer=False):
     if cacheResult:
         in_cache = True
         foundResult = findCertainShow(sickbeard.showList, cacheResult)
-        logger.log(
-            u"Cache lookup found Indexer ID:" + repr(
-                foundResult.indexerid) + ", using that for " + name,
-            logger.DEBUG)
+        if foundResult:
+            logger.log(
+                u"Cache lookup found Indexer ID:" + repr(
+                    foundResult.indexerid) + ", using that for " + name,
+                logger.DEBUG)
 
     if not foundResult:
         logger.log(
