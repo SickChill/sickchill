@@ -361,34 +361,34 @@ class ParseResult(object):
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
         # convert scene numbered releases before storing to cache
-        showObj = helpers.get_show_by_name(self.series_name)
-        if showObj:
-            self.show = showObj
+        self.show = helpers.get_show_by_name(self.series_name)
+        if not self.show:
+            return self
 
-            new_episode_numbers = []
-            new_season_numbers = []
-            for epNo in self.episode_numbers:
-                (s, e) = scene_numbering.get_indexer_numbering(showObj.indexerid, self.season_number, epNo)
-                new_episode_numbers.append(e)
-                new_season_numbers.append(s)
+        new_episode_numbers = []
+        new_season_numbers = []
+        for epNo in self.episode_numbers:
+            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.season_number, epNo)
+            new_episode_numbers.append(e)
+            new_season_numbers.append(s)
 
-            # need to do a quick sanity check here.  It's possible that we now have episodes
-            # from more than one season (by tvdb numbering), and this is just too much
-            # for sickbeard, so we'd need to flag it.
-            new_season_numbers = list(set(new_season_numbers))  # remove duplicates
-            if len(new_season_numbers) > 1:
-                raise InvalidNameException("Scene numbering results episodes from "
-                                           "seasons %s, (i.e. more than one) and "
-                                           "sickbeard does not support this.  "
-                                           "Sorry." % (str(new_season_numbers)))
+        # need to do a quick sanity check here.  It's possible that we now have episodes
+        # from more than one season (by tvdb numbering), and this is just too much
+        # for sickbeard, so we'd need to flag it.
+        new_season_numbers = list(set(new_season_numbers))  # remove duplicates
+        if len(new_season_numbers) > 1:
+            raise InvalidNameException("Scene numbering results episodes from "
+                                       "seasons %s, (i.e. more than one) and "
+                                       "sickbeard does not support this.  "
+                                       "Sorry." % (str(new_season_numbers)))
 
-            # I guess it's possible that we'd have duplicate episodes too, so lets
-            # eliminate them
-            new_episode_numbers = list(set(new_episode_numbers))
-            new_episode_numbers.sort()
+        # I guess it's possible that we'd have duplicate episodes too, so lets
+        # eliminate them
+        new_episode_numbers = list(set(new_episode_numbers))
+        new_episode_numbers.sort()
 
-            self.episode_numbers = new_episode_numbers
-            self.season_number = new_season_numbers[0]
+        self.episode_numbers = new_episode_numbers
+        self.season_number = new_season_numbers[0]
 
         return self
 

@@ -28,9 +28,8 @@ sys.path.append(os.path.abspath('../lib'))
 
 import test_lib as test
 import sickbeard
-from sickbeard.helpers import get_show_by_name
+from sickbeard.helpers import sanitizeSceneName, custom_strftime
 from sickbeard.tv import TVShow
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 class XEMBasicTests(test.SickbeardTestDBCase):
     def loadFromDB(self):
@@ -48,44 +47,41 @@ class XEMBasicTests(test.SickbeardTestDBCase):
             except Exception, e:
                 print "There was an error creating the show"
 
-    def test_parsing_scene_release(self):
+    def test_formating(self):
         self.loadFromDB()
+        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 75978)
+        ep = show.getEpisode(7, 6)
+        ep.airdate = datetime.datetime.now()
 
-        # parse the file name
-        scene_parsse_results1 = ''
-        scene_parsse_results2 = ''
-        scene_release = 'Pawn Stars S08E41 Field Trip HDTV x264-tNe'
-        try:
-            myParser = NameParser(False, 1)
-            scene_parsse_results1 = myParser.parse(scene_release)
-            scene_parsse_results2 = myParser.parse(scene_release).convert()
-        except InvalidNameException:
-            print(u"Unable to parse the filename " + scene_release + " into a valid episode")
+        print format(ep.episode, '02d')
+        print format(ep.scene_episode, '02d')
 
-        print scene_parsse_results1
-        print scene_parsse_results2
+        search_string = {'Episode':[]}
+        episode = ep.airdate
+        str(episode).replace('-', '|')
+        ep_string = sanitizeSceneName(show.name) + ' ' + \
+                    str(episode).replace('-', '|') + '|' + \
+                    sickbeard.helpers.custom_strftime('%b', episode)
 
-        sports_release = 'UFC.168.Weidman.vs.Silva.II.28th.Dec.2013.HDTV.x264-Sir.Paul'
-        try:
-            myParser = NameParser(False, 2)
-            parse_result = myParser.parse(sports_release)
+        search_string['Episode'].append(ep_string)
 
-            test = sickbeard.show_name_helpers.allPossibleShowNames(parse_result.series_name)
-            show = get_show_by_name(parse_result.series_name)
-            if show:
-                sql_results = test.db.DBConnection().select(
-                    "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                    [show.indexerid, parse_result.sports_event_date.toordinal()])
+        scene_ep_string = sanitizeSceneName(show.name) + ' ' + \
+                    sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep.scene_season,
+                                                          'episodenumber': ep.scene_episode} + '|' + \
+                    sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep.scene_season,
+                                                          'episodenumber': ep.scene_episode} + '|' + \
+                    sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep.scene_season,
+                                                          'episodenumber': ep.scene_episode} + ' %s category:tv' % ''
 
-                actual_season = int(sql_results[0]["season"])
-                actual_episodes = [int(sql_results[0]["episode"])]
+        scene_season_string = show.name + ' S%02d' % int(ep.scene_season) + ' -S%02d' % int(ep.scene_season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
 
-                print actual_season
-                print actual_episodes
-        except InvalidNameException:
-            print(u"Unable to parse the filename " + scene_release + " into a valid episode")
 
-        print scene_parsse_results1
+        print(
+            u'Searching "%s" for "%s" as "%s"' % (show.name, ep.prettyName(), ep.scene_prettyName()))
+
+        print('Scene episode search strings: %s' % (scene_ep_string))
+
+        print('Scene season search strings: %s' % (scene_season_string))
 
 if __name__ == "__main__":
     print "=================="
