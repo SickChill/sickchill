@@ -216,8 +216,8 @@ class PostProcessor(object):
 
         # delete the file and any other files which we want to delete
         for cur_file in file_list:
-            self._log(u"Deleting file " + cur_file, logger.DEBUG)
             if ek.ek(os.path.isfile, cur_file):
+                self._log(u"Deleting file " + cur_file, logger.DEBUG)
                 #check first the read-only attribute
                 file_attribute = ek.ek(os.stat, cur_file)[0]
                 if (not file_attribute & stat.S_IWRITE):
