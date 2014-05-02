@@ -172,6 +172,7 @@ class GenericClient(object):
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
+                logger.log(self.name + u': Unable to send Torrent: Return code undefined', logger.ERROR)
                 return False
 
             if not self._set_torrent_pause(result):
