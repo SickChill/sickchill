@@ -106,7 +106,11 @@ class NameParser(object):
                 result.series_name = match.group('series_name')
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
-                    self.show = helpers.get_show_by_name(result.series_name)
+                    name_list = sickbeard.show_name_helpers.sceneToNormalShowNames(result.series_name)
+                    for name in name_list:
+                        result.show = helpers.get_show_by_name(name)
+                        if result.show:
+                            break
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
@@ -239,6 +243,8 @@ class NameParser(object):
         # parse the dirname for extra info if needed
         dir_name_result = self._parse_string(dir_name)
 
+        final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
+
         # build the ParseResult object
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
 
@@ -290,7 +296,6 @@ class ParseResult(object):
                  show=None,
     ):
 
-        self.show = show
         self.original_name = original_name
 
         self.series_name = series_name
@@ -310,11 +315,14 @@ class ParseResult(object):
         self.sports_event_date = sports_event_date
 
         self.which_regex = None
+        self.show = show
 
     def __eq__(self, other):
         if not other:
             return False
 
+        if self.show != other.show:
+            return False
         if self.series_name != other.series_name:
             return False
         if self.season_number != other.season_number:

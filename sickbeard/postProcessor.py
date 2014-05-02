@@ -93,8 +93,6 @@ class PostProcessor(object):
 
         self.is_priority = is_priority
 
-        self.indexer = None
-
         self.good_results = {self.NZB_NAME: False,
                              self.FOLDER_NAME: False,
                              self.FILE_NAME: False}
@@ -394,7 +392,7 @@ class PostProcessor(object):
         Returns a (indexer_id, season, []) tuple. The first two may be None if none were found.
         """
 
-        to_return = (None, None, [])
+        to_return = (None, None, None, [], None)
 
         # if we don't have either of these then there's nothing to use to search the history for anyway
         if not self.nzb_name and not self.folder_name:
@@ -414,29 +412,55 @@ class PostProcessor(object):
 
         # search the database for a possible match and return immediately if we find one
         for curName in names:
-            sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [re.sub("[\.\-\ ]", "_", curName)])
+            search_name = re.sub("[\.\-\ ]", "_", curName)
+            sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
 
             if len(sql_results) == 0:
                 continue
 
             indexer_id = int(sql_results[0]["showid"])
             season = int(sql_results[0]["season"])
+            quality = int(sql_results[0]["quality"])
+
+            if quality == common.Quality.UNKNOWN:
+                quality = None
 
             self.in_history = True
-            to_return = (indexer_id, season, [])
+            to_return = (indexer_id, None, season, [], quality)
             self._log("Found result in history: " + str(to_return), logger.DEBUG)
-
-            if curName == self.nzb_name:
-                self.good_results[self.NZB_NAME] = True
-            elif curName == self.folder_name:
-                self.good_results[self.FOLDER_NAME] = True
-            elif curName == self.file_name:
-                self.good_results[self.FILE_NAME] = True
 
             return to_return
 
         self.in_history = False
         return to_return
+
+    def _finalize(self, parse_result):
+        self.release_group = parse_result.release_group
+
+        # remember whether it's a proper
+        if parse_result.extra_info:
+            self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info,
+                                       re.I) != None
+
+        # if the result is complete then remember that for later
+        if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
+            test_name = ek.ek(os.path.basename, parse_result.original_name)
+            if test_name == self.nzb_name:
+                self.good_results[self.NZB_NAME] = True
+            elif test_name == self.folder_name:
+                self.good_results[self.FOLDER_NAME] = True
+            elif test_name == self.file_name:
+                self.good_results[self.FILE_NAME] = True
+            else:
+                logger.log(u"Nothing was good, found " + repr(test_name) + " and wanted either " + repr(
+                    self.nzb_name) + ", " + repr(self.folder_name) + ", or " + repr(self.file_name))
+        else:
+            logger.log(u"Parse result not sufficient(all following have to be set). Will not save release name",
+                       logger.DEBUG)
+            logger.log("Parse result(series_name): " + str(parse_result.series_name), logger.DEBUG)
+            logger.log("Parse result(season_number): " + str(parse_result.season_number), logger.DEBUG)
+            logger.log("Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
+            logger.log("Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
 
     def _analyze_name(self, name, file=True):
         """
@@ -450,7 +474,10 @@ class PostProcessor(object):
 
         logger.log(u"Analyzing name " + repr(name))
 
-        to_return = (None, None, [])
+        indexer_id = None
+        indexer = None
+
+        to_return = (indexer_id, indexer, None, [], None)
 
         if not name:
             return to_return
@@ -471,50 +498,13 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        to_return = (None, season, episodes)
+        if parse_result.show:
+            indexer_id = parse_result.show.indexerid
+            indexer = parse_result.show.indexer
 
-        # do a scene reverse-lookup to get a list of all possible names
-        name_list = show_name_helpers.sceneToNormalShowNames(parse_result.series_name)
+        to_return = (indexer_id, indexer, season, episodes, None)
 
-        if not name_list:
-            return (None, season, episodes)
-
-        def _finalize(parse_result):
-            self.release_group = parse_result.release_group
-
-            # remember whether it's a proper
-            if parse_result.extra_info:
-                self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info,
-                                           re.I) != None
-
-            # if the result is complete then remember that for later
-            if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
-                test_name = os.path.basename(name)
-                if test_name == self.nzb_name:
-                    self.good_results[self.NZB_NAME] = True
-                elif test_name == self.folder_name:
-                    self.good_results[self.FOLDER_NAME] = True
-                elif test_name == self.file_name:
-                    self.good_results[self.FILE_NAME] = True
-                else:
-                    logger.log(u"Nothing was good, found " + repr(test_name) + " and wanted either " + repr(
-                        self.nzb_name) + ", " + repr(self.folder_name) + ", or " + repr(self.file_name))
-            else:
-                logger.log(u"Parse result not sufficient(all following have to be set). Will not save release name",
-                           logger.DEBUG)
-                logger.log("Parse result(series_name): " + str(parse_result.series_name), logger.DEBUG)
-                logger.log("Parse result(season_number): " + str(parse_result.season_number), logger.DEBUG)
-                logger.log("Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
-                logger.log("Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
-
-        # for each possible interpretation of that scene name
-        for cur_name in name_list:
-            showObj = helpers.get_show_by_name(cur_name, checkIndexers=True)
-            if showObj:
-                _finalize(parse_result)
-                return (showObj.indexerid, season, episodes)
-
-        _finalize(parse_result)
+        self._finalize(parse_result)
         return to_return
 
     def _find_info(self):
@@ -522,7 +512,7 @@ class PostProcessor(object):
         For a given file try to find the showid, season, and episode.
         """
 
-        indexer_id = season = None
+        indexer_id = indexer = season = quality = None
         episodes = []
 
         # try to look up the nzb in history
@@ -549,89 +539,61 @@ class PostProcessor(object):
         for cur_attempt in attempt_list:
 
             try:
-                (cur_indexer_id, cur_season, cur_episodes) = cur_attempt()
+                (cur_indexer_id, cur_indexer, cur_season, cur_episodes, cur_quality) = cur_attempt()
             except InvalidNameException, e:
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
 
-            # if we already did a successful history lookup then keep that indexer_id value
-            if cur_indexer_id and not (self.in_history and indexer_id):
+            # check and confirm first that the indexer_id exists in our shows list before setting it
+            if cur_indexer_id != indexer_id and cur_indexer:
                 indexer_id = cur_indexer_id
+                indexer = cur_indexer
+
+            if cur_quality and not (self.in_history and quality):
+                quality = cur_quality
+
             if cur_season != None:
                 season = cur_season
             if cur_episodes:
                 episodes = cur_episodes
 
-            # for air-by-date shows we need to look up the season/episode from tvdb
-            if season == -1 and indexer_id and episodes:
-                self._log(
-                    u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
-                    logger.DEBUG)
+            # for air-by-date shows we need to look up the season/episode from database
+            if season == -1 and indexer_id and indexer and episodes:
+                self._log(u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
+                          logger.DEBUG)
+                airdate = episodes[0].toordinal()
+                myDB = db.DBConnection()
+                sql_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                                         [indexer_id, indexer, airdate])
 
-                # try to get language set for this show
-                indexer_lang = None
-                try:
-                    showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                    if showObj:
-                        indexer_lang = showObj.lang
-                except exceptions.MultipleShowObjectsException:
+                if sql_result:
+                    season = int(sql_result[0][0])
+                    episodes = [int(sql_result[0][1])]
+                else:
+                    self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
+                        indexer_id) + u", skipping", logger.DEBUG)
+                    # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
+                    episodes = []
                     continue
 
-                for indexer in sickbeard.indexerApi().indexers:
-                    self.indexer = int(indexer)
-                    self._log(
-                        u"Searching " + sickbeard.indexerApi(self.indexer).name + ", trying to auto-detect Indexer for "
-                                                                                  "show")
-                    try:
-                        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-                        if indexer_lang and not indexer_lang == 'en':
-                            lINDEXER_API_PARMS = {'language': indexer_lang}
-
-                        t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-                        epObj = t[indexer_id].airedOn(episodes[0])[0]
-
-                        season = int(epObj["seasonnumber"])
-                        episodes = [int(epObj["episodenumber"])]
-
-                        self._log(u"Got season " + str(season) + " episodes " + str(episodes), logger.DEBUG)
-                    except (KeyError, sickbeard.indexer_episodenotfound), e:
-                        self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
-                            indexer_id) + u", skipping", logger.DEBUG)
-                        # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
-                        continue
-                    except sickbeard.indexer_error, e:
-                        logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
-                                   logger.WARNING)
-                        continue
-
-                    # try to find the file info
-                    if indexer_id and season and episodes:
-                        break
-
-                    episodes = []
-                    self._log(
-                        u"Can't find thhe show on " + sickbeard.indexerApi(
-                            self.indexer).name + ", trying next ""indexer", logger.WARNING)
-
             # if there's no season then we can hopefully just use 1 automatically
-            elif season == None and indexer_id:
+            elif season == None and indexer_id and indexer:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select(
-                    "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
-                    [indexer_id])
+                    "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
+                    [indexer_id, indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season == None:
                     self._log(
                         u"Don't have a season number, but this show appears to only have 1 season, setting seasonnumber to 1...",
                         logger.DEBUG)
                     season = 1
 
-            if indexer_id and season and episodes:
-                break
+            if indexer_id and indexer and season and episodes:
+                return (indexer_id, indexer, season, episodes, quality)
+            
+        return (indexer_id, indexer, season, episodes, quality)
 
-        return (indexer_id, season, episodes)
-
-    def _get_ep_obj(self, indexer_id, season, episodes):
+    def _get_ep_obj(self, indexer_id, indexer, season, episodes):
         """
         Retrieve the TVEpisode object requested.
 
@@ -643,9 +605,7 @@ class PostProcessor(object):
         be instantiated and returned. If the episode can't be found then None will be returned.
         """
 
-        show_obj = None
-
-        self._log(u"Loading show object for indexer_id " + str(indexer_id), logger.DEBUG)
+        self._log(u"Loading show object with Indexer ID:[" + str(indexer_id) + "] for Indexer:[" + str(sickbeard.indexerApi(indexer).name) + "]", logger.DEBUG)
         # find the show in the showlist
         try:
             show_obj = helpers.findCertainShow(sickbeard.showList, indexer_id)
@@ -810,25 +770,31 @@ class PostProcessor(object):
         if ek.ek(os.path.isdir, self.file_path):
             self._log(u"File " + self.file_path + " seems to be a directory")
             return False
+
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.file_path:
                 self._log(u"File " + self.file_path + " is ignored type, skipping")
                 return False
+
         # reset per-file stuff
         self.in_history = False
 
         # try to find the file info
-        (indexer_id, season, episodes) = self._find_info()
-        if not (indexer_id and season and len(episodes)):
-            self._log(u"Unable to find enough info to post-process this show, skipping",
-                      logger.WARNING)
+        (indexer_id, indexer, season, episodes, quality) = self._find_info()
+        if not indexer_id or not indexer or season == None or not episodes:
+            self._log(u"Not enough information to determine what episode this is", logger.DEBUG)
+            self._log(u"Quitting post-processing", logger.DEBUG)
             return False
 
         # retrieve/create the corresponding TVEpisode objects
-        ep_obj = self._get_ep_obj(indexer_id, season, episodes)
+        ep_obj = self._get_ep_obj(indexer_id, indexer, season, episodes)
 
         # get the quality of the episode we're processing
-        new_ep_quality = self._get_quality(ep_obj)
+        if quality:
+            self._log(u"Snatch history had a quality in it, using that: " + common.Quality.qualityStrings[quality], logger.DEBUG)
+            new_ep_quality = quality
+        else:
+            new_ep_quality = self._get_quality(ep_obj)
 
         logger.log(u"Quality of the episode we're processing: " + str(new_ep_quality), logger.DEBUG)
 
