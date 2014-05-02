@@ -393,12 +393,11 @@ def searchProviders(show, season, episode=None, manualSearch=False):
         # search cache first for wanted episodes
         for ep_obj in wantedEps:
             curResults = curProvider.cache.searchCache(ep_obj, manualSearch)
-            foundResults = filterSearchResults(show, curResults)
-
-        if len(foundResults):
-            logger.log(u"Cache results: " + repr(foundResults), logger.DEBUG)
-            didSearch = True
-            break
+            curResults = filterSearchResults(show, curResults)
+            if len(curResults):
+                foundResults.update(curResults)
+                logger.log(u"Cache results: " + repr(foundResults), logger.DEBUG)
+                didSearch = True
 
     if not len(foundResults):
         for curProvider in providers.sortedProviderList():
@@ -418,10 +417,10 @@ def searchProviders(show, season, episode=None, manualSearch=False):
             # finished searching this provider successfully
             didSearch = True
 
-            foundResults = filterSearchResults(show, curResults)
-            if len(foundResults):
+            curResults = filterSearchResults(show, curResults)
+            if len(curResults):
+                foundResults.update(curResults)
                 logger.log(u"Provider search results: " + str(foundResults), logger.DEBUG)
-                break
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
