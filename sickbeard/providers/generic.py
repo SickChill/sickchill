@@ -58,7 +58,7 @@ class GenericProvider:
         self.session = requests.session()
         self.session.verify = False
         self.session.headers.update({
-        'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'})
+            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'})
 
 
     def getID(self):
@@ -283,7 +283,6 @@ class GenericProvider:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                 continue
 
-
             if not useDate:
                 # this check is meaningless for non-season searches
                 if (parse_result.season_number is not None and parse_result.season_number != season) or (
@@ -292,7 +291,8 @@ class GenericProvider:
                         season) + ", ignoring", logger.DEBUG)
                     continue
 
-                if manualSearch and (parse_result.season_number != season or ep_objs[0].episode not in parse_result.episode_numbers):
+                if manualSearch and (
+                        parse_result.season_number != season or ep_objs[0].episode not in parse_result.episode_numbers):
                     logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(
                         ep_objs[0].episode) + ", skipping it", logger.DEBUG)
                     continue
@@ -301,13 +301,14 @@ class GenericProvider:
                 actual_season = season if manualSearch else parse_result.season_number
                 actual_episodes = [ep_objs[0].episode] if manualSearch else parse_result.episode_numbers
             else:
-                if not (parse_result.air_by_date,parse_result.sports_event_date):
+                if not (parse_result.air_by_date or parse_result.sports):
                     logger.log(
-                        u"This is supposed to be an date search but the result " + title + " didn't parse as one, skipping it",
+                        u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
                         logger.DEBUG)
                     continue
 
-                if manualSearch and parse_result.air_date != ep_objs[0].airdate:
+                if manualSearch and ((parse_result.air_date != ep_objs[0].airdate and parse_result.air_by_date) or (
+                                parse_result.sports_event_date != ep_objs[0].airdate and parse_result.sports)):
                     logger.log(u"Episode " + title + " didn't air on " + str(ep_objs[0].airdate) + ", skipping it",
                                logger.DEBUG)
                     continue
@@ -338,7 +339,8 @@ class GenericProvider:
             wantEp = True
             for epNo in actual_episodes:
                 epObj = self.show.getEpisode(actual_season, epNo)
-                if not epObj or not self.show.wantEpisode(epObj.season, epObj.episode, quality, manualSearch=manualSearch):
+                if not epObj or not self.show.wantEpisode(epObj.season, epObj.episode, quality,
+                                                          manualSearch=manualSearch):
                     wantEp = False
                     break
 

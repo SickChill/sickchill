@@ -121,6 +121,14 @@ class NameParser(object):
                 else:
                     result.episode_numbers = [ep_num]
 
+            if 'sports_event_id' in named_groups:
+                result.sports_event_id = int(match.group('sports_event_id'))
+
+            if 'sports_event_name' in named_groups:
+                result.sports_event_name = match.group('sports_event_name')
+                if result.sports_event_name:
+                    result.sports_event_name = self.clean_series_name(result.sports_event_name)
+
             if 'sports_event_date' in named_groups:
                 sports_event_date = match.group('sports_event_date')
                 if sports_event_date:
@@ -235,6 +243,8 @@ class NameParser(object):
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
 
         # sports event title
+        final_result.sports_event_id = self._combine_results(file_name_result, dir_name_result, 'sports_event_id')
+        final_result.sports_event_name = self._combine_results(file_name_result, dir_name_result, 'sports_event_name')
         final_result.sports_event_date = self._combine_results(file_name_result, dir_name_result, 'sports_event_date')
 
         if not final_result.air_date:
@@ -272,6 +282,8 @@ class ParseResult(object):
     def __init__(self,
                  original_name,
                  series_name=None,
+                 sports_event_id=None,
+                 sports_event_name=None,
                  sports_event_date=None,
                  season_number=None,
                  episode_numbers=None,
@@ -296,6 +308,8 @@ class ParseResult(object):
 
         self.air_date = air_date
 
+        self.sports_event_id = sports_event_id
+        self.sports_event_name = sports_event_name
         self.sports_event_date = sports_event_date
 
         self.which_regex = None
@@ -316,6 +330,10 @@ class ParseResult(object):
             return False
         if self.air_date != other.air_date:
             return False
+        if self.sports_event_id != other.sports_event_id:
+            return False
+        if self.sports_event_name != other.sports_event_name:
+            return False
         if self.sports_event_date != other.sports_event_date:
             return False
 
@@ -335,6 +353,8 @@ class ParseResult(object):
         if self.air_by_date:
             to_return += str(self.air_date)
         if self.sports:
+            to_return += str(self.sports_event_name)
+            to_return += str(self.sports_event_id)
             to_return += str(self.sports_event_date)
 
         if self.extra_info:
