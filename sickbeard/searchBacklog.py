@@ -123,7 +123,7 @@ class BacklogSearcher:
             if curShow.air_by_date:
                 segments = [x[1] for x in self._get_air_by_date_segments(curShow.indexerid, fromDate)]
             elif curShow.sports:
-                segments = [x[1] for x in self._get_sports_segments(curShow.indexerid, fromDate)]
+                segments = self._get_sports_segments(curShow.indexerid, fromDate)
             else:
                 segments = self._get_season_segments(curShow.indexerid, fromDate)
 
@@ -195,24 +195,11 @@ class BacklogSearcher:
         return air_by_date_segments
 
     def _get_sports_segments(self, indexer_id, fromDate):
-        # query the DB for all dates for this show
         myDB = db.DBConnection()
-        num_sports_results = myDB.select(
-            "SELECT airdate, showid FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.sports = 1",
-            [fromDate.toordinal(), indexer_id])
-
-        # break them apart into month/year strings
-        sports_segments = []
-        for cur_result in num_sports_results:
-            cur_date = datetime.date.fromordinal(int(cur_result["airdate"]))
-            cur_date_str = str(cur_date)[:7]
-            cur_indexer_id = int(cur_result["showid"])
-
-            cur_result_tuple = (cur_indexer_id, cur_date_str)
-            if cur_result_tuple not in sports_segments:
-                sports_segments.append(cur_result_tuple)
-
-        return sports_segments
+        sqlResults = myDB.select(
+            "SELECT DISTINCT(season) as season FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
+            [indexer_id, fromDate.toordinal()])
+        return [int(x["season"]) for x in sqlResults]
 
     def _set_lastBacklog(self, when):
 

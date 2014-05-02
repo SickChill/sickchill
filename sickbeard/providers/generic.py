@@ -339,8 +339,7 @@ class GenericProvider:
             wantEp = True
             for epNo in actual_episodes:
                 epObj = self.show.getEpisode(actual_season, epNo)
-                if not epObj or not self.show.wantEpisode(epObj.season, epObj.episode, quality,
-                                                          manualSearch=manualSearch):
+                if not epObj or not self.show.wantEpisode(epObj.season, epObj.episode, quality,manualSearch=manualSearch):
                     wantEp = False
                     break
 
