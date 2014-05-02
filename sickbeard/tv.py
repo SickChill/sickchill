@@ -1314,14 +1314,14 @@ class TVEpisode(object):
                     pass
 
                 # if we tried loading it from NFO and didn't find the NFO, try the Indexers
-                if self.hasnfo == False:
+                if not self.hasnfo:
                     try:
                         result = self.loadFromIndexer(season, episode)
                     except exceptions.EpisodeDeletedException:
                         result = False
 
                     # if we failed SQL *and* NFO, Indexers then fail
-                    if result == False:
+                    if not result:
                         raise exceptions.EpisodeNotFoundException(
                             "Couldn't find episode " + str(season) + "x" + str(episode))
 
@@ -2117,17 +2117,17 @@ class TVEpisode(object):
         for cur_related_file in related_files:
             cur_result = helpers.rename_ep_file(cur_related_file, absolute_proper_path,
                                                 absolute_current_path_no_ext_length)
-            if cur_result == False:
+            if not cur_result:
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_file, logger.ERROR)
 
         for cur_related_sub in related_subs:
             cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,absolute_current_path_no_ext_length)
-            if cur_result == False:
+            if not cur_result:
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_sub, logger.ERROR)
 
         # save the ep
         with self.lock:
-            if result != False:
+            if result:
                 self.location = absolute_proper_path + file_ext
                 for relEp in self.relatedEps:
                     relEp.location = absolute_proper_path + file_ext

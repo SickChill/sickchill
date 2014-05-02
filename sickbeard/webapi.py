@@ -193,7 +193,7 @@ class Api:
         else:
             del kwargs["apikey"]
 
-        if sickbeard.USE_API != True:
+        if not sickbeard.USE_API:
             msg = u"API :: " + remoteIp + " - SB API Disabled. ACCESS DENIED"
             return False, msg, args, kwargs
         elif apiKey == realKey:
@@ -1512,7 +1512,7 @@ class CMD_SickBeardPauseBacklog(ApiCall):
 
     def run(self):
         """ pause the backlog search """
-        if self.pause == True:
+        if self.pause:
             sickbeard.searchQueueScheduler.action.pause_backlog()  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
@@ -2172,7 +2172,7 @@ class CMD_ShowPause(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        if self.pause == True:
+        if self.pause:
             showObj.paused = 1
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been paused")
         else:
