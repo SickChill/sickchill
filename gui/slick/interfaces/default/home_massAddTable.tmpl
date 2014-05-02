@@ -20,7 +20,7 @@
 #end if
 
 #set $indexer = 0
-#if #if $curDir['existing_info'][0]:
+#if $curDir['existing_info'][0]:
     #set $indexer = $curDir['existing_info'][2]
 #elif $sickbeard.INDEXER_DEFAULT
     #set $indexer = $sickbeard.INDEXER_DEFAULT
