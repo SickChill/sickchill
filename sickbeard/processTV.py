@@ -147,7 +147,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 if process_method == "move" and \
                                 ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath,
                                                                               sickbeard.TV_DOWNLOAD_DIR):
-                    delete_dir(processPath)
+                    if processPath != sickbeard.TV_DOWNLOAD_DIR:
+                        delete_dir(processPath)
 
     return returnStr
 
