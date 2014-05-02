@@ -126,7 +126,9 @@ class NameParser(object):
                     result.episode_numbers = [ep_num]
 
             if 'sports_event_id' in named_groups:
-                result.sports_event_id = int(match.group('sports_event_id'))
+                sports_event_id = match.group('sports_event_id')
+                if sports_event_id:
+                    result.sports_event_id = int(match.group('sports_event_id'))
 
             if 'sports_event_name' in named_groups:
                 result.sports_event_name = match.group('sports_event_name')

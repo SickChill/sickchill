@@ -133,7 +133,7 @@ def splitResult(result):
         # parse the name
         try:
             np = NameParser(False)
-            parse_result = np.parse(newNZB)
+            parse_result = np.parse(newNZB).convert()
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + newNZB + " into a valid episode", logger.WARNING)
             return False

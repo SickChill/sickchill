@@ -66,15 +66,9 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.extra_info), logger.DEBUG)
         logger.log(u" - " + str(parsed.release_group), logger.DEBUG)
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
+        logger.log(u" - " + str(parsed.sports_event_date), logger.DEBUG)
 
-        show_id = self._get_show_id(parsed.series_name)
-        if show_id is None:
-            self._log(u"Warning: couldn't find show ID", logger.WARNING)
-            raise exceptions.FailedProcessingFailed()
-
-        self._log(u"Found show_id: " + str(show_id), logger.DEBUG)
-
-        self._show_obj = helpers.findCertainShow(sickbeard.showList, show_id)
+        self._show_obj = parsed.show
         if self._show_obj is None:
             self._log(
                 u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)",
@@ -91,23 +85,3 @@ class FailedProcessor(object):
         """Log to regular logfile and save for return for PP script log"""
         logger.log(message, level)
         self.log += message + "\n"
-
-    def _get_show_id(self, series_name):
-        """Find and return show ID by searching exceptions, then DB"""
-
-        show_names = show_name_helpers.sceneToNormalShowNames(series_name)
-
-        logger.log(u"show_names: " + str(show_names), logger.DEBUG)
-
-        for show_name in show_names:
-            exception = scene_exceptions.get_scene_exception_by_name(show_name)
-            if exception is not None:
-                return exception
-
-        for show_name in show_names:
-            found_info = helpers.get_show_by_name(show_name)
-            if found_info is not None:
-                return (found_info.indexerid)
-
-        return None
-

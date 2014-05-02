@@ -312,45 +312,6 @@ class TVShow(object):
             parse_result = None
             curEpisode = None
 
-            if sceneConvert:
-                try:
-                    i = 0
-                    while i < 2:
-                        i+=1
-                        np = NameParser(False)
-                        parse_result = np.parse(mediaFile, True if i > 1 else False)
-                        if helpers.validateShow(self, parse_result.season_number, parse_result.episode_numbers[0]):
-                            ep = TVEpisode(self, parse_result.season_number, parse_result.episode_numbers[0])
-                            proper_path = ep.proper_path()
-                            proper_absolute_path = ek.ek(os.path.join, self._location, proper_path)
-                            src_path = ek.ek(os.path.dirname, mediaFile)
-                            dest_path = ek.ek(os.path.dirname, proper_absolute_path)
-                            orig_extension = mediaFile.rpartition('.')[-1]
-                            new_base_name = ek.ek(os.path.basename, proper_path)
-
-                            new_file_name = new_base_name + '.' + orig_extension
-                            old_file_name = ek.ek(os.path.basename, mediaFile)
-                            new_mediaFile = os.path.join(dest_path, new_file_name)
-                            if old_file_name == new_file_name or os.path.exists(new_mediaFile):break
-
-                            if os.path.exists(os.path.join(src_path, old_file_name)):
-                                old_mediaFile = os.path.join(src_path, old_file_name)
-                            elif os.path.exists(os.path.join(dest_path, old_file_name)):
-                                old_mediaFile = os.path.join(dest_path, old_file_name)
-                            else:break
-
-                            logger.log(u"Scene Converting file %s to %s" % (old_file_name, new_file_name), logger.MESSAGE)
-                            if not os.path.exists(dest_path):
-                                shutil.move(src_path, dest_path)
-                            shutil.move(old_mediaFile, new_mediaFile)
-                            mediaFile = new_mediaFile
-
-                            # converted
-                            break
-
-                except Exception:
-                    continue
-
             logger.log(str(self.indexerid) + u": Creating episode from " + mediaFile, logger.DEBUG)
             try:
                 curEpisode = self.makeEpFromFile(ek.ek(os.path.join, self._location, mediaFile))
@@ -562,31 +523,22 @@ class TVShow(object):
         rootEp = None
 
         # if we have an air-by-date show then get the real season/episode numbers
-        if parse_result.air_by_date or parse_result.sports:
-            try:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+        if parse_result.air_by_date:
+            logger.log(
+                u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
+                logger.DEBUG)
+            airdate = parse_result.air_date.toordinal()
+            myDB = db.DBConnection()
+            sql_result = myDB.select(
+                "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                [self.indexerid, self.indexer, airdate])
 
-                if self.lang:
-                    lINDEXER_API_PARMS['language'] = self.lang
-
-                if self.dvdorder != 0:
-                    lINDEXER_API_PARMS['dvdorder'] = True
-
-                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-                epObj = None
-                if parse_result.air_by_date:
-                    epObj = t[self.indexerid].airedOn(parse_result.air_date)[0]
-
-                season = int(epObj["seasonnumber"])
-                episodes = [int(epObj["episodenumber"])]
-            except sickbeard.indexer_episodenotfound:
+            if sql_result:
+                season = int(sql_result[0][0])
+                episodes = [int(sql_result[0][1])]
+            else:
                 logger.log(u"Unable to find episode with date " + str(
                     parse_result.air_date) + " for show " + self.name + ", skipping", logger.WARNING)
-                return None
-            except sickbeard.indexer_error, e:
-                logger.log(u"Unable to contact " + sickbeard.indexerApi(self.indexer).name + ": " + ex(e),
-                           logger.WARNING)
                 return None
 
         for curEpNum in episodes:

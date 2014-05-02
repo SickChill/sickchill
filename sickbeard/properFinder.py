@@ -105,6 +105,12 @@ class ProperFinder():
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
 
+            # if we can't find the show then there's nothing we can really do
+            if not parse_result.show:
+                logger.log(u"This show isn't in your list, skipping ...",
+                          logger.DEBUG)
+                continue
+
             if not parse_result.episode_numbers:
                 logger.log(
                     u"Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
@@ -178,20 +184,20 @@ class ProperFinder():
                 continue
 
             # if we have an air-by-date show then get the real season/episode numbers
-            if curProper.season == -1 and curProper.indexerid:
-                indexer_lang = showObj.lang
-                lINDEXER_API_PARMS = sickbeard.indexerApi(showObj.indexer).api_params.copy()
-                if indexer_lang and not indexer_lang == 'en':
-                    lINDEXER_API_PARMS['language'] = indexer_lang
+            if curProper.season == -1 and curProper.indexerid and curProper.indexer:
+                logger.log(
+                    u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
+                    logger.DEBUG)
+                airdate = curProper.episode.toordinal()
+                myDB = db.DBConnection()
+                sql_result = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                    [curProper.indexerid, curProper.indexer, airdate])
 
-                try:
-                    t = sickbeard.indexerApi(showObj.indexer).indexer(**lINDEXER_API_PARMS)
-
-                    epObj = t[curProper.indexerid].airedOn(curProper.episode)[0]
-
-                    curProper.season = int(epObj["seasonnumber"])
-                    curProper.episodes = [int(epObj["episodenumber"])]
-                except sickbeard.indexer_episodenotfound:
+                if sql_result:
+                    curProper.season = int(sql_result[0][0])
+                    curProper.episodes = [int(sql_result[0][1])]
+                else:
                     logger.log(u"Unable to find episode with date " + str(
                         curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
                     continue
