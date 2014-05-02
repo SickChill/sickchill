@@ -259,10 +259,6 @@ class GenericProvider:
         if self.show.air_by_date or self.show.sports:
             useDate = True
 
-        regexMode = 0
-        if self.show.sports:
-            regexMode = 2
-
         for ep_obj in ep_objs:
             logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, ep_obj.prettyName(), ep_obj.scene_prettyName()))
 
@@ -281,7 +277,7 @@ class GenericProvider:
 
             # parse the file name
             try:
-                myParser = NameParser(False, regexMode=regexMode)
+                myParser = NameParser(False)
                 parse_result = myParser.parse(title).convert()
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)

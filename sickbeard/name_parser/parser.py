@@ -106,11 +106,7 @@ class NameParser(object):
                 result.series_name = match.group('series_name')
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
-
-            if 'sports_event_title' in named_groups:
-                result.sports_event_title = match.group('sports_event_title')
-                if result.sports_event_title:
-                    result.sports_event_title = self.clean_series_name(result.sports_event_title)
+                    self.show = helpers.get_show_by_name(result.series_name)
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
@@ -130,8 +126,8 @@ class NameParser(object):
                 if sports_event_date:
                     try:
                         result.sports_event_date = parser.parse(sports_event_date, fuzzy=True).date()
-                    except ValueError, e:
-                        raise InvalidNameException(e.message)
+                    except:
+                        continue
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                 year = int(match.group('air_year'))
@@ -141,8 +137,8 @@ class NameParser(object):
                 try:
                     dtStr = '%s-%s-%s' % (year, month, day)
                     result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
-                except ValueError, e:
-                    raise InvalidNameException(e.message)
+                except:
+                    continue
 
             if 'extra_info' in named_groups:
                 tmp_extra_info = match.group('extra_info')
@@ -247,8 +243,9 @@ class NameParser(object):
 
         # if the dirname has a release group/show name I believe it over the filename
         final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
-        if final_result.sports:
-            final_result.series_name = str(final_result.series_name).partition(" ")[0]
+
+#        if final_result.sports:
+#            final_result.series_name = str(final_result.series_name).partition(" ")[0]
 
         final_result.extra_info = self._combine_results(dir_name_result, file_name_result, 'extra_info')
         final_result.release_group = self._combine_results(dir_name_result, file_name_result, 'release_group')
@@ -275,7 +272,6 @@ class ParseResult(object):
     def __init__(self,
                  original_name,
                  series_name=None,
-                 sports_event_title=None,
                  sports_event_date=None,
                  season_number=None,
                  episode_numbers=None,
@@ -286,7 +282,6 @@ class ParseResult(object):
     ):
 
         self.show = show
-
         self.original_name = original_name
 
         self.series_name = series_name
@@ -301,7 +296,6 @@ class ParseResult(object):
 
         self.air_date = air_date
 
-        self.sports_event_title = sports_event_title
         self.sports_event_date = sports_event_date
 
         self.which_regex = None
@@ -355,14 +349,10 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
+        if not self.show: return self
         if self.air_by_date: return self # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
-
-        # convert scene numbered releases before storing to cache
-        self.show = helpers.get_show_by_name(self.series_name)
-        if not self.show:
-            return self
 
         new_episode_numbers = []
         new_season_numbers = []
@@ -398,7 +388,7 @@ class ParseResult(object):
     air_by_date = property(_is_air_by_date)
 
     def _is_sports(self):
-        if self.sports_event_title or self.sports_event_date:
+        if self.sports_event_date:
             return True
         return False
     sports = property(_is_sports)

@@ -14,10 +14,16 @@
 #end if
 
 #set $show_id = $curDir['dir']
-#set $indexer = 1
 #if $curDir['existing_info'][0]:
 #set $show_id = $show_id + '|' + $str($curDir['existing_info'][0]) + '|' + $str($curDir['existing_info'][1])
 #set $indexer = $curDir['existing_info'][2]
+#end if
+
+#set $indexer = 0
+#if #if $curDir['existing_info'][0]:
+    #set $indexer = $curDir['existing_info'][2]
+#elif $sickbeard.INDEXER_DEFAULT
+    #set $indexer = $sickbeard.INDEXER_DEFAULT
 #end if
 
   <tr>

@@ -602,7 +602,7 @@ def initialize(consoleLogging=True):
         VERSION_NOTIFY = check_setting_int(CFG, 'General', 'version_notify', 1)
         AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 1)
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
-	INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 1)
+        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 

@@ -152,7 +152,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
 
     try:
         result = parser.parse(new_name)
-    except InvalidNameException:
+    except InvalidNameException, e  :
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
 

@@ -28,7 +28,8 @@ sys.path.append(os.path.abspath('../lib'))
 
 import test_lib as test
 import sickbeard
-from sickbeard.helpers import sanitizeSceneName, custom_strftime
+from sickbeard.helpers import sanitizeSceneName
+from sickbeard.name_parser.parser import NameParser
 from sickbeard.tv import TVShow
 
 class XEMBasicTests(test.SickbeardTestDBCase):
@@ -49,39 +50,13 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
     def test_formating(self):
         self.loadFromDB()
-        show = sickbeard.helpers.findCertainShow(sickbeard.showList, 75978)
-        ep = show.getEpisode(7, 6)
-        ep.airdate = datetime.datetime.now()
 
-        print format(ep.episode, '02d')
-        print format(ep.scene_episode, '02d')
+        release = "d:\\Downloads\\newdownload\\2.Broke.Girls.S03E10.And.the.First.Day.of.School.720p.WEB-DL.DD5.1.H.264-BS.mkv"
+        # parse the name to break it into show name, season, and episode
+        np = NameParser(file)
+        parse_result = np.parse(release).convert()
 
-        search_string = {'Episode':[]}
-        episode = ep.airdate
-        str(episode).replace('-', '|')
-        ep_string = sanitizeSceneName(show.name) + ' ' + \
-                    str(episode).replace('-', '|') + '|' + \
-                    sickbeard.helpers.custom_strftime('%b', episode)
-
-        search_string['Episode'].append(ep_string)
-
-        scene_ep_string = sanitizeSceneName(show.name) + ' ' + \
-                    sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + '|' + \
-                    sickbeard.config.naming_ep_type[0] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + '|' + \
-                    sickbeard.config.naming_ep_type[3] % {'seasonnumber': ep.scene_season,
-                                                          'episodenumber': ep.scene_episode} + ' %s category:tv' % ''
-
-        scene_season_string = show.name + ' S%02d' % int(ep.scene_season) + ' -S%02d' % int(ep.scene_season) + 'E' + ' category:tv'  #1) ShowName SXX -SXXE
-
-
-        print(
-            u'Searching "%s" for "%s" as "%s"' % (show.name, ep.prettyName(), ep.scene_prettyName()))
-
-        print('Scene episode search strings: %s' % (scene_ep_string))
-
-        print('Scene season search strings: %s' % (scene_season_string))
+        print(parse_result)
 
 if __name__ == "__main__":
     print "=================="

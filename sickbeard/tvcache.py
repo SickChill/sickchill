@@ -198,7 +198,7 @@ class TVCache():
 
         # if we don't have complete info then parse the filename to get it
         try:
-            myParser = NameParser(0)
+            myParser = NameParser()
             parse_result = myParser.parse(name).convert()
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)

@@ -1008,7 +1008,7 @@ class ConfigGeneral:
             sickbeard.DATE_PRESET = date_preset
 
         if indexer_default:
-            sickbeard.INDEXER_DEFAULT = indexer_default
+            sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
@@ -2130,7 +2130,7 @@ class NewHomeAddShows:
 
         t.provided_show_dir = show_dir
         t.other_shows = other_shows
-        t.provided_indexer = int(indexer or 0)
+        t.provided_indexer = int(indexer or sickbeard.INDEXER_DEFAULT)
         t.indexers = sickbeard.indexerApi().indexers
 
         return _munge(t)

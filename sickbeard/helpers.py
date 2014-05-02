@@ -943,6 +943,8 @@ def _check_against_names(name, show):
 
 
 def get_show_by_name(name, checkIndexers=False):
+    if not sickbeard.showList: return
+
     in_cache = False
     foundResult = None
 

@@ -41,6 +41,7 @@
             <select name="indexerLang" id="indexerLangSelect" style="height: 26px;margin-top: 1px;">
                 <option value="en" selected="selected">en</option>
             </select><b>*</b>
+
             <select name="providedIndexer" id="providedIndexer" style="height: 26px;margin-top: 1px;">
                 <option value="0" #if $provided_indexer == 0 then "selected=\"selected\"" else ""#>All Indexers</option>
                 #for $indexer in $indexers
