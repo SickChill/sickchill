@@ -626,7 +626,7 @@ class PostProcessor(object):
             # now that we've figured out which episode this file is just load it manually
             try:
                 # convert scene numbered release and load episode from database
-                curEp = show_obj.getEpisode(scene_season=season, scene_episode=cur_episode)
+                curEp = show_obj.getEpisode(season, cur_episode, scene=True)
             except exceptions.EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise exceptions.PostProcessingFailed()

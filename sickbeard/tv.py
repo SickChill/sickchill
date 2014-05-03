@@ -182,7 +182,7 @@ class TVShow(object):
         return ep_list
 
 
-    def getEpisode(self, season, episode, file=None, noCreate=False):
+    def getEpisode(self, season, episode, file=None, noCreate=False, scene=False):
 
         if not season in self.episodes:
             self.episodes[season] = {}
@@ -197,10 +197,15 @@ class TVShow(object):
                 episode) + " didn't exist in the cache, trying to create it", logger.DEBUG)
 
             if file != None:
-                ep = TVEpisode(self, season, episode, file)
+                if scene:
+                    ep = TVEpisode(self, scene_season=season, scene_episode=episode, file=file)
+                else:
+                    ep = TVEpisode(self, season, episode, file)
             else:
-                ep = TVEpisode(self, season, episode)
-
+                if scene:
+                    ep = TVEpisode(self, scene_season=season, scene_episode=episode)
+                else:
+                    ep = TVEpisode(self, season, episode, file)
             if ep != None:
                 self.episodes[season][episode] = ep
 
