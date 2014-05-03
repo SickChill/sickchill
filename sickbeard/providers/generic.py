@@ -333,7 +333,10 @@ class GenericProvider:
                 else:
                     results[epNum] = [result]
 
-            return results
+                # found the result we wanted
+                break
+
+        return results
 
     def findPropers(self, search_date=None):
 
