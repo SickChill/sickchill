@@ -1134,25 +1134,11 @@ def dirty_setter(attr_name):
 
 class TVEpisode(object):
     def __init__(self, show, season=None, episode=None, scene_season=None, scene_episode=None, file=""):
-        # convert from indexer numbering <-> scene numerbing and back again once we have correct season and episode numbers
-        if season and episode:
-            self._scene_season, self._scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid,
-                                                                                                    show.indexer,
-                                                                                                    season, episode)
-            self._season, self._episode = sickbeard.scene_numbering.get_indexer_numbering(show.indexerid, show.indexer,
-                                                                                          self._scene_season,
-                                                                                          self._scene_episode)
-
-        # convert from scene numbering <-> indexer numbering and back again once we have correct season and episode numbers
-        elif scene_season and scene_episode:
-            self._season, self._episode = sickbeard.scene_numbering.get_indexer_numbering(show.indexerid, show.indexer,
-                                                                                          scene_season,
-                                                                                          scene_episode)
-            self._scene_season, self._scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid,
-                                                                                                    show.indexer,
-                                                                                                    self._season,
-                                                                                                    self._episode)
         self._name = ""
+        self._season = season
+        self._episode = episode
+        self._scene_season = scene_season
+        self._scene_episode = scene_episode
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1340,6 +1326,25 @@ class TVEpisode(object):
                     if result == False:
                         raise exceptions.EpisodeNotFoundException(
                             "Couldn't find episode " + str(season) + "x" + str(episode))
+
+        # convert from indexer numbering <-> scene numerbing and back again once we have correct season and episode numbers
+        if self.season and self.episode:
+            self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+                                                                                                    self.show.indexer,
+                                                                                                    self.season, self.episode)
+            self.season, self.episode = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
+                                                                                          self.scene_season,
+                                                                                          self.scene_episode)
+
+        # convert from scene numbering <-> indexer numbering and back again once we have correct season and episode numbers
+        elif self.scene_season and self.scene_episode:
+            self.season, self.episode = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
+                                                                                          self.scene_season,
+                                                                                          self.scene_episode)
+            self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+                                                                                                    self.show.indexer,
+                                                                                                    self.season,
+                                                                                                    self.episode)
 
     def loadFromDB(self, season, episode, scene_season, scene_episode):
 
