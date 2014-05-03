@@ -360,7 +360,7 @@ class HDTorrentsCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Adding item to cache: " + title, logger.DEBUG)
+        logger.log(u"Adding item to cache: " + str(title), logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

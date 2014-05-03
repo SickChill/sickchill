@@ -971,7 +971,7 @@ def get_show_by_name(name):
         sickbeard.name_cache.addNameToCache(name, indexerid if indexerid else 0)
 
     if indexerid:
-        logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + name + "}",logger.DEBUG)
+        logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + str(name) + "}",logger.DEBUG)
         if not showObj:
             showObjList = [x for x in sickbeard.showList if x.indexerid == indexerid]
             if len(showObjList):

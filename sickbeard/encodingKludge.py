@@ -40,7 +40,6 @@ def fixStupidEncodings(x, silent=False):
             logger.DEBUG if silent else logger.ERROR)
         return None
 
-    return None
 
 
 def fixListEncodings(x):
