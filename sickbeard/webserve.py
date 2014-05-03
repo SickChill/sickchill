@@ -2833,8 +2833,8 @@ class Home:
 
         #t.all_scene_exceptions = list(set((get_scene_exceptions(showObj.indexerid) or []) + (get_custom_exceptions(showObj.indexerid) or [])))
         t.all_scene_exceptions = get_scene_exceptions(showObj.indexerid)
-        t.scene_numbering = get_scene_numbering_for_show(showObj.indexerid, showObj.indexer)
-        t.xem_numbering = get_xem_numbering_for_show(showObj.indexerid, showObj.indexer)
+        t.scene_numbering = get_scene_numbering_for_show(showObj.indexerid, int(showObj.indexer))
+        t.xem_numbering = get_xem_numbering_for_show(showObj.indexerid, int(showObj.indexer))
 
         return _munge(t)
 
@@ -3404,7 +3404,7 @@ class Home:
 
             set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
 
-        sn = get_scene_numbering(show, ep_obj.indexer, forSeason, forEpisode)
+        sn = get_scene_numbering(show, int(ep_obj.indexer), forSeason, forEpisode)
         if sn:
             (result['sceneSeason'], result['sceneEpisode']) = sn
         else:
