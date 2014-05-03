@@ -230,7 +230,7 @@ def _xem_refresh(indexer_id, indexer):
 
     try:
         logger.log(
-            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
+            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(int(indexer)).name,),
             logger.DEBUG)
         data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
             indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
