@@ -498,9 +498,10 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        if parse_result.show:
-            indexer_id = parse_result.show.indexerid
-            indexer = parse_result.show.indexer
+        showObj = helpers.get_show_by_name(parse_result.series_name)
+        if showObj:
+            indexer_id = showObj.indexerid
+            indexer = showObj.indexer
 
         to_return = (indexer_id, indexer, season, episodes, None)
 
