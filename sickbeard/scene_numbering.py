@@ -55,6 +55,9 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     if indexer_id is None or season is None or episode is None:
         return (season, episode)
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     result = find_scene_numbering(indexer_id, indexer, season, episode)
     if result:
         return result
@@ -73,6 +76,9 @@ def find_scene_numbering(indexer_id, indexer, season, episode):
     if indexer_id is None or season is None or episode is None:
         return (season, episode)
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     myDB = db.DBConnection()
 
     rows = myDB.select(
@@ -89,6 +95,9 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
         return (sceneSeason, sceneEpisode)
+
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
 
     myDB = db.DBConnection()
 
@@ -112,6 +121,9 @@ def get_scene_numbering_for_show(indexer_id, indexer):
     if indexer_id is None:
         return {}
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     myDB = db.DBConnection()
 
     rows = myDB.select(
@@ -132,6 +144,9 @@ def set_scene_numbering(indexer_id, indexer, season, episode, sceneSeason=None, 
     """
     if indexer_id is None or season is None or episode is None:
         return
+
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
 
     myDB = db.DBConnection()
 
@@ -163,6 +178,9 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     if indexer_id is None or season is None or episode is None:
         return None
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     if _xem_refresh_needed(indexer_id, indexer):
         _xem_refresh(indexer_id, indexer)
 
@@ -188,6 +206,9 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
         return None
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     if _xem_refresh_needed(indexer_id, indexer):
         _xem_refresh(indexer_id, indexer)
     cacheDB = db.DBConnection('cache.db')
@@ -210,6 +231,9 @@ def _xem_refresh_needed(indexer_id, indexer):
     if indexer_id is None:
         return False
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     cacheDB = db.DBConnection('cache.db')
     rows = cacheDB.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
                           [indexer, indexer_id])
@@ -228,18 +252,21 @@ def _xem_refresh(indexer_id, indexer):
     if indexer_id is None:
         return
 
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
+
     try:
         logger.log(
-            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(int(indexer)).name,),
+            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
             logger.DEBUG)
         data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
-            indexer_id, sickbeard.indexerApi(int(indexer)).config['xem_origin'],), verify=False).json()
+            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
 
         if data is None or data == '':
             logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
-                indexer_id, sickbeard.indexerApi(int(indexer)).name,), logger.MESSAGE)
+                indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
             data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
-                indexer_id, sickbeard.indexerApi(int(indexer)).config['xem_origin'],), verify=False).json()
+                indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
             if data is None or data == '':
                 logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
                            logger.MESSAGE)
@@ -257,23 +284,23 @@ def _xem_refresh(indexer_id, indexer):
                         cacheDB.action(
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(int(indexer)).config['xem_origin']]['episode'],
+                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
                              entry['scene']['season'], entry['scene']['episode']])
                     if 'scene_2' in entry:  # for doubles
                         cacheDB.action(
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(int(indexer)).config['xem_origin']]['episode'],
+                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
                              entry['scene_2']['season'], entry['scene_2']['episode']])
             else:
                 logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
-                    indexer_id, sickbeard.indexerApi(int(indexer)).name, result['message']), logger.DEBUG)
+                    indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.DEBUG)
         else:
             logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
-                indexer_id, sickbeard.indexerApi(int(indexer)).name,), logger.DEBUG)
+                indexer_id, sickbeard.indexerApi(indexer).name,), logger.DEBUG)
     except Exception, e:
         logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
-            int(indexer)).name + ": " + ex(e), logger.WARNING)
+            indexer).name + ": " + ex(e), logger.WARNING)
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
@@ -286,6 +313,9 @@ def get_xem_numbering_for_show(indexer_id, indexer):
     """
     if indexer_id is None:
         return {}
+
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
 
     if _xem_refresh_needed(indexer_id, indexer):
         _xem_refresh(indexer_id, indexer)
@@ -311,6 +341,9 @@ def get_xem_numbering_for_season(indexer_id, indexer, season):
     """
     if indexer_id is None or season is None:
         return {}
+
+    indexer_id = int(indexer_id)
+    indexer = int(indexer)
 
     if _xem_refresh_needed(indexer_id, indexer):
         _xem_refresh(indexer_id, indexer)

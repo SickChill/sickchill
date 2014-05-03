@@ -2831,10 +2831,11 @@ class Home:
         t.epCounts = epCounts
         t.epCats = epCats
 
-        #t.all_scene_exceptions = list(set((get_scene_exceptions(showObj.indexerid) or []) + (get_custom_exceptions(showObj.indexerid) or [])))
-        t.all_scene_exceptions = get_scene_exceptions(showObj.indexerid)
-        t.scene_numbering = get_scene_numbering_for_show(showObj.indexerid, int(showObj.indexer))
-        t.xem_numbering = get_xem_numbering_for_show(showObj.indexerid, int(showObj.indexer))
+        indexerid = int(showObj.indexerid)
+        indexer = int(showObj.indexer)
+        t.all_scene_exceptions = get_scene_exceptions(indexerid)
+        t.scene_numbering = get_scene_numbering_for_show(indexerid, indexer)
+        t.xem_numbering = get_xem_numbering_for_show(indexerid, indexer)
 
         return _munge(t)
 
@@ -3397,14 +3398,15 @@ class Home:
                        (show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
 
             show = int(show)
+            indexer = int(ep_obj.indexer)
             forSeason = int(forSeason)
             forEpisode = int(forEpisode)
             if sceneSeason is not None: sceneSeason = int(sceneSeason)
             if sceneEpisode is not None: sceneEpisode = int(sceneEpisode)
 
             set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
-
-        sn = get_scene_numbering(show, int(ep_obj.indexer), forSeason, forEpisode)
+        
+        sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
         if sn:
             (result['sceneSeason'], result['sceneEpisode']) = sn
         else:
