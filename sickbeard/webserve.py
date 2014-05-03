@@ -2833,8 +2833,8 @@ class Home:
 
         #t.all_scene_exceptions = list(set((get_scene_exceptions(showObj.indexerid) or []) + (get_custom_exceptions(showObj.indexerid) or [])))
         t.all_scene_exceptions = get_scene_exceptions(showObj.indexerid)
-        t.scene_numbering = get_scene_numbering_for_show(showObj.indexerid)
-        t.xem_numbering = get_xem_numbering_for_show(showObj.indexerid)
+        t.scene_numbering = get_scene_numbering_for_show(showObj.indexerid, showObj.indexer)
+        t.xem_numbering = get_xem_numbering_for_show(showObj.indexerid, showObj.indexer)
 
         return _munge(t)
 
@@ -3404,7 +3404,7 @@ class Home:
 
             set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
 
-        sn = get_scene_numbering(show, forSeason, forEpisode)
+        sn = get_scene_numbering(show, ep_obj.indexer, forSeason, forEpisode)
         if sn:
             (result['sceneSeason'], result['sceneEpisode']) = sn
         else:
@@ -3421,7 +3421,7 @@ class Home:
             return json.dumps({'result': 'failure'})
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, {ep_obj.season: ep_obj.episode})
+        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj])
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not

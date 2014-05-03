@@ -46,8 +46,8 @@ class DTTProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(url)
         return quality
 
-    def getSearchResults(self, show, season, ep_objs, seasonSearch=False, manualSearch=False):
-        return generic.TorrentProvider.getSearchResults(self, show, season, ep_objs, seasonSearch, manualSearch)
+    def getSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
+        return generic.TorrentProvider.getSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
 
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()

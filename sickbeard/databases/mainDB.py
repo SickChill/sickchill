@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 30
+MAX_DB_VERSION = 31
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -35,6 +35,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
+        self.fix_scene_numbering()
 
     def fix_duplicate_shows(self):
 
@@ -122,6 +123,29 @@ class MainSanityCheck(db.DBSanityCheck):
         if not self.connection.select("PRAGMA index_info('idx_sta_epi_sta_air')"):
             logger.log(u"Missing idx_sta_epi_sta_air for TV Episodes table detected!, fixing...")
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate)")
+
+
+    def fix_scene_numbering(self):
+        ql = []
+
+        sqlResults = self.connection.select(
+            "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = 0 OR scene_episode = 0")
+
+        for epResult in sqlResults:
+            logger.log(
+                u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
+                    epResult["season"]) + u" episode: " + str(epResult["episode"]), logger.DEBUG)
+
+            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(epResult["showid"],
+                                                                                        epResult["indexer"],
+                                                                                        epResult["season"],
+                                                                                        epResult["episode"])
+
+            ql.append(["UPDATE tv_episodes SET scene_season = ? WHERE indexerid = ?", [scene_season, epResult["indexerid"]]])
+            ql.append(
+                ["UPDATE tv_episodes SET scene_episode = ? WHERE indexerid = ?", [scene_episode, epResult["indexerid"]]])
+
+        self.connection.mass_action(ql)
 
 
 def backupDatabase(version):
@@ -744,5 +768,21 @@ class AddSportsOption(AddRequireAndIgnoreWords):
                 ql.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?", [cur_entry["air_by_date"], cur_entry["show_id"]]])
                 ql.append(["UPDATE tv_shows SET air_by_date = 0 WHERE show_id = ?", [cur_entry["show_id"]]])
             self.connection.mass_action(ql)
+
+        self.incDBVersion()
+
+class AddSceneNumberingToTvEpisodes(AddSportsOption):
+    def test(self):
+        return self.checkDBVersion() >= 31
+
+    def execute(self):
+        backupDatabase(31)
+
+        logger.log(u"Adding column scene_season and scene_episode to tvepisodes")
+        if not self.hasColumn("tv_episodes", "scene_season"):
+            self.addColumn("tv_episodes", "scene_season", "NUMERIC", "0")
+
+        if not self.hasColumn("tv_episodes", "scene_episode"):
+            self.addColumn("tv_episodes", "scene_episode", "NUMERIC", "0")
 
         self.incDBVersion()

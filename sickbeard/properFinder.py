@@ -100,15 +100,9 @@ class ProperFinder():
             # parse the file name
             try:
                 myParser = NameParser(False)
-                parse_result = myParser.parse(curProper.name).convert()
+                parse_result = myParser.parse(curProper.name)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
-                continue
-
-            # if we can't find the show then there's nothing we can really do
-            if not parse_result.show:
-                logger.log(u"This show isn't in your list, skipping ...",
-                          logger.DEBUG)
                 continue
 
             if not parse_result.episode_numbers:
@@ -122,8 +116,8 @@ class ProperFinder():
                 curProper.season = -1
                 curProper.episode = parse_result.air_date
             else:
-                curProper.season = parse_result.season_number if parse_result.season_number != None else 1
-                curProper.episode = parse_result.episode_numbers[0]
+                curProper.scene_season = parse_result.season_number if parse_result.season_number != None else 1
+                curProper.scene_episode = parse_result.episode_numbers[0]
 
             curProper.quality = Quality.nameQuality(curProper.name)
 

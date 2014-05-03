@@ -139,7 +139,7 @@ class TVShow(object):
         sql_selection = sql_selection + " FROM tv_episodes tve WHERE showid = " + str(self.indexerid)
 
         if season is not None:
-            if not self.air_by_date and not self.sports:
+            if not self.air_by_date:
                 sql_selection = sql_selection + " AND season = " + str(season)
             else:
                 segment_year, segment_month = map(int, str(season).split('-'))
@@ -1128,15 +1128,26 @@ def dirty_setter(attr_name):
 
 
 class TVEpisode(object):
-    def __init__(self, show, season, episode, file=""):
-        # Convert season/episode to XEM scene numbering
-        scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid, season, episode)
+    def __init__(self, show, season=None, episode=None, scene_season=None, scene_episode=None, file=""):
+        # convert from indexer numbering <-> scene numerbing and back again once we have correct season and episode numbers
+        if season and episode:
+            self._scene_season, self._scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid,
+                                                                                                    show.indexer,
+                                                                                                    season, episode)
+            self._season, self._episode = sickbeard.scene_numbering.get_indexer_numbering(show.indexerid, show.indexer,
+                                                                                          self._scene_season,
+                                                                                          self._scene_episode)
 
+        # convert from scene numbering <-> indexer numbering and back again once we have correct season and episode numbers
+        elif scene_season and scene_episode:
+            self._season, self._episode = sickbeard.scene_numbering.get_indexer_numbering(show.indexerid, show.indexer,
+                                                                                          scene_season,
+                                                                                          scene_episode)
+            self._scene_season, self._scene_episode = sickbeard.scene_numbering.get_scene_numbering(show.indexerid,
+                                                                                                    show.indexer,
+                                                                                                    self._season,
+                                                                                                    self._episode)
         self._name = ""
-        self._season = season
-        self._episode = episode
-        self._scene_season = scene_season
-        self._scene_episode = scene_episode
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1161,7 +1172,7 @@ class TVEpisode(object):
 
         self.lock = threading.Lock()
 
-        self.specifyEpisode(self.season, self.episode)
+        self.specifyEpisode(self.season, self.episode, self.scene_season, self.scene_episode)
 
         self.relatedEps = []
 
@@ -1299,9 +1310,9 @@ class TVEpisode(object):
         # if either setting has changed return true, if not return false
         return oldhasnfo != self.hasnfo or oldhastbn != self.hastbn
 
-    def specifyEpisode(self, season, episode):
+    def specifyEpisode(self, season, episode, scene_season, scene_episode):
 
-        sqlResult = self.loadFromDB(season, episode)
+        sqlResult = self.loadFromDB(season, episode, scene_season, scene_episode)
 
         if not sqlResult:
             # only load from NFO if we didn't load from DB
@@ -1316,7 +1327,7 @@ class TVEpisode(object):
                 # if we tried loading it from NFO and didn't find the NFO, try the Indexers
                 if self.hasnfo == False:
                     try:
-                        result = self.loadFromIndexer(season, episode)
+                        result = self.loadFromIndexer(season, episode, scene_season, scene_episode)
                     except exceptions.EpisodeDeletedException:
                         result = False
 
@@ -1325,7 +1336,7 @@ class TVEpisode(object):
                         raise exceptions.EpisodeNotFoundException(
                             "Couldn't find episode " + str(season) + "x" + str(episode))
 
-    def loadFromDB(self, season, episode):
+    def loadFromDB(self, season, episode, scene_season, scene_episode):
 
         logger.log(
             str(self.show.indexerid) + u": Loading episode details from DB for episode " + str(season) + "x" + str(
@@ -1345,9 +1356,11 @@ class TVEpisode(object):
             #NAMEIT logger.log(u"AAAAA from" + str(self.season)+"x"+str(self.episode) + " -" + self.name + " to " + str(sqlResults[0]["name"]))
             if sqlResults[0]["name"]:
                 self.name = sqlResults[0]["name"]
+
             self.season = season
             self.episode = episode
-
+            self.scene_season = scene_season
+            self.scene_episode = scene_episode
             self.description = sqlResults[0]["description"]
             if not self.description:
                 self.description = ""
@@ -1379,12 +1392,17 @@ class TVEpisode(object):
             self.dirty = False
             return True
 
-    def loadFromIndexer(self, season=None, episode=None, cache=True, tvapi=None, cachedSeason=None):
+    def loadFromIndexer(self, season=None, episode=None, scene_season=None, scene_episode=None, cache=True, tvapi=None, cachedSeason=None):
 
         if season is None:
             season = self.season
         if episode is None:
             episode = self.episode
+
+        if scene_season is None:
+            scene_season = self.scene_season
+        if scene_episode is None:
+            scene_episode = self.scene_episode
 
         logger.log(str(self.show.indexerid) + u": Loading episode details from " + sickbeard.indexerApi(
             self.show.indexer).name + " for episode " + str(season) + "x" + str(episode), logger.DEBUG)
@@ -1676,11 +1694,11 @@ class TVEpisode(object):
 
         # use a custom update/insert method to get the data into the DB
         return [
-            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode) VALUES ((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode) VALUES ((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND scene_season = ? AND scene_episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
             [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
              ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
              self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode]]
+             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.scene_season, self.scene_episode]]
 
     def saveToDB(self, forceSave=False):
         """
@@ -1714,7 +1732,9 @@ class TVEpisode(object):
                         "location": self.location,
                         "file_size": self.file_size,
                         "release_name": self.release_name,
-                        "is_proper": self.is_proper}
+                        "is_proper": self.is_proper,
+                        "scene_season": self.scene_season,
+                        "scene_episode": self.scene_episode}
         controlValueDict = {"showid": self.show.indexerid,
                             "season": self.season,
                             "episode": self.episode}
@@ -1747,16 +1767,6 @@ class TVEpisode(object):
         """
 
         return self._format_pattern('%SN - %XMSx%0XME - %EN')
-
-    def sports_prettyName(self):
-        """
-        Returns the name of this episode in a "pretty" human-readable format. Used for logging
-        and notifications and such.
-
-        Returns: A string representing the episode's name and season/ep numbers
-        """
-
-        return self._format_pattern('%SN - %A-D - %EN')
 
     def _ep_name(self):
         """

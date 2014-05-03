@@ -20,7 +20,7 @@ from sickbeard import db
 from sickbeard.helpers import sanitizeSceneName
 
 
-def addNameToCache(name, indexer_id):
+def addNameToCache(name, indexer_id=0):
     """
     Adds the show & tvdb id to the scene_names table in cache.db.
     
@@ -28,11 +28,10 @@ def addNameToCache(name, indexer_id):
     indexer_id: the TVDB and TVRAGE id that this show should be cached with (can be None/0 for unknown)
     """
 
-    if indexer_id:
-        # standardize the name we're using to account for small differences in providers
-        name = sanitizeSceneName(name)
-        cacheDB = db.DBConnection('cache.db')
-        cacheDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+    # standardize the name we're using to account for small differences in providers
+    name = sanitizeSceneName(name)
+    cacheDB = db.DBConnection('cache.db')
+    cacheDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
 def retrieveNameFromCache(name):
@@ -52,7 +51,6 @@ def retrieveNameFromCache(name):
 
     if cache_results:
         return int(cache_results[0]["indexer_id"])
-
 
 def clearCache():
     """

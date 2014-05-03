@@ -33,6 +33,21 @@ from sickbeard.name_parser.parser import NameParser
 from sickbeard.tv import TVShow
 
 class XEMBasicTests(test.SickbeardTestDBCase):
+    def loadShowsFromDB(self):
+        """
+        Populates the showList with shows from the database
+        """
+
+        myDB = test.db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM tv_shows")
+
+        for sqlShow in sqlResults:
+            try:
+                curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
+                sickbeard.showList.append(curShow)
+            except Exception:
+                pass
+
     def loadFromDB(self):
         """
         Populates the showList with shows from the database
@@ -49,9 +64,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
                 print "There was an error creating the show"
 
     def test_formating(self):
-        self.loadFromDB()
-
-        release = "d:\\Downloads\\newdownload\\2.Broke.Girls.S03E10.And.the.First.Day.of.School.720p.WEB-DL.DD5.1.H.264-BS.mkv"
+        release = "UFC.172.26th.April.2014.HDTV.x264.720p-Sir.Paul[rartv]"
         # parse the name to break it into show name, season, and episode
         np = NameParser(file)
         parse_result = np.parse(release).convert()

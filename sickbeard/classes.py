@@ -206,6 +206,8 @@ class Proper:
         self.indexerid = -1
         self.season = -1
         self.episode = -1
+        self.scene_season = -1
+        self.scene_episode = -1
 
     def __str__(self):
         return str(self.date) + " " + self.name + " " + str(self.season) + "x" + str(self.episode) + " of " + str(

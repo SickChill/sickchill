@@ -306,7 +306,9 @@ def searchDBForShow(regShowName):
                 logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name", logger.DEBUG)
                 continue
             else:
-                return (int(sqlResults[0]["indexer"]), int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
+                return int(sqlResults[0]["indexer_id"])
+
+    return
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
     showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
@@ -942,79 +944,37 @@ def _check_against_names(name, show):
     return False
 
 
-def get_show_by_name(name, checkIndexers=False):
-    if not sickbeard.showList: return
-
+def get_show_by_name(name):
+    showObj = None
     in_cache = False
-    foundResult = None
 
-    logger.log(
-        u"Checking the cache for:" + str(name),
-        logger.DEBUG)
+    if not sickbeard.showList:
+        return
 
-    cacheResult = sickbeard.name_cache.retrieveNameFromCache(name)
-    if cacheResult:
-        foundResult = findCertainShow(sickbeard.showList, cacheResult)
-        if foundResult:
-            in_cache = True
-            logger.log(
-                u"Cache lookup found Indexer ID:" + repr(
-                    foundResult.indexerid) + ", using that for " + name,
-                logger.DEBUG)
+    indexerid = sickbeard.name_cache.retrieveNameFromCache(name)
+    if indexerid or indexerid == 0:
+        in_cache = True
 
-    if not foundResult:
-        logger.log(
-            u"Checking the database for:" + str(name),
-            logger.DEBUG)
+    showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
+    for showName in showNames if not in_cache else []:
+        try:
+            showObj = [x for x in sickbeard.showList if _check_against_names(showName, x)][0]
+            indexerid = showObj.indexerid
+        except:
+            indexerid = 0
 
-        dbResult = searchDBForShow(name)
-        if dbResult:
-            foundResult = findCertainShow(sickbeard.showList, dbResult[1])
-            if foundResult:
-                logger.log(
-                    u"Database lookup found Indexer ID:" + str(
-                        foundResult.indexerid) + ", using that for " + name, logger.DEBUG)
-
-    if not foundResult:
-        logger.log(
-            u"Checking the scene exceptions list for:" + str(name),
-            logger.DEBUG)
-
-        for show in sickbeard.showList:
-            if _check_against_names(name, show):
-                logger.log(
-                    u"Scene exceptions lookup found Indexer ID:" + str(show.indexerid) + ", using that for " + name,
-                    logger.DEBUG)
-                foundResult = show
-
-    if not foundResult and checkIndexers:
-        logger.log(
-            u"Checking the Indexers for:" + str(name),
-            logger.DEBUG)
-
-        for indexer in sickbeard.indexerApi().indexers:
-            try:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-                lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-                lINDEXER_API_PARMS['search_all_languages'] = True
-
-                t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-                showObj = t[name]
-            except:
-                continue
-
-            if showObj:
-                foundResult = findCertainShow(sickbeard.showList, int(showObj[0]['id']))
-                if foundResult:
-                    logger.log(
-                        u"Indexers lookup found Indexer ID:" + str(
-                            foundResult.indexerid) + ", using that for " + name, logger.DEBUG)
+        if indexerid:
+            break
 
     # add to name cache if we didn't get it from the cache
-    if foundResult and not in_cache:
-        sickbeard.name_cache.addNameToCache(name, foundResult.indexerid)
+    if not in_cache:
+        sickbeard.name_cache.addNameToCache(name, indexerid if indexerid else 0)
 
-    return foundResult
+    if indexerid:
+        logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + name + "}",logger.DEBUG)
+        if not showObj:
+            showObj = [x for x in sickbeard.showList if x.indexerid == indexerid][0]
+        return showObj
 
 def is_hidden_folder(folder):
     """

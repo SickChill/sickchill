@@ -96,7 +96,6 @@ class BacklogSearcher:
         # get separate lists of the season/date shows
         #season_shows = [x for x in show_list if not x.air_by_date]
         air_by_date_shows = [x for x in show_list if x.air_by_date]
-        sports_shows = [x for x in show_list if x.sports]
 
         # figure out how many segments of air by date shows we're going to do
         air_by_date_segments = []
@@ -104,12 +103,6 @@ class BacklogSearcher:
             air_by_date_segments += self._get_air_by_date_segments(cur_id, fromDate)
 
         logger.log(u"Air-by-date segments: " + str(air_by_date_segments), logger.DEBUG)
-
-        sports_segments = []
-        for cur_id in [x.indexerid for x in sports_shows]:
-            sports_segments += self._get_sports_segments(cur_id, fromDate)
-
-        logger.log(u"Sports segments: " + str(sports_segments), logger.DEBUG)
 
         #totalSeasons = float(len(numSeasonResults) + len(air_by_date_segments))
         #numSeasonsDone = 0.0
@@ -122,10 +115,8 @@ class BacklogSearcher:
 
             if curShow.air_by_date:
                 segments = [x[1] for x in self._get_air_by_date_segments(curShow.indexerid, fromDate)]
-            elif curShow.sports:
-                segments = self._get_sports_segments(curShow.indexerid, fromDate)
             else:
-                segments = self._get_season_segments(curShow.indexerid, fromDate)
+                segments = self._get_segments(curShow.indexerid, fromDate)
 
             for cur_segment in segments:
 
@@ -133,12 +124,12 @@ class BacklogSearcher:
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, cur_segment)
 
-                if not backlog_queue_item.wantSeason:
+                if backlog_queue_item.wantedEpisodes:
+                    sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
+                else:
                     logger.log(
                         u"Nothing in season " + str(cur_segment) + " needs to be downloaded, skipping this season",
                         logger.DEBUG)
-                else:
-                    sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -167,11 +158,12 @@ class BacklogSearcher:
         self._lastBacklog = lastBacklog
         return self._lastBacklog
 
-    def _get_season_segments(self, indexer_id, fromDate):
+    def _get_segments(self, indexer_id, fromDate):
         myDB = db.DBConnection()
         sqlResults = myDB.select(
             "SELECT DISTINCT(season) as season FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
             [indexer_id, fromDate.toordinal()])
+
         return [int(x["season"]) for x in sqlResults]
 
     def _get_air_by_date_segments(self, indexer_id, fromDate):
@@ -194,12 +186,6 @@ class BacklogSearcher:
 
         return air_by_date_segments
 
-    def _get_sports_segments(self, indexer_id, fromDate):
-        myDB = db.DBConnection()
-        sqlResults = myDB.select(
-            "SELECT DISTINCT(season) as season FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
-            [indexer_id, fromDate.toordinal()])
-        return [int(x["season"]) for x in sqlResults]
 
     def _set_lastBacklog(self, when):
 

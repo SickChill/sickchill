@@ -113,13 +113,14 @@ class NewznabProvider(generic.NZBProvider):
         # search
         params['q'] = helpers.sanitizeSceneName(self.show.name)
 
-        date_str = str(ep_obj.airdate)
         if self.show.air_by_date:
+            date_str = str(ep_obj.airdate)
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
         elif self.show.sports:
+            date_str = str(ep_obj.airdate)
             params['season'] = date_str.partition('-')[0]
-            params['ep'] = date_str.partition('-')[0]
+            params['ep'] = date_str.partition('-')[2].replace('-', '/')
         else:
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode

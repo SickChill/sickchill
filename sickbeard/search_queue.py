@@ -68,7 +68,6 @@ class SearchQueue(generic_queue.GenericQueue):
     def add_item(self, item):
         if isinstance(item, RSSSearchQueueItem):
             generic_queue.GenericQueue.add_item(self, item)
-        # don't do duplicates
         elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_ep_in_queue(item.ep_obj):
@@ -93,7 +92,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         logger.log("Beginning manual search for " + self.ep_obj.prettyName())
 
-        foundResults = search.searchProviders(self.ep_obj.show, self.ep_obj.season, self.ep_obj.episode, manualSearch=True)
+        foundResults = search.searchProviders(self.ep_obj.show, self.ep_obj.season, [self.ep_obj], manualSearch=True)
         result = False
 
         if not foundResults:
@@ -186,6 +185,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         self.show = show
         self.segment = segment
+        self.wantedEpisodes = []
 
         logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
 
@@ -193,7 +193,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         # see if there is anything in this season worth searching for
         if not self.show.air_by_date:
-            statusResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ?",
+            statusResults = myDB.select("SELECT status, episode FROM tv_episodes WHERE showid = ? AND season = ?",
                                         [self.show.indexerid, self.segment])
         else:
             season_year, season_month = map(int, self.segment.split('-'))
@@ -206,17 +206,17 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 max_date = datetime.date(season_year, season_month + 1, 1) - datetime.timedelta(days=1)
 
             statusResults = myDB.select(
-                "SELECT status FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ?",
+                "SELECT status, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ?",
                 [self.show.indexerid, min_date.toordinal(), max_date.toordinal()])
 
         anyQualities, bestQualities = common.Quality.splitQuality(self.show.quality)  #@UnusedVariable
-        self.wantSeason = self._need_any_episodes(statusResults, bestQualities)
+        self.wantedEpisodes = self._need_any_episodes(statusResults, bestQualities)
 
     def execute(self):
 
         generic_queue.QueueItem.execute(self)
 
-        results = search.searchProviders(self.show, self.segment)
+        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes)
 
         # download whatever we find
         for curResult in results:
@@ -226,13 +226,13 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.finish()
 
     def _need_any_episodes(self, statusResults, bestQualities):
-
-        wantSeason = False
+        wantedEpisodes = []
 
         # check through the list of statuses to see if we want any
         for curStatusResult in statusResults:
             curCompositeStatus = int(curStatusResult["status"])
             curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
+            episode = int(curStatusResult["episode"])
 
             if bestQualities:
                 highestBestQuality = max(bestQualities)
@@ -242,44 +242,45 @@ class BacklogQueueItem(generic_queue.QueueItem):
             # if we need a better one then say yes
             if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
                               common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-                wantSeason = True
-                break
+                epObj = self.show.getEpisode(self.segment,episode)
+                wantedEpisodes.append(epObj)
 
-        return wantSeason
+        return wantedEpisodes
 
 
 class FailedQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self, show, episodes):
         generic_queue.QueueItem.__init__(self, 'Retry', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.thread_name = 'RETRY-' + str(show.indexerid)
 
         self.show = show
-        self.segment = segment
+        self.episodes = episodes
 
         self.success = None
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        for season, episode in self.segment.iteritems():
-            epObj = self.show.getEpisode(season, episode)
+        episodes = []
 
-            (release, provider) = failed_history.findRelease(self.show, season, episode)
+        for epObj in episodes:
+            (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
             if release:
                 logger.log(u"Marking release as bad: " + release)
-                failed_history.markFailed(self.show, season, episode)
+                failed_history.markFailed(self.show, epObj.season, epObj.episode)
                 failed_history.logFailed(release)
-                history.logFailed(self.show.indexerid, season, episode, epObj.status, release, provider)
+                history.logFailed(self.show.indexerid, epObj.season, epObj.episode, epObj.status, release, provider)
 
-            failed_history.revertEpisode(self.show, season, episode)
+                failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
+                episodes.append(epObj)
 
-            # get search results
-            results = search.searchProviders(self.show, season, episode)
+        # get search results
+        results = search.searchProviders(self.show, episodes[0].season, episodes)
 
-            # download whatever we find
-            for curResult in results:
-                self.success = search.snatchEpisode(curResult)
-                time.sleep(5)
+        # download whatever we find
+        for curResult in results:
+            self.success = search.snatchEpisode(curResult)
+            time.sleep(5)
 
         self.finish()

@@ -56,14 +56,6 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
-        # Clear out records missing there Indexer IDs
-        try:
-            sql = "DELETE FROM [" + providerName + "] WHERE indexerid is NULL or indexerid is 0"
-            self.connection.execute(sql)
-            self.connection.commit()
-        except:
-            pass
-
 class TVCache():
     def __init__(self, provider):
 
@@ -113,15 +105,15 @@ class TVCache():
 
             if self._checkAuth(data):
                 items = data.entries
-                cl = []
+                ql = []
                 for item in items:
-                    ci = self._parseItem(item)
-                    if ci is not None:
-                        cl.append(ci)
+                    qi = self._parseItem(item)
+                    if qi is not None:
+                        ql.append(qi)
 
-                if len(cl) > 0:
+                if len(ql):
                     myDB = self._getDB()
-                    myDB.mass_action(cl)
+                    myDB.mass_action(ql)
 
             else:
                 raise AuthException(
@@ -192,14 +184,13 @@ class TVCache():
 
     def _addCacheEntry(self, name, url, quality=None):
 
-        cacheDB = self._getDB()
         season = None
         episodes = None
 
         # if we don't have complete info then parse the filename to get it
         try:
             myParser = NameParser()
-            parse_result = myParser.parse(name).convert()
+            parse_result = myParser.parse(name)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
@@ -212,42 +203,41 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        if not parse_result.show:
-            logger.log(u"Couldn't find a show in our databases matching " + name + ", unable to cache it", logger.DEBUG)
+        if not helpers.get_show_by_name(parse_result.series_name):
+            logger.log(u"Could not find a show matching " + parse_result.series_name + " in the database, skipping ...", logger.DEBUG)
             return None
 
-        try:
+        if parse_result.air_by_date:
             myDB = db.DBConnection()
-            if parse_result.show.air_by_date:
-                airdate = parse_result.sports_event_date.toordinal() if parse_result.show.sports else parse_result.air_date.toordinal()
-                sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                          [parse_result.show.indexerid, airdate])
-                if sql_results > 0:
-                    season = int(sql_results[0]["season"])
-                    episodes = [int(sql_results[0]["episode"])]
-            else:
-                season = parse_result.season_number
-                episodes = parse_result.episode_numbers
 
-            if season and episodes:
-                # store episodes as a seperated string
-                episodeText = "|" + "|".join(map(str, episodes)) + "|"
+            airdate = parse_result.air_date.toordinal()
+            sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
+                                      [parse_result.show.indexerid, parse_result.show.indexer, airdate])
+            if sql_results > 0:
+                season = int(sql_results[0]["season"])
+                episodes = [int(sql_results[0]["episode"])]
+        else:
+            season = parse_result.season_number
+            episodes = parse_result.episode_numbers
 
-                # get the current timestamp
-                curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
+        if season and episodes:
+            # store episodes as a seperated string
+            episodeText = "|" + "|".join(map(str, episodes)) + "|"
 
-                # get quality of release
-                if quality is None:
-                    quality = Quality.sceneQuality(name)
+            # get the current timestamp
+            curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
-                if not isinstance(name, unicode):
-                    name = unicode(name, 'utf-8')
+            # get quality of release
+            if quality is None:
+                quality = Quality.sceneQuality(name)
 
-                cacheDB.action(
-                    "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                    [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality])
-        except:
-            return
+            if not isinstance(name, unicode):
+                name = unicode(name, 'utf-8')
+
+
+            logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
+            return ["INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
+                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality]]
 
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)
@@ -275,7 +265,7 @@ class TVCache():
         else:
             sqlResults = myDB.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
+                [episode.show.indexerid, episode.scene_season, "%|" + str(episode.scene_episode) + "|%"])
 
         # for each cache entry
         for curResult in sqlResults:

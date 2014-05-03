@@ -54,7 +54,7 @@ class FailedProcessor(object):
 
         parser = NameParser(False)
         try:
-            parsed = parser.parse(releaseName).convert()
+            parsed = parser.parse(releaseName)
         except InvalidNameException:
             self._log(u"Error: release name is invalid: " + releaseName, logger.WARNING)
             raise exceptions.FailedProcessingFailed()
@@ -68,16 +68,20 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
         logger.log(u" - " + str(parsed.sports_event_date), logger.DEBUG)
 
-        self._show_obj = parsed.show
+        self._show_obj = sickbeard.helpers.get_show_by_name(parsed.series_name)
         if self._show_obj is None:
             self._log(
                 u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)",
                 logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
+        episodes = []
         for episode in parsed.episode_numbers:
-            cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, {parsed.season_number: episode})
-            sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+            epObj = self._show_obj.getEpisode(parsed.season_number, episode)
+            episodes.append(epObj)
+
+        cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, episodes)
+        sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True
 

@@ -106,11 +106,6 @@ class NameParser(object):
                 result.series_name = match.group('series_name')
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
-                    name_list = sickbeard.show_name_helpers.sceneToNormalShowNames(result.series_name)
-                    for name in name_list:
-                        result.show = helpers.get_show_by_name(name)
-                        if result.show:
-                            break
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
@@ -245,8 +240,6 @@ class NameParser(object):
         # parse the dirname for extra info if needed
         dir_name_result = self._parse_string(dir_name)
 
-        final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
-
         # build the ParseResult object
         final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
 
@@ -323,8 +316,6 @@ class ParseResult(object):
         if not other:
             return False
 
-        if self.show != other.show:
-            return False
         if self.series_name != other.series_name:
             return False
         if self.season_number != other.season_number:
@@ -376,10 +367,13 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
-        if not self.show: return self
         if self.air_by_date: return self # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
+
+        self.show = helpers.get_show_by_name(self.series_name)
+        if not self.show:
+            return self
 
         new_episode_numbers = []
         new_season_numbers = []
