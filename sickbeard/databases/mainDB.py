@@ -136,10 +136,10 @@ class MainSanityCheck(db.DBSanityCheck):
                 u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
                     epResult["season"]) + u" episode: " + str(epResult["episode"]), logger.DEBUG)
 
-            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(epResult["showid"],
-                                                                                        epResult["indexer"],
-                                                                                        epResult["season"],
-                                                                                        epResult["episode"])
+            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(int(epResult["showid"]),
+                                                                                        int(epResult["indexer"]),
+                                                                                        int(epResult["season"]),
+                                                                                        int(epResult["episode"]))
 
             ql.append(["UPDATE tv_episodes SET scene_season = ? WHERE indexerid = ?", [scene_season, epResult["indexerid"]]])
             ql.append(
