@@ -279,7 +279,6 @@ class GenericProvider:
                     continue
 
                 if not (self.show.air_by_date or self.show.sports):
-                if not (self.show.air_by_date or self.show.sports):
                     if (parse_result.season_number != season or epObj.episode not in parse_result.episode_numbers):
                         logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(
                             epObj.episode) + ", skipping it", logger.DEBUG)
