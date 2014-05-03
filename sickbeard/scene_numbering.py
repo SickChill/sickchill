@@ -361,3 +361,35 @@ def get_xem_numbering_for_season(indexer_id, indexer, season):
         result.setdefault(int(season), []).append(int(season))
 
     return result
+
+
+def fix_scene_numbering():
+    ql = []
+
+    myDB = db.DBConnection()
+
+    sqlResults = myDB.select(
+        "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = -1 OR scene_episode = -1")
+
+    for epResult in sqlResults:
+
+        indexerid = int(epResult["showid"])
+        indexer = int(epResult["indexer"])
+        season = int(epResult["season"])
+        episode = int(epResult["episode"])
+
+        logger.log(
+            u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
+                epResult["season"]) + u" episode: " + str(epResult["episode"]), logger.DEBUG)
+
+        scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(indexerid,
+                                                                                    indexer,
+                                                                                    season,
+                                                                                    episode)
+
+        ql.append(
+            ["UPDATE tv_episodes SET scene_season = ? WHERE indexerid = ?", [scene_season, epResult["indexerid"]]])
+        ql.append(
+            ["UPDATE tv_episodes SET scene_episode = ? WHERE indexerid = ?", [scene_episode, epResult["indexerid"]]])
+
+        myDB.mass_action(ql)

@@ -52,12 +52,6 @@ def filterBadReleases(name):
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.WARNING)
         return False
 
-    # if we can't find the show then there's nothing we can really do
-    if not parse_result.show:
-        logger.log(u"This show isn't in your list, skipping ...",
-                   logger.DEBUG)
-        return False
-
     # if any of the bad strings are in the name then say no
     if sickbeard.IGNORE_WORDS:
         resultFilters.extend(sickbeard.IGNORE_WORDS.split(','))

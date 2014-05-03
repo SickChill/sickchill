@@ -35,7 +35,6 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
-        self.fix_scene_numbering()
 
     def fix_duplicate_shows(self):
 
@@ -123,35 +122,6 @@ class MainSanityCheck(db.DBSanityCheck):
         if not self.connection.select("PRAGMA index_info('idx_sta_epi_sta_air')"):
             logger.log(u"Missing idx_sta_epi_sta_air for TV Episodes table detected!, fixing...")
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate)")
-
-
-    def fix_scene_numbering(self):
-        ql = []
-
-        sqlResults = self.connection.select(
-            "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = -1 OR scene_episode = -1")
-
-        for epResult in sqlResults:
-            indexerid = int(str(epResult["showid"]).encode('UTF-8'))
-            indexer = int(str(epResult["indexer"]).encode('UTF-8'))
-            season = int(str(epResult["season"]).encode('UTF-8'))
-            episode = int(str(epResult["episode"]).encode('UTF-8'))
-
-            logger.log(
-                u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
-                    epResult["season"]) + u" episode: " + str(epResult["episode"]), logger.DEBUG)
-
-            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(indexerid,
-                                                                                        indexer,
-                                                                                        season,
-                                                                                        episode)
-
-            ql.append(["UPDATE tv_episodes SET scene_season = ? WHERE indexerid = ?", [scene_season, epResult["indexerid"]]])
-            ql.append(
-                ["UPDATE tv_episodes SET scene_episode = ? WHERE indexerid = ?", [scene_episode, epResult["indexerid"]]])
-
-        self.connection.mass_action(ql)
-
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")

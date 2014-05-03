@@ -176,7 +176,7 @@ a{
 #header .wrapper {
   margin: 0 auto;
   position: relative;
-  width: 850px;
+  width: 960px;
 }
 #header a:hover {
   background: none;
@@ -192,7 +192,7 @@ a{
   float: left;
   position: relative;
   top: 0px;
-  left: 5px;
+  left: -5px;
 }
 #versiontext {
   color: #FFFFFF;
@@ -201,7 +201,7 @@ a{
   position: relative;
 /*  text-transform: lowercase;*/
   top: 42px;
-  left: 5px;
+  left: -5px
 }
 
 .update {
@@ -1862,4 +1862,13 @@ pre {
     color: #343434;
     height: 37px;
     text-align: center;
+}
+
+#donate_form{
+    position: absolute;
+    border: 5px solid gray;
+    padding: 10px;
+    background: white;
+    width: 270px;
+    height: 220px;
 }
