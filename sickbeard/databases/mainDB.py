@@ -132,10 +132,10 @@ class MainSanityCheck(db.DBSanityCheck):
             "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = 0 OR scene_episode = 0")
 
         for epResult in sqlResults:
-            indexerid = int(str(epResult["showid"]))
-            indexer = int(str(epResult["indexer"]))
-            season = int(str(epResult["season"]))
-            episode = int(str(epResult["episode"]))
+            indexerid = int(epResult["showid"])
+            indexer = int(epResult["indexer"])
+            season = int(epResult["season"])
+            episode = int(epResult["episode"])
 
             logger.log(
                 u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
