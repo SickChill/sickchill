@@ -132,14 +132,19 @@ class MainSanityCheck(db.DBSanityCheck):
             "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = 0 OR scene_episode = 0")
 
         for epResult in sqlResults:
+            indexerid = int(epResult["showid"])
+            indexer = int(epResult["indexer"])
+            season = int(epResult["season"])
+            episode = int(epResult["episode"])
+
             logger.log(
                 u"Repairing any scene numbering issues for showid: " + str(epResult["showid"]) + u" season: " + str(
                     epResult["season"]) + u" episode: " + str(epResult["episode"]), logger.DEBUG)
 
-            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(int(epResult["showid"]),
-                                                                                        int(epResult["indexer"]),
-                                                                                        int(epResult["season"]),
-                                                                                        int(epResult["episode"]))
+            scene_season, scene_episode = sickbeard.scene_numbering.get_scene_numbering(indexerid,
+                                                                                        indexer,
+                                                                                        season,
+                                                                                        episode)
 
             ql.append(["UPDATE tv_episodes SET scene_season = ? WHERE indexerid = ?", [scene_season, epResult["indexerid"]]])
             ql.append(
