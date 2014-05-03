@@ -3376,7 +3376,7 @@ class Home:
         return json.dumps({'result': status, 'subtitles': ','.join([x for x in ep_obj.subtitles])})
 
     @cherrypy.expose
-    def setEpisodeSceneNumbering(self, show, forSeason, forEpisode, sceneSeason=None, sceneEpisode=None):
+    def setEpisodeSceneNumbering(self, show, indexer, forSeason, forEpisode, sceneSeason=None, sceneEpisode=None):
 
         # sanitize:
         if sceneSeason in ['null', '']: sceneSeason = None
@@ -3398,14 +3398,14 @@ class Home:
                        (show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
 
             show = int(show)
-            indexer = int(ep_obj.indexer)
+            indexer = int(indexer)
             forSeason = int(forSeason)
             forEpisode = int(forEpisode)
             if sceneSeason is not None: sceneSeason = int(sceneSeason)
             if sceneEpisode is not None: sceneEpisode = int(sceneEpisode)
 
             set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
-        
+
         sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
         if sn:
             (result['sceneSeason'], result['sceneEpisode']) = sn

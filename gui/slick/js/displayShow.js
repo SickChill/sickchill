@@ -165,13 +165,15 @@ $(document).ready(function(){
     function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
     	var sbRoot = $('#sbRoot').val();
     	var showId = $('#showID').val();
-    	
+    	var indexer = $('#indexer').val();
+
     	if (sceneSeason === '') sceneSeason = null;
     	if (sceneEpisode === '') sceneEpisode = null;
     	
     	$.getJSON(sbRoot + '/home/setEpisodeSceneNumbering', 
 			{ 
     			'show': showId,
+                'indexer': indexer,
     			'forSeason': forSeason, 
     			'forEpisode': forEpisode, 
     			'sceneSeason': sceneSeason, 
@@ -205,7 +207,8 @@ $(document).ready(function(){
     	var forSeason = $(this).attr('data-for-season');
     	var forEpisode = $(this).attr('data-for-episode');
     	var showId = $('#showID').val();
-    	
+    	var indexer = $('#indexer').val();
+
     	//var sceneEpisode = $('#sceneEpisode_' + showId + '_' + forSeason +'_' + forEpisode).val();
     	var m = $(this).val().match(/^(\d+)x(\d+)$/i);
     	var sceneSeason = null, sceneEpisode = null;
