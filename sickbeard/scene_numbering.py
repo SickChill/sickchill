@@ -273,7 +273,7 @@ def _xem_refresh(indexer_id, indexer):
                 indexer_id, sickbeard.indexerApi(int(indexer)).name,), logger.DEBUG)
     except Exception, e:
         logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
-            indexer).name + ": " + ex(e), logger.WARNING)
+            int(indexer)).name + ": " + ex(e), logger.WARNING)
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
