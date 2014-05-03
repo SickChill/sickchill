@@ -23,29 +23,29 @@ from indexer_config import initConfig, indexerConfig
 
 class indexerApi(object):
     def __init__(self, indexerID=None):
-        self.indexerID = indexerID
+        self.indexerID = int(indexerID)
 
     def indexer(self, *args, **kwargs):
         if self.indexerID:
-            return indexerConfig[int(self.indexerID)]['module'](*args, **kwargs)
+            return indexerConfig[self.indexerID]['module'](*args, **kwargs)
 
     @property
     def config(self):
         if self.indexerID:
-            return indexerConfig[int(self.indexerID)]
+            return indexerConfig[self.indexerID]
         return initConfig
 
     @property
     def name(self):
         if self.indexerID:
-            return indexerConfig[int(self.indexerID)]['name']
+            return indexerConfig[self.indexerID]['name']
 
     @property
     def api_params(self):
         if self.indexerID:
             if sickbeard.CACHE_DIR:
-                indexerConfig[int(self.indexerID)]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
-            return indexerConfig[int(self.indexerID)]['api_params']
+                indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
+            return indexerConfig[self.indexerID]['api_params']
 
     @property
     def cache(self):
