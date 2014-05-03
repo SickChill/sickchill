@@ -233,13 +233,13 @@ def _xem_refresh(indexer_id, indexer):
             u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(int(indexer)).name,),
             logger.DEBUG)
         data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
-            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
+            indexer_id, sickbeard.indexerApi(int(indexer)).config['xem_origin'],), verify=False).json()
 
         if data is None or data == '':
             logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
-                indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
+                indexer_id, sickbeard.indexerApi(int(indexer)).name,), logger.MESSAGE)
             data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
-                indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
+                indexer_id, sickbeard.indexerApi(int(indexer)).config['xem_origin'],), verify=False).json()
             if data is None or data == '':
                 logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
                            logger.MESSAGE)
@@ -257,20 +257,20 @@ def _xem_refresh(indexer_id, indexer):
                         cacheDB.action(
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
+                             entry[sickbeard.indexerApi(int(indexer)).config['xem_origin']]['episode'],
                              entry['scene']['season'], entry['scene']['episode']])
                     if 'scene_2' in entry:  # for doubles
                         cacheDB.action(
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
+                             entry[sickbeard.indexerApi(int(indexer)).config['xem_origin']]['episode'],
                              entry['scene_2']['season'], entry['scene_2']['episode']])
             else:
                 logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
-                    indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.DEBUG)
+                    indexer_id, sickbeard.indexerApi(int(indexer)).name, result['message']), logger.DEBUG)
         else:
             logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
-                indexer_id, sickbeard.indexerApi(indexer).name,), logger.DEBUG)
+                indexer_id, sickbeard.indexerApi(int(indexer)).name,), logger.DEBUG)
     except Exception, e:
         logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
             indexer).name + ": " + ex(e), logger.WARNING)
