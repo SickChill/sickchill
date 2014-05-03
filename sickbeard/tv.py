@@ -1699,11 +1699,13 @@ class TVEpisode(object):
 
         # use a custom update/insert method to get the data into the DB
         return [
-            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, scene_season, scene_episode) VALUES ((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND scene_season = ? AND scene_episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, scene_season, scene_episode) VALUES "
+            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
             [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
              ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
              self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.scene_season, self.scene_episode]]
+             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.scene_season,
+             self.scene_episode]]
 
     def saveToDB(self, forceSave=False):
         """
