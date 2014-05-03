@@ -973,7 +973,9 @@ def get_show_by_name(name):
     if indexerid:
         logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + name + "}",logger.DEBUG)
         if not showObj:
-            showObj = [x for x in sickbeard.showList if x.indexerid == indexerid][0]
+            showObjList = [x for x in sickbeard.showList if x.indexerid == indexerid]
+            if len(showObjList):
+                showObj = showObjList[0]
         return showObj
 
 def is_hidden_folder(folder):

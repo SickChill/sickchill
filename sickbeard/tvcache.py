@@ -203,7 +203,8 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        if not helpers.get_show_by_name(parse_result.series_name):
+        showObj = helpers.get_show_by_name(parse_result.series_name)
+        if showObj:
             logger.log(u"Could not find a show matching " + parse_result.series_name + " in the database, skipping ...", logger.DEBUG)
             return None
 
@@ -212,7 +213,7 @@ class TVCache():
 
             airdate = parse_result.air_date.toordinal()
             sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
-                                      [parse_result.show.indexerid, parse_result.show.indexer, airdate])
+                                      [showObj.indexerid, showObj.indexer, airdate])
             if sql_results > 0:
                 season = int(sql_results[0]["season"])
                 episodes = [int(sql_results[0]["episode"])]
