@@ -129,7 +129,7 @@ class MainSanityCheck(db.DBSanityCheck):
         ql = []
 
         sqlResults = self.connection.select(
-            "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = 0 OR scene_episode = 0")
+            "SELECT showid, indexerid, indexer, episode_id, season, episode FROM tv_episodes WHERE scene_season = -1 OR scene_episode = -1")
 
         for epResult in sqlResults:
             indexerid = int(str(epResult["showid"]).encode('UTF-8'))
@@ -785,9 +785,9 @@ class AddSceneNumberingToTvEpisodes(AddSportsOption):
 
         logger.log(u"Adding column scene_season and scene_episode to tvepisodes")
         if not self.hasColumn("tv_episodes", "scene_season"):
-            self.addColumn("tv_episodes", "scene_season", "NUMERIC", "0")
+            self.addColumn("tv_episodes", "scene_season", "NUMERIC", -1)
 
         if not self.hasColumn("tv_episodes", "scene_episode"):
-            self.addColumn("tv_episodes", "scene_episode", "NUMERIC", "0")
+            self.addColumn("tv_episodes", "scene_episode", "NUMERIC", -1)
 
         self.incDBVersion()
