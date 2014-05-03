@@ -193,7 +193,7 @@ class Api:
         else:
             del kwargs["apikey"]
 
-        if sickbeard.USE_API != True:
+        if not sickbeard.USE_API:
             msg = u"API :: " + remoteIp + " - SB API Disabled. ACCESS DENIED"
             return False, msg, args, kwargs
         elif apiKey == realKey:
@@ -373,10 +373,10 @@ class ApiCall(object):
         """ function to check passed params for the shorthand wrapper
             and to detect missing/required param
         """
-		# Fix for applications that send tvdbid instead of indexerid
+        # Fix for applications that send tvdbid instead of indexerid
         if key == "indexerid" and "indexerid" not in kwargs:
             key = "tvdbid"
-			
+
         missing = True
         orgDefault = default
 
@@ -803,7 +803,7 @@ class CMD_ComingEpisodes(ApiCall):
             ep["airs"] = str(ep["airs"]).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
             # start day of the week on 1 (monday)
             ep["weekday"] = 1 + datetime.date.fromordinal(ordinalAirdate).weekday()
-			# Add tvdbid for backward compability
+            # Add tvdbid for backward compability
             ep["tvdbid"] = ep['indexerid']
 
             # TODO: check if this obsolete
@@ -1170,7 +1170,7 @@ class CMD_History(ApiCall):
             _rename_element(row, "showid", "indexerid")
             row["resource_path"] = os.path.dirname(row["resource"])
             row["resource"] = os.path.basename(row["resource"])
-			# Add tvdbid for backward compability
+            # Add tvdbid for backward compability
             row['tvdbid'] = row['indexerid']
             results.append(row)
 
@@ -1512,7 +1512,7 @@ class CMD_SickBeardPauseBacklog(ApiCall):
 
     def run(self):
         """ pause the backlog search """
-        if self.pause == True:
+        if self.pause:
             sickbeard.searchQueueScheduler.action.pause_backlog()  #@UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
@@ -2172,7 +2172,7 @@ class CMD_ShowPause(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        if self.pause == True:
+        if self.pause:
             showObj.paused = 1
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been paused")
         else:

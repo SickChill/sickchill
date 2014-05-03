@@ -74,7 +74,7 @@ class BacklogSearcher:
         else:
             show_list = sickbeard.showList
 
-        if self.amActive == True:
+        if self.amActive:
             logger.log(u"Backlog is still running, not starting it again", logger.DEBUG)
             return
 
