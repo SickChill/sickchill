@@ -204,7 +204,7 @@ class TVCache():
             return None
 
         showObj = helpers.get_show_by_name(parse_result.series_name)
-        if showObj:
+        if not showObj:
             logger.log(u"Could not find a show matching " + parse_result.series_name + " in the database, skipping ...", logger.DEBUG)
             return None
 
