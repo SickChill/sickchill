@@ -256,6 +256,9 @@ class GenericProvider:
         results = {}
 
         for epObj in episodes:
+            scene_season = epObj.scene_season
+            scene_episode = epObj.scene_episode
+
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if len(cacheResult):
                 return cacheResult
@@ -279,9 +282,14 @@ class GenericProvider:
                     continue
 
                 if not (self.show.air_by_date or self.show.sports):
-                    if (parse_result.season_number != season or epObj.episode not in parse_result.episode_numbers):
-                        logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(
-                            epObj.episode) + ", skipping it", logger.DEBUG)
+                    if not parse_result.episode_numbers and (parse_result.season_number != None and parse_result.season_number != season) or (
+                                    parse_result.season_number == None and season != 1):
+                        logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(
+                            season) + ", ignoring", logger.DEBUG)
+                        continue
+                    elif len(parse_result.episode_numbers) and (parse_result.season_number != scene_season or scene_episode not in parse_result.episode_numbers):
+                        logger.log(u"Episode " + title + " isn't " + str(scene_season) + "x" + str(
+                            scene_episode) + ", skipping it", logger.DEBUG)
                         continue
 
                 else:
@@ -317,7 +325,7 @@ class GenericProvider:
                 result.content = None
 
                 if len(epObjs) == 1:
-                    epNum = epObjs[0].episode
+                    epNum = epObj.episode
                     logger.log(u"Single episode result.", logger.DEBUG)
                 elif len(epObjs) > 1:
                     epNum = MULTI_EP_RESULT
@@ -332,6 +340,9 @@ class GenericProvider:
                     results[epNum].append(result)
                 else:
                     results[epNum] = [result]
+
+                # remove duplicate results
+                results[epNum] = list(set(results[epNum]))
 
                 # found the result we wanted
                 break
