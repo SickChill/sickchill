@@ -23,7 +23,7 @@ from indexer_config import initConfig, indexerConfig
 
 class indexerApi(object):
     def __init__(self, indexerID=None):
-        self.indexerID = int(indexerID)
+        self.indexerID = int(str(indexerID).encode("UTF-8"))
 
     def indexer(self, *args, **kwargs):
         if self.indexerID:
