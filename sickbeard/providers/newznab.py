@@ -196,7 +196,7 @@ class NewznabProvider(generic.NZBProvider):
 
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
-        data = self.getRSSFeed(search_url)
+        data = self.cache.getRSSFeed(search_url)
         if not data:
             return []
 
