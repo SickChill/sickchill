@@ -186,6 +186,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.wantedEpisodes = []
+        self.seasonSearch = False
 
         logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
 
@@ -212,11 +213,16 @@ class BacklogQueueItem(generic_queue.QueueItem):
         anyQualities, bestQualities = common.Quality.splitQuality(self.show.quality)  #@UnusedVariable
         self.wantedEpisodes = self._need_any_episodes(statusResults, bestQualities)
 
+        # check if we want to search for season packs instead of just season/episode
+        seasonEps = show.getAllEpisodes(self.segment)
+        if len(seasonEps) == len(self.wantedEpisodes):
+            self.seasonSearch = True
+
     def execute(self):
 
         generic_queue.QueueItem.execute(self)
 
-        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes)
+        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes, seasonSearch=self.seasonSearch)
 
         # download whatever we find
         for curResult in results:

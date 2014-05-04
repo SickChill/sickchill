@@ -247,7 +247,7 @@ class GenericProvider:
 
         return (title, url)
 
-    def findSearchResults(self, show, season, episodes, manualSearch=False):
+    def findSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
 
         self._checkAuth()
         self.show = show
@@ -268,6 +268,12 @@ class GenericProvider:
             else:
                 logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.prettySceneName()))
 
+            # get our season pack search results
+            if seasonSearch:
+                for curString in self._get_episode_search_strings(epObj):
+                    itemList += self._doSearch(curString)
+
+            # get our season/episode search results
             for curString in self._get_episode_search_strings(epObj):
                 itemList += self._doSearch(curString)
 

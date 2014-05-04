@@ -363,7 +363,7 @@ def filterSearchResults(show, results):
 
     return foundResults
 
-def searchProviders(show, season, episodes, manualSearch=False):
+def searchProviders(show, season, episodes, seasonSearch=False, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
     foundResults = {}
 
@@ -374,7 +374,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
             continue
 
         try:
-            curResults = curProvider.findSearchResults(show, season, episodes, manualSearch)
+            curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue

@@ -121,7 +121,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
         elif ep_obj.show.air_by_date or ep_obj.show.sports:
             search_string['Season'] = self._get_episode_search_strings(ep_obj)[0]['Season']
 
-        search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
+        #search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
 
         return [search_string]
 

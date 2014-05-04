@@ -103,7 +103,7 @@ class NewznabProvider(generic.NZBProvider):
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             cur_params['season'] = self._get_episode_search_strings(ep_obj)[0]['season']
 
-        cur_params['episode'] = self._get_episode_search_strings(ep_obj)[0]['ep']
+        #cur_params['episode'] = self._get_episode_search_strings(ep_obj)[0]['ep']
 
         to_return.append(cur_params)
 

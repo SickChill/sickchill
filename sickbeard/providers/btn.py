@@ -194,29 +194,27 @@ class BTNProvider(generic.TorrentProvider):
         search_params = []
 
         name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
-        for name in name_exceptions:
+        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
+            for name in name_exceptions:
 
-            current_params = {}
+                current_params = {}
 
-            if self.show.indexer == 1:
-                current_params['tvdb'] = self.show.indexerid
-            elif self.show.indexer == 2:
-                current_params['tvrage'] = self.show.indexerid
-            else:
-                # Search by name if we don't have tvdb or tvrage id
-                current_params['series'] = sanitizeSceneName(name)
+                if self.show.indexer == 1:
+                    current_params['tvdb'] = self.show.indexerid
+                elif self.show.indexer == 2:
+                    current_params['tvrage'] = self.show.indexerid
+                else:
+                    # Search by name if we don't have tvdb or tvrage id
+                    current_params['series'] = sanitizeSceneName(name)
 
-            # Search for entire seasons: no need to do special things for air by date shows
-            if not (ep_obj.show.air_by_date or ep_obj.show.sports):
+                # Search for entire seasons: no need to do special things for air by date shows
                 whole_season_params = current_params.copy()
                 whole_season_params['category'] = 'Season'
-                whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
+                if not (ep_obj.show.air_by_date or ep_obj.show.sports):
+                    whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
+                elif ep_obj.show.air_by_date or ep_obj.show.sports:
+                    whole_season_params['name'] = self._get_episode_search_strings(ep_obj)[0]['name']
                 search_params.append(whole_season_params)
-
-        # Search for episodes in the season
-        current_params = {}
-        current_params['name'] = self._get_episode_search_strings(ep_obj)[0]['name']
-        search_params.append(current_params)
 
         return search_params
 

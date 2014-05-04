@@ -83,7 +83,7 @@ class EZRSSProvider(generic.TorrentProvider):
         else:
             params['season'] = self._get_episode_search_strings(ep_obj)[0]['season']
 
-        params['episode'] = self._get_episode_search_strings(ep_obj)[0]['episode']
+        #params['episode'] = self._get_episode_search_strings(ep_obj)[0]['episode']
 
         return [params]
 
