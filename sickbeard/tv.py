@@ -385,6 +385,7 @@ class TVShow(object):
 
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
+
             if curSeason not in cachedSeasons:
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
@@ -1301,9 +1302,9 @@ class TVEpisode(object):
         # if either setting has changed return true, if not return false
         return oldhasnfo != self.hasnfo or oldhastbn != self.hastbn
 
-    def specifyEpisode(self, season, episode, scene_season, scene_episode):
+    def specifyEpisode(self, season, episode, scene_season=None, scene_episode=None):
 
-        sqlResult = self.loadFromDB(season, episode, scene_season, scene_episode)
+        sqlResult = self.loadFromDB(season, episode)
 
         if not sqlResult:
             # only load from NFO if we didn't load from DB
@@ -1346,7 +1347,7 @@ class TVEpisode(object):
                                                                                                     self.season,
                                                                                                     self.episode)
 
-    def loadFromDB(self, season, episode, scene_season, scene_episode):
+    def loadFromDB(self, season, episode):
 
         logger.log(
             str(self.show.indexerid) + u": Loading episode details from DB for episode " + str(season) + "x" + str(
@@ -1369,8 +1370,8 @@ class TVEpisode(object):
 
             self.season = season
             self.episode = episode
-            self.scene_season = scene_season
-            self.scene_episode = scene_episode
+            self.scene_season = sqlResults[0]["scene_season"]
+            self.scene_episode = sqlResults[0]["scene_episode"]
             self.description = sqlResults[0]["description"]
             if not self.description:
                 self.description = ""
