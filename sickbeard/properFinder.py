@@ -182,7 +182,7 @@ class ProperFinder():
                 logger.log(
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)
-                airdate = curProper.episode.toordinal()
+                airdate = curProper.airdate.toordinal()
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
