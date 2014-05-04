@@ -129,7 +129,7 @@ class DBConnection:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
                             sqlResult.append(self.connection.execute(qu[0], qu[1]))
                     self.connection.commit()
-                    logger.log(u"Transaction with " + str(len(querylist)) + u" query's executed", logger.DEBUG)
+                    logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
                     return sqlResult
                 except sqlite3.OperationalError, e:
                     sqlResult = []
