@@ -257,7 +257,7 @@ class GenericProvider:
             itemList += self._doSearch(curString)
 
         # remove duplicate items
-        if len(itemLisT):
+        if len(itemList):
             itemList = list(set(itemList))
 
         for item in itemList:
