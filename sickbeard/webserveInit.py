@@ -135,6 +135,7 @@ def initWebServer(options={}):
             'tools.staticdir.root': options['data_root'],
             'tools.encode.on': True,
             'tools.encode.encoding': 'utf-8',
+            'tools.handle_reverse_proxy.on': True,
         },
         '/images': {
             'tools.staticdir.on': True,
