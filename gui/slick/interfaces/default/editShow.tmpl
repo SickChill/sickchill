@@ -67,6 +67,14 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
 <br />
 
+#if $anyQualities + $bestQualities
+<b>Archive on first match: </b>
+<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# />
+(check this to have the episode archived after the first best match is found from your archive quality list)
+<br />
+<br />
+#end if
+
 <b>Scene Exception:</b>
 <input type="text" id="SceneName"> 
 <input class="btn" type="button" value="Add" id="addSceneName"><br />
@@ -116,12 +124,6 @@ This <b>DOES NOT</b> allow Sick Beard to download non-english TV episodes!<br />
 <input type="checkbox" name="dvdorder" #if $show.dvdorder == 1 then "checked=\"checked\"" else ""# /><br/>
 (check this if you wish to use the DVD order instead of the Airing order)
 <br/><br/>
-#if $bestQualities
-<b>Archive on first match: </b>
-<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# /><br />
-(check this to have the episode archived after the first best match is found from your archive quality list)
-<br />
-#end if
 
 <b>Ignored Words:</b>  <input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$show.rls_ignore_words" size="50" /><br />
 Results with any of these words in the title will be filtered out <br />
