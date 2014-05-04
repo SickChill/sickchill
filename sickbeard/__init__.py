@@ -1321,7 +1321,7 @@ def save_config():
     new_config['General']['search_frequency'] = int(SEARCH_FREQUENCY)
     new_config['General']['update_frequency'] = int(UPDATE_FREQUENCY)
     new_config['General']['download_propers'] = int(DOWNLOAD_PROPERS)
-    new_config['General']['prefer_episode_releases'] = int(PREFER_EPISODE_RELEASES
+    new_config['General']['prefer_episode_releases'] = int(PREFER_EPISODE_RELEASES)
     new_config['General']['allow_high_priority'] = int(ALLOW_HIGH_PRIORITY)
     new_config['General']['quality_default'] = int(QUALITY_DEFAULT)
     new_config['General']['status_default'] = int(STATUS_DEFAULT)

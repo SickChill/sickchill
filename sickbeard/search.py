@@ -437,9 +437,9 @@ def searchProviders(show, season, episodes, seasonSearch=False, manualSearch=Fal
 
         # if we need every ep in the season check if single episode releases should be preferred over season releases (missing single episode releases will be picked individually from season release)
         preferSingleEpisodesOverSeasonReleases = sickbeard.PREFER_EPISODE_RELEASES
-	       logger.log(u"Prefer single episodes over season releases: "+str(preferSingleEpisodesOverSeasonReleases), logger.DEBUG)
+        logger.log(u"Prefer single episodes over season releases: "+str(preferSingleEpisodesOverSeasonReleases), logger.DEBUG)
         # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
-        if allWanted and bestSeasonNZB.quality == highest_quality_overall and not preferSingleEpisodesOverSeasonReleases::
+        if allWanted and bestSeasonNZB.quality == highest_quality_overall and not preferSingleEpisodesOverSeasonReleases:
             logger.log(u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
             epObjs = []
             for curEpNum in allEps:
