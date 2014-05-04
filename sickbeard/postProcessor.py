@@ -216,8 +216,8 @@ class PostProcessor(object):
 
         # delete the file and any other files which we want to delete
         for cur_file in file_list:
-            self._log(u"Deleting file " + cur_file, logger.DEBUG)
             if ek.ek(os.path.isfile, cur_file):
+                self._log(u"Deleting file " + cur_file, logger.DEBUG)
                 #check first the read-only attribute
                 file_attribute = ek.ek(os.stat, cur_file)[0]
                 if (not file_attribute & stat.S_IWRITE):
@@ -682,7 +682,14 @@ class PostProcessor(object):
                     ep_quality] + ", using that", logger.DEBUG)
                 return ep_quality
 
-        # if we didn't get a quality from one of the names above, try assuming from each of the names
+        # Try getting quality from the episode (snatched) status
+        if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER:
+            oldStatus, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            if ep_quality != common.Quality.UNKNOWN:
+                self._log(u"The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
+                return ep_quality
+
+        # Try guessing quality from the file name
         ep_quality = common.Quality.assumeQuality(self.file_name)
         self._log(
             u"Guessing quality for name " + self.file_name + u", got " + common.Quality.qualityStrings[ep_quality],
