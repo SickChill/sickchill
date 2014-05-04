@@ -34,20 +34,36 @@ from xml.dom import minidom
 
 
 class PLEXNotifier(XBMCNotifier):
+    def _notify_pmc(self, message, title="Sick Beard", host=None, username=None, password=None, force=False):
+          # fill in omitted parameters
+        if not host:
+            host = sickbeard.PLEX_HOST
+        if not username:
+            username = sickbeard.PLEX_USERNAME
+        if not password:
+            password = sickbeard.PLEX_PASSWORD
+
+        # suppress notifications if the notifier is disabled but the notify options are checked
+        if not sickbeard.USE_PLEX and not force:
+            logger.log("Notification for Plex not enabled, skipping this notification", logger.DEBUG)
+            return False
+
+        return self._notify_xbmc(message=message, title=title, host=host, username=username, password=password, force=True)
+
     def notify_snatch(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONSNATCH:
-            self._notify_xbmc(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
+            self._notify_pmc(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONDOWNLOAD:
-            self._notify_xbmc(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
+            self._notify_pmc(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_xbmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+            self._notify_pmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def test_notify(self, host, username, password):
-        return self._notify_xbmc("Testing Plex notifications from Sick Beard", "Test Notification", host, username,
+        return self._notify_pmc("Testing Plex notifications from Sick Beard", "Test Notification", host, username,
                                 password, force=True)
 
     def update_library(self):
