@@ -71,7 +71,7 @@ $(document).ready(function(){
             $('#t_blackhole_settings').hide();
             $('#torrent_settings').show();
             $('#Torrent_Label').show();            
-            $('#Torrent_username').hide();
+            $('#Torrent_username').show();
             $('#Torrent_Path').show();
             $('#Torrent_Ratio').show();
             $('#Torrent_Seed_Time').hide();
