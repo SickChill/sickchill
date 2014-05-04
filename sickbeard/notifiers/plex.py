@@ -27,89 +27,15 @@ from sickbeard import common
 from sickbeard.exceptions import ex
 from sickbeard.encodingKludge import fixStupidEncodings
 
+from sickbeard.notifiers.xbmc import XBMCNotifier
+
 # TODO: switch over to using ElementTree
 from xml.dom import minidom
 
 
-class PLEXNotifier:
-    def _send_to_plex(self, command, host, username=None, password=None):
-        """Handles communication to Plex hosts via HTTP API
-            
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyXBMC(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
-
-        Args:
-            command: Dictionary of field/data pairs, encoded via urllib and passed to the legacy xbmcCmds HTTP API
-            host: Plex host:port
-            username: Plex API username
-            password: Plex API password
-
-        Returns:
-            Returns 'OK' for successful commands or False if there was an error
-
-        """
-
-        # fill in omitted parameters
-        if not username:
-            username = sickbeard.PLEX_USERNAME
-        if not password:
-            password = sickbeard.PLEX_PASSWORD
-
-        if not host:
-            logger.log(u"No Plex host specified, check your settings", logger.DEBUG)
-            return False
-
-        for key in command:
-            if type(command[key]) == unicode:
-                command[key] = command[key].encode('utf-8')
-
-        enc_command = urllib.urlencode(command)
-        logger.log(u"Plex encoded API command: " + enc_command, logger.DEBUG)
-
-        url = 'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)
-        try:
-            req = urllib2.Request(url)
-            # if we have a password, use authentication
-            if password:
-                base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
-                authheader = "Basic %s" % base64string
-                req.add_header("Authorization", authheader)
-                logger.log(u"Contacting Plex (with auth header) via url: " + url, logger.DEBUG)
-            else:
-                logger.log(u"Contacting Plex via url: " + url, logger.DEBUG)
-
-            response = urllib2.urlopen(req)
-
-            result = response.read().decode(sickbeard.SYS_ENCODING)
-            response.close()
-
-            logger.log(u"Plex HTTP response: " + result.replace('\n', ''), logger.DEBUG)
-            # could return result response = re.compile('<html><li>(.+\w)</html>').findall(result)
-            return 'OK'
-
-        except (urllib2.URLError, IOError), e:
-            logger.log(u"Warning: Couldn't contact Plex at " + fixStupidEncodings(url) + " " + ex(e), logger.WARNING)
-            return False
-
+class PLEXNotifier(XBMCNotifier):
     def _notify_pmc(self, message, title="Sick Beard", host=None, username=None, password=None, force=False):
-        """Internal wrapper for the notify_snatch and notify_download functions
-
-        Args:
-            message: Message body of the notice to send
-            title: Title of the notice to send
-            host: Plex Media Client(s) host:port
-            username: Plex username
-            password: Plex password
-            force: Used for the Test method to override config saftey checks
-
-        Returns:
-            Returns a list results in the format of host:ip:result
-            The result will either be 'OK' or False, this is used to be parsed by the calling function.
-
-        """
-
-        # fill in omitted parameters
+          # fill in omitted parameters
         if not host:
             host = sickbeard.PLEX_HOST
         if not username:
@@ -122,21 +48,7 @@ class PLEXNotifier:
             logger.log("Notification for Plex not enabled, skipping this notification", logger.DEBUG)
             return False
 
-        result = ''
-        for curHost in [x.strip() for x in host.split(",")]:
-            logger.log(u"Sending Plex notification to '" + curHost + "' - " + message, logger.MESSAGE)
-
-            command = {'command': 'ExecBuiltIn',
-                       'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode("utf-8") + ')'}
-            notifyResult = self._send_to_plex(command, curHost, username, password)
-            if notifyResult:
-                result += curHost + ':' + str(notifyResult)
-
-        return result
-
-    ##############################################################################
-    # Public functions
-    ##############################################################################
+        return self._notify_xbmc(message=message, title=title, host=host, username=username, password=password, force=True)
 
     def notify_snatch(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONSNATCH:
@@ -194,6 +106,5 @@ class PLEXNotifier:
                         return False
 
             return True
-
 
 notifier = PLEXNotifier
