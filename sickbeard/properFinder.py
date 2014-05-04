@@ -184,6 +184,9 @@ class ProperFinder():
                     logger.DEBUG)
                 if curProper.airdate:
                     airdate = curProper.airdate.toordinal()
+                else:
+                    airdate = None
+
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
