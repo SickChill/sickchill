@@ -167,12 +167,16 @@ class KATProvider(generic.TorrentProvider):
     def _get_season_search_strings(self, ep_obj):
         search_string = {'Season': [], 'Episode': []}
 
-        for show_name in set(allPossibleShowNames(self.show)):
-            ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
-            search_string['Season'].append(ep_string)
+        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
+            for show_name in set(allPossibleShowNames(self.show)):
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
+                search_string['Season'].append(ep_string)
 
-            ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*' + ' category:tv'  #2) showName Season X
-            search_string['Season'].append(ep_string)
+                ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*' + ' category:tv'  #2) showName Season X
+                search_string['Season'].append(ep_string)
+
+        elif ep_obj.show.air_by_date or ep_obj.show.sports:
+            search_string['Season'] = self._get_episode_search_strings(ep_obj)[0]['Season']
 
         search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
 

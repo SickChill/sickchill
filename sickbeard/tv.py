@@ -301,7 +301,7 @@ class TVShow(object):
 
 
     # find all media files in the show folder and create episodes for as many as possible
-    def loadEpisodesFromDir(self, sceneConvert=False):
+    def loadEpisodesFromDir(self):
 
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, not loading episodes from disk")
@@ -1771,7 +1771,17 @@ class TVEpisode(object):
 
         return self._format_pattern('%SN - %Sx%0E - %EN')
 
-    def scene_prettyName(self):
+    def prettyABDName(self):
+        """
+        Returns the name of this episode in a "pretty" human-readable format. Used for logging
+        and notifications and such.
+
+        Returns: A string representing the episode's name and season/ep numbers
+        """
+
+        return self._format_pattern('%SN - %AD - %EN')
+
+    def prettySceneName(self):
         """
         Returns the name of this episode in a "pretty" human-readable format. Used for logging
         and notifications and such.

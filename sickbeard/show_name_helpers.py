@@ -108,16 +108,11 @@ def makeSceneShowSearchStrings(show):
 def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
     myDB = db.DBConnection()
 
-    if show.air_by_date:
-        numseasons = 0
-
-        # the search string for air by date shows is just 
-        seasonStrings = [ep_obj.scene_season]
-    elif show.sports:
+    if show.air_by_date or show.sports:
         numseasons = 0
 
         # the search string for air by date shows is just
-        seasonStrings = [ep_obj.scene_season]
+        seasonStrings = []
     else:
         numseasonsSQlResult = myDB.select(
             "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
@@ -162,8 +157,8 @@ def makeSceneSearchString(show, ep_obj):
     # see if we should use dates instead of episodes
     if show.air_by_date and ep_obj.airdate != datetime.date.fromordinal(1):
         epStrings = [str(ep_obj.airdate)]
-    elif show.sports and ep_obj.airdate != datetime.date.fromordinal(1):
-        epStrings = [str(ep_obj.scene_episode)]
+    elif show.sports:
+        epStrings = [str(ep_obj.airdate)]
     else:
         epStrings = ["S%02iE%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode)),
                      "%ix%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode))]

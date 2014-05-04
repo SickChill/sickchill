@@ -263,7 +263,11 @@ class GenericProvider:
             if len(cacheResult):
                 return cacheResult
 
-            logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.scene_prettyName()))
+            if epObj.show.air_by_date:
+                logger.log(u'Searching "%s" for "%s"' % (self.name, epObj.prettyABDName()))
+            else:
+                logger.log(u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.prettySceneName()))
+
             for curString in self._get_episode_search_strings(epObj):
                 itemList += self._doSearch(curString)
 
