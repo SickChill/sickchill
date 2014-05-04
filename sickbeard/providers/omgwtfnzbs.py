@@ -164,7 +164,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.provider.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url)
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)

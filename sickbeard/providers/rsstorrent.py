@@ -33,7 +33,6 @@ from sickbeard.exceptions import ex
 from lib import requests
 from lib.requests import exceptions
 from lib.bencode import bdecode
-from lib.feedparser import feedparser
 
 class TorrentRssProvider(generic.TorrentProvider):
     def __init__(self, name, url):
@@ -156,7 +155,7 @@ class TorrentRssCache(tvcache.TVCache):
     def _getRSSData(self):
         url = self.provider.url
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
-        return self.provider.getRSSFeed(url)
+        return self.getRSSFeed(url)
 
     def _parseItem(self, item):
 

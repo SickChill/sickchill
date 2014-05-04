@@ -378,7 +378,7 @@ class ParseResult(object):
         new_episode_numbers = []
         new_season_numbers = []
         for epNo in self.episode_numbers:
-            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.season_number, epNo)
+            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number, epNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)
 

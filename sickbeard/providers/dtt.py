@@ -80,7 +80,7 @@ class DTTProvider(generic.TorrentProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-        data = self.getRSSFeed(searchURL)
+        data = self.cache.getRSSFeed(searchURL)
 
         if not data:
             return []
@@ -126,7 +126,7 @@ class DTTCache(tvcache.TVCache):
 
         url = self.provider.url + 'rss/allshows?' + urllib.urlencode(params)
         logger.log(u"DTT cache update URL: " + url, logger.DEBUG)
-        return self.provider.getRSSFeed(url)
+        return self.getRSSFeed(url)
 
     def _parseItem(self, item):
         title, url = self.provider._get_title_and_url(item)

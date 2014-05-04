@@ -47,6 +47,8 @@ class SearchQueue(generic_queue.GenericQueue):
         for cur_item in self.queue:
             if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
                 return True
+            if isinstance(cur_item, BacklogQueueItem) and cur_item.ep_obj == ep_obj:
+                return True
         return False
 
     def pause_backlog(self):

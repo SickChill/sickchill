@@ -42,7 +42,7 @@ class WombleCache(tvcache.TVCache):
     def _getRSSData(self):
         url = self.provider.url + 'rss/?sec=TV-x264&fr=false'
         logger.log(u"Womble's Index cache update URL: " + url, logger.DEBUG)
-        return self.provider.getRSSFeed(url)
+        return self.getRSSFeed(url)
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'

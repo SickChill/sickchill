@@ -76,7 +76,7 @@ class NZBsProvider(generic.NZBProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-        data = self.getRSSFeed(searchURL)
+        data = self.cache.getRSSFeed(searchURL)
 
         # Pause to avoid 503's
         time.sleep(5)

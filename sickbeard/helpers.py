@@ -952,7 +952,7 @@ def get_show_by_name(name):
         return
 
     indexerid = sickbeard.name_cache.retrieveNameFromCache(name)
-    if indexerid or indexerid == 0:
+    if indexerid:
         in_cache = True
 
     showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
@@ -965,10 +965,6 @@ def get_show_by_name(name):
 
         if indexerid:
             break
-
-    # add to name cache if we didn't get it from the cache
-    if not in_cache:
-        sickbeard.name_cache.addNameToCache(name, indexerid if indexerid else 0)
 
     if indexerid:
         logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + str(name) + "}",logger.DEBUG)

@@ -319,7 +319,7 @@ class NewzbinProvider(generic.NZBProvider):
         url = self.url + "search/?%s" % urllib.urlencode(params)
         logger.log("Newzbin search URL: " + url, logger.DEBUG)
 
-        return self.getRSSFeed(url)
+        return self.cache.getRSSFeed(url)
 
     def _checkAuth(self):
         if sickbeard.NEWZBIN_USERNAME in (None, "") or sickbeard.NEWZBIN_PASSWORD in (None, ""):

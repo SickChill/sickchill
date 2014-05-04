@@ -67,7 +67,7 @@ class NZBsRUSProvider(generic.NZBProvider):
         searchURL = self.url + 'api.php?' + urllib.urlencode(params)
         logger.log(u"NZBS'R'US search url: " + searchURL, logger.DEBUG)
 
-        data = self.getRSSFeed(searchURL)
+        data = self.cache.getRSSFeed(searchURL)
         if not data:
             return []
 
@@ -107,7 +107,7 @@ class NZBsRUSCache(tvcache.TVCache):
         url += urllib.urlencode(urlArgs)
         logger.log(u"NZBs'R'US cache update URL: " + url, logger.DEBUG)
 
-        return self.provider.getRSSFeed(url)
+        return self.getRSSFeed(url)
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'
