@@ -138,7 +138,7 @@ class TVCache():
             title = self._translateTitle(title)
             url = self._translateLinkURL(url)
 
-            logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
+            logger.log(u"Checking if item from RSS feed is in the cache: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
 
         else:
@@ -256,25 +256,20 @@ class TVCache():
         #return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
         return myDB.select(sql)
 
-    def findNeededEpisodes(self, episode=None, manualSearch=False):
+    def findNeededEpisodes(self, epObj=None, manualSearch=False):
         neededEps = {}
 
         myDB = self._getDB()
 
-        if not episode:
+        if not epObj:
             sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
         else:
             sqlResults = myDB.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [episode.show.indexerid, episode.scene_season, "%|" + str(episode.scene_episode) + "|%"])
+                [epObj.show.indexerid, epObj.scene_season, "%|" + str(epObj.scene_episode) + "|%"])
 
         # for each cache entry
         for curResult in sqlResults:
-            # skip if we don't have a indexerid
-            indexerid = int(curResult["indexerid"])
-            if not indexerid:
-                continue
-
             # skip non-tv crap (but allow them for Newzbin cause we assume it's filtered well)
             if self.providerID != 'newzbin' and not show_name_helpers.filterBadReleases(curResult["name"]):
                 continue
@@ -303,29 +298,28 @@ class TVCache():
                 logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
                            Quality.qualityStrings[curQuality], logger.DEBUG)
             else:
-                epObj = None
-                if episode:
-                    epObj = episode
 
-                if epObj:
-                    # build a result object
-                    title = curResult["name"]
-                    url = curResult["url"]
+                if not epObj:
+                    epObj = showObj.getEpisode(curSeason, curEp)
 
-                    logger.log(u"Found result " + title + " at " + url)
+                # build a result object
+                title = curResult["name"]
+                url = curResult["url"]
 
-                    result = self.provider.getResult([epObj])
-                    result.url = url
-                    result.name = title
-                    result.quality = curQuality
-                    result.content = self.provider.getURL(url) \
-                        if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                        and not url.startswith('magnet') else None
+                logger.log(u"Found result " + title + " at " + url)
 
-                    # add it to the list
-                    if epObj not in neededEps:
-                        neededEps[epObj] = [result]
-                    else:
-                        neededEps[epObj].append(result)
+                result = self.provider.getResult([epObj])
+                result.url = url
+                result.name = title
+                result.quality = curQuality
+                result.content = self.provider.getURL(url) \
+                    if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
+                    and not url.startswith('magnet') else None
+
+                # add it to the list
+                if epObj not in neededEps:
+                    neededEps[epObj] = [result]
+                else:
+                    neededEps[epObj].append(result)
 
         return neededEps

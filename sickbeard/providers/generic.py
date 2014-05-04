@@ -270,7 +270,7 @@ class GenericProvider:
 
             # get our season pack search results
             if seasonSearch:
-                for curString in self._get_episode_search_strings(epObj):
+                for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString)
 
             # get our season/episode search results
