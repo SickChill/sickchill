@@ -250,13 +250,13 @@ class GenericProvider:
             searchStrings += self._get_episode_search_strings(epObj)
 
         # remove duplicate search strings
-        searchStrings = [i for n, i in enumerate(searchStrings) if i not in searchStrings[n + 1:]]
+        searchStrings = [i for n, i in enumerate(searchStrings) if i not in searchStrings[n + 1:]] if len(searchStrings) else []
 
         for curString in sorted(searchStrings):
             itemList += self._doSearch(curString)
 
         # remove duplicate items
-        itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
+        itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]] if len(itemList) else []
 
         for item in itemList:
 
