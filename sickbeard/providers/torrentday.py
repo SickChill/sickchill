@@ -162,9 +162,6 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         freeleech = '&free=on' if sickbeard.TORRENTDAY_FREELEECH else ''
 
-        if not self.session:
-            self._doLogin()
-
         if not self._doLogin():
             return []
 

@@ -76,8 +76,6 @@ class IPTorrentsProvider(generic.TorrentProvider):
                         'login': 'submit',
         }
 
-        self.session = requests.Session()
-
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
