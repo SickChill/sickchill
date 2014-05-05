@@ -129,6 +129,14 @@
                             </label>
                         </div>
 
+                        <div class="field-pair">
+                            <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" #if $sickbeard.HANDLE_REVERSE_PROXY then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="handle_reverse_proxy">
+                                <span class="component-title">Handle reverse proxies</span>
+                                <span class="component-desc">Should Sick Beard accept reverse proxy headers? (X-Forwarded-Host, X-Forwarded-For, X-Forwarded-Proto)</span>
+                            </label>
+                        </div>
+
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
                 </div><!-- /component-group1 //-->
