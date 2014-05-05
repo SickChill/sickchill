@@ -3624,14 +3624,6 @@ class WebInterface:
             sql_results[index]['localtime'] = network_timezones.parse_date_time(item['airdate'], item['airs'],
                                                                                 item['network'])
 
-            #Normalize/Format the Airing Time
-            try:
-                locale.setlocale(locale.LC_TIME, 'us_US')
-                sql_results[index]['localtime_string'] = sql_results[index]['localtime'].strftime("%A %H:%M %p")
-                locale.setlocale(locale.LC_ALL, '')  #Reseting to default locale
-            except:
-                sql_results[index]['localtime_string'] = sql_results[index]['localtime'].strftime("%A %H:%M %p")
-
         sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
 
         t = PageTemplate(file="comingEpisodes.tmpl")
