@@ -199,7 +199,8 @@ class TVShow(object):
             if file != None:
                 ep = TVEpisode(self, season, episode, file)
             else:
-                ep = TVEpisode(self, season, episode, file)
+                ep = TVEpisode(self, season, episode)
+
             if ep != None:
                 self.episodes[season][episode] = ep
 
@@ -849,10 +850,6 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
-        if 'ended' in str(self.status).lower():
-            logger.log(str(self.indexerid) + u": Show Status: " + str(self.status) + ", skipping ...", logger.DEBUG)
-            return []
-
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
         myDB = db.DBConnection()
@@ -1132,8 +1129,8 @@ class TVEpisode(object):
         self._name = ""
         self._season = season
         self._episode = episode
-        self._scene_season = -1
-        self._scene_episode = -1
+        self._scene_season = season
+        self._scene_episode = episode
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1152,9 +1149,9 @@ class TVEpisode(object):
 
         self.show = show
 
-        self._indexer = int(self.show.indexer)
-
         self._location = file
+
+        self._indexer = int(self.show.indexer)
 
         self.lock = threading.Lock()
 
@@ -1276,7 +1273,7 @@ class TVEpisode(object):
         cur_tbn = False
 
         # check for nfo and tbn
-        if self.location and ek.ek(os.path.isfile, self.location):
+        if ek.ek(os.path.isfile, self.location):
             for cur_provider in sickbeard.metadata_provider_dict.values():
                 if cur_provider.episode_metadata:
                     new_result = cur_provider._has_episode_metadata(self)
@@ -1300,7 +1297,7 @@ class TVEpisode(object):
 
         sqlResult = self.loadFromDB(season, episode)
 
-        if not sqlResult and self.location:
+        if not sqlResult:
             # only load from NFO if we didn't load from DB
             if ek.ek(os.path.isfile, self.location):
                 try:
