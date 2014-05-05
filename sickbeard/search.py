@@ -116,6 +116,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
         for curEp in result.episodes:
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
+    if re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', result.name, re.I) != None:
+        endStatus = SNATCHED_PROPER
 
     # NZBs can be sent straight to SAB or saved to disk
     if result.resultType in ("nzb", "nzbdata"):
@@ -124,11 +126,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
         elif sickbeard.NZB_METHOD == "sabnzbd":
             dlResult = sab.sendNZB(result)
         elif sickbeard.NZB_METHOD == "nzbget":
-            if endStatus == SNATCHED_PROPER:
-                s_prop = True
-            else:
-                s_prop = False
-            dlResult = nzbget.sendNZB(result, s_prop)
+            is_proper = True if endStatus == SNATCHED_PROPER else False
+            dlResult = nzbget.sendNZB(result, is_proper)
         else:
             logger.log(u"Unknown NZB action specified in config: " + sickbeard.NZB_METHOD, logger.ERROR)
             dlResult = False
