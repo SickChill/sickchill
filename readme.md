@@ -17,7 +17,7 @@ FEATURES:
 - available for any platform, uses simple HTTP interface
 - can notify XBMC, Growl, or Twitter when new episodes are downloaded
 - specials and double episode support
-- Automatic XEM Scene Numbering/Naming for seasons/episodes (ported from Bricky's fork).
+- Automatic XEM Scene Numbering/Naming for seasons/episodes
 - Failed handling now attempts to snatch a different release and excludes failed releases from future snatch attempts.
 - Episode Status Manager now allows for mass failing seasons/episodes to force retrying to download new releases.
 - DVD Order numbering for returning the results in DVD order instead of Air-By-Date order.
@@ -31,8 +31,8 @@ FEATURES:
 
 ## Dependencies
 
-To run Sick Beard from source you will need Python 2.6+ and Cheetah 2.1.0+.
+To run SickRage from source you will need Python 2.6+ and Cheetah 2.1.0+.
 
 ## Bugs
 
-If you find a bug please report [here][githubissues] on Github. Verify that it hasn't already been submitted and then [log a new bug][githubnewissue]. Be sure to provide a sickrage log in debug mode where is the error evidence or it'll never get fixed.
+If you find a bug please report [here][githubissues] on Github or at our forums http://www.sickrage.tv. Verify that it hasn't already been submitted and then [log a new bug][githubnewissue]. Be sure to provide a sickrage log in debug mode where is the error evidence or it'll never get fixed.
