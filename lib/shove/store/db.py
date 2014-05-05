@@ -23,7 +23,7 @@ http://www.sqlalchemy.org/docs/dbengine.myt#dbengine_supported
 try:
     from sqlalchemy import MetaData, Table, Column, String, Binary, select
     from shove import BaseStore, DbBase
-except ImportError:
+except ImportError, e:
     raise ImportError('Requires SQLAlchemy >= 0.4')
 
 

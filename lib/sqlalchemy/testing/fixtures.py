@@ -1,21 +1,12 @@
-# testing/fixtures.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
-#
-# This module is part of SQLAlchemy and is released under
-# the MIT License: http://www.opensource.org/licenses/mit-license.php
-
 from . import config
 from . import assertions, schema
 from .util import adict
-from .. import util
 from .engines import drop_all_tables
 from .entities import BasicEntity, ComparableEntity
 import sys
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 
-# whether or not we use unittest changes things dramatically,
-# as far as how py.test collection works.
 
 class TestBase(object):
     # A sequence of database names to always run, regardless of the
@@ -39,14 +30,6 @@ class TestBase(object):
     def assert_(self, val, msg=None):
         assert val, msg
 
-    # apparently a handful of tests are doing this....OK
-    def setup(self):
-        if hasattr(self, "setUp"):
-            self.setUp()
-
-    def teardown(self):
-        if hasattr(self, "tearDown"):
-            self.tearDown()
 
 class TablesTest(TestBase):
 
@@ -142,10 +125,9 @@ class TablesTest(TestBase):
             for table in reversed(self.metadata.sorted_tables):
                 try:
                     table.delete().execute().close()
-                except sa.exc.DBAPIError as ex:
-                    util.print_(
-                        ("Error emptying table %s: %r" % (table, ex)),
-                        file=sys.stderr)
+                except sa.exc.DBAPIError, ex:
+                    print >> sys.stderr, "Error emptying table %s: %r" % (
+                        table, ex)
 
     def setup(self):
         self._setup_each_tables()
@@ -205,10 +187,10 @@ class TablesTest(TestBase):
     def _load_fixtures(cls):
         """Insert rows as represented by the fixtures() method."""
         headers, rows = {}, {}
-        for table, data in cls.fixtures().items():
+        for table, data in cls.fixtures().iteritems():
             if len(data) < 2:
                 continue
-            if isinstance(table, util.string_types):
+            if isinstance(table, basestring):
                 table = cls.tables[table]
             headers[table] = data[0]
             rows[table] = data[1:]
@@ -219,24 +201,6 @@ class TablesTest(TestBase):
                 table.insert(),
                 [dict(zip(headers[table], column_values))
                  for column_values in rows[table]])
-
-from sqlalchemy import event
-class RemovesEvents(object):
-    @util.memoized_property
-    def _event_fns(self):
-        return set()
-
-    def event_listen(self, target, name, fn):
-        self._event_fns.add((target, name, fn))
-        event.listen(target, name, fn)
-
-    def teardown(self):
-        for key in self._event_fns:
-            event.remove(*key)
-        super_ = super(RemovesEvents, self)
-        if hasattr(super_, "teardown"):
-            super_.teardown()
-
 
 
 class _ORMTest(object):
@@ -320,8 +284,8 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
                 cls_registry[classname] = cls
                 return type.__init__(cls, classname, bases, dict_)
 
-        class _Base(util.with_metaclass(FindFixture, object)):
-            pass
+        class _Base(object):
+            __metaclass__ = FindFixture
 
         class Basic(BasicEntity, _Base):
             pass

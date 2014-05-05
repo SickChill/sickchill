@@ -29,15 +29,17 @@ alternate instrumentation forms.
 """
 
 
-from . import exc, collections, interfaces, state
-from .. import util
-from . import base
+from . import exc, collections, events, interfaces
+from operator import attrgetter
+from .. import event, util
+state = util.importlater("sqlalchemy.orm", "state")
+
 
 class ClassManager(dict):
     """tracks state information at the class level."""
 
-    MANAGER_ATTR = base.DEFAULT_MANAGER_ATTR
-    STATE_ATTR = base.DEFAULT_STATE_ATTR
+    MANAGER_ATTR = '_sa_class_manager'
+    STATE_ATTR = '_sa_instance_state'
 
     deferred_scalar_loader = None
 
@@ -61,8 +63,7 @@ class ClassManager(dict):
         for base in self._bases:
             self.update(base)
 
-        self.dispatch._events._new_classmanager_instance(class_, self)
-        #events._InstanceEventsHold.populate(class_, self)
+        events._InstanceEventsHold.populate(class_, self)
 
         for basecls in class_.__mro__:
             mgr = manager_of_class(basecls)
@@ -78,11 +79,7 @@ class ClassManager(dict):
                         "reference cycles.  Please remove this method." %
                         class_)
 
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return other is self
+    dispatch = event.dispatcher(events.InstanceEvents)
 
     @property
     def is_mapped(self):
@@ -167,7 +164,9 @@ class ClassManager(dict):
 
     @util.hybridmethod
     def manager_getter(self):
-        return _default_manager_getter
+        def manager_of_class(cls):
+            return cls.__dict__.get(ClassManager.MANAGER_ATTR, None)
+        return manager_of_class
 
     @util.hybridmethod
     def state_getter(self):
@@ -178,12 +177,11 @@ class ClassManager(dict):
         instance.
         """
 
-        return _default_state_getter
+        return attrgetter(self.STATE_ATTR)
 
     @util.hybridmethod
     def dict_getter(self):
-        return _default_dict_getter
-
+        return attrgetter('__dict__')
 
     def instrument_attribute(self, key, inst, propagated=False):
         if propagated:
@@ -281,7 +279,7 @@ class ClassManager(dict):
 
     @property
     def attributes(self):
-        return iter(self.values())
+        return self.itervalues()
 
     ## InstanceState management
 
@@ -297,9 +295,6 @@ class ClassManager(dict):
 
     def teardown_instance(self, instance):
         delattr(instance, self.STATE_ATTR)
-
-    def _serialize(self, state, state_dict):
-        return _SerializeManager(state, state_dict)
 
     def _new_state_if_none(self, instance):
         """Install a default InstanceState if none is present.
@@ -330,50 +325,19 @@ class ClassManager(dict):
         """TODO"""
         return self.get_impl(key).hasparent(state, optimistic=optimistic)
 
-    def __bool__(self):
+    def __nonzero__(self):
         """All ClassManagers are non-zero regardless of attribute state."""
         return True
-
-    __nonzero__ = __bool__
 
     def __repr__(self):
         return '<%s of %r at %x>' % (
             self.__class__.__name__, self.class_, id(self))
 
-class _SerializeManager(object):
-    """Provide serialization of a :class:`.ClassManager`.
-
-    The :class:`.InstanceState` uses ``__init__()`` on serialize
-    and ``__call__()`` on deserialize.
-
-    """
-    def __init__(self, state, d):
-        self.class_ = state.class_
-        manager = state.manager
-        manager.dispatch.pickle(state, d)
-
-    def __call__(self, state, inst, state_dict):
-        state.manager = manager = manager_of_class(self.class_)
-        if manager is None:
-            raise exc.UnmappedInstanceError(
-                        inst,
-                        "Cannot deserialize object of type %r - "
-                        "no mapper() has "
-                        "been configured for this class within the current "
-                        "Python process!" %
-                        self.class_)
-        elif manager.is_mapped and not manager.mapper.configured:
-            manager.mapper._configure_all()
-
-        # setup _sa_instance_state ahead of time so that
-        # unpickle events can access the object normally.
-        # see [ticket:2362]
-        if inst is not None:
-            manager.setup_instance(inst, state)
-        manager.dispatch.unpickle(state, state_dict)
 
 class InstrumentationFactory(object):
     """Factory for new ClassManager instances."""
+
+    dispatch = event.dispatcher(events.InstrumentationEvents)
 
     def create_manager_for_cls(self, class_):
         assert class_ is not None
@@ -414,14 +378,6 @@ class InstrumentationFactory(object):
 # when importred.
 _instrumentation_factory = InstrumentationFactory()
 
-# these attributes are replaced by sqlalchemy.ext.instrumentation
-# when a non-standard InstrumentationManager class is first
-# used to instrument a class.
-instance_state = _default_state_getter = base.instance_state
-
-instance_dict = _default_dict_getter = base.instance_dict
-
-manager_of_class = _default_manager_getter = base.manager_of_class
 
 def register_class(class_):
     """Register class instrumentation.
@@ -453,6 +409,15 @@ def is_instrumented(instance, key):
     return manager_of_class(instance.__class__).\
                         is_instrumented(key, search=True)
 
+# these attributes are replaced by sqlalchemy.ext.instrumentation
+# when a non-standard InstrumentationManager class is first
+# used to instrument a class.
+instance_state = _default_state_getter = ClassManager.state_getter()
+
+instance_dict = _default_dict_getter = ClassManager.dict_getter()
+
+manager_of_class = _default_manager_getter = ClassManager.manager_getter()
+
 
 def _generate_init(class_, class_manager):
     """Build an __init__ decorator that triggers ClassManager events."""
@@ -479,21 +444,21 @@ def __init__(%(apply_pos)s):
     func_vars = util.format_argspec_init(original__init__, grouped=False)
     func_text = func_body % func_vars
 
-    if util.py2k:
-        func = getattr(original__init__, 'im_func', original__init__)
-        func_defaults = getattr(func, 'func_defaults', None)
-    else:
-        func_defaults = getattr(original__init__, '__defaults__', None)
-        func_kw_defaults = getattr(original__init__, '__kwdefaults__', None)
+    # Py3K
+    #func_defaults = getattr(original__init__, '__defaults__', None)
+    #func_kw_defaults = getattr(original__init__, '__kwdefaults__', None)
+    # Py2K
+    func = getattr(original__init__, 'im_func', original__init__)
+    func_defaults = getattr(func, 'func_defaults', None)
+    # end Py2K
 
     env = locals().copy()
-    exec(func_text, env)
+    exec func_text in env
     __init__ = env['__init__']
     __init__.__doc__ = original__init__.__doc__
-
     if func_defaults:
-        __init__.__defaults__ = func_defaults
-    if not util.py2k and func_kw_defaults:
-        __init__.__kwdefaults__ = func_kw_defaults
-
+        __init__.func_defaults = func_defaults
+    # Py3K
+    #if func_kw_defaults:
+    #    __init__.__kwdefaults__ = func_kw_defaults
     return __init__

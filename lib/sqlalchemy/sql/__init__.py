@@ -35,7 +35,6 @@ from .expression import (
     exists,
     extract,
     false,
-    False_,
     func,
     insert,
     intersect,
@@ -56,7 +55,6 @@ from .expression import (
     table,
     text,
     true,
-    True_,
     tuple_,
     type_coerce,
     union,
@@ -66,25 +64,5 @@ from .expression import (
 
 from .visitors import ClauseVisitor
 
-def __go(lcls):
-    global __all__
-    from .. import util as _sa_util
-
-    import inspect as _inspect
-
-    __all__ = sorted(name for name, obj in lcls.items()
-                 if not (name.startswith('_') or _inspect.ismodule(obj)))
-
-    from .annotation import _prepare_annotations, Annotated
-    from .elements import AnnotatedColumnElement, ClauseList
-    from .selectable import AnnotatedFromClause
-    _prepare_annotations(ColumnElement, AnnotatedColumnElement)
-    _prepare_annotations(FromClause, AnnotatedFromClause)
-    _prepare_annotations(ClauseList, Annotated)
-
-    _sa_util.dependencies.resolve_all("sqlalchemy.sql")
-
-    from . import naming
-
-__go(locals())
-
+__tmp = locals().keys()
+__all__ = sorted([i for i in __tmp if not i.startswith('__')])

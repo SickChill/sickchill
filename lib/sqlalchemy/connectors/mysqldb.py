@@ -1,9 +1,3 @@
-# connectors/mysqldb.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
-#
-# This module is part of SQLAlchemy and is released under
-# the MIT License: http://www.opensource.org/licenses/mit-license.php
-
 """Define behaviors common to MySQLdb dialects.
 
 Currently includes MySQL and Drizzle.
@@ -61,7 +55,6 @@ class MySQLDBConnector(Connector):
     def dbapi(cls):
         # is overridden when pymysql is used
         return __import__('MySQLdb')
-
 
     def do_executemany(self, cursor, statement, parameters, context=None):
         rowcount = cursor.executemany(statement, parameters)

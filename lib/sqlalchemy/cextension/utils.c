@@ -8,9 +8,6 @@ the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 #include <Python.h>
 
-#define MODULE_NAME "cutils"
-#define MODULE_DOC "Module containing C versions of utility functions."
-
 /*
     Given arguments from the calling form *multiparams, **params,
     return a list of bind parameter structures, usually a list of
@@ -175,51 +172,26 @@ distill_params(PyObject *self, PyObject *args)
 	}
 }
 
+#ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
+#define PyMODINIT_FUNC void
+#endif
+
+
 static PyMethodDef module_methods[] = {
     {"_distill_params", distill_params, METH_VARARGS,
      "Distill an execute() parameter structure."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-#ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
-#endif
-
-#if PY_MAJOR_VERSION >= 3
-
-static struct PyModuleDef module_def = {
-    PyModuleDef_HEAD_INIT,
-    MODULE_NAME,
-    MODULE_DOC,
-    -1,
-    module_methods
- };
-#endif
-
-
-#if PY_MAJOR_VERSION >= 3
-PyMODINIT_FUNC
-PyInit_cutils(void)
-#else
 PyMODINIT_FUNC
 initcutils(void)
-#endif
 {
     PyObject *m;
 
-#if PY_MAJOR_VERSION >= 3
-    m = PyModule_Create(&module_def);
-#else
-    m = Py_InitModule3(MODULE_NAME, module_methods, MODULE_DOC);
-#endif
+    m = Py_InitModule3("cutils", module_methods,
+                       "Internal utility functions.");
+    if (m == NULL)
+        return;
 
-#if PY_MAJOR_VERSION >= 3
-    if (m == NULL)
-        return NULL;
-    return m;
-#else
-    if (m == NULL)
-    	return;
-#endif
 }
 

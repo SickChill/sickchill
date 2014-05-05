@@ -417,7 +417,6 @@ class DrizzleIdentifierPreparer(mysql_dialect.MySQLIdentifierPreparer):
     pass
 
 
-@log.class_logger
 class DrizzleDialect(mysql_dialect.MySQLDialect):
     """Details of the Drizzle dialect.
 
@@ -496,3 +495,4 @@ class DrizzleDialect(mysql_dialect.MySQLDialect):
         self._backslash_escapes = False
 
 
+log.class_logger(DrizzleDialect)

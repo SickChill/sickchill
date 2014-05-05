@@ -58,9 +58,24 @@ from ..orm.interfaces import MapperProperty
 from ..orm.attributes import QueryableAttribute
 from .. import Table, Column
 from ..engine import Engine
-from ..util import pickle, byte_buffer, b64encode, b64decode, text_type
+from ..util import pickle, text_type
 import re
+import base64
+# Py3K
+#from io import BytesIO as byte_buffer
+# Py2K
+from cStringIO import StringIO as byte_buffer
+# end Py2K
 
+# Py3K
+#def b64encode(x):
+#    return base64.b64encode(x).decode('ascii')
+#def b64decode(x):
+#    return base64.b64decode(x.encode('ascii'))
+# Py2K
+b64encode = base64.b64encode
+b64decode = base64.b64decode
+# end Py2K
 
 __all__ = ['Serializer', 'Deserializer', 'dumps', 'loads']
 

@@ -8,11 +8,10 @@
 and :class:`.RowProxy."""
 
 
-
-from .. import exc, util
-from ..sql import expression, sqltypes
+from itertools import izip
+from .. import exc, types, util
+from ..sql import expression
 import collections
-import operator
 
 # This reconstructor is necessary so that pickles with the C extension or
 # without use the same Binary format.
@@ -56,7 +55,7 @@ except ImportError:
             return list(self)
 
         def __iter__(self):
-            for processor, value in zip(self._processors, self._row):
+            for processor, value in izip(self._processors, self._row):
                 if processor is None:
                     yield value
                 else:
@@ -73,7 +72,7 @@ except ImportError:
             except TypeError:
                 if isinstance(key, slice):
                     l = []
-                    for processor, value in zip(self._processors[key],
+                    for processor, value in izip(self._processors[key],
                                                  self._row[key]):
                         if processor is None:
                             l.append(value)
@@ -94,7 +93,7 @@ except ImportError:
         def __getattr__(self, name):
             try:
                 return self[name]
-            except KeyError as e:
+            except KeyError, e:
                 raise AttributeError(e.args[0])
 
 
@@ -126,28 +125,11 @@ class RowProxy(BaseRowProxy):
 
     __hash__ = None
 
-    def _op(self, other, op):
-        return op(tuple(self), tuple(other)) \
-            if isinstance(other, RowProxy) \
-            else op(tuple(self), other)
-
-    def __lt__(self, other):
-        return self._op(other, operator.lt)
-
-    def __le__(self, other):
-        return self._op(other, operator.le)
-
-    def __ge__(self, other):
-        return self._op(other, operator.ge)
-
-    def __gt__(self, other):
-        return self._op(other, operator.gt)
-
     def __eq__(self, other):
-        return self._op(other, operator.eq)
+        return other is self or other == tuple(self)
 
     def __ne__(self, other):
-        return self._op(other, operator.ne)
+        return not self.__eq__(other)
 
     def __repr__(self):
         return repr(tuple(self))
@@ -160,7 +142,7 @@ class RowProxy(BaseRowProxy):
     def items(self):
         """Return a list of tuples, each tuple containing a key/value pair."""
         # TODO: no coverage here
-        return [(key, self[key]) for key in self.keys()]
+        return [(key, self[key]) for key in self.iterkeys()]
 
     def keys(self):
         """Return the list of keys as strings represented by this RowProxy."""
@@ -223,10 +205,10 @@ class ResultMetaData(object):
                                                     else colname.lower()]
                 except KeyError:
                     name, obj, type_ = \
-                        colname, None, typemap.get(coltype, sqltypes.NULLTYPE)
+                        colname, None, typemap.get(coltype, types.NULLTYPE)
             else:
                 name, obj, type_ = \
-                        colname, None, typemap.get(coltype, sqltypes.NULLTYPE)
+                        colname, None, typemap.get(coltype, types.NULLTYPE)
 
             processor = context.get_result_processor(type_, colname, coltype)
 
@@ -292,7 +274,7 @@ class ResultMetaData(object):
     def _key_fallback(self, key, raiseerr=True):
         map = self._keymap
         result = None
-        if isinstance(key, util.string_types):
+        if isinstance(key, basestring):
             result = map.get(key if self.case_sensitive else key.lower())
         # fallback for targeting a ColumnElement to a textual expression
         # this is a rare use case which only occurs when matching text()
@@ -346,8 +328,8 @@ class ResultMetaData(object):
         return {
             '_pickled_keymap': dict(
                 (key, index)
-                for key, (processor, obj, index) in self._keymap.items()
-                if isinstance(key, util.string_types + util.int_types)
+                for key, (processor, obj, index) in self._keymap.iteritems()
+                if isinstance(key, (basestring, int))
             ),
             'keys': self.keys,
             "case_sensitive": self.case_sensitive,
@@ -356,9 +338,9 @@ class ResultMetaData(object):
     def __setstate__(self, state):
         # the row has been processed at pickling time so we don't need any
         # processor anymore
-        self._processors = [None for _ in range(len(state['keys']))]
+        self._processors = [None for _ in xrange(len(state['keys']))]
         self._keymap = keymap = {}
-        for key, index in state['_pickled_keymap'].items():
+        for key, index in state['_pickled_keymap'].iteritems():
             # not preserving "obj" here, unfortunately our
             # proxy comparison fails with the unpickle
             keymap[key] = (None, None, index)
@@ -458,7 +440,7 @@ class ResultProxy(object):
         """
         try:
             return self.context.rowcount
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                               e, None, None, self.cursor, self.context)
 
@@ -480,7 +462,7 @@ class ResultProxy(object):
         """
         try:
             return self._saved_cursor.lastrowid
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                                  e, None, None,
                                  self._saved_cursor, self.context)
@@ -639,24 +621,6 @@ class ResultProxy(object):
         else:
             return self.context.compiled_parameters[0]
 
-    @property
-    def returned_defaults(self):
-        """Return the values of default columns that were fetched using
-        the :meth:`.ValuesBase.return_defaults` feature.
-
-        The value is an instance of :class:`.RowProxy`, or ``None``
-        if :meth:`.ValuesBase.return_defaults` was not used or if the
-        backend does not support RETURNING.
-
-        .. versionadded:: 0.9.0
-
-        .. seealso::
-
-            :meth:`.ValuesBase.return_defaults`
-
-        """
-        return self.context.returned_defaults
-
     def lastrow_has_defaults(self):
         """Return ``lastrow_has_defaults()`` from the underlying
         :class:`.ExecutionContext`.
@@ -782,7 +746,7 @@ class ResultProxy(object):
             l = self.process_rows(self._fetchall_impl())
             self.close()
             return l
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                                     e, None, None,
                                     self.cursor, self.context)
@@ -801,7 +765,7 @@ class ResultProxy(object):
             if len(l) == 0:
                 self.close()
             return l
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                                     e, None, None,
                                     self.cursor, self.context)
@@ -820,7 +784,7 @@ class ResultProxy(object):
             else:
                 self.close()
                 return None
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                                     e, None, None,
                                     self.cursor, self.context)
@@ -836,7 +800,7 @@ class ResultProxy(object):
 
         try:
             row = self._fetchone_impl()
-        except Exception as e:
+        except Exception, e:
             self.connection._handle_dbapi_exception(
                                     e, None, None,
                                     self.cursor, self.context)
@@ -1002,9 +966,9 @@ class BufferedColumnResultProxy(ResultProxy):
         # constructed.
         metadata._orig_processors = metadata._processors
         # replace the all type processors by None processors.
-        metadata._processors = [None for _ in range(len(metadata.keys))]
+        metadata._processors = [None for _ in xrange(len(metadata.keys))]
         keymap = {}
-        for k, (func, obj, index) in metadata._keymap.items():
+        for k, (func, obj, index) in metadata._keymap.iteritems():
             keymap[k] = (None, obj, index)
         self._metadata._keymap = keymap
 
@@ -1025,7 +989,7 @@ class BufferedColumnResultProxy(ResultProxy):
         if size is None:
             return self.fetchall()
         l = []
-        for i in range(size):
+        for i in xrange(size):
             row = self.fetchone()
             if row is None:
                 break

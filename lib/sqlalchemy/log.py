@@ -21,7 +21,7 @@ import logging
 import sys
 
 # set initial level to WARN.  This so that
-# log statements don't occur in the absence of explicit
+# log statements don't occur in the absense of explicit
 # logging being enabled for 'sqlalchemy'.
 rootlogger = logging.getLogger('sqlalchemy')
 if rootlogger.level == logging.NOTSET:
@@ -38,13 +38,17 @@ def _add_default_handler(logger):
 _logged_classes = set()
 
 
-def class_logger(cls):
+def class_logger(cls, enable=False):
     logger = logging.getLogger(cls.__module__ + "." + cls.__name__)
+    if enable == 'debug':
+        logger.setLevel(logging.DEBUG)
+    elif enable == 'info':
+        logger.setLevel(logging.INFO)
     cls._should_log_debug = lambda self: logger.isEnabledFor(logging.DEBUG)
     cls._should_log_info = lambda self: logger.isEnabledFor(logging.INFO)
     cls.logger = logger
     _logged_classes.add(cls)
-    return cls
+
 
 class Identified(object):
     logging_name = None

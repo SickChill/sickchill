@@ -7,7 +7,7 @@
 # TODO: should be using the sys. catalog with SQL Server, not information schema
 
 from ... import Table, MetaData, Column
-from ...types import String, Unicode, UnicodeText, Integer, TypeDecorator
+from ...types import String, Unicode, Integer, TypeDecorator
 from ... import cast
 from ... import util
 from ...sql import expression
@@ -19,8 +19,10 @@ class CoerceUnicode(TypeDecorator):
     impl = Unicode
 
     def process_bind_param(self, value, dialect):
-        if util.py2k and isinstance(value, util.binary_type):
+        # Py2K
+        if isinstance(value, str):
             value = value.decode(dialect.encoding)
+        # end Py2K
         return value
 
     def bind_expression(self, bindvalue):

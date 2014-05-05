@@ -11,7 +11,7 @@ the functions here are called primarily by Query, Mapper,
 as well as some of the attribute loading strategies.
 
 """
-
+from __future__ import absolute_import
 
 from .. import util
 from . import attributes, exc as orm_exc, state as statelib
@@ -19,6 +19,7 @@ from .interfaces import EXT_CONTINUE
 from ..sql import util as sql_util
 from .util import _none_set, state_str
 from .. import exc as sa_exc
+sessionlib = util.importlater("sqlalchemy.orm", "session")
 
 _new_runid = util.counter()
 
@@ -33,8 +34,7 @@ def instances(query, cursor, context):
                 for ent in query._entities]
     filtered = id in filter_fns
 
-    single_entity = len(query._entities) == 1 and \
-                        query._entities[0].supports_single_entity
+    single_entity = filtered and len(query._entities) == 1
 
     if filtered:
         if single_entity:
@@ -44,14 +44,14 @@ def instances(query, cursor, context):
                 return tuple(fn(x) for x, fn in zip(row, filter_fns))
 
     custom_rows = single_entity and \
-                    query._entities[0].custom_rows
+                    query._entities[0].mapper.dispatch.append_result
 
     (process, labels) = \
-                list(zip(*[
+                zip(*[
                     query_entity.row_processor(query,
                             context, custom_rows)
                     for query_entity in query._entities
-                ]))
+                ])
 
     while True:
         context.progress = {}
@@ -84,11 +84,11 @@ def instances(query, cursor, context):
             context.progress.pop(context.refresh_state)
 
         statelib.InstanceState._commit_all_states(
-            list(context.progress.items()),
+            context.progress.items(),
             session.identity_map
         )
 
-        for state, (dict_, attrs) in context.partials.items():
+        for state, (dict_, attrs) in context.partials.iteritems():
             state._commit(dict_, attrs)
 
         for row in rows:
@@ -98,9 +98,10 @@ def instances(query, cursor, context):
             break
 
 
-@util.dependencies("sqlalchemy.orm.query")
-def merge_result(querylib, query, iterator, load=True):
+def merge_result(query, iterator, load=True):
     """Merge a result into this :class:`.Query` object's Session."""
+
+    from . import query as querylib
 
     session = query.session
     if load:
@@ -174,6 +175,8 @@ def load_on_ident(query, key,
                         only_load_props=None):
     """Load the given identity key from the database."""
 
+    lockmode = lockmode or query._lockmode
+
     if key is not None:
         ident = key[1]
     else:
@@ -211,17 +214,10 @@ def load_on_ident(query, key,
         q._params = params
 
     if lockmode is not None:
-        version_check = True
-        q = q.with_lockmode(lockmode)
-    elif query._for_update_arg is not None:
-        version_check = True
-        q._for_update_arg = query._for_update_arg
-    else:
-        version_check = False
-
+        q._lockmode = lockmode
     q._get_options(
         populate_existing=bool(refresh_state),
-        version_check=version_check,
+        version_check=(lockmode is not None),
         only_load_props=only_load_props,
         refresh_state=refresh_state)
     q._order_by = None
@@ -361,7 +357,6 @@ def instance_processor(mapper, context, path, adapter,
                         )
 
         instance = session_identity_map.get(identitykey)
-
         if instance is not None:
             state = attributes.instance_state(instance)
             dict_ = attributes.instance_dict(instance)
@@ -512,7 +507,7 @@ def _populators(mapper, context, path, row, adapter,
     pops = (new_populators, existing_populators, delayed_populators,
                         eager_populators)
 
-    for prop in mapper._props.values():
+    for prop in mapper._props.itervalues():
 
         for i, pop in enumerate(prop.create_row_processor(
                                     context,
@@ -552,7 +547,7 @@ def load_scalar_attributes(mapper, state, attribute_names):
     """initiate a column-based attribute refresh operation."""
 
     #assert mapper is _state_mapper(state)
-    session = state.session
+    session = sessionlib._state_session(state)
     if not session:
         raise orm_exc.DetachedInstanceError(
                     "Instance %s is not bound to a Session; "

@@ -6,7 +6,7 @@
 
 from sqlalchemy.dialects.firebird import base, kinterbasdb, fdb
 
-base.dialect = fdb.dialect
+base.dialect = kinterbasdb.dialect
 
 from sqlalchemy.dialects.firebird.base import \
     SMALLINT, BIGINT, FLOAT, FLOAT, DATE, TIME, \

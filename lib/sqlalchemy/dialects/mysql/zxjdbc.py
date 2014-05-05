@@ -19,7 +19,7 @@ SQLAlchemy zxjdbc dialects pass unicode straight through to the
 zxjdbc/JDBC layer. To allow multiple character sets to be sent from the
 MySQL Connector/J JDBC driver, by default SQLAlchemy sets its
 ``characterEncoding`` connection property to ``UTF-8``. It may be
-overridden via a ``create_engine`` URL parameter.
+overriden via a ``create_engine`` URL parameter.
 
 """
 import re
@@ -37,7 +37,7 @@ class _ZxJDBCBit(BIT):
                 return value
             if isinstance(value, bool):
                 return int(value)
-            v = 0
+            v = 0L
             for i in value:
                 v = v << 8 | (i & 0xff)
             value = v

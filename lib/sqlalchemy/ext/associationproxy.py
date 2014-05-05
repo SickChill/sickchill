@@ -17,7 +17,7 @@ import operator
 import weakref
 from .. import exc, orm, util
 from ..orm import collections, interfaces
-from ..sql import not_, or_
+from ..sql import not_
 
 
 def association_proxy(target_collection, attr, **kw):
@@ -231,10 +231,6 @@ class AssociationProxy(interfaces._InspectionAttr):
         return not self._get_property().\
                     mapper.get_property(self.value_attr).uselist
 
-    @util.memoized_property
-    def _target_is_object(self):
-        return getattr(self.target_class, self.value_attr).impl.uses_objects
-
     def __get__(self, obj, class_):
         if self.owning_class is None:
             self.owning_class = class_ and class_ or type(obj)
@@ -242,8 +238,7 @@ class AssociationProxy(interfaces._InspectionAttr):
             return self
 
         if self.scalar:
-            target = getattr(obj, self.target_collection)
-            return self._scalar_get(target)
+            return self._scalar_get(getattr(obj, self.target_collection))
         else:
             try:
                 # If the owning instance is reborn (orm session resurrect,
@@ -288,8 +283,7 @@ class AssociationProxy(interfaces._InspectionAttr):
 
     def _default_getset(self, collection_class):
         attr = self.value_attr
-        _getter = operator.attrgetter(attr)
-        getter = lambda target: _getter(target) if target is not None else None
+        getter = operator.attrgetter(attr)
         if collection_class is dict:
             setter = lambda o, k, v: setattr(o, attr, v)
         else:
@@ -394,17 +388,10 @@ class AssociationProxy(interfaces._InspectionAttr):
 
         """
 
-        if self._target_is_object:
-            return self._comparator.has(
+        return self._comparator.has(
                     getattr(self.target_class, self.value_attr).\
                         has(criterion, **kwargs)
                 )
-        else:
-            if criterion is not None or kwargs:
-                raise exc.ArgumentError(
-                        "Non-empty has() not allowed for "
-                        "column-targeted association proxy; use ==")
-            return self._comparator.has()
 
     def contains(self, obj):
         """Produce a proxied 'contains' expression using EXISTS.
@@ -424,21 +411,10 @@ class AssociationProxy(interfaces._InspectionAttr):
             return self._comparator.any(**{self.value_attr: obj})
 
     def __eq__(self, obj):
-        # note the has() here will fail for collections; eq_()
-        # is only allowed with a scalar.
-        if obj is None:
-            return or_(
-                        self._comparator.has(**{self.value_attr: obj}),
-                        self._comparator == None
-                    )
-        else:
-            return self._comparator.has(**{self.value_attr: obj})
+        return self._comparator.has(**{self.value_attr: obj})
 
     def __ne__(self, obj):
-        # note the has() here will fail for collections; eq_()
-        # is only allowed with a scalar.
-        return self._comparator.has(
-                    getattr(self.target_class, self.value_attr) != obj)
+        return not_(self.__eq__(obj))
 
 
 class _lazy_collection(object):
@@ -499,10 +475,8 @@ class _AssociationCollection(object):
     def __len__(self):
         return len(self.col)
 
-    def __bool__(self):
+    def __nonzero__(self):
         return bool(self.col)
-
-    __nonzero__ = __bool__
 
     def __getstate__(self):
         return {'parent': self.parent, 'lazy_collection': self.lazy_collection}
@@ -540,12 +514,11 @@ class _AssociationList(_AssociationCollection):
                 stop = index.stop
             step = index.step or 1
 
-            start = index.start or 0
-            rng = list(range(index.start or 0, stop, step))
+            rng = range(index.start or 0, stop, step)
             if step == 1:
                 for i in rng:
-                    del self[start]
-                i = start
+                    del self[index.start]
+                i = index.start
                 for item in value:
                     self.insert(i, item)
                     i += 1
@@ -596,7 +569,7 @@ class _AssociationList(_AssociationCollection):
 
     def count(self, value):
         return sum([1 for _ in
-                    util.itertools_filter(lambda v: v == value, iter(self))])
+                    itertools.ifilter(lambda v: v == value, iter(self))])
 
     def extend(self, values):
         for v in values:
@@ -695,8 +668,8 @@ class _AssociationList(_AssociationCollection):
     def __hash__(self):
         raise TypeError("%s objects are unhashable" % type(self).__name__)
 
-    for func_name, func in list(locals().items()):
-        if (util.callable(func) and func.__name__ == func_name and
+    for func_name, func in locals().items():
+        if (util.callable(func) and func.func_name == func_name and
             not func.__doc__ and hasattr(list, func_name)):
             func.__doc__ = getattr(list, func_name).__doc__
     del func_name, func
@@ -738,7 +711,7 @@ class _AssociationDict(_AssociationCollection):
         return key in self.col
 
     def __iter__(self):
-        return iter(self.col.keys())
+        return self.col.iterkeys()
 
     def clear(self):
         self.col.clear()
@@ -783,27 +756,24 @@ class _AssociationDict(_AssociationCollection):
     def keys(self):
         return self.col.keys()
 
-    if util.py2k:
-        def iteritems(self):
-            return ((key, self._get(self.col[key])) for key in self.col)
+    def iterkeys(self):
+        return self.col.iterkeys()
 
-        def itervalues(self):
-            return (self._get(self.col[key]) for key in self.col)
+    def values(self):
+        return [self._get(member) for member in self.col.values()]
 
-        def iterkeys(self):
-            return self.col.iterkeys()
+    def itervalues(self):
+        for key in self.col:
+            yield self._get(self.col[key])
+        raise StopIteration
 
-        def values(self):
-            return [self._get(member) for member in self.col.values()]
+    def items(self):
+        return [(k, self._get(self.col[k])) for k in self]
 
-        def items(self):
-            return [(k, self._get(self.col[k])) for k in self]
-    else:
-        def items(self):
-            return ((key, self._get(self.col[key])) for key in self.col)
-
-        def values(self):
-            return (self._get(self.col[key]) for key in self.col)
+    def iteritems(self):
+        for key in self.col:
+            yield (key, self._get(self.col[key]))
+        raise StopIteration
 
     def pop(self, key, default=_NotProvided):
         if default is _NotProvided:
@@ -846,8 +816,8 @@ class _AssociationDict(_AssociationCollection):
     def __hash__(self):
         raise TypeError("%s objects are unhashable" % type(self).__name__)
 
-    for func_name, func in list(locals().items()):
-        if (util.callable(func) and func.__name__ == func_name and
+    for func_name, func in locals().items():
+        if (util.callable(func) and func.func_name == func_name and
             not func.__doc__ and hasattr(dict, func_name)):
             func.__doc__ = getattr(dict, func_name).__doc__
     del func_name, func
@@ -868,13 +838,11 @@ class _AssociationSet(_AssociationCollection):
     def __len__(self):
         return len(self.col)
 
-    def __bool__(self):
+    def __nonzero__(self):
         if self.col:
             return True
         else:
             return False
-
-    __nonzero__ = __bool__
 
     def __contains__(self, value):
         for member in self.col:
@@ -1046,8 +1014,8 @@ class _AssociationSet(_AssociationCollection):
     def __hash__(self):
         raise TypeError("%s objects are unhashable" % type(self).__name__)
 
-    for func_name, func in list(locals().items()):
-        if (util.callable(func) and func.__name__ == func_name and
+    for func_name, func in locals().items():
+        if (util.callable(func) and func.func_name == func_name and
             not func.__doc__ and hasattr(set, func_name)):
             func.__doc__ = getattr(set, func_name).__doc__
     del func_name, func

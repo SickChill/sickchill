@@ -1,8 +1,3 @@
-# testing/assertsql.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
-#
-# This module is part of SQLAlchemy and is released under
-# the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 from ..engine.default import DefaultDialect
 from .. import util
@@ -132,7 +127,7 @@ class RegexSQL(SQLMatchRule):
             # do a positive compare only
 
             for param, received in zip(params, _received_parameters):
-                for k, v in param.items():
+                for k, v in param.iteritems():
                     if k not in received or received[k] != v:
                         equivalent = False
                         break
@@ -185,7 +180,7 @@ class CompiledSQL(SQLMatchRule):
             all_received = list(_received_parameters)
             while params:
                 param = dict(params.pop(0))
-                for k, v in context.compiled.params.items():
+                for k, v in context.compiled.params.iteritems():
                     param.setdefault(k, v)
                 if param not in _received_parameters:
                     equivalent = False
@@ -200,9 +195,9 @@ class CompiledSQL(SQLMatchRule):
             all_received = []
         self._result = equivalent
         if not self._result:
-            print('Testing for compiled statement %r partial params '\
+            print 'Testing for compiled statement %r partial params '\
                 '%r, received %r with params %r' % (self.statement,
-                    all_params, _received_statement, all_received))
+                    all_params, _received_statement, all_received)
             self._errmsg = \
                 'Testing for compiled statement %r partial params %r, '\
                 'received %r with params %r' % (self.statement,
@@ -267,7 +262,7 @@ def _process_engine_statement(query, context):
 
         # oracle+zxjdbc passes a PyStatement when returning into
 
-        query = str(query)
+        query = unicode(query)
     if context.engine.name == 'mssql' \
         and query.endswith('; select scope_identity()'):
         query = query[:-25]

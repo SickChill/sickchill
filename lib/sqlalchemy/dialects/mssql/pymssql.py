@@ -16,6 +16,7 @@ pymssql is a Python module that provides a Python DBAPI interface around
 Linux, MacOSX and Windows platforms.
 
 """
+
 from .base import MSDialect
 from ... import types as sqltypes, util, processors
 import re

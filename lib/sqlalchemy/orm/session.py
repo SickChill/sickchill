@@ -5,42 +5,27 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 """Provides the Session class and related utilities."""
 
-
+from __future__ import with_statement
 
 import weakref
-from .. import util, sql, engine, exc as sa_exc
+from .. import util, sql, engine, exc as sa_exc, event
 from ..sql import util as sql_util, expression
 from . import (
-    SessionExtension, attributes, exc, query,
+    SessionExtension, attributes, exc, query, util as orm_util,
     loading, identity
     )
-from ..inspection import inspect
-from .base import (
+from .util import (
     object_mapper, class_mapper,
     _class_to_mapper, _state_mapper, object_state,
-    _none_set, state_str, instance_str
+    _none_set
     )
 from .unitofwork import UOWTransaction
-from . import state as statelib
+from .mapper import Mapper
+from .events import SessionEvents
+statelib = util.importlater("sqlalchemy.orm", "state")
 import sys
 
 __all__ = ['Session', 'SessionTransaction', 'SessionExtension', 'sessionmaker']
-
-_sessions = weakref.WeakValueDictionary()
-"""Weak-referencing dictionary of :class:`.Session` objects.
-"""
-
-def _state_session(state):
-    """Given an :class:`.InstanceState`, return the :class:`.Session`
-        associated, if any.
-    """
-    if state.session_id:
-        try:
-            return _sessions[state.session_id]
-        except KeyError:
-            pass
-    return None
-
 
 
 class _SessionClassMethods(object):
@@ -54,8 +39,7 @@ class _SessionClassMethods(object):
             sess.close()
 
     @classmethod
-    @util.dependencies("sqlalchemy.orm.util")
-    def identity_key(cls, orm_util, *args, **kwargs):
+    def identity_key(cls, *args, **kwargs):
         """Return an identity key.
 
         This is an alias of :func:`.util.identity_key`.
@@ -344,7 +328,7 @@ class SessionTransaction(object):
                 subtransaction.commit()
 
         if not self.session._flushing:
-            for _flush_guard in range(100):
+            for _flush_guard in xrange(100):
                 if self.session._is_clean():
                     break
                 self.session.flush()
@@ -485,7 +469,6 @@ class Session(_SessionClassMethods):
                 _enable_transaction_accounting=True,
                  autocommit=False, twophase=False,
                  weak_identity_map=True, binds=None, extension=None,
-                 info=None,
                  query_cls=query.Query):
         """Construct a new Session.
 
@@ -518,29 +501,27 @@ class Session(_SessionClassMethods):
             :ref:`session_autocommit`
 
         :param autoflush: When ``True``, all query operations will issue a
-           :meth:`~.Session.flush` call to this ``Session`` before proceeding. 
-           This is a convenience feature so that :meth:`~.Session.flush` need 
-           not be called repeatedly in order for database queries to retrieve 
-           results. It's typical that ``autoflush`` is used in conjunction with
+           ``flush()`` call to this ``Session`` before proceeding. This is a
+           convenience feature so that ``flush()`` need not be called
+           repeatedly in order for database queries to retrieve results. It's
+           typical that ``autoflush`` is used in conjunction with
            ``autocommit=False``. In this scenario, explicit calls to
-           :meth:`~.Session.flush` are rarely needed; you usually only need to 
-           call :meth:`~.Session.commit` (which flushes) to finalize changes.
+           ``flush()`` are rarely needed; you usually only need to call
+           ``commit()`` (which flushes) to finalize changes.
 
-        :param bind: An optional :class:`.Engine` or :class:`.Connection` to 
-           which this ``Session`` should be bound. When specified, all SQL 
-           operations performed by this session will execute via this 
-           connectable.
+        :param bind: An optional ``Engine`` or ``Connection`` to which this
+           ``Session`` should be bound. When specified, all SQL operations
+           performed by this session will execute via this connectable.
 
         :param binds: An optional dictionary which contains more granular
            "bind" information than the ``bind`` parameter provides. This
-           dictionary can map individual :class`.Table` 
-           instances as well as :class:`~.Mapper` instances to individual 
-           :class:`.Engine` or :class:`.Connection` objects. Operations which 
-           proceed relative to a particular :class:`.Mapper` will consult this 
-           dictionary for the direct :class:`.Mapper` instance as 
-           well as the mapper's ``mapped_table`` attribute in order to locate a 
-           connectable to use. The full resolution is described in the 
-           :meth:`.Session.get_bind`.
+           dictionary can map individual ``Table`` instances as well as
+           ``Mapper`` instances to individual ``Engine`` or ``Connection``
+           objects. Operations which proceed relative to a particular
+           ``Mapper`` will consult this dictionary for the direct ``Mapper``
+           instance as well as the mapper's ``mapped_table`` attribute in
+           order to locate an connectable to use. The full resolution is
+           described in the ``get_bind()`` method of ``Session``.
            Usage looks like::
 
             Session = sessionmaker(binds={
@@ -555,7 +536,7 @@ class Session(_SessionClassMethods):
         :param \class_: Specify an alternate class other than
            ``sqlalchemy.orm.session.Session`` which should be used by the
            returned class. This is the only argument that is local to the
-           :class:`.sessionmaker` function, and is not sent directly to the
+           ``sessionmaker()`` function, and is not sent directly to the
            constructor for ``Session``.
 
         :param _enable_transaction_accounting:  Defaults to ``True``.  A
@@ -563,12 +544,12 @@ class Session(_SessionClassMethods):
            object accounting on transaction boundaries, including auto-expiry
            of instances on rollback and commit, maintenance of the "new" and
            "deleted" lists upon rollback, and autoflush of pending changes upon
-           :meth:`~.Session.begin`, all of which are interdependent.
+           begin(), all of which are interdependent.
 
         :param expire_on_commit:  Defaults to ``True``. When ``True``, all
-           instances will be fully expired after each :meth:`~.commit`, 
-           so that all attribute/object access subsequent to a completed 
-           transaction will load from the most recent database state.
+           instances will be fully expired after each ``commit()``, so that
+           all attribute/object access subsequent to a completed transaction
+           will load from the most recent database state.
 
         :param extension: An optional
            :class:`~.SessionExtension` instance, or a list
@@ -576,26 +557,17 @@ class Session(_SessionClassMethods):
            flush events, as well as a post-rollback event. **Deprecated.**
            Please see :class:`.SessionEvents`.
 
-        :param info: optional dictionary of arbitrary data to be associated
-           with this :class:`.Session`.  Is available via the :attr:`.Session.info`
-           attribute.  Note the dictionary is copied at construction time so
-           that modifications to the per-:class:`.Session` dictionary will be local
-           to that :class:`.Session`.
-
-           .. versionadded:: 0.9.0
-
         :param query_cls:  Class which should be used to create new Query
-           objects, as returned by the :meth:`~.Session.query` method. Defaults 
-           to :class:`.Query`.
+           objects, as returned by the ``query()`` method. Defaults to
+           :class:`~sqlalchemy.orm.query.Query`.
 
         :param twophase:  When ``True``, all transactions will be started as
             a "two phase" transaction, i.e. using the "two phase" semantics
-            of the database in use along with an XID.  During a 
-            :meth:`~.commit`, after :meth:`~.flush` has been issued for all 
-            attached databases, the :meth:`~.TwoPhaseTransaction.prepare` method
-            on each database's :class:`.TwoPhaseTransaction` will be called. 
-            This allows each database to roll back the entire transaction, 
-            before each transaction is committed.
+            of the database in use along with an XID.  During a ``commit()``,
+            after ``flush()`` has been issued for all attached databases, the
+            ``prepare()`` method on each database's ``TwoPhaseTransaction``
+            will be called. This allows each database to roll back the entire
+            transaction, before each transaction is committed.
 
         :param weak_identity_map:  Defaults to ``True`` - when set to
            ``False``, objects placed in the :class:`.Session` will be
@@ -627,50 +599,31 @@ class Session(_SessionClassMethods):
         self._enable_transaction_accounting = _enable_transaction_accounting
         self.twophase = twophase
         self._query_cls = query_cls
-        if info:
-            self.info.update(info)
 
         if extension:
             for ext in util.to_list(extension):
                 SessionExtension._adapt_listener(self, ext)
 
         if binds is not None:
-            for mapperortable, bind in binds.items():
-                insp = inspect(mapperortable)
-                if insp.is_selectable:
-                    self.bind_table(mapperortable, bind)
-                elif insp.is_mapper:
+            for mapperortable, bind in binds.iteritems():
+                if isinstance(mapperortable, (type, Mapper)):
                     self.bind_mapper(mapperortable, bind)
                 else:
-                    assert False
-
+                    self.bind_table(mapperortable, bind)
 
         if not self.autocommit:
             self.begin()
         _sessions[self.hash_key] = self
+
+    dispatch = event.dispatcher(SessionEvents)
 
     connection_callable = None
 
     transaction = None
     """The current active or inactive :class:`.SessionTransaction`."""
 
-    @util.memoized_property
-    def info(self):
-        """A user-modifiable dictionary.
-
-        The initial value of this dictioanry can be populated using the
-        ``info`` argument to the :class:`.Session` constructor or
-        :class:`.sessionmaker` constructor or factory methods.  The dictionary
-        here is always local to this :class:`.Session` and can be modified
-        independently of all other :class:`.Session` objects.
-
-        .. versionadded:: 0.9.0
-
-        """
-        return {}
-
     def begin(self, subtransactions=False, nested=False):
-        """Begin a transaction on this :class:`.Session`.
+        """Begin a transaction on this Session.
 
         If this Session is already within a transaction, either a plain
         transaction or nested transaction, an error is raised, unless
@@ -719,7 +672,7 @@ class Session(_SessionClassMethods):
         This method rolls back the current transaction or nested transaction
         regardless of subtransactions being in effect.  All subtransactions up
         to the first real transaction are closed.  Subtransactions occur when
-        :meth:`.begin` is called multiple times.
+        begin() is called multiple times.
 
         .. seealso::
 
@@ -826,7 +779,7 @@ class Session(_SessionClassMethods):
             etc.) which will be used to locate a bind, if a bind
             cannot otherwise be identified.
 
-        :param close_with_result: Passed to :meth:`.Engine.connect`, indicating
+        :param close_with_result: Passed to :meth:`Engine.connect`, indicating
           the :class:`.Connection` should be considered "single use",
           automatically closing when the first result set is closed.  This
           flag only has an effect if this :class:`.Session` is configured with
@@ -1016,7 +969,7 @@ class Session(_SessionClassMethods):
         self._deleted = {}
 
     # TODO: need much more test coverage for bind_mapper() and similar !
-    # TODO: + crystallize + document resolution order
+    # TODO: + crystalize + document resolution order
     #       vis. bind_mapper/bind_table
 
     def bind_mapper(self, mapper, bind):
@@ -1026,7 +979,7 @@ class Session(_SessionClassMethods):
           A mapper instance or mapped class
 
         bind
-          Any Connectable: a :class:`.Engine` or :class:`.Connection`.
+          Any Connectable: a ``Engine`` or ``Connection``.
 
         All subsequent operations involving this mapper will use the given
         `bind`.
@@ -1043,12 +996,12 @@ class Session(_SessionClassMethods):
         """Bind operations on a Table to a Connectable.
 
         table
-          A :class:`.Table` instance
+          A ``Table`` instance
 
         bind
-          Any Connectable: a :class:`.Engine` or :class:`.Connection`.
+          Any Connectable: a ``Engine`` or ``Connection``.
 
-        All subsequent operations involving this :class:`.Table` will use the 
+        All subsequent operations involving this ``Table`` will use the
         given `bind`.
 
         """
@@ -1149,8 +1102,7 @@ class Session(_SessionClassMethods):
             ', '.join(context)))
 
     def query(self, *entities, **kwargs):
-        """Return a new :class:`.Query` object corresponding to this 
-        :class:`.Session`."""
+        """Return a new ``Query`` object corresponding to this ``Session``."""
 
         return self._query_cls(entities, self, **kwargs)
 
@@ -1184,18 +1136,7 @@ class Session(_SessionClassMethods):
 
     def _autoflush(self):
         if self.autoflush and not self._flushing:
-            try:
-                self.flush()
-            except sa_exc.StatementError as e:
-                # note we are reraising StatementError as opposed to
-                # raising FlushError with "chaining" to remain compatible
-                # with code that catches StatementError, IntegrityError,
-                # etc.
-                e.add_detail(
-                        "raised as a result of Query-invoked autoflush; "
-                        "consider using a session.no_autoflush block if this "
-                        "flush is occurring prematurely")
-                util.raise_from_cause(e)
+            self.flush()
 
     def refresh(self, instance, attribute_names=None, lockmode=None):
         """Expire and refresh the attributes on the given instance.
@@ -1224,14 +1165,6 @@ class Session(_SessionClassMethods):
         :param lockmode: Passed to the :class:`~sqlalchemy.orm.query.Query`
           as used by :meth:`~sqlalchemy.orm.query.Query.with_lockmode`.
 
-        .. seealso::
-
-            :ref:`session_expire` - introductory material
-
-            :meth:`.Session.expire`
-
-            :meth:`.Session.expire_all`
-
         """
         try:
             state = attributes.instance_state(instance)
@@ -1247,7 +1180,7 @@ class Session(_SessionClassMethods):
                 only_load_props=attribute_names) is None:
             raise sa_exc.InvalidRequestError(
                 "Could not refresh instance '%s'" %
-                instance_str(instance))
+                orm_util.instance_str(instance))
 
     def expire_all(self):
         """Expires all persistent instances within this Session.
@@ -1269,14 +1202,6 @@ class Session(_SessionClassMethods):
         state can be loaded for the new transaction.   For this reason,
         calling :meth:`Session.expire_all` should not be needed when
         autocommit is ``False``, assuming the transaction is isolated.
-
-        .. seealso::
-
-            :ref:`session_expire` - introductory material
-
-            :meth:`.Session.expire`
-
-            :meth:`.Session.refresh`
 
         """
         for state in self.identity_map.all_states():
@@ -1307,14 +1232,6 @@ class Session(_SessionClassMethods):
         :param instance: The instance to be refreshed.
         :param attribute_names: optional list of string attribute names
           indicating a subset of attributes to be expired.
-
-        .. seealso::
-
-            :ref:`session_expire` - introductory material
-
-            :meth:`.Session.expire`
-
-            :meth:`.Session.refresh`
 
         """
         try:
@@ -1374,7 +1291,7 @@ class Session(_SessionClassMethods):
         if state.session_id is not self.hash_key:
             raise sa_exc.InvalidRequestError(
                 "Instance %s is not present in this Session" %
-                state_str(state))
+                orm_util.state_str(state))
 
         cascaded = list(state.manager.mapper.cascade_iterator(
                                     'expunge', state))
@@ -1414,7 +1331,7 @@ class Session(_SessionClassMethods):
                         "expect these generated values.  Ensure also that "
                         "this flush() is not occurring at an inappropriate "
                         "time, such aswithin a load() event."
-                        % state_str(state)
+                        % orm_util.state_str(state)
                     )
 
                 if state.key is None:
@@ -1517,7 +1434,7 @@ class Session(_SessionClassMethods):
         if state.key is None:
             raise sa_exc.InvalidRequestError(
                 "Instance '%s' is not persisted" %
-                state_str(state))
+                orm_util.state_str(state))
 
         if state in self._deleted:
             return
@@ -1681,7 +1598,7 @@ class Session(_SessionClassMethods):
                             "merging to update the most recent version."
                             % (
                                 existing_version,
-                                state_str(merged_state),
+                                orm_util.state_str(merged_state),
                                 merged_version
                             ))
 
@@ -1705,13 +1622,13 @@ class Session(_SessionClassMethods):
         if not self.identity_map.contains_state(state):
             raise sa_exc.InvalidRequestError(
                 "Instance '%s' is not persistent within this Session" %
-                state_str(state))
+                orm_util.state_str(state))
 
     def _save_impl(self, state):
         if state.key is not None:
             raise sa_exc.InvalidRequestError(
                 "Object '%s' already has an identity - it can't be registered "
-                "as pending" % state_str(state))
+                "as pending" % orm_util.state_str(state))
 
         self._before_attach(state)
         if state not in self._new:
@@ -1727,13 +1644,13 @@ class Session(_SessionClassMethods):
         if state.key is None:
             raise sa_exc.InvalidRequestError(
                 "Instance '%s' is not persisted" %
-                state_str(state))
+                orm_util.state_str(state))
 
         if state.deleted:
             raise sa_exc.InvalidRequestError(
                 "Instance '%s' has been deleted.  Use the make_transient() "
                 "function to send this object back to the transient state." %
-                state_str(state)
+                orm_util.state_str(state)
             )
         self._before_attach(state)
         self._deleted.pop(state, None)
@@ -1827,14 +1744,14 @@ class Session(_SessionClassMethods):
             raise sa_exc.InvalidRequestError("Can't attach instance "
                     "%s; another instance with key %s is already "
                     "present in this session."
-                    % (state_str(state), state.key))
+                    % (orm_util.state_str(state), state.key))
 
         if state.session_id and \
                 state.session_id is not self.hash_key and \
                 state.session_id in _sessions:
             raise sa_exc.InvalidRequestError(
                 "Object '%s' is already attached to session '%s' "
-                "(this is '%s')" % (state_str(state),
+                "(this is '%s')" % (orm_util.state_str(state),
                                     state.session_id, self.hash_key))
 
         if state.session_id != self.hash_key:
@@ -1865,7 +1782,7 @@ class Session(_SessionClassMethods):
         Session.
 
         """
-        return iter(list(self._new.values()) + list(self.identity_map.values()))
+        return iter(list(self._new.values()) + self.identity_map.values())
 
     def _contains_state(self, state):
         return state in self._new or self.identity_map.contains_state(state)
@@ -2229,13 +2146,13 @@ class Session(_SessionClassMethods):
     def deleted(self):
         "The set of all instances marked as 'deleted' within this ``Session``"
 
-        return util.IdentitySet(list(self._deleted.values()))
+        return util.IdentitySet(self._deleted.values())
 
     @property
     def new(self):
         "The set of all instances marked as 'new' within this ``Session``."
 
-        return util.IdentitySet(list(self._new.values()))
+        return util.IdentitySet(self._new.values())
 
 
 class sessionmaker(_SessionClassMethods):
@@ -2286,8 +2203,7 @@ class sessionmaker(_SessionClassMethods):
 
     def __init__(self, bind=None, class_=Session, autoflush=True,
                         autocommit=False,
-                        expire_on_commit=True,
-                        info=None, **kw):
+                        expire_on_commit=True, **kw):
         """Construct a new :class:`.sessionmaker`.
 
         All arguments here except for ``class_`` correspond to arguments
@@ -2304,13 +2220,6 @@ class sessionmaker(_SessionClassMethods):
          :class:`.Session` objects.
         :param expire_on_commit=True: the expire_on_commit setting to use
          with newly created :class:`.Session` objects.
-        :param info: optional dictionary of information that will be available
-         via :attr:`.Session.info`.  Note this dictionary is *updated*, not
-         replaced, when the ``info`` parameter is specified to the specific
-         :class:`.Session` construction operation.
-
-         .. versionadded:: 0.9.0
-
         :param \**kw: all other keyword arguments are passed to the constructor
          of newly created :class:`.Session` objects.
 
@@ -2319,8 +2228,6 @@ class sessionmaker(_SessionClassMethods):
         kw['autoflush'] = autoflush
         kw['autocommit'] = autocommit
         kw['expire_on_commit'] = expire_on_commit
-        if info is not None:
-            kw['info'] = info
         self.kw = kw
         # make our own subclass of the given class, so that
         # events can be associated with it specifically.
@@ -2338,12 +2245,7 @@ class sessionmaker(_SessionClassMethods):
 
         """
         for k, v in self.kw.items():
-            if k == 'info' and 'info' in local_kw:
-                d = v.copy()
-                d.update(local_kw['info'])
-                local_kw['info'] = d
-            else:
-                local_kw.setdefault(k, v)
+            local_kw.setdefault(k, v)
         return self.class_(**local_kw)
 
     def configure(self, **new_kw):
@@ -2358,11 +2260,13 @@ class sessionmaker(_SessionClassMethods):
         self.kw.update(new_kw)
 
     def __repr__(self):
-        return "%s(class_=%r,%s)" % (
+        return "%s(class_=%r%s)" % (
                     self.__class__.__name__,
                     self.class_.__name__,
                     ", ".join("%s=%r" % (k, v) for k, v in self.kw.items())
                 )
+
+_sessions = weakref.WeakValueDictionary()
 
 
 def make_transient(instance):
@@ -2393,41 +2297,6 @@ def make_transient(instance):
     if state.deleted:
         del state.deleted
 
-def make_transient_to_detached(instance):
-    """Make the given transient instance 'detached'.
-
-    All attribute history on the given instance
-    will be reset as though the instance were freshly loaded
-    from a query.  Missing attributes will be marked as expired.
-    The primary key attributes of the object, which are required, will be made
-    into the "key" of the instance.
-
-    The object can then be added to a session, or merged
-    possibly with the load=False flag, at which point it will look
-    as if it were loaded that way, without emitting SQL.
-
-    This is a special use case function that differs from a normal
-    call to :meth:`.Session.merge` in that a given persistent state
-    can be manufactured without any SQL calls.
-
-    .. versionadded:: 0.9.5
-
-    .. seealso::
-
-        :func:`.make_transient`
-
-    """
-    state = attributes.instance_state(instance)
-    if state.session_id or state.key:
-        raise sa_exc.InvalidRequestError(
-                    "Given object must be transient")
-    state.key = state.mapper._identity_key_from_state(state)
-    if state.deleted:
-        del state.deleted
-    state._commit_all(state.dict)
-    state._expire_attributes(state.dict, state.unloaded)
-
-
 
 def object_session(instance):
     """Return the ``Session`` to which instance belongs.
@@ -2441,5 +2310,13 @@ def object_session(instance):
     except exc.NO_STATE:
         raise exc.UnmappedInstanceError(instance)
 
+
+def _state_session(state):
+    if state.session_id:
+        try:
+            return _sessions[state.session_id]
+        except KeyError:
+            pass
+    return None
 
 _new_sessionid = util.counter()

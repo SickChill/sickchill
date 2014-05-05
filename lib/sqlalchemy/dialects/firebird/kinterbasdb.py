@@ -24,7 +24,7 @@ also accepts the following:
 
 * ``concurrency_level`` - set the backend policy with regards to threading
   issues: by default SQLAlchemy uses policy 1.  See the linked documents
-  below for further information.
+  below for futher information.
 
 .. seealso::
 
@@ -87,7 +87,7 @@ class FBDialect_kinterbasdb(FBDialect):
 
     def __init__(self, type_conv=200, concurrency_level=1,
                             enable_rowcount=True,
-                            retaining=False, **kwargs):
+                            retaining=True, **kwargs):
         super(FBDialect_kinterbasdb, self).__init__(**kwargs)
         self.enable_rowcount = enable_rowcount
         self.type_conv = type_conv

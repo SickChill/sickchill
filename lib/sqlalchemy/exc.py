@@ -6,9 +6,9 @@
 
 """Exceptions used with SQLAlchemy.
 
-The base exception class is :exc:`.SQLAlchemyError`.  Exceptions which are
+The base exception class is :class:`.SQLAlchemyError`.  Exceptions which are
 raised as a result of DBAPI exceptions are all subclasses of
-:exc:`.DBAPIError`.
+:class:`.DBAPIError`.
 
 """
 
@@ -26,9 +26,6 @@ class ArgumentError(SQLAlchemyError):
 
     """
 
-class NoSuchModuleError(ArgumentError):
-    """Raised when a dynamically-loaded module (usually a database dialect)
-    of a particular name cannot be located."""
 
 class NoForeignKeysError(ArgumentError):
     """Raised when no foreign keys can be located between two selectables
@@ -172,7 +169,7 @@ class UnboundExecutionError(InvalidRequestError):
 
 class DontWrapMixin(object):
     """A mixin class which, when applied to a user-defined Exception class,
-    will not be wrapped inside of :exc:`.StatementError` if the error is
+    will not be wrapped inside of :class:`.StatementError` if the error is
     emitted within the process of executing a statement.
 
     E.g.::
@@ -190,6 +187,10 @@ class DontWrapMixin(object):
                     raise MyCustomException("invalid!")
 
     """
+import sys
+if sys.version_info < (2, 5):
+    class DontWrapMixin:
+        pass
 
 # Moved to orm.exc; compatibility definition installed by orm import until 0.6
 UnmappedColumnError = None
@@ -222,10 +223,6 @@ class StatementError(SQLAlchemyError):
         self.statement = statement
         self.params = params
         self.orig = orig
-        self.detail = []
-
-    def add_detail(self, msg):
-        self.detail.append(msg)
 
     def __reduce__(self):
         return self.__class__, (self.args[0], self.statement,
@@ -234,13 +231,8 @@ class StatementError(SQLAlchemyError):
     def __str__(self):
         from sqlalchemy.sql import util
         params_repr = util._repr_params(self.params, 10)
-
-        return ' '.join([
-                            "(%s)" % det for det in self.detail
-                        ] + [
-                            SQLAlchemyError.__str__(self),
-                             repr(self.statement), repr(params_repr)
-                        ])
+        return ' '.join((SQLAlchemyError.__str__(self),
+                         repr(self.statement), repr(params_repr)))
 
     def __unicode__(self):
         return self.__str__()
@@ -305,7 +297,7 @@ class DBAPIError(StatementError):
             text = str(orig)
         except (KeyboardInterrupt, SystemExit):
             raise
-        except Exception as e:
+        except Exception, e:
             text = 'Error in str() of DB-API-generated exception: ' + str(e)
         StatementError.__init__(
                 self,

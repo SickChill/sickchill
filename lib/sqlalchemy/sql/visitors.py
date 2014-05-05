@@ -31,7 +31,6 @@ from .. import exc
 __all__ = ['VisitableType', 'Visitable', 'ClauseVisitor',
     'CloningVisitor', 'ReplacingCloningVisitor', 'iterate',
     'iterate_depthfirst', 'traverse_using', 'traverse',
-    'traverse_depthfirst',
     'cloned_traverse', 'replacement_traverse']
 
 
@@ -51,9 +50,11 @@ class VisitableType(type):
     Classes having no __visit_name__ attribute will remain unaffected.
     """
     def __init__(cls, clsname, bases, clsdict):
-        if clsname != 'Visitable' and \
-                hasattr(cls, '__visit_name__'):
-            _generate_dispatch(cls)
+        if cls.__name__ == 'Visitable' or not hasattr(cls, '__visit_name__'):
+            super(VisitableType, cls).__init__(clsname, bases, clsdict)
+            return
+
+        _generate_dispatch(cls)
 
         super(VisitableType, cls).__init__(clsname, bases, clsdict)
 
@@ -97,11 +98,13 @@ def _generate_dispatch(cls):
         cls._compiler_dispatch = _compiler_dispatch
 
 
-class Visitable(util.with_metaclass(VisitableType, object)):
+class Visitable(object):
     """Base class for visitable objects, applies the
     ``VisitableType`` metaclass.
 
     """
+
+    __metaclass__ = VisitableType
 
 
 class ClauseVisitor(object):
@@ -267,8 +270,8 @@ def cloned_traverse(obj, opts, visitors):
     """clone the given expression structure, allowing
     modifications by visitors."""
 
-    cloned = {}
-    stop_on = set(opts.get('stop_on', []))
+    cloned = util.column_dict()
+    stop_on = util.column_set(opts.get('stop_on', []))
 
     def clone(elem):
         if elem in stop_on:
@@ -291,8 +294,8 @@ def replacement_traverse(obj, opts, replace):
     """clone the given expression structure, allowing element
     replacement by a given replacement function."""
 
-    cloned = {}
-    stop_on = set([id(x) for x in opts.get('stop_on', [])])
+    cloned = util.column_dict()
+    stop_on = util.column_set([id(x) for x in opts.get('stop_on', [])])
 
     def clone(elem, **kw):
         if id(elem) in stop_on or \

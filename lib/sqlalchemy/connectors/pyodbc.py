@@ -5,23 +5,20 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 from . import Connector
-from .. import util
-
+from ..util import asbool
 
 import sys
 import re
+import urllib
 
 
 class PyODBCConnector(Connector):
     driver = 'pyodbc'
 
     supports_sane_multi_rowcount = False
-
-    if util.py2k:
-        # PyODBC unicode is broken on UCS-4 builds
-        supports_unicode = sys.maxunicode == 65535
-        supports_unicode_statements = supports_unicode
-
+    # PyODBC unicode is broken on UCS-4 builds
+    supports_unicode = sys.maxunicode == 65535
+    supports_unicode_statements = supports_unicode
     supports_native_decimal = True
     default_paramstyle = 'named'
 
@@ -59,10 +56,10 @@ class PyODBCConnector(Connector):
         connect_args = {}
         for param in ('ansi', 'unicode_results', 'autocommit'):
             if param in keys:
-                connect_args[param] = util.asbool(keys.pop(param))
+                connect_args[param] = asbool(keys.pop(param))
 
         if 'odbc_connect' in keys:
-            connectors = [util.unquote_plus(keys.pop('odbc_connect'))]
+            connectors = [urllib.unquote_plus(keys.pop('odbc_connect'))]
         else:
             dsn_connection = 'dsn' in keys or \
                             ('host' in keys and 'database' not in keys)
@@ -94,7 +91,7 @@ class PyODBCConnector(Connector):
                 connectors.append("AutoTranslate=%s" %
                                     keys.pop("odbc_autotranslate"))
 
-            connectors.extend(['%s=%s' % (k, v) for k, v in keys.items()])
+            connectors.extend(['%s=%s' % (k, v) for k, v in keys.iteritems()])
         return [[";".join(connectors)], connect_args]
 
     def is_disconnect(self, e, connection, cursor):
@@ -124,19 +121,18 @@ class PyODBCConnector(Connector):
             self.freetds_driver_version = dbapi_con.getinfo(
                 pyodbc.SQL_DRIVER_VER)
 
+        # the "Py2K only" part here is theoretical.
+        # have not tried pyodbc + python3.1 yet.
+        # Py2K
         self.supports_unicode_statements = (
-            not util.py2k or
-            (not self.freetds and not self.easysoft)
-        )
-
+            not self.freetds and not self.easysoft)
         if self._user_supports_unicode_binds is not None:
             self.supports_unicode_binds = self._user_supports_unicode_binds
-        elif util.py2k:
+        else:
             self.supports_unicode_binds = (
                 not self.freetds or self.freetds_driver_version >= '0.91'
             ) and not self.easysoft
-        else:
-            self.supports_unicode_binds = True
+        # end Py2K
 
         # run other initialization which asks for user name, etc.
         super(PyODBCConnector, self).initialize(connection)

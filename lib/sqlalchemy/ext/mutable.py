@@ -177,7 +177,7 @@ callbacks. In our case, this is a good thing, since if this dictionary were
 picklable, it could lead to an excessively large pickle size for our value
 objects that are pickled by themselves outside of the context of the parent.
 The developer responsibility here is only to provide a ``__getstate__`` method
-that excludes the :meth:`~MutableBase._parents` collection from the pickle
+that excludes the :meth:`~.MutableBase._parents` collection from the pickle
 stream::
 
     class MyMutableType(Mutable):
@@ -327,7 +327,7 @@ Supporting Pickling
 
 As is the case with :class:`.Mutable`, the :class:`.MutableComposite` helper
 class uses a ``weakref.WeakKeyDictionary`` available via the
-:meth:`MutableBase._parents` attribute which isn't picklable. If we need to
+:meth:`.MutableBase._parents` attribute which isn't picklable. If we need to
 pickle instances of ``Point`` or its owning class ``Vertex``, we at least need
 to define a ``__getstate__`` that doesn't include the ``_parents`` dictionary.
 Below we define both a ``__getstate__`` and a ``__setstate__`` that package up
@@ -344,7 +344,7 @@ the minimal form of our ``Point`` class::
 
 As with :class:`.Mutable`, the :class:`.MutableComposite` augments the
 pickling process of the parent's object-relational state so that the
-:meth:`MutableBase._parents` collection is restored to all ``Point`` objects.
+:meth:`.MutableBase._parents` collection is restored to all ``Point`` objects.
 
 """
 from ..orm.attributes import flag_modified
@@ -540,7 +540,7 @@ class Mutable(MutableBase):
 
         To associate a particular mutable type with all occurrences of a
         particular type, use the :meth:`.Mutable.associate_with` classmethod
-        of the particular :class:`.Mutable` subclass to establish a global
+        of the particular :meth:`.Mutable` subclass to establish a global
         association.
 
         .. warning::
@@ -586,14 +586,14 @@ class MutableComposite(MutableBase):
                 setattr(parent, attr_name, value)
 
 def _setup_composite_listener():
+    import types
     def _listen_for_type(mapper, class_):
         for prop in mapper.iterate_properties:
-            if (hasattr(prop, 'composite_class') and
-                isinstance(prop.composite_class, type) and
-                 issubclass(prop.composite_class, MutableComposite)):
+            if (hasattr(prop, 'composite_class') and (type(prop.composite_class) in (types.ClassType, types.TypeType)) and
+                issubclass(prop.composite_class, MutableComposite)):
                 prop.composite_class._listen_on_attribute(
                     getattr(class_, prop.key), False, class_)
-    if not event.contains(Mapper, "mapper_configured", _listen_for_type):
+    if not Mapper.dispatch.mapper_configured._contains(Mapper, _listen_for_type):
         event.listen(Mapper, 'mapper_configured', _listen_for_type)
 _setup_composite_listener()
 

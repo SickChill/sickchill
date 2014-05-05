@@ -52,7 +52,7 @@ def _parse_error(hstore_str, pos):
 
 
 def _parse_hstore(hstore_str):
-    """Parse an hstore from its literal string representation.
+    """Parse an hstore from it's literal string representation.
 
     Attempts to approximate PG's hstore input parsing rules as closely as
     possible. Although currently this is not strictly necessary, since the
@@ -97,14 +97,14 @@ def _serialize_hstore(val):
     def esc(s, position):
         if position == 'value' and s is None:
             return 'NULL'
-        elif isinstance(s, util.string_types):
+        elif isinstance(s, basestring):
             return '"%s"' % s.replace("\\", "\\\\").replace('"', r'\"')
         else:
             raise ValueError("%r in %s position is not a string." %
                              (s, position))
 
     return ', '.join('%s=>%s' % (esc(k, 'key'), esc(v, 'value'))
-                     for k, v in val.items())
+                     for k, v in val.iteritems())
 
 
 class HSTORE(sqltypes.Concatenable, sqltypes.TypeEngine):

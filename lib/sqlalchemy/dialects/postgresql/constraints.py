@@ -47,10 +47,10 @@ class ExcludeConstraint(ColumnCollectionConstraint):
         """
         ColumnCollectionConstraint.__init__(
             self,
-            *[col for col, op in elements],
             name=kw.get('name'),
             deferrable=kw.get('deferrable'),
-            initially=kw.get('initially')
+            initially=kw.get('initially'),
+            *[col for col, op in elements]
             )
         self.operators = {}
         for col_or_string, op in elements:
@@ -64,10 +64,10 @@ class ExcludeConstraint(ColumnCollectionConstraint):
     def copy(self, **kw):
         elements = [(col, self.operators[col])
                     for col in self.columns.keys()]
-        c = self.__class__(*elements,
-                            name=self.name,
+        c = self.__class__(name=self.name,
                             deferrable=self.deferrable,
-                            initially=self.initially)
+                            initially=self.initially,
+                            *elements)
         c.dispatch._update(self.dispatch)
         return c
 

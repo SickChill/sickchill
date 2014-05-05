@@ -6,23 +6,20 @@
 """Internal implementation for declarative."""
 
 from ...schema import Table, Column
-from ...orm import mapper, class_mapper, synonym
+from ...orm import mapper, class_mapper
 from ...orm.interfaces import MapperProperty
 from ...orm.properties import ColumnProperty, CompositeProperty
-from ...orm.attributes import QueryableAttribute
-from ...orm.base import _is_mapped_class
+from ...orm.util import _is_mapped_class
 from ... import util, exc
-from ...util import topological
 from ...sql import expression
 from ... import event
 from . import clsregistry
-import collections
-import weakref
+
 
 def _declared_mapping_info(cls):
     # deferred mapping
-    if _DeferredMapperConfig.has_cls(cls):
-        return _DeferredMapperConfig.config_for_cls(cls)
+    if cls in _MapperConfig.configs:
+        return _MapperConfig.configs[cls]
     # regular mapping
     elif _is_mapped_class(cls):
         return class_mapper(cls, configure=False)
@@ -52,10 +49,6 @@ def _as_declarative(cls, classname, dict_):
             @event.listens_for(mapper, "after_configured")
             def go():
                 cls.__declare_last__()
-        if '__declare_first__' in base.__dict__:
-            @event.listens_for(mapper, "before_configured")
-            def go():
-                cls.__declare_first__()
         if '__abstract__' in base.__dict__:
             if (base is cls or
                 (base in cls.__bases__ and not _is_declarative_inherits)
@@ -155,15 +148,6 @@ def _as_declarative(cls, classname, dict_):
         if isinstance(value, declarative_props):
             value = getattr(cls, k)
 
-        elif isinstance(value, QueryableAttribute) and \
-                value.class_ is not cls and \
-                value.key != k:
-            # detect a QueryableAttribute that's already mapped being
-            # assigned elsewhere in userland, turn into a synonym()
-            value = synonym(value.key)
-            setattr(cls, k, value)
-
-
         if (isinstance(value, tuple) and len(value) == 1 and
             isinstance(value[0], (Column, MapperProperty))):
             util.warn("Ignoring declarative-like tuple value of attribute "
@@ -189,19 +173,15 @@ def _as_declarative(cls, classname, dict_):
 
     # extract columns from the class dict
     declared_columns = set()
-    name_to_prop_key = collections.defaultdict(set)
-    for key, c in list(our_stuff.items()):
+    for key, c in our_stuff.iteritems():
         if isinstance(c, (ColumnProperty, CompositeProperty)):
             for col in c.columns:
                 if isinstance(col, Column) and \
                     col.table is None:
                     _undefer_column_name(key, col)
-                    if not isinstance(c, CompositeProperty):
-                        name_to_prop_key[col.name].add(key)
                     declared_columns.add(col)
         elif isinstance(c, Column):
             _undefer_column_name(key, c)
-            name_to_prop_key[c.name].add(key)
             declared_columns.add(c)
             # if the column is the same name as the key,
             # remove it from the explicit properties dict.
@@ -210,15 +190,6 @@ def _as_declarative(cls, classname, dict_):
             # in multi-column ColumnProperties.
             if key == c.key:
                 del our_stuff[key]
-
-    for name, keys in name_to_prop_key.items():
-        if len(keys) > 1:
-            util.warn(
-                "On class %r, Column object %r named directly multiple times, "
-                "only one will be used: %s" %
-                (classname, name, (", ".join(sorted(keys))))
-            )
-
     declared_columns = sorted(
         declared_columns, key=lambda c: c._creation_order)
     table = None
@@ -310,24 +281,19 @@ def _as_declarative(cls, classname, dict_):
                     inherited_mapped_table is not inherited_table:
                     inherited_mapped_table._refresh_for_new_column(c)
 
-    defer_map = hasattr(cls, '_sa_decl_prepare')
-    if defer_map:
-        cfg_cls = _DeferredMapperConfig
-    else:
-        cfg_cls = _MapperConfig
-    mt = cfg_cls(mapper_cls,
+    mt = _MapperConfig(mapper_cls,
                        cls, table,
                        inherits,
                        declared_columns,
                        column_copies,
                        our_stuff,
                        mapper_args_fn)
-    if not defer_map:
+    if not hasattr(cls, '_sa_decl_prepare'):
         mt.map()
 
 
 class _MapperConfig(object):
-
+    configs = util.OrderedDict()
     mapped_table = None
 
     def __init__(self, mapper_cls,
@@ -345,7 +311,7 @@ class _MapperConfig(object):
         self.mapper_args_fn = mapper_args_fn
         self.declared_columns = declared_columns
         self.column_copies = column_copies
-
+        self.configs[cls] = self
 
     def _prepare_mapper_arguments(self):
         properties = self.properties
@@ -388,7 +354,7 @@ class _MapperConfig(object):
             # in which case the mapper makes this combination).
             # See if the superclass has a similar column property.
             # If so, join them together.
-            for k, col in list(properties.items()):
+            for k, col in properties.items():
                 if not isinstance(col, expression.ColumnElement):
                     continue
                 if k in inherited_mapper._props:
@@ -402,69 +368,13 @@ class _MapperConfig(object):
         return result_mapper_args
 
     def map(self):
+        self.configs.pop(self.cls, None)
         mapper_args = self._prepare_mapper_arguments()
         self.cls.__mapper__ = self.mapper_cls(
             self.cls,
             self.local_table,
             **mapper_args
         )
-
-class _DeferredMapperConfig(_MapperConfig):
-    _configs = util.OrderedDict()
-
-    @property
-    def cls(self):
-        return self._cls()
-
-    @cls.setter
-    def cls(self, class_):
-        self._cls = weakref.ref(class_, self._remove_config_cls)
-        self._configs[self._cls] = self
-
-    @classmethod
-    def _remove_config_cls(cls, ref):
-        cls._configs.pop(ref, None)
-
-    @classmethod
-    def has_cls(cls, class_):
-        # 2.6 fails on weakref if class_ is an old style class
-        return isinstance(class_, type) and \
-                weakref.ref(class_) in cls._configs
-
-    @classmethod
-    def config_for_cls(cls, class_):
-        return cls._configs[weakref.ref(class_)]
-
-
-    @classmethod
-    def classes_for_base(cls, base_cls, sort=True):
-        classes_for_base = [m for m in cls._configs.values()
-                        if issubclass(m.cls, base_cls)]
-        if not sort:
-            return classes_for_base
-
-        all_m_by_cls = dict(
-                            (m.cls, m)
-                            for m in classes_for_base
-                        )
-
-        tuples = []
-        for m_cls in all_m_by_cls:
-            tuples.extend(
-                    (all_m_by_cls[base_cls], all_m_by_cls[m_cls])
-                    for base_cls in m_cls.__bases__
-                    if base_cls in all_m_by_cls
-                )
-        return list(
-            topological.sort(
-                tuples,
-                classes_for_base
-            )
-        )
-
-    def map(self):
-        self._configs.pop(self._cls, None)
-        super(_DeferredMapperConfig, self).map()
 
 
 def _add_attribute(cls, key, value):
@@ -474,7 +384,6 @@ def _add_attribute(cls, key, value):
     adds it to the Mapper, adds a column to the mapped Table, etc.
 
     """
-
     if '__mapper__' in cls.__dict__:
         if isinstance(value, Column):
             _undefer_column_name(key, value)
@@ -487,14 +396,6 @@ def _add_attribute(cls, key, value):
                     cls.__table__.append_column(col)
             cls.__mapper__.add_property(key, value)
         elif isinstance(value, MapperProperty):
-            cls.__mapper__.add_property(
-                key,
-                clsregistry._deferred_relationship(cls, value)
-            )
-        elif isinstance(value, QueryableAttribute) and value.key != key:
-            # detect a QueryableAttribute that's already mapped being
-            # assigned elsewhere in userland, turn into a synonym()
-            value = synonym(value.key)
             cls.__mapper__.add_property(
                 key,
                 clsregistry._deferred_relationship(cls, value)

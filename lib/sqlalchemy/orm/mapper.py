@@ -14,7 +14,6 @@ available in :class:`~sqlalchemy.orm.`.
 
 """
 from __future__ import absolute_import
-
 import types
 import weakref
 from itertools import chain
@@ -22,18 +21,26 @@ from collections import deque
 
 from .. import sql, util, log, exc as sa_exc, event, schema, inspection
 from ..sql import expression, visitors, operators, util as sql_util
-from . import instrumentation, attributes, exc as orm_exc, loading
-from . import properties
+from . import instrumentation, attributes, \
+                        exc as orm_exc, events, loading
 from .interfaces import MapperProperty, _InspectionAttr, _MappedAttribute
 
-from .base import _class_to_mapper, _state_mapper, class_mapper, \
-        state_str, _INSTRUMENTOR
-from .path_registry import PathRegistry
-
+from .util import _INSTRUMENTOR, _class_to_mapper, \
+        _state_mapper, class_mapper, \
+        PathRegistry, state_str
 import sys
+properties = util.importlater("sqlalchemy.orm", "properties")
+descriptor_props = util.importlater("sqlalchemy.orm", "descriptor_props")
 
+__all__ = (
+    'Mapper',
+    '_mapper_registry',
+    'class_mapper',
+    'object_mapper',
+    )
 
 _mapper_registry = weakref.WeakKeyDictionary()
+_new_mappers = False
 _already_compiling = False
 
 _memoized_configured_property = util.group_expirable_memoized_property()
@@ -48,8 +55,6 @@ NO_ATTRIBUTE = util.symbol('NO_ATTRIBUTE')
 _CONFIGURE_MUTEX = util.threading.RLock()
 
 
-@inspection._self_inspects
-@log.class_logger
 class Mapper(_InspectionAttr):
     """Define the correlation of class attributes to database table
     columns.
@@ -82,12 +87,9 @@ class Mapper(_InspectionAttr):
 
 
     """
-
-    _new_mappers = False
-
     def __init__(self,
                  class_,
-                 local_table=None,
+                 local_table,
                  properties=None,
                  primary_key=None,
                  non_primary=False,
@@ -110,400 +112,14 @@ class Mapper(_InspectionAttr):
                  include_properties=None,
                  exclude_properties=None,
                  passive_updates=True,
-                 confirm_deleted_rows=True,
                  eager_defaults=False,
                  legacy_is_orphan=False,
                  _compiled_cache_size=100,
                  ):
-        """Return a new :class:`~.Mapper` object.
+        """Construct a new mapper.
 
-        This function is typically used behind the scenes
-        via the Declarative extension.   When using Declarative,
-        many of the usual :func:`.mapper` arguments are handled
-        by the Declarative extension itself, including ``class_``,
-        ``local_table``, ``properties``, and  ``inherits``.
-        Other options are passed to :func:`.mapper` using
-        the ``__mapper_args__`` class variable::
-
-           class MyClass(Base):
-               __tablename__ = 'my_table'
-               id = Column(Integer, primary_key=True)
-               type = Column(String(50))
-               alt = Column("some_alt", Integer)
-
-               __mapper_args__ = {
-                   'polymorphic_on' : type
-               }
-
-
-        Explicit use of :func:`.mapper`
-        is often referred to as *classical mapping*.  The above
-        declarative example is equivalent in classical form to::
-
-            my_table = Table("my_table", metadata,
-                Column('id', Integer, primary_key=True),
-                Column('type', String(50)),
-                Column("some_alt", Integer)
-            )
-
-            class MyClass(object):
-                pass
-
-            mapper(MyClass, my_table,
-                polymorphic_on=my_table.c.type,
-                properties={
-                    'alt':my_table.c.some_alt
-                })
-
-        .. seealso::
-
-            :ref:`classical_mapping` - discussion of direct usage of
-            :func:`.mapper`
-
-        :param class\_: The class to be mapped.  When using Declarative,
-          this argument is automatically passed as the declared class
-          itself.
-
-        :param local_table: The :class:`.Table` or other selectable
-           to which the class is mapped.  May be ``None`` if
-           this mapper inherits from another mapper using single-table
-           inheritance.   When using Declarative, this argument is
-           automatically passed by the extension, based on what
-           is configured via the ``__table__`` argument or via the
-           :class:`.Table` produced as a result of the ``__tablename__``
-           and :class:`.Column` arguments present.
-
-        :param always_refresh: If True, all query operations for this mapped
-           class will overwrite all data within object instances that already
-           exist within the session, erasing any in-memory changes with
-           whatever information was loaded from the database. Usage of this
-           flag is highly discouraged; as an alternative, see the method
-           :meth:`.Query.populate_existing`.
-
-        :param allow_partial_pks: Defaults to True.  Indicates that a
-           composite primary key with some NULL values should be considered as
-           possibly existing within the database. This affects whether a
-           mapper will assign an incoming row to an existing identity, as well
-           as if :meth:`.Session.merge` will check the database first for a
-           particular primary key value. A "partial primary key" can occur if
-           one has mapped to an OUTER JOIN, for example.
-
-        :param batch: Defaults to ``True``, indicating that save operations
-           of multiple entities can be batched together for efficiency.
-           Setting to False indicates
-           that an instance will be fully saved before saving the next
-           instance.  This is used in the extremely rare case that a
-           :class:`.MapperEvents` listener requires being called
-           in between individual row persistence operations.
-
-        :param column_prefix: A string which will be prepended
-           to the mapped attribute name when :class:`.Column`
-           objects are automatically assigned as attributes to the
-           mapped class.  Does not affect explicitly specified
-           column-based properties.
-
-           See the section :ref:`column_prefix` for an example.
-
-        :param concrete: If True, indicates this mapper should use concrete
-           table inheritance with its parent mapper.
-
-           See the section :ref:`concrete_inheritance` for an example.
-
-        :param confirm_deleted_rows: defaults to True; when a DELETE occurs
-          of one more rows based on specific primary keys, a warning is
-          emitted when the number of rows matched does not equal the number
-          of rows expected.  This parameter may be set to False to handle the case
-          where database ON DELETE CASCADE rules may be deleting some of those
-          rows automatically.  The warning may be changed to an exception
-          in a future release.
-
-          .. versionadded:: 0.9.4 - added :paramref:`.mapper.confirm_deleted_rows`
-             as well as conditional matched row checking on delete.
-
-        :param eager_defaults: if True, the ORM will immediately fetch the
-          value of server-generated default values after an INSERT or UPDATE,
-          rather than leaving them as expired to be fetched on next access.
-          This can be used for event schemes where the server-generated values
-          are needed immediately before the flush completes.   By default,
-          this scheme will emit an individual ``SELECT`` statement per row
-          inserted or updated, which note can add significant performance
-          overhead.  However, if the
-          target database supports :term:`RETURNING`, the default values will be
-          returned inline with the INSERT or UPDATE statement, which can
-          greatly enhance performance for an application that needs frequent
-          access to just-generated server defaults.
-
-          .. versionchanged:: 0.9.0 The ``eager_defaults`` option can now
-             make use of :term:`RETURNING` for backends which support it.
-
-        :param exclude_properties: A list or set of string column names to
-          be excluded from mapping.
-
-          See :ref:`include_exclude_cols` for an example.
-
-        :param extension: A :class:`.MapperExtension` instance or
-           list of :class:`.MapperExtension` instances which will be applied
-           to all operations by this :class:`.Mapper`.  **Deprecated.**
-           Please see :class:`.MapperEvents`.
-
-        :param include_properties: An inclusive list or set of string column
-          names to map.
-
-          See :ref:`include_exclude_cols` for an example.
-
-        :param inherits: A mapped class or the corresponding :class:`.Mapper`
-          of one indicating a superclass to which this :class:`.Mapper`
-          should *inherit* from.   The mapped class here must be a subclass
-          of the other mapper's class.   When using Declarative, this argument
-          is passed automatically as a result of the natural class
-          hierarchy of the declared classes.
-
-          .. seealso::
-
-            :ref:`inheritance_toplevel`
-
-        :param inherit_condition: For joined table inheritance, a SQL
-           expression which will
-           define how the two tables are joined; defaults to a natural join
-           between the two tables.
-
-        :param inherit_foreign_keys: When ``inherit_condition`` is used and the
-           columns present are missing a :class:`.ForeignKey` configuration,
-           this parameter can be used to specify which columns are "foreign".
-           In most cases can be left as ``None``.
-
-        :param legacy_is_orphan: Boolean, defaults to ``False``.
-          When ``True``, specifies that "legacy" orphan consideration
-          is to be applied to objects mapped by this mapper, which means
-          that a pending (that is, not persistent) object is auto-expunged
-          from an owning :class:`.Session` only when it is de-associated
-          from *all* parents that specify a ``delete-orphan`` cascade towards
-          this mapper.  The new default behavior is that the object is auto-expunged
-          when it is de-associated with *any* of its parents that specify
-          ``delete-orphan`` cascade.  This behavior is more consistent with
-          that of a persistent object, and allows behavior to be consistent
-          in more scenarios independently of whether or not an orphanable
-          object has been flushed yet or not.
-
-          See the change note and example at :ref:`legacy_is_orphan_addition`
-          for more detail on this change.
-
-          .. versionadded:: 0.8 - the consideration of a pending object as
-            an "orphan" has been modified to more closely match the
-            behavior as that of persistent objects, which is that the object
-            is expunged from the :class:`.Session` as soon as it is
-            de-associated from any of its orphan-enabled parents.  Previously,
-            the pending object would be expunged only if de-associated
-            from all of its orphan-enabled parents. The new flag ``legacy_is_orphan``
-            is added to :func:`.orm.mapper` which re-establishes the
-            legacy behavior.
-
-        :param non_primary: Specify that this :class:`.Mapper` is in addition
-          to the "primary" mapper, that is, the one used for persistence.
-          The :class:`.Mapper` created here may be used for ad-hoc
-          mapping of the class to an alternate selectable, for loading
-          only.
-
-          :paramref:`.Mapper.non_primary` is not an often used option, but
-          is useful in some specific :func:`.relationship` cases.
-
-          .. seealso::
-
-              :ref:`relationship_non_primary_mapper`
-
-        :param order_by: A single :class:`.Column` or list of :class:`.Column`
-           objects for which selection operations should use as the default
-           ordering for entities.  By default mappers have no pre-defined
-           ordering.
-
-        :param passive_updates: Indicates UPDATE behavior of foreign key
-           columns when a primary key column changes on a joined-table
-           inheritance mapping.   Defaults to ``True``.
-
-           When True, it is assumed that ON UPDATE CASCADE is configured on
-           the foreign key in the database, and that the database will handle
-           propagation of an UPDATE from a source column to dependent columns
-           on joined-table rows.
-
-           When False, it is assumed that the database does not enforce
-           referential integrity and will not be issuing its own CASCADE
-           operation for an update.  The unit of work process will
-           emit an UPDATE statement for the dependent columns during a
-           primary key change.
-
-           .. seealso::
-
-               :ref:`passive_updates` - description of a similar feature as
-               used with :func:`.relationship`
-
-        :param polymorphic_on: Specifies the column, attribute, or
-          SQL expression used to determine the target class for an
-          incoming row, when inheriting classes are present.
-
-          This value is commonly a :class:`.Column` object that's
-          present in the mapped :class:`.Table`::
-
-            class Employee(Base):
-                __tablename__ = 'employee'
-
-                id = Column(Integer, primary_key=True)
-                discriminator = Column(String(50))
-
-                __mapper_args__ = {
-                    "polymorphic_on":discriminator,
-                    "polymorphic_identity":"employee"
-                }
-
-          It may also be specified
-          as a SQL expression, as in this example where we
-          use the :func:`.case` construct to provide a conditional
-          approach::
-
-            class Employee(Base):
-                __tablename__ = 'employee'
-
-                id = Column(Integer, primary_key=True)
-                discriminator = Column(String(50))
-
-                __mapper_args__ = {
-                    "polymorphic_on":case([
-                        (discriminator == "EN", "engineer"),
-                        (discriminator == "MA", "manager"),
-                    ], else_="employee"),
-                    "polymorphic_identity":"employee"
-                }
-
-          It may also refer to any attribute
-          configured with :func:`.column_property`, or to the
-          string name of one::
-
-                class Employee(Base):
-                    __tablename__ = 'employee'
-
-                    id = Column(Integer, primary_key=True)
-                    discriminator = Column(String(50))
-                    employee_type = column_property(
-                        case([
-                            (discriminator == "EN", "engineer"),
-                            (discriminator == "MA", "manager"),
-                        ], else_="employee")
-                    )
-
-                    __mapper_args__ = {
-                        "polymorphic_on":employee_type,
-                        "polymorphic_identity":"employee"
-                    }
-
-          .. versionchanged:: 0.7.4
-              ``polymorphic_on`` may be specified as a SQL expression,
-              or refer to any attribute configured with
-              :func:`.column_property`, or to the string name of one.
-
-          When setting ``polymorphic_on`` to reference an
-          attribute or expression that's not present in the
-          locally mapped :class:`.Table`, yet the value
-          of the discriminator should be persisted to the database,
-          the value of the
-          discriminator is not automatically set on new
-          instances; this must be handled by the user,
-          either through manual means or via event listeners.
-          A typical approach to establishing such a listener
-          looks like::
-
-                from sqlalchemy import event
-                from sqlalchemy.orm import object_mapper
-
-                @event.listens_for(Employee, "init", propagate=True)
-                def set_identity(instance, *arg, **kw):
-                    mapper = object_mapper(instance)
-                    instance.discriminator = mapper.polymorphic_identity
-
-          Where above, we assign the value of ``polymorphic_identity``
-          for the mapped class to the ``discriminator`` attribute,
-          thus persisting the value to the ``discriminator`` column
-          in the database.
-
-          .. seealso::
-
-            :ref:`inheritance_toplevel`
-
-        :param polymorphic_identity: Specifies the value which
-          identifies this particular class as returned by the
-          column expression referred to by the ``polymorphic_on``
-          setting.  As rows are received, the value corresponding
-          to the ``polymorphic_on`` column expression is compared
-          to this value, indicating which subclass should
-          be used for the newly reconstructed object.
-
-        :param properties: A dictionary mapping the string names of object
-           attributes to :class:`.MapperProperty` instances, which define the
-           persistence behavior of that attribute.  Note that :class:`.Column`
-           objects present in
-           the mapped :class:`.Table` are automatically placed into
-           ``ColumnProperty`` instances upon mapping, unless overridden.
-           When using Declarative, this argument is passed automatically,
-           based on all those :class:`.MapperProperty` instances declared
-           in the declared class body.
-
-        :param primary_key: A list of :class:`.Column` objects which define the
-           primary key to be used against this mapper's selectable unit.
-           This is normally simply the primary key of the ``local_table``, but
-           can be overridden here.
-
-        :param version_id_col: A :class:`.Column`
-           that will be used to keep a running version id of rows
-           in the table.  This is used to detect concurrent updates or
-           the presence of stale data in a flush.  The methodology is to
-           detect if an UPDATE statement does not match the last known
-           version id, a
-           :class:`~sqlalchemy.orm.exc.StaleDataError` exception is
-           thrown.
-           By default, the column must be of :class:`.Integer` type,
-           unless ``version_id_generator`` specifies an alternative version
-           generator.
-
-           .. seealso::
-
-              :ref:`mapper_version_counter` - discussion of version counting
-              and rationale.
-
-        :param version_id_generator: Define how new version ids should
-          be generated.  Defaults to ``None``, which indicates that
-          a simple integer counting scheme be employed.  To provide a custom
-          versioning scheme, provide a callable function of the form::
-
-              def generate_version(version):
-                  return next_version
-
-          Alternatively, server-side versioning functions such as triggers,
-          or programmatic versioning schemes outside of the version id generator
-          may be used, by specifying the value ``False``.
-          Please see :ref:`server_side_version_counter` for a discussion
-          of important points when using this option.
-
-          .. versionadded:: 0.9.0 ``version_id_generator`` supports server-side
-             version number generation.
-
-          .. seealso::
-
-             :ref:`custom_version_counter`
-
-             :ref:`server_side_version_counter`
-
-
-        :param with_polymorphic: A tuple in the form ``(<classes>,
-            <selectable>)`` indicating the default style of "polymorphic"
-            loading, that is, which tables are queried at once. <classes> is
-            any single or list of mappers and/or classes indicating the
-            inherited classes that should be loaded at once. The special value
-            ``'*'`` may be used to indicate all descending classes should be
-            loaded immediately. The second tuple argument <selectable>
-            indicates a selectable that will be used to query for multiple
-            classes.
-
-            .. seealso::
-
-              :ref:`with_polymorphic` - discussion of polymorphic querying techniques.
+        Mappers are normally constructed via the
+        :func:`~sqlalchemy.orm.mapper` function.  See for details.
 
         """
 
@@ -520,19 +136,9 @@ class Mapper(_InspectionAttr):
             self.order_by = order_by
 
         self.always_refresh = always_refresh
-
-        if isinstance(version_id_col, MapperProperty):
-            self.version_id_prop = version_id_col
-            self.version_id_col = None
-        else:
-            self.version_id_col = version_id_col
-        if version_id_generator is False:
-            self.version_id_generator = False
-        elif version_id_generator is None:
-            self.version_id_generator = lambda x: (x or 0) + 1
-        else:
-            self.version_id_generator = version_id_generator
-
+        self.version_id_col = version_id_col
+        self.version_id_generator = version_id_generator or \
+                                        (lambda x: (x or 0) + 1)
         self.concrete = concrete
         self.single = False
         self.inherits = inherits
@@ -557,12 +163,8 @@ class Mapper(_InspectionAttr):
         self._compiled_cache_size = _compiled_cache_size
         self._reconstructor = None
         self._deprecated_extensions = util.to_list(extension or [])
-        self.allow_partial_pks = allow_partial_pks
 
-        if self.inherits and not self.concrete:
-            self.confirm_deleted_rows = False
-        else:
-            self.confirm_deleted_rows = confirm_deleted_rows
+        self.allow_partial_pks = allow_partial_pks
 
         self._set_with_polymorphic(with_polymorphic)
 
@@ -609,7 +211,7 @@ class Mapper(_InspectionAttr):
         # configure_mappers() until construction succeeds)
         _CONFIGURE_MUTEX.acquire()
         try:
-            self.dispatch._events._new_mapper_instance(class_, self)
+            events._MapperEventsHold.populate(class_, self)
             self._configure_inheritance()
             self._configure_legacy_instrument_class()
             self._configure_class_instrumentation()
@@ -617,7 +219,8 @@ class Mapper(_InspectionAttr):
             self._configure_properties()
             self._configure_polymorphic_setter()
             self._configure_pks()
-            Mapper._new_mappers = True
+            global _new_mappers
+            _new_mappers = True
             self._log("constructed")
             self._expire_memoizations()
         finally:
@@ -874,6 +477,8 @@ class Mapper(_InspectionAttr):
     c = None
     """A synonym for :attr:`~.Mapper.columns`."""
 
+    dispatch = event.dispatcher(events.MapperEvents)
+
     @util.memoized_property
     def _path_registry(self):
         return PathRegistry.per_mapper(self)
@@ -913,7 +518,7 @@ class Mapper(_InspectionAttr):
                     if self.inherit_condition is None:
                         # figure out inherit condition from our table to the
                         # immediate table of the inherited mapper, not its
-                        # full table which could pull in other stuff we don't
+                        # full table which could pull in other stuff we dont
                         # want (allows test/inheritance.InheritTest4 to pass)
                         self.inherit_condition = sql_util.join_condition(
                                                     self.inherits.local_table,
@@ -982,7 +587,7 @@ class Mapper(_InspectionAttr):
         if with_polymorphic == '*':
             self.with_polymorphic = ('*', None)
         elif isinstance(with_polymorphic, (tuple, list)):
-            if isinstance(with_polymorphic[0], util.string_types + (tuple, list)):
+            if isinstance(with_polymorphic[0], (basestring, tuple, list)):
                 self.with_polymorphic = with_polymorphic
             else:
                 self.with_polymorphic = (with_polymorphic, None)
@@ -1027,7 +632,7 @@ class Mapper(_InspectionAttr):
         self.inherits._inheriting_mappers.append(self)
         self.passive_updates = self.inherits.passive_updates
         self._all_tables = self.inherits._all_tables
-        for key, prop in mapper._props.items():
+        for key, prop in mapper._props.iteritems():
             if key not in self._props and \
                 not self._should_exclude(key, key, local=False,
                                         column=None):
@@ -1129,20 +734,30 @@ class Mapper(_InspectionAttr):
                     self._reconstructor = method
                     event.listen(manager, 'load', _event_on_load, raw=True)
                 elif hasattr(method, '__sa_validators__'):
-                    validation_opts = method.__sa_validation_opts__
+                    include_removes = getattr(method,
+                                            "__sa_include_removes__", False)
                     for name in method.__sa_validators__:
                         self.validators = self.validators.union(
-                            {name: (method, validation_opts)}
+                            {name: (method, include_removes)}
                         )
 
         manager.info[_INSTRUMENTOR] = self
 
+    @util.deprecated("0.7", message=":meth:`.Mapper.compile` "
+                            "is replaced by :func:`.configure_mappers`")
+    def compile(self):
+        """Initialize the inter-mapper relationships of all mappers that
+        have been constructed thus far.
 
-    @classmethod
-    def _configure_all(cls):
-        """Class-level path to the :func:`.configure_mappers` call.
         """
         configure_mappers()
+        return self
+
+    @property
+    @util.deprecated("0.7", message=":attr:`.Mapper.compiled` "
+                            "is replaced by :attr:`.Mapper.configured`")
+    def compiled(self):
+        return self.configured
 
     def dispose(self):
         # Disable any attribute-based compilation.
@@ -1257,12 +872,12 @@ class Mapper(_InspectionAttr):
 
         # load custom properties
         if self._init_properties:
-            for key, prop in self._init_properties.items():
+            for key, prop in self._init_properties.iteritems():
                 self._configure_property(key, prop, False)
 
         # pull properties from the inherited mapper if any.
         if self.inherits:
-            for key, prop in self.inherits._props.items():
+            for key, prop in self.inherits._props.iteritems():
                 if key not in self._props and \
                     not self._should_exclude(key, key, local=False,
                                             column=None):
@@ -1310,8 +925,8 @@ class Mapper(_InspectionAttr):
         if self.polymorphic_on is not None:
             setter = True
 
-            if isinstance(self.polymorphic_on, util.string_types):
-                # polymorphic_on specified as a string - link
+            if isinstance(self.polymorphic_on, basestring):
+                # polymorphic_on specified as as string - link
                 # it to mapped ColumnProperty
                 try:
                     self.polymorphic_on = self._props[self.polymorphic_on]
@@ -1340,7 +955,7 @@ class Mapper(_InspectionAttr):
                 prop = self.polymorphic_on
                 self.polymorphic_on = prop.columns[0]
                 polymorphic_key = prop.key
-            elif not expression._is_column(self.polymorphic_on):
+            elif not expression.is_column(self.polymorphic_on):
                 # polymorphic_on is not a Column and not a ColumnProperty;
                 # not supported right now.
                 raise sa_exc.ArgumentError(
@@ -1462,13 +1077,6 @@ class Mapper(_InspectionAttr):
 
 
     _validate_polymorphic_identity = None
-
-    @_memoized_configured_property
-    def _version_id_prop(self):
-        if self.version_id_col is not None:
-            return self._columntoproperty[self.version_id_col]
-        else:
-            return None
 
     @_memoized_configured_property
     def _acceptable_polymorphic_identities(self):
@@ -1596,7 +1204,7 @@ class Mapper(_InspectionAttr):
         # generate a properties.ColumnProperty
         columns = util.to_list(prop)
         column = columns[0]
-        if not expression._is_column(column):
+        if not expression.is_column(column):
             raise sa_exc.ArgumentError(
                     "%s=%r is not an instance of MapperProperty or Column"
                     % (key, prop))
@@ -1665,7 +1273,7 @@ class Mapper(_InspectionAttr):
         """
 
         self._log("_post_configure_properties() started")
-        l = [(key, prop) for key, prop in self._props.items()]
+        l = [(key, prop) for key, prop in self._props.iteritems()]
         for key, prop in l:
             self._log("initialize prop %s", key)
 
@@ -1683,7 +1291,7 @@ class Mapper(_InspectionAttr):
         using `add_property`.
 
         """
-        for key, value in dict_of_properties.items():
+        for key, value in dict_of_properties.iteritems():
             self.add_property(key, value)
 
     def add_property(self, key, prop):
@@ -1760,7 +1368,7 @@ class Mapper(_InspectionAttr):
         """return a MapperProperty associated with the given key.
         """
 
-        if _configure_mappers and Mapper._new_mappers:
+        if _configure_mappers and _new_mappers:
             configure_mappers()
 
         try:
@@ -1778,9 +1386,9 @@ class Mapper(_InspectionAttr):
     @property
     def iterate_properties(self):
         """return an iterator of all MapperProperty objects."""
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
-        return iter(self._props.values())
+        return self._props.itervalues()
 
     def _mappers_from_spec(self, spec, selectable):
         """given a with_polymorphic() argument, return the set of mappers it
@@ -1852,7 +1460,7 @@ class Mapper(_InspectionAttr):
 
     @_memoized_configured_property
     def _with_polymorphic_mappers(self):
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
         if not self.with_polymorphic:
             return []
@@ -1959,7 +1567,7 @@ class Mapper(_InspectionAttr):
             :attr:`.Mapper.all_orm_descriptors`
 
         """
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
         return util.ImmutableProperties(self._props)
 
@@ -2008,7 +1616,7 @@ class Mapper(_InspectionAttr):
             objects.
 
         """
-        return self._filter_properties(properties.SynonymProperty)
+        return self._filter_properties(descriptor_props.SynonymProperty)
 
     @_memoized_configured_property
     def column_attrs(self):
@@ -2047,13 +1655,13 @@ class Mapper(_InspectionAttr):
             objects.
 
         """
-        return self._filter_properties(properties.CompositeProperty)
+        return self._filter_properties(descriptor_props.CompositeProperty)
 
     def _filter_properties(self, type_):
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
         return util.ImmutableProperties(util.OrderedDict(
-            (k, v) for k, v in self._props.items()
+            (k, v) for k, v in self._props.iteritems()
             if isinstance(v, type_)
         ))
 
@@ -2463,7 +2071,7 @@ class Mapper(_InspectionAttr):
             # attempt to skip dependencies that are not
             # significant to the inheritance chain
             # for two tables that are related by inheritance.
-            # while that dependency may be important, it's technically
+            # while that dependency may be important, it's techinically
             # not what we mean to sort on here.
             parent = table_to_mapper.get(fk.parent.table)
             dep = table_to_mapper.get(fk.column.table)
@@ -2471,16 +2079,16 @@ class Mapper(_InspectionAttr):
                 dep is not None and \
                 dep is not parent and \
                     dep.inherit_condition is not None:
-                cols = set(sql_util._find_columns(dep.inherit_condition))
+                cols = set(sql_util.find_columns(dep.inherit_condition))
                 if parent.inherit_condition is not None:
-                    cols = cols.union(sql_util._find_columns(
+                    cols = cols.union(sql_util.find_columns(
                                         parent.inherit_condition))
                     return fk.parent not in cols and fk.column not in cols
                 else:
                     return fk.parent not in cols
             return False
 
-        sorted_ = sql_util.sort_tables(table_to_mapper,
+        sorted_ = sql_util.sort_tables(table_to_mapper.iterkeys(),
                                     skip_fn=skip,
                                     extra_dependencies=extra_dependencies)
 
@@ -2515,6 +2123,9 @@ class Mapper(_InspectionAttr):
 
         return result
 
+inspection._self_inspects(Mapper)
+log.class_logger(Mapper)
+
 
 def configure_mappers():
     """Initialize the inter-mapper relationships of all mappers that
@@ -2525,9 +2136,11 @@ def configure_mappers():
 
     """
 
-    if not Mapper._new_mappers:
+    global _new_mappers
+    if not _new_mappers:
         return
 
+    _call_configured = None
     _CONFIGURE_MUTEX.acquire()
     try:
         global _already_compiling
@@ -2537,15 +2150,13 @@ def configure_mappers():
         try:
 
             # double-check inside mutex
-            if not Mapper._new_mappers:
+            if not _new_mappers:
                 return
 
-            Mapper.dispatch(Mapper).before_configured()
             # initialize properties on all mappers
             # note that _mapper_registry is unordered, which
             # may randomly conceal/reveal issues related to
             # the order of mapper compilation
-
             for mapper in list(_mapper_registry):
                 if getattr(mapper, '_configure_failed', False):
                     e = sa_exc.InvalidRequestError(
@@ -2561,18 +2172,20 @@ def configure_mappers():
                         mapper._expire_memoizations()
                         mapper.dispatch.mapper_configured(
                                 mapper, mapper.class_)
+                        _call_configured = mapper
                     except:
                         exc = sys.exc_info()[1]
                         if not hasattr(exc, '_configure_failed'):
                             mapper._configure_failed = exc
                         raise
 
-            Mapper._new_mappers = False
+            _new_mappers = False
         finally:
             _already_compiling = False
     finally:
         _CONFIGURE_MUTEX.release()
-    Mapper.dispatch(Mapper).after_configured()
+    if _call_configured is not None:
+        _call_configured.dispatch.after_configured()
 
 
 def reconstructor(fn):
@@ -2618,28 +2231,13 @@ def validates(*names, **kw):
      argument "is_remove" which will be a boolean.
 
      .. versionadded:: 0.7.7
-    :param include_backrefs: defaults to ``True``; if ``False``, the
-     validation function will not emit if the originator is an attribute
-     event related via a backref.  This can be used for bi-directional
-     :func:`.validates` usage where only one validator should emit per
-     attribute operation.
-
-     .. versionadded:: 0.9.0
-
-    .. seealso::
-
-      :ref:`simple_validators` - usage examples for :func:`.validates`
 
     """
     include_removes = kw.pop('include_removes', False)
-    include_backrefs = kw.pop('include_backrefs', True)
 
     def wrap(fn):
         fn.__sa_validators__ = names
-        fn.__sa_validation_opts__ = {
-                  "include_removes": include_removes,
-                  "include_backrefs": include_backrefs
-                }
+        fn.__sa_include_removes__ = include_removes
         return fn
     return wrap
 
@@ -2660,7 +2258,7 @@ def _event_on_first_init(manager, cls):
 
     instrumenting_mapper = manager.info.get(_INSTRUMENTOR)
     if instrumenting_mapper:
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
 
 
@@ -2675,7 +2273,7 @@ def _event_on_init(state, args, kwargs):
 
     instrumenting_mapper = state.manager.info.get(_INSTRUMENTOR)
     if instrumenting_mapper:
-        if Mapper._new_mappers:
+        if _new_mappers:
             configure_mappers()
         if instrumenting_mapper._set_polymorphic_identity:
             instrumenting_mapper._set_polymorphic_identity(state)

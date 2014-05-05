@@ -102,7 +102,7 @@ This overrides the encoding specified in the Postgresql client configuration.
     :func:`.create_engine`.
 
 SQLAlchemy can also be instructed to skip the usage of the psycopg2
-``UNICODE`` extension and to instead utilize its own unicode encode/decode
+``UNICODE`` extension and to instead utilize it's own unicode encode/decode
 services, which are normally reserved only for those DBAPIs that don't
 fully support unicode directly.  Passing ``use_native_unicode=False`` to
 :func:`.create_engine` will disable usage of ``psycopg2.extensions.UNICODE``.
@@ -169,7 +169,7 @@ connection, a sequence like the following is performed:
    If this function returns a list of HSTORE identifiers, we then determine that
    the ``HSTORE`` extension is present.
 
-2. If the ``use_native_hstore`` flag is at its default of ``True``, and
+2. If the ``use_native_hstore`` flag is at it's default of ``True``, and
    we've detected that ``HSTORE`` oids are available, the
    ``psycopg2.extensions.register_hstore()`` extension is invoked for all
    connections.
@@ -191,7 +191,6 @@ may be more performant.
 
 """
 from __future__ import absolute_import
-
 import re
 import logging
 
@@ -206,7 +205,6 @@ from .base import PGDialect, PGCompiler, \
                                 ENUM, ARRAY, _DECIMAL_TYPES, _FLOAT_TYPES,\
                                 _INT_TYPES
 from .hstore import HSTORE
-from .json import JSON
 
 
 logger = logging.getLogger('sqlalchemy.dialects.postgresql')
@@ -219,9 +217,7 @@ class _PGNumeric(sqltypes.Numeric):
     def result_processor(self, dialect, coltype):
         if self.asdecimal:
             if coltype in _FLOAT_TYPES:
-                return processors.to_decimal_processor_factory(
-                                decimal.Decimal,
-                                self._effective_decimal_return_scale)
+                return processors.to_decimal_processor_factory(decimal.Decimal)
             elif coltype in _DECIMAL_TYPES or coltype in _INT_TYPES:
                 # pg8000 returns Decimal natively for 1700
                 return None
@@ -240,13 +236,25 @@ class _PGNumeric(sqltypes.Numeric):
 
 
 class _PGEnum(ENUM):
-    def result_processor(self, dialect, coltype):
-        if util.py2k and self.convert_unicode is True:
-            # we can't easily use PG's extensions here because
-            # the OID is on the fly, and we need to give it a python
-            # function anyway - not really worth it.
-            self.convert_unicode = "force_nocheck"
-        return super(_PGEnum, self).result_processor(dialect, coltype)
+    def __init__(self, *arg, **kw):
+        super(_PGEnum, self).__init__(*arg, **kw)
+        # Py2K
+        if self.convert_unicode:
+            self.convert_unicode = "force"
+        # end Py2K
+
+
+class _PGArray(ARRAY):
+    def __init__(self, *arg, **kw):
+        super(_PGArray, self).__init__(*arg, **kw)
+        # Py2K
+        # FIXME: this check won't work for setups that
+        # have convert_unicode only on their create_engine().
+        if isinstance(self.item_type, sqltypes.String) and \
+                    self.item_type.convert_unicode:
+            self.item_type.convert_unicode = "force"
+        # end Py2K
+
 
 class _PGHStore(HSTORE):
     def bind_processor(self, dialect):
@@ -260,15 +268,6 @@ class _PGHStore(HSTORE):
             return None
         else:
             return super(_PGHStore, self).result_processor(dialect, coltype)
-
-
-class _PGJSON(JSON):
-
-    def result_processor(self, dialect, coltype):
-        if dialect._has_native_json:
-            return None
-        else:
-            return super(_PGJSON, self).result_processor(dialect, coltype)
 
 # When we're handed literal SQL, ensure it's a SELECT-query. Since
 # 8.3, combining cursors and "FOR UPDATE" has been fine.
@@ -343,9 +342,9 @@ class PGIdentifierPreparer_psycopg2(PGIdentifierPreparer):
 
 class PGDialect_psycopg2(PGDialect):
     driver = 'psycopg2'
-    if util.py2k:
-        supports_unicode_statements = False
-
+    # Py2K
+    supports_unicode_statements = False
+    # end Py2K
     default_paramstyle = 'pyformat'
     supports_sane_multi_rowcount = False  # set to true based on psycopg2 version
     execution_ctx_cls = PGExecutionContext_psycopg2
@@ -354,7 +353,6 @@ class PGDialect_psycopg2(PGDialect):
     psycopg2_version = (0, 0)
 
     _has_native_hstore = False
-    _has_native_json = False
 
     colspecs = util.update_copy(
         PGDialect.colspecs,
@@ -362,8 +360,8 @@ class PGDialect_psycopg2(PGDialect):
             sqltypes.Numeric: _PGNumeric,
             ENUM: _PGEnum,  # needs force_unicode
             sqltypes.Enum: _PGEnum,  # needs force_unicode
+            ARRAY: _PGArray,  # needs force_unicode
             HSTORE: _PGHStore,
-            JSON: _PGJSON
         }
     )
 
@@ -391,7 +389,6 @@ class PGDialect_psycopg2(PGDialect):
         self._has_native_hstore = self.use_native_hstore and \
                         self._hstore_oids(connection.connection) \
                             is not None
-        self._has_native_json = self.psycopg2_version >= (2, 5)
 
         # http://initd.org/psycopg/docs/news.html#what-s-new-in-psycopg-2-0-9
         self.supports_sane_multi_rowcount = self.psycopg2_version >= (2, 0, 9)
@@ -403,7 +400,7 @@ class PGDialect_psycopg2(PGDialect):
 
     @util.memoized_property
     def _isolation_lookup(self):
-        from psycopg2 import extensions
+        extensions = __import__('psycopg2.extensions').extensions
         return {
             'AUTOCOMMIT': extensions.ISOLATION_LEVEL_AUTOCOMMIT,
             'READ COMMITTED': extensions.ISOLATION_LEVEL_READ_COMMITTED,
@@ -441,7 +438,6 @@ class PGDialect_psycopg2(PGDialect):
         if self.dbapi and self.use_native_unicode:
             def on_connect(conn):
                 extensions.register_type(extensions.UNICODE, conn)
-                extensions.register_type(extensions.UNICODEARRAY, conn)
             fns.append(on_connect)
 
         if self.dbapi and self.use_native_hstore:
@@ -456,11 +452,6 @@ class PGDialect_psycopg2(PGDialect):
                     else:
                         extras.register_hstore(conn, oid=oid,
                                         array_oid=array_oid)
-            fns.append(on_connect)
-
-        if self.dbapi and self._json_deserializer:
-            def on_connect(conn):
-                extras.register_default_json(conn, loads=self._json_deserializer)
             fns.append(on_connect)
 
         if fns:
@@ -505,9 +496,7 @@ class PGDialect_psycopg2(PGDialect):
                 'cursor already closed',
                 # not sure where this path is originally from, it may
                 # be obsolete.   It really says "losed", not "closed".
-                'losed the connection unexpectedly',
-                # this can occur in newer SSL
-                'connection has been closed unexpectedly'
+                'losed the connection unexpectedly'
             ]:
                 idx = str_e.find(msg)
                 if idx >= 0 and '"' not in str_e[:idx]:

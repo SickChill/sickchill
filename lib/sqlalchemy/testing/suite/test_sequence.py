@@ -9,7 +9,6 @@ from ..schema import Table, Column
 
 class SequenceTest(fixtures.TablesTest):
     __requires__ = ('sequences',)
-    __backend__ = True
 
     run_create_tables = 'each'
 
@@ -73,7 +72,6 @@ class SequenceTest(fixtures.TablesTest):
 
 class HasSequenceTest(fixtures.TestBase):
     __requires__ = 'sequences',
-    __backend__ = True
 
     def test_has_sequence(self):
         s1 = Sequence('user_id_seq')

@@ -15,9 +15,10 @@
 
     .. versionadded:: 0.8 - Support for the fdb Firebird driver.
 
-    .. versionchanged:: 0.9 - The fdb dialect is now the default dialect
-       under the ``firebird://`` URL space, as ``fdb`` is now the official
-       Python driver for Firebird.
+Status
+------
+
+The fdb dialect is new and not yet tested (can't get fdb to build).
 
 Arguments
 ----------
@@ -44,7 +45,7 @@ dialect, however does not accept every argument that Kinterbasdb does.
       r = conn.execute(stmt)
       print r.rowcount
 
-* ``retaining`` - False by default.   Setting this to True will pass the
+* ``retaining`` - True by default.   Leaving this on True will pass the
   ``retaining=True`` keyword argument to the ``.commit()`` and ``.rollback()``
   methods of the DBAPI connection, which can improve performance in some
   situations, but apparently with significant caveats.
@@ -52,11 +53,8 @@ dialect, however does not accept every argument that Kinterbasdb does.
   understand the implications of this flag.
 
   .. versionadded:: 0.8.2 - ``retaining`` keyword argument specifying
-     transaction retaining behavior - in 0.8 it defaults to ``True``
-     for backwards compatibility.
-
-  .. versionchanged:: 0.9.0 - the ``retaining`` flag defaults to ``False``.
-     In 0.8 it defaulted to ``True``.
+     transaction retaining behavior.  This flag will **default to False**
+     in 0.9.
 
   .. seealso::
 
@@ -72,7 +70,7 @@ from ... import util
 class FBDialect_fdb(FBDialect_kinterbasdb):
 
     def __init__(self, enable_rowcount=True,
-                            retaining=False, **kwargs):
+                            retaining=True, **kwargs):
         super(FBDialect_fdb, self).__init__(
                             enable_rowcount=enable_rowcount,
                             retaining=retaining, **kwargs)

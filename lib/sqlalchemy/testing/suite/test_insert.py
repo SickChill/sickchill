@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from .. import fixtures, config
 from ..config import requirements
 from .. import exclusions
@@ -11,8 +12,6 @@ from ..schema import Table, Column
 
 class LastrowidTest(fixtures.TablesTest):
     run_deletes = 'each'
-
-    __backend__ = True
 
     __requires__ = 'implements_get_lastrowid', 'autoincrement_insert'
 
@@ -58,9 +57,8 @@ class LastrowidTest(fixtures.TablesTest):
             [pk]
         )
 
-    # failed on pypy1.9 but seems to be OK on pypy 2.1
-    #@exclusions.fails_if(lambda: util.pypy, "lastrowid not maintained after "
-    #                        "connection close")
+    @exclusions.fails_if(lambda: util.pypy, "lastrowid not maintained after "
+                            "connection close")
     @requirements.dbapi_lastrowid
     def test_native_lastrowid_autoinc(self):
         r = config.db.execute(
@@ -76,7 +74,6 @@ class LastrowidTest(fixtures.TablesTest):
 
 class InsertBehaviorTest(fixtures.TablesTest):
     run_deletes = 'each'
-    __backend__ = True
 
     @classmethod
     def define_tables(cls, metadata):
@@ -159,9 +156,8 @@ class InsertBehaviorTest(fixtures.TablesTest):
         )
 
 class ReturningTest(fixtures.TablesTest):
-    run_create_tables = 'each'
+    run_deletes = 'each'
     __requires__ = 'returning', 'autoincrement_insert'
-    __backend__ = True
 
     __engine_options__ = {"implicit_returning": True}
 

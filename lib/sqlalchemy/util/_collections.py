@@ -6,12 +6,10 @@
 
 """Collection classes and helpers."""
 
-from __future__ import absolute_import
+import itertools
 import weakref
 import operator
-from .compat import threading, itertools_filterfalse
-from . import py2k
-import types
+from .compat import threading
 
 EMPTY_SET = frozenset()
 
@@ -144,7 +142,7 @@ class Properties(object):
         return len(self._data)
 
     def __iter__(self):
-        return iter(list(self._data.values()))
+        return self._data.itervalues()
 
     def __add__(self, other):
         return list(self) + list(other)
@@ -191,13 +189,13 @@ class Properties(object):
             return default
 
     def keys(self):
-        return list(self._data)
+        return self._data.keys()
 
     def values(self):
-        return list(self._data.values())
+        return self._data.values()
 
     def items(self):
-        return list(self._data.items())
+        return self._data.items()
 
     def has_key(self, key):
         return key in self._data
@@ -262,55 +260,23 @@ class OrderedDict(dict):
     def __iter__(self):
         return iter(self._list)
 
+    def values(self):
+        return [self[key] for key in self._list]
 
-    if py2k:
-        def values(self):
-            return [self[key] for key in self._list]
+    def itervalues(self):
+        return iter([self[key] for key in self._list])
 
-        def keys(self):
-            return self._list
+    def keys(self):
+        return list(self._list)
 
-        def itervalues(self):
-            return iter([self[key] for key in self._list])
+    def iterkeys(self):
+        return iter(self.keys())
 
-        def iterkeys(self):
-            return iter(self)
+    def items(self):
+        return [(key, self[key]) for key in self.keys()]
 
-        def iteritems(self):
-            return iter(self.items())
-
-        def items(self):
-            return [(key, self[key]) for key in self._list]
-    else:
-        def values(self):
-            #return (self[key] for key in self)
-            return (self[key] for key in self._list)
-
-        def keys(self):
-            #return iter(self)
-            return iter(self._list)
-
-        def items(self):
-            #return ((key, self[key]) for key in self)
-            return ((key, self[key]) for key in self._list)
-
-    _debug_iter = False
-    if _debug_iter:
-        # normally disabled to reduce function call
-        # overhead
-        def __iter__(self):
-            len_ = len(self._list)
-            for item in self._list:
-                yield item
-                assert len_ == len(self._list), \
-                   "Dictionary changed size during iteration"
-        def values(self):
-            return (self[key] for key in self)
-        def keys(self):
-            return iter(self)
-        def items(self):
-            return ((key, self[key]) for key in self)
-
+    def iteritems(self):
+        return iter(self.items())
 
     def __setitem__(self, key, object):
         if key not in self:
@@ -504,8 +470,8 @@ class IdentitySet(object):
 
         if len(self) > len(other):
             return False
-        for m in itertools_filterfalse(other._members.__contains__,
-                                        iter(self._members.keys())):
+        for m in itertools.ifilterfalse(other._members.__contains__,
+                                        self._members.iterkeys()):
             return False
         return True
 
@@ -525,8 +491,8 @@ class IdentitySet(object):
         if len(self) < len(other):
             return False
 
-        for m in itertools_filterfalse(self._members.__contains__,
-                                        iter(other._members.keys())):
+        for m in itertools.ifilterfalse(self._members.__contains__,
+                                        other._members.iterkeys()):
             return False
         return True
 
@@ -616,7 +582,7 @@ class IdentitySet(object):
         return result
 
     def _member_id_tuples(self):
-        return ((id(v), v) for v in self._members.values())
+        return ((id(v), v) for v in self._members.itervalues())
 
     def __xor__(self, other):
         if not isinstance(other, IdentitySet):
@@ -633,7 +599,7 @@ class IdentitySet(object):
         return self
 
     def copy(self):
-        return type(self)(iter(self._members.values()))
+        return type(self)(self._members.itervalues())
 
     __copy__ = copy
 
@@ -641,13 +607,13 @@ class IdentitySet(object):
         return len(self._members)
 
     def __iter__(self):
-        return iter(self._members.values())
+        return self._members.itervalues()
 
     def __hash__(self):
         raise TypeError('set objects are unhashable')
 
     def __repr__(self):
-        return '%s(%r)' % (type(self).__name__, list(self._members.values()))
+        return '%s(%r)' % (type(self).__name__, self._members.values())
 
 
 class WeakSequence(object):
@@ -756,11 +722,6 @@ class UniqueAppender(object):
     def __iter__(self):
         return iter(self.data)
 
-def coerce_generator_arg(arg):
-    if len(arg) == 1 and isinstance(arg[0], types.GeneratorType):
-        return list(arg[0])
-    else:
-        return arg
 
 def to_list(x, default=None):
     if x is None:
@@ -805,7 +766,7 @@ def flatten_iterator(x):
 
     """
     for elem in x:
-        if not isinstance(elem, str) and hasattr(elem, '__iter__'):
+        if not isinstance(elem, basestring) and hasattr(elem, '__iter__'):
             for y in flatten_iterator(elem):
                 yield y
         else:
@@ -859,7 +820,7 @@ class LRUCache(dict):
                 try:
                     del self[item[0]]
                 except KeyError:
-                    # if we couldn't find a key, most
+                    # if we couldnt find a key, most
                     # likely some other thread broke in
                     # on us. loop around and try again
                     break
@@ -908,7 +869,7 @@ class ScopedRegistry(object):
         return self.scopefunc() in self.registry
 
     def set(self, obj):
-        """Set the value for the current scope."""
+        """Set the value forthe current scope."""
 
         self.registry[self.scopefunc()] = obj
 

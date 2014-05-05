@@ -1,9 +1,3 @@
-# testing/profiling.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
-#
-# This module is part of SQLAlchemy and is released under
-# the MIT License: http://www.opensource.org/licenses/mit-license.php
-
 """Profiling support for unit and performance tests.
 
 These are special purpose profiling methods which operate
@@ -15,7 +9,7 @@ import os
 import sys
 from .util import gc_collect, decorator
 from . import config
-from .plugin.plugin_base import SkipTest
+from nose import SkipTest
 import pstats
 import time
 import collections
@@ -51,10 +45,12 @@ def profiled(target=None, **target_opts):
     if target is None:
         target = 'anonymous_target'
 
+    filename = "%s.prof" % target
+
     @decorator
     def decorate(fn, *args, **kw):
         elapsed, load_stats, result = _profile(
-            fn, *args, **kw)
+            filename, fn, *args, **kw)
 
         graphic = target_opts.get('graphic', profile_config['graphic'])
         if graphic:
@@ -64,9 +60,9 @@ def profiled(target=None, **target_opts):
             if report:
                 sort_ = target_opts.get('sort', profile_config['sort'])
                 limit = target_opts.get('limit', profile_config['limit'])
-                print(("Profile report for target '%s'" % (
-                    target, )
-                    ))
+                print ("Profile report for target '%s' (%s)" % (
+                    target, filename)
+                    )
 
                 stats = load_stats()
                 stats.sort_stats(*sort_)
@@ -85,6 +81,7 @@ def profiled(target=None, **target_opts):
                 if print_callees:
                     stats.print_callees()
 
+        os.unlink(filename)
         return result
     return decorate
 
@@ -111,7 +108,7 @@ class ProfileStatsFile(object):
             # etc.
             self._write()
 
-    @property
+    @util.memoized_property
     def platform_key(self):
 
         dbapi_key = config.db.name + "_" + config.db.driver
@@ -165,15 +162,6 @@ class ProfileStatsFile(object):
         per_platform['current_count'] += 1
         return result
 
-    def replace(self, callcount):
-        test_key = _current_test
-        per_fn = self.data[test_key]
-        per_platform = per_fn[self.platform_key]
-        counts = per_platform['counts']
-        counts[-1] = callcount
-        if self.write:
-            self._write()
-
     def _header(self):
         return \
         "# %s\n"\
@@ -210,7 +198,7 @@ class ProfileStatsFile(object):
         profile_f.close()
 
     def _write(self):
-        print(("Writing profile file %s" % self.fname))
+        print("Writing profile file %s" % self.fname)
         profile_f = open(self.fname, "w")
         profile_f.write(self._header())
         for test_key in sorted(self.data):
@@ -265,29 +253,26 @@ def function_call_count(variance=0.05):
             else:
                 line_no, expected_count = expected
 
-            print(("Pstats calls: %d Expected %s" % (
+            print("Pstats calls: %d Expected %s" % (
                     callcount,
                     expected_count
                 )
-            ))
+            )
             stats.print_stats()
             #stats.print_callers()
 
             if expected_count:
                 deviance = int(callcount * variance)
-                failed = abs(callcount - expected_count) > deviance
-
-                if failed:
-                    if _profile_stats.write:
-                        _profile_stats.replace(callcount)
-                    else:
-                        raise AssertionError(
-                            "Adjusted function call count %s not within %s%% "
-                            "of expected %s. Rerun with --write-profiles to "
-                            "regenerate this callcount."
-                            % (
-                            callcount, (variance * 100),
-                            expected_count))
+                if abs(callcount - expected_count) > deviance:
+                    raise AssertionError(
+                        "Adjusted function call count %s not within %s%% "
+                        "of expected %s. (Delete line %d of file %s to "
+                        "regenerate this callcount, when tests are run "
+                        "with --write-profiles.)"
+                        % (
+                        callcount, (variance * 100),
+                        expected_count, line_no,
+                        _profile_stats.fname))
             return fn_result
         return update_wrapper(wrap, fn)
     return decorate
