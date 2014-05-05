@@ -1,4 +1,10 @@
-from ..util import jython, pypy, defaultdict, decorator
+# testing/util.py
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+#
+# This module is part of SQLAlchemy and is released under
+# the MIT License: http://www.opensource.org/licenses/mit-license.php
+
+from ..util import jython, pypy, defaultdict, decorator, py2k
 import decimal
 import gc
 import time
@@ -32,13 +38,13 @@ else:
 
 def picklers():
     picklers = set()
-    # Py2K
-    try:
-        import cPickle
-        picklers.add(cPickle)
-    except ImportError:
-        pass
-    # end Py2K
+    if py2k:
+        try:
+            import cPickle
+            picklers.add(cPickle)
+        except ImportError:
+            pass
+
     import pickle
     picklers.add(pickle)
 
@@ -130,8 +136,8 @@ def function_named(fn, name):
     try:
         fn.__name__ = name
     except TypeError:
-        fn = types.FunctionType(fn.func_code, fn.func_globals, name,
-                          fn.func_defaults, fn.func_closure)
+        fn = types.FunctionType(fn.__code__, fn.__globals__, name,
+                          fn.__defaults__, fn.__closure__)
     return fn
 
 

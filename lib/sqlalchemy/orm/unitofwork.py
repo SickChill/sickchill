@@ -16,8 +16,6 @@ from .. import util, event
 from ..util import topological
 from . import attributes, persistence, util as orm_util
 
-sessionlib = util.importlater("sqlalchemy.orm", "session")
-
 
 def track_cascade_events(descriptor, prop):
     """Establish event listeners on object attributes which handle
@@ -33,7 +31,7 @@ def track_cascade_events(descriptor, prop):
         if item is None:
             return
 
-        sess = sessionlib._state_session(state)
+        sess = state.session
         if sess:
             if sess._warn_on_events:
                 sess._flush_warning("collection append")
@@ -50,7 +48,7 @@ def track_cascade_events(descriptor, prop):
         if item is None:
             return
 
-        sess = sessionlib._state_session(state)
+        sess = state.session
         if sess:
 
             prop = state.manager.mapper._props[key]
@@ -74,7 +72,7 @@ def track_cascade_events(descriptor, prop):
         if oldvalue is newvalue:
             return newvalue
 
-        sess = sessionlib._state_session(state)
+        sess = state.session
         if sess:
 
             if sess._warn_on_events:
@@ -315,7 +313,7 @@ class UOWTransaction(object):
         # see if the graph of mapper dependencies has cycles.
         self.cycles = cycles = topological.find_cycles(
                                         self.dependencies,
-                                        self.postsort_actions.values())
+                                        list(self.postsort_actions.values()))
 
         if cycles:
             # if yes, break the per-mapper actions into
@@ -381,7 +379,7 @@ class UOWTransaction(object):
         """
         states = set(self.states)
         isdel = set(
-            s for (s, (isdelete, listonly)) in self.states.iteritems()
+            s for (s, (isdelete, listonly)) in self.states.items()
             if isdelete
         )
         other = states.difference(isdel)

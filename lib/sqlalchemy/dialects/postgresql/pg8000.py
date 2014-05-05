@@ -39,7 +39,9 @@ class _PGNumeric(sqltypes.Numeric):
     def result_processor(self, dialect, coltype):
         if self.asdecimal:
             if coltype in _FLOAT_TYPES:
-                return processors.to_decimal_processor_factory(decimal.Decimal)
+                return processors.to_decimal_processor_factory(
+                                    decimal.Decimal,
+                                    self._effective_decimal_return_scale)
             elif coltype in _DECIMAL_TYPES or coltype in _INT_TYPES:
                 # pg8000 returns Decimal natively for 1700
                 return None

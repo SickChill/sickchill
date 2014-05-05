@@ -6,15 +6,15 @@
 
 """Core event interfaces."""
 
-from . import event, exc, util
-engine = util.importlater('sqlalchemy', 'engine')
-pool = util.importlater('sqlalchemy', 'pool')
-
+from . import event, exc
+from .pool import Pool
+from .engine import Connectable, Engine, Dialect
+from .sql.base import SchemaEventTarget
 
 class DDLEvents(event.Events):
     """
     Define event listeners for schema objects,
-    that is, :class:`.SchemaItem` and :class:`.SchemaEvent`
+    that is, :class:`.SchemaItem` and other :class:`.SchemaEventTarget`
     subclasses, including :class:`.MetaData`, :class:`.Table`,
     :class:`.Column`.
 
@@ -69,6 +69,9 @@ class DDLEvents(event.Events):
         :ref:`schema_ddl_sequences`
 
     """
+
+    _target_class_doc = "SomeSchemaClassOrObject"
+    _dispatch_target = SchemaEventTarget
 
     def before_create(self, target, connection, **kw):
         """Called before CREATE statments are emitted.
@@ -217,25 +220,6 @@ class DDLEvents(event.Events):
         """
 
 
-class SchemaEventTarget(object):
-    """Base class for elements that are the targets of :class:`.DDLEvents`
-    events.
-
-    This includes :class:`.SchemaItem` as well as :class:`.SchemaType`.
-
-    """
-    dispatch = event.dispatcher(DDLEvents)
-
-    def _set_parent(self, parent):
-        """Associate with this SchemaEvent's parent object."""
-
-        raise NotImplementedError()
-
-    def _set_parent_with_dispatch(self, parent):
-        self.dispatch.before_parent_attach(self, parent)
-        self._set_parent(parent)
-        self.dispatch.after_parent_attach(self, parent)
-
 
 class PoolEvents(event.Events):
     """Available events for :class:`.Pool`.
@@ -266,59 +250,77 @@ class PoolEvents(event.Events):
 
     """
 
+    _target_class_doc = "SomeEngineOrPool"
+    _dispatch_target = Pool
+
     @classmethod
     def _accept_with(cls, target):
         if isinstance(target, type):
-            if issubclass(target, engine.Engine):
-                return pool.Pool
-            elif issubclass(target, pool.Pool):
+            if issubclass(target, Engine):
+                return Pool
+            elif issubclass(target, Pool):
                 return target
-        elif isinstance(target, engine.Engine):
+        elif isinstance(target, Engine):
             return target.pool
         else:
             return target
 
     def connect(self, dbapi_connection, connection_record):
-        """Called once for each new DB-API connection or Pool's ``creator()``.
+        """Called at the moment a particular DBAPI connection is first
+        created for a given :class:`.Pool`.
 
-        :param dbapi_con:
-          A newly connected raw DB-API connection (not a SQLAlchemy
-          ``Connection`` wrapper).
+        This event allows one to capture the point directly after which
+        the DBAPI module-level ``.connect()`` method has been used in order
+        to produce a new DBAPI connection.
 
-        :param con_record:
-          The ``_ConnectionRecord`` that persistently manages the connection
+        :param dbapi_connection: a DBAPI connection.
+
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
 
         """
 
     def first_connect(self, dbapi_connection, connection_record):
-        """Called exactly once for the first DB-API connection.
+        """Called exactly once for the first time a DBAPI connection is
+        checked out from a particular :class:`.Pool`.
 
-        :param dbapi_con:
-          A newly connected raw DB-API connection (not a SQLAlchemy
-          ``Connection`` wrapper).
+        The rationale for :meth:`.PoolEvents.first_connect` is to determine
+        information about a particular series of database connections based
+        on the settings used for all connections.  Since a particular
+        :class:`.Pool` refers to a single "creator" function (which in terms
+        of a :class:`.Engine` refers to the URL and connection options used),
+        it is typically valid to make observations about a single connection
+        that can be safely assumed to be valid about all subsequent connections,
+        such as the database version, the server and client encoding settings,
+        collation settings, and many others.
 
-        :param con_record:
-          The ``_ConnectionRecord`` that persistently manages the connection
+        :param dbapi_connection: a DBAPI connection.
+
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
 
         """
 
     def checkout(self, dbapi_connection, connection_record, connection_proxy):
         """Called when a connection is retrieved from the Pool.
 
-        :param dbapi_con:
-          A raw DB-API connection
+        :param dbapi_connection: a DBAPI connection.
 
-        :param con_record:
-          The ``_ConnectionRecord`` that persistently manages the connection
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
 
-        :param con_proxy:
-          The ``_ConnectionFairy`` which manages the connection for the span of
-          the current checkout.
+        :param connection_proxy: the :class:`._ConnectionFairy` object which
+          will proxy the public interface of the DBAPI connection for the lifespan
+          of the checkout.
 
         If you raise a :class:`~sqlalchemy.exc.DisconnectionError`, the current
         connection will be disposed and a fresh connection retrieved.
         Processing of all checkout listeners will abort and restart
         using the new connection.
+
+        .. seealso:: :meth:`.ConnectionEvents.engine_connect` - a similar event
+           which occurs upon creation of a new :class:`.Connection`.
+
         """
 
     def checkin(self, dbapi_connection, connection_record):
@@ -328,15 +330,14 @@ class PoolEvents(event.Events):
         connection has been invalidated.  ``checkin`` will not be called
         for detached connections.  (They do not return to the pool.)
 
-        :param dbapi_con:
-          A raw DB-API connection
+        :param dbapi_connection: a DBAPI connection.
 
-        :param con_record:
-          The ``_ConnectionRecord`` that persistently manages the connection
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
 
         """
 
-    def reset(self, dbapi_con, con_record):
+    def reset(self, dbapi_connnection, connection_record):
         """Called before the "reset" action occurs for a pooled connection.
 
         This event represents
@@ -350,11 +351,10 @@ class PoolEvents(event.Events):
         the :meth:`.PoolEvents.checkin` event is called, except in those
         cases where the connection is discarded immediately after reset.
 
-        :param dbapi_con:
-          A raw DB-API connection
+        :param dbapi_connection: a DBAPI connection.
 
-        :param con_record:
-          The ``_ConnectionRecord`` that persistently manages the connection
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
 
         .. versionadded:: 0.8
 
@@ -366,6 +366,30 @@ class PoolEvents(event.Events):
 
         """
 
+    def invalidate(self, dbapi_connection, connection_record, exception):
+        """Called when a DBAPI connection is to be "invalidated".
+
+        This event is called any time the :meth:`._ConnectionRecord.invalidate`
+        method is invoked, either from API usage or via "auto-invalidation".
+        The event occurs before a final attempt to call ``.close()`` on the connection
+        occurs.
+
+        :param dbapi_connection: a DBAPI connection.
+
+        :param connection_record: the :class:`._ConnectionRecord` managing the
+         DBAPI connection.
+
+        :param exception: the exception object corresponding to the reason
+         for this invalidation, if any.  May be ``None``.
+
+        .. versionadded:: 0.9.2 Added support for connection invalidation
+           listening.
+
+        .. seealso::
+
+            :ref:`pool_connection_invalidation`
+
+        """
 
 
 class ConnectionEvents(event.Events):
@@ -439,8 +463,15 @@ class ConnectionEvents(event.Events):
 
     """
 
+    _target_class_doc = "SomeEngine"
+    _dispatch_target = Connectable
+
+
     @classmethod
-    def _listen(cls, target, identifier, fn, retval=False):
+    def _listen(cls, event_key, retval=False):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
         target._has_events = True
 
         if not retval:
@@ -469,7 +500,7 @@ class ConnectionEvents(event.Events):
                     "'before_cursor_execute' engine "
                     "event listeners accept the 'retval=True' "
                     "argument.")
-        event.Events._listen(target, identifier, fn)
+        event_key.with_wrapper(fn).base_listen()
 
     def before_execute(self, conn, clauseelement, multiparams, params):
         """Intercept high level execute() events, receiving uncompiled
@@ -615,6 +646,103 @@ class ConnectionEvents(event.Events):
 
         """
 
+    def engine_connect(self, conn, branch):
+        """Intercept the creation of a new :class:`.Connection`.
+
+        This event is called typically as the direct result of calling
+        the :meth:`.Engine.connect` method.
+
+        It differs from the :meth:`.PoolEvents.connect` method, which
+        refers to the actual connection to a database at the DBAPI level;
+        a DBAPI connection may be pooled and reused for many operations.
+        In contrast, this event refers only to the production of a higher level
+        :class:`.Connection` wrapper around such a DBAPI connection.
+
+        It also differs from the :meth:`.PoolEvents.checkout` event
+        in that it is specific to the :class:`.Connection` object, not the
+        DBAPI connection that :meth:`.PoolEvents.checkout` deals with, although
+        this DBAPI connection is available here via the :attr:`.Connection.connection`
+        attribute.  But note there can in fact
+        be multiple :meth:`.PoolEvents.checkout` events within the lifespan
+        of a single :class:`.Connection` object, if that :class:`.Connection`
+        is invalidated and re-established.  There can also be multiple
+        :class:`.Connection` objects generated for the same already-checked-out
+        DBAPI connection, in the case that a "branch" of a :class:`.Connection`
+        is produced.
+
+        :param conn: :class:`.Connection` object.
+        :param branch: if True, this is a "branch" of an existing
+         :class:`.Connection`.  A branch is generated within the course
+         of a statement execution to invoke supplemental statements, most
+         typically to pre-execute a SELECT of a default value for the purposes
+         of an INSERT statement.
+
+        .. versionadded:: 0.9.0
+
+        .. seealso::
+
+            :meth:`.PoolEvents.checkout` the lower-level pool checkout event
+            for an individual DBAPI connection
+
+            :meth:`.ConnectionEvents.set_connection_execution_options` - a copy of a
+            :class:`.Connection` is also made when the
+            :meth:`.Connection.execution_options` method is called.
+
+        """
+
+    def set_connection_execution_options(self, conn, opts):
+        """Intercept when the :meth:`.Connection.execution_options`
+        method is called.
+
+        This method is called after the new :class:`.Connection` has been
+        produced, with the newly updated execution options collection, but
+        before the :class:`.Dialect` has acted upon any of those new options.
+
+        Note that this method is not called when a new :class:`.Connection`
+        is produced which is inheriting execution options from its parent
+        :class:`.Engine`; to intercept this condition, use the
+        :meth:`.ConnectionEvents.engine_connect` event.
+
+        :param conn: The newly copied :class:`.Connection` object
+
+        :param opts: dictionary of options that were passed to the
+         :meth:`.Connection.execution_options` method.
+
+        .. versionadded:: 0.9.0
+
+        .. seealso::
+
+            :meth:`.ConnectionEvents.set_engine_execution_options` - event
+            which is called when :meth:`.Engine.execution_options` is called.
+
+
+        """
+
+    def set_engine_execution_options(self, engine, opts):
+        """Intercept when the :meth:`.Engine.execution_options`
+        method is called.
+
+        The :meth:`.Engine.execution_options` method produces a shallow
+        copy of the :class:`.Engine` which stores the new options.  That new
+        :class:`.Engine` is passed here.   A particular application of this
+        method is to add a :meth:`.ConnectionEvents.engine_connect` event
+        handler to the given :class:`.Engine` which will perform some per-
+        :class:`.Connection` task specific to these execution options.
+
+        :param conn: The newly copied :class:`.Engine` object
+
+        :param opts: dictionary of options that were passed to the
+         :meth:`.Connection.execution_options` method.
+
+        .. versionadded:: 0.9.0
+
+        .. seealso::
+
+            :meth:`.ConnectionEvents.set_connection_execution_options` - event
+            which is called when :meth:`.Connection.execution_options` is called.
+
+        """
+
     def begin(self, conn):
         """Intercept begin() events.
 
@@ -652,7 +780,7 @@ class ConnectionEvents(event.Events):
         :param conn: :class:`.Connection` object
         """
 
-    def savepoint(self, conn, name=None):
+    def savepoint(self, conn, name):
         """Intercept savepoint() events.
 
         :param conn: :class:`.Connection` object
@@ -712,3 +840,85 @@ class ConnectionEvents(event.Events):
          :meth:`.TwoPhaseTransaction.prepare` was called.
 
         """
+
+
+class DialectEvents(event.Events):
+    """event interface for execution-replacement functions.
+
+    These events allow direct instrumentation and replacement
+    of key dialect functions which interact with the DBAPI.
+
+    .. note::
+
+        :class:`.DialectEvents` hooks should be considered **semi-public**
+        and experimental.
+        These hooks are not for general use and are only for those situations where
+        intricate re-statement of DBAPI mechanics must be injected onto an existing
+        dialect.   For general-use statement-interception events, please
+        use the :class:`.ConnectionEvents` interface.
+
+    .. seealso::
+
+        :meth:`.ConnectionEvents.before_cursor_execute`
+
+        :meth:`.ConnectionEvents.before_execute`
+
+        :meth:`.ConnectionEvents.after_cursor_execute`
+
+        :meth:`.ConnectionEvents.after_execute`
+
+
+    .. versionadded:: 0.9.4
+
+    """
+
+    _target_class_doc = "SomeEngine"
+    _dispatch_target = Dialect
+
+    @classmethod
+    def _listen(cls, event_key, retval=False):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
+        target._has_events = True
+        event_key.base_listen()
+
+    @classmethod
+    def _accept_with(cls, target):
+        if isinstance(target, type):
+            if issubclass(target, Engine):
+                return Dialect
+            elif issubclass(target, Dialect):
+                return target
+        elif isinstance(target, Engine):
+            return target.dialect
+        else:
+            return target
+
+    def do_executemany(self, cursor, statement, parameters, context):
+        """Receive a cursor to have executemany() called.
+
+        Return the value True to halt further events from invoking,
+        and to indicate that the cursor execution has already taken
+        place within the event handler.
+
+        """
+
+    def do_execute_no_params(self, cursor, statement, context):
+        """Receive a cursor to have execute() with no parameters called.
+
+        Return the value True to halt further events from invoking,
+        and to indicate that the cursor execution has already taken
+        place within the event handler.
+
+        """
+
+    def do_execute(self, cursor, statement, parameters, context):
+        """Receive a cursor to have execute() called.
+
+        Return the value True to halt further events from invoking,
+        and to indicate that the cursor execution has already taken
+        place within the event handler.
+
+        """
+

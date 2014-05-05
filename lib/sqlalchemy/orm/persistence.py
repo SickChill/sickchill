@@ -17,7 +17,7 @@ import operator
 from itertools import groupby
 from .. import sql, util, exc as sa_exc, schema
 from . import attributes, sync, exc as orm_exc, evaluator
-from .util import _state_mapper, state_str, _attr_as_key
+from .base import _state_mapper, state_str, _attr_as_key
 from ..sql import expression
 from . import loading
 
@@ -46,7 +46,7 @@ def save_obj(base_mapper, states, uowtransaction, single=False):
 
     cached_connections = _cached_connection_dict(base_mapper)
 
-    for table, mapper in base_mapper._sorted_tables.iteritems():
+    for table, mapper in base_mapper._sorted_tables.items():
         insert = _collect_insert_commands(base_mapper, uowtransaction,
                                 table, states_to_insert)
 
@@ -61,7 +61,7 @@ def save_obj(base_mapper, states, uowtransaction, single=False):
         if insert:
             _emit_insert_statements(base_mapper, uowtransaction,
                                     cached_connections,
-                                    table, insert)
+                                    mapper, table, insert)
 
     _finalize_insert_update_commands(base_mapper, uowtransaction,
                                     states_to_insert, states_to_update)
@@ -78,7 +78,7 @@ def post_update(base_mapper, states, uowtransaction, post_update_cols):
                                     base_mapper,
                                     states, uowtransaction)
 
-    for table, mapper in base_mapper._sorted_tables.iteritems():
+    for table, mapper in base_mapper._sorted_tables.items():
         update = _collect_post_update_commands(base_mapper, uowtransaction,
                                             table, states_to_update,
                                             post_update_cols)
@@ -106,7 +106,7 @@ def delete_obj(base_mapper, states, uowtransaction):
 
     table_to_mapper = base_mapper._sorted_tables
 
-    for table in reversed(table_to_mapper.keys()):
+    for table in reversed(list(table_to_mapper.keys())):
         delete = _collect_delete_commands(base_mapper, uowtransaction,
                                 table, states_to_delete)
 
@@ -246,9 +246,12 @@ def _collect_insert_commands(base_mapper, uowtransaction, table,
         value_params = {}
 
         has_all_pks = True
+        has_all_defaults = True
         for col in mapper._cols_by_table[table]:
-            if col is mapper.version_id_col:
-                params[col.key] = mapper.version_id_generator(None)
+            if col is mapper.version_id_col and \
+                mapper.version_id_generator is not False:
+                val = mapper.version_id_generator(None)
+                params[col.key] = val
             else:
                 # pull straight from the dict for
                 # pending objects
@@ -261,6 +264,9 @@ def _collect_insert_commands(base_mapper, uowtransaction, table,
                     elif col.default is None and \
                          col.server_default is None:
                         params[col.key] = value
+                    elif col.server_default is not None and \
+                        mapper.base_mapper.eager_defaults:
+                        has_all_defaults = False
 
                 elif isinstance(value, sql.ClauseElement):
                     value_params[col] = value
@@ -268,7 +274,8 @@ def _collect_insert_commands(base_mapper, uowtransaction, table,
                     params[col.key] = value
 
         insert.append((state, state_dict, params, mapper,
-                        connection, value_params, has_all_pks))
+                        connection, value_params, has_all_pks,
+                        has_all_defaults))
     return insert
 
 
@@ -315,19 +322,20 @@ def _collect_update_commands(base_mapper, uowtransaction,
                     params[col.key] = history.added[0]
                     hasdata = True
                 else:
-                    params[col.key] = mapper.version_id_generator(
-                                                params[col._label])
+                    if mapper.version_id_generator is not False:
+                        val = mapper.version_id_generator(params[col._label])
+                        params[col.key] = val
 
-                    # HACK: check for history, in case the
-                    # history is only
-                    # in a different table than the one
-                    # where the version_id_col is.
-                    for prop in mapper._columntoproperty.itervalues():
-                        history = attributes.get_state_history(
-                                state, prop.key,
-                                attributes.PASSIVE_NO_INITIALIZE)
-                        if history.added:
-                            hasdata = True
+                        # HACK: check for history, in case the
+                        # history is only
+                        # in a different table than the one
+                        # where the version_id_col is.
+                        for prop in mapper._columntoproperty.values():
+                            history = attributes.get_state_history(
+                                    state, prop.key,
+                                    attributes.PASSIVE_NO_INITIALIZE)
+                            if history.added:
+                                hasdata = True
             else:
                 prop = mapper._columntoproperty[col]
                 history = attributes.get_state_history(
@@ -409,6 +417,7 @@ def _collect_post_update_commands(base_mapper, uowtransaction, table,
                         mapper._get_state_attr_by_column(
                                         state,
                                         state_dict, col)
+
             elif col in post_update_cols:
                 prop = mapper._columntoproperty[col]
                 history = attributes.get_state_history(
@@ -478,7 +487,13 @@ def _emit_update_statements(base_mapper, uowtransaction,
                     sql.bindparam(mapper.version_id_col._label,
                                     type_=mapper.version_id_col.type))
 
-        return table.update(clause)
+        stmt = table.update(clause)
+        if mapper.base_mapper.eager_defaults:
+            stmt = stmt.return_defaults()
+        elif mapper.version_id_col is not None:
+            stmt = stmt.return_defaults(mapper.version_id_col)
+
+        return stmt
 
     statement = base_mapper._memo(('update', table), update_stmt)
 
@@ -500,8 +515,7 @@ def _emit_update_statements(base_mapper, uowtransaction,
                 table,
                 state,
                 state_dict,
-                c.context.prefetch_cols,
-                c.context.postfetch_cols,
+                c,
                 c.context.compiled_parameters[0],
                 value_params)
         rows += c.rowcount
@@ -521,44 +535,55 @@ def _emit_update_statements(base_mapper, uowtransaction,
 
 
 def _emit_insert_statements(base_mapper, uowtransaction,
-                        cached_connections, table, insert):
+                        cached_connections, mapper, table, insert):
     """Emit INSERT statements corresponding to value lists collected
     by _collect_insert_commands()."""
 
     statement = base_mapper._memo(('insert', table), table.insert)
 
-    for (connection, pkeys, hasvalue, has_all_pks), \
+    for (connection, pkeys, hasvalue, has_all_pks, has_all_defaults), \
         records in groupby(insert,
                             lambda rec: (rec[4],
-                                    rec[2].keys(),
+                                    list(rec[2].keys()),
                                     bool(rec[5]),
-                                    rec[6])
+                                    rec[6], rec[7])
     ):
-        if has_all_pks and not hasvalue:
+        if \
+            (
+                has_all_defaults
+                or not base_mapper.eager_defaults
+                or not connection.dialect.implicit_returning
+            ) and has_all_pks and not hasvalue:
+
             records = list(records)
             multiparams = [rec[2] for rec in records]
+
             c = cached_connections[connection].\
                                 execute(statement, multiparams)
 
-            for (state, state_dict, params, mapper,
-                    conn, value_params, has_all_pks), \
+            for (state, state_dict, params, mapper_rec,
+                    conn, value_params, has_all_pks, has_all_defaults), \
                     last_inserted_params in \
                     zip(records, c.context.compiled_parameters):
                 _postfetch(
-                        mapper,
+                        mapper_rec,
                         uowtransaction,
                         table,
                         state,
                         state_dict,
-                        c.context.prefetch_cols,
-                        c.context.postfetch_cols,
+                        c,
                         last_inserted_params,
                         value_params)
 
         else:
-            for state, state_dict, params, mapper, \
+            if not has_all_defaults and base_mapper.eager_defaults:
+                statement = statement.return_defaults()
+            elif mapper.version_id_col is not None:
+                statement = statement.return_defaults(mapper.version_id_col)
+
+            for state, state_dict, params, mapper_rec, \
                         connection, value_params, \
-                        has_all_pks in records:
+                        has_all_pks, has_all_defaults in records:
 
                 if value_params:
                     result = connection.execute(
@@ -574,23 +599,22 @@ def _emit_insert_statements(base_mapper, uowtransaction,
                     # set primary key attributes
                     for pk, col in zip(primary_key,
                                     mapper._pks_by_table[table]):
-                        prop = mapper._columntoproperty[col]
+                        prop = mapper_rec._columntoproperty[col]
                         if state_dict.get(prop.key) is None:
                             # TODO: would rather say:
                             #state_dict[prop.key] = pk
-                            mapper._set_state_attr_by_column(
+                            mapper_rec._set_state_attr_by_column(
                                         state,
                                         state_dict,
                                         col, pk)
 
                 _postfetch(
-                        mapper,
+                        mapper_rec,
                         uowtransaction,
                         table,
                         state,
                         state_dict,
-                        result.context.prefetch_cols,
-                        result.context.postfetch_cols,
+                        result,
                         result.context.compiled_parameters[0],
                         value_params)
 
@@ -616,7 +640,7 @@ def _emit_post_update_statements(base_mapper, uowtransaction,
     # also group them into common (connection, cols) sets
     # to support executemany().
     for key, grouper in groupby(
-        update, lambda rec: (rec[4], rec[2].keys())
+        update, lambda rec: (rec[4], list(rec[2].keys()))
     ):
         connection = key[0]
         multiparams = [params for state, state_dict,
@@ -650,26 +674,21 @@ def _emit_delete_statements(base_mapper, uowtransaction, cached_connections,
 
         return table.delete(clause)
 
-    for connection, del_objects in delete.iteritems():
+    for connection, del_objects in delete.items():
         statement = base_mapper._memo(('delete', table), delete_stmt)
 
         connection = cached_connections[connection]
 
         expected = len(del_objects)
         rows_matched = -1
+        only_warn = False
         if connection.dialect.supports_sane_multi_rowcount:
             c = connection.execute(statement, del_objects)
 
-            # only do a row check if we have versioning turned on.
-            # unfortunately, we *cannot* do a check on the number of
-            # rows matched here in general, as there is the edge case
-            # of a table that has a self-referential foreign key with
-            # ON DELETE CASCADE on it, see #2403.   I'm not sure how we can
-            # resolve this, unless we require special configuration
-            # to enable "count rows" for certain mappings, or to disable
-            # it, or to based on it relationship(), not sure.
-            if need_version_id:
-                rows_matched = c.rowcount
+            if not need_version_id:
+                only_warn = True
+
+            rows_matched = c.rowcount
 
         elif need_version_id:
             if connection.dialect.supports_sane_rowcount:
@@ -689,12 +708,24 @@ def _emit_delete_statements(base_mapper, uowtransaction, cached_connections,
         else:
             connection.execute(statement, del_objects)
 
-        if rows_matched > -1 and expected != rows_matched:
-            raise orm_exc.StaleDataError(
-                "DELETE statement on table '%s' expected to "
-                "delete %d row(s); %d were matched." %
-                (table.description, expected, rows_matched)
-            )
+        if base_mapper.confirm_deleted_rows and \
+            rows_matched > -1 and expected != rows_matched:
+            if only_warn:
+                util.warn(
+                    "DELETE statement on table '%s' expected to "
+                    "delete %d row(s); %d were matched.  Please set "
+                    "confirm_deleted_rows=False within the mapper "
+                    "configuration to prevent this warning." %
+                    (table.description, expected, rows_matched)
+                )
+            else:
+                raise orm_exc.StaleDataError(
+                    "DELETE statement on table '%s' expected to "
+                    "delete %d row(s); %d were matched.  Please set "
+                    "confirm_deleted_rows=False within the mapper "
+                    "configuration to prevent this warning." %
+                    (table.description, expected, rows_matched)
+                )
 
 def _finalize_insert_update_commands(base_mapper, uowtransaction,
                             states_to_insert, states_to_update):
@@ -714,14 +745,25 @@ def _finalize_insert_update_commands(base_mapper, uowtransaction,
             if readonly:
                 state._expire_attributes(state.dict, readonly)
 
-        # if eager_defaults option is enabled,
-        # refresh whatever has been expired.
-        if base_mapper.eager_defaults and state.unloaded:
+        # if eager_defaults option is enabled, load
+        # all expired cols.  Else if we have a version_id_col, make sure
+        # it isn't expired.
+        toload_now = []
+
+        if base_mapper.eager_defaults:
+            toload_now.extend(state._unloaded_non_object)
+        elif mapper.version_id_col is not None and \
+            mapper.version_id_generator is False:
+            prop = mapper._columntoproperty[mapper.version_id_col]
+            if prop.key in state.unloaded:
+                toload_now.extend([prop.key])
+
+        if toload_now:
             state.key = base_mapper._identity_key_from_state(state)
             loading.load_on_ident(
                 uowtransaction.session.query(base_mapper),
                 state.key, refresh_state=state,
-                only_load_props=state.unloaded)
+                only_load_props=toload_now)
 
         # call after_XXX extensions
         if not has_identity:
@@ -731,14 +773,25 @@ def _finalize_insert_update_commands(base_mapper, uowtransaction,
 
 
 def _postfetch(mapper, uowtransaction, table,
-                state, dict_, prefetch_cols, postfetch_cols,
-                            params, value_params):
+                state, dict_, result, params, value_params):
     """Expire attributes in need of newly persisted database state,
     after an INSERT or UPDATE statement has proceeded for that
     state."""
 
+    prefetch_cols = result.context.prefetch_cols
+    postfetch_cols = result.context.postfetch_cols
+    returning_cols = result.context.returning_cols
+
     if mapper.version_id_col is not None:
         prefetch_cols = list(prefetch_cols) + [mapper.version_id_col]
+
+    if returning_cols:
+        row = result.context.returned_defaults
+        if row is not None:
+            for col in returning_cols:
+                if col.primary_key:
+                    continue
+                mapper._set_state_attr_by_column(state, dict_, col, row[col])
 
     for c in prefetch_cols:
         if c.key in params and c in mapper._columntoproperty:
@@ -813,6 +866,10 @@ class BulkUD(object):
     def __init__(self, query):
         self.query = query.enable_eagerloads(False)
 
+    @property
+    def session(self):
+        return self.query.session
+
     @classmethod
     def _factory(cls, lookup, synchronize_session, *arg):
         try:
@@ -821,7 +878,7 @@ class BulkUD(object):
             raise sa_exc.ArgumentError(
                             "Valid strategies for session synchronization "
                             "are %s" % (", ".join(sorted(repr(x)
-                                for x in lookup.keys()))))
+                                for x in lookup))))
         else:
             return klass(*arg)
 
@@ -886,7 +943,7 @@ class BulkEvaluate(BulkUD):
         #TODO: detect when the where clause is a trivial primary key match
         self.matched_objects = [
                             obj for (cls, pk), obj in
-                            query.session.identity_map.iteritems()
+                            query.session.identity_map.items()
                             if issubclass(cls, target_cls) and
                             eval_condition(obj)]
 
@@ -930,8 +987,7 @@ class BulkUpdate(BulkUD):
 
     def _do_post(self):
         session = self.query.session
-        session.dispatch.after_bulk_update(session, self.query,
-                                self.context, self.result)
+        session.dispatch.after_bulk_update(self)
 
 
 class BulkDelete(BulkUD):
@@ -959,8 +1015,7 @@ class BulkDelete(BulkUD):
 
     def _do_post(self):
         session = self.query.session
-        session.dispatch.after_bulk_delete(session, self.query,
-                        self.context, self.result)
+        session.dispatch.after_bulk_delete(self)
 
 
 class BulkUpdateEvaluate(BulkEvaluate, BulkUpdate):
@@ -969,7 +1024,7 @@ class BulkUpdateEvaluate(BulkEvaluate, BulkUpdate):
 
     def _additional_evaluators(self, evaluator_compiler):
         self.value_evaluators = {}
-        for key, value in self.values.iteritems():
+        for key, value in self.values.items():
             key = _attr_as_key(key)
             self.value_evaluators[key] = evaluator_compiler.process(
                                 expression._literal_as_binds(value))
@@ -977,7 +1032,7 @@ class BulkUpdateEvaluate(BulkEvaluate, BulkUpdate):
     def _do_post_synchronize(self):
         session = self.query.session
         states = set()
-        evaluated_keys = self.value_evaluators.keys()
+        evaluated_keys = list(self.value_evaluators.keys())
         for obj in self.matched_objects:
             state, dict_ = attributes.instance_state(obj),\
                                     attributes.instance_dict(obj)

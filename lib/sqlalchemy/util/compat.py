@@ -15,8 +15,6 @@ except ImportError:
 
 py33 = sys.version_info >= (3, 3)
 py32 = sys.version_info >= (3, 2)
-py26 = sys.version_info >= (2, 6)
-py3k_warning = getattr(sys, 'py3kwarning', False) or sys.version_info >= (3, 0)
 py3k = sys.version_info >= (3, 0)
 py2k = sys.version_info < (3, 0)
 jython = sys.platform.startswith('java')
@@ -24,32 +22,10 @@ pypy = hasattr(sys, 'pypy_version_info')
 win32 = sys.platform.startswith('win')
 cpython = not pypy and not jython  # TODO: something better for this ?
 
-if py3k_warning:
-    set_types = set
-elif sys.version_info < (2, 6):
-    import sets
-    set_types = set, sets.Set
-else:
-    # 2.6 deprecates sets.Set, but we still need to be able to detect them
-    # in user code and as return values from DB-APIs
-    ignore = ('ignore', None, DeprecationWarning, None, 0)
-    import warnings
-    try:
-        warnings.filters.insert(0, ignore)
-    except Exception:
-        import sets
-    else:
-        import sets
-        warnings.filters.remove(ignore)
+import collections
+next = next
 
-    set_types = set, sets.Set
-
-if sys.version_info < (2, 6):
-    def next(iter):
-        return iter.next()
-else:
-    next = next
-if py3k_warning:
+if py3k:
     import pickle
 else:
     try:
@@ -57,90 +33,29 @@ else:
     except ImportError:
         import pickle
 
-if sys.version_info < (2, 6):
-    # emits a nasty deprecation warning
-    # in newer pythons
-    from cgi import parse_qsl
-else:
-    from urlparse import parse_qsl
-
-# Py3K
-#from inspect import getfullargspec as inspect_getfullargspec
-# Py2K
-from inspect import getargspec as inspect_getfullargspec
-# end Py2K
-
-if py3k_warning:
-    # they're bringing it back in 3.2.  brilliant !
-    def callable(fn):
-        return hasattr(fn, '__call__')
-
-    def cmp(a, b):
-        return (a > b) - (a < b)
-
-    from functools import reduce
-else:
-    callable = callable
-    cmp = cmp
-    reduce = reduce
-
-try:
-    from collections import namedtuple
-except ImportError:
-    def namedtuple(typename, fieldnames):
-        def __new__(cls, *values):
-            tup = tuple.__new__(cls, values)
-            for i, fname in enumerate(fieldnames):
-                setattr(tup, fname, tup[i])
-            return tup
-        tuptype = type(typename, (tuple, ), {'__new__': __new__})
-        return tuptype
-
-try:
-    from weakref import WeakSet
-except:
-    import weakref
-
-    class WeakSet(object):
-        """Implement the small subset of set() which SQLAlchemy needs
-        here. """
-        def __init__(self, values=None):
-            self._storage = weakref.WeakKeyDictionary()
-            if values is not None:
-                self._storage.update((value, None) for value in values)
-
-        def __iter__(self):
-            return iter(self._storage)
-
-        def union(self, other):
-            return WeakSet(set(self).union(other))
-
-        def add(self, other):
-            self._storage[other] = True
-
-import time
-if win32 or jython:
-    time_func = time.clock
-else:
-    time_func = time.time
-
-
-if sys.version_info >= (2, 6):
-    from operator import attrgetter as dottedgetter
-else:
-    def dottedgetter(attr):
-        def g(obj):
-            for name in attr.split("."):
-                obj = getattr(obj, name)
-            return obj
-        return g
+ArgSpec = collections.namedtuple("ArgSpec",
+                ["args", "varargs", "keywords", "defaults"])
 
 if py3k:
+    import builtins
+
+    from inspect import getfullargspec as inspect_getfullargspec
+    from urllib.parse import quote_plus, unquote_plus, parse_qsl, quote, unquote
+    import configparser
+    from io import StringIO
+
+    from io import BytesIO as byte_buffer
+
+    def inspect_getargspec(func):
+        return ArgSpec(
+                    *inspect_getfullargspec(func)[0:4]
+                )
 
     string_types = str,
     binary_type = bytes
     text_type = str
     int_types = int,
+    iterbytes = iter
 
     def u(s):
         return s
@@ -151,14 +66,47 @@ if py3k:
     def b(s):
         return s.encode("latin-1")
 
+    if py32:
+        callable = callable
+    else:
+        def callable(fn):
+            return hasattr(fn, '__call__')
+
+    def cmp(a, b):
+        return (a > b) - (a < b)
+
+    from functools import reduce
+
+    print_ = getattr(builtins, "print")
+
+    import_ = getattr(builtins, '__import__')
+
+    import itertools
+    itertools_filterfalse = itertools.filterfalse
+    itertools_filter = filter
+    itertools_imap = map
+
+    import base64
+    def b64encode(x):
+        return base64.b64encode(x).decode('ascii')
+    def b64decode(x):
+        return base64.b64decode(x.encode('ascii'))
+
 else:
+    from inspect import getargspec as inspect_getfullargspec
+    inspect_getargspec = inspect_getfullargspec
+    from urllib import quote_plus, unquote_plus, quote, unquote
+    from urlparse import parse_qsl
+    import ConfigParser as configparser
+    from StringIO import StringIO
+    from cStringIO import StringIO as byte_buffer
+
     string_types = basestring,
     binary_type = str
     text_type = unicode
     int_types = int, long
-
-    def b(s):
-        return s
+    def iterbytes(buf):
+        return (ord(byte) for byte in buf)
 
     def u(s):
         # this differs from what six does, which doesn't support non-ASCII
@@ -173,6 +121,43 @@ else:
     def b(s):
         return s
 
+    def import_(*args):
+        if len(args) == 4:
+            args = args[0:3] + ([str(arg) for arg in args[3]],)
+        return __import__(*args)
+
+    callable = callable
+    cmp = cmp
+    reduce = reduce
+
+    import base64
+    b64encode = base64.b64encode
+    b64decode = base64.b64decode
+
+    def print_(*args, **kwargs):
+        fp = kwargs.pop("file", sys.stdout)
+        if fp is None:
+            return
+        for arg in enumerate(args):
+            if not isinstance(arg, basestring):
+                arg = str(arg)
+            fp.write(arg)
+
+    import itertools
+    itertools_filterfalse = itertools.ifilterfalse
+    itertools_filter = itertools.ifilter
+    itertools_imap = itertools.imap
+
+
+import time
+if win32 or jython:
+    time_func = time.clock
+else:
+    time_func = time.time
+
+from collections import namedtuple
+from operator import attrgetter as dottedgetter
+
 
 if py3k:
     def reraise(tp, value, tb=None, cause=None):
@@ -182,19 +167,49 @@ if py3k:
             raise value.with_traceback(tb)
         raise value
 
-    def raise_from_cause(exception, exc_info):
+    def raise_from_cause(exception, exc_info=None):
+        if exc_info is None:
+            exc_info = sys.exc_info()
         exc_type, exc_value, exc_tb = exc_info
         reraise(type(exception), exception, tb=exc_tb, cause=exc_value)
 else:
     exec("def reraise(tp, value, tb=None, cause=None):\n"
             "    raise tp, value, tb\n")
 
-    def raise_from_cause(exception, exc_info):
+    def raise_from_cause(exception, exc_info=None):
         # not as nice as that of Py3K, but at least preserves
         # the code line where the issue occurred
+        if exc_info is None:
+            exc_info = sys.exc_info()
         exc_type, exc_value, exc_tb = exc_info
         reraise(type(exception), exception, tb=exc_tb)
 
+if py3k:
+    exec_ = getattr(builtins, 'exec')
+else:
+    def exec_(func_text, globals_, lcl=None):
+        if lcl is None:
+            exec('exec func_text in globals_')
+        else:
+            exec('exec func_text in globals_, lcl')
 
+
+def with_metaclass(meta, *bases):
+    """Create a base class with a metaclass.
+
+    Drops the middle class upon creation.
+
+    Source: http://lucumr.pocoo.org/2013/5/21/porting-to-python-3-redux/
+
+    """
+
+    class metaclass(meta):
+        __call__ = type.__call__
+        __init__ = type.__init__
+        def __new__(cls, name, this_bases, d):
+            if this_bases is None:
+                return type.__new__(cls, name, (), d)
+            return meta(name, bases, d)
+    return metaclass('temporary_class', None, {})
 
 

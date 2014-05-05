@@ -162,8 +162,8 @@ Using Temporary Tables with SQLite
 Due to the way SQLite deals with temporary tables, if you wish to use a
 temporary table in a file-based SQLite database across multiple checkouts
 from the connection pool, such as when using an ORM :class:`.Session` where
-the temporary table should continue to remain after :meth:`.commit` or
-:meth:`.rollback` is called, a pool which maintains a single connection must
+the temporary table should continue to remain after :meth:`.Session.commit` or
+:meth:`.Session.rollback` is called, a pool which maintains a single connection must
 be used.   Use :class:`.SingletonThreadPool` if the scope is only needed
 within the current thread, or :class:`.StaticPool` is scope is needed within
 multiple threads for this case::
@@ -269,8 +269,8 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
         }
     )
 
-    # Py3K
-    #description_encoding = None
+    if not util.py2k:
+        description_encoding = None
 
     driver = 'pysqlite'
 
@@ -290,7 +290,7 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
     def dbapi(cls):
         try:
             from pysqlite2 import dbapi2 as sqlite
-        except ImportError, e:
+        except ImportError as e:
             try:
                 from sqlite3 import dbapi2 as sqlite  # try 2.5+ stdlib name.
             except ImportError:

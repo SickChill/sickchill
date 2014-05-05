@@ -13,6 +13,7 @@
     :url: https://github.com/nakagami/CyMySQL
 
 """
+import re
 
 from .mysqldb import MySQLDialect_mysqldb
 from .base import (BIT, MySQLDialect)
@@ -25,15 +26,9 @@ class _cymysqlBIT(BIT):
 
         def process(value):
             if value is not None:
-                # Py2K
-                v = 0L
-                for i in map(ord, value):
+                v = 0
+                for i in util.iterbytes(value):
                     v = v << 8 | i
-                # end Py2K
-                # Py3K
-                #v = 0
-                #for i in value:
-                #    v = v << 8 | i
                 return v
             return value
         return process
@@ -43,7 +38,9 @@ class MySQLDialect_cymysql(MySQLDialect_mysqldb):
     driver = 'cymysql'
 
     description_encoding = None
-    supports_sane_rowcount = False
+    supports_sane_rowcount = True
+    supports_sane_multi_rowcount = False
+    supports_unicode_statements = True
 
     colspecs = util.update_copy(
         MySQLDialect.colspecs,
@@ -58,7 +55,13 @@ class MySQLDialect_cymysql(MySQLDialect_mysqldb):
 
     def _get_server_version_info(self, connection):
         dbapi_con = connection.connection
-        version = [int(v) for v in dbapi_con.server_version.split('.')]
+        version = []
+        r = re.compile('[.\-]')
+        for n in r.split(dbapi_con.server_version):
+            try:
+                version.append(int(n))
+            except ValueError:
+                version.append(n)
         return tuple(version)
 
     def _detect_charset(self, connection):

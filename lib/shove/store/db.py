@@ -24,7 +24,7 @@ try:
     from sqlalchemy import MetaData, Table, Column, String, Binary, select
     from shove import BaseStore, DbBase
 except ImportError, e:
-    raise ImportError('Requires SQLAlchemy >= 0.4')
+    raise ImportError('Error: ' + e + ' Requires SQLAlchemy >= 0.4')
 
 
 class DbStore(BaseStore, DbBase):

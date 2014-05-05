@@ -440,6 +440,8 @@ class SybaseDialect(default.DefaultDialect):
     preparer = SybaseIdentifierPreparer
     inspector = SybaseInspector
 
+    construct_arguments = []
+
     def _get_default_schema_name(self, connection):
         return connection.scalar(
                      text("SELECT user_name() as user_name",
@@ -475,12 +477,11 @@ class SybaseDialect(default.DefaultDialect):
               AND o.type in ('U', 'V')
         """)
 
-        # Py2K
-        if isinstance(schema, unicode):
-            schema = schema.encode("ascii")
-        if isinstance(table_name, unicode):
-            table_name = table_name.encode("ascii")
-        # end Py2K
+        if util.py2k:
+            if isinstance(schema, unicode):
+                schema = schema.encode("ascii")
+            if isinstance(table_name, unicode):
+                table_name = table_name.encode("ascii")
         result = connection.execute(TABLEID_SQL,
                                     schema_name=schema,
                                     table_name=table_name)
@@ -759,10 +760,10 @@ class SybaseDialect(default.DefaultDialect):
             AND o.type = 'U'
         """)
 
-        # Py2K
-        if isinstance(schema, unicode):
-            schema = schema.encode("ascii")
-        # end Py2K
+        if util.py2k:
+            if isinstance(schema, unicode):
+                schema = schema.encode("ascii")
+
         tables = connection.execute(TABLE_SQL, schema_name=schema)
 
         return [t["name"] for t in tables]
@@ -779,10 +780,10 @@ class SybaseDialect(default.DefaultDialect):
             AND o.type = 'V'
         """)
 
-        # Py2K
-        if isinstance(view_name, unicode):
-            view_name = view_name.encode("ascii")
-        # end Py2K
+        if util.py2k:
+            if isinstance(view_name, unicode):
+                view_name = view_name.encode("ascii")
+
         view = connection.execute(VIEW_DEF_SQL, view_name=view_name)
 
         return view.scalar()
@@ -799,10 +800,9 @@ class SybaseDialect(default.DefaultDialect):
             AND o.type = 'V'
         """)
 
-        # Py2K
-        if isinstance(schema, unicode):
-            schema = schema.encode("ascii")
-        # end Py2K
+        if util.py2k:
+            if isinstance(schema, unicode):
+                schema = schema.encode("ascii")
         views = connection.execute(VIEW_SQL, schema_name=schema)
 
         return [v["name"] for v in views]

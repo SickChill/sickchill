@@ -87,7 +87,7 @@ class FBDialect_kinterbasdb(FBDialect):
 
     def __init__(self, type_conv=200, concurrency_level=1,
                             enable_rowcount=True,
-                            retaining=True, **kwargs):
+                            retaining=False, **kwargs):
         super(FBDialect_kinterbasdb, self).__init__(**kwargs)
         self.enable_rowcount = enable_rowcount
         self.type_conv = type_conv

@@ -9,16 +9,19 @@
 
 """Defines operators used in SQL expressions."""
 
+from .. import util
+
+
 from operator import (
     and_, or_, inv, add, mul, sub, mod, truediv, lt, le, ne, gt, ge, eq, neg,
     getitem, lshift, rshift
     )
 
-# Py2K
-from operator import (div,)
-# end Py2K
+if util.py2k:
+    from operator import div
+else:
+    div = truediv
 
-from ..util import symbol
 
 
 class Operators(object):
@@ -99,7 +102,7 @@ class Operators(object):
         """
         return self.operate(inv)
 
-    def op(self, opstring, precedence=0):
+    def op(self, opstring, precedence=0, is_comparison=False):
         """produce a generic operator function.
 
         e.g.::
@@ -131,12 +134,23 @@ class Operators(object):
 
          .. versionadded:: 0.8 - added the 'precedence' argument.
 
+        :param is_comparison: if True, the operator will be considered as a
+         "comparison" operator, that is which evaulates to a boolean true/false
+         value, like ``==``, ``>``, etc.  This flag should be set so that
+         ORM relationships can establish that the operator is a comparison
+         operator when used in a custom join condition.
+
+         .. versionadded:: 0.9.2 - added the :paramref:`.Operators.op.is_comparison`
+            flag.
+
         .. seealso::
 
             :ref:`types_operators`
 
+            :ref:`relationship_custom_operator`
+
         """
-        operator = custom_op(opstring, precedence)
+        operator = custom_op(opstring, precedence, is_comparison)
 
         def against(other):
             return operator(self, other)
@@ -197,9 +211,10 @@ class custom_op(object):
     """
     __name__ = 'custom_op'
 
-    def __init__(self, opstring, precedence=0):
+    def __init__(self, opstring, precedence=0, is_comparison=False):
         self.opstring = opstring
         self.precedence = precedence
+        self.is_comparison = is_comparison
 
     def __eq__(self, other):
         return isinstance(other, custom_op) and \
@@ -654,6 +669,12 @@ def exists():
     raise NotImplementedError()
 
 
+def istrue(a):
+    raise NotImplementedError()
+
+def isfalse(a):
+    raise NotImplementedError()
+
 def is_(a, b):
     return a.is_(b)
 
@@ -760,7 +781,8 @@ _comparison = set([eq, ne, lt, gt, ge, le, between_op])
 
 
 def is_comparison(op):
-    return op in _comparison
+    return op in _comparison or \
+        isinstance(op, custom_op) and op.is_comparison
 
 
 def is_commutative(op):
@@ -779,17 +801,16 @@ parenthesize (a op b).
 
 """
 
-_smallest = symbol('_smallest', canonical=-100)
-_largest = symbol('_largest', canonical=100)
+_asbool = util.symbol('_asbool', canonical=-10)
+_smallest = util.symbol('_smallest', canonical=-100)
+_largest = util.symbol('_largest', canonical=100)
 
 _PRECEDENCE = {
     from_: 15,
     getitem: 15,
     mul: 8,
     truediv: 8,
-    # Py2K
     div: 8,
-    # end Py2K
     mod: 8,
     neg: 8,
     add: 7,
@@ -818,12 +839,19 @@ _PRECEDENCE = {
     between_op: 5,
     distinct_op: 5,
     inv: 5,
+    istrue: 5,
+    isfalse: 5,
     and_: 3,
     or_: 2,
     comma_op: -1,
-    collate: 7,
+
+    desc_op: 3,
+    asc_op: 3,
+    collate: 4,
+
     as_: -1,
     exists: 0,
+    _asbool: -10,
     _smallest: _smallest,
     _largest: _largest
 }

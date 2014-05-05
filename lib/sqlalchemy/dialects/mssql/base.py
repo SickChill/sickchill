@@ -103,21 +103,48 @@ for these types will be issued as DATETIME.
 
 .. _mssql_indexes:
 
-MSSQL-Specific Index Options
------------------------------
+Clustered Index Support
+-----------------------
 
-The MSSQL dialect supports special options for :class:`.Index`.
+The MSSQL dialect supports clustered indexes (and primary keys) via the
+``mssql_clustered`` option.  This option is available to :class:`.Index`,
+:class:`.UniqueConstraint`. and :class:`.PrimaryKeyConstraint`.
 
-CLUSTERED
-^^^^^^^^^^
-
-The ``mssql_clustered`` option  adds the CLUSTERED keyword to the index::
+To generate a clustered index::
 
     Index("my_index", table.c.x, mssql_clustered=True)
 
-would render the index as ``CREATE CLUSTERED INDEX my_index ON table (x)``
+which renders the index as ``CREATE CLUSTERED INDEX my_index ON table (x)``.
 
 .. versionadded:: 0.8
+
+To generate a clustered primary key use::
+
+    Table('my_table', metadata,
+          Column('x', ...),
+          Column('y', ...),
+          PrimaryKeyConstraint("x", "y", mssql_clustered=True))
+
+which will render the table, for example, as::
+
+  CREATE TABLE my_table (x INTEGER NOT NULL, y INTEGER NOT NULL, PRIMARY KEY CLUSTERED (x, y))
+
+Similarly, we can generate a clustered unique constraint using::
+
+    Table('my_table', metadata,
+          Column('x', ...),
+          Column('y', ...),
+          PrimaryKeyConstraint("x"),
+          UniqueConstraint("y", mssql_clustered=True),
+          )
+
+  .. versionadded:: 0.9.2
+
+MSSQL-Specific Index Options
+-----------------------------
+
+In addition to clustering, the MSSQL dialect supports other special options
+for :class:`.Index`.
 
 INCLUDE
 ^^^^^^^
@@ -295,7 +322,7 @@ class _MSDate(sqltypes.Date):
         def process(value):
             if isinstance(value, datetime.datetime):
                 return value.date()
-            elif isinstance(value, basestring):
+            elif isinstance(value, util.string_types):
                 return datetime.date(*[
                         int(x or 0)
                         for x in self._reg.match(value).groups()
@@ -328,7 +355,7 @@ class TIME(sqltypes.TIME):
         def process(value):
             if isinstance(value, datetime.datetime):
                 return value.time()
-            elif isinstance(value, basestring):
+            elif isinstance(value, util.string_types):
                 return datetime.time(*[
                         int(x or 0)
                         for x in self._reg.match(value).groups()])
@@ -991,7 +1018,7 @@ class MSDDLCompiler(compiler.DDLCompiler):
             text += "UNIQUE "
 
         # handle clustering option
-        if index.kwargs.get("mssql_clustered"):
+        if index.dialect_options['mssql']['clustered']:
             text += "CLUSTERED "
 
         text += "INDEX %s ON %s (%s)" \
@@ -1006,13 +1033,13 @@ class MSDDLCompiler(compiler.DDLCompiler):
                         )
 
         # handle other included columns
-        if index.kwargs.get("mssql_include"):
+        if index.dialect_options['mssql']['include']:
             inclusions = [index.table.c[col]
-                            if isinstance(col, basestring) else col
-                          for col in index.kwargs["mssql_include"]]
+                            if isinstance(col, util.string_types) else col
+                          for col in index.dialect_options['mssql']['include']]
 
             text += " INCLUDE (%s)" \
-                % ', '.join([preparer.quote(c.name, c.quote)
+                % ', '.join([preparer.quote(c.name)
                              for c in inclusions])
 
         return text
@@ -1022,6 +1049,40 @@ class MSDDLCompiler(compiler.DDLCompiler):
             self._prepared_index_name(drop.element, include_schema=False),
             self.preparer.format_table(drop.element.table)
             )
+
+    def visit_primary_key_constraint(self, constraint):
+        if len(constraint) == 0:
+            return ''
+        text = ""
+        if constraint.name is not None:
+            text += "CONSTRAINT %s " % \
+                    self.preparer.format_constraint(constraint)
+        text += "PRIMARY KEY "
+
+        if constraint.dialect_options['mssql']['clustered']:
+            text += "CLUSTERED "
+
+        text += "(%s)" % ', '.join(self.preparer.quote(c.name)
+                                   for c in constraint)
+        text += self.define_constraint_deferrability(constraint)
+        return text
+
+    def visit_unique_constraint(self, constraint):
+        if len(constraint) == 0:
+            return ''
+        text = ""
+        if constraint.name is not None:
+            text += "CONSTRAINT %s " % \
+                    self.preparer.format_constraint(constraint)
+        text += "UNIQUE "
+
+        if constraint.dialect_options['mssql']['clustered']:
+            text += "CLUSTERED "
+
+        text += "(%s)" % ', '.join(self.preparer.quote(c.name)
+                                   for c in constraint)
+        text += self.define_constraint_deferrability(constraint)
+        return text
 
 class MSIdentifierPreparer(compiler.IdentifierPreparer):
     reserved_words = RESERVED_WORDS
@@ -1033,7 +1094,7 @@ class MSIdentifierPreparer(compiler.IdentifierPreparer):
     def _escape_identifier(self, value):
         return value
 
-    def quote_schema(self, schema, force=True):
+    def quote_schema(self, schema, force=None):
         """Prepare a quoted table and schema name."""
         result = '.'.join([self.quote(x, force) for x in schema.split('.')])
         return result
@@ -1103,11 +1164,24 @@ class MSDialect(default.DefaultDialect):
     type_compiler = MSTypeCompiler
     preparer = MSIdentifierPreparer
 
+    construct_arguments = [
+        (sa_schema.PrimaryKeyConstraint, {
+            "clustered": False
+        }),
+        (sa_schema.UniqueConstraint, {
+            "clustered": False
+        }),
+        (sa_schema.Index, {
+            "clustered": False,
+            "include": None
+        })
+    ]
+
     def __init__(self,
                  query_timeout=None,
                  use_scope_identity=True,
                  max_identifier_length=None,
-                 schema_name=u"dbo", **opts):
+                 schema_name="dbo", **opts):
         self.query_timeout = int(query_timeout or 0)
         self.schema_name = schema_name
 
@@ -1127,7 +1201,7 @@ class MSDialect(default.DefaultDialect):
 
     def initialize(self, connection):
         super(MSDialect, self).initialize(connection)
-        if self.server_version_info[0] not in range(8, 17):
+        if self.server_version_info[0] not in list(range(8, 17)):
             # FreeTDS with version 4.2 seems to report here
             # a number like "95.10.255".  Don't know what
             # that is.  So emit warning.
@@ -1154,22 +1228,17 @@ class MSDialect(default.DefaultDialect):
             try:
                 default_schema_name = connection.scalar(query, name=user_name)
                 if default_schema_name is not None:
-                    return unicode(default_schema_name)
+                    return util.text_type(default_schema_name)
             except:
                 pass
         return self.schema_name
-
-    def _unicode_cast(self, column):
-        if self.server_version_info >= MS_2005_VERSION:
-            return cast(column, NVARCHAR(_warn_on_bytestring=False))
-        else:
-            return column
 
     @_db_plus_owner
     def has_table(self, connection, tablename, dbname, owner, schema):
         columns = ischema.columns
 
-        whereclause = self._unicode_cast(columns.c.table_name) == tablename
+        whereclause = columns.c.table_name == tablename
+
         if owner:
             whereclause = sql.and_(whereclause,
                                    columns.c.table_schema == owner)
@@ -1192,7 +1261,7 @@ class MSDialect(default.DefaultDialect):
         s = sql.select([tables.c.table_name],
             sql.and_(
                 tables.c.table_schema == owner,
-                tables.c.table_type == u'BASE TABLE'
+                tables.c.table_type == 'BASE TABLE'
             ),
             order_by=[tables.c.table_name]
         )
@@ -1206,7 +1275,7 @@ class MSDialect(default.DefaultDialect):
         s = sql.select([tables.c.table_name],
             sql.and_(
                 tables.c.table_schema == owner,
-                tables.c.table_type == u'VIEW'
+                tables.c.table_type == 'VIEW'
             ),
             order_by=[tables.c.table_name]
         )
@@ -1271,7 +1340,7 @@ class MSDialect(default.DefaultDialect):
             if row['index_id'] in indexes:
                 indexes[row['index_id']]['column_names'].append(row['name'])
 
-        return indexes.values()
+        return list(indexes.values())
 
     @reflection.cache
     @_db_plus_owner
@@ -1478,4 +1547,4 @@ class MSDialect(default.DefaultDialect):
             local_cols.append(scol)
             remote_cols.append(rcol)
 
-        return fkeys.values()
+        return list(fkeys.values())

@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
@@ -19,6 +19,8 @@ metadata, users = None, None
 
 
 class HasTableTest(fixtures.TablesTest):
+    __backend__ = True
+
     @classmethod
     def define_tables(cls, metadata):
         Table('test_table', metadata,
@@ -33,8 +35,11 @@ class HasTableTest(fixtures.TablesTest):
 
 
 
+
 class ComponentReflectionTest(fixtures.TablesTest):
     run_inserts = run_deletes = None
+
+    __backend__ = True
 
     @classmethod
     def define_tables(cls, metadata):
@@ -89,7 +94,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
 
         if testing.requires.index_reflection.enabled:
             cls.define_index(metadata, users)
-        if testing.requires.view_reflection.enabled:
+        if testing.requires.view_column_reflection.enabled:
             cls.define_views(metadata, schema)
 
     @classmethod
@@ -172,17 +177,17 @@ class ComponentReflectionTest(fixtures.TablesTest):
     def test_get_table_names_with_schema(self):
         self._test_get_table_names('test_schema')
 
-    @testing.requires.view_reflection
+    @testing.requires.view_column_reflection
     def test_get_view_names(self):
         self._test_get_table_names(table_type='view')
 
-    @testing.requires.view_reflection
+    @testing.requires.view_column_reflection
     @testing.requires.schemas
     def test_get_view_names_with_schema(self):
         self._test_get_table_names('test_schema', table_type='view')
 
     @testing.requires.table_reflection
-    @testing.requires.view_reflection
+    @testing.requires.view_column_reflection
     def test_get_tables_and_views(self):
         self._test_get_table_names()
         self._test_get_table_names(table_type='view')
@@ -238,16 +243,62 @@ class ComponentReflectionTest(fixtures.TablesTest):
     def test_get_columns(self):
         self._test_get_columns()
 
+    @testing.provide_metadata
+    def _type_round_trip(self, *types):
+        t = Table('t', self.metadata,
+                    *[
+                        Column('t%d' % i, type_)
+                        for i, type_ in enumerate(types)
+                    ]
+                )
+        t.create()
+
+        return [
+            c['type'] for c in
+            inspect(self.metadata.bind).get_columns('t')
+        ]
+
+    @testing.requires.table_reflection
+    def test_numeric_reflection(self):
+        for typ in self._type_round_trip(
+                            sql_types.Numeric(18, 5),
+                        ):
+            assert isinstance(typ, sql_types.Numeric)
+            eq_(typ.precision, 18)
+            eq_(typ.scale, 5)
+
+    @testing.requires.table_reflection
+    def test_varchar_reflection(self):
+        typ = self._type_round_trip(sql_types.String(52))[0]
+        assert isinstance(typ, sql_types.String)
+        eq_(typ.length, 52)
+
+    @testing.requires.table_reflection
+    @testing.provide_metadata
+    def test_nullable_reflection(self):
+        t = Table('t', self.metadata,
+                        Column('a', Integer, nullable=True),
+                        Column('b', Integer, nullable=False))
+        t.create()
+        eq_(
+            dict(
+                (col['name'], col['nullable'])
+                for col in inspect(self.metadata.bind).get_columns('t')
+            ),
+            {"a": True, "b": False}
+        )
+
+
     @testing.requires.table_reflection
     @testing.requires.schemas
     def test_get_columns_with_schema(self):
         self._test_get_columns(schema='test_schema')
 
-    @testing.requires.view_reflection
+    @testing.requires.view_column_reflection
     def test_get_view_columns(self):
         self._test_get_columns(table_type='view')
 
-    @testing.requires.view_reflection
+    @testing.requires.view_column_reflection
     @testing.requires.schemas
     def test_get_view_columns_with_schema(self):
         self._test_get_columns(schema='test_schema', table_type='view')
@@ -300,18 +351,20 @@ class ComponentReflectionTest(fixtures.TablesTest):
         insp = inspect(meta.bind)
         expected_schema = schema
         # users
-        users_fkeys = insp.get_foreign_keys(users.name,
-                                            schema=schema)
-        fkey1 = users_fkeys[0]
 
-        with testing.requires.named_constraints.fail_if():
-            self.assert_(fkey1['name'] is not None)
-
-        eq_(fkey1['referred_schema'], expected_schema)
-        eq_(fkey1['referred_table'], users.name)
-        eq_(fkey1['referred_columns'], ['user_id', ])
         if testing.requires.self_referential_foreign_keys.enabled:
-            eq_(fkey1['constrained_columns'], ['parent_user_id'])
+            users_fkeys = insp.get_foreign_keys(users.name,
+                                                schema=schema)
+            fkey1 = users_fkeys[0]
+
+            with testing.requires.named_constraints.fail_if():
+                self.assert_(fkey1['name'] is not None)
+
+            eq_(fkey1['referred_schema'], expected_schema)
+            eq_(fkey1['referred_table'], users.name)
+            eq_(fkey1['referred_columns'], ['user_id', ])
+            if testing.requires.self_referential_foreign_keys.enabled:
+                eq_(fkey1['constrained_columns'], ['parent_user_id'])
 
         #addresses
         addr_fkeys = insp.get_foreign_keys(addresses.name,
@@ -382,9 +435,9 @@ class ComponentReflectionTest(fixtures.TablesTest):
     def _test_get_unique_constraints(self, schema=None):
         uniques = sorted(
             [
+                {'name': 'unique_a', 'column_names': ['a']},
                 {'name': 'unique_a_b_c', 'column_names': ['a', 'b', 'c']},
-                {'name': 'unique_a_c', 'column_names': ['a', 'c']},
-                {'name': 'unique_b_c', 'column_names': ['b', 'c']},
+                {'name': 'unique_c_a_b', 'column_names': ['c', 'a', 'b']},
                 {'name': 'unique_asc_key', 'column_names': ['asc', 'key']},
             ],
             key=operator.itemgetter('name')
@@ -402,7 +455,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
         )
         for uc in uniques:
             table.append_constraint(
-                sa.UniqueConstraint(name=uc['name'], *uc['column_names'])
+                sa.UniqueConstraint(*uc['column_names'], name=uc['name'])
             )
         orig_meta.create_all()
 
@@ -412,7 +465,8 @@ class ComponentReflectionTest(fixtures.TablesTest):
             key=operator.itemgetter('name')
         )
 
-        eq_(uniques, reflected)
+        for orig, refl in zip(uniques, reflected):
+            eq_(orig, refl)
 
 
     @testing.provide_metadata
@@ -445,7 +499,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
                     self.tables.email_addresses, self.tables.dingalings
         insp = inspect(meta.bind)
         oid = insp.get_table_oid(table_name, schema)
-        self.assert_(isinstance(oid, (int, long)))
+        self.assert_(isinstance(oid, int))
 
     def test_get_table_oid(self):
         self._test_get_table_oid('users')
@@ -454,6 +508,7 @@ class ComponentReflectionTest(fixtures.TablesTest):
     def test_get_table_oid_with_schema(self):
         self._test_get_table_oid('users', schema='test_schema')
 
+    @testing.requires.table_reflection
     @testing.provide_metadata
     def test_autoincrement_col(self):
         """test that 'autoincrement' is reflected according to sqla's policy.

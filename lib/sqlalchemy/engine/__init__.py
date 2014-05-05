@@ -50,14 +50,13 @@ url.py
     within a URL.
 """
 
-# not sure what this was used for
-#import sqlalchemy.databases
-
 from .interfaces import (
-    Compiled,
     Connectable,
     Dialect,
     ExecutionContext,
+
+    # backwards compat
+    Compiled,
     TypeCompiler
 )
 
@@ -83,7 +82,11 @@ from .util import (
     connection_memoize
     )
 
+
 from . import util, strategies
+
+# backwards compat
+from ..sql import ddl
 
 default_strategy = 'plain'
 
@@ -354,10 +357,13 @@ def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
     arguments.
     """
 
-    opts = util._coerce_config(configuration, prefix)
-    opts.update(kwargs)
-    url = opts.pop('url')
-    return create_engine(url, **opts)
+    options = dict((key[len(prefix):], configuration[key])
+                   for key in configuration
+                   if key.startswith(prefix))
+    options['_coerce_config'] = True
+    options.update(kwargs)
+    url = options.pop('url')
+    return create_engine(url, **options)
 
 
 __all__ = (

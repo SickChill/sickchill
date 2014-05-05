@@ -8,10 +8,14 @@
 
 """
 from .. import event, exc, util
-orm = util.importlater("sqlalchemy", "orm")
+from .base import _mapper_or_none
 import inspect
 import weakref
-
+from . import interfaces
+from . import mapperlib, instrumentation
+from .session import Session, sessionmaker
+from .scoping import scoped_session
+from .attributes import QueryableAttribute
 
 class InstrumentationEvents(event.Events):
     """Events related to class instrumentation events.
@@ -42,16 +46,21 @@ class InstrumentationEvents(event.Events):
 
     """
 
+    _target_class_doc = "SomeBaseClass"
+    _dispatch_target = instrumentation.InstrumentationFactory
+
+
     @classmethod
     def _accept_with(cls, target):
-        # TODO: there's no coverage for this
         if isinstance(target, type):
             return _InstrumentationEventsHold(target)
         else:
             return None
 
     @classmethod
-    def _listen(cls, target, identifier, fn, propagate=True):
+    def _listen(cls, event_key, propagate=True, **kw):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
 
         def listen(target_cls, *arg):
             listen_cls = target()
@@ -61,22 +70,21 @@ class InstrumentationEvents(event.Events):
                 return fn(target_cls, *arg)
 
         def remove(ref):
-            event.Events._remove(orm.instrumentation._instrumentation_factory,
-                                            identifier, listen)
+            key = event.registry._EventKey(None, identifier, listen,
+                        instrumentation._instrumentation_factory)
+            getattr(instrumentation._instrumentation_factory.dispatch,
+                        identifier).remove(key)
 
         target = weakref.ref(target.class_, remove)
-        event.Events._listen(orm.instrumentation._instrumentation_factory,
-                        identifier, listen)
 
-    @classmethod
-    def _remove(cls, identifier, target, fn):
-        raise NotImplementedError("Removal of instrumentation events "
-                                    "not yet implemented")
+        event_key.\
+            with_dispatch_target(instrumentation._instrumentation_factory).\
+            with_wrapper(listen).base_listen(**kw)
 
     @classmethod
     def _clear(cls):
         super(InstrumentationEvents, cls)._clear()
-        orm.instrumentation._instrumentation_factory.dispatch._clear()
+        instrumentation._instrumentation_factory.dispatch._clear()
 
     def class_instrument(self, cls):
         """Called after the given class is instrumented.
@@ -98,6 +106,7 @@ class InstrumentationEvents(event.Events):
         """Called when an attribute is instrumented."""
 
 
+
 class _InstrumentationEventsHold(object):
     """temporary marker object used to transfer from _accept_with() to
     _listen() on the InstrumentationEvents class.
@@ -107,7 +116,6 @@ class _InstrumentationEventsHold(object):
         self.class_ = class_
 
     dispatch = event.dispatcher(InstrumentationEvents)
-
 
 class InstanceEvents(event.Events):
     """Define events specific to object lifecycle.
@@ -149,19 +157,29 @@ class InstanceEvents(event.Events):
        object, rather than the mapped instance itself.
 
     """
+
+    _target_class_doc = "SomeClass"
+
+    _dispatch_target = instrumentation.ClassManager
+
     @classmethod
-    def _accept_with(cls, target):
-        if isinstance(target, orm.instrumentation.ClassManager):
+    def _new_classmanager_instance(cls, class_, classmanager):
+        _InstanceEventsHold.populate(class_, classmanager)
+
+    @classmethod
+    @util.dependencies("sqlalchemy.orm")
+    def _accept_with(cls, orm, target):
+        if isinstance(target, instrumentation.ClassManager):
             return target
-        elif isinstance(target, orm.Mapper):
+        elif isinstance(target, mapperlib.Mapper):
             return target.class_manager
         elif target is orm.mapper:
-            return orm.instrumentation.ClassManager
+            return instrumentation.ClassManager
         elif isinstance(target, type):
-            if issubclass(target, orm.Mapper):
-                return orm.instrumentation.ClassManager
+            if issubclass(target, mapperlib.Mapper):
+                return instrumentation.ClassManager
             else:
-                manager = orm.instrumentation.manager_of_class(target)
+                manager = instrumentation.manager_of_class(target)
                 if manager:
                     return manager
                 else:
@@ -169,23 +187,20 @@ class InstanceEvents(event.Events):
         return None
 
     @classmethod
-    def _listen(cls, target, identifier, fn, raw=False, propagate=False):
+    def _listen(cls, event_key, raw=False, propagate=False, **kw):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
         if not raw:
-            orig_fn = fn
-
             def wrap(state, *arg, **kw):
-                return orig_fn(state.obj(), *arg, **kw)
-            fn = wrap
+                return fn(state.obj(), *arg, **kw)
+            event_key = event_key.with_wrapper(wrap)
 
-        event.Events._listen(target, identifier, fn, propagate=propagate)
+        event_key.base_listen(propagate=propagate, **kw)
+
         if propagate:
             for mgr in target.subclass_managers(True):
-                event.Events._listen(mgr, identifier, fn, True)
-
-    @classmethod
-    def _remove(cls, identifier, target, fn):
-        msg = "Removal of instance events not yet implemented"
-        raise NotImplementedError(msg)
+                event_key.with_dispatch_target(mgr).base_listen(propagate=True)
 
     @classmethod
     def _clear(cls):
@@ -314,8 +329,7 @@ class InstanceEvents(event.Events):
 
         """
 
-
-class _EventsHold(object):
+class _EventsHold(event.RefCollection):
     """Hold onto listeners against unmapped, uninstrumented classes.
 
     Establish _listen() for that class' mapper/instrumentation when
@@ -330,14 +344,20 @@ class _EventsHold(object):
         cls.all_holds.clear()
 
     class HoldEvents(object):
+        _dispatch_target = None
+
         @classmethod
-        def _listen(cls, target, identifier, fn, raw=False, propagate=False):
+        def _listen(cls, event_key, raw=False, propagate=False, **kw):
+            target, identifier, fn = \
+                event_key.dispatch_target, event_key.identifier, event_key.fn
+
             if target.class_ in target.all_holds:
                 collection = target.all_holds[target.class_]
             else:
-                collection = target.all_holds[target.class_] = []
+                collection = target.all_holds[target.class_] = {}
 
-            collection.append((identifier, fn, raw, propagate))
+            event.registry._stored_in_collection(event_key, target)
+            collection[event_key._key] = (event_key, raw, propagate)
 
             if propagate:
                 stack = list(target.class_.__subclasses__())
@@ -346,31 +366,40 @@ class _EventsHold(object):
                     stack.extend(subclass.__subclasses__())
                     subject = target.resolve(subclass)
                     if subject is not None:
-                        subject.dispatch._listen(subject, identifier, fn,
-                                        raw=raw, propagate=propagate)
+                        # we are already going through __subclasses__()
+                        # so leave generic propagate flag False
+                        event_key.with_dispatch_target(subject).\
+                            listen(raw=raw, propagate=False, **kw)
+
+    def remove(self, event_key):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
+        if isinstance(target, _EventsHold):
+            collection = target.all_holds[target.class_]
+            del collection[event_key._key]
 
     @classmethod
     def populate(cls, class_, subject):
         for subclass in class_.__mro__:
             if subclass in cls.all_holds:
                 collection = cls.all_holds[subclass]
-                for ident, fn, raw, propagate in collection:
+                for event_key, raw, propagate in collection.values():
                     if propagate or subclass is class_:
                         # since we can't be sure in what order different classes
                         # in a hierarchy are triggered with populate(),
                         # we rely upon _EventsHold for all event
                         # assignment, instead of using the generic propagate
                         # flag.
-                        subject.dispatch._listen(subject, ident,
-                                                        fn, raw=raw,
-                                                        propagate=False)
+                        event_key.with_dispatch_target(subject).\
+                            listen(raw=raw, propagate=False)
 
 
 class _InstanceEventsHold(_EventsHold):
     all_holds = weakref.WeakKeyDictionary()
 
     def resolve(self, class_):
-        return orm.instrumentation.manager_of_class(class_)
+        return instrumentation.manager_of_class(class_)
 
     class HoldInstanceEvents(_EventsHold.HoldEvents, InstanceEvents):
         pass
@@ -449,15 +478,23 @@ class MapperEvents(event.Events):
 
     """
 
+    _target_class_doc = "SomeClass"
+    _dispatch_target = mapperlib.Mapper
+
     @classmethod
-    def _accept_with(cls, target):
+    def _new_mapper_instance(cls, class_, mapper):
+        _MapperEventsHold.populate(class_, mapper)
+
+    @classmethod
+    @util.dependencies("sqlalchemy.orm")
+    def _accept_with(cls, orm, target):
         if target is orm.mapper:
-            return orm.Mapper
+            return mapperlib.Mapper
         elif isinstance(target, type):
-            if issubclass(target, orm.Mapper):
+            if issubclass(target, mapperlib.Mapper):
                 return target
             else:
-                mapper = orm.util._mapper_or_none(target)
+                mapper = _mapper_or_none(target)
                 if mapper is not None:
                     return mapper
                 else:
@@ -466,8 +503,16 @@ class MapperEvents(event.Events):
             return target
 
     @classmethod
-    def _listen(cls, target, identifier, fn,
-                            raw=False, retval=False, propagate=False):
+    def _listen(cls, event_key, raw=False, retval=False, propagate=False, **kw):
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
+        if identifier in ("before_configured", "after_configured") and \
+            target is not mapperlib.Mapper:
+            util.warn(
+                    "'before_configured' and 'after_configured' ORM events "
+                    "only invoke with the mapper() function or Mapper class "
+                    "as the target.")
 
         if not raw or not retval:
             if not raw:
@@ -478,24 +523,23 @@ class MapperEvents(event.Events):
                 except ValueError:
                     target_index = None
 
-            wrapped_fn = fn
-
             def wrap(*arg, **kw):
                 if not raw and target_index is not None:
                     arg = list(arg)
                     arg[target_index] = arg[target_index].obj()
                 if not retval:
-                    wrapped_fn(*arg, **kw)
-                    return orm.interfaces.EXT_CONTINUE
+                    fn(*arg, **kw)
+                    return interfaces.EXT_CONTINUE
                 else:
-                    return wrapped_fn(*arg, **kw)
-            fn = wrap
+                    return fn(*arg, **kw)
+            event_key = event_key.with_wrapper(wrap)
 
         if propagate:
             for mapper in target.self_and_descendants:
-                event.Events._listen(mapper, identifier, fn, propagate=True)
+                event_key.with_dispatch_target(mapper).base_listen(
+                                                propagate=True, **kw)
         else:
-            event.Events._listen(target, identifier, fn)
+            event_key.base_listen(**kw)
 
     @classmethod
     def _clear(cls):
@@ -546,6 +590,42 @@ class MapperEvents(event.Events):
         """
         # TODO: need coverage for this event
 
+    def before_configured(self):
+        """Called before a series of mappers have been configured.
+
+        This corresponds to the :func:`.orm.configure_mappers` call, which
+        note is usually called automatically as mappings are first
+        used.
+
+        This event can **only** be applied to the :class:`.Mapper` class
+        or :func:`.mapper` function, and not to individual mappings or
+        mapped classes.  It is only invoked for all mappings as a whole::
+
+            from sqlalchemy.orm import mapper
+
+            @event.listens_for(mapper, "before_configured")
+            def go():
+                # ...
+
+        Theoretically this event is called once per
+        application, but is actually called any time new mappers
+        are to be affected by a :func:`.orm.configure_mappers`
+        call.   If new mappings are constructed after existing ones have
+        already been used, this event can be called again.  To ensure
+        that a particular event is only called once and no further, the
+        ``once=True`` argument (new in 0.9.4) can be applied::
+
+            from sqlalchemy.orm import mapper
+
+            @event.listens_for(mapper, "before_configured", once=True)
+            def go():
+                # ...
+
+
+        .. versionadded:: 0.9.3
+
+        """
+
     def after_configured(self):
         """Called after a series of mappers have been configured.
 
@@ -553,11 +633,29 @@ class MapperEvents(event.Events):
         note is usually called automatically as mappings are first
         used.
 
+        This event can **only** be applied to the :class:`.Mapper` class
+        or :func:`.mapper` function, and not to individual mappings or
+        mapped classes.  It is only invoked for all mappings as a whole::
+
+            from sqlalchemy.orm import mapper
+
+            @event.listens_for(mapper, "after_configured")
+            def go():
+                # ...
+
         Theoretically this event is called once per
         application, but is actually called any time new mappers
         have been affected by a :func:`.orm.configure_mappers`
         call.   If new mappings are constructed after existing ones have
-        already been used, this event can be called again.
+        already been used, this event can be called again.  To ensure
+        that a particular event is only called once and no further, the
+        ``once=True`` argument (new in 0.9.4) can be applied::
+
+            from sqlalchemy.orm import mapper
+
+            @event.listens_for(mapper, "after_configured", once=True)
+            def go():
+                # ...
 
         """
 
@@ -1047,17 +1145,11 @@ class MapperEvents(event.Events):
 
         """
 
-    @classmethod
-    def _remove(cls, identifier, target, fn):
-        "Removal of mapper events not yet implemented"
-        raise NotImplementedError(msg)
-
-
 class _MapperEventsHold(_EventsHold):
     all_holds = weakref.WeakKeyDictionary()
 
     def resolve(self, class_):
-        return orm.util._mapper_or_none(class_)
+        return _mapper_or_none(class_)
 
     class HoldMapperEvents(_EventsHold.HoldEvents, MapperEvents):
         pass
@@ -1082,44 +1174,44 @@ class SessionEvents(event.Events):
 
     The :func:`~.event.listen` function will accept
     :class:`.Session` objects as well as the return result
-    of :func:`.sessionmaker` and :func:`.scoped_session`.
+    of :class:`~.sessionmaker()` and :class:`~.scoped_session()`.
 
     Additionally, it accepts the :class:`.Session` class which
     will apply listeners to all :class:`.Session` instances
     globally.
 
     """
+
+    _target_class_doc = "SomeSessionOrFactory"
+
+    _dispatch_target = Session
+
     @classmethod
     def _accept_with(cls, target):
-        if isinstance(target, orm.scoped_session):
+        if isinstance(target, scoped_session):
 
             target = target.session_factory
-            if not isinstance(target, orm.sessionmaker) and \
+            if not isinstance(target, sessionmaker) and \
                 (
                     not isinstance(target, type) or
-                    not issubclass(target, orm.Session)
+                    not issubclass(target, Session)
                 ):
                 raise exc.ArgumentError(
                             "Session event listen on a scoped_session "
                             "requires that its creation callable "
                             "is associated with the Session class.")
 
-        if isinstance(target, orm.sessionmaker):
+        if isinstance(target, sessionmaker):
             return target.class_
         elif isinstance(target, type):
-            if issubclass(target, orm.scoped_session):
-                return orm.Session
-            elif issubclass(target, orm.Session):
+            if issubclass(target, scoped_session):
+                return Session
+            elif issubclass(target, Session):
                 return target
-        elif isinstance(target, orm.Session):
+        elif isinstance(target, Session):
             return target
         else:
             return None
-
-    @classmethod
-    def _remove(cls, identifier, target, fn):
-        msg = "Removal of session events not yet implemented"
-        raise NotImplementedError(msg)
 
     def after_transaction_create(self, session, transaction):
         """Execute when a new :class:`.SessionTransaction` is created.
@@ -1169,7 +1261,7 @@ class SessionEvents(event.Events):
 
         .. note::
 
-            The :meth:`.before_commit` hook is *not* per-flush,
+            The :meth:`~.SessionEvents.before_commit` hook is *not* per-flush,
             that is, the :class:`.Session` can emit SQL to the database
             many times within the scope of a transaction.
             For interception of these events, use the :meth:`~.SessionEvents.before_flush`,
@@ -1261,9 +1353,9 @@ class SessionEvents(event.Events):
 
         :param session: The target :class:`.Session`.
         :param previous_transaction: The :class:`.SessionTransaction`
-        transactional marker object which was just closed.   The current
-        :class:`.SessionTransaction` for the given :class:`.Session` is
-        available via the :attr:`.Session.transaction` attribute.
+         transactional marker object which was just closed.   The current
+         :class:`.SessionTransaction` for the given :class:`.Session` is
+         available via the :attr:`.Session.transaction` attribute.
 
         .. versionadded:: 0.7.3
 
@@ -1355,7 +1447,7 @@ class SessionEvents(event.Events):
         This is called before an add, delete or merge causes
         the object to be part of the session.
 
-        .. versionadded:: 0.8.  Note that :meth:`.after_attach` now
+        .. versionadded:: 0.8.  Note that :meth:`~.SessionEvents.after_attach` now
            fires off after the item is part of the session.
            :meth:`.before_attach` is provided for those cases where
            the item should not yet be part of the session state.
@@ -1388,31 +1480,55 @@ class SessionEvents(event.Events):
 
         """
 
-    def after_bulk_update(self, session, query, query_context, result):
+    @event._legacy_signature("0.9",
+                    ["session", "query", "query_context", "result"],
+                    lambda update_context: (
+                            update_context.session,
+                            update_context.query,
+                            update_context.context,
+                            update_context.result))
+    def after_bulk_update(self, update_context):
         """Execute after a bulk update operation to the session.
 
         This is called as a result of the :meth:`.Query.update` method.
 
-        :param query: the :class:`.Query` object that this update operation was
-         called upon.
-        :param query_context: The :class:`.QueryContext` object, corresponding
-         to the invocation of an ORM query.
-        :param result: the :class:`.ResultProxy` returned as a result of the
-         bulk UPDATE operation.
+        :param update_context: an "update context" object which contains
+         details about the update, including these attributes:
+
+            * ``session`` - the :class:`.Session` involved
+            * ``query`` -the :class:`.Query` object that this update operation was
+              called upon.
+            * ``context`` The :class:`.QueryContext` object, corresponding
+              to the invocation of an ORM query.
+            * ``result`` the :class:`.ResultProxy` returned as a result of the
+              bulk UPDATE operation.
+
 
         """
 
-    def after_bulk_delete(self, session, query, query_context, result):
+    @event._legacy_signature("0.9",
+                    ["session", "query", "query_context", "result"],
+                    lambda delete_context: (
+                            delete_context.session,
+                            delete_context.query,
+                            delete_context.context,
+                            delete_context.result))
+    def after_bulk_delete(self, delete_context):
         """Execute after a bulk delete operation to the session.
 
         This is called as a result of the :meth:`.Query.delete` method.
 
-        :param query: the :class:`.Query` object that this update operation was
-         called upon.
-        :param query_context: The :class:`.QueryContext` object, corresponding
-         to the invocation of an ORM query.
-        :param result: the :class:`.ResultProxy` returned as a result of the
-         bulk DELETE operation.
+        :param delete_context: a "delete context" object which contains
+         details about the update, including these attributes:
+
+            * ``session`` - the :class:`.Session` involved
+            * ``query`` -the :class:`.Query` object that this update operation was
+              called upon.
+            * ``context`` The :class:`.QueryContext` object, corresponding
+              to the invocation of an ORM query.
+            * ``result`` the :class:`.ResultProxy` returned as a result of the
+              bulk DELETE operation.
+
 
         """
 
@@ -1446,7 +1562,7 @@ class AttributeEvents(event.Events):
         listen(UserContact.phone, 'set', validate_phone, retval=True)
 
     A validation function like the above can also raise an exception
-    such as :class:`.ValueError` to halt the operation.
+    such as :exc:`ValueError` to halt the operation.
 
     Several modifiers are available to the :func:`~.event.listen` function.
 
@@ -1474,49 +1590,51 @@ class AttributeEvents(event.Events):
 
     """
 
+    _target_class_doc = "SomeClass.some_attribute"
+    _dispatch_target = QueryableAttribute
+
+    @staticmethod
+    def _set_dispatch(cls, dispatch_cls):
+        event.Events._set_dispatch(cls, dispatch_cls)
+        dispatch_cls._active_history = False
+
     @classmethod
     def _accept_with(cls, target):
         # TODO: coverage
-        if isinstance(target, orm.interfaces.MapperProperty):
+        if isinstance(target, interfaces.MapperProperty):
             return getattr(target.parent.class_, target.key)
         else:
             return target
 
     @classmethod
-    def _listen(cls, target, identifier, fn, active_history=False,
+    def _listen(cls, event_key, active_history=False,
                                         raw=False, retval=False,
                                         propagate=False):
+
+        target, identifier, fn = \
+            event_key.dispatch_target, event_key.identifier, event_key.fn
+
         if active_history:
             target.dispatch._active_history = True
 
-        # TODO: for removal, need to package the identity
-        # of the wrapper with the original function.
-
         if not raw or not retval:
-            orig_fn = fn
-
             def wrap(target, value, *arg):
                 if not raw:
                     target = target.obj()
                 if not retval:
-                    orig_fn(target, value, *arg)
+                    fn(target, value, *arg)
                     return value
                 else:
-                    return orig_fn(target, value, *arg)
-            fn = wrap
+                    return fn(target, value, *arg)
+            event_key = event_key.with_wrapper(wrap)
 
-        event.Events._listen(target, identifier, fn, propagate)
+        event_key.base_listen(propagate=propagate)
 
         if propagate:
-            manager = orm.instrumentation.manager_of_class(target.class_)
+            manager = instrumentation.manager_of_class(target.class_)
 
             for mgr in manager.subclass_managers(True):
-                event.Events._listen(mgr[target.key], identifier, fn, True)
-
-    @classmethod
-    def _remove(cls, identifier, target, fn):
-        msg = "Removal of attribute events not yet implemented"
-        raise NotImplementedError(msg)
+                event_key.with_dispatch_target(mgr[target.key]).base_listen(propagate=True)
 
     def append(self, target, value, initiator):
         """Receive a collection append event.
@@ -1528,8 +1646,15 @@ class AttributeEvents(event.Events):
           is registered with ``retval=True``, the listener
           function must return this value, or a new value which
           replaces it.
-        :param initiator: the attribute implementation object
-          which initiated this event.
+        :param initiator: An instance of :class:`.attributes.Event`
+          representing the initiation of the event.  May be modified
+          from it's original value by backref handlers in order to control
+          chained event propagation.
+
+          .. versionchanged:: 0.9.0 the ``initiator`` argument is now
+             passed as a :class:`.attributes.Event` object, and may be modified
+             by backref handlers within a chain of backref-linked events.
+
         :return: if the event was registered with ``retval=True``,
          the given value, or a new effective value, should be returned.
 
@@ -1542,8 +1667,15 @@ class AttributeEvents(event.Events):
           If the listener is registered with ``raw=True``, this will
           be the :class:`.InstanceState` object.
         :param value: the value being removed.
-        :param initiator: the attribute implementation object
-          which initiated this event.
+        :param initiator: An instance of :class:`.attributes.Event`
+          representing the initiation of the event.  May be modified
+          from it's original value by backref handlers in order to control
+          chained event propagation.
+
+          .. versionchanged:: 0.9.0 the ``initiator`` argument is now
+             passed as a :class:`.attributes.Event` object, and may be modified
+             by backref handlers within a chain of backref-linked events.
+
         :return: No return value is defined for this event.
         """
 
@@ -1563,9 +1695,17 @@ class AttributeEvents(event.Events):
           the previous value of the attribute will be loaded from
           the database if the existing value is currently unloaded
           or expired.
-        :param initiator: the attribute implementation object
-          which initiated this event.
+        :param initiator: An instance of :class:`.attributes.Event`
+          representing the initiation of the event.  May be modified
+          from it's original value by backref handlers in order to control
+          chained event propagation.
+
+          .. versionchanged:: 0.9.0 the ``initiator`` argument is now
+             passed as a :class:`.attributes.Event` object, and may be modified
+             by backref handlers within a chain of backref-linked events.
+
         :return: if the event was registered with ``retval=True``,
          the given value, or a new effective value, should be returned.
 
         """
+

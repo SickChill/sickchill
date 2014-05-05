@@ -49,18 +49,27 @@ class DefaultEngineStrategy(EngineStrategy):
 
         dialect_cls = u.get_dialect()
 
+        if kwargs.pop('_coerce_config', False):
+            def pop_kwarg(key, default=None):
+                value = kwargs.pop(key, default)
+                if key in dialect_cls.engine_config_types:
+                    value = dialect_cls.engine_config_types[key](value)
+                return value
+        else:
+            pop_kwarg = kwargs.pop
+
         dialect_args = {}
         # consume dialect arguments from kwargs
         for k in util.get_cls_kwargs(dialect_cls):
             if k in kwargs:
-                dialect_args[k] = kwargs.pop(k)
+                dialect_args[k] = pop_kwarg(k)
 
         dbapi = kwargs.pop('module', None)
         if dbapi is None:
             dbapi_args = {}
             for k in util.get_func_kwargs(dialect_cls.dbapi):
                 if k in kwargs:
-                    dbapi_args[k] = kwargs.pop(k)
+                    dbapi_args[k] = pop_kwarg(k)
             dbapi = dialect_cls.dbapi(**dbapi_args)
 
         dialect_args['dbapi'] = dbapi
@@ -70,32 +79,26 @@ class DefaultEngineStrategy(EngineStrategy):
 
         # assemble connection arguments
         (cargs, cparams) = dialect.create_connect_args(u)
-        cparams.update(kwargs.pop('connect_args', {}))
+        cparams.update(pop_kwarg('connect_args', {}))
 
         # look for existing pool or create
-        pool = kwargs.pop('pool', None)
+        pool = pop_kwarg('pool', None)
         if pool is None:
             def connect():
                 try:
                     return dialect.connect(*cargs, **cparams)
-                except dialect.dbapi.Error, e:
+                except dialect.dbapi.Error as e:
                     invalidated = dialect.is_disconnect(e, None, None)
-                    # Py3K
-                    #raise exc.DBAPIError.instance(None, None,
-                    #    e, dialect.dbapi.Error,
-                    #    connection_invalidated=invalidated
-                    #) from e
-                    # Py2K
-                    import sys
-                    raise exc.DBAPIError.instance(
-                        None, None, e, dialect.dbapi.Error,
-                        connection_invalidated=invalidated
-                    ), None, sys.exc_info()[2]
-                    # end Py2K
+                    util.raise_from_cause(
+                        exc.DBAPIError.instance(None, None,
+                            e, dialect.dbapi.Error,
+                            connection_invalidated=invalidated
+                        )
+                    )
 
-            creator = kwargs.pop('creator', connect)
+            creator = pop_kwarg('creator', connect)
 
-            poolclass = kwargs.pop('poolclass', None)
+            poolclass = pop_kwarg('poolclass', None)
             if poolclass is None:
                 poolclass = dialect_cls.get_pool_class(u)
             pool_args = {}
@@ -112,7 +115,7 @@ class DefaultEngineStrategy(EngineStrategy):
             for k in util.get_cls_kwargs(poolclass):
                 tk = translate.get(k, k)
                 if tk in kwargs:
-                    pool_args[k] = kwargs.pop(tk)
+                    pool_args[k] = pop_kwarg(tk)
             pool = poolclass(creator, **pool_args)
         else:
             if isinstance(pool, poollib._DBProxy):
@@ -125,7 +128,7 @@ class DefaultEngineStrategy(EngineStrategy):
         engine_args = {}
         for k in util.get_cls_kwargs(engineclass):
             if k in kwargs:
-                engine_args[k] = kwargs.pop(k)
+                engine_args[k] = pop_kwarg(k)
 
         _initialize = kwargs.pop('_initialize', True)
 
@@ -155,18 +158,12 @@ class DefaultEngineStrategy(EngineStrategy):
                 event.listen(pool, 'first_connect', on_connect)
                 event.listen(pool, 'connect', on_connect)
 
-            @util.only_once
             def first_connect(dbapi_connection, connection_record):
-                c = base.Connection(engine, connection=dbapi_connection)
-
-                # TODO: removing this allows the on connect activities
-                # to generate events.  tests currently assume these aren't
-                # sent.  do we want users to get all the initial connect
-                # activities as events ?
-                c._has_events = False
+                c = base.Connection(engine, connection=dbapi_connection,
+                            _has_events=False)
 
                 dialect.initialize(c)
-            event.listen(pool, 'first_connect', first_connect)
+            event.listen(pool, 'first_connect', first_connect, once=True)
 
         return engine
 
