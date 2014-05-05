@@ -3406,7 +3406,7 @@ class Home:
             if sceneSeason is not None: sceneSeason = int(sceneSeason)
             if sceneEpisode is not None: sceneEpisode = int(sceneEpisode)
 
-            set_scene_numbering(show, forSeason, forEpisode, sceneSeason, sceneEpisode)
+            set_scene_numbering(show, indexer, forSeason, forEpisode, sceneSeason, sceneEpisode)
 
         sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
         if sn:
