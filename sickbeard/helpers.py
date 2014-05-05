@@ -945,24 +945,15 @@ def _check_against_names(name, show):
 
 
 def get_show_by_name(name):
-    showObj = None
 
-    if not sickbeard.showList:
-        return
-
-    indexerid = sickbeard.name_cache.retrieveNameFromCache(name)
-
-    showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
-    for showName in showNames if not indexerid else []:
-        sceneResults = [x for x in sickbeard.showList if _check_against_names(showName, x)]
-        showObj = sceneResults[0] if len(sceneResults) else None
-        if showObj:
-            break
-
-    if showObj or indexerid:
-        logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + str(name) + "}",logger.DEBUG)
-        if not showObj:
-            showObj = findCertainShow(sickbeard.showList, int(indexerid))
+    showObj = sickbeard.name_cache.retrieveShowFromCache(name)
+    if not showObj:
+        showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
+        for showName in showNames if sickbeard.showList else []:
+            sceneResults = [x for x in sickbeard.showList if _check_against_names(showName, x)]
+            showObj = sceneResults[0] if len(sceneResults) else None
+            if showObj:
+                break
 
     return showObj
 

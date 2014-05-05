@@ -350,7 +350,7 @@ def filterSearchResults(show, results):
     foundResults = {}
 
     # make a list of all the results for this provider
-    for curEp in results:
+    for curEp in results.keys():
         # skip non-tv crap
         results[curEp] = filter(
             lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show),
