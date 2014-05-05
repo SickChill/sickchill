@@ -1063,7 +1063,7 @@ class ConfigSearch:
     @cherrypy.expose
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
-                   nzbget_category=None, nzbget_host=None,
+                   nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, search_frequency=None,
                    download_propers=None, prefer_episode_releases=None, allow_high_priority=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
@@ -1108,6 +1108,7 @@ class ConfigSearch:
         sickbeard.NZBGET_PASSWORD = nzbget_password
         sickbeard.NZBGET_CATEGORY = nzbget_category
         sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
+        sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
 
         sickbeard.TORRENT_USERNAME = torrent_username
         sickbeard.TORRENT_PASSWORD = torrent_password
