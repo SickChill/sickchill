@@ -22,7 +22,7 @@
 #set $indexer = 0
 #if $curDir['existing_info'][0]:
     #set $indexer = $curDir['existing_info'][2]
-#elif $sickbeard.INDEXER_DEFAULT
+#elif $sickbeard.INDEXER_DEFAULT > 0:
     #set $indexer = $sickbeard.INDEXER_DEFAULT
 #end if
 
@@ -36,9 +36,8 @@
     #end if
     <td>
         <select name="indexer">
-            <option value="0" #if $indexer == 0 then "selected=\"selected\"" else ""#>All Indexers</option>
             #for $curIndexer in $sickbeard.indexerApi().indexers.items():
-                <option value="$curIndexer[0]" #if $curIndexer[0] == $indexer then "selected=\"selected\"" else ""#>$curIndexer[1]</option>
+                <option value="$curIndexer[0]" #if $curIndexer[0] == $indexer then "selected=\"selected\"" else "UNKNOWN"#>$curIndexer[1]</option>
             #end for
         </select>
     </td>
