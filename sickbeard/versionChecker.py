@@ -131,7 +131,7 @@ class UpdateManager():
         return 'echel0n'
 
     def get_github_repo(self):
-        return 'SickBeard-TVRage'
+        return 'SickRage'
 
     def get_update_url(self):
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)

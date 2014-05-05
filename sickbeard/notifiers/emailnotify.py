@@ -2,7 +2,7 @@
 # Derek Battams <derek@battams.ca>
 # Pedro Jose Pereira Vieito (@pvieito) <pvieito@gmail.com>
 #
-# URL: https://github.com/echel0n/SickBeard-TVRage
+# URL: https://github.com/echel0n/SickRage
 #
 # This file is part of Sick Beard.
 #
