@@ -112,9 +112,9 @@ class ProperFinder():
                 continue
 
             # populate our Proper instance
-            if parse_result.air_by_date:
+            if parse_result.air_by_date or parse_result.sports:
                 curProper.season = -1
-                curProper.episode = parse_result.air_date
+                curProper.episode = parse_result.air_date or parse_result.sports_event_date
             else:
                 curProper.scene_season = parse_result.season_number if parse_result.season_number != None else 1
                 curProper.scene_episode = parse_result.episode_numbers[0]
@@ -178,15 +178,11 @@ class ProperFinder():
                 continue
 
             # if we have an air-by-date show then get the real season/episode numbers
-            if curProper.season == -1 and curProper.indexerid and curProper.indexer:
+            if (parse_result.air_by_date or parse_result.sports_event_date) and curProper.indexerid:
                 logger.log(
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)
-                if curProper.airdate:
-                    airdate = curProper.airdate.toordinal()
-                else:
-                    airdate = None
-
+                airdate = curProper.episode.toordinal()
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
@@ -263,7 +259,7 @@ class ProperFinder():
                 showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
                 if showObj == None:
                     logger.log(u"Unable to find the show with indexerid " + str(
-                        curProper.indexerid) + " so unable to download the proper", logger.ERROR)
+                        curProper                                      .indexerid) + " so unable to download the proper", logger.ERROR)
                     continue
                 epObj = showObj.getEpisode(curProper.season, curProper.episode)
 

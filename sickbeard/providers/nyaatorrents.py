@@ -143,7 +143,7 @@ class NyaaCache(tvcache.TVCache):
                        logger.ERROR)
             return None
 
-        logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
+        logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

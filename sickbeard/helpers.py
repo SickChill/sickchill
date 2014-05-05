@@ -946,33 +946,25 @@ def _check_against_names(name, show):
 
 def get_show_by_name(name):
     showObj = None
-    in_cache = False
 
     if not sickbeard.showList:
         return
 
     indexerid = sickbeard.name_cache.retrieveNameFromCache(name)
-    if indexerid:
-        in_cache = True
 
     showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
-    for showName in showNames if not in_cache else []:
-        try:
-            showObj = [x for x in sickbeard.showList if _check_against_names(showName, x)][0]
-            indexerid = showObj.indexerid
-        except:
-            indexerid = 0
-
-        if indexerid:
+    for showName in showNames if not indexerid else []:
+        sceneResults = [x for x in sickbeard.showList if _check_against_names(showName, x)]
+        showObj = sceneResults[0] if len(sceneResults) else None
+        if showObj:
             break
 
-    if indexerid:
+    if showObj or indexerid:
         logger.log(u"Found Indexer ID:[" + repr(indexerid) + "], using that for [" + str(name) + "}",logger.DEBUG)
         if not showObj:
-            showObjList = [x for x in sickbeard.showList if x.indexerid == indexerid]
-            if len(showObjList):
-                showObj = showObjList[0]
-        return showObj
+            showObj = findCertainShow(sickbeard.showList, int(indexerid))
+
+    return showObj
 
 def is_hidden_folder(folder):
     """

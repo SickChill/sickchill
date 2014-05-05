@@ -373,6 +373,9 @@ def searchProviders(show, season, episodes, seasonSearch=False, manualSearch=Fal
         if not curProvider.isActive():
             continue
 
+        if manualSearch:
+            curProvider.cache.updateCache()
+
         try:
             curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
         except exceptions.AuthException, e:

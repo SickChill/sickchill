@@ -63,6 +63,7 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
+
 class TVCache():
     def __init__(self, provider):
 
@@ -94,7 +95,7 @@ class TVCache():
 
     def getRSSFeed(self, url, post_data=None):
         # create provider storaqe cache
-        storage = Shove('file://' + ek.ek(os.path.join, sickbeard.CACHE_DIR, self.providerID))
+        storage = Shove('sqlite:///' + ek.ek(os.path.join, sickbeard.CACHE_DIR, self.provider.name) + '.db')
         fc = cache.Cache(storage)
 
         parsed = list(urlparse.urlparse(url))
@@ -209,7 +210,6 @@ class TVCache():
     lastUpdate = property(_getLastUpdate)
 
     def shouldUpdate(self):
-        return True
         # if we've updated recently then skip the update
         if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
             logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
@@ -220,10 +220,10 @@ class TVCache():
 
     def _addCacheEntry(self, name, url, quality=None):
 
-
         cacheResult = sickbeard.name_cache.retrieveNameFromCache(name)
         if cacheResult:
-            logger.log(u"Found Indexer ID:[" + repr(cacheResult) + "], using that for [" + str(name) + "}", logger.DEBUG)
+            logger.log(u"Found Indexer ID:[" + repr(cacheResult) + "], using that for [" + str(name) + "}",
+                       logger.DEBUG)
             return
 
         # if we don't have complete info then parse the filename to get it
@@ -242,19 +242,16 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        showObj = helpers.get_show_by_name(parse_result.series_name)
+        showObj = sickbeard.name_cache.retrieveShowFromCache(parse_result.series_name)
         if not showObj:
-            logger.log(u"Could not find a show matching " + parse_result.series_name + " in the database, skipping ...", logger.DEBUG)
+            logger.log(u"Cache lookup failed for [" + parse_result.series_name + "], skipping ...", logger.DEBUG)
             return None
 
-        logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
-        sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
-
         season = episodes = None
-        if parse_result.air_by_date:
+        if parse_result.air_by_date or parse_result.sports:
             myDB = db.DBConnection()
 
-            airdate = parse_result.air_date.toordinal()
+            airdate = parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()
             sql_results = myDB.select(
                 "SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
                 [showObj.indexerid, showObj.indexer, airdate])
@@ -280,6 +277,7 @@ class TVCache():
                 name = unicode(name, 'utf-8')
 
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
+            sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
             return [
                 "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
                 [name, season, episodeText, showObj.indexerid, url, curTimestamp, quality]]

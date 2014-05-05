@@ -29,6 +29,7 @@ from sickbeard import ui
 
 BACKLOG_SEARCH = 10
 RSS_SEARCH = 20
+FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
 
 
@@ -46,8 +47,6 @@ class SearchQueue(generic_queue.GenericQueue):
     def is_ep_in_queue(self, ep_obj):
         for cur_item in self.queue:
             if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
-                return True
-            if isinstance(cur_item, BacklogQueueItem) and cur_item.ep_obj == ep_obj:
                 return True
         return False
 
@@ -92,7 +91,11 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        logger.log("Beginning manual search for " + self.ep_obj.prettyName())
+        # convert indexer numbering to scene numbering for searches
+        (self.ep_obj.scene_season, self.ep_obj.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(
+            self.ep_obj.show.indexerid, self.ep_obj.show.indexer, self.ep_obj.season, self.ep_obj.episode)
+
+        logger.log("Beginning manual search for " + self.ep_obj.prettyName() + ' as ' + self.ep_obj.prettySceneName())
 
         foundResults = search.searchProviders(self.ep_obj.show, self.ep_obj.season, [self.ep_obj], manualSearch=True)
         result = False
@@ -134,7 +137,7 @@ class RSSSearchQueueItem(generic_queue.QueueItem):
 
         self._changeMissingEpisodes()
 
-        logger.log(u"Beginning search for new episodes on RSS")
+        logger.log(u"Beginning search for new episodes on RSS feeds and in cache")
 
         foundResults = search.searchForNeededEpisodes()
 
@@ -188,7 +191,6 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.wantedEpisodes = []
-        self.seasonSearch = False
 
         logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
 
@@ -215,16 +217,29 @@ class BacklogQueueItem(generic_queue.QueueItem):
         anyQualities, bestQualities = common.Quality.splitQuality(self.show.quality)  #@UnusedVariable
         self.wantedEpisodes = self._need_any_episodes(statusResults, bestQualities)
 
-        # check if we want to search for season packs instead of just season/episode
-        seasonEps = show.getAllEpisodes(self.segment)
-        if len(seasonEps) == len(self.wantedEpisodes):
-            self.seasonSearch = True
-
     def execute(self):
 
         generic_queue.QueueItem.execute(self)
 
-        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes, seasonSearch=self.seasonSearch)
+        # check if we want to search for season packs instead of just season/episode
+        seasonSearch = False
+        seasonEps = self.show.getAllEpisodes(self.segment)
+        if len(seasonEps) == len(self.wantedEpisodes):
+            seasonSearch = True
+
+        # convert indexer numbering to scene numbering for searches
+        for i, epObj in enumerate(self.wantedEpisodes):
+            (self.wantedEpisodes[i].scene_season,
+             self.wantedEpisodes[i].scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+                                                                                                   self.show.indexer,
+                                                                                                   epObj.season,
+                                                                                                   epObj.episode)
+            logger.log(
+                "Beginning backlog search for " + self.wantedEpisodes[i].prettyName() + ' as ' + self.wantedEpisodes[
+                    i].prettySceneName())
+
+        # search for our wanted items and return the results
+        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes, seasonSearch=seasonSearch)
 
         # download whatever we find
         for curResult in results:
@@ -250,7 +265,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
             # if we need a better one then say yes
             if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
                               common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-                epObj = self.show.getEpisode(self.segment,episode)
+                epObj = self.show.getEpisode(self.segment, episode)
                 wantedEpisodes.append(epObj)
 
         return wantedEpisodes
@@ -258,7 +273,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, episodes):
-        generic_queue.QueueItem.__init__(self, 'Retry', MANUAL_SEARCH)
+        generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.thread_name = 'RETRY-' + str(show.indexerid)
 
@@ -272,7 +287,14 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         episodes = []
 
-        for epObj in episodes:
+        for i, epObj in enumerate(episodes):
+            # convert indexer numbering to scene numbering for searches
+            (episodes[i].scene_season, self.episodes[i].scene_episode) = sickbeard.scene_numbering.get_scene_numbering(
+                self.show.indexerid, self.show.indexer, epObj.season, epObj.episode)
+
+            logger.log(
+                "Beginning failed download search for " + epObj.prettyName() + ' as ' + epObj.prettySceneName())
+
             (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
             if release:
                 logger.log(u"Marking release as bad: " + release)

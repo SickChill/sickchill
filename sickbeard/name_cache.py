@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
+import sickbeard
+
 from sickbeard import db
 from sickbeard.helpers import sanitizeSceneName
 
@@ -51,6 +53,11 @@ def retrieveNameFromCache(name):
 
     if cache_results:
         return int(cache_results[0]["indexer_id"])
+
+def retrieveShowFromCache(name):
+    indexerid = retrieveNameFromCache(name)
+    if indexerid:
+        return sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexerid))
 
 def clearCache():
     """

@@ -68,6 +68,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         # parse the name to break it into show name, season, and episode
         np = NameParser(file)
         parse_result = np.parse(release).convert()
+        airdate = parse_result.sports_event_date.toordinal()
 
         print(parse_result)
 

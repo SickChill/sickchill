@@ -117,7 +117,6 @@ class BTNProvider(generic.TorrentProvider):
                         found_torrents.update(parsedJSON['torrents'])
 
             results = []
-
             for torrentid, torrent_info in found_torrents.iteritems():
                 (title, url) = self._get_title_and_url(torrent_info)
 

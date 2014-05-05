@@ -83,7 +83,9 @@ class HDBitsProvider(generic.TorrentProvider):
             season = ep_obj.scene_season
             episode = ep_obj.scene_episode
 
-            self.cache.updateCache()
+            if manualSearch:
+                self.cache.updateCache()
+
             results = self.cache.searchCache(episode, manualSearch)
             logger.log(u"Cache results: " + str(results), logger.DEBUG)
 
