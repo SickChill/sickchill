@@ -77,7 +77,7 @@ class SearchQueue(generic_queue.GenericQueue):
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_ep_in_queue(item.ep_obj):
             generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
+        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.episodes):
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
