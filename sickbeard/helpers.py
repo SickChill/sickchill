@@ -165,7 +165,7 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False):
+def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False, use_proxy=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -186,8 +186,10 @@ def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=Fals
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-
-        if sickbeard.PROXY_SETTING:
+        
+        
+        if use_proxy and sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
             proxies = {
                 "http": sickbeard.PROXY_SETTING,
                 "https": sickbeard.PROXY_SETTING,

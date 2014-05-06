@@ -114,7 +114,7 @@ class GenericProvider:
         if not headers:
             headers = []
 
-        data = helpers.getURL(url, post_data, headers, json=json)
+        data = helpers.getURL(url, post_data, headers, json=json, use_proxy=True)
 
         if not data:
             logger.log(u"Error loading " + self.name + " URL: " + url, logger.ERROR)
