@@ -234,6 +234,9 @@ class GenericProvider:
         results = {}
         searchItems = {}
 
+        if manualSearch:
+            self.cache.updateCache()
+
         for epObj in episodes:
             itemList = []
 

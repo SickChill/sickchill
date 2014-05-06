@@ -2136,3 +2136,15 @@ class TVEpisode(object):
             self.saveToDB()
             for relEp in self.relatedEps:
                 relEp.saveToDB()
+
+    def convertToSceneNumbering(self):
+        (self.scene_season, self.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+                                                                                                self.show.indexer,
+                                                                                                self.season,
+                                                                                                self.episode)
+
+    def convertToIndexerNumbering(self):
+        (self.season, self.episode) = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid,
+                                                                                      self.show.indexer,
+                                                                                      self.scene_season,
+                                                                                      self.scene_episode)

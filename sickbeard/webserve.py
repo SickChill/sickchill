@@ -984,7 +984,8 @@ class ConfigGeneral:
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None, use_api=None, api_key=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None,
+                    num_of_threads=None):
 
         results = []
 
@@ -1038,6 +1039,8 @@ class ConfigGeneral:
                 "Unable to create directory " + os.path.normpath(https_key) + ", https key directory not changed."]
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
+
+        sickbeard.NUM_OF_THREADS = config.to_int(num_of_threads)
 
         sickbeard.save_config()
 
