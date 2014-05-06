@@ -103,14 +103,19 @@ class TorrentDayProvider(generic.TorrentProvider):
                 logger.log(u'Invalid username or password for ' + self.name + ', Check your settings!', logger.ERROR)
                 return False
 
-            sickbeard.TORRENTDAY_UID = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-            sickbeard.TORRENTDAY_HASH = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                sickbeard.TORRENTDAY_UID = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                sickbeard.TORRENTDAY_HASH = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-            self.cookies = {'uid': sickbeard.TORRENTDAY_UID,
-                            'pass': sickbeard.TORRENTDAY_HASH
-            }
+                self.cookies = {'uid': sickbeard.TORRENTDAY_UID,
+                                'pass': sickbeard.TORRENTDAY_HASH
+                }
+                return True
 
-        return True
+            else:
+                logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
+                return False
+
 
     def _get_season_search_strings(self, ep_obj):
 
