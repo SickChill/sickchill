@@ -181,7 +181,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
 
     def execute(self):
 
-        backupDatabase(11)
+        backupDatabase(10)
 
         if not self.hasColumn("tv_episodes", "file_size"):
             self.addColumn("tv_episodes", "file_size")
@@ -306,19 +306,6 @@ class RenameSeasonFolders(AddSizeAndSceneNameFields):
         self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.incDBVersion()
-
-
-class AddSubtitlesSupport(RenameSeasonFolders):
-    def test(self):
-        return self.checkDBVersion() >= 12
-
-    def execute(self):
-        self.addColumn("tv_shows", "subtitles")
-        self.addColumn("tv_episodes", "subtitles", "TEXT", "")
-        self.addColumn("tv_episodes", "subtitles_searchcount")
-        self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
-        self.incDBVersion()
-
 
 class AddIMDbInfo(RenameSeasonFolders):
     def test(self):
@@ -545,6 +532,17 @@ class AddDvdOrderOption(AddProperSearch):
         if not self.hasColumn("tv_shows", "dvdorder"):
             self.addColumn("tv_shows", "dvdorder", "NUMERIC", "0")
 
+        self.incDBVersion()
+
+class AddSubtitlesSupport(RenameSeasonFolders):
+    def test(self):
+        return self.hasColumn("tv_shows", "subtitles")
+
+    def execute(self):
+        self.addColumn("tv_shows", "subtitles")
+        self.addColumn("tv_episodes", "subtitles", "TEXT", "")
+        self.addColumn("tv_episodes", "subtitles_searchcount")
+        self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
         self.incDBVersion()
 
 class ConvertTVShowsToIndexerScheme(AddDvdOrderOption):
