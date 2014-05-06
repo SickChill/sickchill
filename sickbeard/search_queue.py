@@ -111,6 +111,8 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             self.success = result
         else:
             for foundResult in foundResults:
+                time.sleep(0.01)
+
                 # just use the first result for now
                 logger.log(u"Downloading " + foundResult.name + " from " + foundResult.provider.name)
 
@@ -152,9 +154,10 @@ class RSSSearchQueueItem(generic_queue.QueueItem):
             foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
         for curResult in foundResults:
+            time.sleep(0.01)
+
             if curResult:
                 search.snatchEpisode(curResult)
-                #time.sleep(2)
 
         generic_queue.QueueItem.finish(self)
 
@@ -238,6 +241,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         for curResult in foundResults if foundResults else logger.log(
                 u"Backlog search found nothing to snatch ..."):
+            time.sleep(0.01)
+
             search.snatchEpisode(curResult)
 
         self.finish()
@@ -256,6 +261,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         # check through the list of statuses to see if we want any
         for curStatusResult in statusResults:
+            time.sleep(0.01)
+
             curCompositeStatus = int(curStatusResult["status"])
             curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
             episode = int(curStatusResult["episode"])
@@ -292,8 +299,9 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         # download whatever we find
         for curResult in foundResults:
+            time.sleep(0.01)
+
             self.success = search.snatchEpisode(curResult)
-            time.sleep(5)
 
         self.finish()
 
@@ -301,6 +309,8 @@ class FailedQueueItem(generic_queue.QueueItem):
         episodes = []
 
         for i, epObj in enumerate(episodes):
+            time.sleep(0.01)
+
             if epObj.show.air_by_date:
                 logger.log("Beginning manual search for " + epObj.prettyABDName())
             else:

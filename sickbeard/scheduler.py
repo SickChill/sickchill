@@ -61,6 +61,7 @@ class Scheduler:
     def runAction(self):
 
         while True:
+            time.sleep(0.01)
 
             currentTime = datetime.datetime.now()
 
@@ -78,5 +79,3 @@ class Scheduler:
                 self.abort = False
                 self.thread = None
                 return
-
-            time.sleep(1)

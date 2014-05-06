@@ -341,12 +341,11 @@ def main():
 
     # Stay alive while my threads do the work
     while (True):
+        time.sleep(1)
 
         if sickbeard.invoked_command:
             sickbeard.invoked_command()
             sickbeard.invoked_command = None
-
-        time.sleep(1)
 
     return
 

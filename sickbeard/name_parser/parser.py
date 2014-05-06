@@ -20,6 +20,7 @@ import datetime
 import os.path
 import re
 import regexes
+import time
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering
@@ -207,6 +208,7 @@ class NameParser(object):
 
             i = result = 0
             for integer, numeral in numeral_map:
+                time.sleep(0.01)
                 while n[i:i + len(numeral)] == numeral:
                     result += integer
                     i += len(numeral)
@@ -424,6 +426,7 @@ class NameParserCache(object):
         self._previous_parsed[name] = parse_result
         self._previous_parsed_list.append(name)
         while len(self._previous_parsed_list) > self._cache_size:
+            time.sleep(0.01)
             del_me = self._previous_parsed_list.pop(0)
             self._previous_parsed.pop(del_me)
 
