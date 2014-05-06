@@ -36,24 +36,24 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
 
-    def fix_duplicate_shows(self):
+    def fix_duplicate_shows(self, column='indexer_id'):
 
         sqlResults = self.connection.select(
-            "SELECT show_id, indexer_id, COUNT(indexer_id) as count FROM tv_shows GROUP BY indexer_id HAVING count > 1")
+            "SELECT show_id, " + column + ", COUNT(" + column + ") as count FROM tv_shows GROUP BY " + column + " HAVING count > 1")
 
         for cur_duplicate in sqlResults:
 
-            logger.log(u"Duplicate show detected! indexer_id: " + str(cur_duplicate["indexer_id"]) + u" count: " + str(
+            logger.log(u"Duplicate show detected! " + column + ": " + str(cur_duplicate[column]) + u" count: " + str(
                 cur_duplicate["count"]), logger.DEBUG)
 
             cur_dupe_results = self.connection.select(
-                "SELECT show_id, indexer_id FROM tv_shows WHERE indexer_id = ? LIMIT ?",
-                [cur_duplicate["indexer_id"], int(cur_duplicate["count"]) - 1]
+                "SELECT show_id, " + column + " FROM tv_shows WHERE " + column + " = ? LIMIT ?",
+                [cur_duplicate[column], int(cur_duplicate["count"]) - 1]
             )
 
             for cur_dupe_id in cur_dupe_results:
                 logger.log(
-                    u"Deleting duplicate show with indexer_id: " + str(cur_dupe_id["indexer_id"]) + u" show_id: " + str(
+                    u"Deleting duplicate show with " + column + ": " + str(cur_dupe_id[column]) + u" show_id: " + str(
                         cur_dupe_id["show_id"]))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
@@ -493,7 +493,7 @@ class AddShowidTvdbidIndex(AddEmailSubscriptionTable):
         backupDatabase(17)
 
         logger.log(u"Check for duplicate shows before adding unique index.")
-        MainSanityCheck(self.connection).fix_duplicate_shows()
+        MainSanityCheck(self.connection).fix_duplicate_shows('tvdb_id')
 
         logger.log(u"Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries.")
         if not self.hasTable("idx_showid"):
