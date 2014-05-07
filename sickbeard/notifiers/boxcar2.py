@@ -31,7 +31,7 @@ API_URL = "https://new.boxcar.io/api/notifications"
 
 
 class Boxcar2Notifier:
-    def test_notify(self, accesstoken, title="Test"):
+    def test_notify(self, accesstoken, title="SickRage : Test"):
         return self._sendBoxcar2("This is a test notification from SickBeard", title, accesstoken)
 
     def _sendBoxcar2(self, msg, title, accesstoken):
@@ -46,12 +46,13 @@ class Boxcar2Notifier:
         """
 
         # build up the URL and parameters
+	#more info goes here - https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification
         msg = msg.strip()
         curUrl = API_URL
 
         data = urllib.urlencode({
                 'user_credentials': accesstoken,
-                'notification[title]': title,
+                'notification[title]': "SickRage : " + title,
                 'notification[long_message]': msg,
                 'notification[sound]': "bird-1"
             })
