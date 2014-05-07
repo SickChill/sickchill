@@ -1849,9 +1849,9 @@ class TVEpisode(object):
             '%Q.N': dot(Quality.qualityStrings[epQual]),
             '%Q_N': us(Quality.qualityStrings[epQual]),
             '%S': str(self.season),
-            '%0S': '%02d' % int(self.season),
+            '%0S': '%02d' % int(self.season) if not self.show.air_by_date else self.season,
             '%E': str(self.episode),
-            '%0E': '%02d' % int(self.episode),
+            '%0E': '%02d' % int(self.episode)if not self.show.air_by_date else self.episode,
             '%XS': str(self.scene_season),
             '%0XS': '%02d' % int(self.scene_season),
             '%XE': str(self.scene_episode),
@@ -2136,3 +2136,15 @@ class TVEpisode(object):
             self.saveToDB()
             for relEp in self.relatedEps:
                 relEp.saveToDB()
+
+    def convertToSceneNumbering(self):
+        (self.scene_season, self.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+                                                                                                self.show.indexer,
+                                                                                                self.season,
+                                                                                                self.episode)
+
+    def convertToIndexerNumbering(self):
+        (self.season, self.episode) = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid,
+                                                                                      self.show.indexer,
+                                                                                      self.scene_season,
+                                                                                      self.scene_episode)

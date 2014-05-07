@@ -19,6 +19,8 @@
 from __future__ import with_statement
 
 import datetime
+from threading import Thread
+import threading
 import time
 
 import sickbeard
@@ -26,6 +28,8 @@ from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue
 from sickbeard import search, failed_history, history
 from sickbeard import ui
+
+from lib.concurrent import futures
 
 BACKLOG_SEARCH = 10
 RSS_SEARCH = 20
@@ -73,7 +77,7 @@ class SearchQueue(generic_queue.GenericQueue):
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_ep_in_queue(item.ep_obj):
             generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
+        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.episodes):
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
@@ -90,24 +94,25 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
+        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
-        # convert indexer numbering to scene numbering for searches
-        (self.ep_obj.scene_season, self.ep_obj.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(
-            self.ep_obj.show.indexerid, self.ep_obj.show.indexer, self.ep_obj.season, self.ep_obj.episode)
-
-        logger.log("Beginning manual search for " + self.ep_obj.prettyName() + ' as ' + self.ep_obj.prettySceneName())
-
-        foundResults = search.searchProviders(self.ep_obj.show, self.ep_obj.season, [self.ep_obj], manualSearch=True)
         result = False
-
         if not foundResults:
-            ui.notifications.message('No downloads were found',
+            if self.ep_obj.show.air_by_date:
+                ui.notifications.message('No downloads were found ...',
+                                         "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyABName())
+                logger.log(u"Unable to find a download for " + self.ep_obj.prettyABDName())
+            else:
+                ui.notifications.message('No downloads were found ...',
                                      "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
-            logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
+                logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
 
             self.success = result
         else:
             for foundResult in foundResults:
+                time.sleep(0.01)
+
                 # just use the first result for now
                 logger.log(u"Downloading " + foundResult.name + " from " + foundResult.provider.name)
 
@@ -115,11 +120,22 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
                 providerModule = foundResult.provider
                 if not result:
-                    ui.notifications.error('Error while attempting to snatch ' + foundResult.name + ', check your logs')
+                    ui.notifications.error(
+                        'Error while attempting to snatch ' + foundResult.name + ', check your logs')
                 elif providerModule == None:
                     ui.notifications.error('Provider is configured incorrectly, unable to download')
 
                 self.success = result
+
+        self.finish()
+
+    def process(self, curProvider):
+        if self.ep_obj.show.air_by_date:
+            logger.log("Beginning manual search for " + self.ep_obj.prettyABDName())
+        else:
+            logger.log("Beginning manual search for " + self.ep_obj.prettyName())
+
+        return search.searchProviders(self.ep_obj.show, self.ep_obj.season, self.ep_obj, curProvider, True, False)
 
     def finish(self):
         # don't let this linger if something goes wrong
@@ -134,21 +150,22 @@ class RSSSearchQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
+        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
+        for curResult in foundResults:
+            time.sleep(0.01)
+
+            if curResult:
+                search.snatchEpisode(curResult)
+
+        generic_queue.QueueItem.finish(self)
+
+    def process(self, curProvider):
         self._changeMissingEpisodes()
 
         logger.log(u"Beginning search for new episodes on RSS feeds and in cache")
-
-        foundResults = search.searchForNeededEpisodes()
-
-        if not len(foundResults):
-            logger.log(u"No needed episodes found on the RSS feeds")
-        else:
-            for curResult in foundResults:
-                search.snatchEpisode(curResult)
-                time.sleep(2)
-
-        generic_queue.QueueItem.finish(self)
+        return search.searchForNeededEpisodes(curProvider)
 
     def _changeMissingEpisodes(self):
 
@@ -218,41 +235,34 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.wantedEpisodes = self._need_any_episodes(statusResults, bestQualities)
 
     def execute(self):
-
         generic_queue.QueueItem.execute(self)
+        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+            foundResults = sum(list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()])))
 
+        for curResult in foundResults if foundResults else logger.log(
+                u"Backlog search found nothing to snatch ..."):
+            time.sleep(0.01)
+
+            search.snatchEpisode(curResult)
+
+        self.finish()
+
+    def process(self, curProvider):
         # check if we want to search for season packs instead of just season/episode
         seasonSearch = False
         seasonEps = self.show.getAllEpisodes(self.segment)
         if len(seasonEps) == len(self.wantedEpisodes):
             seasonSearch = True
 
-        # convert indexer numbering to scene numbering for searches
-        for i, epObj in enumerate(self.wantedEpisodes):
-            (self.wantedEpisodes[i].scene_season,
-             self.wantedEpisodes[i].scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
-                                                                                                   self.show.indexer,
-                                                                                                   epObj.season,
-                                                                                                   epObj.episode)
-            logger.log(
-                "Beginning backlog search for " + self.wantedEpisodes[i].prettyName() + ' as ' + self.wantedEpisodes[
-                    i].prettySceneName())
-
-        # search for our wanted items and return the results
-        results = search.searchProviders(self.show, self.segment, self.wantedEpisodes, seasonSearch=seasonSearch)
-
-        # download whatever we find
-        for curResult in results:
-            search.snatchEpisode(curResult)
-            time.sleep(5)
-
-        self.finish()
+        return search.searchProviders(self.show, self.segment, self.wantedEpisodes, curProvider, False, seasonSearch)
 
     def _need_any_episodes(self, statusResults, bestQualities):
         wantedEpisodes = []
 
         # check through the list of statuses to see if we want any
         for curStatusResult in statusResults:
+            time.sleep(0.01)
+
             curCompositeStatus = int(curStatusResult["status"])
             curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
             episode = int(curStatusResult["episode"])
@@ -284,16 +294,28 @@ class FailedQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
+        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
+        # download whatever we find
+        for curResult in foundResults:
+            time.sleep(0.01)
+
+            self.success = search.snatchEpisode(curResult)
+
+        self.finish()
+
+    def process(self, curProvider):
         episodes = []
 
         for i, epObj in enumerate(episodes):
-            # convert indexer numbering to scene numbering for searches
-            (episodes[i].scene_season, self.episodes[i].scene_episode) = sickbeard.scene_numbering.get_scene_numbering(
-                self.show.indexerid, self.show.indexer, epObj.season, epObj.episode)
+            time.sleep(0.01)
 
-            logger.log(
-                "Beginning failed download search for " + epObj.prettyName() + ' as ' + epObj.prettySceneName())
+            if epObj.show.air_by_date:
+                logger.log("Beginning manual search for " + epObj.prettyABDName())
+            else:
+                logger.log(
+                "Beginning failed download search for " + epObj.prettyName())
 
             (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
             if release:
@@ -305,12 +327,4 @@ class FailedQueueItem(generic_queue.QueueItem):
                 failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
                 episodes.append(epObj)
 
-        # get search results
-        results = search.searchProviders(self.show, episodes[0].season, episodes)
-
-        # download whatever we find
-        for curResult in results:
-            self.success = search.snatchEpisode(curResult)
-            time.sleep(5)
-
-        self.finish()
+        return search.searchProviders(self.show, self.episodes[0].season, self.episodes, curProvider, False, False)

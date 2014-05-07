@@ -984,7 +984,8 @@ class ConfigGeneral:
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None, use_api=None, api_key=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None,
+                    num_of_threads=None):
 
         results = []
 
@@ -1039,6 +1040,8 @@ class ConfigGeneral:
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
+        sickbeard.NUM_OF_THREADS = config.to_int(num_of_threads)
+
         sickbeard.save_config()
 
         if len(results) > 0:
@@ -1063,9 +1066,9 @@ class ConfigSearch:
     @cherrypy.expose
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
-                   nzbget_category=None, nzbget_host=None,
+                   nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, search_frequency=None,
-                   download_propers=None, prefer_episode_releases=None, allow_high_priority=None,
+                   download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
@@ -1097,6 +1100,11 @@ class ConfigSearch:
 
         sickbeard.PREFER_EPISODE_RELEASES = config.checkbox_to_value(prefer_episode_releases)
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+        sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
+        if sickbeard.BACKLOG_STARTUP:
+            sickbeard.backlogSearchScheduler.silent = False
+        else:
+            sickbeard.backlogSearchScheduler.silent = True
 
         sickbeard.SAB_USERNAME = sab_username
         sickbeard.SAB_PASSWORD = sab_password
@@ -1108,6 +1116,7 @@ class ConfigSearch:
         sickbeard.NZBGET_PASSWORD = nzbget_password
         sickbeard.NZBGET_CATEGORY = nzbget_category
         sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
+        sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
 
         sickbeard.TORRENT_USERNAME = torrent_username
         sickbeard.TORRENT_PASSWORD = torrent_password
@@ -3623,14 +3632,6 @@ class WebInterface:
         for index, item in enumerate(sql_results):
             sql_results[index]['localtime'] = network_timezones.parse_date_time(item['airdate'], item['airs'],
                                                                                 item['network'])
-
-            #Normalize/Format the Airing Time
-            try:
-                locale.setlocale(locale.LC_TIME, 'us_US')
-                sql_results[index]['localtime_string'] = sql_results[index]['localtime'].strftime("%A %H:%M %p")
-                locale.setlocale(locale.LC_ALL, '')  #Reseting to default locale
-            except:
-                sql_results[index]['localtime_string'] = sql_results[index]['localtime'].strftime("%A %H:%M %p")
 
         sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
 

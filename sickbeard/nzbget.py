@@ -37,7 +37,11 @@ from common import Quality
 def sendNZB(nzb, proper=False):
     addToTop = False
     nzbgetprio = 0
-    nzbgetXMLrpc = "http://%(username)s:%(password)s@%(host)s/xmlrpc"
+    
+    if sickbeard.NZBGET_USE_HTTPS:
+        nzbgetXMLrpc = "https://%(username)s:%(password)s@%(host)s/xmlrpc"
+    else:
+        nzbgetXMLrpc = "http://%(username)s:%(password)s@%(host)s/xmlrpc"
 
     if sickbeard.NZBGET_HOST == None:
         logger.log(u"No NZBget host found in configuration. Please configure it.", logger.ERROR)
@@ -71,7 +75,10 @@ def sendNZB(nzb, proper=False):
     # if it aired recently make it high priority and generate DupeKey/Score
     for curEp in nzb.episodes:
         if dupekey == "":
-            dupekey = "Sickbeard-" + str(curEp.show.indexerid)
+            if curEp.show.indexer == 1:
+                dupekey = "Sickbeard-" + str(curEp.show.indexerid)
+            elif curEp.show.indexer == 2:
+                dupekey = "Sickbeard-tvr" + str(curEp.show.indexerid)
         dupekey += "-" + str(curEp.season) + "." + str(curEp.episode)
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True
@@ -82,18 +89,10 @@ def sendNZB(nzb, proper=False):
     if proper:
         dupescore += 10
 
-    # if it's a normal result need to download the NZB content
-    if nzb.resultType == "nzb":
-        genProvider = GenericProvider("")
-        data = genProvider.getURL(nzb.url)
-        if (data == None):
-            return False
-
-    # if we get a raw data result thats even better
-    elif nzb.resultType == "nzbdata":
+    nzbcontent64 = None
+    if nzb.resultType == "nzbdata":
         data = nzb.extraInfo[0]
-
-    nzbcontent64 = standard_b64encode(data)
+        nzbcontent64 = standard_b64encode(data)
 
     logger.log(u"Sending NZB to NZBget")
     logger.log(u"URL: " + url, logger.DEBUG)
@@ -103,13 +102,30 @@ def sendNZB(nzb, proper=False):
         nzbget_version_str = nzbGetRPC.version()
         nzbget_version = helpers.tryInt(nzbget_version_str[:nzbget_version_str.find(".")])
         if nzbget_version == 0:
+            if nzbcontent64 is not None:
+                nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, addToTop, nzbcontent64)
+            else:
+                if nzb.resultType == "nzb":
+                    genProvider = GenericProvider("")
+                    data = genProvider.getURL(nzb.url)
+                    if (data == None):
+                        return False
+                    nzbcontent64 = standard_b64encode(data)
             nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, addToTop, nzbcontent64)
         elif nzbget_version >= 12:
-            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
-                                             nzbcontent64, False, dupekey, dupescore, "score")
+            if nzbcontent64 is not None:
+                nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                                 nzbcontent64, False, dupekey, dupescore, "score")
+            else:
+                nzbget_result = nzbGetRPC.appendurl(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                                    nzb.url, False, dupekey, dupescore, "score")
         else:
-            nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
-                                             nzbcontent64)
+            if nzbcontent64 is not None:
+                nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                                 nzbcontent64)
+            else:
+                nzbget_result = nzbGetRPC.appendurl(nzb.name + ".nzb", sickbeard.NZBGET_CATEGORY, nzbgetprio, False,
+                                                    nzb.url)
 
         if nzbget_result:
             logger.log(u"NZB sent to NZBget successfully", logger.DEBUG)

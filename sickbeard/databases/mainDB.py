@@ -36,24 +36,24 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
 
-    def fix_duplicate_shows(self):
+    def fix_duplicate_shows(self, column='indexer_id'):
 
         sqlResults = self.connection.select(
-            "SELECT show_id, indexer_id, COUNT(indexer_id) as count FROM tv_shows GROUP BY indexer_id HAVING count > 1")
+            "SELECT show_id, " + column + ", COUNT(" + column + ") as count FROM tv_shows GROUP BY " + column + " HAVING count > 1")
 
         for cur_duplicate in sqlResults:
 
-            logger.log(u"Duplicate show detected! indexer_id: " + str(cur_duplicate["indexer_id"]) + u" count: " + str(
+            logger.log(u"Duplicate show detected! " + column + ": " + str(cur_duplicate[column]) + u" count: " + str(
                 cur_duplicate["count"]), logger.DEBUG)
 
             cur_dupe_results = self.connection.select(
-                "SELECT show_id, indexer_id FROM tv_shows WHERE indexer_id = ? LIMIT ?",
-                [cur_duplicate["indexer_id"], int(cur_duplicate["count"]) - 1]
+                "SELECT show_id, " + column + " FROM tv_shows WHERE " + column + " = ? LIMIT ?",
+                [cur_duplicate[column], int(cur_duplicate["count"]) - 1]
             )
 
             for cur_dupe_id in cur_dupe_results:
                 logger.log(
-                    u"Deleting duplicate show with indexer_id: " + str(cur_dupe_id["indexer_id"]) + u" show_id: " + str(
+                    u"Deleting duplicate show with " + column + ": " + str(cur_dupe_id[column]) + u" show_id: " + str(
                         cur_dupe_id["show_id"]))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
@@ -144,15 +144,19 @@ class InitialSchema(db.SchemaUpgrade):
         if not self.hasTable("tv_shows") and not self.hasTable("db_version"):
             queries = [
                 "CREATE TABLE db_version (db_version INTEGER);",
-                "CREATE TABLE history (action NUMERIC, date NUMERIC, showid NUMERIC, season NUMERIC, episode NUMERIC, quality NUMERIC, resource TEXT, provider TEXT);",
-                "CREATE TABLE imdb_info (tvdb_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)",
-                "CREATE TABLE info (last_backlog NUMERIC, last_tvdb NUMERIC, last_proper_search NUMERIC);",
-                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, tvdbid NUMERIC, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC)",
-                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, location TEXT, show_name TEXT, tvdb_id NUMERIC, network TEXT, genre TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, tvr_id NUMERIC, tvr_name TEXT, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_tvdb NUMERIC)",
-                "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);",
+                "CREATE TABLE history (action NUMERIC, date NUMERIC, showid NUMERIC, season NUMERIC, episode NUMERIC, quality NUMERIC, resource TEXT, provider TEXT)",
+                "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)",
+                "CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)",
+                "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER,scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY(indexer_id, season, episode))",
+                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer TEXT, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC);",
+                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC);",
+                "CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id)",
                 "CREATE INDEX idx_showid ON tv_episodes (showid);",
-                "CREATE UNIQUE INDEX idx_tvdb_id ON tv_shows (tvdb_id);",
-                "INSERT INTO db_version (db_version) VALUES (18);"
+                "CREATE INDEX idx_sta_epi_air ON tv_episodes (status,episode, airdate);",
+                "CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate);",
+                "CREATE INDEX idx_status ON tv_episodes (status,season,episode,airdate);",
+                "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate)",
+                "INSERT INTO db_version (db_version) VALUES (28);"
             ]
             for query in queries:
                 self.connection.action(query)
@@ -181,7 +185,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
 
     def execute(self):
 
-        backupDatabase(11)
+        backupDatabase(10)
 
         if not self.hasColumn("tv_episodes", "file_size"):
             self.addColumn("tv_episodes", "file_size")
@@ -307,30 +311,7 @@ class RenameSeasonFolders(AddSizeAndSceneNameFields):
 
         self.incDBVersion()
 
-
-class AddSubtitlesSupport(RenameSeasonFolders):
-    def test(self):
-        return self.checkDBVersion() >= 12
-
-    def execute(self):
-        self.addColumn("tv_shows", "subtitles")
-        self.addColumn("tv_episodes", "subtitles", "TEXT", "")
-        self.addColumn("tv_episodes", "subtitles_searchcount")
-        self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
-        self.incDBVersion()
-
-
-class AddIMDbInfo(RenameSeasonFolders):
-    def test(self):
-        return self.checkDBVersion() >= 13
-
-    def execute(self):
-        self.connection.action(
-            "CREATE TABLE imdb_info (tvdb_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)")
-        self.incDBVersion()
-
-
-class Add1080pAndRawHDQualities(AddIMDbInfo):
+class Add1080pAndRawHDQualities(RenameSeasonFolders):
     """Add support for 1080p related qualities along with RawHD
 
     Quick overview of what the upgrade needs to do:
@@ -347,7 +328,7 @@ class Add1080pAndRawHDQualities(AddIMDbInfo):
     """
 
     def test(self):
-        return self.checkDBVersion() >= 14
+        return self.checkDBVersion() >= 12
 
     def _update_status(self, old_status):
         (status, quality) = common.Quality.splitCompositeStatus(old_status)
@@ -464,10 +445,72 @@ class Add1080pAndRawHDQualities(AddIMDbInfo):
         logger.log(u"Performing a vacuum on the database.", logger.DEBUG)
         self.connection.action("VACUUM")
 
+class AddShowidTvdbidIndex(Add1080pAndRawHDQualities):
+    """ Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries """
 
-class AddProperNamingSupport(Add1080pAndRawHDQualities):
+    def test(self):
+        return self.checkDBVersion() >= 13
+
+    def execute(self):
+        backupDatabase(13)
+
+        logger.log(u"Check for duplicate shows before adding unique index.")
+        MainSanityCheck(self.connection).fix_duplicate_shows('tvdb_id')
+
+        logger.log(u"Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries.")
+        if not self.hasTable("idx_showid"):
+            self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
+        if not self.hasTable("idx_tvdb_id"):
+            self.connection.action("CREATE UNIQUE INDEX idx_tvdb_id ON tv_shows (tvdb_id);")
+
+        self.incDBVersion()
+
+class AddLastUpdateTVDB(AddShowidTvdbidIndex):
+    """ Adding column last_update_tvdb to tv_shows for controlling nightly updates """
+
+    def test(self):
+        return self.checkDBVersion() >= 14
+
+    def execute(self):
+        backupDatabase(14)
+
+        logger.log(u"Adding column last_update_tvdb to tvshows")
+        if not self.hasColumn("tv_shows", "last_update_tvdb"):
+            self.addColumn("tv_shows", "last_update_tvdb", default=1)
+
+        self.incDBVersion()
+
+class AddRequireAndIgnoreWords(AddLastUpdateTVDB):
+    """ Adding column rls_require_words and rls_ignore_words to tv_shows """
+
     def test(self):
         return self.checkDBVersion() >= 15
+
+    def execute(self):
+        backupDatabase(15)
+
+        logger.log(u"Adding column rls_require_words to tvshows")
+        if not self.hasColumn("tv_shows", "rls_require_words"):
+            self.addColumn("tv_shows", "rls_require_words", "TEXT", "")
+
+        logger.log(u"Adding column rls_ignore_words to tvshows")
+        if not self.hasColumn("tv_shows", "rls_ignore_words"):
+            self.addColumn("tv_shows", "rls_ignore_words", "TEXT", "")
+
+        self.incDBVersion()
+
+class AddIMDbInfo(AddRequireAndIgnoreWords):
+    def test(self):
+        return self.checkDBVersion() >= 13
+
+    def execute(self):
+        self.connection.action(
+            "CREATE TABLE imdb_info (tvdb_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)")
+        self.incDBVersion()
+
+class AddProperNamingSupport(AddIMDbInfo):
+    def test(self):
+        return self.checkDBVersion() >= 14
 
     def execute(self):
         self.addColumn("tv_episodes", "is_proper")
@@ -482,50 +525,12 @@ class AddEmailSubscriptionTable(AddProperNamingSupport):
         self.addColumn('tv_shows', 'notify_list', 'TEXT', None)
         self.incDBVersion()
 
-
-class AddShowidTvdbidIndex(AddEmailSubscriptionTable):
-    """ Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries """
-
+class AddProperSearch(AddEmailSubscriptionTable):
     def test(self):
-        return self.checkDBVersion() >= 17
+        return self.checkDBVersion() >= 16
 
     def execute(self):
-        backupDatabase(17)
-
-        logger.log(u"Check for duplicate shows before adding unique index.")
-        MainSanityCheck(self.connection).fix_duplicate_shows()
-
-        logger.log(u"Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries.")
-        if not self.hasTable("idx_showid"):
-            self.connection.action("CREATE INDEX idx_showid ON tv_episodes (showid);")
-        if not self.hasTable("idx_tvdb_id"):
-            self.connection.action("CREATE UNIQUE INDEX idx_tvdb_id ON tv_shows (tvdb_id);")
-
-        self.incDBVersion()
-
-
-class AddUpdateTVDB(AddShowidTvdbidIndex):
-    """ Adding column last_update_tvdb to tv_shows for controlling nightly updates """
-
-    def test(self):
-        return self.checkDBVersion() >= 18
-
-    def execute(self):
-        backupDatabase(18)
-
-        logger.log(u"Adding column last_update_tvdb to tvshows")
-        if not self.hasColumn("tv_shows", "last_update_tvdb"):
-            self.addColumn("tv_shows", "last_update_tvdb", default=1)
-
-        self.incDBVersion()
-
-
-class AddProperSearch(AddUpdateTVDB):
-    def test(self):
-        return self.checkDBVersion() >= 19
-
-    def execute(self):
-        backupDatabase(19)
+        backupDatabase(16)
 
         logger.log(u"Adding column last_proper_search to info")
         if not self.hasColumn("info", "last_proper_search"):
@@ -536,27 +541,32 @@ class AddProperSearch(AddUpdateTVDB):
 
 class AddDvdOrderOption(AddProperSearch):
     def test(self):
-        return self.checkDBVersion() >= 20
+        return self.hasColumn("tv_shows", "dvdorder")
 
     def execute(self):
-        backupDatabase(20)
-
         logger.log(u"Adding column dvdorder to tvshows")
         if not self.hasColumn("tv_shows", "dvdorder"):
             self.addColumn("tv_shows", "dvdorder", "NUMERIC", "0")
 
         self.incDBVersion()
 
-class ConvertTVShowsToIndexerScheme(AddDvdOrderOption):
+class AddSubtitlesSupport(AddDvdOrderOption):
     def test(self):
-        return self.checkDBVersion() >= 22
+        return self.hasColumn("tv_shows", "subtitles")
 
     def execute(self):
-        backupDatabase(22)
+        self.addColumn("tv_shows", "subtitles")
+        self.addColumn("tv_episodes", "subtitles", "TEXT", "")
+        self.addColumn("tv_episodes", "subtitles_searchcount")
+        self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
+        self.incDBVersion()
 
-        logger.log(u"Adding column dvdorder to tvshows")
-        if not self.hasColumn("tv_shows", "dvdorder"):
-            self.addColumn("tv_shows", "dvdorder", "NUMERIC", "0")
+class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
+    def test(self):
+        return self.checkDBVersion() >= 19
+
+    def execute(self):
+        backupDatabase(19)
 
         logger.log(u"Converting TV Shows table to Indexer Scheme...")
 
@@ -581,10 +591,10 @@ class ConvertTVShowsToIndexerScheme(AddDvdOrderOption):
 
 class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 23
+        return self.checkDBVersion() >= 20
 
     def execute(self):
-        backupDatabase(23)
+        backupDatabase(20)
 
         logger.log(u"Converting TV Episodes table to Indexer Scheme...")
 
@@ -612,10 +622,10 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
 
 class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 24
+        return self.checkDBVersion() >= 21
 
     def execute(self):
-        backupDatabase(24)
+        backupDatabase(21)
 
         logger.log(u"Converting IMDB Info table to Indexer Scheme...")
 
@@ -635,10 +645,10 @@ class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
 
 class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 25
+        return self.checkDBVersion() >= 22
 
     def execute(self):
-        backupDatabase(25)
+        backupDatabase(22)
 
         logger.log(u"Converting Info table to Indexer Scheme...")
 
@@ -657,10 +667,10 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
 
 class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 26
+        return self.checkDBVersion() >= 23
 
     def execute(self):
-        backupDatabase(26)
+        backupDatabase(23)
 
         logger.log(u"Adding column archive_firstmatch to tvshows")
         if not self.hasColumn("tv_shows", "archive_firstmatch"):
@@ -670,10 +680,10 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
 
 class AddSceneNumbering(AddArchiveFirstMatchOption):
     def test(self):
-        return self.checkDBVersion() >= 27
+        return self.checkDBVersion() >= 24
 
     def execute(self):
-        backupDatabase(27)
+        backupDatabase(24)
 
         if self.hasTable("scene_numbering"):
             self.connection.action("DROP TABLE scene_numbering")
@@ -686,10 +696,10 @@ class AddSceneNumbering(AddArchiveFirstMatchOption):
 
 class ConvertIndexerToInteger(AddSceneNumbering):
     def test(self):
-        return self.checkDBVersion() >= 28
+        return self.checkDBVersion() >= 25
 
     def execute(self):
-        backupDatabase(28)
+        backupDatabase(25)
 
         ql = []
         logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
@@ -708,10 +718,10 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
     """ Adding column rls_require_words and rls_ignore_words to tv_shows """
 
     def test(self):
-        return self.checkDBVersion() >= 29
+        return self.checkDBVersion() >= 26
 
     def execute(self):
-        backupDatabase(29)
+        backupDatabase(26)
 
         logger.log(u"Adding column rls_require_words to tvshows")
         if not self.hasColumn("tv_shows", "rls_require_words"):
@@ -725,10 +735,10 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
 
 class AddSportsOption(AddRequireAndIgnoreWords):
     def test(self):
-        return self.checkDBVersion() >= 30
+        return self.checkDBVersion() >= 27
 
     def execute(self):
-        backupDatabase(30)
+        backupDatabase(27)
 
         logger.log(u"Adding column sports to tvshows")
         if not self.hasColumn("tv_shows", "sports"):
@@ -748,10 +758,10 @@ class AddSportsOption(AddRequireAndIgnoreWords):
 
 class AddSceneNumberingToTvEpisodes(AddSportsOption):
     def test(self):
-        return self.checkDBVersion() >= 31
+        return self.checkDBVersion() >= 28
 
     def execute(self):
-        backupDatabase(31)
+        backupDatabase(28)
 
         logger.log(u"Adding column scene_season and scene_episode to tvepisodes")
         if not self.hasColumn("tv_episodes", "scene_season"):

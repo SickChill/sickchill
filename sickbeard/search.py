@@ -20,6 +20,7 @@ from __future__ import with_statement
 
 import os
 import re
+import threading
 import traceback
 import datetime
 
@@ -116,6 +117,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
         for curEp in result.episodes:
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
+    if re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', result.name, re.I) != None:
+        endStatus = SNATCHED_PROPER
 
     # NZBs can be sent straight to SAB or saved to disk
     if result.resultType in ("nzb", "nzbdata"):
@@ -124,11 +127,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
         elif sickbeard.NZB_METHOD == "sabnzbd":
             dlResult = sab.sendNZB(result)
         elif sickbeard.NZB_METHOD == "nzbget":
-            if endStatus == SNATCHED_PROPER:
-                s_prop = True
-            else:
-                s_prop = False
-            dlResult = nzbget.sendNZB(result, s_prop)
+            is_proper = True if endStatus == SNATCHED_PROPER else False
+            dlResult = nzbget.sendNZB(result, is_proper)
         else:
             logger.log(u"Unknown NZB action specified in config: " + sickbeard.NZB_METHOD, logger.ERROR)
             dlResult = False
@@ -171,57 +171,51 @@ def snatchEpisode(result, endStatus=SNATCHED):
     return True
 
 
-def searchForNeededEpisodes():
-    logger.log(u"Searching all providers for any needed episodes")
+def searchForNeededEpisodes(curProvider):
+    threading.currentThread().name = curProvider.name
 
+    logger.log(u"Searching all providers for any needed episodes")
     foundResults = {}
 
-    didSearch = False
-
     # ask all providers for any episodes it finds
-    for curProvider in providers.sortedProviderList():
+    try:
+        curFoundResults = curProvider.searchRSS()
+    except exceptions.AuthException, e:
+        logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+        return
+    except Exception, e:
+        logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+        logger.log(traceback.format_exc(), logger.DEBUG)
+        return
 
-        if not curProvider.isActive():
+    didSearch = True
+
+    # pick a single result for each episode, respecting existing results
+    for curEp in curFoundResults:
+
+        if curEp.show.paused:
+            logger.log(u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
+                       logger.DEBUG)
             continue
 
-        try:
-            curFoundResults = curProvider.searchRSS()
-        except exceptions.AuthException, e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+        # find the best result for the current episode
+        bestResult = None
+        for curResult in curFoundResults[curEp]:
+            if not bestResult or bestResult.quality < curResult.quality:
+                bestResult = curResult
+
+        bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
+
+        # if all results were rejected move on to the next episode
+        if not bestResult:
+            logger.log(u"All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
             continue
-        except Exception, e:
-            logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+
+        # if it's already in the list (from another provider) and the newly found quality is no better then skip it
+        if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
             continue
 
-        didSearch = True
-
-        # pick a single result for each episode, respecting existing results
-        for curEp in curFoundResults:
-
-            if curEp.show.paused:
-                logger.log(u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
-                           logger.DEBUG)
-                continue
-
-            # find the best result for the current episode
-            bestResult = None
-            for curResult in curFoundResults[curEp]:
-                if not bestResult or bestResult.quality < curResult.quality:
-                    bestResult = curResult
-
-            bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
-
-            # if all results were rejected move on to the next episode
-            if not bestResult:
-                logger.log(u"All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
-                continue
-
-            # if it's already in the list (from another provider) and the newly found quality is no better then skip it
-            if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
-                continue
-
-            foundResults[curEp] = bestResult
+        foundResults[curEp] = bestResult
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
@@ -363,36 +357,35 @@ def filterSearchResults(show, results):
 
     return foundResults
 
-def searchProviders(show, season, episodes, seasonSearch=False, manualSearch=False):
+def searchProviders(show, season, episodes, curProvider, seasonSearch=False, manualSearch=False):
+    threading.currentThread().name = curProvider.name
+
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
     foundResults = {}
 
-    didSearch = False
+    if manualSearch:
+        curProvider.cache.updateCache()
 
-    for curProvider in providers.sortedProviderList():
-        if not curProvider.isActive():
-            continue
+    # convert indexer numbering to scene numbering for searches
+    map(lambda x: x.convertToSceneNumbering, episodes)
 
-        if manualSearch:
-            curProvider.cache.updateCache()
+    try:
+        curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
+    except exceptions.AuthException, e:
+        logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+        return
+    except Exception, e:
+        logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+        logger.log(traceback.format_exc(), logger.DEBUG)
+        return
 
-        try:
-            curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
-        except exceptions.AuthException, e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-            continue
-        except Exception, e:
-            logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            continue
+    # finished searching this provider successfully
+    didSearch = True
 
-        # finished searching this provider successfully
-        didSearch = True
-
-        curResults = filterSearchResults(show, curResults)
-        if len(curResults):
-            foundResults.update(curResults)
-            logger.log(u"Provider search results: " + str(foundResults), logger.DEBUG)
+    curResults = filterSearchResults(show, curResults)
+    if len(curResults):
+        foundResults.update(curResults)
+        logger.log(u"Provider search results: " + str(foundResults), logger.DEBUG)
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",

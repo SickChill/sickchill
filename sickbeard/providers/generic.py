@@ -24,6 +24,7 @@ import os
 import re
 import urllib
 import urlparse
+import time
 
 import sickbeard
 
@@ -234,7 +235,12 @@ class GenericProvider:
         results = {}
         searchItems = {}
 
+        if manualSearch:
+            self.cache.updateCache()
+
         for epObj in episodes:
+            time.sleep(0.01)
+
             itemList = []
 
             cacheResult = self.cache.searchCache(epObj, manualSearch)
@@ -268,6 +274,8 @@ class GenericProvider:
 
         for episode, items in searchItems.items():
             for item in items:
+                time.sleep(0.01)
+
                 (title, url) = self._get_title_and_url(item)
 
                 quality = self.getQuality(item)
@@ -328,6 +336,7 @@ class GenericProvider:
                     logger.log(
                         u"Ignoring result " + title + " because we don't want an episode that is " + Quality.qualityStrings[
                             quality], logger.DEBUG)
+                    time.sleep(0.01)
                     continue
 
                 logger.log(u"Found result " + title + " at " + url, logger.DEBUG)

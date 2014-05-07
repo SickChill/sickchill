@@ -137,15 +137,15 @@ class PublicHDProvider(generic.TorrentProvider):
                         urllib.quote(unidecode(search_string)), ';'.join(self.categories[mode]))
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-
                 html = self.getURL(searchURL)
+
                 if not html:
                     continue
 
                 #remove unneccecary <option> lines which are slowing down BeautifulSoup
                 optreg = re.compile(r'<option.*</option>')
                 html = os.linesep.join([s for s in html.splitlines() if not optreg.search(s)])
-    
+
                 try:
                     soup = BeautifulSoup(html, features=["html5lib", "permissive"])
 
@@ -313,16 +313,15 @@ class PublicHDCache(tvcache.TVCache):
         logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
         self._clearCache()
 
-        cl = []
+        ql = []
         for result in rss_results:
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
-                cl.append(ci)
+                ql.append(ci)
 
-        if len(cl) > 0:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+        myDB = self._getDB()
+        myDB.mass_action(ql)
 
     def _parseItem(self, item):
 

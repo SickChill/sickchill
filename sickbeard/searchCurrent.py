@@ -33,4 +33,4 @@ class CurrentSearcher():
 
     def run(self):
         search_queue_item = search_queue.RSSSearchQueueItem()
-        sickbeard.searchQueueScheduler.action.add_item(search_queue_item)  #@UndefinedVariable
+        sickbeard.searchQueueScheduler.action.add_item(search_queue_item)
