@@ -480,32 +480,25 @@ class AddLastUpdateTVDB(AddShowidTvdbidIndex):
 
         self.incDBVersion()
 
-class AddRequireAndIgnoreWords(AddLastUpdateTVDB):
-    """ Adding column rls_require_words and rls_ignore_words to tv_shows """
+class AddDBIncreaseTo15(AddLastUpdateTVDB):
 
     def test(self):
         return self.checkDBVersion() >= 15
 
     def execute(self):
-        backupDatabase(15)
-
-        logger.log(u"Adding column rls_require_words to tvshows")
-        if not self.hasColumn("tv_shows", "rls_require_words"):
-            self.addColumn("tv_shows", "rls_require_words", "TEXT", "")
-
-        logger.log(u"Adding column rls_ignore_words to tvshows")
-        if not self.hasColumn("tv_shows", "rls_ignore_words"):
-            self.addColumn("tv_shows", "rls_ignore_words", "TEXT", "")
-
         self.incDBVersion()
 
-class AddIMDbInfo(AddRequireAndIgnoreWords):
+class AddIMDbInfo(AddDBIncreaseTo15):
     def test(self):
         return self.checkDBVersion() >= 16
 
     def execute(self):
         self.connection.action(
             "CREATE TABLE imdb_info (tvdb_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)")
+
+        if not self.hasColumn("tv_shows", "imdb_id"):
+            self.addColumn("tv_shows", "imdb_id")
+
         self.incDBVersion()
 
 class AddProperNamingSupport(AddIMDbInfo):
