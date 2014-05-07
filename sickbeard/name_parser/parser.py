@@ -19,12 +19,16 @@
 import datetime
 import os.path
 import re
+import threading
 import regexes
 import time
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering
 from dateutil import parser
+
+nameparser_lock = threading.Lock()
+
 
 class NameParser(object):
     ALL_REGEX = 0
@@ -64,19 +68,19 @@ class NameParser(object):
 
     def _compile_regexes(self, regexMode):
         if regexMode <= self.ALL_REGEX:
-            logger.log(u"Using ALL regexs" , logger.DEBUG)
-            uncompiled_regex = regexes.sports_regexs+regexes.ep_regexes
+            logger.log(u"Using ALL regexs", logger.DEBUG)
+            uncompiled_regex = regexes.sports_regexs + regexes.ep_regexes
 
         elif regexMode == self.NORMAL_REGEX:
-            logger.log(u"Using NORMAL regexs" , logger.DEBUG)
+            logger.log(u"Using NORMAL regexs", logger.DEBUG)
             uncompiled_regex = regexes.ep_regexes
 
         elif regexMode == self.SPORTS_REGEX:
-            logger.log(u"Using SPORTS regexs" , logger.DEBUG)
+            logger.log(u"Using SPORTS regexs", logger.DEBUG)
             uncompiled_regex = regexes.sports_regexs
 
         else:
-            logger.log(u"This is a programing ERROR. Fallback Using NORMAL regexs" , logger.ERROR)
+            logger.log(u"This is a programing ERROR. Fallback Using NORMAL regexs", logger.ERROR)
             uncompiled_regex = regexes.ep_regexes
 
         for (cur_pattern_name, cur_pattern) in uncompiled_regex:
@@ -278,6 +282,7 @@ class NameParser(object):
         name_parser_cache.add(name, final_result)
         return final_result
 
+
 class ParseResult(object):
     def __init__(self,
                  original_name,
@@ -369,7 +374,7 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
-        if self.air_by_date: return self # scene numbering does not apply to air-by-date
+        if self.air_by_date: return self  # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
@@ -380,7 +385,8 @@ class ParseResult(object):
         new_episode_numbers = []
         new_season_numbers = []
         for epNo in self.episode_numbers:
-            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number, epNo)
+            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number,
+                                                           epNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)
 
@@ -408,34 +414,34 @@ class ParseResult(object):
         if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
             return True
         return False
+
     air_by_date = property(_is_air_by_date)
 
     def _is_sports(self):
         if self.sports_event_date:
             return True
         return False
+
     sports = property(_is_sports)
 
+
 class NameParserCache(object):
-    #TODO: check if the fifo list can beskiped and only use one dict
-    _previous_parsed_list = []  # keep a fifo list of the cached items
     _previous_parsed = {}
     _cache_size = 100
 
     def add(self, name, parse_result):
-        self._previous_parsed[name] = parse_result
-        self._previous_parsed_list.append(name)
-        while len(self._previous_parsed_list) > self._cache_size:
-            time.sleep(0.01)
-            del_me = self._previous_parsed_list.pop(0)
-            self._previous_parsed.pop(del_me)
+        with nameparser_lock:
+            self._previous_parsed[name] = parse_result
+            _current_cache_size = len(self._previous_parsed)
+            if _current_cache_size > self._cache_size:
+                for i in range(_current_cache_size - self._cache_size):
+                    del self._previous_parsed[self._previous_parsed.keys()[0]]
 
     def get(self, name):
-        if name in self._previous_parsed:
-            logger.log("Using cached parse result for: " + name, logger.DEBUG)
-            return self._previous_parsed[name]
-        else:
-            return None
+        with nameparser_lock:
+            if name in self._previous_parsed:
+                logger.log("Using cached parse result for: " + name, logger.DEBUG)
+                return self._previous_parsed[name]
 
 
 name_parser_cache = NameParserCache()

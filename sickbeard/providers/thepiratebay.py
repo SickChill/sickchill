@@ -18,6 +18,7 @@
 
 from __future__ import with_statement
 
+import time
 import re
 import urllib, urllib2, urlparse
 import sys
@@ -171,7 +172,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
     def _get_season_search_strings(self, ep_obj):
 
-        search_string = {'Season': [], 'Episode': []}
+        search_string = {'Season': []}
         if not (ep_obj.show.air_by_date or ep_obj.show.sports):
             for show_name in set(allPossibleShowNames(self.show)) if not (ep_obj.show.air_by_date or ep_obj.show.sports) else []:
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
@@ -218,7 +219,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -262,7 +263,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
                     #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent 
                     if mode == 'Season':
-                        ep_number = int(len(search_params['Episode']) / len(set(allPossibleShowNames(self.show))))
+                        ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
                         title = self._find_season_quality(title, id, ep_number)
 
                     if not title or not url:
@@ -414,6 +415,7 @@ class ThePirateBayCache(tvcache.TVCache):
 
         cl = []
         for result in rss_results:
+            time.sleep(0.01)
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
@@ -430,7 +432,7 @@ class ThePirateBayCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Adding item to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to cache item:" + str(title), logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

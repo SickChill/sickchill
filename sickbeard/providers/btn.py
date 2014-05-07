@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+import socket
+import math
 import sickbeard
 import generic
 
@@ -30,10 +33,6 @@ from sickbeard.exceptions import ex, AuthException
 
 from lib import jsonrpclib
 from datetime import datetime
-import time
-import socket
-import math
-
 
 class BTNProvider(generic.TorrentProvider):
     def __init__(self):
@@ -69,7 +68,7 @@ class BTNProvider(generic.TorrentProvider):
 
         return True
 
-    def _doSearch(self, search_params, show=None, age=0):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         self._checkAuth()
 
@@ -322,6 +321,7 @@ class BTNCache(tvcache.TVCache):
                 # By now we know we've got data and no auth errors, all we need to do is put it in the database
                 cl = []
                 for item in data:
+                    time.sleep(0.01)
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)

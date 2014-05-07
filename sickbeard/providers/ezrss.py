@@ -106,7 +106,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return [params]
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         params = {"mode": "rss"}
 
@@ -130,7 +130,7 @@ class EZRSSProvider(generic.TorrentProvider):
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:
-                logger.log(u"Adding item from [" + self.name + "] RSS feed to cache: " + title, logger.DEBUG)
+                logger.log(u"RSS Feed provider: [" + self.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
                 results.append(curItem)
             else:
                 logger.log(
@@ -180,7 +180,7 @@ class EZRSSCache(tvcache.TVCache):
         (title, url) = self.provider._get_title_and_url(item)
 
         if title and url:
-            logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
+            logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
             url = self._translateLinkURL(url)
             return self._addCacheEntry(title, url)
 

@@ -143,6 +143,7 @@ class TVCache():
                 items = data.entries
                 ql = []
                 for item in items:
+                    time.sleep(0.01)
                     qi = self._parseItem(item)
                     if qi is not None:
                         ql.append(qi)
@@ -224,7 +225,7 @@ class TVCache():
         if cacheResult:
             logger.log(u"Found Indexer ID:[" + repr(cacheResult) + "], using that for [" + str(name) + "}",
                        logger.DEBUG)
-            return
+            return None
 
         # if we don't have complete info then parse the filename to get it
         try:
@@ -244,7 +245,7 @@ class TVCache():
 
         showObj = sickbeard.name_cache.retrieveShowFromCache(parse_result.series_name)
         if not showObj:
-            logger.log(u"Cache lookup failed for [" + parse_result.series_name + "], skipping ...", logger.DEBUG)
+            logger.log(u"Show is not in our list of watched shows [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
             return None
 
         season = episodes = None
@@ -296,8 +297,7 @@ class TVCache():
         if date != None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
-        #return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
-        return myDB.select(sql)
+        return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
 
     def findNeededEpisodes(self, epObj=None, manualSearch=False):
         neededEps = {}

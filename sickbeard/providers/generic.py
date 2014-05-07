@@ -199,7 +199,7 @@ class GenericProvider:
         quality = Quality.sceneQuality(title)
         return quality
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
         return []
 
     def _get_season_search_strings(self, episode):
@@ -234,14 +234,13 @@ class GenericProvider:
 
         results = {}
         searchItems = {}
+        itemList = []
 
         if manualSearch:
             self.cache.updateCache()
 
         for epObj in episodes:
             time.sleep(0.01)
-
-            itemList = []
 
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if len(cacheResult):
@@ -256,9 +255,9 @@ class GenericProvider:
 
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):
-                    itemList += self._doSearch(curString)
+                    itemList += self._doSearch(curString, len(episodes))
             for curString in self._get_episode_search_strings(epObj):
-                itemList += self._doSearch(curString)
+                itemList += self._doSearch(curString, len(episodes))
 
             # next episode if no search results
             if not itemList:
@@ -328,7 +327,7 @@ class GenericProvider:
                 # make sure we want the episode
                 wantEp = True
                 for epNo in actual_episodes:
-                    if not show.wantEpisode(actual_season, epNo, quality):
+                    if not show.wantEpisode(actual_season, epNo, quality, manualSearch):
                         wantEp = False
                         break
 

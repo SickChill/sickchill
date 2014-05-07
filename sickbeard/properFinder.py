@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import datetime
 import operator
 
@@ -84,6 +85,12 @@ class ProperFinder():
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
+                time.sleep(0.01)
+                showObj = helpers.findCertainShow(sickbeard.showList, x.indexerid)
+                if not showObj:
+                    logger.log(u"Unable to find the show we watch with indexerID " + str(x.indexerid), logger.ERROR)
+                    continue
+
                 name = self._genericName(x.name)
 
                 if not name in propers:
@@ -105,11 +112,18 @@ class ProperFinder():
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
 
+            if not parse_result.series_name:
+                continue
+
+            if not curProper.indexerid:
+                continue
+
             if not parse_result.episode_numbers:
                 logger.log(
                     u"Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
                     logger.DEBUG)
                 continue
+
 
             # populate our Proper instance
             if parse_result.air_by_date or parse_result.sports:
@@ -123,9 +137,6 @@ class ProperFinder():
 
             # for each show in our list
             for curShow in sickbeard.showList:
-
-                if not parse_result.series_name:
-                    continue
 
                 genericName = self._genericName(parse_result.series_name)
 
@@ -153,9 +164,6 @@ class ProperFinder():
                 # if we found something in the inner for loop break out of this one
                 if curProper.indexerid != -1:
                     break
-
-            if curProper.indexerid == -1:
-                continue
 
             if not show_name_helpers.filterBadReleases(curProper.name):
                 logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, igoring it",

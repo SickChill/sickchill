@@ -18,14 +18,15 @@
 
 import urllib
 import re
+
 import sickbeard
 import generic
 
 from sickbeard import show_name_helpers
 from sickbeard import logger
 from sickbeard.common import Quality
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
 from sickbeard import tvcache
+from sickbeard import show_name_helpers
 
 REMOTE_DBG = False
 
@@ -143,7 +144,7 @@ class NyaaCache(tvcache.TVCache):
                        logger.ERROR)
             return None
 
-        logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
+        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

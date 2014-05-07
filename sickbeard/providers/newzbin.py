@@ -356,7 +356,7 @@ class NewzbinCache(tvcache.TVCache):
 
         logger.log("Found quality " + str(quality), logger.DEBUG)
 
-        logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
+        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
 
         self._addCacheEntry(title, url, quality=quality)
 

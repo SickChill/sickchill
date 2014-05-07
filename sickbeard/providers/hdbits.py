@@ -12,7 +12,8 @@
 #                                                                                                                                        
 # You should have received a copy of the GNU General Public License                                                                      
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.                                                                    
-                                                                                                                                         
+
+import time
 import datetime                                                                                                                          
 import urllib                                                                                                                            
 import generic                                                                                                                           
@@ -86,7 +87,7 @@ class HDBitsProvider(generic.TorrentProvider):
                                                                                                                                          
         return (title, url)                                                                                                              
                                                                                                                                          
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
         results = []
 
         self._checkAuth()                                                                                                                
@@ -206,6 +207,7 @@ class HDBitsCache(tvcache.TVCache):
                                                                                                                                          
                 ql = []
                 for item in items:
+                    time.sleep(0.01)
                     ci = self._parseItem(item)
                     if ci is not None:
                         ql.append(ci)

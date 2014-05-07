@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import re
 import traceback
 import datetime
@@ -92,7 +93,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
     def _get_season_search_strings(self, ep_obj):
 
-        search_string = {'Season': [], 'Episode': []}
+        search_string = {'Season': []}
         if not (ep_obj.show.air_by_date or ep_obj.show.sports):
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
@@ -134,7 +135,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -294,6 +295,7 @@ class IPTorrentsCache(tvcache.TVCache):
 
         cl = []
         for result in rss_results:
+            time.sleep(0.01)
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
@@ -310,7 +312,7 @@ class IPTorrentsCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Adding item to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to cache item:" + str(title), logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 
