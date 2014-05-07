@@ -111,6 +111,11 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     if result is None: return False
 
+    # don't notify when we re-download an episode
+    for curEpObj in result.episodes:
+        if curEpObj.status in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
+            return 2
+
     result.priority = 0  # -1 = low, 0 = normal, 1 = high
     if sickbeard.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority

@@ -126,10 +126,11 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             for foundResult in [item for sublist in foundResults for item in sublist]:
                 time.sleep(0.01)
 
-                # just use the first result for now
-                logger.log(u"Downloading " + foundResult.name + " from " + foundResult.provider.name)
-
                 result = search.snatchEpisode(foundResult)
+
+                # duplicate snatch detected due to multithreading
+                if result == 2:
+                    continue
 
                 providerModule = foundResult.provider
                 if not result:
@@ -138,9 +139,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 elif providerModule == None:
                     ui.notifications.error('Provider is configured incorrectly, unable to download')
 
-                self.success = result
+                # just use the first result for now
+                logger.log(u"Downloading " + foundResult.name + " from " + foundResult.provider.name)
 
-        self.finish()
+                self.success = result
 
     def process(self, curProvider):
         if self.ep_obj.show.air_by_date:
@@ -154,8 +156,8 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         # don't let this linger if something goes wrong
         if self.success == None:
             self.success = False
-        generic_queue.QueueItem.finish(self)
-
+        else:
+            generic_queue.QueueItem.finish(self)
 
 class RSSSearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
@@ -186,7 +188,11 @@ class RSSSearchQueueItem(generic_queue.QueueItem):
         if len(foundResults):
             for curResult in [item for sublist in foundResults for item in sublist]:
                 time.sleep(0.01)
-                search.snatchEpisode(curResult)
+                result = search.snatchEpisode(curResult)
+
+                # duplicate snatch detected due to multithreading
+                if result == 2:
+                    continue
         else:
             logger.log(u"RSS Feed search found nothing to snatch ...")
 
@@ -289,7 +295,12 @@ class BacklogQueueItem(generic_queue.QueueItem):
             for curResult in [item for sublist in foundResults for item in sublist]:
                 time.sleep(0.01)
 
-                search.snatchEpisode(curResult)
+                result = search.snatchEpisode(curResult)
+
+                # duplicate snatch detected due to multithreading
+                if result == 2:
+                    continue
+
         else:
             logger.log(u"Backlog search found nothing to snatch ...")
 
@@ -365,7 +376,13 @@ class FailedQueueItem(generic_queue.QueueItem):
             for curResult in [item for sublist in foundResults for item in sublist]:
                 time.sleep(0.01)
 
-                self.success = search.snatchEpisode(curResult)
+                result = search.snatchEpisode(curResult)
+
+                # duplicate snatch detected due to multithreading
+                if result == 2:
+                    continue
+
+                self.success = result
         else:
             logger.log(u"Retry failed download search found nothing to snatch ...")
 
