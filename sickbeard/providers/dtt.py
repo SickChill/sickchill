@@ -64,7 +64,7 @@ class DTTProvider(generic.TorrentProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return self._get_season_search_strings(ep_obj)
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         #        show_id = self._dtt_show_id(self.show.name)
 
@@ -130,7 +130,7 @@ class DTTCache(tvcache.TVCache):
 
     def _parseItem(self, item):
         title, url = self.provider._get_title_and_url(item)
-        logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
+        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url)
 
 

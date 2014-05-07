@@ -164,5 +164,5 @@ class TorrentRssCache(tvcache.TVCache):
             logger.log(u"The XML returned from the RSS feed is incomplete, this result is unusable", logger.ERROR)
             return None
 
-        logger.log(u"Adding item from [" + self.provider.name + "] RSS feed to cache: " + title, logger.DEBUG)
+        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url)

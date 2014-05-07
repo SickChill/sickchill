@@ -273,25 +273,27 @@ def _xem_refresh(indexer_id, indexer):
                 return None
 
         result = data
+        ql = []
+
+        cacheDB = db.DBConnection('cache.db')
         if result:
-            cacheDB = db.DBConnection('cache.db')
-            cacheDB.action("INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
-                           [indexer, indexer_id, time.time()])
+            ql.append(["INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
+                      [indexer, indexer_id, time.time()]])
             if 'success' in result['result']:
-                cacheDB.action("DELETE FROM xem_numbering where indexer = ? and indexer_id = ?", [indexer, indexer_id])
+                ql.append(["DELETE FROM xem_numbering where indexer = ? and indexer_id = ?", [indexer, indexer_id]])
                 for entry in result['data']:
                     if 'scene' in entry:
-                        cacheDB.action(
+                        ql.append([
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                              entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
-                             entry['scene']['season'], entry['scene']['episode']])
+                             entry['scene']['season'], entry['scene']['episode']]])
                     if 'scene_2' in entry:  # for doubles
-                        cacheDB.action(
+                        ql.append([
                             "INSERT INTO xem_numbering (indexer, indexer_id, season, episode, scene_season, scene_episode) VALUES (?,?,?,?,?,?)",
                             [indexer, indexer_id, entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
                              entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode'],
-                             entry['scene_2']['season'], entry['scene_2']['episode']])
+                             entry['scene_2']['season'], entry['scene_2']['episode']]])
             else:
                 logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
                     indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.DEBUG)
@@ -304,6 +306,8 @@ def _xem_refresh(indexer_id, indexer):
         logger.log(traceback.format_exc(), logger.DEBUG)
         return None
 
+    if ql:
+        cacheDB.mass_action(ql)
 
 def get_xem_numbering_for_show(indexer_id, indexer):
     """
@@ -392,4 +396,5 @@ def fix_scene_numbering():
         ql.append(
             ["UPDATE tv_episodes SET scene_episode = ? WHERE indexerid = ?", [scene_episode, epResult["indexerid"]]])
 
+    if ql:
         myDB.mass_action(ql)

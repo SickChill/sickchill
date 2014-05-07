@@ -350,10 +350,11 @@ def filterSearchResults(show, results):
             lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show),
             results[curEp])
 
-        if curEp in foundResults:
-            foundResults[curEp] += results[curEp]
-        else:
-            foundResults[curEp] = results[curEp]
+        if len(results[curEp]):
+            if curEp in foundResults:
+                foundResults[curEp] += results[curEp]
+            else:
+                foundResults[curEp] = results[curEp]
 
     return foundResults
 
@@ -362,6 +363,7 @@ def searchProviders(show, season, episodes, curProvider, seasonSearch=False, man
 
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
     foundResults = {}
+    finalResults = []
 
     if manualSearch:
         curProvider.cache.updateCache()
@@ -373,25 +375,22 @@ def searchProviders(show, season, episodes, curProvider, seasonSearch=False, man
         curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
     except exceptions.AuthException, e:
         logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-        return
+        return []
     except Exception, e:
         logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
         logger.log(traceback.format_exc(), logger.DEBUG)
-        return
+        return []
 
-    # finished searching this provider successfully
-    didSearch = True
+    if not len(curResults):
+        return []
 
     curResults = filterSearchResults(show, curResults)
     if len(curResults):
         foundResults.update(curResults)
         logger.log(u"Provider search results: " + str(foundResults), logger.DEBUG)
 
-    if not didSearch:
-        logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
-                   logger.ERROR)
-
-    finalResults = []
+    if not len(foundResults):
+        return []
 
     anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
@@ -401,8 +400,8 @@ def searchProviders(show, season, episodes, curProvider, seasonSearch=False, man
         bestSeasonNZB = pickBestResult(foundResults[SEASON_RESULT], show, anyQualities + bestQualities)
 
     highest_quality_overall = 0
-    for cur_season in foundResults:
-        for cur_result in foundResults[cur_season]:
+    for cur_episode in foundResults:
+        for cur_result in foundResults[cur_episode]:
             if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
                 highest_quality_overall = cur_result.quality
     logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)

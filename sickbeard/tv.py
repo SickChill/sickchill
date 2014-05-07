@@ -440,6 +440,7 @@ class TVShow(object):
 
         sql_l = []
         for season in showObj:
+            time.sleep(0.01)
             scannedEps[season] = {}
             for episode in showObj[season]:
                 # need some examples of wtf episode 0 means to decide if we want it or not

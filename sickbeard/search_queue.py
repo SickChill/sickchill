@@ -36,7 +36,6 @@ RSS_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
 
-
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
         generic_queue.GenericQueue.__init__(self)
@@ -87,30 +86,44 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, ep_obj):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-
         self.ep_obj = ep_obj
-
         self.success = None
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
+
+        foundResults = []
+        didSearch = False
+
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+        try:
+            with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+                foundResults = list(
+                    executor.map(self.process, providers))
+            didSearch = True
+        except Exception, e:
+            pass
+
+        if not didSearch:
+            logger.log(
+                u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
+                logger.ERROR)
 
         result = False
-        if not foundResults:
+        if not len(foundResults):
             if self.ep_obj.show.air_by_date:
                 ui.notifications.message('No downloads were found ...',
                                          "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyABName())
                 logger.log(u"Unable to find a download for " + self.ep_obj.prettyABDName())
             else:
                 ui.notifications.message('No downloads were found ...',
-                                     "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
+                                         "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
                 logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
 
             self.success = result
         else:
-            for foundResult in foundResults:
+            for foundResult in [item for sublist in foundResults for item in sublist]:
                 time.sleep(0.01)
 
                 # just use the first result for now
@@ -135,7 +148,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         else:
             logger.log("Beginning manual search for " + self.ep_obj.prettyName())
 
-        return search.searchProviders(self.ep_obj.show, self.ep_obj.season, self.ep_obj, curProvider, True, False)
+        return search.searchProviders(self.ep_obj.show, self.ep_obj.season, [self.ep_obj], curProvider, False, True)
 
     def finish(self):
         # don't let this linger if something goes wrong
@@ -150,14 +163,32 @@ class RSSSearchQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
-        for curResult in foundResults:
-            time.sleep(0.01)
+        foundResults = []
+        didSearch = False
 
-            if curResult:
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+        try:
+            with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+                foundResults = list(
+                    executor.map(self.process, providers))
+
+            didSearch = True
+        except:
+            pass
+
+        if not didSearch:
+            logger.log(
+                u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
+                logger.ERROR)
+
+        if len(foundResults):
+            for curResult in [item for sublist in foundResults for item in sublist]:
+                time.sleep(0.01)
                 search.snatchEpisode(curResult)
+        else:
+            logger.log(u"RSS Feed search found nothing to snatch ...")
 
         generic_queue.QueueItem.finish(self)
 
@@ -236,14 +267,31 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-            foundResults = sum(list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()])))
 
-        for curResult in foundResults if foundResults else logger.log(
-                u"Backlog search found nothing to snatch ..."):
-            time.sleep(0.01)
+        foundResults = []
+        didSearch = False
 
-            search.snatchEpisode(curResult)
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+        try:
+            with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+                foundResults = list(executor.map(self.process,providers))
+            didSearch = True
+        except:
+            pass
+
+        if not didSearch:
+            logger.log(
+                u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
+                logger.ERROR)
+
+        if len(foundResults):
+            for curResult in [item for sublist in foundResults for item in sublist]:
+                time.sleep(0.01)
+
+                search.snatchEpisode(curResult)
+        else:
+            logger.log(u"Backlog search found nothing to snatch ...")
 
         self.finish()
 
@@ -254,7 +302,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         if len(seasonEps) == len(self.wantedEpisodes):
             seasonSearch = True
 
-        return search.searchProviders(self.show, self.segment, self.wantedEpisodes, curProvider, False, seasonSearch)
+        return search.searchProviders(self.show, self.segment, self.wantedEpisodes, curProvider, seasonSearch, False)
 
     def _need_any_episodes(self, statusResults, bestQualities):
         wantedEpisodes = []
@@ -294,14 +342,32 @@ class FailedQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-        with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-            foundResults = list(executor.map(self.process, [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]))
 
-        # download whatever we find
-        for curResult in foundResults:
-            time.sleep(0.01)
+        foundResults = []
+        didSearch = False
 
-            self.success = search.snatchEpisode(curResult)
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+        try:
+            with futures.ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
+                foundResults = list(
+                    executor.map(self.process, providers))
+            didSearch = True
+        except:
+            pass
+
+        if not didSearch:
+            logger.log(
+                u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
+                logger.ERROR)
+
+        if len(foundResults):
+            for curResult in [item for sublist in foundResults for item in sublist]:
+                time.sleep(0.01)
+
+                self.success = search.snatchEpisode(curResult)
+        else:
+            logger.log(u"Retry failed download search found nothing to snatch ...")
 
         self.finish()
 
@@ -315,7 +381,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                 logger.log("Beginning manual search for " + epObj.prettyABDName())
             else:
                 logger.log(
-                "Beginning failed download search for " + epObj.prettyName())
+                    "Beginning failed download search for " + epObj.prettyName())
 
             (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
             if release:

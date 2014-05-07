@@ -19,6 +19,7 @@
 import re
 import datetime
 import urlparse
+import time
 import sickbeard
 import generic
 
@@ -35,7 +36,6 @@ from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
 from sickbeard.helpers import sanitizeSceneName
-
 
 class SpeedCDProvider(generic.TorrentProvider):
 
@@ -93,7 +93,7 @@ class SpeedCDProvider(generic.TorrentProvider):
     def _get_season_search_strings(self, ep_obj):
 
         #If Every episode in Season is a wanted Episode then search for Season first
-        search_string = {'Season': [], 'Episode': []}
+        search_string = {'Season': []}
         if not (ep_obj.show.air_by_date or ep_obj.show.sports):
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = show_name +' S%02d' % int(ep_obj.scene_season) #1) showName SXX
@@ -133,7 +133,7 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, show=None, age=None):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -274,6 +274,7 @@ class SpeedCDCache(tvcache.TVCache):
 
         ql = []
         for result in rss_results:
+            time.sleep(0.01)
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
@@ -289,7 +290,7 @@ class SpeedCDCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Adding item to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to cache item:" + str(title), logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 
