@@ -156,7 +156,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate);",
                 "CREATE INDEX idx_status ON tv_episodes (status,season,episode,airdate);",
                 "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate)",
-                "INSERT INTO db_version (db_version) VALUES (28);"
+                "INSERT INTO db_version (db_version) VALUES (31);"
             ]
             for query in queries:
                 self.connection.action(query)
@@ -501,7 +501,7 @@ class AddRequireAndIgnoreWords(AddLastUpdateTVDB):
 
 class AddIMDbInfo(AddRequireAndIgnoreWords):
     def test(self):
-        return self.checkDBVersion() >= 13
+        return self.checkDBVersion() >= 16
 
     def execute(self):
         self.connection.action(
@@ -510,7 +510,7 @@ class AddIMDbInfo(AddRequireAndIgnoreWords):
 
 class AddProperNamingSupport(AddIMDbInfo):
     def test(self):
-        return self.checkDBVersion() >= 14
+        return self.checkDBVersion() >= 17
 
     def execute(self):
         self.addColumn("tv_episodes", "is_proper")
@@ -519,7 +519,7 @@ class AddProperNamingSupport(AddIMDbInfo):
 
 class AddEmailSubscriptionTable(AddProperNamingSupport):
     def test(self):
-        return self.hasColumn("tv_shows", "notify_list")
+        return self.checkDBVersion() >= 18
 
     def execute(self):
         self.addColumn('tv_shows', 'notify_list', 'TEXT', None)
@@ -527,10 +527,10 @@ class AddEmailSubscriptionTable(AddProperNamingSupport):
 
 class AddProperSearch(AddEmailSubscriptionTable):
     def test(self):
-        return self.checkDBVersion() >= 16
+        return self.checkDBVersion() >= 19
 
     def execute(self):
-        backupDatabase(16)
+        backupDatabase(19)
 
         logger.log(u"Adding column last_proper_search to info")
         if not self.hasColumn("info", "last_proper_search"):
@@ -541,7 +541,7 @@ class AddProperSearch(AddEmailSubscriptionTable):
 
 class AddDvdOrderOption(AddProperSearch):
     def test(self):
-        return self.hasColumn("tv_shows", "dvdorder")
+        return self.checkDBVersion() >= 20
 
     def execute(self):
         logger.log(u"Adding column dvdorder to tvshows")
@@ -552,7 +552,7 @@ class AddDvdOrderOption(AddProperSearch):
 
 class AddSubtitlesSupport(AddDvdOrderOption):
     def test(self):
-        return self.hasColumn("tv_shows", "subtitles")
+        return self.checkDBVersion() >= 21
 
     def execute(self):
         self.addColumn("tv_shows", "subtitles")
@@ -563,10 +563,10 @@ class AddSubtitlesSupport(AddDvdOrderOption):
 
 class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
     def test(self):
-        return self.checkDBVersion() >= 19
+        return self.checkDBVersion() >= 22
 
     def execute(self):
-        backupDatabase(19)
+        backupDatabase(22)
 
         logger.log(u"Converting TV Shows table to Indexer Scheme...")
 
@@ -591,10 +591,10 @@ class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
 
 class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 20
+        return self.checkDBVersion() >= 23
 
     def execute(self):
-        backupDatabase(20)
+        backupDatabase(23)
 
         logger.log(u"Converting TV Episodes table to Indexer Scheme...")
 
@@ -622,10 +622,10 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
 
 class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 21
+        return self.checkDBVersion() >= 24
 
     def execute(self):
-        backupDatabase(21)
+        backupDatabase(24)
 
         logger.log(u"Converting IMDB Info table to Indexer Scheme...")
 
@@ -645,10 +645,10 @@ class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
 
 class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 22
+        return self.checkDBVersion() >= 25
 
     def execute(self):
-        backupDatabase(22)
+        backupDatabase(25)
 
         logger.log(u"Converting Info table to Indexer Scheme...")
 
@@ -667,10 +667,10 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
 
 class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
     def test(self):
-        return self.checkDBVersion() >= 23
+        return self.checkDBVersion() >= 26
 
     def execute(self):
-        backupDatabase(23)
+        backupDatabase(26)
 
         logger.log(u"Adding column archive_firstmatch to tvshows")
         if not self.hasColumn("tv_shows", "archive_firstmatch"):
@@ -680,10 +680,10 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
 
 class AddSceneNumbering(AddArchiveFirstMatchOption):
     def test(self):
-        return self.checkDBVersion() >= 24
+        return self.checkDBVersion() >= 27
 
     def execute(self):
-        backupDatabase(24)
+        backupDatabase(27)
 
         if self.hasTable("scene_numbering"):
             self.connection.action("DROP TABLE scene_numbering")
@@ -696,10 +696,10 @@ class AddSceneNumbering(AddArchiveFirstMatchOption):
 
 class ConvertIndexerToInteger(AddSceneNumbering):
     def test(self):
-        return self.checkDBVersion() >= 25
+        return self.checkDBVersion() >= 28
 
     def execute(self):
-        backupDatabase(25)
+        backupDatabase(28)
 
         ql = []
         logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
@@ -718,10 +718,10 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
     """ Adding column rls_require_words and rls_ignore_words to tv_shows """
 
     def test(self):
-        return self.checkDBVersion() >= 26
+        return self.checkDBVersion() >= 29
 
     def execute(self):
-        backupDatabase(26)
+        backupDatabase(29)
 
         logger.log(u"Adding column rls_require_words to tvshows")
         if not self.hasColumn("tv_shows", "rls_require_words"):
@@ -735,10 +735,10 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
 
 class AddSportsOption(AddRequireAndIgnoreWords):
     def test(self):
-        return self.checkDBVersion() >= 27
+        return self.checkDBVersion() >= 30
 
     def execute(self):
-        backupDatabase(27)
+        backupDatabase(30)
 
         logger.log(u"Adding column sports to tvshows")
         if not self.hasColumn("tv_shows", "sports"):
@@ -758,10 +758,10 @@ class AddSportsOption(AddRequireAndIgnoreWords):
 
 class AddSceneNumberingToTvEpisodes(AddSportsOption):
     def test(self):
-        return self.checkDBVersion() >= 28
+        return self.checkDBVersion() >= 31
 
     def execute(self):
-        backupDatabase(28)
+        backupDatabase(31)
 
         logger.log(u"Adding column scene_season and scene_episode to tvepisodes")
         if not self.hasColumn("tv_episodes", "scene_season"):
