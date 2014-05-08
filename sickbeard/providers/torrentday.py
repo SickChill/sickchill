@@ -296,7 +296,7 @@ class TorrentDayCache(tvcache.TVCache):
 
         cl = []
         for result in rss_results:
-            time.sleep(0.01)
+
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:

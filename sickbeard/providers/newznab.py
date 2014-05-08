@@ -173,7 +173,7 @@ class NewznabProvider(generic.NZBProvider):
 
         return True
 
-    def _doSearch(self, search_params, show=None, max_age=0):
+    def _doSearch(self, search_params, epcount=0, age=0):
 
         self._checkAuth()
 
@@ -183,8 +183,8 @@ class NewznabProvider(generic.NZBProvider):
                   "cat": self.catIDs}
 
         # if max_age is set, use it, don't allow it to be missing
-        if max_age or not params['maxage']:
-            params['maxage'] = max_age
+        if age or not params['maxage']:
+            params['maxage'] = age
 
         if search_params:
             params.update(search_params)
@@ -229,7 +229,7 @@ class NewznabProvider(generic.NZBProvider):
                    cache_results]
 
         for term in search_terms:
-            for item in self._doSearch({'q': term}, max_age=4):
+            for item in self._doSearch({'q': term}, age=4):
 
                 (title, url) = self._get_title_and_url(item)
 

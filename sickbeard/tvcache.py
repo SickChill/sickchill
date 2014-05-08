@@ -143,7 +143,6 @@ class TVCache():
                 items = data.entries
                 ql = []
                 for item in items:
-                    time.sleep(0.01)
                     qi = self._parseItem(item)
                     if qi is not None:
                         ql.append(qi)

@@ -399,7 +399,6 @@ class ConfigMigrator():
         sickbeard.CONFIG_VERSION = self.config_version
 
         while self.config_version < self.expected_config_version:
-            time.sleep(0.01)
             next_version = self.config_version + 1
 
             if next_version in self.migration_names:

@@ -21,6 +21,7 @@ from __future__ import with_statement
 import os
 import re
 import threading
+import Queue
 import traceback
 import datetime
 
@@ -110,11 +111,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
     """
 
     if result is None: return False
-
-    # don't notify when we re-download an episode
-    for curEpObj in result.episodes:
-        if curEpObj.status in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST:
-            return 2
 
     result.priority = 0  # -1 = low, 0 = normal, 1 = high
     if sickbeard.ALLOW_HIGH_PRIORITY:
@@ -363,8 +359,9 @@ def filterSearchResults(show, results):
 
     return foundResults
 
-def searchProviders(show, season, episodes, curProvider, seasonSearch=False, manualSearch=False):
-    threading.currentThread().name = curProvider.name
+def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch=False, manualSearch=False):
+    thread_name = str(curProvider.name).upper() + '-' + str(show.indexerid)
+    threading.currentThread().name = thread_name
 
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
     foundResults = {}
@@ -392,7 +389,7 @@ def searchProviders(show, season, episodes, curProvider, seasonSearch=False, man
     curResults = filterSearchResults(show, curResults)
     if len(curResults):
         foundResults.update(curResults)
-        logger.log(u"Provider search results: " + str(foundResults), logger.DEBUG)
+        logger.log(u"Provider search results: " + repr(foundResults), logger.DEBUG)
 
     if not len(foundResults):
         return []
@@ -407,6 +404,7 @@ def searchProviders(show, season, episodes, curProvider, seasonSearch=False, man
     highest_quality_overall = 0
     for cur_episode in foundResults:
         for cur_result in foundResults[cur_episode]:
+            cur_result.queue_item = queueItem
             if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
                 highest_quality_overall = cur_result.quality
     logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)

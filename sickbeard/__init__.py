@@ -79,6 +79,7 @@ showUpdateScheduler = None
 versionCheckScheduler = None
 showQueueScheduler = None
 searchQueueScheduler = None
+snatchQueueScheduler = None
 properFinderScheduler = None
 autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
@@ -489,7 +490,7 @@ def initialize(consoleLogging=True):
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
             versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY,MIN_UPDATE_FREQUENCY,UPDATE_FREQUENCY,\
-            showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
+            showQueueScheduler, searchQueueScheduler, snatchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
             WOMBLE, OMGWTFNZBS, OMGWTFNZBS_USERNAME, OMGWTFNZBS_APIKEY, providerList, newznabProviderList, torrentRssProviderList, \
@@ -1124,7 +1125,7 @@ def start():
 def halt():
     global __INITIALIZED__, currentSearchScheduler, backlogSearchScheduler, showUpdateScheduler, \
         showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, started, \
+        subtitlesFinderScheduler, snatchQueueScheduler, started, \
         traktWatchListCheckerSchedular
 
     with INIT_LOCK:
@@ -1174,6 +1175,13 @@ def halt():
             logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
             try:
                 searchQueueScheduler.thread.join(10)
+            except:
+                pass
+
+            snatchQueueScheduler.abort = True
+            logger.log(u"Waiting for the SNATCHQUEUE thread to exit")
+            try:
+                snatchQueueScheduler.thread.join(10)
             except:
                 pass
 

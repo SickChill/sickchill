@@ -3153,7 +3153,6 @@ class Home:
 
             sql_l = []
             for curEp in eps.split('|'):
-                time.sleep(0.01)
 
                 logger.log(u"Attempting to set status on episode " + curEp + " to " + status, logger.DEBUG)
 

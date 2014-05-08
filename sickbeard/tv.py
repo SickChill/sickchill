@@ -441,7 +441,6 @@ class TVShow(object):
 
         sql_l = []
         for season in showObj:
-            time.sleep(0.01)
             scannedEps[season] = {}
             for episode in showObj[season]:
                 # need some examples of wtf episode 0 means to decide if we want it or not
@@ -1732,18 +1731,10 @@ class TVEpisode(object):
 
         Returns: A string representing the episode's name and season/ep numbers 
         """
-
-        return self._format_pattern('%SN - %Sx%0E - %EN')
-
-    def prettyABDName(self):
-        """
-        Returns the name of this episode in a "pretty" human-readable format. Used for logging
-        and notifications and such.
-
-        Returns: A string representing the episode's name and season/ep numbers
-        """
-
-        return self._format_pattern('%SN - %AD - %EN')
+        if self.show.air_by_date:
+            return self._format_pattern('%SN - %AD - %EN')
+        else:
+            return self._format_pattern('%SN - %Sx%0E - %EN')
 
     def prettySceneName(self):
         """
@@ -1752,8 +1743,10 @@ class TVEpisode(object):
 
         Returns: A string representing the episode's name and season/ep numbers
         """
-
-        return self._format_pattern('%SN - %XSx%0XE - %EN')
+        if self.show.air_by_date:
+            return self._format_pattern('%SN - %AD - %EN')
+        else:
+            return self._format_pattern('%SN - %XSx%0XE - %EN')
 
     def _ep_name(self):
         """
@@ -1851,13 +1844,13 @@ class TVEpisode(object):
             '%Q.N': dot(Quality.qualityStrings[epQual]),
             '%Q_N': us(Quality.qualityStrings[epQual]),
             '%S': str(self.season),
-            '%0S': '%02d' % int(self.season) if not self.show.air_by_date else self.season,
+            '%0S': '%02d' % self.season,
             '%E': str(self.episode),
-            '%0E': '%02d' % int(self.episode)if not self.show.air_by_date else self.episode,
+            '%0E': '%02d' % self.episode,
             '%XS': str(self.scene_season),
-            '%0XS': '%02d' % int(self.scene_season),
+            '%0XS': '%02d' % self.scene_season,
             '%XE': str(self.scene_episode),
-            '%0XE': '%02d' % int(self.scene_episode),
+            '%0XE': '%02d' % self.scene_episode,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),
