@@ -330,7 +330,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
             with ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
                 for provider in providers:
                     didSearch = True
-                    logger.log("Beginning backlog search for [" + self.segment + "] on " + provider.name)
+                    logger.log("Beginning backlog search for [" + str(self.segment) + "] on " + provider.name)
                     executor.submit(
                         search.searchProviders, self, self.show, self.segment, self.wantedEpisodes, provider,
                         seasonSearch, False).add_done_callback(snatch_results)
