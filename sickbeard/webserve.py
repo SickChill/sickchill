@@ -1933,12 +1933,22 @@ def havePLEX():
     return sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY
 
 
+def haveTORRENT():
+    if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
+            and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
+                 or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
+        return True
+    else:
+        return False
+
+
 def HomeMenu():
     return [
         {'title': 'Add Shows', 'path': 'home/addShows/', },
         {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
         {'title': 'Update XBMC', 'path': 'home/updateXBMC/', 'requires': haveXBMC},
         {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': havePLEX},
+        {'title': 'Manage Torrents', 'path': 'manage/manageTorrents', 'requires': haveTORRENT},
         {'title': 'Restart', 'path': 'home/restart/?pid=' + str(sickbeard.PID), 'confirm': True},
         {'title': 'Shutdown', 'path': 'home/shutdown/?pid=' + str(sickbeard.PID), 'confirm': True},
     ]
