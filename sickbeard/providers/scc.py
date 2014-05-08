@@ -143,6 +143,13 @@ class SCCProvider(generic.TorrentProvider):
 
         return [search_string]
 
+    def _isSection(section, text):
+        title = '<title>.+? \| %s</title>' % section
+        if re.search(title, text, re.IGNORECASE):
+            return True
+        else:
+            return False
+
     def _doSearch(self, search_params, epcount=0, age=0):
 
         results = []
@@ -182,7 +189,7 @@ class SCCProvider(generic.TorrentProvider):
                         torrent_table = html.find('table', attrs={'id': 'torrents-table'})
                         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                        #Continue only if one Release is found
+                        #Continue only if at least one Release is found
                         if len(torrent_rows) < 2:
                             if html.title:
                                 source = self.name + " (" + html.title.string + ")"
@@ -195,7 +202,12 @@ class SCCProvider(generic.TorrentProvider):
 
                             try:
                                 link = result.find('td', attrs={'class': 'ttr_name'}).find('a')
-                                url = result.find('td', attrs={'class': 'td_dl'}).find('a')
+                                all_urls = result.find('td', attrs={'class': 'td_dl'}).find_all('a', limit=2)
+                                # Foreign section contain two links, the others one
+                                if self._isSection('Foreign', dataItem):
+                                    url = all_urls[1]
+                                else:
+                                    url = all_urls[0]
                                 title = link.string
                                 if re.search('\.\.\.', title):
                                     details_html = BeautifulSoup(self.getURL(self.url + "/" + link['href']))
@@ -215,9 +227,9 @@ class SCCProvider(generic.TorrentProvider):
 
                             item = title, download_url, id, seeders, leechers
 
-                            if re.search('<title>SceneAccess \| Non-Scene</title>', dataItem):
+                            if self._isSection('Non-Scene', dataItem):
                                 logger.log(u"Found result: " + title + "(" + nonsceneSearchURL + ")", logger.DEBUG)
-                            elif re.search('<title>SceneAccess \| Foreign</title>', dataItem):
+                            elif self._isSection('Foreign', dataItem):
                                 logger.log(u"Found result: " + title + "(" + foreignSearchURL + ")", logger.DEBUG)
                             else:
                                 logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
