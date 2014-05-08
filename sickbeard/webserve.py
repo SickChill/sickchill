@@ -1924,6 +1924,8 @@ def haveXBMC():
 def havePLEX():
     return sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY
 
+def haveTORRENT():
+    return sickbeard.USE_TORRENTS
 
 def HomeMenu():
     return [
@@ -1931,6 +1933,7 @@ def HomeMenu():
         {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
         {'title': 'Update XBMC', 'path': 'home/updateXBMC/', 'requires': haveXBMC},
         {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': havePLEX},
+        {'title': 'Manage Torrents', 'path': '/manage/manageTorrents', 'requires': haveTORRENT},
         {'title': 'Restart', 'path': 'home/restart/?pid=' + str(sickbeard.PID), 'confirm': True},
         {'title': 'Shutdown', 'path': 'home/shutdown/?pid=' + str(sickbeard.PID), 'confirm': True},
     ]
