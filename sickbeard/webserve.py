@@ -1650,7 +1650,7 @@ class ConfigNotifications:
         return _munge(t)
 
     @cherrypy.expose
-    def saveNotifications(self, use_xbmc=None, xbmc_notify_onsnatch=None, xbmc_notify_ondownload=None,
+    def saveNotifications(self, use_xbmc=None, xbmc_always_on=None, xbmc_notify_onsnatch=None, xbmc_notify_ondownload=None,
                           xbmc_notify_onsubtitledownload=None, xbmc_update_onlyfirst=None,
                           xbmc_update_library=None, xbmc_update_full=None, xbmc_host=None, xbmc_username=None,
                           xbmc_password=None,
@@ -1696,6 +1696,7 @@ class ConfigNotifications:
         results = []
 
         sickbeard.USE_XBMC = config.checkbox_to_value(use_xbmc)
+        sickbeard.XBMC_ALWAYS_ON = config.checkbox_to_value(xbmc_always_on)
         sickbeard.XBMC_NOTIFY_ONSNATCH = config.checkbox_to_value(xbmc_notify_onsnatch)
         sickbeard.XBMC_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(xbmc_notify_ondownload)
         sickbeard.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(xbmc_notify_onsubtitledownload)
