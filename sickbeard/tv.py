@@ -2055,10 +2055,13 @@ class TVEpisode(object):
             else:
                 pattern = sickbeard.NAMING_PATTERN
 
-        # split off the filename only, if they exist
+        # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
 
-        return self._format_pattern(name_groups[-1], multi)
+        if len(name_groups) == 1:
+            return ''
+        else:
+            return self._format_pattern(os.sep.join(name_groups[:-1]), multi)
 
     def rename(self):
         """
