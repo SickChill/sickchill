@@ -289,6 +289,9 @@ class PublicHDProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.PUBLICHD_RATIO
+
 
 class PublicHDCache(tvcache.TVCache):
     def __init__(self, provider):

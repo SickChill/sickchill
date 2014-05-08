@@ -159,6 +159,9 @@ class EZRSSProvider(generic.TorrentProvider):
             return match.group(1)
         return None
 
+    def seedRatio(self):
+        return sickbeard.EZRSS_RATIO
+
 
 class EZRSSCache(tvcache.TVCache):
     def __init__(self, provider):

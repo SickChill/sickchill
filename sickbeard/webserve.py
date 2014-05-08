@@ -1422,19 +1422,21 @@ class ConfigProviders:
     @cherrypy.expose
     def saveProviders(self, newznab_string='', torrentrss_string='',
                       omgwtfnzbs_username=None, omgwtfnzbs_apikey=None,
-                      tvtorrents_digest=None, tvtorrents_hash=None,
-                      btn_api_key=None,
-                      thepiratebay_trusted=None, thepiratebay_proxy=None, thepiratebay_proxy_url=None,
-                      torrentleech_username=None, torrentleech_password=None,
-                      iptorrents_username=None, iptorrents_password=None, iptorrents_freeleech=None,
-                      kat_trusted=None, kat_verified=None,
-                      scc_username=None, scc_password=None,
-                      hdtorrents_username=None, hdtorrents_password=None,
-                      torrentday_username=None, torrentday_password=None, torrentday_freeleech=None,
-                      hdbits_username=None, hdbits_passkey=None,
-                      nextgen_username=None, nextgen_password=None,
+                      ezrss_ratio=None,
+                      tvtorrents_digest=None, tvtorrents_hash=None, tvtorrents_ratio=None,
+                      btn_api_key=None, btn_ratio=None,
+                      thepiratebay_ratio=None, thepiratebay_trusted=None, thepiratebay_proxy=None, thepiratebay_proxy_url=None,
+                      torrentleech_username=None, torrentleech_password=None, torrentleech_ratio=None,
+                      iptorrents_username=None, iptorrents_password=None, iptorrents_ratio=None, iptorrents_freeleech=None,
+                      kat_trusted=None, kat_ratio=None, kat_verified=None,
+                      publichd_ratio=None,
+                      scc_username=None, scc_password=None, scc_ratio=None,
+                      hdtorrents_username=None, hdtorrents_password=None, hdtorrents_ratio=None,
+                      torrentday_username=None, torrentday_password=None, torrentday_ratio=None, torrentday_freeleech=None,
+                      hdbits_username=None, hdbits_passkey=None, hdbits_ratio=None,
+                      nextgen_username=None, nextgen_password=None, nextgen_ratio=None,
                       newzbin_username=None, newzbin_password=None,
-                      speedcd_username=None, speedcd_password=None, speedcd_freeleech=None,
+                      speedcd_username=None, speedcd_password=None, speedcd_ratio=None, speedcd_freeleech=None,
                       provider_order=None):
 
         results = []
@@ -1575,11 +1577,16 @@ class ConfigProviders:
             else:
                 logger.log(u"don't know what " + curProvider + " is, skipping")
 
+        sickbeard.EZRSS_RATIO = ezrss_ratio
+
         sickbeard.TVTORRENTS_DIGEST = tvtorrents_digest.strip()
         sickbeard.TVTORRENTS_HASH = tvtorrents_hash.strip()
+        sickbeard.TVTORRENTS_RATIO = tvtorrents_ratio
 
         sickbeard.BTN_API_KEY = btn_api_key.strip()
+        sickbeard.BTN_RATIO = btn_ratio
 
+        sickbeard.THEPIRATEBAY_RATIO = thepiratebay_ratio
         sickbeard.THEPIRATEBAY_TRUSTED = config.checkbox_to_value(thepiratebay_trusted)
 
         thepiratebay_proxy = config.checkbox_to_value(thepiratebay_proxy)
@@ -1592,38 +1599,48 @@ class ConfigProviders:
 
         sickbeard.TORRENTLEECH_USERNAME = torrentleech_username
         sickbeard.TORRENTLEECH_PASSWORD = torrentleech_password
+        sickbeard.TORRENTLEECH_RATIO = torrentleech_ratio
 
         sickbeard.IPTORRENTS_USERNAME = iptorrents_username.strip()
         sickbeard.IPTORRENTS_PASSWORD = iptorrents_password.strip()
+        sickbeard.IPTORRENTS_RATIO = iptorrents_ratio
 
         sickbeard.IPTORRENTS_FREELEECH = config.checkbox_to_value(iptorrents_freeleech)
 
         sickbeard.KAT_TRUSTED = config.checkbox_to_value(kat_trusted)
-
+        sickbeard.KAT_RATIO = kat_ratio
         sickbeard.KAT_VERIFIED = config.checkbox_to_value(kat_verified)
+        
+        sickbeard.PUBLICHD_RATIO = publichd_ratio
 
         sickbeard.TORRENTDAY_USERNAME = torrentday_username.strip()
         sickbeard.TORRENTDAY_PASSWORD = torrentday_password.strip()
+        sickbeard.TORRENTDAY_RATIO = torrentday_ratio
 
         sickbeard.TORRENTDAY_FREELEECH = config.checkbox_to_value(torrentday_freeleech)
 
         sickbeard.SCC_USERNAME = scc_username.strip()
         sickbeard.SCC_PASSWORD = scc_password.strip()
+        sickbeard.SCC_RATIO = scc_ratio
 
         sickbeard.HDTORRENTS_USERNAME = hdtorrents_username.strip()
         sickbeard.HDTORRENTS_PASSWORD = hdtorrents_password.strip()
+        sickbeard.HDTORRENTS_RATIO = hdtorrents_ratio
 
         sickbeard.HDBITS_USERNAME = hdbits_username.strip()
         sickbeard.HDBITS_PASSKEY = hdbits_passkey.strip()
+        sickbeard.HDBITS_RATIO = hdbits_ratio
 
         sickbeard.OMGWTFNZBS_USERNAME = omgwtfnzbs_username.strip()
         sickbeard.OMGWTFNZBS_APIKEY = omgwtfnzbs_apikey.strip()
 
         sickbeard.NEXTGEN_USERNAME = nextgen_username.strip()
         sickbeard.NEXTGEN_PASSWORD = nextgen_password.strip()
+        sickbeard.NEXTGEN_RATIO = nextgen_ratio
 
         sickbeard.SPEEDCD_USERNAME = speedcd_username.strip()
         sickbeard.SPEEDCD_PASSWORD = speedcd_password.strip()
+        sickbeard.SPEEDCD_RATIO = speedcd_ratio
         sickbeard.SPEEDCD_FREELEECH = config.checkbox_to_value(speedcd_freeleech)
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])

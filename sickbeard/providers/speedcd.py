@@ -246,6 +246,9 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.SPEEDCD_RATIO
+
 
 class SpeedCDCache(tvcache.TVCache):
 

@@ -172,6 +172,15 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                     </div><!-- /omgwtfnzbsDiv //-->
 
+<div class="providerDiv" id="ezrssDiv">
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="ezrss_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="ezrss_ratio" id="ezrss_ratio" value="$sickbeard.EZRSS_RATIO" size="40" />
+                            </label>
+                        </div>
+</div>
+
 <div class="providerDiv" id="tvtorrentsDiv">
                         <div class="field-pair">
                             <label class="clearfix">
@@ -185,39 +194,23 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="text" name="tvtorrents_hash" value="$sickbeard.TVTORRENTS_HASH" size="40" />
                             </label>
                         </div>
-                        <div style="width: 340px; padding-bottom: 10px !important;">
-						<input type="hidden" id="tvtorrents_option_string" />
-						<fieldset style="display: block; border-width: 1px !important; border-radius: 5px !important; border-color: #D0D0D0 !important; border-style: solid !important;">
-						<legend id="seed_options">Advanced Options</legend>
-						<div class="field-pair" style="margin-top: -2px !important;">
-                            <label class="clearfix" >
-                                <span class="component-title" style="width: 130px !important;">Seeding Goal Ratio(%):</span>
-                                <input class="seed_option" type="text" id="tvtorrents_seed_ratio" size="5" style="margin-left: -5px !important;"/>
-                            </label>
-                        </div>
-						<div class="field-pair" style="margin-top: -10px !important;">
+
+                        <div class="field-pair">
                             <label class="clearfix">
-                                <span class="component-title" style="width: 130px !important;">Seeding Goal Time(h):</span>
-                                <input class="seed_option" type="text" id="tvtorrents_seed_time" size="5"  style="margin-left: -5px !important;" />
+                                <span class="component-title" id="tvtorrents_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="tvtorrents_ratio" id="tvtorrents_ratio" value="$sickbeard.TVTORRENTS_RATIO" size="40" />
                             </label>
-                        </div>
-                        <div style="display: block; text-align: center;margin-top: -10px !important;" class="float-left">
-                                <label class="clearfix">
-                                <span class="component-title" style="margin-left: -49px !important; width: 201px !important;">Process Method:</span>
-                                    <select class="seed_option" id="tvtorrents_process_method" class="input-medium" >
-                                        #set $process_method_text = {'': "", 'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
-                                        #for $curAction in ('', 'copy', 'move', 'hardlink', 'symlink'):
-                                        #set $process_method = ""
-                                        <option class="seed_option" value="$curAction" $process_method>$process_method_text[$curAction]</option>
-                                        #end for
-                                    </select>                                
-								</label>
-						</div>                                     
-						</fieldset>
                         </div>
 </div>
 
 <div class="providerDiv" id="thepiratebayDiv">
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="thepiratebay_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="thepiratebay_ratio" id="thepiratebay_ratio" value="$sickbeard.THEPIRATEBAY_RATIO" size="40" />
+                            </label>
+                        </div>
+
                         <div class="field-pair">
                             <input type="checkbox" class="enabler" name="thepiratebay_proxy" id="thepiratebay_proxy" #if $sickbeard.THEPIRATEBAY_PROXY then "checked=\"checked\"" else ""#/>
                             <label class="clearfix">
@@ -250,10 +243,26 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
 <div class="providerDiv" id="kickasstorrentsDiv">
                         <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="kat_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="kat_ratio" id="kat_ratio" value="$sickbeard.KAT_RATIO" size="40" />
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <input type="checkbox" name="kat_verified" id="kat_verified" #if $sickbeard.KAT_VERIFIED then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="kat_verified">
                                 <span class="component-title">Verified Only</span>
                                 <span class="component-desc">Download only verified torrent?</span>
+                            </label>
+                        </div>
+</div>
+
+<div class="providerDiv" id="publichdDiv">
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="publichd_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="publichd_ratio" id="publichd_ratio" value="$sickbeard.PUBLICHD_RATIO" size="40" />
                             </label>
                         </div>
 </div>
@@ -263,6 +272,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix">
                                 <span class="component-title">Api Key:</span>
                                 <input class="component-desc" type="text" name="btn_api_key" value="$sickbeard.BTN_API_KEY" size="40" />
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="btn_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="btn_ratio" id="btn_ratio" value="$sickbeard.BTN_RATIO" size="40" />
                             </label>
                         </div>
 </div>
@@ -280,6 +295,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="password" name="torrentleech_password" value="$sickbeard.TORRENTLEECH_PASSWORD" size="40" />
                             </label>
                         </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="torrentleech_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="torrentleech_ratio" id="torrentleech_ratio" value="$sickbeard.TORRENTLEECH_RATIO" size="40" />
+                            </label>
+                        </div>
 </div>
 
 <div class="providerDiv" id="iptorrentsDiv">
@@ -293,6 +314,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix">
                                 <span class="component-title">Password:</span>
                                 <input class="component-desc" type="password" name="iptorrents_password" value="$sickbeard.IPTORRENTS_PASSWORD" size="40" />
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="iptorrents_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="iptorrents_ratio" id="iptorrents_ratio" value="$sickbeard.IPTORRENTS_RATIO" size="40" />
                             </label>
                         </div>
                         <div class="field-pair">
@@ -317,6 +344,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="password" name="scc_password" value="$sickbeard.SCC_PASSWORD" size="40" />
                             </label>
                         </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="scc_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="scc_ratio" id="scc_ratio" value="$sickbeard.SCC_RATIO" size="40" />
+                            </label>
+                        </div>
 </div><!-- /sceneaccessDiv //-->
 
 <div class="providerDiv" id="hdtorrentsDiv">
@@ -332,6 +365,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="password" name="hdtorrents_password" value="$sickbeard.HDTORRENTS_PASSWORD" size="40" />
                             </label>
                         </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="hdtorrents_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="hdtorrents_ratio" id="hdtorrents_ratio" value="$sickbeard.HDTORRENTS_RATIO" size="40" />
+                            </label>
+                        </div>
 </div><!-- /sceneaccessDiv //-->
 
 <div class="providerDiv" id="torrentdayDiv">
@@ -345,6 +384,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix">
                                 <span class="component-title">Password:</span>
                                 <input class="component-desc" type="password" name="torrentday_password" value="$sickbeard.TORRENTDAY_PASSWORD" size="40" />
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="torrentday_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="torrentday_ratio" id="torrentday_ratio" value="$sickbeard.TORRENTDAY_RATIO" size="40" />
                             </label>
                         </div>
                         <div class="field-pair">
@@ -369,6 +414,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="password" name="nextgen_password" value="$sickbeard.NEXTGEN_PASSWORD" size="40" />
                             </label>
                         </div>
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="nextgen_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="nextgen_ratio" id="nextgen_ratio" value="$sickbeard.NEXTGEN_RATIO" size="40" />
+                            </label>
+                        </div>
 </div><!-- /nextgenDiv //-->
 
 <div class="providerDiv" id="hdbitsDiv">
@@ -384,9 +435,15 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc" type="text" name="hdbits_passkey" value="$sickbeard.HDBITS_PASSKEY" size="40" />
                             </label>
                         </div>
-                    </div><!-- /hdbitsDiv //-->   
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="hdbits_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="hdbits_ratio" id="hdbits_ratio" value="$sickbeard.HDBITS_RATIO" size="40" />
+                            </label>
+                        </div>
+</div><!-- /hdbitsDiv //-->   
 
-                    <div class="providerDiv" id="speedcdDiv">
+<div class="providerDiv" id="speedcdDiv">
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">Username:</span>
@@ -400,13 +457,19 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="speedcd_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="speedcd_ratio" id="speedcd_ratio" value="$sickbeard.SPEEDCD_RATIO" size="40" />
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="speedcd_freeleech" id="speedcd_freeleech" #if $sickbeard.SPEEDCD_FREELEECH then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="iptorrents_freeleech">
                                 <span class="component-title">FreeLeech</span>
                                 <span class="component-desc">This will only download <b>[FreeLeech]</b> torrents.</span>
                             </label>
                         </div>
-                    </div><!-- /speedcdDiv //-->
+</div><!-- /speedcdDiv //-->
 
 <!-- end div for editing providers -->
 

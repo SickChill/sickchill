@@ -19,6 +19,7 @@
 import re
 
 import sickbeard
+from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
@@ -66,28 +67,39 @@ class uTorrentAPI(GenericClient):
 
     def _set_torrent_ratio(self, result):
 
-        if sickbeard.TORRENT_RATIO != '':
-            ratio = 10 * float(sickbeard.TORRENT_RATIO)
+        ratio = ''
+        if result.ratio:
+            ratio = result.ratio
+        elif sickbeard.TORRENT_RATIO:
+            ratio = sickbeard.TORRENT_RATIO
+        else:
+            return True
+
+        try:
+            float(ratio)
+        except ValueError:
+            logger.log(self.name + u': Invalid Ratio. "' + ratio + u'" is not a number', logger.ERROR)
+            return False
+
+        ratio = 10 * float(ratio)
+        params = {'action': 'setprops',
+                  'hash': result.hash,
+                  's': 'seed_override',
+                  'v': '1'
+        }
+        if self._request(params=params):
             params = {'action': 'setprops',
                       'hash': result.hash,
-                      's': 'seed_override',
-                      'v': '1'
+                      's': 'seed_ratio',
+                      'v': ratio
             }
-            if self._request(params=params):
-                params = {'action': 'setprops',
-                          'hash': result.hash,
-                          's': 'seed_ratio',
-                          'v': ratio
-                }
-                return self._request(params=params)
-            else:
-                return False
+            return self._request(params=params)
         else:
-            return True         
+            return False     
 
     def _set_torrent_seed_time(self, result):
 
-        if sickbeard.TORRENT_SEED_TIME != '':
+        if sickbeard.TORRENT_SEED_TIME:
             time = 3600 * float(sickbeard.TORRENT_SEED_TIME)
             params = {'action': 'setprops',
                       'hash': result.hash,

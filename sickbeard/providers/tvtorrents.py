@@ -69,6 +69,9 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
         return True
 
+    def seedRatio(self):
+        return sickbeard.TVTORRENTS_RATIO
+
 
 class TvTorrentsCache(tvcache.TVCache):
     def __init__(self, provider):
