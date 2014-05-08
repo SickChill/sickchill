@@ -56,7 +56,6 @@ def foldersAtPath(path, includeParent=False):
 
     # walk up the tree until we find a valid path
     while path and not os.path.isdir(path):
-        time.sleep(0.01)
         if path == os.path.dirname(path):
             path = ''
             break

@@ -212,8 +212,8 @@ class NameParser(object):
 
             i = result = 0
             for integer, numeral in numeral_map:
-                time.sleep(0.01)
                 while n[i:i + len(numeral)] == numeral:
+                    time.sleep(1)
                     result += integer
                     i += len(numeral)
 

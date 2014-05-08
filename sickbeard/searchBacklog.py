@@ -125,7 +125,8 @@ class BacklogSearcher:
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, cur_segment)
 
                 if backlog_queue_item.wantedEpisodes:
-                    sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
+                    backlog_queue_item = search_queue.BacklogQueueItem(curShow, cur_segment)
+                    #sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
                 else:
                     logger.log(
                         u"Nothing in season " + str(cur_segment) + " needs to be downloaded, skipping this season",

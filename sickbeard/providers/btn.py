@@ -321,7 +321,7 @@ class BTNCache(tvcache.TVCache):
                 # By now we know we've got data and no auth errors, all we need to do is put it in the database
                 cl = []
                 for item in data:
-                    time.sleep(0.01)
+
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)

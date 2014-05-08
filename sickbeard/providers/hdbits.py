@@ -207,7 +207,7 @@ class HDBitsCache(tvcache.TVCache):
                                                                                                                                          
                 ql = []
                 for item in items:
-                    time.sleep(0.01)
+
                     ci = self._parseItem(item)
                     if ci is not None:
                         ql.append(ci)

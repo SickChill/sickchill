@@ -85,10 +85,9 @@ class ProperFinder():
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
-                time.sleep(0.01)
                 showObj = helpers.findCertainShow(sickbeard.showList, x.indexerid)
                 if not showObj:
-                    logger.log(u"Unable to find the show we watch with indexerID " + str(x.indexerid), logger.ERROR)
+                    logger.log(u"Unable to find the show in our watch list " + str(x.name), logger.DEBUG)
                     continue
 
                 name = self._genericName(x.name)

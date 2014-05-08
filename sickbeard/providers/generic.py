@@ -240,18 +240,15 @@ class GenericProvider:
             self.cache.updateCache()
 
         for epObj in episodes:
-            time.sleep(0.01)
+
 
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if len(cacheResult):
                 results.update(cacheResult)
                 continue
 
-            if epObj.show.air_by_date:
-                logger.log(u'Searching "%s" for "%s"' % (self.name, epObj.prettyABDName()))
-            else:
-                logger.log(
-                    u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.prettySceneName()))
+            logger.log(
+                u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.prettySceneName()))
 
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):
@@ -273,7 +270,7 @@ class GenericProvider:
 
         for episode, items in searchItems.items():
             for item in items:
-                time.sleep(0.01)
+
 
                 (title, url) = self._get_title_and_url(item)
 
@@ -335,7 +332,7 @@ class GenericProvider:
                     logger.log(
                         u"Ignoring result " + title + " because we don't want an episode that is " + Quality.qualityStrings[
                             quality], logger.DEBUG)
-                    time.sleep(0.01)
+
                     continue
 
                 logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
@@ -351,6 +348,7 @@ class GenericProvider:
                 result.quality = quality
                 result.provider = self
                 result.content = None
+                result.extraInfo = [show]
 
                 if len(epObj) == 1:
                     epNum = epObj[0].episode
@@ -361,7 +359,6 @@ class GenericProvider:
                         parse_result.episode_numbers), logger.DEBUG)
                 elif len(epObj) == 0:
                     epNum = SEASON_RESULT
-                    result.extraInfo = [show]
                     logger.log(u"Separating full season result to check for later", logger.DEBUG)
 
                 if not result:

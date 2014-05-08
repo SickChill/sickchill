@@ -194,7 +194,7 @@ sports_regexs = [
      '''
      ^(?P<series_name>(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP))[. _-]+
      ((?P<sports_event_id>\d{3})[. _-]+)?
-     ((?P<sports_event_name>\w+)[. _-]+)?
+     ((?P<sports_event_name>\.+)[. _-]+)?
      (?P<sports_event_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
      -(?P<release_group>[^- ]+))?)?$

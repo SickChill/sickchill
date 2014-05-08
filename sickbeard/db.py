@@ -79,7 +79,6 @@ class DBConnection:
             attempt = 0
 
             while attempt < 5:
-                time.sleep(0.01)
                 try:
                     if args == None:
                         logger.log(self.filename + ": " + query, logger.DB)
@@ -119,7 +118,6 @@ class DBConnection:
             attempt = 0
 
             while attempt < 5:
-                time.sleep(0.01)
                 try:
                     for qu in querylist:
                         if len(qu) == 1:
@@ -164,7 +162,6 @@ class DBConnection:
             attempt = 0
 
             while attempt < 5:
-                time.sleep(0.01)
                 try:
                     if args == None:
                         logger.log(self.filename + ": " + query, logger.DB)

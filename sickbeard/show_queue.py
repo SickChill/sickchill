@@ -19,6 +19,7 @@
 from __future__ import with_statement
 
 import traceback
+import Queue
 
 import sickbeard
 
@@ -30,16 +31,18 @@ from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
 
+ShowItemQueue = Queue.PriorityQueue()
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
 
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "SHOWQUEUE"
+        self.queue = ShowItemQueue
 
 
     def _isInQueue(self, show, actions):
-        return show in [x.show for x in self.queue if x.action_id in actions]
+        return show in [x.show for x in self.queue.queue if x.action_id in actions] if self.queue.qsize() > 0  else []
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -73,7 +76,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return self._isBeingSomethinged(show, (ShowQueueActions.SUBTITLE,))
 
     def _getLoadingShowList(self):
-        return [x for x in self.queue + [self.currentItem] if x != None and x.isLoading]
+        return [x for x in self.queue.queue + [self.currentItem] if x != None and x.isLoading] if self.queue.qsize() > 0 else []
 
     loadingShowList = property(_getLoadingShowList)
 

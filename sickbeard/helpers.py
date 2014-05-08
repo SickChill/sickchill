@@ -165,7 +165,7 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False):
+def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False, use_proxy=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -186,8 +186,10 @@ def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=Fals
         url = urlparse.urlunparse(parsed)
 
         it = iter(req_headers)
-
-        if sickbeard.PROXY_SETTING:
+        
+        
+        if use_proxy and sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
             proxies = {
                 "http": sickbeard.PROXY_SETTING,
                 "https": sickbeard.PROXY_SETTING,
@@ -549,8 +551,6 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
 
     # as long as the folder exists and doesn't contain any files, delete it
     while ek.ek(os.path.isdir, check_empty_dir) and check_empty_dir != keep_dir:
-        time.sleep(0.01)
-
         check_files = ek.ek(os.listdir, check_empty_dir)
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(
@@ -792,7 +792,6 @@ def backupVersionedFile(old_file, version):
     new_file = old_file + '.' + 'v' + str(version)
 
     while not ek.ek(os.path.isfile, new_file):
-        time.sleep(0.01)
         if not ek.ek(os.path.isfile, old_file):
             logger.log(u"Not creating backup, " + old_file + " doesn't exist", logger.DEBUG)
             break
