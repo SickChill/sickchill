@@ -2058,10 +2058,7 @@ class TVEpisode(object):
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
 
-        if len(name_groups) == 1:
-            return ''
-        else:
-            return self._format_pattern(os.sep.join(name_groups[:-1]), multi)
+        return self._format_pattern(name_groups[-1], multi)
 
     def rename(self):
         """
