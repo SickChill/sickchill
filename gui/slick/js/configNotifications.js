@@ -46,6 +46,13 @@ $(document).ready(function(){
         $.get(sbRoot + "/home/testBoxcar", {'username': boxcar_username},
             function (data) { $('#testBoxcar-result').html(data); });
     });
+	
+	 $('#testBoxcar2').click(function() {
+        $('#testBoxcar2-result').html(loading);
+        var boxcar2_accesstoken = $("#boxcar2_accesstoken").val();
+        $.get(sbRoot + "/home/testBoxcar2", {'accesstoken': boxcar2_accesstoken},
+            function (data) { $('#testBoxcar2-result').html(data); });
+    });
 
     $('#testPushover').click(function() {
         $('#testPushover-result').html(loading);
