@@ -142,7 +142,7 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_backlog_in_progress(self):
-        for cur_item in self.queue + [self.currentItem]:
+        for cur_item in self.queue.queue + [self.currentItem]:
             if isinstance(cur_item, BacklogQueueItem):
                 return True
         return False
