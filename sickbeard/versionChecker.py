@@ -550,6 +550,7 @@ class SourceUpdateManager(UpdateManager):
 
         if not self._cur_commit_hash:
             self._cur_commit_hash = None
+        sickbeard.CUR_COMMIT_HASH = str(self._cur_commit_hash)
 
     def need_update(self):
 
