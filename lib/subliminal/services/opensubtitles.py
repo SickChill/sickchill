@@ -97,7 +97,11 @@ class OpenSubtitles(ServiceBase):
     def terminate(self):
         super(OpenSubtitles, self).terminate()
         if self.token:
-            self.server.LogOut(self.token)
+            try:
+                self.server.LogOut(self.token)
+            except Exception as e:
+                raise ServiceError(str(e))
+
 
     def query(self, filepath, languages, moviehash=None, size=None, imdbid=None, query=None):
         searches = []
