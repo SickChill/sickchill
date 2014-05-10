@@ -31,7 +31,7 @@ from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException
 from lib.unidecode import unidecode
 
-resultFilters = ["sub(pack|s|bed)", "swesub(bed)?",
+resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nl|nor|nordic|pl|swe)sub(bed|ed|s)?",
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
 
