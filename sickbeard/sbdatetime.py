@@ -100,6 +100,11 @@ class sbdatetime(datetime.datetime):
     def sbftime(self, dt=None, show_seconds=False, t_preset=None):
 
         try:
+            locale.setlocale(locale.LC_TIME, '')
+        except:
+            pass
+
+        try:
             if sbdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, 'us_US')
         except:
@@ -133,6 +138,11 @@ class sbdatetime(datetime.datetime):
     @static_or_instance
     def sbfdate(self, dt=None, d_preset=None):
 
+        try:
+            locale.setlocale(locale.LC_TIME, '')
+        except:
+            pass
+
         strd = ''
         try:
             if self is None:
@@ -152,6 +162,11 @@ class sbdatetime(datetime.datetime):
     # display Datetime in Sickbeard Format
     @static_or_instance
     def sbfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
+
+        try:
+            locale.setlocale(locale.LC_TIME, '')
+        except:
+            pass
 
         strd = ''
         try:
