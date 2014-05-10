@@ -397,6 +397,9 @@ class KATProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.KAT_RATIO
+
 
 class KATCache(tvcache.TVCache):
     def __init__(self, provider):

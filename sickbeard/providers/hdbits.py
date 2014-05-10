@@ -162,7 +162,10 @@ class HDBitsProvider(generic.TorrentProvider):
         if search_term:                                                                                                                  
             post_data['search'] = search_term                                                                                            
                                                                                                                                          
-        return json.dumps(post_data)                                                                                                     
+        return json.dumps(post_data)
+    
+    def seedRatio(self):
+        return sickbeard.HDBITS_RATIO                                                                                                         
                                                                                                                                          
                                                                                                                                          
 class HDBitsCache(tvcache.TVCache):                                                                                                      

@@ -377,6 +377,13 @@ class GenericProvider:
 
         return [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in results]
 
+    def seedRatio(self):
+        '''
+        Provider should override this value if custom seed ratio enabled
+        It should return the value of the provider seed ratio
+        '''
+        return ''
+
 
 class NZBProvider(GenericProvider):
     def __init__(self, name):

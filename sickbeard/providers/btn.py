@@ -291,6 +291,9 @@ class BTNProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.BTN_RATIO
+
 
 class BTNCache(tvcache.TVCache):
     def __init__(self, provider):

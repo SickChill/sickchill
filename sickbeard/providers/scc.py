@@ -307,6 +307,9 @@ class SCCProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.SCC_RATIO
+
 
 class SCCCache(tvcache.TVCache):
     def __init__(self, provider):

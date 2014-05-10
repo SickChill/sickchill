@@ -388,6 +388,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return results
 
+    def seedRatio(self):
+        return sickbeard.THEPIRATEBAY_RATIO
+
 
 class ThePirateBayCache(tvcache.TVCache):
     def __init__(self, provider):
