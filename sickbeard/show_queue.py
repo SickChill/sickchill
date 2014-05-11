@@ -42,7 +42,7 @@ class ShowQueue(generic_queue.GenericQueue):
 
     def _isInQueue(self, show, actions):
         shows = [x.show for x in self.queue.queue if x.action_id in actions] if not self.queue.empty() else []
-        if self.currentItem.action_id in actions:
+        if self.currentItem != None and self.currentItem.action_id in actions:
             shows.append(self.currentItem)
 
         return show in shows
