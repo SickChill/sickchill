@@ -71,6 +71,7 @@ $(document).ready(function(){
         } else if (selectedProvider == "deluge"){
             $('#t_blackhole_settings').hide();
             $('#torrent_settings').show();
+            $('#Torrent_Verify_Cert').show();
             $('#Torrent_Label').show();
             $('#Torrent_username').show();
             $('#Torrent_Path').show();

@@ -362,6 +362,14 @@
                                 </label>
                             </div>
                             
+                            <div class="field-pair" id="Torrent_Verify_Cert">
+                                <input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" #if $sickbeard.TORRENT_VERIFY_CERT == True then "checked=\"checked\"" else ""# />
+                                <label class="nocheck clearfix" for="torrent_verify_cert">
+                        	    <span class="component-title" id="torrent_verify_cert_desc">Verify Certificate</span>
+                                    <span class="component-desc">Disable if you get "Deluge: Authentication Error" in your log</span>
+                                </label>
+                            </div>
+                            
                             <div class="field-pair" id="Torrent_username">
                                 <label class="nocheck clearfix">
                                     <span class="component-title" id="username_desc">Torrent Username</span>
