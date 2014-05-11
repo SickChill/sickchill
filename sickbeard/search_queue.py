@@ -91,7 +91,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, ep_obj):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'MANUAL-' + str(ep_obj.show.indexerid)
+        self.thread_name = 'MANUAL-' + str(ep_obj.show.indexerid) + '-'
         self.success = None
         self.show = ep_obj.show
         self.ep_obj = ep_obj
@@ -145,7 +145,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.thread_name = 'BACKLOG-' + str(show.indexerid)
+        self.thread_name = 'BACKLOG-' + str(show.indexerid) + '-'
 
         self.show = show
         self.segment = segment
@@ -245,7 +245,7 @@ class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, episodes):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'RETRY-' + str(show.indexerid)
+        self.thread_name = 'RETRY-' + str(show.indexerid) + '-'
         self.show = show
         self.episodes = episodes
         self.success = None
