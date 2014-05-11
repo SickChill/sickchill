@@ -634,7 +634,7 @@ def initialize(consoleLogging=True):
         QUALITY_DEFAULT = check_setting_int(CFG, 'General', 'quality_default', SD)
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         VERSION_NOTIFY = check_setting_int(CFG, 'General', 'version_notify', 1)
-        AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 1)
+        AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 0)
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
 
