@@ -46,14 +46,16 @@ class SearchQueue(generic_queue.GenericQueue):
         self.queue_name = "SEARCHQUEUE"
 
     def is_in_queue(self, show, segment):
-        for cur_item in self.queue.queue:
+        queue =  [x for x in self.queue.queue] + [self.currentItem]
+        for cur_item in queue:
             with search_queue_lock:
                 if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
                     return True
         return False
 
     def is_ep_in_queue(self, ep_obj):
-        for cur_item in self.queue.queue:
+        queue = [x for x in self.queue.queue] + [self.currentItem]
+        for cur_item in queue:
             with search_queue_lock:
                 if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
                     return True
@@ -70,7 +72,8 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_backlog_in_progress(self):
-        for cur_item in self.queue.queue:
+        queue = [x for x in self.queue.queue] + [self.currentItem]
+        for cur_item in queue:
             if isinstance(cur_item, BacklogQueueItem):
                 return True
         return False
