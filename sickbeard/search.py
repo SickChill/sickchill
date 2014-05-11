@@ -173,57 +173,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     return True
 
-
-def searchForNeededEpisodes(curProvider):
-    logger.log(u"Searching all providers for any needed episodes")
-    foundResults = {}
-
-    # ask all providers for any episodes it finds
-    try:
-        curFoundResults = curProvider.searchRSS()
-    except exceptions.AuthException, e:
-        logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-        return
-    except Exception, e:
-        logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-        logger.log(traceback.format_exc(), logger.DEBUG)
-        return
-
-    didSearch = True
-
-    # pick a single result for each episode, respecting existing results
-    for curEp in curFoundResults:
-
-        if curEp.show.paused:
-            logger.log(u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
-                       logger.DEBUG)
-            continue
-
-        # find the best result for the current episode
-        bestResult = None
-        for curResult in curFoundResults[curEp]:
-            if not bestResult or bestResult.quality < curResult.quality:
-                bestResult = curResult
-
-        bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
-
-        # if all results were rejected move on to the next episode
-        if not bestResult:
-            logger.log(u"All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
-            continue
-
-        # if it's already in the list (from another provider) and the newly found quality is no better then skip it
-        if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
-            continue
-
-        foundResults[curEp] = bestResult
-
-    if not didSearch:
-        logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
-                   logger.ERROR)
-
-    return foundResults.values()
-
 def filter_release_name(name, filter_words):
     """
     Filters out results based on filter_words
