@@ -236,17 +236,14 @@ class GenericProvider:
         searchItems = {}
         itemList = []
 
-        if not manualSearch:
-            self.cache.updateCache()
+        #if not manualSearch:
+        #    self.cache.updateCache()
 
         for epObj in episodes:
-            cacheResult = self.cache.searchCache(epObj, manualSearch)
-            if len(cacheResult):
-                results.update(cacheResult)
-                continue
-
-            logger.log(
-                u'Searching "%s" for "%s" as "%s"' % (self.name, epObj.prettyName(), epObj.prettySceneName()))
+            #cacheResult = self.cache.searchCache(epObj, manualSearch)
+            #if len(cacheResult):
+            #    results.update(cacheResult)
+            #    continue
 
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):

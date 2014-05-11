@@ -1731,10 +1731,7 @@ class TVEpisode(object):
 
         Returns: A string representing the episode's name and season/ep numbers 
         """
-        if self.show.air_by_date:
-            return self._format_pattern('%SN - %AD - %EN')
-        else:
-            return self._format_pattern('%SN - %Sx%0E - %EN')
+        return self._format_pattern('%SN - %Sx%0E - %EN')
 
     def prettySceneName(self):
         """
@@ -1743,10 +1740,7 @@ class TVEpisode(object):
 
         Returns: A string representing the episode's name and season/ep numbers
         """
-        if self.show.air_by_date:
-            return self._format_pattern('%SN - %AD - %EN')
-        else:
-            return self._format_pattern('%SN - %XSx%0XE - %EN')
+        return self._format_pattern('%SN - %XSx%0XE - %EN')
 
     def _ep_name(self):
         """

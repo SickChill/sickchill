@@ -429,18 +429,16 @@ class NameParserCache(object):
     _cache_size = 100
 
     def add(self, name, parse_result):
-        with nameparser_lock:
-            self._previous_parsed[name] = parse_result
-            _current_cache_size = len(self._previous_parsed)
-            if _current_cache_size > self._cache_size:
-                for i in range(_current_cache_size - self._cache_size):
-                    del self._previous_parsed[self._previous_parsed.keys()[0]]
+        self._previous_parsed[name] = parse_result
+        _current_cache_size = len(self._previous_parsed)
+        if _current_cache_size > self._cache_size:
+            for i in range(_current_cache_size - self._cache_size):
+                del self._previous_parsed[self._previous_parsed.keys()[0]]
 
     def get(self, name):
-        with nameparser_lock:
-            if name in self._previous_parsed:
-                logger.log("Using cached parse result for: " + name, logger.DEBUG)
-                return self._previous_parsed[name]
+        if name in self._previous_parsed:
+            logger.log("Using cached parse result for: " + name, logger.DEBUG)
+            return self._previous_parsed[name]
 
 
 name_parser_cache = NameParserCache()
