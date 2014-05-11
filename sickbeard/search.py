@@ -362,9 +362,6 @@ def filterSearchResults(show, results):
     return foundResults
 
 def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch=False, manualSearch=False):
-    thread_name = str(curProvider.name).upper() + '-' + str(show.indexerid)
-    threading.currentThread().name = thread_name
-
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
     foundResults = {}
     finalResults = []

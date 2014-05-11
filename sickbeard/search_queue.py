@@ -104,7 +104,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
         try:
             for provider in providers:
-                logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "] on " + provider.name)
+                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                threading.currentThread().name = thread_name
+
+                logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
                 searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj], provider,
                                                       False,
                                                       True)
@@ -185,11 +188,14 @@ class BacklogQueueItem(generic_queue.QueueItem):
         if len(seasonEps) == len(self.wantedEpisodes):
             seasonSearch = True
 
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x]
 
         try:
             for provider in providers:
-                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "] on " + provider.name)
+                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                threading.currentThread().name = thread_name
+
+                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
                 searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, provider,
                                                       seasonSearch, False)
 
@@ -252,9 +258,6 @@ class FailedQueueItem(generic_queue.QueueItem):
         episodes = []
 
         for i, epObj in enumerate(episodes):
-            logger.log(
-                "Beginning failed download search for " + epObj.prettyName())
-
             (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
             if release:
                 logger.log(u"Marking release as bad: " + release)
@@ -269,6 +272,12 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             for provider in providers:
+                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                threading.currentThread().name = thread_name
+
+                logger.log(
+                    "Beginning failed download search for episodes from Season [" + self.episodes[0].season + "]")
+
                 searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, provider,
                                                       False, True)
 
