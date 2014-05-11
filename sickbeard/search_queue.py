@@ -192,7 +192,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         try:
             for provider in providers:
-                logger.log("Beginning backlog search for [" + str(self.segment) + "] on " + provider.name)
+                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "] on " + provider.name)
                 searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, provider,
                                                       seasonSearch, False)
 
