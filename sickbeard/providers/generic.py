@@ -277,7 +277,7 @@ class GenericProvider:
                     if ep_obj.season == ep_obj.scene_season and ep_obj.episode == ep_obj.scene_episode:
                         parse_result = myParser.parse(title)
                     else:
-                        parse_result = myParser.parse(title)
+                        parse_result = myParser.parse(title).convert()
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
