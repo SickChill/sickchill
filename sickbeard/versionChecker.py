@@ -58,12 +58,12 @@ class CheckVersion():
 
     def run(self):
         if self.check_for_new_version():
-           if sickbeard.AUTO_UPDATE:
-            logger.log(u"New update found for SickBeard, starting auto-updater ...")
-            updated = sickbeard.versionCheckScheduler.action.update()
-            if updated:
-                logger.log(u"Update was successfull, restarting SickBeard ...")
-                sickbeard.restart(False)
+            if sickbeard.AUTO_UPDATE:
+                logger.log(u"New update found for SickRage, starting auto-updater ...")
+                updated = sickbeard.versionCheckScheduler.action.update()
+                if updated:
+                    logger.log(u"Update was successfull, restarting SickRage ...")
+                    sickbeard.restart(False)
 
         # refresh scene exceptions too
         scene_exceptions.retrieve_exceptions()
@@ -518,8 +518,6 @@ class GitUpdateManager(UpdateManager):
 
         if exit_status == 0:
             return True
-        else:
-            return False
 
         return False
 
