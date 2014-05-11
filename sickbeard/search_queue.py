@@ -30,8 +30,6 @@ from sickbeard import generic_queue, scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
 from sickbeard.snatch_queue import SnatchQueue
-from lib.concurrent.futures import as_completed
-from lib.concurrent.futures.thread import ThreadPoolExecutor
 
 search_queue_lock = threading.Lock()
 
@@ -72,10 +70,9 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_backlog_in_progress(self):
-        for cur_item in self.queue.queue + [self.currentItem]:
-            with search_queue_lock:
-                if isinstance(cur_item, BacklogQueueItem):
-                    return True
+        for cur_item in self.queue.queue:
+            if isinstance(cur_item, BacklogQueueItem):
+                return True
         return False
 
     def add_item(self, item):
