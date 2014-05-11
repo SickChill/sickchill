@@ -43,7 +43,7 @@ class ShowQueue(generic_queue.GenericQueue):
         self.queue = show_queue
 
     def _isInQueue(self, show, actions):
-        return show in [x.show for x in self.queue.get()  if x.action_id in actions] if not self.queue.empty() else []
+        return show in [x.show for x in self.queue.queue if x.action_id in actions] if not self.queue.empty() else []
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -77,7 +77,11 @@ class ShowQueue(generic_queue.GenericQueue):
         return self._isBeingSomethinged(show, (ShowQueueActions.SUBTITLE,))
 
     def _getLoadingShowList(self):
-        return [x for x in self.queue.get() if x != None and x.isLoading] + [self.currentItem] if not self.queue.empty() else []
+        queue = []
+        while not self.queue.empty():
+            queueItem = self.queue.get()
+            queue.append(queueItem)
+        return [x for x in queue if x != None and x.isLoading] if not self.queue.empty() else []
 
 
     loadingShowList = property(_getLoadingShowList)
