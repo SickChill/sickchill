@@ -304,6 +304,7 @@ TORRENT_SEED_TIME = ''
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
 TORRENT_LABEL = ''
+TORRENT_VERIFY_CERT = True
 
 USE_XBMC = False
 XBMC_ALWAYS_ON = True
@@ -489,7 +490,7 @@ def initialize(consoleLogging=True):
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, PREFER_EPISODE_RELEASES, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_HOST, NZBGET_USE_HTTPS, currentSearchScheduler, backlogSearchScheduler, \
-            TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_RATIO, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, \
+            TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_RATIO, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerSchedular, \
@@ -809,6 +810,7 @@ def initialize(consoleLogging=True):
         TORRENT_PAUSED = bool(check_setting_int(CFG, 'TORRENT', 'torrent_paused', 0))
         TORRENT_HIGH_BANDWIDTH = bool(check_setting_int(CFG, 'TORRENT', 'torrent_high_bandwidth', 0))
         TORRENT_LABEL = check_setting_str(CFG, 'TORRENT', 'torrent_label', '')
+        TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
 
         USE_XBMC = bool(check_setting_int(CFG, 'XBMC', 'use_xbmc', 0))
         XBMC_ALWAYS_ON = bool(check_setting_int(CFG, 'XBMC', 'xbmc_always_on', 1))
@@ -1568,6 +1570,7 @@ def save_config():
     new_config['TORRENT']['torrent_paused'] = int(TORRENT_PAUSED)
     new_config['TORRENT']['torrent_high_bandwidth'] = int(TORRENT_HIGH_BANDWIDTH)
     new_config['TORRENT']['torrent_label'] = TORRENT_LABEL
+    new_config['TORRENT']['torrent_verify_cert'] = TORRENT_VERIFY_CERT
 
     new_config['XBMC'] = {}
     new_config['XBMC']['use_xbmc'] = int(USE_XBMC)

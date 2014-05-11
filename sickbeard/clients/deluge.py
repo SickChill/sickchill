@@ -38,7 +38,7 @@ class DelugeAPI(GenericClient):
                                 "id": 1
         })
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
         except:
             return None
 
@@ -49,7 +49,7 @@ class DelugeAPI(GenericClient):
                                 "id": 10
         })
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
         except:
             return None
 
@@ -61,7 +61,7 @@ class DelugeAPI(GenericClient):
                                     "id": 11
             })
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
             except:
                 return None
             hosts = self.response.json()['result']
@@ -74,7 +74,7 @@ class DelugeAPI(GenericClient):
                                     "id": 11
             })
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
             except:
                 return None
 
@@ -83,7 +83,7 @@ class DelugeAPI(GenericClient):
                                     "id": 10
             })
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
             except:
                 return None
 
@@ -123,7 +123,7 @@ class DelugeAPI(GenericClient):
 
     def _set_torrent_label(self, result):
 
-        label = sickbeard.TORRENT_LABEL.lower()
+        label = sickbeard.TORRENT_LABEL
         if ' ' in label:
             logger.log(self.name + u': Invalid label. Label must not contain a space', logger.ERROR)
             return False
