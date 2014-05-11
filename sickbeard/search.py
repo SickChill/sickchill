@@ -441,7 +441,8 @@ def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch
             for curEpNum in allEps:
                 epObjs.append(show.getEpisode(season, curEpNum))
             bestSeasonNZB.episodes = epObjs
-            return [bestSeasonNZB]
+            queueItem.results = bestSeasonNZB
+            return queueItem
 
         elif not anyWanted:
             logger.log(
