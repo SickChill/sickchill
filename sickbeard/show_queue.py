@@ -33,17 +33,19 @@ from sickbeard import name_cache
 from sickbeard.exceptions import ex
 
 show_queue_lock = threading.Lock()
-show_queue = Queue.Queue()
 
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
 
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "SHOWQUEUE"
-        self.queue = show_queue
 
     def _isInQueue(self, show, actions):
-        return show in [x.show for x in self.queue.queue if x.action_id in actions] if not self.queue.empty() else []
+        shows = [x.show for x in self.queue.queue if x.action_id in actions] if not self.queue.empty() else []
+        if self.currentItem.action_id in actions:
+            shows.append(self.currentItem)
+
+        return show in shows
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -77,11 +79,10 @@ class ShowQueue(generic_queue.GenericQueue):
         return self._isBeingSomethinged(show, (ShowQueueActions.SUBTITLE,))
 
     def _getLoadingShowList(self):
-        queue = []
-        while not self.queue.empty():
-            queueItem = self.queue.get()
-            queue.append(queueItem)
-        return [x for x in queue if x != None and x.isLoading] if not self.queue.empty() else []
+        shows = [x for x in self.queue.queue if x != None and x.isLoading] if not self.queue.empty() else []
+        if self.currentItem != None and self.currentItem.isLoading:
+            shows.append(self.currentItem)
+        return shows
 
 
     loadingShowList = property(_getLoadingShowList)
@@ -186,7 +187,9 @@ class ShowQueueItem(generic_queue.QueueItem):
         self.show = show
 
     def isInQueue(self):
-        return self in sickbeard.showQueueScheduler.action.queue.queue + [sickbeard.showQueueScheduler.action.currentItem]
+        queue = [x for x in sickbeard.showQueueScheduler.action.queue.queue]
+        queue.append(sickbeard.showQueueScheduler.action.currentItem)
+        return self in queue
 
     def _getName(self):
         return str(self.show.indexerid)
