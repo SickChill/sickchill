@@ -104,7 +104,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
         try:
             for provider in providers:
-                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                thread_name = self.thread_name + str(provider.name).upper()
                 threading.currentThread().name = thread_name
 
                 logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
@@ -192,7 +192,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         try:
             for provider in providers:
-                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                thread_name = self.thread_name + str(provider.name).upper()
                 threading.currentThread().name = thread_name
 
                 logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
@@ -272,7 +272,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             for provider in providers:
-                thread_name = str(provider.name).upper() + '-' + str(self.show.indexerid)
+                thread_name = self.thread_name + str(provider.name).upper()
                 threading.currentThread().name = thread_name
 
                 logger.log(
