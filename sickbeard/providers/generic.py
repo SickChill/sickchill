@@ -259,11 +259,11 @@ class GenericProvider:
             itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
 
             if epObj.episode in searchItems:
-                searchItems[epObj.episode] += itemList
+                searchItems[epObj] += itemList
             else:
-                searchItems[epObj.episode] = itemList
+                searchItems[epObj] = itemList
 
-        for episode, items in searchItems.items():
+        for ep_obj, items in searchItems.items():
             for item in items:
 
 
@@ -274,22 +274,25 @@ class GenericProvider:
                 # parse the file name
                 try:
                     myParser = NameParser(False)
-                    parse_result = myParser.parse(title).convert()
+                    if ep_obj.season == ep_obj.scene_season and ep_obj.episode == ep_obj.scene_episode:
+                        parse_result = myParser.parse(title)
+                    else:
+                        parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
 
                 if not (self.show.air_by_date or self.show.sports):
                     if not len(parse_result.episode_numbers) and (
-                            parse_result.season_number != None and parse_result.season_number != season) or (
-                                    parse_result.season_number == None and season != 1):
+                            parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
+                                    parse_result.season_number == None and ep_obj.season != 1):
                         logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(
-                            season) + ", ignoring", logger.DEBUG)
+                            ep_obj.season) + ", ignoring", logger.DEBUG)
                         continue
                     elif len(parse_result.episode_numbers) and (
-                            parse_result.season_number != season or episode not in parse_result.episode_numbers):
-                        logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(
-                            episode) + ", skipping it", logger.DEBUG)
+                            parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
+                        logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
+                            ep_obj.episode) + ", skipping it", logger.DEBUG)
                         continue
 
                     # we just use the existing info for normal searches

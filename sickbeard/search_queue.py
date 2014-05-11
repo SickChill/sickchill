@@ -29,7 +29,6 @@ from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue, scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
-from sickbeard.snatch_queue import SnatchQueue
 
 search_queue_lock = threading.Lock()
 
@@ -89,6 +88,14 @@ class SearchQueue(generic_queue.GenericQueue):
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
+    def snatch_item(self, item):
+        for result in item.results:
+            # just use the first result for now
+            logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+            status =  search.snatchEpisode(result)
+            item.success = status
+            generic_queue.QueueItem.finish(item)
+            return status
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, ep_obj):
@@ -104,31 +111,15 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         didSearch = False
 
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
         try:
-            for provider in providers:
-                thread_name = self.thread_name + str(provider.name).upper()
-                threading.currentThread().name = thread_name
+            logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
+            searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj],False,True)
 
-                logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
-                searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj], provider,
-                                                      False,
-                                                      True)
-
-                didSearch = True
-                if searchResult:
-                    self.success = SnatchQueue().process_results(searchResult)
-                    if self.success:
-                        break
+            if searchResult:
+                self.success = SearchQueue().snatch_item(searchResult)
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            stop = True
-
-        if not didSearch:
-            logger.log(
-                u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
-                logger.ERROR)
 
         if not self.success:
             ui.notifications.message('No downloads were found',
@@ -194,27 +185,14 @@ class BacklogQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x]
 
         try:
-            for provider in providers:
-                thread_name = self.thread_name + str(provider.name).upper()
-                threading.currentThread().name = thread_name
+            logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
+            searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, seasonSearch, False)
 
-                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
-                searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, provider,
-                                                      seasonSearch, False)
-
-                didSearch = True
-                if searchResult:
-                    self.success = SnatchQueue().process_results(searchResult)
-                    if self.success:
-                        break
+            if searchResult:
+                self.success = SearchQueue().snatch_item(searchResult)
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-
-        if not didSearch:
-            logger.log(
-                u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
-                logger.ERROR)
 
         if not self.success:
             logger.log(u"No needed episodes found during backlog search")
@@ -274,29 +252,15 @@ class FailedQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
         try:
-            for provider in providers:
-                thread_name = self.thread_name + str(provider.name).upper()
-                threading.currentThread().name = thread_name
+            logger.log(
+                "Beginning failed download search for episodes from Season [" + self.episodes[0].season + "]")
 
-                logger.log(
-                    "Beginning failed download search for episodes from Season [" + self.episodes[0].season + "]")
-
-                searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, provider,
-                                                      False, True)
-
-                didSearch = True
-                if searchResult:
-                    self.success = SnatchQueue().process_results(searchResult)
-                    if self.success:
-                        break
+            searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, False, True)
+            if searchResult:
+                self.success = SearchQueue().snatch_item(searchResult)
 
         except Exception, e:
             logger.log(traceback.format_exc(), logger.DEBUG)
-
-        if not didSearch:
-            logger.log(
-                u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
-                logger.ERROR)
 
         if not self.success:
             logger.log(u"No needed episodes found on the RSS feeds")

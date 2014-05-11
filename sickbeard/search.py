@@ -175,8 +175,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
 
 def searchForNeededEpisodes(curProvider):
-    threading.currentThread().name = curProvider.name
-
     logger.log(u"Searching all providers for any needed episodes")
     foundResults = {}
 
@@ -361,212 +359,230 @@ def filterSearchResults(show, results):
 
     return foundResults
 
-def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch=False, manualSearch=False):
+def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
-    foundResults = {}
     finalResults = []
+    didSearch = False
 
-    # convert indexer numbering to scene numbering for searches
-    map(lambda x: x.convertToSceneNumbering, episodes)
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
-    try:
-        curResults = curProvider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
-    except exceptions.AuthException, e:
-        logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-        return []
-    except Exception, e:
-        logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-        logger.log(traceback.format_exc(), logger.DEBUG)
-        return []
+    for provider in providers:
+        foundResults = {provider.name:{}}
 
-    if not len(curResults):
-        return []
+        try:
+            curResults = provider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
+        except exceptions.AuthException, e:
+            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            return []
+        except Exception, e:
+            logger.log(u"Error while searching " + provider.name + ", skipping: " + ex(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            return []
 
-    curResults = filterSearchResults(show, curResults)
-    if len(curResults):
-        foundResults.update(curResults)
-        logger.log(u"Provider search results: " + repr(foundResults), logger.DEBUG)
+        didSearch = True
 
-    if not len(foundResults):
-        return []
+        if not len(curResults):
+            continue
 
-    anyQualities, bestQualities = Quality.splitQuality(show.quality)
+        curResults = filterSearchResults(show, curResults)
+        if len(curResults):
+            foundResults[provider.name] = curResults
+            logger.log(u"Provider search results: " + repr(foundResults), logger.DEBUG)
 
-    # pick the best season NZB
-    bestSeasonNZB = None
-    if SEASON_RESULT in foundResults:
-        bestSeasonNZB = pickBestResult(foundResults[SEASON_RESULT], show, anyQualities + bestQualities)
+        if not len(foundResults[provider.name]):
+            continue
 
-    highest_quality_overall = 0
-    for cur_episode in foundResults:
-        for cur_result in foundResults[cur_episode]:
-            if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
-                highest_quality_overall = cur_result.quality
-    logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)
+        anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
-    # see if every episode is wanted
-    if bestSeasonNZB:
+        # pick the best season NZB
+        bestSeasonNZB = None
+        if SEASON_RESULT in foundResults:
+            bestSeasonNZB = pickBestResult(foundResults[SEASON_RESULT], show, anyQualities + bestQualities)
 
-        # get the quality of the season nzb
-        seasonQual = Quality.sceneQuality(bestSeasonNZB.name)
-        seasonQual = bestSeasonNZB.quality
-        logger.log(
-            u"The quality of the season " + bestSeasonNZB.provider.providerType + " is " + Quality.qualityStrings[
-                seasonQual], logger.DEBUG)
+        highest_quality_overall = 0
+        for cur_episode in foundResults[provider.name]:
+            for cur_result in foundResults[provider.name][cur_episode]:
+                if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
+                    highest_quality_overall = cur_result.quality
+        logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)
 
-        myDB = db.DBConnection()
-        allEps = [int(x["episode"]) for x in
-                  myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND season = ?",
-                              [show.indexerid, season])]
-        logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
+        # see if every episode is wanted
+        if bestSeasonNZB:
 
-        allWanted = True
-        anyWanted = False
-        for curEpNum in allEps:
-            if not show.wantEpisode(season, curEpNum, seasonQual):
-                allWanted = False
-            else:
-                anyWanted = True
-
-        # if we need every ep in the season check if single episode releases should be preferred over season releases (missing single episode releases will be picked individually from season release)
-        preferSingleEpisodesOverSeasonReleases = sickbeard.PREFER_EPISODE_RELEASES
-        logger.log(u"Prefer single episodes over season releases: "+str(preferSingleEpisodesOverSeasonReleases), logger.DEBUG)
-        # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
-        if allWanted and bestSeasonNZB.quality == highest_quality_overall and not preferSingleEpisodesOverSeasonReleases:
-            logger.log(u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
-            epObjs = []
-            for curEpNum in allEps:
-                epObjs.append(show.getEpisode(season, curEpNum))
-            bestSeasonNZB.episodes = epObjs
-            queueItem.results = [bestSeasonNZB]
-            return queueItem
-
-        elif not anyWanted:
+            # get the quality of the season nzb
+            seasonQual = Quality.sceneQuality(bestSeasonNZB.name)
+            seasonQual = bestSeasonNZB.quality
             logger.log(
-                u"No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonNZB.name,
-                logger.DEBUG)
+                u"The quality of the season " + bestSeasonNZB.provider.providerType + " is " + Quality.qualityStrings[
+                    seasonQual], logger.DEBUG)
 
-        else:
+            myDB = db.DBConnection()
+            allEps = [int(x["episode"]) for x in
+                      myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND season = ?",
+                                  [show.indexerid, season])]
+            logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
-            if bestSeasonNZB.provider.providerType == GenericProvider.NZB:
-                logger.log(u"Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
+            allWanted = True
+            anyWanted = False
+            for curEpNum in allEps:
+                if not show.wantEpisode(season, curEpNum, seasonQual):
+                    allWanted = False
+                else:
+                    anyWanted = True
 
-                # if not, break it apart and add them as the lowest priority results
-                individualResults = nzbSplitter.splitResult(bestSeasonNZB)
-
-                individualResults = filter(
-                    lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                             show),
-                    individualResults)
-
-                for curResult in individualResults:
-                    if len(curResult.episodes) == 1:
-                        epNum = curResult.episodes[0].episode
-                    elif len(curResult.episodes) > 1:
-                        epNum = MULTI_EP_RESULT
-
-                    if epNum in foundResults:
-                        foundResults[epNum].append(curResult)
-                    else:
-                        foundResults[epNum] = [curResult]
-
-            # If this is a torrent all we can do is leech the entire torrent, user will have to select which eps not do download in his torrent client
-            else:
-
-                # Season result from Torrent Provider must be a full-season torrent, creating multi-ep result for it.
-                logger.log(
-                    u"Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!")
+            # if we need every ep in the season check if single episode releases should be preferred over season releases (missing single episode releases will be picked individually from season release)
+            preferSingleEpisodesOverSeasonReleases = sickbeard.PREFER_EPISODE_RELEASES
+            logger.log(u"Prefer single episodes over season releases: "+str(preferSingleEpisodesOverSeasonReleases), logger.DEBUG)
+            # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
+            if allWanted and bestSeasonNZB.quality == highest_quality_overall and not preferSingleEpisodesOverSeasonReleases:
+                logger.log(u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
                 epObjs = []
                 for curEpNum in allEps:
                     epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonNZB.episodes = epObjs
+                queueItem.results = [bestSeasonNZB]
+                return queueItem
 
-                epNum = MULTI_EP_RESULT
-                if epNum in foundResults:
-                    foundResults[epNum].append(bestSeasonNZB)
-                else:
-                    foundResults[epNum] = [bestSeasonNZB]
-
-    # go through multi-ep results and see if we really want them or not, get rid of the rest
-    multiResults = {}
-    if MULTI_EP_RESULT in foundResults:
-        for multiResult in foundResults[MULTI_EP_RESULT]:
-
-            logger.log(u"Seeing if we want to bother with multi-episode result " + multiResult.name, logger.DEBUG)
-
-            if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(multiResult.name, multiResult.size,
-                                                                           multiResult.provider.name):
-                logger.log(multiResult.name + u" has previously failed, rejecting this multi-ep result")
-                continue
-
-            # see how many of the eps that this result covers aren't covered by single results
-            neededEps = []
-            notNeededEps = []
-            for epObj in multiResult.episodes:
-                epNum = epObj.episode
-                # if we have results for the episode
-                if epNum in foundResults and len(foundResults[epNum]) > 0:
-                    # but the multi-ep is worse quality, we don't want it
-                    # TODO: wtf is this False for
-                    #if False and multiResult.quality <= pickBestResult(foundResults[epNum]):
-                    #    notNeededEps.append(epNum)
-                    #else:
-                    neededEps.append(epNum)
-                else:
-                    neededEps.append(epNum)
-
-            logger.log(
-                u"Single-ep check result is neededEps: " + str(neededEps) + ", notNeededEps: " + str(notNeededEps),
-                logger.DEBUG)
-
-            if not neededEps:
-                logger.log(u"All of these episodes were covered by single nzbs, ignoring this multi-ep result",
-                           logger.DEBUG)
-                continue
-
-            # check if these eps are already covered by another multi-result
-            multiNeededEps = []
-            multiNotNeededEps = []
-            for epObj in multiResult.episodes:
-                epNum = epObj.episode
-                if epNum in multiResults:
-                    multiNotNeededEps.append(epNum)
-                else:
-                    multiNeededEps.append(epNum)
-
-            logger.log(
-                u"Multi-ep check result is multiNeededEps: " + str(multiNeededEps) + ", multiNotNeededEps: " + str(
-                    multiNotNeededEps), logger.DEBUG)
-
-            if not multiNeededEps:
+            elif not anyWanted:
                 logger.log(
-                    u"All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result",
+                    u"No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonNZB.name,
                     logger.DEBUG)
+
+            else:
+
+                if bestSeasonNZB.provider.providerType == GenericProvider.NZB:
+                    logger.log(u"Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
+
+                    # if not, break it apart and add them as the lowest priority results
+                    individualResults = nzbSplitter.splitResult(bestSeasonNZB)
+
+                    individualResults = filter(
+                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
+                                                                                                                 show),
+                        individualResults)
+
+                    for curResult in individualResults:
+                        if len(curResult.episodes) == 1:
+                            epNum = curResult.episodes[0].episode
+                        elif len(curResult.episodes) > 1:
+                            epNum = MULTI_EP_RESULT
+
+                        if epNum in foundResults[provider.name]:
+                            foundResults[provider.name][epNum] += curResult
+                        else:
+                            foundResults[provider.name][epNum] = [curResult]
+
+                # If this is a torrent all we can do is leech the entire torrent, user will have to select which eps not do download in his torrent client
+                else:
+
+                    # Season result from Torrent Provider must be a full-season torrent, creating multi-ep result for it.
+                    logger.log(
+                        u"Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!")
+                    epObjs = []
+                    for curEpNum in allEps:
+                        epObjs.append(show.getEpisode(season, curEpNum))
+                    bestSeasonNZB.episodes = epObjs
+
+                    epNum = MULTI_EP_RESULT
+                    if epNum in foundResults[provider.name]:
+                        foundResults[provider.name][epNum] += bestSeasonNZB
+                    else:
+                        foundResults[provider.name][epNum] = [bestSeasonNZB]
+
+        # go through multi-ep results and see if we really want them or not, get rid of the rest
+        multiResults = {}
+        if MULTI_EP_RESULT in foundResults[provider.name]:
+            for multiResult in foundResults[provider.name][MULTI_EP_RESULT]:
+
+                logger.log(u"Seeing if we want to bother with multi-episode result " + multiResult.name, logger.DEBUG)
+
+                if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(multiResult.name, multiResult.size,
+                                                                               multiResult.provider.name):
+                    logger.log(multiResult.name + u" has previously failed, rejecting this multi-ep result")
+                    continue
+
+                # see how many of the eps that this result covers aren't covered by single results
+                neededEps = []
+                notNeededEps = []
+                for epObj in multiResult.episodes:
+                    epNum = epObj.episode
+                    # if we have results for the episode
+                    if epNum in foundResults[provider.name] and len(foundResults[provider.name][epNum]) > 0:
+                        # but the multi-ep is worse quality, we don't want it
+                        # TODO: wtf is this False for
+                        #if False and multiResult.quality <= pickBestResult(foundResults[epNum]):
+                        #    notNeededEps.append(epNum)
+                        #else:
+                        neededEps.append(epNum)
+                    else:
+                        neededEps.append(epNum)
+
+                logger.log(
+                    u"Single-ep check result is neededEps: " + str(neededEps) + ", notNeededEps: " + str(notNeededEps),
+                    logger.DEBUG)
+
+                if not neededEps:
+                    logger.log(u"All of these episodes were covered by single nzbs, ignoring this multi-ep result",
+                               logger.DEBUG)
+                    continue
+
+                # check if these eps are already covered by another multi-result
+                multiNeededEps = []
+                multiNotNeededEps = []
+                for epObj in multiResult.episodes:
+                    epNum = epObj.episode
+                    if epNum in multiResults:
+                        multiNotNeededEps.append(epNum)
+                    else:
+                        multiNeededEps.append(epNum)
+
+                logger.log(
+                    u"Multi-ep check result is multiNeededEps: " + str(multiNeededEps) + ", multiNotNeededEps: " + str(
+                        multiNotNeededEps), logger.DEBUG)
+
+                if not multiNeededEps:
+                    logger.log(
+                        u"All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result",
+                        logger.DEBUG)
+                    continue
+
+                # if we're keeping this multi-result then remember it
+                for epObj in multiResult.episodes:
+                    multiResults[epObj.episode] = multiResult
+
+                # don't bother with the single result if we're going to get it with a multi result
+                for epObj in multiResult.episodes:
+                    epNum = epObj.episode
+                    if epNum in foundResults[provider.name]:
+                        logger.log(u"A needed multi-episode result overlaps with a single-episode result for ep #" + str(
+                            epNum) + ", removing the single-episode results from the list", logger.DEBUG)
+                        del foundResults[provider.name][epNum]
+
+        finalResults += set(multiResults.values())
+
+        # of all the single ep results narrow it down to the best one for each episode
+        for curEp in foundResults[provider.name]:
+            if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
 
-            # if we're keeping this multi-result then remember it
-            for epObj in multiResult.episodes:
-                multiResults[epObj.episode] = multiResult
+            if len(foundResults[provider.name][curEp]) == 0:
+                continue
 
-            # don't bother with the single result if we're going to get it with a multi result
-            for epObj in multiResult.episodes:
-                epNum = epObj.episode
-                if epNum in foundResults:
-                    logger.log(u"A needed multi-episode result overlaps with a single-episode result for ep #" + str(
-                        epNum) + ", removing the single-episode results from the list", logger.DEBUG)
-                    del foundResults[epNum]
+            result = pickBestResult(foundResults[provider.name][curEp], show)
+            finalResults.append(result)
 
-    finalResults += set(multiResults.values())
+            logger.log(u"Checking if we should snatch " + result.name, logger.DEBUG)
+            any_qualities, best_qualities = Quality.splitQuality(show.quality)
 
-    # of all the single ep results narrow it down to the best one for each episode
-    for curEp in foundResults:
-        if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
-            continue
+            # if there is a redownload that's higher than this then we definitely need to keep looking
+            if best_qualities and result.quality == max(best_qualities):
+                queueItem.results = [result]
+                return queueItem
 
-        if len(foundResults[curEp]) == 0:
-            continue
-
-        finalResults.append(pickBestResult(foundResults[curEp], show))
+            # if there's no redownload that's higher (above) and this is the highest initial download then we're good
+            elif any_qualities and result.quality in any_qualities:
+                queueItem.results = [result]
+                return queueItem
 
     queueItem.results = finalResults
     return queueItem

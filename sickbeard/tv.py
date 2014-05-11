@@ -1158,6 +1158,8 @@ class TVEpisode(object):
 
         self.specifyEpisode(self.season, self.episode)
 
+        self.convertToSceneNumbering()
+
         self.relatedEps = []
 
         self.checkForMetaFiles()
