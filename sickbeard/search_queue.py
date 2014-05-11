@@ -22,14 +22,18 @@ import datetime
 import Queue
 import time
 import traceback
+import threading
 
 import sickbeard
 from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue, scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
-from lib.concurrent import futures
+from sickbeard.snatch_queue import SnatchQueue
+from lib.concurrent.futures import as_completed
 from lib.concurrent.futures.thread import ThreadPoolExecutor
+
+search_queue_lock = threading.Lock()
 
 BACKLOG_SEARCH = 10
 RSS_SEARCH = 20
@@ -37,98 +41,24 @@ FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
 SNATCH = 40
 
-# snatch queues
-ManualSnatchQueue = Queue.PriorityQueue()
-RSSSnatchQueue = Queue.PriorityQueue()
-BacklogSnatchQueue = Queue.PriorityQueue()
-FailedSnatchQueue = Queue.PriorityQueue()
-
-SearchItemQueue = Queue.PriorityQueue()
-
-
-class SnatchQueue(generic_queue.GenericQueue):
-    def __init__(self):
-        generic_queue.GenericQueue.__init__(self)
-        self.queue_name = "SNATCHQUEUE"
-
-    def is_in_queue(self, show, episodes, quality):
-        for cur_item in self.queue.queue:
-            if cur_item.results.extraInfo[0] == show \
-                    and cur_item.results.episodes.sort() == episodes.sort() \
-                    and cur_item.results.quality >= quality:
-                return True
-        return False
-
-    def add_item(self, item):
-        # dynamically select our snatch queue
-        if item.type == 'RSSSearchQueueItem':
-            self.queue = RSSSnatchQueue
-        elif item.type == 'ManualSearchQueueItem':
-            self.queue = ManualSnatchQueue
-        elif item.type == 'BacklogQueueItem':
-            self.queue = BacklogSnatchQueue
-        elif item.type == 'FailedQueueItem':
-            self.queue = FailedSnatchQueue
-        else:
-            return
-
-        # check if we already have a item ready to snatch with same or better quality score
-        if not self.is_in_queue(item.results.extraInfo[0], item.results.episodes, item.results.quality):
-            generic_queue.GenericQueue.add_item(self, item)
-        else:
-            logger.log(
-                u"Not adding item [" + item.results.name + "] it's already in the queue with same or higher quality",
-                logger.DEBUG)
-
-
-class SnatchQueueItem(generic_queue.QueueItem):
-    def __init__(self, results, queue_item):
-        generic_queue.QueueItem.__init__(self, 'Snatch', SNATCH)
-        self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'SNATCH-' + str(results.extraInfo[0].indexerid)
-        self.results = results
-        self.success = None
-        self.queue_item = queue_item
-        self.type = queue_item.type
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
-
-        # just use the first result for now
-        logger.log(u"Downloading " + self.results.name + " from " + self.results.provider.name)
-
-        result = search.snatchEpisode(self.results)
-
-        if self.type == "ManualSearchQueueItem":
-            providerModule = self.results.provider
-            if not result:
-                ui.notifications.error(
-                    'Error while attempting to snatch ' + self.results.name + ', check your logs')
-            elif providerModule == None:
-                ui.notifications.error('Provider is configured incorrectly, unable to download')
-
-        self.success = result
-        self.queue_item.success = result
-
-        generic_queue.QueueItem.finish(self.queue_item)
-        generic_queue.QueueItem.finish(self)
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "SEARCHQUEUE"
-        self.queue = SearchItemQueue
 
     def is_in_queue(self, show, segment):
         for cur_item in self.queue.queue:
-            if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
-                return True
+            with search_queue_lock:
+                if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
+                    return True
         return False
 
     def is_ep_in_queue(self, ep_obj):
         for cur_item in self.queue.queue:
-            if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
-                return True
+            with search_queue_lock:
+                if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
+                    return True
         return False
 
     def pause_backlog(self):
@@ -143,15 +73,14 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def is_backlog_in_progress(self):
         for cur_item in self.queue.queue + [self.currentItem]:
-            if isinstance(cur_item, BacklogQueueItem):
-                return True
+            with search_queue_lock:
+                if isinstance(cur_item, BacklogQueueItem):
+                    return True
         return False
 
     def add_item(self, item):
 
-        if isinstance(item, RSSSearchQueueItem):
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+        if isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_ep_in_queue(item.ep_obj):
             generic_queue.GenericQueue.add_item(self, item)
@@ -165,7 +94,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, ep_obj):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.type = self.__class__.__name__
         self.thread_name = 'MANUAL-' + str(ep_obj.show.indexerid)
         self.success = None
         self.show = ep_obj.show
@@ -174,113 +102,49 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        fs = []
         didSearch = False
 
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
         try:
-            with ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-                for provider in providers:
-                    didSearch = True
-                    logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "] on " + provider.name)
-                    executor.submit(
-                        search.searchProviders, self, self.show, self.ep_obj.season, [self.ep_obj], provider, False,
-                        True).add_done_callback(snatch_results)
-                executor.shutdown(wait=True)
-        except Exception, e:
+            for provider in providers:
+                logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "] on " + provider.name)
+                searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj], provider,
+                                                      False,
+                                                      True)
+
+                didSearch = True
+                if searchResult:
+                    self.success = SnatchQueue().process_results(searchResult)
+                    if self.success:
+                        break
+
+        except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            stop = True
 
         if not didSearch:
             logger.log(
                 u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
                 logger.ERROR)
 
-        if ManualSnatchQueue.empty():
+        if not self.success:
             ui.notifications.message('No downloads were found',
                                      "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
             logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
-        else:
-            # snatch all items in queue
-            scheduler.Scheduler(SnatchQueue(), silent=True, runOnce=True, queue=ManualSnatchQueue).thread.start()
 
+        self.finish()
+
+    def finish(self):
+        # don't let this linger if something goes wrong
+        if self.success == None:
+            self.success = False
         generic_queue.QueueItem.finish(self)
-
-class RSSSearchQueueItem(generic_queue.QueueItem):
-    def __init__(self):
-        generic_queue.QueueItem.__init__(self, 'RSS Search', RSS_SEARCH)
-        self.thread_name = 'RSSFEED'
-        self.type = self.__class__.__name__
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
-
-        results = False
-        didSearch = False
-
-        self._changeMissingEpisodes()
-
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
-
-        try:
-            with ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-                for provider in providers:
-                    didSearch = True
-                    logger.log("Beginning RSS Feed search on " + provider.name)
-                    executor.submit(search.searchForNeededEpisodes, provider).add_done_callback(snatch_results)
-            executor.shutdown(wait=True)
-        except:
-            logger.log(traceback.format_exc(), logger.DEBUG)
-
-        if not didSearch:
-            logger.log(
-                u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
-                logger.ERROR)
-
-        if RSSSnatchQueue.empty():
-            logger.log(u"No needed episodes found on the RSS feeds")
-        else:
-            # snatch all items in queue
-            scheduler.Scheduler(SnatchQueue(), silent=True, runOnce=True, queue=RSSSnatchQueue).thread.start()
-
-        generic_queue.QueueItem.finish(self)
-
-    def _changeMissingEpisodes(self):
-
-        logger.log(u"Changing all old missing episodes to status WANTED")
-
-        curDate = datetime.date.today().toordinal()
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status = ? AND airdate < ?",
-                                 [common.UNAIRED, curDate])
-
-        for sqlEp in sqlResults:
-
-            try:
-                show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
-            except exceptions.MultipleShowObjectsException:
-                logger.log(u"ERROR: expected to find a single show matching " + str(sqlEp["showid"]))
-                return None
-
-            if show == None:
-                logger.log(u"Unable to find the show with ID " + str(
-                    sqlEp["showid"]) + " in your show list! DB value was " + str(sqlEp), logger.ERROR)
-                return None
-
-            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
-            with ep.lock:
-                if ep.show.paused:
-                    ep.status = common.SKIPPED
-                else:
-                    ep.status = common.WANTED
-                ep.saveToDB()
 
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.type = self.__class__.__name__
         self.thread_name = 'BACKLOG-' + str(show.indexerid)
 
         self.show = show
@@ -315,7 +179,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        results = False
+        fs = []
         didSearch = False
 
         # check if we want to search for season packs instead of just season/episode
@@ -327,15 +191,18 @@ class BacklogQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
         try:
-            with ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-                for provider in providers:
-                    didSearch = True
-                    logger.log("Beginning backlog search for [" + str(self.segment) + "] on " + provider.name)
-                    executor.submit(
-                        search.searchProviders, self, self.show, self.segment, self.wantedEpisodes, provider,
-                        seasonSearch, False).add_done_callback(snatch_results)
-            executor.shutdown(wait=True)
-        except Exception, e:
+            for provider in providers:
+                logger.log("Beginning backlog search for [" + str(self.segment) + "] on " + provider.name)
+                searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, provider,
+                                                      seasonSearch, False)
+
+                didSearch = True
+                if searchResult:
+                    self.success = SnatchQueue().process_results(searchResult)
+                    if self.success:
+                        break
+
+        except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         if not didSearch:
@@ -343,11 +210,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
                 logger.ERROR)
 
-        if BacklogSnatchQueue.empty():
+        if not self.success:
             logger.log(u"No needed episodes found during backlog search")
-        else:
-            # snatch all items in queue
-            scheduler.Scheduler(SnatchQueue(), silent=True, runOnce=True, queue=BacklogSnatchQueue).thread.start()
 
         self.finish()
 
@@ -356,8 +220,6 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         # check through the list of statuses to see if we want any
         for curStatusResult in statusResults:
-            time.sleep(1)
-
             curCompositeStatus = int(curStatusResult["status"])
             curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
             episode = int(curStatusResult["episode"])
@@ -380,7 +242,6 @@ class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, episodes):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.type = self.__class__.__name__
         self.thread_name = 'RETRY-' + str(show.indexerid)
         self.show = show
         self.episodes = episodes
@@ -389,13 +250,11 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        results = False
+        fs = []
         didSearch = False
-
         episodes = []
 
         for i, epObj in enumerate(episodes):
-            time.sleep(1)
             logger.log(
                 "Beginning failed download search for " + epObj.prettyName())
 
@@ -412,14 +271,16 @@ class FailedQueueItem(generic_queue.QueueItem):
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
         try:
-            with ThreadPoolExecutor(sickbeard.NUM_OF_THREADS) as executor:
-                for provider in providers:
-                    didSearch = True
-                    executor.submit(
-                        search.searchProviders, self, self.show, self.episodes[0].season, self.episodes, provider,
-                        False,
-                        True).add_done_callback(snatch_results)
-            executor.shutdown(wait=True)
+            for provider in providers:
+                searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, provider,
+                                                      False, True)
+
+                didSearch = True
+                if searchResult:
+                    self.success = SnatchQueue().process_results(searchResult)
+                    if self.success:
+                        break
+
         except Exception, e:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
@@ -428,17 +289,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                 u"No NZB/Torrent providers found or enabled in your SickRage config. Please check your settings.",
                 logger.ERROR)
 
-        if FailedSnatchQueue.empty():
+        if not self.success:
             logger.log(u"No needed episodes found on the RSS feeds")
-        else:
-            # snatch all items in queue
-            scheduler.Scheduler(SnatchQueue(), silent=True, runOnce=True, queue=FailedSnatchQueue).thread.start()
 
         self.finish()
-
-
-# send to snatch queue
-def snatch_results(f):
-    for result in f.result():
-        snatch_queue_item = SnatchQueueItem(result, result.queue_item)
-        SnatchQueue().add_item(snatch_queue_item)

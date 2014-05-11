@@ -37,7 +37,11 @@ class PLEXNotifier(XBMCNotifier):
     def _notify_pmc(self, message, title="Sick Beard", host=None, username=None, password=None, force=False):
           # fill in omitted parameters
         if not host:
-            host = sickbeard.PLEX_HOST
+            if sickbeard.PLEX_HOST:
+                host = sickbeard.PLEX_HOST # Use the default Plex host
+            else:
+                logger.log(u"No Plex host specified, check your settings", logger.DEBUG)
+                return False
         if not username:
             username = sickbeard.PLEX_USERNAME
         if not password:

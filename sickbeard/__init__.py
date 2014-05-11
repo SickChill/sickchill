@@ -33,7 +33,7 @@ from sickbeard import providers, metadata, config
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, ConfigMigrator, naming_ep_type
-from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
+from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
     subtitles, traktWatchListChecker
 from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
 from sickbeard import logger
@@ -74,7 +74,6 @@ PIDFILE = ''
 DAEMON = None
 
 backlogSearchScheduler = None
-currentSearchScheduler = None
 showUpdateScheduler = None
 versionCheckScheduler = None
 showQueueScheduler = None
@@ -489,7 +488,7 @@ def initialize(consoleLogging=True):
         global ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, PREFER_EPISODE_RELEASES, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_HOST, \
-            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_HOST, NZBGET_USE_HTTPS, currentSearchScheduler, backlogSearchScheduler, \
+            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_RATIO, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, \
@@ -1049,12 +1048,6 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
         providerList = providers.makeProviderList()
 
-        # initialize newznab providers
-        currentSearchScheduler = scheduler.Scheduler(searchCurrent.CurrentSearcher(),
-                                                     cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),
-                                                     threadName="SEARCH",
-                                                     runImmediately=True)
-
         # the interval for this is stored inside the ShowUpdater class
         showUpdaterInstance = showUpdater.ShowUpdater()
         showUpdateScheduler = scheduler.Scheduler(showUpdaterInstance,
@@ -1070,7 +1063,8 @@ def initialize(consoleLogging=True):
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE",
-                                                 silent=True)
+                                                 silent=True,
+                                                 runImmediately=True)
 
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
                                                    cycleTime=datetime.timedelta(seconds=3),
@@ -1125,7 +1119,7 @@ def initialize(consoleLogging=True):
 
 
 def start():
-    global __INITIALIZED__, currentSearchScheduler, backlogSearchScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, USE_SUBTITLES, \
@@ -1135,20 +1129,17 @@ def start():
 
         if __INITIALIZED__:
 
-            # start the search scheduler
-            currentSearchScheduler.thread.start()
+            # start the queue checker
+            showQueueScheduler.thread.start()
+
+            # start the version checker
+            versionCheckScheduler.thread.start()
 
             # start the backlog scheduler
             backlogSearchScheduler.thread.start()
 
             # start the show updater
             showUpdateScheduler.thread.start()
-
-            # start the version checker
-            versionCheckScheduler.thread.start()
-
-            # start the queue checker
-            showQueueScheduler.thread.start()
 
             # start the search queue checker
             searchQueueScheduler.thread.start()
@@ -1170,7 +1161,7 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, currentSearchScheduler, backlogSearchScheduler, showUpdateScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, showUpdateScheduler, \
         showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, \
         traktWatchListCheckerSchedular
@@ -1182,13 +1173,6 @@ def halt():
             logger.log(u"Aborting all threads")
 
             # abort all the threads
-
-            currentSearchScheduler.abort = True
-            logger.log(u"Waiting for the SEARCH thread to exit")
-            try:
-                currentSearchScheduler.thread.join(10)
-            except:
-                pass
 
             backlogSearchScheduler.abort = True
             logger.log(u"Waiting for the BACKLOG thread to exit")

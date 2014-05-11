@@ -236,12 +236,10 @@ class GenericProvider:
         searchItems = {}
         itemList = []
 
-        if manualSearch:
+        if not manualSearch:
             self.cache.updateCache()
 
         for epObj in episodes:
-
-
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if len(cacheResult):
                 results.update(cacheResult)

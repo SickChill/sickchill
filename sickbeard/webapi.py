@@ -1368,14 +1368,12 @@ class CMD_SickBeardCheckScheduler(ApiCall):
 
         backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  #@UndefinedVariable
         backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  #@UndefinedVariable
-        searchStatus = sickbeard.currentSearchScheduler.action.amActive  #@UndefinedVariable
-        nextSearch = str(sickbeard.currentSearchScheduler.timeLeft()).split('.')[0]
         nextBacklog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         myDB.connection.close()
         data = {"backlog_is_paused": int(backlogPaused), "backlog_is_running": int(backlogRunning),
                 "last_backlog": _ordinal_to_dateForm(sqlResults[0]["last_backlog"]),
-                "search_is_running": int(searchStatus), "next_search": nextSearch, "next_backlog": nextBacklog}
+                "next_backlog": nextBacklog}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1422,27 +1420,6 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
         sickbeard.ROOT_DIRS = root_dirs_new
         # what if the root dir was not found?
         return _responds(RESULT_SUCCESS, _getRootDirs(), msg="Root directory deleted")
-
-
-class CMD_SickBeardForceSearch(ApiCall):
-    _help = {"desc": "force the episode search early"
-    }
-
-    def __init__(self, args, kwargs):
-        # required
-        # optional
-        # super, missing, help
-        ApiCall.__init__(self, args, kwargs)
-
-    def run(self):
-        """ force the episode search early """
-        # Changing all old missing episodes to status WANTED
-        # Beginning search for new episodes on RSS
-        # Searching all providers for any needed episodes
-        result = sickbeard.currentSearchScheduler.forceRun()
-        if result:
-            return _responds(RESULT_SUCCESS, msg="Episode search forced")
-        return _responds(RESULT_FAILURE, msg="Can not search for episode")
 
 
 class CMD_SickBeardGetDefaults(ApiCall):
@@ -2604,7 +2581,6 @@ _functionMaper = {"help": CMD_Help,
                   "sb.addrootdir": CMD_SickBeardAddRootDir,
                   "sb.checkscheduler": CMD_SickBeardCheckScheduler,
                   "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
-                  "sb.forcesearch": CMD_SickBeardForceSearch,
                   "sb.getdefaults": CMD_SickBeardGetDefaults,
                   "sb.getmessages": CMD_SickBeardGetMessages,
                   "sb.getrootdirs": CMD_SickBeardGetRootDirs,

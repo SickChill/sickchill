@@ -86,7 +86,7 @@ def _worker(executor_reference, work_queue):
         _base.LOGGER.critical('Exception in worker', exc_info=True)
 
 class ThreadPoolExecutor(_base.Executor):
-    def __init__(self, max_workers, name=None):
+    def __init__(self, max_workers):
         """Initializes a new ThreadPoolExecutor instance.
 
         Args:
@@ -98,7 +98,6 @@ class ThreadPoolExecutor(_base.Executor):
         self._threads = set()
         self._shutdown = False
         self._shutdown_lock = threading.Lock()
-        self._name = name
 
     def submit(self, fn, *args, **kwargs):
         with self._shutdown_lock:
@@ -109,11 +108,16 @@ class ThreadPoolExecutor(_base.Executor):
             w = _WorkItem(f, fn, args, kwargs)
 
             self._work_queue.put(w)
-            self._adjust_thread_count()
+
+            name = None
+            if kwargs.has_key('name'):
+                name = kwargs.pop('name')
+
+            self._adjust_thread_count(name)
             return f
     submit.__doc__ = _base.Executor.submit.__doc__
 
-    def _adjust_thread_count(self):
+    def _adjust_thread_count(self, name=None):
         # When the executor gets lost, the weakref callback will wake up
         # the worker threads.
         def weakref_cb(_, q=self._work_queue):
@@ -124,8 +128,8 @@ class ThreadPoolExecutor(_base.Executor):
             t = threading.Thread(target=_worker,
                                  args=(weakref.ref(self, weakref_cb),
                                        self._work_queue),)
-            if self._name:
-                t.name = self._name
+            if name:
+                t.name = name
             t.daemon = True
             t.start()
             self._threads.add(t)
