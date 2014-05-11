@@ -1570,7 +1570,7 @@ def save_config():
     new_config['TORRENT']['torrent_paused'] = int(TORRENT_PAUSED)
     new_config['TORRENT']['torrent_high_bandwidth'] = int(TORRENT_HIGH_BANDWIDTH)
     new_config['TORRENT']['torrent_label'] = TORRENT_LABEL
-    new_config['TORRENT']['torrent_verify_cert'] = TORRENT_VERIFY_CERT
+    new_config['TORRENT']['torrent_verify_cert'] = int(TORRENT_VERIFY_CERT)
 
     new_config['XBMC'] = {}
     new_config['XBMC']['use_xbmc'] = int(USE_XBMC)
