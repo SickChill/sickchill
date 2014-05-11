@@ -247,7 +247,7 @@
 			#if (epResult["season"], epResult["episode"]) in $xem_numbering:
 				#set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
 			#else
-				#set ($dfltSeas, $dfltEpis) = (epResult["season"], epResult["episode"])
+				#set ($dfltSeas, $dfltEpis) = (0,0)
 			#end if
 			#if (epResult["season"], epResult["episode"]) in $scene_numbering:
 				#set ($scSeas, $scEpis) = $scene_numbering[(epResult["season"], epResult["episode"])]

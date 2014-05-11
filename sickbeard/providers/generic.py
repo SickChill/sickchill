@@ -240,10 +240,15 @@ class GenericProvider:
         #    self.cache.updateCache()
 
         for epObj in episodes:
-            #cacheResult = self.cache.searchCache(epObj, manualSearch)
-            #if len(cacheResult):
-            #    results.update(cacheResult)
-            #    continue
+            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            if len(cacheResult):
+                results.update(cacheResult)
+                continue
+
+            if not epObj.show.air_by_date:
+                if epObj.scene_season == 0 or epObj.scene_episode == 0:
+                    logger.log(u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
+                    continue
 
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):
@@ -274,10 +279,7 @@ class GenericProvider:
                 # parse the file name
                 try:
                     myParser = NameParser(False)
-                    if ep_obj.season == ep_obj.scene_season and ep_obj.episode == ep_obj.scene_episode:
-                        parse_result = myParser.parse(title)
-                    else:
-                        parse_result = myParser.parse(title).convert()
+                    parse_result = myParser.parse(title).convert()
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue

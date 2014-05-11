@@ -185,11 +185,24 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
         _xem_refresh(indexer_id, indexer)
 
     cacheDB = db.DBConnection('cache.db')
+    myDB = db.DBConnection()
+
     rows = cacheDB.select(
         "SELECT scene_season, scene_episode FROM xem_numbering WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?",
         [indexer, indexer_id, season, episode])
+
+    scene_seasons = cacheDB.select(
+        "SELECT COUNT(DISTINCT scene_season) as count FROM xem_numbering WHERE indexer = ? and indexer_id = ?",
+        [indexer, indexer_id])
+
+    indexer_seasons = myDB.select(
+        "SELECT COUNT(DISTINCT season) as count FROM tv_episodes WHERE indexer = ? and showid = ?",
+        [indexer, indexer_id])
+
     if rows:
         return (int(rows[0]["scene_season"]), int(rows[0]["scene_episode"]))
+    elif int(scene_seasons[0]["count"]) > 0 and int(indexer_seasons[0]["count"]) > int(scene_seasons[0]["count"]):
+        return (0,0)
     else:
         return None
 
