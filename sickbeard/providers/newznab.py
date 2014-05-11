@@ -272,3 +272,59 @@ class NewznabCache(tvcache.TVCache):
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
+
+
+    def updateCache(self):
+        if not self.shouldUpdate():
+            return
+
+        if self._checkAuth(None):
+            data = self._getRSSData()
+
+            # as long as the http request worked we count this as an update
+            if data:
+                self.setLastUpdate()
+            else:
+                return []
+
+            # now that we've loaded the current RSS feed lets delete the old cache
+            logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
+            self._clearCache()
+
+
+            if self._checkAuth(data):
+                items = data.entries
+                ql = []
+                for item in items:
+                    ci = self._parseItem(item)
+                    if ci is not None:
+                        ql.append(ci)
+
+                myDB = self._getDB()
+                myDB.mass_action(ql)
+
+            else:
+                raise AuthException(
+                    u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+
+        return []
+
+
+    # overwrite method with that parses the rageid from the newznab feed
+    def _parseItem(self, item):
+        title = item.title
+        url = item.link
+
+        self._checkItemAuth(title, url)
+
+        if not title or not url:
+            logger.log(
+                u"The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
+                logger.DEBUG)
+            return None
+
+        url = self._translateLinkURL(url)
+
+        logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
+
+        return self._addCacheEntry(title, url)

@@ -204,23 +204,10 @@ class ManageSearches:
         #t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        t.searchStatus = sickbeard.currentSearchScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
 
         return _munge(t)
-
-    @cherrypy.expose
-    def forceSearch(self):
-
-        # force it to run the next time it looks
-        result = sickbeard.currentSearchScheduler.forceRun()
-        if result:
-            logger.log(u"Search forced")
-            ui.notifications.message('Episode search started',
-                                     'Note: RSS feeds may not be updated if retrieved recently')
-
-        redirect("/manage/manageSearches/")
 
     @cherrypy.expose
     def pauseBacklog(self, paused=None):

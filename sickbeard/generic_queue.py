@@ -20,7 +20,11 @@ import datetime
 import threading
 import Queue
 
+import sickbeard
+from lib.concurrent.futures.thread import ThreadPoolExecutor
+
 from sickbeard import logger
+
 
 class QueuePriorities:
     LOW = 10
@@ -29,11 +33,12 @@ class QueuePriorities:
 
 class GenericQueue:
     def __init__(self):
+        #self.executor = ThreadPoolExecutor(sickbeard.NUM_OF_THREADS)
         self.currentItem = None
         self.thread = None
         self.queue_name = "QUEUE"
         self.min_priority = 0
-        self.queue = Queue.PriorityQueue()
+        self.queue = Queue.Queue()
 
     def pause(self):
         logger.log(u"Pausing queue")
@@ -45,7 +50,7 @@ class GenericQueue:
 
     def add_item(self, item):
         item.added = datetime.datetime.now()
-        self.queue.put(item, item.priority)
+        self.queue.put(item)
         return item
 
     def run(self, queue=None):
@@ -67,11 +72,9 @@ class GenericQueue:
                     return
 
                 threadName = self.queue_name + '-' + queueItem.get_thread_name()
-                self.thread = threading.Thread(None, queueItem.execute, threadName)
-                self.thread.start()
-
+                executor = ThreadPoolExecutor(sickbeard.NUM_OF_THREADS)
+                self.thread = executor.submit(queueItem.execute, name=threadName)
                 self.currentItem = queueItem
-
 
 class QueueItem:
     def __init__(self, name, action_id=0):

@@ -424,15 +424,13 @@ class KATCache(tvcache.TVCache):
 
         cl = []
         for result in rss_results:
-
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
                 cl.append(ci)
 
-        if len(cl) > 0:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+        myDB = self._getDB()
+        myDB.mass_action(cl)
 
     def _parseItem(self, item):
 
@@ -441,7 +439,7 @@ class KATCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Attempting to cache item:" + title, logger.DEBUG)
+        logger.log(u"Attempting to cache item:[" + title +"]", logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

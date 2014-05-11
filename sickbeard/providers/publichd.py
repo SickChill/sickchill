@@ -332,7 +332,7 @@ class PublicHDCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Attempting to cache item:" + title, logger.DEBUG)
+        logger.log(u"Attempting to cache item:[" + title +"]", logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 

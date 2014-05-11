@@ -367,9 +367,6 @@ def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch
     foundResults = {}
     finalResults = []
 
-    if manualSearch:
-        curProvider.cache.updateCache()
-
     # convert indexer numbering to scene numbering for searches
     map(lambda x: x.convertToSceneNumbering, episodes)
 
@@ -404,7 +401,6 @@ def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch
     highest_quality_overall = 0
     for cur_episode in foundResults:
         for cur_result in foundResults[cur_episode]:
-            cur_result.queue_item = queueItem
             if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
                 highest_quality_overall = cur_result.quality
     logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)
@@ -572,4 +568,5 @@ def searchProviders(queueItem, show, season, episodes, curProvider, seasonSearch
 
         finalResults.append(pickBestResult(foundResults[curEp], show))
 
-    return finalResults
+    queueItem.results = finalResults
+    return queueItem

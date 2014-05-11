@@ -163,7 +163,6 @@ def change_SEARCH_FREQUENCY(freq):
     if sickbeard.SEARCH_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
         sickbeard.SEARCH_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
 
-    sickbeard.currentSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.SEARCH_FREQUENCY)
     sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.get_backlog_cycle_time())
 
 def change_UPDATE_FREQUENCY(freq):
