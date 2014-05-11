@@ -3,7 +3,13 @@ SickRage
 
 *SickRage  is currently in beta release stage. There may be severe bugs in it and at any given time it may not work at all.*
 
-SickRage-TVRage is a PVR for torrent and newsgroup users. It watches for new episodes of your favorite shows and when they are posted it downloads them, sorts and renames them, and optionally generates metadata for them. It retrieves show information from theTVDB.com and TVRage.com.
+There are currently a lot of changes that we're working on, which affect the very core of how SickRage works. We're doing this to lay the groundwork
+for making SickRage seriously more awesome, scalable and resource-friendly than it already is. We know it will be a bumpy ride, but we also know
+that SickRage deserves to grow from a USENET grabber into a media independant grabber of anything TV show related. And beyond.
+ 
+While we're doing this, please expect SickRage do strange things, or maybe even not work at all. In any case, we need your help. If you see SickRage behaving weird, check if someone has reported it, and if not, open a new issue. There is little to no use to report "software should be stable". We will focus on that later, not now.
+
+SickRage is a PVR for torrent and newsgroup users. It watches for new episodes of your favorite shows and when they are posted it downloads them, sorts and renames them, and optionally generates metadata for them. It retrieves show information from theTVDB.com and TVRage.com.
 
 !!! Please before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present, we HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk !!!
 
