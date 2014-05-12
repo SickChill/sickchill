@@ -548,10 +548,11 @@ class AddSubtitlesSupport(AddDvdOrderOption):
         return self.checkDBVersion() >= 21
 
     def execute(self):
-        self.addColumn("tv_shows", "subtitles")
-        self.addColumn("tv_episodes", "subtitles", "TEXT", "")
-        self.addColumn("tv_episodes", "subtitles_searchcount")
-        self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
+        if not self.hasColumn("tv_shows", "subtitles"):
+            self.addColumn("tv_shows", "subtitles")
+            self.addColumn("tv_episodes", "subtitles", "TEXT", "")
+            self.addColumn("tv_episodes", "subtitles_searchcount")
+            self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
         self.incDBVersion()
 
 class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
