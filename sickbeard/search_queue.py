@@ -145,6 +145,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.segment = segment
         self.wantedEpisodes = []
 
+        self._changeMissingEpisodes()
+
         logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
 
         myDB = db.DBConnection()
@@ -221,6 +223,37 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         return wantedEpisodes
 
+
+    def _changeMissingEpisodes(self):
+
+        logger.log(u"Changing all old missing episodes to status WANTED")
+
+        curDate = datetime.date.today().toordinal()
+
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status = ? AND airdate < ?",
+                                 [common.UNAIRED, curDate])
+
+        for sqlEp in sqlResults:
+
+            try:
+                show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+            except exceptions.MultipleShowObjectsException:
+                logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
+                return None
+
+            if show == None:
+                logger.log(u"Unable to find the show with ID " + str(
+                    sqlEp["showid"]) + " in your show list! DB value was " + str(sqlEp), logger.ERROR)
+                return None
+
+            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
+            with ep.lock:
+                if ep.show.paused:
+                    ep.status = common.SKIPPED
+                else:
+                    ep.status = common.WANTED
+                ep.saveToDB()
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, episodes):

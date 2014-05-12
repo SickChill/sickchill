@@ -251,24 +251,18 @@ class TVCache():
             indexerid = int(cacheResult)
 
         if not indexerid:
-            name_list = show_name_helpers.sceneToNormalShowNames(parse_result.series_name)
-            for cur_name in name_list:
-                if not indexerid:
-                    for curShow in sickbeard.showList:
-                        if show_name_helpers.isGoodResult(cur_name, curShow, False):
-                            indexerid = int(curShow.indexerid)
-                            break
+            showResult = helpers.searchDBForShow(parse_result.series_name)
+            if showResult:
+                indexerid = int(showResult[0])
 
-                if not indexerid:
-                    # do a scene reverse-lookup to get a list of all possible names
-                    scene_id = sickbeard.scene_exceptions.get_scene_exception_by_name(cur_name)
-                    if scene_id:
-                        indexerid = int(scene_id)
-                        break
+        if not indexerid:
+            for curShow in sickbeard.showList:
+                if show_name_helpers.isGoodResult(name, curShow, False):
+                    indexerid = int(curShow.indexerid)
+                    break
 
         showObj = None
         if indexerid:
-            logger.log(u"Found Indexer ID: [" + str(indexerid) + "], for [" + str(cur_name) + "}", logger.DEBUG)
             showObj = helpers.findCertainShow(sickbeard.showList, indexerid)
 
         if not showObj:
@@ -317,7 +311,6 @@ class TVCache():
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)
         return neededEps
-
 
     def listPropers(self, date=None, delimiter="."):
         myDB = self._getDB()

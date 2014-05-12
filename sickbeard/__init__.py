@@ -38,6 +38,7 @@ from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, 
 from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, show_name_helpers
 from sickbeard import logger
 from sickbeard import naming
+from sickbeard import rssupdater
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -82,6 +83,7 @@ properFinderScheduler = None
 autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
 traktWatchListCheckerSchedular = None
+updateRSSScheduler = None
 
 showList = None
 loadingShowList = None
@@ -133,7 +135,6 @@ ROOT_DIRS = None
 UPDATE_SHOWS_ON_START = None
 SORT_ARTICLE = None
 DEBUG = False
-NUM_OF_THREADS = None
 
 USE_LISTVIEW = None
 METADATA_XBMC = None
@@ -528,7 +529,7 @@ def initialize(consoleLogging=True):
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, NUM_OF_THREADS
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, updateRSSScheduler
 
         if __INITIALIZED__:
             return False
@@ -596,8 +597,6 @@ def initialize(consoleLogging=True):
         API_KEY = check_setting_str(CFG, 'General', 'api_key', '')
 
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
-
-        NUM_OF_THREADS = check_setting_int(CFG, 'General', 'num_of_threads', 1)
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
@@ -1063,6 +1062,12 @@ def initialize(consoleLogging=True):
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 
+        updateRSSScheduler = scheduler.Scheduler(rssupdater.RSSUpdater(),
+                                                 cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),
+                                                 threadName="RSSUPDATER",
+                                                 silent=True,
+                                                 runImmediately=True)
+
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE",
@@ -1099,7 +1104,7 @@ def initialize(consoleLogging=True):
 
         backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
                                                                       cycleTime=datetime.timedelta(
-                                                                          minutes=get_backlog_cycle_time()),
+                                                                      minutes=get_backlog_cycle_time()),
                                                                       threadName="BACKLOG",
                                                                       runImmediately=True)
         backlogSearchScheduler.action.cycleTime = BACKLOG_SEARCH_FREQUENCY
@@ -1126,29 +1131,32 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, USE_SUBTITLES, \
-        traktWatchListCheckerSchedular, started
+        traktWatchListCheckerSchedular, updateRSSScheduler, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
 
-            # start the queue checker
-            showQueueScheduler.thread.start()
-
             # start the version checker
             versionCheckScheduler.thread.start()
 
+            # start the RSS cache updater
+            updateRSSScheduler.thread.start()
+
             # start the backlog scheduler
             backlogSearchScheduler.thread.start()
-
-            # start the show updater
-            showUpdateScheduler.thread.start()
 
             # start the search queue checker
             searchQueueScheduler.thread.start()
 
             # start the queue checker
             properFinderScheduler.thread.start()
+
+            # start the queue checker
+            showQueueScheduler.thread.start()
+
+            # start the show updater
+            showUpdateScheduler.thread.start()
 
             # start the proper finder
             autoPostProcesserScheduler.thread.start()
@@ -1166,7 +1174,7 @@ def start():
 def halt():
     global __INITIALIZED__, backlogSearchScheduler, showUpdateScheduler, \
         showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, started, \
+        subtitlesFinderScheduler, updateRSSScheduler, started, \
         traktWatchListCheckerSchedular
 
     with INIT_LOCK:
@@ -1237,6 +1245,13 @@ def halt():
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
                 subtitlesFinderScheduler.thread.join(10)
+            except:
+                pass
+
+            updateRSSScheduler.abort = True
+            logger.log(u"Waiting for the RSSUPDATER thread to exit")
+            try:
+                updateRSSScheduler.thread.join(10)
             except:
                 pass
 
@@ -1355,7 +1370,6 @@ def save_config():
     new_config['General']['use_api'] = int(USE_API)
     new_config['General']['api_key'] = API_KEY
     new_config['General']['debug'] = int(DEBUG)
-    new_config['General']['num_of_threads'] = int(NUM_OF_THREADS)
     new_config['General']['enable_https'] = int(ENABLE_HTTPS)
     new_config['General']['https_cert'] = HTTPS_CERT
     new_config['General']['https_key'] = HTTPS_KEY
