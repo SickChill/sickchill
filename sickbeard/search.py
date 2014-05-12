@@ -344,7 +344,7 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
         # pick the best season NZB
         bestSeasonNZB = None
         if SEASON_RESULT in foundResults:
-            bestSeasonNZB = pickBestResult(foundResults[SEASON_RESULT], show, anyQualities + bestQualities)
+            bestSeasonNZB = pickBestResult(foundResults[provider.name][SEASON_RESULT], show, anyQualities + bestQualities)
 
         highest_quality_overall = 0
         for cur_episode in foundResults[provider.name]:
