@@ -183,21 +183,21 @@ DEFAULT_SEARCH_FREQUENCY = 40
 DEFAULT_UPDATE_FREQUENCY = 12
 
 EZRSS = False
-EZRSS_RATIO = ''
+EZRSS_RATIO = None
 
 TVTORRENTS = False
 TVTORRENTS_DIGEST = None
 TVTORRENTS_HASH = None
-TVTORRENTS_RATIO = ''
+TVTORRENTS_RATIO = None
 
 BTN = False
 BTN_API_KEY = None
-BTN_RATIO = ''
+BTN_RATIO = None
 
 NEWZNAB_DATA = None
 
 THEPIRATEBAY = False
-THEPIRATEBAY_RATIO = ''
+THEPIRATEBAY_RATIO = None
 THEPIRATEBAY_TRUSTED = False
 THEPIRATEBAY_PROXY = False
 THEPIRATEBAY_PROXY_URL = None
@@ -207,43 +207,43 @@ TORRENTLEECH = False
 TORRENTLEECH_KEY = None
 TORRENTLEECH_USERNAME = None
 TORRENTLEECH_PASSWORD = None
-TORRENTLEECH_RATIO = ''
+TORRENTLEECH_RATIO = None
 
 IPTORRENTS = False
 IPTORRENTS_USERNAME = None
 IPTORRENTS_PASSWORD = None
-IPTORRENTS_RATIO = ''
+IPTORRENTS_RATIO = None
 IPTORRENTS_FREELEECH = False
 
 NEXTGEN = False
 NEXTGEN_USERNAME = None
 NEXTGEN_PASSWORD = None
-NEXTGEN_RATIO = ''
+NEXTGEN_RATIO = None
 NEXTGEN_FREELEECH = False
 
 KAT = None
-KAT_RATIO = ''
+KAT_RATIO = None
 KAT_VERIFIED = False
 
 PUBLICHD = None
-PUBLICHD_RATIO = ''
+PUBLICHD_RATIO = None
 
 SCC = False
 SCC_USERNAME = None
 SCC_PASSWORD = None
-SCC_RATIO = ''
+SCC_RATIO = None
 
 HDTORRENTS = False
 HDTORRENTS_USERNAME = None
 HDTORRENTS_PASSWORD = None
-HDTORRENTS_RATIO = ''
+HDTORRENTS_RATIO = None
 HDTORRENTS_UID = None
 HDTORRENTS_HASH = None
 
 TORRENTDAY = None
 TORRENTDAY_USERNAME = None
 TORRENTDAY_PASSWORD = None
-TORRENTDAY_RATIO = ''
+TORRENTDAY_RATIO = None
 TORRENTDAY_UID = None
 TORRENTDAY_HASH = None
 TORRENTDAY_FREELEECH = None
@@ -251,12 +251,12 @@ TORRENTDAY_FREELEECH = None
 HDBITS = False
 HDBITS_USERNAME = None
 HDBITS_PASSKEY = None
-HDBITS_RATIO = ''
+HDBITS_RATIO = None
 
 SPEEDCD = False
 SPEEDCD_USERNAME = None
 SPEEDCD_PASSWORD = None
-SPEEDCD_RATIO = ''
+SPEEDCD_RATIO = None
 SPEEDCD_FREELEECH = None
 
 ADD_SHOWS_WO_DIR = None
@@ -299,8 +299,8 @@ TORRENT_USERNAME = None
 TORRENT_PASSWORD = None
 TORRENT_HOST = ''
 TORRENT_PATH = ''
-TORRENT_RATIO = ''
-TORRENT_SEED_TIME = ''
+TORRENT_RATIO = None
+TORRENT_SEED_TIME = None
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
 TORRENT_LABEL = ''
@@ -695,21 +695,21 @@ def initialize(consoleLogging=True):
         EZRSS = bool(check_setting_int(CFG, 'General', 'use_torrent', 0))
         if not EZRSS:
             EZRSS = bool(check_setting_int(CFG, 'EZRSS', 'ezrss', 0))
-        EZRSS_RATIO = check_setting_str(CFG, 'EZRSS', 'ezrss_ratio', '')
+        EZRSS_RATIO = check_setting_int(CFG, 'EZRSS', 'ezrss_ratio', 0)
 
         TVTORRENTS = bool(check_setting_int(CFG, 'TVTORRENTS', 'tvtorrents', 0))
         TVTORRENTS_DIGEST = check_setting_str(CFG, 'TVTORRENTS', 'tvtorrents_digest', '')
         TVTORRENTS_HASH = check_setting_str(CFG, 'TVTORRENTS', 'tvtorrents_hash', '')
-        TVTORRENTS_RATIO = check_setting_str(CFG, 'TVTORRENTS', 'tvtorrents_ratio', '')
+        TVTORRENTS_RATIO = check_setting_int(CFG, 'TVTORRENTS', 'tvtorrents_ratio', 0)
         TVTORRENTS_OPTIONS = check_setting_str(CFG, 'TVTORRENTS', 'tvtorrents_options', '')
 
         BTN = bool(check_setting_int(CFG, 'BTN', 'btn', 0))
         BTN_API_KEY = check_setting_str(CFG, 'BTN', 'btn_api_key', '')
-        BTN_RATIO = check_setting_str(CFG, 'BTN', 'btn_ratio', '')
+        BTN_RATIO = check_setting_int(CFG, 'BTN', 'btn_ratio', 0)
         BTN_OPTIONS = check_setting_str(CFG, 'BTN', 'btn_options', '')
 
         THEPIRATEBAY = bool(check_setting_int(CFG, 'THEPIRATEBAY', 'thepiratebay', 1))
-        THEPIRATEBAY_RATIO = check_setting_str(CFG, 'THEPIRATEBAY', 'thepiratebay_ratio', '')
+        THEPIRATEBAY_RATIO = check_setting_int(CFG, 'THEPIRATEBAY', 'thepiratebay_ratio', 0)
         THEPIRATEBAY_TRUSTED = bool(check_setting_int(CFG, 'THEPIRATEBAY', 'thepiratebay_trusted', 1))
         THEPIRATEBAY_PROXY = bool(check_setting_int(CFG, 'THEPIRATEBAY', 'thepiratebay_proxy', 0))
         THEPIRATEBAY_PROXY_URL = check_setting_str(CFG, 'THEPIRATEBAY', 'thepiratebay_proxy_url', '')
@@ -719,60 +719,60 @@ def initialize(consoleLogging=True):
         TORRENTLEECH = bool(check_setting_int(CFG, 'TORRENTLEECH', 'torrentleech', 0))
         TORRENTLEECH_USERNAME = check_setting_str(CFG, 'TORRENTLEECH', 'torrentleech_username', '')
         TORRENTLEECH_PASSWORD = check_setting_str(CFG, 'TORRENTLEECH', 'torrentleech_password', '')
-        TORRENTLEECH_RATIO = check_setting_str(CFG, 'TORRENTLEECH', 'torrentleech_ratio', '')
+        TORRENTLEECH_RATIO = check_setting_int(CFG, 'TORRENTLEECH', 'torrentleech_ratio', 0)
         TORRENTLEECH_OPTIONS = check_setting_str(CFG, 'TORRENTLEECH', 'torrentleech_options', '')
 
         IPTORRENTS = bool(check_setting_int(CFG, 'IPTORRENTS', 'iptorrents', 0))
         IPTORRENTS_USERNAME = check_setting_str(CFG, 'IPTORRENTS', 'iptorrents_username', '')
         IPTORRENTS_PASSWORD = check_setting_str(CFG, 'IPTORRENTS', 'iptorrents_password', '')
-        IPTORRENTS_RATIO = check_setting_str(CFG, 'IPTORRENTS', 'iptorrents_ratio', '')
+        IPTORRENTS_RATIO = check_setting_int(CFG, 'IPTORRENTS', 'iptorrents_ratio', 0)
         IPTORRENTS_FREELEECH = bool(check_setting_int(CFG, 'IPTORRENTS', 'iptorrents_freeleech', 0))
         IPTORRENTS_OPTIONS = check_setting_str(CFG, 'IPTORRENTS', 'iptorrents_options', '')
 
         NEXTGEN = bool(check_setting_int(CFG, 'NEXTGEN', 'nextgen', 0))
         NEXTGEN_USERNAME = check_setting_str(CFG, 'NEXTGEN', 'nextgen_username', '')
         NEXTGEN_PASSWORD = check_setting_str(CFG, 'NEXTGEN', 'nextgen_password', '')
-        NEXTGEN_RATIO = check_setting_str(CFG, 'NEXTGEN', 'nextgen_ratio', '')
+        NEXTGEN_RATIO = check_setting_int(CFG, 'NEXTGEN', 'nextgen_ratio', 0)
         NEXTGEN_OPTIONS = check_setting_str(CFG, 'NEXTGEN', 'nextgen_options', '')
 
         KAT = bool(check_setting_int(CFG, 'KAT', 'kat', 0))
-        KAT_RATIO = check_setting_str(CFG, 'KAT', 'kat_ratio', '')
+        KAT_RATIO = check_setting_int(CFG, 'KAT', 'kat_ratio', 0)
         KAT_VERIFIED = bool(check_setting_int(CFG, 'KAT', 'kat_verified', 1))
         KAT_OPTIONS = check_setting_str(CFG, 'KAT', 'kat_options', '')
 
         PUBLICHD = bool(check_setting_int(CFG, 'PUBLICHD', 'publichd', 0))
-        PUBLICHD_RATIO = check_setting_str(CFG, 'PUBLICHD', 'publichd_ratio', '')
+        PUBLICHD_RATIO = check_setting_int(CFG, 'PUBLICHD', 'publichd_ratio', 0)
         PUBLICHD_OPTIONS = check_setting_str(CFG, 'PUBLICHD', 'publichd_options', '')
 
         SCC = bool(check_setting_int(CFG, 'SCC', 'scc', 0))
         SCC_USERNAME = check_setting_str(CFG, 'SCC', 'scc_username', '')
         SCC_PASSWORD = check_setting_str(CFG, 'SCC', 'scc_password', '')
-        SCC_RATIO = check_setting_str(CFG, 'SCC', 'scc_ratio', '')
+        SCC_RATIO = check_setting_int(CFG, 'SCC', 'scc_ratio', 0)
         SCC_OPTIONS = check_setting_str(CFG, 'SCC', 'scc_options', '')
 
         HDTORRENTS = bool(check_setting_int(CFG, 'HDTORRENTS', 'hdtorrents', 0))
         HDTORRENTS_USERNAME = check_setting_str(CFG, 'HDTORRENTS', 'hdtorrents_username', '')
         HDTORRENTS_PASSWORD = check_setting_str(CFG, 'HDTORRENTS', 'hdtorrents_password', '')
-        HDTORRENTS_RATIO = check_setting_str(CFG, 'HDTORRENTS', 'hdtorrents_ratio', '')
+        HDTORRENTS_RATIO = check_setting_int(CFG, 'HDTORRENTS', 'hdtorrents_ratio', 0)
         HDTORRENTS_OPTIONS = check_setting_str(CFG, 'HDTORRENTS', 'hdtorrents_options', '')
 
         TORRENTDAY = bool(check_setting_int(CFG, 'TORRENTDAY', 'torrentday', 0))
         TORRENTDAY_USERNAME = check_setting_str(CFG, 'TORRENTDAY', 'torrentday_username', '')
         TORRENTDAY_PASSWORD = check_setting_str(CFG, 'TORRENTDAY', 'torrentday_password', '')
-        TORRENTDAY_RATIO = check_setting_str(CFG, 'TORRENTDAY', 'torrentday_ratio', '')
+        TORRENTDAY_RATIO = check_setting_int(CFG, 'TORRENTDAY', 'torrentday_ratio', 0)
         TORRENTDAY_FREELEECH = bool(check_setting_int(CFG, 'TORRENTDAY', 'torrentday_freeleech', 0))
         TORRENTDAY_OPTIONS = check_setting_str(CFG, 'TORRENTDAY', 'torrentday_options', '')
 
         HDBITS = bool(check_setting_int(CFG, 'HDBITS', 'hdbits', 0))
         HDBITS_USERNAME = check_setting_str(CFG, 'HDBITS', 'hdbits_username', '')
         HDBITS_PASSKEY = check_setting_str(CFG, 'HDBITS', 'hdbits_passkey', '')
-        HDBITS_RATIO = check_setting_str(CFG, 'HDBITS', 'hdbits_ratio', '')
+        HDBITS_RATIO = check_setting_int(CFG, 'HDBITS', 'hdbits_ratio', 0)
         HDBITS_OPTIONS = check_setting_str(CFG, 'HDBITS', 'hdbits_options', '')
 
         SPEEDCD = bool(check_setting_int(CFG, 'SPEEDCD', 'speedcd', 0))
         SPEEDCD_USERNAME = check_setting_str(CFG, 'SPEEDCD', 'speedcd_username', '')
         SPEEDCD_PASSWORD = check_setting_str(CFG, 'SPEEDCD', 'speedcd_password', '')
-        SPEEDCD_RATIO = check_setting_str(CFG, 'SPEEDCD', 'speedcd_ratio', '')
+        SPEEDCD_RATIO = check_setting_int(CFG, 'SPEEDCD', 'speedcd_ratio', 0)
         SPEEDCD_FREELEECH = bool(check_setting_int(CFG, 'SPEEDCD', 'speedcd_freeleech', 0))
 
         NZBS = bool(check_setting_int(CFG, 'NZBs', 'nzbs', 0))
@@ -805,8 +805,8 @@ def initialize(consoleLogging=True):
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', '')
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host', '')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path', '')
-        TORRENT_RATIO = check_setting_str(CFG, 'TORRENT', 'torrent_ratio', '')
-        TORRENT_SEED_TIME = check_setting_str(CFG, 'TORRENT', 'torrent_seed_time', '')
+        TORRENT_RATIO = check_setting_int(CFG, 'TORRENT', 'torrent_ratio', 0)
+        TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', 0)
         TORRENT_PAUSED = bool(check_setting_int(CFG, 'TORRENT', 'torrent_paused', 0))
         TORRENT_HIGH_BANDWIDTH = bool(check_setting_int(CFG, 'TORRENT', 'torrent_high_bandwidth', 0))
         TORRENT_LABEL = check_setting_str(CFG, 'TORRENT', 'torrent_label', '')
@@ -1422,24 +1422,24 @@ def save_config():
 
     new_config['EZRSS'] = {}
     new_config['EZRSS']['ezrss'] = int(EZRSS)
-    new_config['EZRSS']['ezrss_ratio'] = EZRSS_RATIO
+    new_config['EZRSS']['ezrss_ratio'] = int(EZRSS_RATIO)
 
     new_config['TVTORRENTS'] = {}
     new_config['TVTORRENTS']['tvtorrents'] = int(TVTORRENTS)
     new_config['TVTORRENTS']['tvtorrents_digest'] = TVTORRENTS_DIGEST
     new_config['TVTORRENTS']['tvtorrents_hash'] = TVTORRENTS_HASH
-    new_config['TVTORRENTS']['tvtorrents_ratio'] = TVTORRENTS_RATIO
+    new_config['TVTORRENTS']['tvtorrents_ratio'] = int(TVTORRENTS_RATIO)
     new_config['TVTORRENTS']['tvtorrents_options'] = TVTORRENTS_OPTIONS
 
     new_config['BTN'] = {}
     new_config['BTN']['btn'] = int(BTN)
     new_config['BTN']['btn_api_key'] = BTN_API_KEY
-    new_config['BTN']['btn_ratio'] = BTN_RATIO
+    new_config['BTN']['btn_ratio'] = int(BTN_RATIO)
     new_config['BTN']['btn_options'] = BTN_OPTIONS
 
     new_config['THEPIRATEBAY'] = {}
     new_config['THEPIRATEBAY']['thepiratebay'] = int(THEPIRATEBAY)
-    new_config['THEPIRATEBAY']['thepiratebay_ratio'] = THEPIRATEBAY_RATIO
+    new_config['THEPIRATEBAY']['thepiratebay_ratio'] = int(THEPIRATEBAY_RATIO)
     new_config['THEPIRATEBAY']['thepiratebay_trusted'] = int(THEPIRATEBAY_TRUSTED)
     new_config['THEPIRATEBAY']['thepiratebay_proxy'] = int(THEPIRATEBAY_PROXY)
     new_config['THEPIRATEBAY']['thepiratebay_proxy_url'] = THEPIRATEBAY_PROXY_URL
@@ -1450,14 +1450,14 @@ def save_config():
     new_config['TORRENTLEECH']['torrentleech'] = int(TORRENTLEECH)
     new_config['TORRENTLEECH']['torrentleech_username'] = TORRENTLEECH_USERNAME
     new_config['TORRENTLEECH']['torrentleech_password'] = helpers.encrypt(TORRENTLEECH_PASSWORD, ENCRYPTION_VERSION)
-    new_config['TORRENTLEECH']['torrentleech_ratio'] = TORRENTLEECH_RATIO
+    new_config['TORRENTLEECH']['torrentleech_ratio'] = int(TORRENTLEECH_RATIO)
     new_config['TORRENTLEECH']['torrentleech_options'] = TORRENTLEECH_OPTIONS
 
     new_config['IPTORRENTS'] = {}
     new_config['IPTORRENTS']['iptorrents'] = int(IPTORRENTS)
     new_config['IPTORRENTS']['iptorrents_username'] = IPTORRENTS_USERNAME
     new_config['IPTORRENTS']['iptorrents_password'] = helpers.encrypt(IPTORRENTS_PASSWORD, ENCRYPTION_VERSION)
-    new_config['IPTORRENTS']['iptorrents_ratio'] = IPTORRENTS_RATIO
+    new_config['IPTORRENTS']['iptorrents_ratio'] = int(IPTORRENTS_RATIO)
     new_config['IPTORRENTS']['iptorrents_freeleech'] = int(IPTORRENTS_FREELEECH)
     new_config['IPTORRENTS']['iptorrents_options'] = IPTORRENTS_OPTIONS
 
@@ -1465,39 +1465,39 @@ def save_config():
     new_config['NEXTGEN']['nextgen'] = int(NEXTGEN)
     new_config['NEXTGEN']['nextgen_username'] = NEXTGEN_USERNAME
     new_config['NEXTGEN']['nextgen_password'] = helpers.encrypt(NEXTGEN_PASSWORD, ENCRYPTION_VERSION)
-    new_config['NEXTGEN']['nextgen_ratio'] = NEXTGEN_RATIO
+    new_config['NEXTGEN']['nextgen_ratio'] = int(NEXTGEN_RATIO)
     new_config['NEXTGEN']['nextgen_options'] = NEXTGEN_OPTIONS
 
     new_config['KAT'] = {}
     new_config['KAT']['kat'] = int(KAT)
-    new_config['KAT']['kat_ratio'] = KAT_RATIO
+    new_config['KAT']['kat_ratio'] = int(KAT_RATIO)
     new_config['KAT']['kat_verified'] = int(KAT_VERIFIED)
     new_config['KAT']['kat_options'] = KAT_OPTIONS
 
     new_config['PUBLICHD'] = {}
     new_config['PUBLICHD']['publichd'] = int(PUBLICHD)
-    new_config['PUBLICHD']['publichd_ratio'] = PUBLICHD_RATIO
+    new_config['PUBLICHD']['publichd_ratio'] = int(PUBLICHD_RATIO)
     new_config['PUBLICHD']['publichd_options'] = PUBLICHD_OPTIONS
 
     new_config['SCC'] = {}
     new_config['SCC']['scc'] = int(SCC)
     new_config['SCC']['scc_username'] = SCC_USERNAME
     new_config['SCC']['scc_password'] = helpers.encrypt(SCC_PASSWORD, ENCRYPTION_VERSION)
-    new_config['SCC']['scc_ratio'] = SCC_RATIO
+    new_config['SCC']['scc_ratio'] = int(SCC_RATIO)
     new_config['SCC']['scc_options'] = SCC_OPTIONS
 
     new_config['HDTORRENTS'] = {}
     new_config['HDTORRENTS']['hdtorrents'] = int(HDTORRENTS)
     new_config['HDTORRENTS']['hdtorrents_username'] = HDTORRENTS_USERNAME
     new_config['HDTORRENTS']['hdtorrents_password'] = helpers.encrypt(HDTORRENTS_PASSWORD, ENCRYPTION_VERSION)
-    new_config['HDTORRENTS']['hdtorrents_ratio'] = HDTORRENTS_RATIO
+    new_config['HDTORRENTS']['hdtorrents_ratio'] = int(HDTORRENTS_RATIO)
     new_config['HDTORRENTS']['hdtorrents_options'] = HDTORRENTS_OPTIONS
 
     new_config['TORRENTDAY'] = {}
     new_config['TORRENTDAY']['torrentday'] = int(TORRENTDAY)
     new_config['TORRENTDAY']['torrentday_username'] = TORRENTDAY_USERNAME
     new_config['TORRENTDAY']['torrentday_password'] = helpers.encrypt(TORRENTDAY_PASSWORD, ENCRYPTION_VERSION)
-    new_config['TORRENTDAY']['torrentday_ratio'] = TORRENTDAY_RATIO
+    new_config['TORRENTDAY']['torrentday_ratio'] = int(TORRENTDAY_RATIO)
     new_config['TORRENTDAY']['torrentday_freeleech'] = int(TORRENTDAY_FREELEECH)
     new_config['TORRENTDAY']['torrentday_options'] = TORRENTDAY_OPTIONS
 
@@ -1505,14 +1505,14 @@ def save_config():
     new_config['HDBITS']['hdbits'] = int(HDBITS)
     new_config['HDBITS']['hdbits_username'] = HDBITS_USERNAME
     new_config['HDBITS']['hdbits_passkey'] = HDBITS_PASSKEY
-    new_config['HDBITS']['hdbits_ratio'] = HDBITS_RATIO
+    new_config['HDBITS']['hdbits_ratio'] = int(HDBITS_RATIO)
     new_config['HDBITS']['hdbits_options'] = HDBITS_OPTIONS
 
     new_config['SPEEDCD'] = {}
     new_config['SPEEDCD']['speedcd'] = int(SPEEDCD)
     new_config['SPEEDCD']['speedcd_username'] = SPEEDCD_USERNAME
     new_config['SPEEDCD']['speedcd_password'] = helpers.encrypt(SPEEDCD_PASSWORD, ENCRYPTION_VERSION)
-    new_config['SPEEDCD']['speedcd_ratio'] = SPEEDCD_RATIO
+    new_config['SPEEDCD']['speedcd_ratio'] = int(SPEEDCD_RATIO)
     new_config['SPEEDCD']['speedcd_freeleech'] = int(SPEEDCD_FREELEECH)
 
     new_config['NZBs'] = {}
@@ -1553,8 +1553,8 @@ def save_config():
     new_config['TORRENT']['torrent_password'] = helpers.encrypt(TORRENT_PASSWORD, ENCRYPTION_VERSION)
     new_config['TORRENT']['torrent_host'] = TORRENT_HOST
     new_config['TORRENT']['torrent_path'] = TORRENT_PATH
-    new_config['TORRENT']['torrent_ratio'] = TORRENT_RATIO
-    new_config['TORRENT']['torrent_seed_time'] = TORRENT_SEED_TIME
+    new_config['TORRENT']['torrent_ratio'] = int(TORRENT_RATIO)
+    new_config['TORRENT']['torrent_seed_time'] = int(TORRENT_SEED_TIME)
     new_config['TORRENT']['torrent_paused'] = int(TORRENT_PAUSED)
     new_config['TORRENT']['torrent_high_bandwidth'] = int(TORRENT_HIGH_BANDWIDTH)
     new_config['TORRENT']['torrent_label'] = TORRENT_LABEL
