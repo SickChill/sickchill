@@ -48,10 +48,7 @@ class GenericQueue:
         self.queue.put(item)
         return item
 
-    def run(self, queue=None):
-        # dynamically set queue
-        if queue:
-            self.queue = queue
+    def run(self):
 
         # only start a new task if one isn't already going
         if self.thread == None or self.thread.isAlive() == False:
@@ -68,6 +65,8 @@ class GenericQueue:
 
                 threadName = self.queue_name + '-' + queueItem.get_thread_name()
                 self.thread = threading.Thread(None, queueItem.execute, threadName)
+                self.thread.start()
+
                 self.currentItem = queueItem
 
 class QueueItem:
