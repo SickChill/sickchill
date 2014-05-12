@@ -52,9 +52,9 @@ class Boxcar2Notifier:
 
         data = urllib.urlencode({
                 'user_credentials': accesstoken,
-                'notification[title]': "SickRage : " + title,
+                'notification[title]': "SickRage : " + title + ' ' + msg,
                 'notification[long_message]': msg,
-                'notification[sound]': "bird-1"
+                'notification[sound]': "success"
             })
 
         # send the request to boxcar2
