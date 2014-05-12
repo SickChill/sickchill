@@ -19,8 +19,6 @@
 from __future__ import with_statement
 
 import datetime
-import Queue
-import time
 import traceback
 import threading
 
@@ -33,11 +31,8 @@ from sickbeard import ui
 search_queue_lock = threading.Lock()
 
 BACKLOG_SEARCH = 10
-RSS_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
-SNATCH = 40
-
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -109,8 +104,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        didSearch = False
-
         try:
             logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
             searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj],False,True)
@@ -145,6 +138,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.segment = segment
         self.wantedEpisodes = []
 
+        self._changeMissingEpisodes()
+
         logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
 
         myDB = db.DBConnection()
@@ -172,9 +167,6 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-
-        fs = []
-        didSearch = False
 
         # check if we want to search for season packs instead of just season/episode
         seasonSearch = False
@@ -222,6 +214,37 @@ class BacklogQueueItem(generic_queue.QueueItem):
         return wantedEpisodes
 
 
+    def _changeMissingEpisodes(self):
+
+        logger.log(u"Changing all old missing episodes to status WANTED")
+
+        curDate = datetime.date.today().toordinal()
+
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status = ? AND airdate < ?",
+                                 [common.UNAIRED, curDate])
+
+        for sqlEp in sqlResults:
+
+            try:
+                show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+            except exceptions.MultipleShowObjectsException:
+                logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
+                return None
+
+            if show == None:
+                logger.log(u"Unable to find the show with ID " + str(
+                    sqlEp["showid"]) + " in your show list! DB value was " + str(sqlEp), logger.ERROR)
+                return None
+
+            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
+            with ep.lock:
+                if ep.show.paused:
+                    ep.status = common.SKIPPED
+                else:
+                    ep.status = common.WANTED
+                ep.saveToDB()
+
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, episodes):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
@@ -234,8 +257,6 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        fs = []
-        didSearch = False
         episodes = []
 
         for i, epObj in enumerate(episodes):
@@ -253,7 +274,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log(
-                "Beginning failed download search for episodes from Season [" + self.episodes[0].season + "]")
+                "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
             searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, False, True)
             if searchResult:

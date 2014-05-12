@@ -20,17 +20,19 @@ from __future__ import with_statement
 
 import sickbeard
 
-from sickbeard import search_queue
+from sickbeard import logger
 
 import threading
 
-
-class CurrentSearcher():
+class RSSUpdater():
     def __init__(self):
         self.lock = threading.Lock()
 
         self.amActive = False
 
     def run(self):
-        search_queue_item = search_queue.RSSSearchQueueItem()
-        sickbeard.searchQueueScheduler.action.add_item(search_queue_item)
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+        for provider in providers:
+            logger.log(u"Updating RSS cache for provider [" + provider.name + "]")
+            provider.cache.updateCache()

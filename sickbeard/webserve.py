@@ -1051,7 +1051,7 @@ class ConfigSearch:
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
-                   nzb_method=None, torrent_method=None, usenet_retention=None, search_frequency=None,
+                   nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
                    download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
@@ -1065,7 +1065,7 @@ class ConfigSearch:
         if not config.change_TORRENT_DIR(torrent_dir):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
-        config.change_SEARCH_FREQUENCY(search_frequency)
+        config.change_RSSUPDATE_FREQUENCY(rssupdate_frequency)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -1084,6 +1084,8 @@ class ConfigSearch:
 
         sickbeard.PREFER_EPISODE_RELEASES = config.checkbox_to_value(prefer_episode_releases)
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+
+        config.change_BACKLOG_FREQUENCY(backlog_frequency)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
         if sickbeard.BACKLOG_STARTUP:
             sickbeard.backlogSearchScheduler.silent = False
@@ -1137,7 +1139,7 @@ class ConfigPostProcessing:
     @cherrypy.expose
     def savePostProcessing(self, naming_pattern=None, naming_multi_ep=None,
                            xbmc_data=None, xbmc_12plus_data=None, mediabrowser_data=None, sony_ps3_data=None,
-                           wdtv_data=None, tivo_data=None,
+                           wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, process_automatically=None,
                            rename_episodes=None, unpack=None,
                            move_associated_files=None, tv_download_dir=None, naming_custom_abd=None,
@@ -1183,6 +1185,7 @@ class ConfigPostProcessing:
         sickbeard.METADATA_PS3 = sony_ps3_data
         sickbeard.METADATA_WDTV = wdtv_data
         sickbeard.METADATA_TIVO = tivo_data
+        sickbeard.METADATA_MEDE8ER = mede8er_data
 
         sickbeard.metadata_provider_dict['XBMC'].set_config(sickbeard.METADATA_XBMC)
         sickbeard.metadata_provider_dict['XBMC 12+'].set_config(sickbeard.METADATA_XBMC_12PLUS)
@@ -1190,6 +1193,7 @@ class ConfigPostProcessing:
         sickbeard.metadata_provider_dict['Sony PS3'].set_config(sickbeard.METADATA_PS3)
         sickbeard.metadata_provider_dict['WDTV'].set_config(sickbeard.METADATA_WDTV)
         sickbeard.metadata_provider_dict['TIVO'].set_config(sickbeard.METADATA_TIVO)
+        sickbeard.metadata_provider_dict['Mede8er'].set_config(sickbeard.METADATA_MEDE8ER)
 
         if self.isNamingValid(naming_pattern, naming_multi_ep) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
@@ -1562,16 +1566,16 @@ class ConfigProviders:
             else:
                 logger.log(u"don't know what " + curProvider + " is, skipping")
 
-        sickbeard.EZRSS_RATIO = ezrss_ratio
+        sickbeard.EZRSS_RATIO = config.to_int(ezrss_ratio)
 
         sickbeard.TVTORRENTS_DIGEST = tvtorrents_digest.strip()
         sickbeard.TVTORRENTS_HASH = tvtorrents_hash.strip()
-        sickbeard.TVTORRENTS_RATIO = tvtorrents_ratio
+        sickbeard.TVTORRENTS_RATIO = config.to_int(tvtorrents_ratio)
 
         sickbeard.BTN_API_KEY = btn_api_key.strip()
-        sickbeard.BTN_RATIO = btn_ratio
+        sickbeard.BTN_RATIO = config.to_int(btn_ratio)
 
-        sickbeard.THEPIRATEBAY_RATIO = thepiratebay_ratio
+        sickbeard.THEPIRATEBAY_RATIO = config.to_int(thepiratebay_ratio)
         sickbeard.THEPIRATEBAY_TRUSTED = config.checkbox_to_value(thepiratebay_trusted)
 
         thepiratebay_proxy = config.checkbox_to_value(thepiratebay_proxy)
@@ -1584,48 +1588,48 @@ class ConfigProviders:
 
         sickbeard.TORRENTLEECH_USERNAME = torrentleech_username
         sickbeard.TORRENTLEECH_PASSWORD = torrentleech_password
-        sickbeard.TORRENTLEECH_RATIO = torrentleech_ratio
+        sickbeard.TORRENTLEECH_RATIO = config.to_int(torrentleech_ratio)
 
         sickbeard.IPTORRENTS_USERNAME = iptorrents_username.strip()
         sickbeard.IPTORRENTS_PASSWORD = iptorrents_password.strip()
-        sickbeard.IPTORRENTS_RATIO = iptorrents_ratio
+        sickbeard.IPTORRENTS_RATIO = config.to_int(iptorrents_ratio)
 
         sickbeard.IPTORRENTS_FREELEECH = config.checkbox_to_value(iptorrents_freeleech)
 
         sickbeard.KAT_TRUSTED = config.checkbox_to_value(kat_trusted)
-        sickbeard.KAT_RATIO = kat_ratio
+        sickbeard.KAT_RATIO = config.to_int(kat_ratio)
         sickbeard.KAT_VERIFIED = config.checkbox_to_value(kat_verified)
         
         sickbeard.PUBLICHD_RATIO = publichd_ratio
 
         sickbeard.TORRENTDAY_USERNAME = torrentday_username.strip()
         sickbeard.TORRENTDAY_PASSWORD = torrentday_password.strip()
-        sickbeard.TORRENTDAY_RATIO = torrentday_ratio
+        sickbeard.TORRENTDAY_RATIO = config.to_int(torrentday_ratio)
 
         sickbeard.TORRENTDAY_FREELEECH = config.checkbox_to_value(torrentday_freeleech)
 
         sickbeard.SCC_USERNAME = scc_username.strip()
         sickbeard.SCC_PASSWORD = scc_password.strip()
-        sickbeard.SCC_RATIO = scc_ratio
+        sickbeard.SCC_RATIO = config.to_int(scc_ratio)
 
         sickbeard.HDTORRENTS_USERNAME = hdtorrents_username.strip()
         sickbeard.HDTORRENTS_PASSWORD = hdtorrents_password.strip()
-        sickbeard.HDTORRENTS_RATIO = hdtorrents_ratio
+        sickbeard.HDTORRENTS_RATIO = config.to_int(hdtorrents_ratio)
 
         sickbeard.HDBITS_USERNAME = hdbits_username.strip()
         sickbeard.HDBITS_PASSKEY = hdbits_passkey.strip()
-        sickbeard.HDBITS_RATIO = hdbits_ratio
+        sickbeard.HDBITS_RATIO = config.to_int(hdbits_ratio)
 
         sickbeard.OMGWTFNZBS_USERNAME = omgwtfnzbs_username.strip()
         sickbeard.OMGWTFNZBS_APIKEY = omgwtfnzbs_apikey.strip()
 
         sickbeard.NEXTGEN_USERNAME = nextgen_username.strip()
         sickbeard.NEXTGEN_PASSWORD = nextgen_password.strip()
-        sickbeard.NEXTGEN_RATIO = nextgen_ratio
+        sickbeard.NEXTGEN_RATIO = config.to_int(nextgen_ratio)
 
         sickbeard.SPEEDCD_USERNAME = speedcd_username.strip()
         sickbeard.SPEEDCD_PASSWORD = speedcd_password.strip()
-        sickbeard.SPEEDCD_RATIO = speedcd_ratio
+        sickbeard.SPEEDCD_RATIO = config.to_int(speedcd_ratio)
         sickbeard.SPEEDCD_FREELEECH = config.checkbox_to_value(speedcd_freeleech)
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])

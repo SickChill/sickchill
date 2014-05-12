@@ -291,7 +291,6 @@ class NewznabCache(tvcache.TVCache):
             logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
             self._clearCache()
 
-
             if self._checkAuth(data):
                 items = data.entries
                 ql = []
@@ -325,6 +324,6 @@ class NewznabCache(tvcache.TVCache):
 
         url = self._translateLinkURL(url)
 
-        logger.log(u"Adding item from RSS to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
 
         return self._addCacheEntry(title, url)

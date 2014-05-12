@@ -21,12 +21,12 @@ import os.path
 import datetime
 import re
 import time
+import sickbeard
+
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
-
-import sickbeard
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
@@ -157,13 +157,21 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
     return True
 
 
-def change_SEARCH_FREQUENCY(freq):
-    sickbeard.SEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
+def change_RSSUPDATE_FREQUENCY(freq):
+    sickbeard.RSSUPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
 
-    if sickbeard.SEARCH_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
-        sickbeard.SEARCH_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+    if sickbeard.RSSUPDATE_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
+        sickbeard.RSSUPDATE_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
 
-    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.get_backlog_cycle_time())
+    sickbeard.updateRSSScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.RSSUPDATE_FREQUENCY)
+
+def change_BACKLOG_FREQUENCY(freq):
+    sickbeard.BACKLOG_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
+
+    if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
+        sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+
+    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
 
 def change_UPDATE_FREQUENCY(freq):
     sickbeard.UPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)
@@ -606,6 +614,7 @@ class ConfigMigrator():
         metadata_ps3 = check_setting_str(self.config_obj, 'General', 'metadata_ps3', '0|0|0|0|0|0')
         metadata_wdtv = check_setting_str(self.config_obj, 'General', 'metadata_wdtv', '0|0|0|0|0|0')
         metadata_tivo = check_setting_str(self.config_obj, 'General', 'metadata_tivo', '0|0|0|0|0|0')
+        metadata_mede8er = check_setting_str(self.config_obj, 'General', 'metadata_mede8er', '0|0|0|0|0|0')
 
         use_banner = bool(check_setting_int(self.config_obj, 'General', 'use_banner', 0))
 
@@ -627,6 +636,11 @@ class ConfigMigrator():
                 metadata = '|'.join(cur_metadata)
                 logger.log(u"Upgrading " + metadata_name + " metadata, new value: " + metadata)
 
+            elif len(cur_metadata) == 10:
+
+                metadata = '|'.join(cur_metadata)
+                logger.log(u"Keeping " + metadata_name + " metadata, value: " + metadata)
+
             else:
                 logger.log(u"Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format",
                            logger.ERROR)
@@ -641,3 +655,4 @@ class ConfigMigrator():
         sickbeard.METADATA_PS3 = _migrate_metadata(metadata_ps3, 'PS3', use_banner)
         sickbeard.METADATA_WDTV = _migrate_metadata(metadata_wdtv, 'WDTV', use_banner)
         sickbeard.METADATA_TIVO = _migrate_metadata(metadata_tivo, 'TIVO', use_banner)
+        sickbeard.METADATA_MEDE8ER = _migrate_metadata(metadata_mede8er, 'Mede8er', use_banner)

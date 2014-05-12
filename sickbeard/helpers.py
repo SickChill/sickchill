@@ -285,21 +285,29 @@ def makeDir(path):
 
 
 def searchDBForShow(regShowName):
-    showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
+    showNames = [re.sub('[. -]', ' ', regShowName)]
 
     myDB = db.DBConnection()
 
     yearRegex = "([^()]+?)\s*(\()?(\d{4})(?(2)\))$"
 
     for showName in showNames:
-        # if we didn't get exactly one result then try again with the year stripped off if possible
-        match = re.match(yearRegex, showName)
-        if match and match.group(1):
-            logger.log(u"Unable to match original name but trying to manually strip and specify show year",
-                       logger.DEBUG)
-            sqlResults = myDB.select(
-                "SELECT * FROM tv_shows WHERE (show_name LIKE ? OR show_name LIKE ?) AND startyear = ?",
-                [match.group(1) + '%', match.group(1) + '%', match.group(3)])
+
+        sqlResults = myDB.select("SELECT * FROM tv_shows WHERE show_name LIKE ?",
+                                 [showName])
+
+        if len(sqlResults) == 1:
+            return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
+
+        else:
+            # if we didn't get exactly one result then try again with the year stripped off if possible
+            match = re.match(yearRegex, showName)
+            if match and match.group(1):
+                logger.log(u"Unable to match original name but trying to manually strip and specify show year",
+                           logger.DEBUG)
+                sqlResults = myDB.select(
+                    "SELECT * FROM tv_shows WHERE (show_name LIKE ?) AND startyear = ?",
+                    [match.group(1) + '%', match.group(3)])
 
             if len(sqlResults) == 0:
                 logger.log(u"Unable to match a record in the DB for " + showName, logger.DEBUG)
@@ -308,7 +316,7 @@ def searchDBForShow(regShowName):
                 logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name", logger.DEBUG)
                 continue
             else:
-                return int(sqlResults[0]["indexer_id"])
+                return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
 
     return
 
