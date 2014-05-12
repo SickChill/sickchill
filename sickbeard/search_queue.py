@@ -19,8 +19,6 @@
 from __future__ import with_statement
 
 import datetime
-import Queue
-import time
 import traceback
 import threading
 
@@ -33,11 +31,8 @@ from sickbeard import ui
 search_queue_lock = threading.Lock()
 
 BACKLOG_SEARCH = 10
-RSS_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
-SNATCH = 40
-
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -109,8 +104,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        didSearch = False
-
         try:
             logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
             searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj],False,True)
@@ -174,9 +167,6 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
-
-        fs = []
-        didSearch = False
 
         # check if we want to search for season packs instead of just season/episode
         seasonSearch = False
@@ -267,8 +257,6 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        fs = []
-        didSearch = False
         episodes = []
 
         for i, epObj in enumerate(episodes):
@@ -286,7 +274,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log(
-                "Beginning failed download search for episodes from Season [" + self.episodes[0].season + "]")
+                "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
             searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, False, True)
             if searchResult:
