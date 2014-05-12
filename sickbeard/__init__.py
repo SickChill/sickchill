@@ -1105,9 +1105,8 @@ def initialize(consoleLogging=True):
                                                                       cycleTime=datetime.timedelta(
                                                                       minutes=BACKLOG_FREQUENCY),
                                                                       threadName="BACKLOG",
-                                                                      runImmediately=True)
-        if not BACKLOG_STARTUP:
-            backlogSearchScheduler.silent = True
+                                                                      silent=True,
+                                                                      runImmediately=BACKLOG_STARTUP)
 
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),

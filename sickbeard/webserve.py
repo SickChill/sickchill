@@ -1087,10 +1087,6 @@ class ConfigSearch:
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
-        if sickbeard.BACKLOG_STARTUP:
-            sickbeard.backlogSearchScheduler.silent = False
-        else:
-            sickbeard.backlogSearchScheduler.silent = True
 
         sickbeard.SAB_USERNAME = sab_username
         sickbeard.SAB_PASSWORD = sab_password

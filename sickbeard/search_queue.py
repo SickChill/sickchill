@@ -133,7 +133,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.thread_name = 'BACKLOG-' + str(show.indexerid) + '-'
-
+        self.success = None
         self.show = show
         self.segment = segment
         self.wantedEpisodes = []
@@ -257,26 +257,22 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        episodes = []
+        for i, epObj in enumerate(self.episodes):
+            with epObj.lock:
+                (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
+                if release:
+                    logger.log(u"Marking release as bad: " + release)
+                    failed_history.markFailed(self.show, epObj.season, epObj.episode)
+                    failed_history.logFailed(release)
+                    history.logFailed(self.show.indexerid, epObj.season, epObj.episode, epObj.status, release, provider)
 
-        for i, epObj in enumerate(episodes):
-            (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
-            if release:
-                logger.log(u"Marking release as bad: " + release)
-                failed_history.markFailed(self.show, epObj.season, epObj.episode)
-                failed_history.logFailed(release)
-                history.logFailed(self.show.indexerid, epObj.season, epObj.episode, epObj.status, release, provider)
-
-                failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
-                episodes.append(epObj)
-
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+                    failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
 
         try:
             logger.log(
                 "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
-            searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, False, True)
+            searchResult = search.searchProviders(self, self.show, self.episodes[0].season, self.episodes, False, True)
             if searchResult:
                 self.success = SearchQueue().snatch_item(searchResult)
 

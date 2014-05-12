@@ -294,26 +294,30 @@ def filterSearchResults(show, results):
     foundResults = {}
 
     # make a list of all the results for this provider
-    for curEp in results.keys():
+    for curEp in results:
         # skip non-tv crap
         results[curEp] = filter(
             lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show),
             results[curEp])
 
-        if len(results[curEp]):
-            if curEp in foundResults:
-                foundResults[curEp] += results[curEp]
-            else:
-                foundResults[curEp] = results[curEp]
+        if curEp in foundResults:
+            foundResults[curEp] += results[curEp]
+        else:
+            foundResults[curEp] = results[curEp]
 
     return foundResults
 
 def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
+
     finalResults = []
-    didSearch = False
 
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+
+    if not len(providers):
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+                   logger.ERROR)
+        return []
 
     for provider in providers:
         foundResults = {provider.name:{}}
@@ -322,22 +326,16 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
             curResults = provider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-            return []
+            continue
         except Exception, e:
             logger.log(u"Error while searching " + provider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-            return []
-
-        didSearch = True
+            continue
 
         if not len(curResults):
             continue
 
-        curResults = filterSearchResults(show, curResults)
-        if len(curResults):
-            foundResults[provider.name] = curResults
-            logger.log(u"Provider search results: " + repr(foundResults), logger.DEBUG)
-
+        foundResults[provider.name] = filterSearchResults(show, curResults)
         if not len(foundResults[provider.name]):
             continue
 
@@ -345,8 +343,8 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
         # pick the best season NZB
         bestSeasonNZB = None
-        if SEASON_RESULT in foundResults:
-            bestSeasonNZB = pickBestResult(foundResults[SEASON_RESULT], show, anyQualities + bestQualities)
+        if SEASON_RESULT in foundResults[provider.name]:
+            bestSeasonNZB = pickBestResult(foundResults[provider.name][SEASON_RESULT], show, anyQualities + bestQualities)
 
         highest_quality_overall = 0
         for cur_episode in foundResults[provider.name]:
