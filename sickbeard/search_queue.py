@@ -133,7 +133,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.thread_name = 'BACKLOG-' + str(show.indexerid) + '-'
-
+        self.success = None
         self.show = show
         self.segment = segment
         self.wantedEpisodes = []

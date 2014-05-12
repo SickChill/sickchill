@@ -294,17 +294,16 @@ def filterSearchResults(show, results):
     foundResults = {}
 
     # make a list of all the results for this provider
-    for curEp in results.keys():
+    for curEp in results:
         # skip non-tv crap
         results[curEp] = filter(
             lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show),
             results[curEp])
 
-        if len(results[curEp]):
-            if curEp in foundResults:
-                foundResults[curEp] += results[curEp]
-            else:
-                foundResults[curEp] = results[curEp]
+        if curEp in foundResults:
+            foundResults[curEp] += results[curEp]
+        else:
+            foundResults[curEp] = results[curEp]
 
     return foundResults
 
