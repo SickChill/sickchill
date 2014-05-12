@@ -22,6 +22,7 @@ from __future__ import with_statement
 import unittest
 import sys, os.path
 import datetime
+import re
 
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
@@ -64,11 +65,16 @@ class XEMBasicTests(test.SickbeardTestDBCase):
                 print "There was an error creating the show"
 
     def test_formating(self):
-        release = "UFC.172.26th.April.2014.HDTV.x264.720p-Sir.Paul[rartv]"
-        # parse the name to break it into show name, season, and episode
-        np = NameParser(file)
-        parse_result = np.parse(release).convert()
-        airdate = parse_result.sports_event_date.toordinal()
+        name = "Game.of.Thrones.S03.720p.HDTV.x264-CtrlHD"
+        release = "Game of Thrones"
+
+        escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(release))
+        curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+        print(u"Checking if show " + name + " matches " + curRegex)
+
+        match = re.search(curRegex, name, re.I)
+        if match:
+            print(u"Matched " + curRegex + " to " + name)
 
         print(parse_result)
 

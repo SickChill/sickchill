@@ -64,11 +64,11 @@ UCM_NEEDPASSWORD = 2
 architecture_bits = ctypes.sizeof(ctypes.c_voidp)*8
 dll_name = "unrar.dll"
 if architecture_bits == 64:
-    dll_name = "unrar64.dll"
+    dll_name = "x64\\unrar64.dll"
     
     
 try:
-    unrar = ctypes.WinDLL(os.path.join(os.path.split(__file__)[0], dll_name))
+    unrar = ctypes.WinDLL(os.path.join(os.path.split(__file__)[0], 'UnRARDLL', dll_name))
 except WindowsError:
     unrar = ctypes.WinDLL(dll_name)
 
@@ -305,3 +305,5 @@ class RarFileImplementation(object):
                 self.needskip = False
                 res.append(info)
         return res
+
+

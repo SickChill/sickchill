@@ -1,0 +1,2 @@
+recursive-include UnRARDLL *.*
+include test.rar UnRAR2.html license.txt
