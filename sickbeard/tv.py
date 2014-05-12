@@ -1904,6 +1904,9 @@ class TVEpisode(object):
             result_name = result_name.replace('%rg', 'sickbeard')
             logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
 
+        if not replace_map['%RT']:
+            result_name = re.sub('([ _.-]*)%RT([ _.-]*)', r'\2', result_name)
+
         # split off ep name part only
         name_groups = re.split(r'[\\/]', result_name)
 
