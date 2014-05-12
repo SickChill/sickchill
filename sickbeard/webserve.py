@@ -1051,7 +1051,7 @@ class ConfigSearch:
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
-                   nzb_method=None, torrent_method=None, usenet_retention=None, search_frequency=None,
+                   nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
                    download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
@@ -1065,7 +1065,7 @@ class ConfigSearch:
         if not config.change_TORRENT_DIR(torrent_dir):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
-        config.change_SEARCH_FREQUENCY(search_frequency)
+        config.change_RSSUPDATE_FREQUENCY(rssupdate_frequency)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -1084,6 +1084,8 @@ class ConfigSearch:
 
         sickbeard.PREFER_EPISODE_RELEASES = config.checkbox_to_value(prefer_episode_releases)
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+
+        config.change_BACKLOG_FREQUENCY(backlog_frequency)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
         if sickbeard.BACKLOG_STARTUP:
             sickbeard.backlogSearchScheduler.silent = False

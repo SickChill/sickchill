@@ -21,12 +21,12 @@ import os.path
 import datetime
 import re
 import time
+import sickbeard
+
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
-
-import sickbeard
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
@@ -157,13 +157,21 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
     return True
 
 
-def change_SEARCH_FREQUENCY(freq):
-    sickbeard.SEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
+def change_RSSUPDATE_FREQUENCY(freq):
+    sickbeard.RSSUPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
 
-    if sickbeard.SEARCH_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
-        sickbeard.SEARCH_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+    if sickbeard.RSSUPDATE_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
+        sickbeard.RSSUPDATE_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
 
-    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.get_backlog_cycle_time())
+    sickbeard.updateRSSScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.RSSUPDATE_FREQUENCY)
+
+def change_BACKLOG_FREQUENCY(freq):
+    sickbeard.BACKLOG_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
+
+    if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
+        sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+
+    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
 
 def change_UPDATE_FREQUENCY(freq):
     sickbeard.UPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)

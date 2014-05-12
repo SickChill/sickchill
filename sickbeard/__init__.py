@@ -173,9 +173,9 @@ DOWNLOAD_PROPERS = None
 PREFER_EPISODE_RELEASES = None
 ALLOW_HIGH_PRIORITY = None
 
-SEARCH_FREQUENCY = None
+RSSUPDATE_FREQUENCY = None
 UPDATE_FREQUENCY = None
-BACKLOG_SEARCH_FREQUENCY = 21
+BACKLOG_FREQUENCY = 21
 BACKLOG_STARTUP = None
 
 MIN_SEARCH_FREQUENCY = 10
@@ -479,11 +479,6 @@ TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 __INITIALIZED__ = False
 
 
-def get_backlog_cycle_time():
-    cycletime = SEARCH_FREQUENCY * 2 + 7
-    return max([cycletime, 720])
-
-
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -501,7 +496,7 @@ def initialize(consoleLogging=True):
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, EZRSS, TVTORRENTS, TVTORRENTS_DIGEST, TVTORRENTS_HASH, TVTORRENTS_OPTIONS, BTN, BTN_API_KEY, BTN_OPTIONS, \
             THEPIRATEBAY, THEPIRATEBAY_TRUSTED, THEPIRATEBAY_PROXY, THEPIRATEBAY_PROXY_URL, THEPIRATEBAY_BLACKLIST, THEPIRATEBAY_OPTIONS, TORRENTLEECH, TORRENTLEECH_USERNAME, TORRENTLEECH_PASSWORD, TORRENTLEECH_OPTIONS, \
             IPTORRENTS, IPTORRENTS_USERNAME, IPTORRENTS_PASSWORD, IPTORRENTS_FREELEECH, IPTORRENTS_OPTIONS, KAT, KAT_VERIFIED, KAT_OPTIONS, PUBLICHD, PUBLICHD_OPTIONS, SCC, SCC_USERNAME, SCC_PASSWORD, SCC_OPTIONS, HDTORRENTS, HDTORRENTS_USERNAME, HDTORRENTS_PASSWORD, HDTORRENTS_UID, HDTORRENTS_HASH, HDTORRENTS_OPTIONS, TORRENTDAY, TORRENTDAY_USERNAME, TORRENTDAY_PASSWORD, TORRENTDAY_UID, TORRENTDAY_HASH, TORRENTDAY_FREELEECH, TORRENTDAY_OPTIONS, \
-            HDBITS, HDBITS_USERNAME, HDBITS_PASSKEY, HDBITS_OPTIONS, TORRENT_DIR, USENET_RETENTION, SOCKET_TIMEOUT, SEARCH_FREQUENCY, DEFAULT_SEARCH_FREQUENCY, BACKLOG_SEARCH_FREQUENCY, BACKLOG_STARTUP, INDEXER_DEFAULT, \
+            HDBITS, HDBITS_USERNAME, HDBITS_PASSKEY, HDBITS_OPTIONS, TORRENT_DIR, USENET_RETENTION, SOCKET_TIMEOUT, RSSUPDATE_FREQUENCY, DEFAULT_SEARCH_FREQUENCY, BACKLOG_FREQUENCY, BACKLOG_STARTUP, INDEXER_DEFAULT, \
             NEXTGEN, NEXTGEN_USERNAME, NEXTGEN_PASSWORD, NEXTGEN_FREELEECH, NEXTGEN_OPTIONS, SPEEDCD, SPEEDCD_USERNAME, SPEEDCD_PASSWORD, SPEEDCD_FREELEECH,\
             EZRSS_RATIO, TVTORRENTS_RATIO, BTN_RATIO, THEPIRATEBAY_RATIO, TORRENTLEECH_RATIO, IPTORRENTS_RATIO, KAT_RATIO, PUBLICHD_RATIO, TORRENTDAY_RATIO, SCC_RATIO, HDTORRENTS_RATIO, HDBITS_RATIO, NEXTGEN_RATIO, SPEEDCD_RATIO, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, \
@@ -670,9 +665,13 @@ def initialize(consoleLogging=True):
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        SEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'search_frequency', 40)
-        if SEARCH_FREQUENCY < MIN_SEARCH_FREQUENCY:
-            SEARCH_FREQUENCY = MIN_SEARCH_FREQUENCY
+        RSSUPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'rssupdate_frequency', 40)
+        if RSSUPDATE_FREQUENCY < MIN_SEARCH_FREQUENCY:
+            RSSUPDATE_FREQUENCY = MIN_SEARCH_FREQUENCY
+
+        BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', 40)
+        if BACKLOG_FREQUENCY < MIN_SEARCH_FREQUENCY:
+            BACKLOG_FREQUENCY = MIN_SEARCH_FREQUENCY
 
         UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', 12)
         if UPDATE_FREQUENCY < MIN_UPDATE_FREQUENCY:
@@ -1063,7 +1062,7 @@ def initialize(consoleLogging=True):
                                                     runImmediately=True)
 
         updateRSSScheduler = scheduler.Scheduler(rssupdater.RSSUpdater(),
-                                                 cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),
+                                                 cycleTime=datetime.timedelta(minutes=RSSUPDATE_FREQUENCY),
                                                  threadName="RSSUPDATER",
                                                  silent=True,
                                                  runImmediately=True)
@@ -1104,10 +1103,9 @@ def initialize(consoleLogging=True):
 
         backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
                                                                       cycleTime=datetime.timedelta(
-                                                                      minutes=get_backlog_cycle_time()),
+                                                                      minutes=BACKLOG_FREQUENCY),
                                                                       threadName="BACKLOG",
                                                                       runImmediately=True)
-        backlogSearchScheduler.action.cycleTime = BACKLOG_SEARCH_FREQUENCY
         if not BACKLOG_STARTUP:
             backlogSearchScheduler.silent = True
 
@@ -1379,7 +1377,8 @@ def save_config():
     new_config['General']['nzb_method'] = NZB_METHOD
     new_config['General']['torrent_method'] = TORRENT_METHOD
     new_config['General']['usenet_retention'] = int(USENET_RETENTION)
-    new_config['General']['search_frequency'] = int(SEARCH_FREQUENCY)
+    new_config['General']['rssupdate_frequency'] = int(RSSUPDATE_FREQUENCY)
+    new_config['General']['backlog_frequency'] = int(BACKLOG_FREQUENCY)
     new_config['General']['update_frequency'] = int(UPDATE_FREQUENCY)
     new_config['General']['download_propers'] = int(DOWNLOAD_PROPERS)
     new_config['General']['prefer_episode_releases'] = int(PREFER_EPISODE_RELEASES)
