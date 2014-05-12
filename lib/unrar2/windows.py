@@ -23,9 +23,10 @@
 # Low level interface - see UnRARDLL\UNRARDLL.TXT
 
 from __future__ import generators
-from shutil import copyfile
-import ctypes.wintypes
-import os.path
+
+import ctypes, ctypes.wintypes
+import os, os.path, sys
+import Queue
 import time
 
 from rar_exceptions import *
@@ -63,10 +64,11 @@ UCM_NEEDPASSWORD = 2
 architecture_bits = ctypes.sizeof(ctypes.c_voidp)*8
 dll_name = "unrar.dll"
 if architecture_bits == 64:
-    dll_name = "unrar64.dll"
-
+    dll_name = "x64\\unrar64.dll"
+    
+    
 try:
-    unrar = ctypes.WinDLL(os.path.join(os.path.dirname(__file__), dll_name))
+    unrar = ctypes.WinDLL(os.path.join(os.path.split(__file__)[0], 'UnRARDLL', dll_name))
 except WindowsError:
     unrar = ctypes.WinDLL(dll_name)
 
