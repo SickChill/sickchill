@@ -258,6 +258,10 @@ class GenericProvider:
             else:
                 searchItems[epObj] = itemList
 
+        # if we have cached results return them.
+        if len(results):
+            return results
+
         for ep_obj, items in searchItems.items():
             for item in items:
 
