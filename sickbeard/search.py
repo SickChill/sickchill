@@ -309,7 +309,12 @@ def filterSearchResults(show, results):
     return foundResults
 
 def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manualSearch=False):
-    logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
+    if show:
+        logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
+    else:
+        logger.log(u"Attempting to search for stuff from nonexistent show. Failing.", logger.ERROR)
+        return False
+
     finalResults = []
     didSearch = False
 
