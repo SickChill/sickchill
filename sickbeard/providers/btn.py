@@ -192,27 +192,39 @@ class BTNProvider(generic.TorrentProvider):
         search_params = []
 
         name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
-        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
-            for name in name_exceptions:
+        for name in name_exceptions:
 
-                current_params = {}
+            current_params = {}
 
-                if self.show.indexer == 1:
-                    current_params['tvdb'] = self.show.indexerid
-                elif self.show.indexer == 2:
-                    current_params['tvrage'] = self.show.indexerid
-                else:
-                    # Search by name if we don't have tvdb or tvrage id
-                    current_params['series'] = sanitizeSceneName(name)
+            if self.show.indexer == 1:
+                current_params['tvdb'] = self.show.indexerid
+            elif self.show.indexer == 2:
+                current_params['tvrage'] = self.show.indexerid
+            else:
+                # Search by name if we don't have tvdb or tvrage id
+                current_params['series'] = sanitizeSceneName(name)
 
-                # Search for entire seasons: no need to do special things for air by date shows
-                whole_season_params = current_params.copy()
-                whole_season_params['category'] = 'Season'
-                if not (ep_obj.show.air_by_date or ep_obj.show.sports):
-                    whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
-                elif ep_obj.show.air_by_date or ep_obj.show.sports:
-                    whole_season_params['name'] = self._get_episode_search_strings(ep_obj)[0]['name']
-                search_params.append(whole_season_params)
+            # Search for entire seasons: no need to do special things for air by date shows
+            whole_season_params = current_params.copy()
+            partial_season_params = current_params.copy()
+
+            # Search for entire seasons: no need to do special things for air by date shows
+            whole_season_params['category'] = 'Season'
+            whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
+
+            search_params.append(whole_season_params)
+
+            # Search for episodes in the season
+            partial_season_params['category'] = 'Episode'
+
+            if ep_obj.show.air_by_date or ep_obj.show.sports:
+                # Search for the year of the air by date show
+                partial_season_params['name'] = str(ep_obj.airdate).split('-')[0]
+            else:
+                # Search for any result which has Sxx in the name
+                partial_season_params['name'] = 'S%02d' % int(ep_obj.scene_season)
+
+            search_params.append(partial_season_params)
 
         return search_params
 
@@ -236,7 +248,7 @@ class BTNProvider(generic.TorrentProvider):
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
-        if self.show.sports:
+        elif self.show.sports:
             date_str = str(ep_obj.airdate)
 
             # BTN uses dots in dates, we just search for the date since that
