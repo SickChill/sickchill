@@ -314,6 +314,11 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
+    if not len(providers):
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+                   logger.ERROR)
+        return []
+
     for provider in providers:
         foundResults = {provider.name:{}}
 
@@ -321,22 +326,16 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
             curResults = provider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-            return []
+            continue
         except Exception, e:
             logger.log(u"Error while searching " + provider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-            return []
-
-        didSearch = True
+            continue
 
         if not len(curResults):
             continue
 
-        curResults = filterSearchResults(show, curResults)
-        if len(curResults):
-            foundResults[provider.name] = curResults
-            logger.log(u"Provider search results: " + repr(foundResults), logger.DEBUG)
-
+        foundResults[provider.name] = filterSearchResults(show, curResults)
         if not len(foundResults[provider.name]):
             continue
 

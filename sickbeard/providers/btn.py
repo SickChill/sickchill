@@ -311,7 +311,7 @@ class BTNCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
 
-        # At least 15 minutes between queries
+            # At least 15 minutes between queries
         self.minTime = 15
 
     def updateCache(self):
