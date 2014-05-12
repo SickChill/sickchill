@@ -230,15 +230,15 @@ class GenericProvider:
         itemList = []
 
         for epObj in episodes:
-            cacheResult = self.cache.searchCache(epObj, manualSearch)
-            if len(cacheResult):
-                results.update(cacheResult)
-                continue
-
             if not epObj.show.air_by_date:
                 if epObj.scene_season == 0 or epObj.scene_episode == 0:
                     logger.log(u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
                     continue
+
+            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            if len(cacheResult):
+                results.update(cacheResult)
+                continue
 
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):
