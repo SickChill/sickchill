@@ -257,18 +257,16 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        episodes = []
+        for i, epObj in enumerate(self.episodes):
+            with epObj.lock:
+                (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
+                if release:
+                    logger.log(u"Marking release as bad: " + release)
+                    failed_history.markFailed(self.show, epObj.season, epObj.episode)
+                    failed_history.logFailed(release)
+                    history.logFailed(self.show.indexerid, epObj.season, epObj.episode, epObj.status, release, provider)
 
-        for i, epObj in enumerate(episodes):
-            (release, provider) = failed_history.findRelease(self.show, epObj.season, epObj.episode)
-            if release:
-                logger.log(u"Marking release as bad: " + release)
-                failed_history.markFailed(self.show, epObj.season, epObj.episode)
-                failed_history.logFailed(release)
-                history.logFailed(self.show.indexerid, epObj.season, epObj.episode, epObj.status, release, provider)
-
-                failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
-                episodes.append(epObj)
+                    failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
 
         try:
             logger.log(
