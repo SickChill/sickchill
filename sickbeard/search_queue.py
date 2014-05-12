@@ -270,13 +270,11 @@ class FailedQueueItem(generic_queue.QueueItem):
                 failed_history.revertEpisode(self.show, epObj.season, epObj.episode)
                 episodes.append(epObj)
 
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
-
         try:
             logger.log(
                 "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
-            searchResult = search.searchProviders(self.show, self.episodes[0].season, self.episodes, False, True)
+            searchResult = search.searchProviders(self, self.show, self.episodes[0].season, self.episodes, False, True)
             if searchResult:
                 self.success = SearchQueue().snatch_item(searchResult)
 
