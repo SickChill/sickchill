@@ -142,7 +142,7 @@ class SCCProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _isSection(section, text):
+    def _isSection(self, section, text):
         title = '<title>.+? \| %s</title>' % section
         if re.search(title, text, re.IGNORECASE):
             return True
