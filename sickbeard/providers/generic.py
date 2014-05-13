@@ -265,7 +265,6 @@ class GenericProvider:
         for ep_obj, items in searchItems.items():
             for item in items:
 
-
                 (title, url) = self._get_title_and_url(item)
 
                 quality = self.getQuality(item)
@@ -299,6 +298,11 @@ class GenericProvider:
                         logger.log(
                             u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
                             logger.DEBUG)
+                        continue
+
+                    if parse_result.air_date != ep_obj.airdate:
+                        logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
+                                   logger.DEBUG)
                         continue
 
                     myDB = db.DBConnection()
