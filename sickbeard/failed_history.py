@@ -104,6 +104,8 @@ def hasFailed(release, size, provider="%"):
     is found with any provider.
     """
 
+    release = prepareFailedName(release)
+
     myDB = db.DBConnection("failed.db")
     sql_results = myDB.select(
         "SELECT * FROM failed WHERE release=? AND size=? AND provider LIKE ?",
@@ -136,9 +138,6 @@ def revertEpisode(epObj):
     except EpisodeNotFoundException, e:
         logger.log(u"Unable to create episode, please set its status manually: " + ex(e),
                                logger.WARNING)
-            
-    return
-
 
 def markFailed(epObj):
     log_str = u""
@@ -160,7 +159,6 @@ def logSnatch(searchResult):
 
     logDate = datetime.datetime.today().strftime(dateFormat)
     release = prepareFailedName(searchResult.name)
-
 
     providerClass = searchResult.provider
     if providerClass is not None:
@@ -191,7 +189,6 @@ def trimHistory():
     myDB = db.DBConnection("failed.db")
     myDB.action("DELETE FROM history WHERE date < " + str(
         (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(dateFormat)))
-
 
 def findRelease(epObj):
     """
