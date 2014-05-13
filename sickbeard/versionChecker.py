@@ -27,6 +27,7 @@ import tarfile
 import stat
 import traceback
 import gh_api as github
+import threading
 
 import sickbeard
 from sickbeard import helpers
@@ -57,23 +58,27 @@ class CheckVersion():
             self.updater = None
 
     def run(self):
+        updated = None
         if self.check_for_new_version():
             if sickbeard.AUTO_UPDATE:
                 logger.log(u"New update found for SickRage, starting auto-updater ...")
                 updated = sickbeard.versionCheckScheduler.action.update()
                 if updated:
                     logger.log(u"Update was successfull, restarting SickRage ...")
-                    sickbeard.restart(False)
 
-        # refresh scene exceptions too
-        scene_exceptions.retrieve_exceptions()
+                    # do a soft restart
+                    threading.Timer(2, sickbeard.invoke_restart, [False]).start()
 
-        # refresh network timezones
-        network_timezones.update_network_dict()
+        if not updated:
+            # refresh scene exceptions too
+            scene_exceptions.retrieve_exceptions()
 
-        # sure, why not?
-        if sickbeard.USE_FAILED_DOWNLOADS:
-            failed_history.trimHistory()
+            # refresh network timezones
+            network_timezones.update_network_dict()
+
+            # sure, why not?
+            if sickbeard.USE_FAILED_DOWNLOADS:
+                failed_history.trimHistory()
 
     def find_install_type(self):
         """

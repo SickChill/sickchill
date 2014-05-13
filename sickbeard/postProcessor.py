@@ -625,7 +625,6 @@ class PostProcessor(object):
 
             # detect and convert scene numbered releases
             season, cur_episode = sickbeard.scene_numbering.get_indexer_numbering(indexer_id,indexer,season,cur_episode)
-            self._log(u"Episode object has been scene converted to " + str(season) + "x" + str(cur_episode), logger.DEBUG)
 
             # now that we've figured out which episode this file is just load it manually
             try:
@@ -633,6 +632,9 @@ class PostProcessor(object):
             except exceptions.EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise exceptions.PostProcessingFailed()
+
+            self._log(u"Episode object has been converted from Scene numbering " + str(curEp.scene_season) + "x" + str(
+                curEp.scene_episode) + " to Indexer numbering" + str(curEp.season) + "x" + str(curEp.episode))
 
             # associate all the episodes together under a single root episode
             if root_ep == None:

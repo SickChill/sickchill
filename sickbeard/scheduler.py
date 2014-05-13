@@ -27,7 +27,7 @@ from sickbeard.exceptions import ex
 
 class Scheduler:
     def __init__(self, action, cycleTime=datetime.timedelta(minutes=10), runImmediately=True,
-                 threadName="ScheduledThread", silent=False, runOnce=False):
+                 threadName="ScheduledThread", silent=False):
 
         if runImmediately:
             self.lastRun = datetime.datetime.fromordinal(1)
@@ -44,7 +44,6 @@ class Scheduler:
         self.initThread()
 
         self.abort = False
-        self.runOnce = runOnce
 
     def initThread(self):
         if self.thread == None or not self.thread.isAlive():
@@ -76,7 +75,7 @@ class Scheduler:
                     logger.log(u"Exception generated in thread " + self.threadName + ": " + ex(e), logger.ERROR)
                     logger.log(repr(traceback.format_exc()), logger.DEBUG)
 
-            if self.abort or self.runOnce:
+            if self.abort:
                 self.abort = False
                 self.thread = None
                 return

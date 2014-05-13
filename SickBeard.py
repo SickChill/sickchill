@@ -2,20 +2,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # Check needed software dependencies to nudge users to fix their setup
 import sys
@@ -96,9 +96,10 @@ def daemonize():
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
-            sys.exit(0)
+            os._exit(0)
     except OSError, e:
-        raise RuntimeError("1st fork failed: %s [%d]" % (e.strerror, e.errno))
+        sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+        sys.exit(1)
 
     os.setsid()  # @UndefinedVariable - only available in UNIX
 
@@ -110,18 +111,33 @@ def daemonize():
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
-            sys.exit(0)
+            os._exit(0)
     except OSError, e:
-        raise RuntimeError("2nd fork failed: %s [%d]" % (e.strerror, e.errno))
+        sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+        sys.exit(1)
 
-    dev_null = file('/dev/null', 'r')
-    os.dup2(dev_null.fileno(), sys.stdin.fileno())
-
+    # Write pid
     if sickbeard.CREATEPID:
         pid = str(os.getpid())
-        logger.log(u"Writing PID " + pid + " to " + str(sickbeard.PIDFILE))
-        file(sickbeard.PIDFILE, 'w').write("%s\n" % pid)
+        logger.log(u"Writing PID: " + pid + " to " + str(sickbeard.PIDFILE))
+        try:
+            file(sickbeard.PIDFILE, 'w').write("%s\n" % pid)
+        except IOError, e:
+            logger.log_error_and_exit(
+                u"Unable to write PID file: " + sickbeard.PIDFILE + " Error: " + str(e.strerror) + " [" + str(
+                    e.errno) + "]")
 
+    # Redirect all output
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    devnull = getattr(os, 'devnull', '/dev/null')
+    stdin = file(devnull, 'r')
+    stdout = file(devnull, 'a+')
+    stderr = file(devnull, 'a+')
+    os.dup2(stdin.fileno(), sys.stdin.fileno())
+    os.dup2(stdout.fileno(), sys.stdout.fileno())
+    os.dup2(stderr.fileno(), sys.stderr.fileno())
 
 def main():
     """
@@ -134,8 +150,8 @@ def main():
     sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
     sickbeard.DATA_DIR = sickbeard.PROG_DIR
     sickbeard.MY_ARGS = sys.argv[1:]
-    sickbeard.CREATEPID = False
     sickbeard.DAEMON = False
+    sickbeard.CREATEPID = False
 
     sickbeard.SYS_ENCODING = None
 
@@ -157,7 +173,7 @@ def main():
         # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
         sys.setdefaultencoding(sickbeard.SYS_ENCODING)
     except:
-        print 'Sorry, you MUST add the Sick Beard folder to the PYTHONPATH environment variable'
+        print 'Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable'
         print 'or find another way to force Python to use ' + sickbeard.SYS_ENCODING + ' for string encoding.'
         sys.exit(1)
 
@@ -196,13 +212,15 @@ def main():
         if o in ('-p', '--port'):
             forcedPort = int(a)
 
-        # Run as a daemon
+        # Run as a double forked daemon
         if o in ('-d', '--daemon'):
+            sickbeard.DAEMON = True
+            # When running as daemon disable consoleLogging and don't start browser
+            consoleLogging = False
+            noLaunch = True
+
             if sys.platform == 'win32':
-                print "Daemonize not supported under Windows, starting normally"
-            else:
-                consoleLogging = False
-                sickbeard.DAEMON = True
+                sickbeard.DAEMON = False
 
         # Specify folder to load the config file from
         if o in ('--config',):
@@ -214,21 +232,27 @@ def main():
 
         # Write a pidfile if requested
         if o in ('--pidfile',):
+            sickbeard.CREATEPID = True
             sickbeard.PIDFILE = str(a)
 
             # If the pidfile already exists, sickbeard may still be running, so exit
             if os.path.exists(sickbeard.PIDFILE):
-                sys.exit("PID file '" + sickbeard.PIDFILE + "' already exists. Exiting.")
+                sys.exit("PID file: " + sickbeard.PIDFILE + " already exists. Exiting.")
 
-            # The pidfile is only useful in daemon mode, make sure we can write the file properly
-            if sickbeard.DAEMON:
-                sickbeard.CREATEPID = True
-                try:
-                    file(sickbeard.PIDFILE, 'w').write("pid\n")
-                except IOError, e:
-                    raise SystemExit("Unable to write PID file: %s [%d]" % (e.strerror, e.errno))
-            else:
-                logger.log(u"Not running in daemon mode. PID file creation disabled.")
+    # The pidfile is only useful in daemon mode, make sure we can write the file properly
+    if sickbeard.CREATEPID:
+        if sickbeard.DAEMON:
+            pid_dir = os.path.dirname(sickbeard.PIDFILE)
+            if not os.access(pid_dir, os.F_OK):
+                sys.exit("PID dir: " + pid_dir + " doesn't exist. Exiting.")
+            if not os.access(pid_dir, os.W_OK):
+                sys.exit("PID dir: " + pid_dir + " must be writable (write permissions). Exiting.")
+
+        else:
+            if consoleLogging:
+                sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
+
+            sickbeard.CREATEPID = False
 
     # If they don't specify a config file then put it in the data dir
     if not sickbeard.CONFIG_FILE:
@@ -255,7 +279,7 @@ def main():
     os.chdir(sickbeard.DATA_DIR)
 
     if consoleLogging:
-        print "Starting up Sick Beard " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
+        print "Starting up SickRage " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
 
     # Load the config and publish it to the sickbeard package
     if not os.path.isfile(sickbeard.CONFIG_FILE):
@@ -263,16 +287,16 @@ def main():
 
     sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
-    CUR_DB_VERSION = db.DBConnection().checkDBVersion() 
+    CUR_DB_VERSION = db.DBConnection().checkDBVersion()
     if CUR_DB_VERSION > 0:
         if CUR_DB_VERSION < MIN_DB_VERSION:
-            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of Sick Beard (" + str(MIN_DB_VERSION) + ").\n" + \
+            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of SickRage (" + str(MIN_DB_VERSION) + ").\n" + \
                              "Upgrade using a previous version of SB first, or start with no database file to begin fresh.")
         if CUR_DB_VERSION > MAX_DB_VERSION:
-            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of Sick Beard supports (" + str(MAX_DB_VERSION) + ").\n" + \
-                             "If you have used other forks of SB, your database may be unusable due to their modifications.")    
-            
-    # Initialize the config and our threads
+            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of SickRage supports (" + str(MAX_DB_VERSION) + ").\n" + \
+                             "If you have used other forks of SB, your database may be unusable due to their modifications.")
+
+            # Initialize the config and our threads
     sickbeard.initialize(consoleLogging=consoleLogging)
 
     sickbeard.showList = []
@@ -306,17 +330,17 @@ def main():
 
     try:
         initWebServer({
-                      'port': startPort,
-                      'host': webhost,
-                      'data_root': os.path.join(sickbeard.PROG_DIR, 'gui/'+sickbeard.GUI_NAME),
-                      'web_root': sickbeard.WEB_ROOT,
-                      'log_dir': log_dir,
-                      'username': sickbeard.WEB_USERNAME,
-                      'password': sickbeard.WEB_PASSWORD,
-                      'enable_https': sickbeard.ENABLE_HTTPS,
-                      'https_cert': sickbeard.HTTPS_CERT,
-                      'https_key': sickbeard.HTTPS_KEY,
-                      })
+            'port': startPort,
+            'host': webhost,
+            'data_root': os.path.join(sickbeard.PROG_DIR, 'gui/'+sickbeard.GUI_NAME),
+            'web_root': sickbeard.WEB_ROOT,
+            'log_dir': log_dir,
+            'username': sickbeard.WEB_USERNAME,
+            'password': sickbeard.WEB_PASSWORD,
+            'enable_https': sickbeard.ENABLE_HTTPS,
+            'https_cert': sickbeard.HTTPS_CERT,
+            'https_key': sickbeard.HTTPS_KEY,
+            })
     except IOError:
         logger.log(u"Unable to start web server, is something else running on port %d?" % startPort, logger.ERROR)
         if sickbeard.LAUNCH_BROWSER and not sickbeard.DAEMON:
@@ -341,11 +365,12 @@ def main():
 
     # Stay alive while my threads do the work
     while (True):
-        time.sleep(1)
 
         if sickbeard.invoked_command:
             sickbeard.invoked_command()
             sickbeard.invoked_command = None
+
+        time.sleep(1)
 
     return
 

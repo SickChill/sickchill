@@ -233,7 +233,6 @@ def pickBestResult(results, show, quality_list=None):
 
     return bestResult
 
-
 def isFinalResult(result):
     """
     Checks if the given result is good enough quality that we can stop searching for other ones.

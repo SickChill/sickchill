@@ -205,7 +205,9 @@ class TVShow(object):
             if ep != None:
                 self.episodes[season][episode] = ep
 
-        return self.episodes[season][episode]
+        epObj = self.episodes[season][episode]
+        epObj.convertToSceneNumbering()
+        return epObj
 
     def should_update(self, update_date=datetime.date.today()):
 
@@ -1157,8 +1159,6 @@ class TVEpisode(object):
         self.lock = threading.Lock()
 
         self.specifyEpisode(self.season, self.episode)
-
-        self.convertToSceneNumbering()
 
         self.relatedEps = []
 
