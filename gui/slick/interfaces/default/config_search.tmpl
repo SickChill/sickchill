@@ -108,10 +108,17 @@
                             </label>
                         </div>
                         <div class="field-pair">
+                            <input type="checkbox" name="rssupdate_startup" id="backlog_startup" #if $sickbeard.RSSUPDATE_STARTUP == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="rssupdate_startup">
+                                <span class="component title">RSS Cache Updates on startup</span>
+                                <span class="component-desc">Start RSS Cache updates upon startup of SickRage?</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
                             <input type="checkbox" name="backlog_startup" id="backlog_startup" #if $sickbeard.BACKLOG_STARTUP == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="backlog_startup">
                                 <span class="component title">Process backlog on startup</span>
-                                <span class="component-desc">Start processing backlogged episodes upon startup of Sick Beard?</span>
+                                <span class="component-desc">Start processing backlogged episodes upon startup of SickRage?</span>
                             </label>
                         </div>
 

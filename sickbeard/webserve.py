@@ -1053,7 +1053,7 @@ class ConfigSearch:
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
                    download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
-                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
+                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None, rssupdate_startup=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
 
@@ -1086,6 +1086,7 @@ class ConfigSearch:
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
+        sickbeard.RSSUPDATE_STARTUP = config.checkbox_to_value(rssupdate_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
 
         sickbeard.SAB_USERNAME = sab_username
