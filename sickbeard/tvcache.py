@@ -232,7 +232,7 @@ class TVCache():
         # if we don't have complete info then parse the filename to get it
         try:
             myParser = NameParser()
-            parse_result = myParser.parse(name)
+            parse_result = myParser.parse(name).convert()
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
@@ -254,13 +254,6 @@ class TVCache():
             showResult = helpers.searchDBForShow(parse_result.series_name)
             if showResult:
                 indexerid = int(showResult[0])
-
-        # if not indexerid:
-        #     for curShow in sickbeard.showList:
-        #         if curShow.name == parse_result.series_name:
-        #             if show_name_helpers.isGoodResult(name, curShow, False):
-        #                 indexerid = int(curShow.indexerid)
-        #                 break
 
         showObj = None
         if indexerid:
@@ -327,14 +320,14 @@ class TVCache():
     def findNeededEpisodes(self, epObj=None, manualSearch=False):
         neededEps = {}
 
-        myDB = self._getDB()
+        cacheDB = self._getDB()
 
         if not epObj:
-            sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
+            sqlResults = cacheDB.select("SELECT * FROM [" + self.providerID + "]")
         else:
-            sqlResults = myDB.select(
+            sqlResults = cacheDB.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [epObj.show.indexerid, epObj.scene_season, "%|" + str(epObj.scene_episode) + "|%"])
+                [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"])
 
         # for each cache entry
         for curResult in sqlResults:
@@ -386,9 +379,9 @@ class TVCache():
 
                 # add it to the list
                 if epObj not in neededEps:
-                    neededEps[epObj] = [result]
+                    neededEps[epObj.episode] = [result]
                 else:
-                    neededEps[epObj].append(result)
+                    neededEps[epObj.episode].append(result)
 
         return neededEps
 

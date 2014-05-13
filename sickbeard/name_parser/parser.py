@@ -377,7 +377,10 @@ class ParseResult(object):
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 
-        self.show = helpers.get_show_by_name(self.series_name)
+        showResult = helpers.searchDBForShow(self.series_name)
+        if showResult:
+            self.show = helpers.findCertainShow(sickbeard.showList, int(showResult[0]))
+
         if not self.show:
             return self
 
