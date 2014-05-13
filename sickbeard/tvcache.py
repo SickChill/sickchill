@@ -245,7 +245,7 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        cacheResult = sickbeard.name_cache.retrieveNameFromCache(name)
+        cacheResult = sickbeard.name_cache.retrieveNameFromCache(parse_result.series_name)
         if cacheResult:
             in_cache = True
             indexerid = int(cacheResult)
@@ -255,11 +255,12 @@ class TVCache():
             if showResult:
                 indexerid = int(showResult[0])
 
-        if not indexerid:
-            for curShow in sickbeard.showList:
-                if show_name_helpers.isGoodResult(name, curShow, False):
-                    indexerid = int(curShow.indexerid)
-                    break
+        # if not indexerid:
+        #     for curShow in sickbeard.showList:
+        #         if curShow.name == parse_result.series_name:
+        #             if show_name_helpers.isGoodResult(name, curShow, False):
+        #                 indexerid = int(curShow.indexerid)
+        #                 break
 
         showObj = None
         if indexerid:
@@ -281,7 +282,7 @@ class TVCache():
                 season = int(sql_results[0]["season"])
                 episodes = [int(sql_results[0]["episode"])]
         else:
-            season = parse_result.season_number
+            season = parse_result.season_number if parse_result.season_number != None else 1
             episodes = parse_result.episode_numbers
 
         if season and episodes:
@@ -301,7 +302,7 @@ class TVCache():
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             if not in_cache:
-                sickbeard.name_cache.addNameToCache(name, indexerid)
+                sickbeard.name_cache.addNameToCache(parse_result.series_name, indexerid)
 
             return [
                 "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
