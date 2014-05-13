@@ -1259,11 +1259,20 @@ def halt():
             __INITIALIZED__ = False
 
 
+def remove_pid_file(PIDFILE):
+    try:
+        if os.path.exists(PIDFILE):
+            os.remove(PIDFILE)
+
+    except (IOError, OSError):
+        return False
+
+    return True
+
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         saveAndShutdown()
-
 
 def saveAll():
     global showList
@@ -1288,7 +1297,7 @@ def saveAndShutdown(restart=False):
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
-        os.remove(PIDFILE)
+        remove_pid_file(PIDFILE)
 
     if restart:
         install_type = versionCheckScheduler.action.install_type
@@ -1310,7 +1319,7 @@ def saveAndShutdown(restart=False):
             popen_list += MY_ARGS
             if '--nolaunch' not in popen_list:
                 popen_list += ['--nolaunch']
-            logger.log(u"Restarting Sick Beard with " + str(popen_list))
+            logger.log(u"Restarting SickRage with " + str(popen_list))
             logger.close()
             subprocess.Popen(popen_list, cwd=os.getcwd())
 
