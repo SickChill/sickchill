@@ -319,7 +319,7 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
                    logger.ERROR)
         return []
 
-    for provider in providers:
+    for providerNum, provider in enumerate(providers):
         foundResults = {provider.name:{}}
 
         try:
@@ -523,20 +523,25 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
             finalResults.append(bestResult)
 
-            logger.log(u"Checking if we should snatch " + bestResult.name, logger.DEBUG)
-            any_qualities, best_qualities = Quality.splitQuality(show.quality)
+            if manualSearch:
+                logger.log(u"Checking if we should snatch " + bestResult.name, logger.DEBUG)
+                any_qualities, best_qualities = Quality.splitQuality(show.quality)
 
-            # if there is a redownload that's higher than this then we definitely need to keep looking
-            if best_qualities and bestResult.quality == max(best_qualities):
-                logger.log(u"Found a highest quality archive match to snatch [" + bestResult.name + "]", logger.DEBUG)
-                queueItem.results = [bestResult]
-                return queueItem
+                # if there is a redownload that's higher than this then we definitely need to keep looking
+                if best_qualities and bestResult.quality == max(best_qualities):
+                    logger.log(u"Found a highest quality archive match to snatch [" + bestResult.name + "]", logger.DEBUG)
+                    queueItem.results = [bestResult]
+                    return queueItem
 
-            # if there's no redownload that's higher (above) and this is the highest initial download then we're good
-            elif any_qualities and bestResult.quality in any_qualities:
-                logger.log(u"Found a initial quality match to snatch [" + bestResult.name + "]", logger.DEBUG)
-                queueItem.results = [bestResult]
-                return queueItem
+                # if there's no redownload that's higher (above) and this is the highest initial download then we're good
+                elif any_qualities and bestResult.quality in any_qualities:
+                    logger.log(u"Found a initial quality match to snatch [" + bestResult.name + "]", logger.DEBUG)
+                    queueItem.results = [bestResult]
+                    return queueItem
+
+        # make sure we search every provider for results
+        if providerNum < len(providers):
+            continue
 
     # remove duplicates and insures snatch of highest quality from results
     for i1, result1 in enumerate(finalResults):
