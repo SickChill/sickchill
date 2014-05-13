@@ -2,20 +2,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # Check needed software dependencies to nudge users to fix their setup
 import sys
@@ -173,7 +173,7 @@ def main():
         # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
         sys.setdefaultencoding(sickbeard.SYS_ENCODING)
     except:
-        print 'Sorry, you MUST add the Sick Beard folder to the PYTHONPATH environment variable'
+        print 'Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable'
         print 'or find another way to force Python to use ' + sickbeard.SYS_ENCODING + ' for string encoding.'
         sys.exit(1)
 
@@ -279,7 +279,7 @@ def main():
     os.chdir(sickbeard.DATA_DIR)
 
     if consoleLogging:
-        print "Starting up Sick Beard " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
+        print "Starting up SickRage " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
 
     # Load the config and publish it to the sickbeard package
     if not os.path.isfile(sickbeard.CONFIG_FILE):
@@ -290,10 +290,10 @@ def main():
     CUR_DB_VERSION = db.DBConnection().checkDBVersion()
     if CUR_DB_VERSION > 0:
         if CUR_DB_VERSION < MIN_DB_VERSION:
-            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of Sick Beard (" + str(MIN_DB_VERSION) + ").\n" + \
+            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of SickRage (" + str(MIN_DB_VERSION) + ").\n" + \
                              "Upgrade using a previous version of SB first, or start with no database file to begin fresh.")
         if CUR_DB_VERSION > MAX_DB_VERSION:
-            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of Sick Beard supports (" + str(MAX_DB_VERSION) + ").\n" + \
+            raise SystemExit("Your database version (" + str(db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of SickRage supports (" + str(MAX_DB_VERSION) + ").\n" + \
                              "If you have used other forks of SB, your database may be unusable due to their modifications.")
 
             # Initialize the config and our threads
