@@ -268,18 +268,19 @@ class FailedQueueItem(generic_queue.QueueItem):
                 failed_history.revertEpisode(epObj)
                 failed_episodes.append(epObj)
 
-        try:
-            logger.log(
-                "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
+        if len(failed_episodes):
+            try:
+                logger.log(
+                    "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
-            searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, False, True)
-            if searchResult:
-                self.success = SearchQueue().snatch_item(searchResult)
+                searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, False, True)
+                if searchResult:
+                    self.success = SearchQueue().snatch_item(searchResult)
 
-        except Exception, e:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            except Exception, e:
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
         if not self.success:
-            logger.log(u"No needed episodes found on the RSS feeds")
+            logger.log(u"No episodes found to retry for failed downloads return from providers!")
 
         self.finish()
