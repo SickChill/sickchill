@@ -523,30 +523,46 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
             finalResults.append(bestResult)
 
-            if manualSearch:
-                logger.log(u"Checking if we should snatch " + bestResult.name, logger.DEBUG)
-                any_qualities, best_qualities = Quality.splitQuality(show.quality)
+            logger.log(u"Checking if we should snatch " + bestResult.name, logger.DEBUG)
+            any_qualities, best_qualities = Quality.splitQuality(show.quality)
 
-                # if there is a redownload that's higher than this then we definitely need to keep looking
-                if best_qualities and bestResult.quality == max(best_qualities):
-                    logger.log(u"Found a highest quality archive match to snatch [" + bestResult.name + "]", logger.DEBUG)
-                    queueItem.results = [bestResult]
+            # if there is a redownload that's higher than this then we definitely need to keep looking
+            if best_qualities and bestResult.quality == max(best_qualities):
+                logger.log(u"Found a highest quality archive match to snatch [" + bestResult.name + "]", logger.DEBUG)
+                queueItem.results += [bestResult]
+
+                # check that we got all the episodes we wanted first before doing a match and snatch
+                wantedEpCount = 0
+                for wantedEp in episodes:
+                    for result in queueItem.results:
+                        if wantedEp in result.episodes:
+                            wantedEpCount += 1
+                if wantedEpCount == len(episodes):
                     return queueItem
 
-                # if there's no redownload that's higher (above) and this is the highest initial download then we're good
-                elif any_qualities and bestResult.quality in any_qualities:
-                    logger.log(u"Found a initial quality match to snatch [" + bestResult.name + "]", logger.DEBUG)
-                    queueItem.results = [bestResult]
+            # if there's no redownload that's higher (above) and this is the highest initial download then we're good
+            elif any_qualities and bestResult.quality in any_qualities:
+                logger.log(u"Found a initial quality match to snatch [" + bestResult.name + "]", logger.DEBUG)
+                queueItem.results += [bestResult]
+
+                # check that we got all the episodes we wanted first before doing a match and snatch
+                wantedEpCount = 0
+                for wantedEp in episodes:
+                    for result in queueItem.results:
+                        if wantedEp in result.episodes:
+                            wantedEpCount += 1
+                if wantedEpCount == len(episodes):
                     return queueItem
+
 
         # make sure we search every provider for results
-        if providerNum < len(providers):
+        if providerNum != len(providers):
             continue
 
     # remove duplicates and insures snatch of highest quality from results
     for i1, result1 in enumerate(finalResults):
         for i2, result2 in enumerate(finalResults):
-            if result2.provider.show == show and result2.episodes.sort() == episodes.sort() and len(finalResults) > 1:
+            if result1.provider.show == result2.provider.show and result1.episodes.sort() == result2.episodes.sort():
                 if result1.quality >= result2.quality:
                     finalResults.pop(i2)
 

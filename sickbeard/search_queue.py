@@ -90,7 +90,6 @@ class SearchQueue(generic_queue.GenericQueue):
             status =  search.snatchEpisode(result)
             item.success = status
             generic_queue.QueueItem.finish(item)
-            return status
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, ep_obj):
@@ -100,6 +99,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.success = None
         self.show = ep_obj.show
         self.ep_obj = ep_obj
+        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -109,24 +109,17 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj],False,True)
 
             if searchResult:
-                self.success = SearchQueue().snatch_item(searchResult)
+                SearchQueue().snatch_item(searchResult)
+            else:
+                ui.notifications.message('No downloads were found',
+                                         "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
+
+                logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-        if not self.success:
-            ui.notifications.message('No downloads were found',
-                                     "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
-            logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
-
         self.finish()
-
-    def finish(self):
-        # don't let this linger if something goes wrong
-        if self.success == None:
-            self.success = False
-        generic_queue.QueueItem.finish(self)
-
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -137,6 +130,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.wantedEpisodes = []
+        self.results = []
 
         self._changeMissingEpisodes()
 
@@ -174,20 +168,17 @@ class BacklogQueueItem(generic_queue.QueueItem):
         if len(seasonEps) == len(self.wantedEpisodes):
             seasonSearch = True
 
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x]
-
         try:
             logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
             searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, seasonSearch, False)
 
             if searchResult:
-                self.success = SearchQueue().snatch_item(searchResult)
+                SearchQueue().snatch_item(searchResult)
+            else:
+                logger.log(u"No needed episodes found during backlog search")
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-
-        if not self.success:
-            logger.log(u"No needed episodes found during backlog search")
 
         self.finish()
 
@@ -253,6 +244,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.show = show
         self.episodes = episodes
         self.success = None
+        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -274,13 +266,12 @@ class FailedQueueItem(generic_queue.QueueItem):
                     "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
 
                 searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, False, True)
-                if searchResult:
-                    self.success = SearchQueue().snatch_item(searchResult)
 
+                if searchResult:
+                    SearchQueue().snatch_item(searchResult)
+                else:
+                    logger.log(u"No episodes found to retry for failed downloads return from providers!")
             except Exception, e:
                 logger.log(traceback.format_exc(), logger.DEBUG)
-
-        if not self.success:
-            logger.log(u"No episodes found to retry for failed downloads return from providers!")
 
         self.finish()
