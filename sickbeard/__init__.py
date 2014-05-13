@@ -1126,14 +1126,16 @@ def initialize(consoleLogging=True):
         showList = []
         loadingShowList = {}
 
-        url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
-        clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
-        CLEAR_CACHE = check_setting_str(CFG, 'General', 'clear_cache', '')
-        if CLEAR_CACHE != clear_cache:
-            for curProvider in [x for x in providers.sortedProviderList() if x.isActive()]:
-                curProvider.cache._clearCache()
-            CLEAR_CACHE = clear_cache
-            save_config()
+        try:
+            url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
+            clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
+            CLEAR_CACHE = check_setting_str(CFG, 'General', 'clear_cache', '')
+            if CLEAR_CACHE != clear_cache:
+                for curProvider in [x for x in providers.sortedProviderList() if x.isActive()]:
+                    curProvider.cache._clearCache()
+                CLEAR_CACHE = clear_cache
+                save_config()
+        except:pass
 
         __INITIALIZED__ = True
         return True
