@@ -134,15 +134,13 @@ class NextGenProvider(generic.TorrentProvider):
     def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': []}
-        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
-            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+        for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+            if ep_obj.show.air_by_date or ep_obj.show.sports:
+                ep_string = show_name + str(ep_obj.airdate)[:7]
+            else:
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-                search_string['Season'].append(ep_string)
 
-        elif ep_obj.show.air_by_date or ep_obj.show.sports:
-            search_string['Season'] = self._get_episode_search_strings(ep_obj)[0]['Season']
-
-        #search_string['Episode'] = self._get_episode_search_strings(ep_obj)[0]['Episode']
+            search_string['Season'].append(ep_string)
 
         return [search_string]
 

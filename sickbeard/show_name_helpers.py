@@ -119,7 +119,10 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
             [show.indexerid])
         numseasons = int(numseasonsSQlResult[0][0])
 
-        seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
+        if show.air_by_date or show.sports:
+            seasonStrings = [str(ep_obj.airdate)[:7]]
+        else:
+            seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
 
     showNames = set(makeSceneShowSearchStrings(show))
 

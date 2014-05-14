@@ -210,21 +210,13 @@ class BTNProvider(generic.TorrentProvider):
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
-            whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
-
-            search_params.append(whole_season_params)
-
-            # Search for episodes in the season
-            partial_season_params['category'] = 'Episode'
-
             if ep_obj.show.air_by_date or ep_obj.show.sports:
                 # Search for the year of the air by date show
-                partial_season_params['name'] = str(ep_obj.airdate).split('-')[0]
+                whole_season_params['name'] = str(ep_obj.airdate)[:7]
             else:
-                # Search for any result which has Sxx in the name
-                partial_season_params['name'] = 'S%02d' % int(ep_obj.scene_season)
+                whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
-            search_params.append(partial_season_params)
+            search_params.append(whole_season_params)
 
         return search_params
 

@@ -68,7 +68,7 @@ class EZRSSProvider(generic.TorrentProvider):
                        logger.WARNING)
             return results
 
-        results = generic.TorrentProvider.getSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
+        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
 
         return results
 
@@ -78,12 +78,10 @@ class EZRSSProvider(generic.TorrentProvider):
 
         params['show_name'] = helpers.sanitizeSceneName(self.show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
-        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
-            params['season'] = ep_obj.scene_season
+        if ep_obj.show.air_by_date or ep_obj.show.sports:
+            params['season'] = str(ep_obj.airdate)[:7]
         else:
-            params['season'] = self._get_episode_search_strings(ep_obj)[0]['season']
-
-        #params['episode'] = self._get_episode_search_strings(ep_obj)[0]['episode']
+            params['season'] = ep_obj.scene_season
 
         return [params]
 
