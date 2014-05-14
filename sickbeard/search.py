@@ -326,8 +326,9 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
                    logger.ERROR)
         return queueItem
 
+    foundResults = {}
     for providerNum, provider in enumerate(providers):
-        foundResults = {provider.name: {}}
+        foundResults.setdefault(provider.name, {})
 
         try:
             curResults = provider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
@@ -426,7 +427,7 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
                             epNum = MULTI_EP_RESULT
 
                         if epNum in foundResults[provider.name]:
-                            foundResults[provider.name][epNum] += curResult
+                            foundResults[provider.name][epNum].append(curResult)
                         else:
                             foundResults[provider.name][epNum] = [curResult]
 
@@ -443,7 +444,7 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
                     epNum = MULTI_EP_RESULT
                     if epNum in foundResults[provider.name]:
-                        foundResults[provider.name][epNum] += bestSeasonNZB
+                        foundResults[provider.name][epNum].append(bestSeasonNZB)
                     else:
                         foundResults[provider.name][epNum] = [bestSeasonNZB]
 
