@@ -38,11 +38,32 @@
 
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <input type="checkbox" name="download_propers" id="download_propers" #if $sickbeard.DOWNLOAD_PROPERS == True then "checked=\"checked\"" else ""# />
+                            <input type="checkbox" name="download_propers" id="download_propers" class="enabler" #if $sickbeard.DOWNLOAD_PROPERS == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="download_propers">
                                 <span class="component-title">Download Propers</span>
                                 <span class="component-desc">Replace original download with "Proper/Repack" if nuked?</span>
                             </label>
+                        </div>
+
+                        <div id="content_download_propers">
+                            <div class="field-pair">
+                                <label class="nocheck clearfix" for="check_propers_interval">
+                                    <span class="component-title">Check Propers Every:</span>
+                                    <span class="component-desc">
+                                        <select id="check_propers_interval" name="check_propers_interval">
+                                            #set $check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"}
+                                            #for $curInterval in ('daily', '4h', '90m', '45m', '15m'):
+                                              #if $sickbeard.CHECK_PROPERS_INTERVAL == $curInterval:
+                                                #set $selMode = " selected=\"selected\""
+                                              #else
+                                                #set $selMode = ""
+                                              #end if
+                                            <option value="$curInterval"$selMode>$check_propers_interval_text[$curInterval]</option>
+                                            #end for
+                                        </select>
+                                    </span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="field-pair">

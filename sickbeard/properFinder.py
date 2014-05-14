@@ -39,6 +39,11 @@ class ProperFinder():
     def __init__(self):
         self.updateInterval = datetime.timedelta(hours=1)
 
+        check_propers_interval = {'15m': 15, '45m': 45, '90m': 90, '4h': 4*60, 'daily': 24*60}
+        for curInterval in ('15m', '45m', '90m', '4h', 'daily'):
+            if sickbeard.CHECK_PROPERS_INTERVAL == curInterval:
+                self.updateInterval = datetime.timedelta(minutes = check_propers_interval[curInterval])
+
     def run(self):
 
         if not sickbeard.DOWNLOAD_PROPERS:
@@ -52,17 +57,24 @@ class ProperFinder():
         hourDiff = datetime.datetime.today().time().hour - updateTime.hour
         dayDiff = (datetime.date.today() - self._get_lastProperSearch()).days
 
-        # if it's less than an interval after the update time then do an update
-        if hourDiff >= 0 and hourDiff < self.updateInterval.seconds / 3600 or dayDiff >= 1:
-            logger.log(u"Beginning the search for new propers")
-        else:
-            return
+        if sickbeard.CHECK_PROPERS_INTERVAL == "daily":
+            # if it's less than an interval after the update time then do an update
+            if not (hourDiff >= 0 and hourDiff < self.updateInterval.seconds / 3600 or dayDiff >= 1):
+                return
+
+        logger.log(u"Beginning the search for new propers")
 
         propers = self._getProperList()
 
         self._downloadPropers(propers)
 
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
+
+        msg = u"Completed the search for new propers, next check "
+        if sickbeard.CHECK_PROPERS_INTERVAL == "daily":
+            logger.log(u"%sat 1am tomorrow" % msg)
+        else:
+            logger.log(u"%sin ~%s" % (msg, sickbeard.CHECK_PROPERS_INTERVAL))
 
     def _getProperList(self):
 
