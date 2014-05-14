@@ -35,6 +35,7 @@ import xml.etree.cElementTree as etree
 from name_parser.parser import NameParser, InvalidNameException
 
 from lib import subliminal
+from lib import babelfish
 
 from lib.imdb import imdb
 
@@ -1277,13 +1278,23 @@ class TVEpisode(object):
         previous_subtitles = self.subtitles
 
         try:
-            need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
-            subtitles = subliminal.download_subtitles([self.location], languages=need_languages,
-                                                      services=sickbeard.subtitles.getEnabledServiceList(), force=force,
-                                                      multi=True, cache_dir=sickbeard.CACHE_DIR)
+            languages = set()
+            for lang in set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles):
+                babel = babelfish.Language.fromalpha2(lang)
+                lang = babel.alpha3
+                languages.add(babelfish.Language(lang))
+
+            video = subliminal.scan_video(self.location)
+            providers = sickbeard.subtitles.getEnabledServiceList()
+            downloadedSubs = subliminal.download_best_subtitles([video], languages, providers)
+            if not len(downloadedSubs):
+                logger.log(
+                    str(self.show.indexerid) + ": No subtitles found for episode " + str(self.season) + "x" + str(
+                        self.episode) + " on any provider", logger.DEBUG)
+                return
 
             if sickbeard.SUBTITLES_DIR:
-                for video in subtitles:
+                for video in downloadedSubs:
                     subs_new_path = ek.ek(os.path.join, os.path.dirname(video.path), sickbeard.SUBTITLES_DIR)
                     dir_exists = helpers.makeDir(subs_new_path)
                     if not dir_exists:
@@ -1291,13 +1302,13 @@ class TVEpisode(object):
                     else:
                         helpers.chmodAsParent(subs_new_path)
 
-                    for subtitle in subtitles.get(video):
+                    for subtitle in downloadedSubs.get(video):
                         new_file_path = ek.ek(os.path.join, subs_new_path, os.path.basename(subtitle.path))
                         helpers.moveFile(subtitle.path, new_file_path)
                         helpers.chmodAsParent(new_file_path)
             else:
-                for video in subtitles:
-                    for subtitle in subtitles.get(video):
+                for video in downloadedSubs:
+                    for subtitle in downloadedSubs.get(video):
                         helpers.chmodAsParent(subtitle.path)
 
         except Exception as e:
@@ -1312,7 +1323,7 @@ class TVEpisode(object):
         newsubtitles = set(self.subtitles).difference(set(previous_subtitles))
 
         if newsubtitles:
-            subtitleList = ", ".join(subliminal.language.Language(x).name for x in newsubtitles)
+            subtitleList = ", ".join(subliminal.Subtitle(x).language for x in newsubtitles)
             logger.log(str(self.show.indexerid) + u": Downloaded " + subtitleList + " subtitles for episode " + str(
                 self.season) + "x" + str(self.episode), logger.DEBUG)
 
@@ -1324,8 +1335,8 @@ class TVEpisode(object):
                     self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            for video in subtitles:
-                for subtitle in subtitles.get(video):
+            for video in downloadedSubs:
+                for subtitle in downloadedSubs.get(video):
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, subtitle)
 
         return subtitles
