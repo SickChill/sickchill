@@ -17,7 +17,12 @@
 
 <div id="summary" class="align-left">
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0">
-    <tr><td class="infoTableHeader">SR Version: </td><td class="infoTableCell">BRANCH: ($sickbeard.version.SICKBEARD_VERSION) / COMMIT: ($sickbeard.CUR_COMMIT_HASH) <!-- &ndash; build.date //--><br />
+    <tr><td class="infoTableHeader">SR Version: </td><td class="infoTableCell">
+#if $sickbeard.VERSION_NOTIFY
+        BRANCH: ($sickbeard.version.SICKBEARD_VERSION) / COMMIT: ($sickbeard.CUR_COMMIT_HASH) <!-- &ndash; build.date //--><br />
+#else
+        You don't have version checking turned on. Please turn on "Check for Update" in Config > General.<br />
+#end if
         <font color="red">You are using BETA software</font>
 	</td></tr>
     <tr><td class="infoTableHeader">SR Config file: </td><td class="infoTableCell">$sickbeard.CONFIG_FILE</td></tr>

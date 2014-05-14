@@ -50,18 +50,17 @@ class NyaaProvider(generic.TorrentProvider):
         return 'nyaatorrents.png'
 
     def getQuality(self, item, anime=False):
-        self.debug()
         title = item.title
         quality = Quality.sceneQuality(title)
         return quality
 
     def getSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
-        results = generic.TorrentProvider.getSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
+        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
         return results
 
     def _get_season_search_strings(self, ep_obj):
         names = []
-        names.extend(show_name_helpers.makeSceneshowSearchStrings(self.show))
+        names.extend(show_name_helpers.makeSceneShowSearchStrings(self.show))
         return names
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):

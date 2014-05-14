@@ -260,18 +260,54 @@ class GenericMetadata():
         """
         return None
 
-    def create_show_metadata(self, show_obj, force=False):
-        if self.show_metadata and show_obj and (not self._has_show_metadata(show_obj) or force):
+    def create_show_metadata(self, show_obj):
+        if self.show_metadata and show_obj and not self._has_show_metadata(show_obj):
             logger.log(u"Metadata provider " + self.name + " creating show metadata for " + show_obj.name, logger.DEBUG)
             return self.write_show_file(show_obj)
         return False
 
-    def create_episode_metadata(self, ep_obj, force=False):
-        if self.episode_metadata and ep_obj and (not self._has_episode_metadata(ep_obj) or force):
+    def create_episode_metadata(self, ep_obj):
+        if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
             logger.log(u"Metadata provider " + self.name + " creating episode metadata for " + ep_obj.prettyName(),
                        logger.DEBUG)
             return self.write_ep_file(ep_obj)
         return False
+
+    def update_show_indexer_metadata(self, show_obj):
+        if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
+            logger.log(u"Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name, logger.DEBUG)
+
+            nfo_file_path = self.get_show_file_path(show_obj)
+            try:
+                with ek.ek(open, nfo_file_path, 'r') as xmlFileObj:
+                    showXML = etree.ElementTree(file=xmlFileObj)
+
+
+                indexer = showXML.find('indexer')
+                indexerid = showXML.find('id')
+
+                root = showXML.getroot()
+                if indexer:
+                    indexer.text = show_obj.indexer
+                else:
+                    etree.SubElement(root, "indexer").text = str(show_obj.indexer)
+
+                if indexerid:
+                    indexerid.text = show_obj.indexerid
+                else:
+                    etree.SubElement(root, "id").text = str(show_obj.indexerid)
+
+                # Make it purdy
+                helpers.indentXML(root)
+
+                showXML.write(nfo_file_path)
+                helpers.chmodAsParent(nfo_file_path)
+
+                return True
+            except IOError, e:
+                logger.log(
+                    u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+                    logger.ERROR)
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):

@@ -43,6 +43,7 @@ from sickbeard import failed_history
 from sickbeard.exceptions import ex
 from sickbeard.providers.generic import GenericProvider, tvcache
 
+
 def _downloadResult(result):
     """
     Downloads a result to the appropriate black hole folder.
@@ -173,6 +174,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     return True
 
+
 def filter_release_name(name, filter_words):
     """
     Filters out results based on filter_words
@@ -190,6 +192,7 @@ def filter_release_name(name, filter_words):
                 return True
 
     return False
+
 
 def pickBestResult(results, show, quality_list=None):
     logger.log(u"Picking the best result out of " + str([x.name for x in results]), logger.DEBUG)
@@ -220,6 +223,7 @@ def pickBestResult(results, show, quality_list=None):
 
         if not bestResult or bestResult.quality < cur_result.quality and cur_result.quality != Quality.UNKNOWN:
             bestResult = cur_result
+
         elif bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():
                 bestResult = cur_result
@@ -232,6 +236,7 @@ def pickBestResult(results, show, quality_list=None):
         logger.log(u"No result picked.", logger.DEBUG)
 
     return bestResult
+
 
 def isFinalResult(result):
     """
@@ -253,7 +258,7 @@ def isFinalResult(result):
         return False
 
     # if there's no redownload that's higher (above) and this is the highest initial download then we're good
-    elif any_qualities and result.quality == max(any_qualities):
+    elif any_qualities and result.quality in any_qualities:
         return True
 
     elif best_qualities and result.quality == max(best_qualities):
@@ -289,6 +294,7 @@ def isFirstBestMatch(result):
 
     return False
 
+
 def filterSearchResults(show, results):
     foundResults = {}
 
@@ -306,20 +312,19 @@ def filterSearchResults(show, results):
 
     return foundResults
 
+
 def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manualSearch=False):
     logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
-
-    finalResults = []
 
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
     if not len(providers):
         logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
                    logger.ERROR)
-        return []
+        return queueItem
 
-    for provider in providers:
-        foundResults = {provider.name:{}}
+    for providerNum, provider in enumerate(providers):
+        foundResults = {provider.name: {}}
 
         try:
             curResults = provider.findSearchResults(show, season, episodes, seasonSearch, manualSearch)
@@ -343,14 +348,16 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
         # pick the best season NZB
         bestSeasonNZB = None
         if SEASON_RESULT in foundResults[provider.name]:
-            bestSeasonNZB = pickBestResult(foundResults[provider.name][SEASON_RESULT], show, anyQualities + bestQualities)
+            bestSeasonNZB = pickBestResult(foundResults[provider.name][SEASON_RESULT], show,
+                                           anyQualities + bestQualities)
 
         highest_quality_overall = 0
         for cur_episode in foundResults[provider.name]:
             for cur_result in foundResults[provider.name][cur_episode]:
                 if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
                     highest_quality_overall = cur_result.quality
-        logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall], logger.DEBUG)
+        logger.log(u"The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall],
+                   logger.DEBUG)
 
         # see if every episode is wanted
         if bestSeasonNZB:
@@ -378,10 +385,12 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
 
             # if we need every ep in the season check if single episode releases should be preferred over season releases (missing single episode releases will be picked individually from season release)
             preferSingleEpisodesOverSeasonReleases = sickbeard.PREFER_EPISODE_RELEASES
-            logger.log(u"Prefer single episodes over season releases: "+str(preferSingleEpisodesOverSeasonReleases), logger.DEBUG)
+            logger.log(u"Prefer single episodes over season releases: " + str(preferSingleEpisodesOverSeasonReleases),
+                       logger.DEBUG)
             # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
             if allWanted and bestSeasonNZB.quality == highest_quality_overall and not preferSingleEpisodesOverSeasonReleases:
-                logger.log(u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
+                logger.log(
+                    u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
                 epObjs = []
                 for curEpNum in allEps:
                     epObjs.append(show.getEpisode(season, curEpNum))
@@ -500,13 +509,13 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
                 for epObj in multiResult.episodes:
                     epNum = epObj.episode
                     if epNum in foundResults[provider.name]:
-                        logger.log(u"A needed multi-episode result overlaps with a single-episode result for ep #" + str(
-                            epNum) + ", removing the single-episode results from the list", logger.DEBUG)
+                        logger.log(
+                            u"A needed multi-episode result overlaps with a single-episode result for ep #" + str(
+                                epNum) + ", removing the single-episode results from the list", logger.DEBUG)
                         del foundResults[provider.name][epNum]
 
-        finalResults += set(multiResults.values())
-
         # of all the single ep results narrow it down to the best one for each episode
+        queueItem.results += set(multiResults.values())
         for curEp in foundResults[provider.name]:
             if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
@@ -514,30 +523,34 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
             if len(foundResults[provider.name][curEp]) == 0:
                 continue
 
-            result = pickBestResult(foundResults[provider.name][curEp], show)
-            finalResults.append(result)
+            bestResult = pickBestResult(foundResults[provider.name][curEp], show)
 
-            logger.log(u"Checking if we should snatch " + result.name, logger.DEBUG)
-            any_qualities, best_qualities = Quality.splitQuality(show.quality)
+            # if all results were rejected move on to the next episode
+            if not bestResult:
+                continue
 
-            # if there is a redownload that's higher than this then we definitely need to keep looking
-            if best_qualities and result.quality == max(best_qualities):
-                logger.log(u"Found a highest quality archive match to snatch [" + result.name + "]", logger.DEBUG)
-                queueItem.results = [result]
-                return queueItem
+            # add result if its not a duplicate and
+            if isFinalResult(bestResult):
+                found = False
+                for i, result in enumerate(queueItem.results):
+                    for bestResultEp in bestResult.episodes:
+                        if bestResultEp in result.episodes:
+                            if result.quality < bestResult.quality:
+                                queueItem.results.pop(i)
+                            else:
+                                found = True
+                if not found:
+                    queueItem.results += [bestResult]
 
-            # if there's no redownload that's higher (above) and this is the highest initial download then we're good
-            elif any_qualities and result.quality in any_qualities:
-                logger.log(u"Found a initial quality match to snatch [" + result.name + "]", logger.DEBUG)
-                queueItem.results = [result]
-                return queueItem
+        # check that we got all the episodes we wanted first before doing a match and snatch
+        wantedEpCount = 0
+        for wantedEp in episodes:
+            for result in queueItem.results:
+                if wantedEp in result.episodes:
+                    wantedEpCount += 1
 
-    # remove duplicates and insures snatch of highest quality from results
-    for i1, result1 in enumerate(finalResults):
-        for i2, result2 in enumerate(finalResults):
-            if result2.provider.show == show and result2.episodes.sort() == episodes.sort() and len(finalResults) > 1:
-                if result1.quality >= result2.quality:
-                    finalResults.pop(i2)
+        # make sure we search every provider for results unless we found everything we wanted
+        if providerNum != len(providers) and wantedEpCount != len(episodes):
+            continue
 
-    queueItem.results = finalResults
     return queueItem

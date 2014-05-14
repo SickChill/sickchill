@@ -248,8 +248,10 @@
 		#if int($show.air_by_date) != 1 and int($show.sports) != 1
 			#if (epResult["season"], epResult["episode"]) in $xem_numbering:
 				#set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
-			#else
+			#elif $xem_numbering and (epResult["season"], epResult["episode"]) not in $xem_numbering:
 				#set ($dfltSeas, $dfltEpis) = (0,0)
+			#else:
+			    #set ($dfltSeas, $dfltEpis) = (epResult["season"], epResult["episode"])
 			#end if
 			#if (epResult["season"], epResult["episode"]) in $scene_numbering:
 				#set ($scSeas, $scEpis) = $scene_numbering[(epResult["season"], epResult["episode"])]

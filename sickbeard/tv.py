@@ -205,7 +205,9 @@ class TVShow(object):
             if ep != None:
                 self.episodes[season][episode] = ep
 
-        return self.episodes[season][episode]
+        epObj = self.episodes[season][episode]
+        epObj.convertToSceneNumbering()
+        return epObj
 
     def should_update(self, update_date=datetime.date.today()):
 
@@ -251,7 +253,7 @@ class TVShow(object):
 
         return False
 
-    def writeShowNFO(self, force=False):
+    def writeShowNFO(self):
 
         result = False
 
@@ -261,11 +263,11 @@ class TVShow(object):
 
         logger.log(str(self.indexerid) + u": Writing NFOs for show")
         for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.create_show_metadata(self, force) or result
+            result = cur_provider.create_show_metadata(self) or result
 
         return result
 
-    def writeMetadata(self, show_only=False, force=False):
+    def writeMetadata(self, show_only=False):
 
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
@@ -273,12 +275,12 @@ class TVShow(object):
 
         self.getImages()
 
-        self.writeShowNFO(force)
+        self.writeShowNFO()
 
         if not show_only:
-            self.writeEpisodeNFOs(force)
+            self.writeEpisodeNFOs()
 
-    def writeEpisodeNFOs(self, force=False):
+    def writeEpisodeNFOs(self):
 
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
@@ -293,8 +295,30 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Retrieving/creating episode " + str(epResult["season"]) + "x" + str(
                 epResult["episode"]), logger.DEBUG)
             curEp = self.getEpisode(epResult["season"], epResult["episode"])
-            curEp.createMetaFiles(force)
+            curEp.createMetaFiles()
 
+
+    def updateMetadata(self):
+
+        if not ek.ek(os.path.isdir, self._location):
+            logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
+            return
+
+        self.updateShowNFO()
+
+    def updateShowNFO(self):
+
+        result = False
+
+        if not ek.ek(os.path.isdir, self._location):
+            logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
+            return False
+
+        logger.log(str(self.indexerid) + u": Updating NFOs for show with new indexer info")
+        for cur_provider in sickbeard.metadata_provider_dict.values():
+            result = cur_provider.update_show_indexer_metadata(self) or result
+
+        return result
 
     # find all media files in the show folder and create episodes for as many as possible
     def loadEpisodesFromDir(self):
@@ -1158,8 +1182,6 @@ class TVEpisode(object):
 
         self.specifyEpisode(self.season, self.episode)
 
-        self.convertToSceneNumbering()
-
         self.relatedEps = []
 
         self.checkForMetaFiles()
@@ -1610,28 +1632,28 @@ class TVEpisode(object):
         toReturn += "status: " + str(self.status) + "\n"
         return toReturn
 
-    def createMetaFiles(self, force=False):
+    def createMetaFiles(self):
 
         if not ek.ek(os.path.isdir, self.show._location):
             logger.log(str(self.show.indexerid) + u": The show dir is missing, not bothering to try to create metadata")
             return
 
-        self.createNFO(force)
+        self.createNFO()
         self.createThumbnail()
 
         if self.checkForMetaFiles():
             self.saveToDB()
 
-    def createNFO(self, force=False):
+    def createNFO(self):
 
         result = False
 
         for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.create_episode_metadata(self, force) or result
+            result = cur_provider.create_episode_metadata(self) or result
 
         return result
 
-    def createThumbnail(self, force=False):
+    def createThumbnail(self):
 
         result = False
 
@@ -1903,6 +1925,9 @@ class TVEpisode(object):
             result_name = result_name.replace('%RG', 'SICKBEARD')
             result_name = result_name.replace('%rg', 'sickbeard')
             logger.log(u"Episode has no release name, replacing it with a generic one: " + result_name, logger.DEBUG)
+
+        if not replace_map['%RT']:
+            result_name = re.sub('([ _.-]*)%RT([ _.-]*)', r'\2', result_name)
 
         # split off ep name part only
         name_groups = re.split(r'[\\/]', result_name)

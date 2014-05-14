@@ -123,7 +123,7 @@ def makeTorrentRssProvider(configString):
 
 
 def getDefaultNewznabProviders():
-    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0!!!NZBs.org|http://nzbs.org/||5030,5040,5060,5070,5090|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0'
+    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0'
 
 
 def getProviderModule(name):

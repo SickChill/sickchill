@@ -144,9 +144,9 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                subtitles=None, lang="en", refresh=False):
+                subtitles=None, lang="en"):
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, refresh)
+                                    subtitles)
 
         self.add_item(queueItemObj)
 
@@ -203,8 +203,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 
 class QueueItemAdd(ShowQueueItem):
-    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles,
-                 refresh):
+    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -214,7 +213,6 @@ class QueueItemAdd(ShowQueueItem):
         self.flatten_folders = flatten_folders
         self.lang = lang
         self.subtitles = subtitles
-        self.refresh = refresh
 
         self.show = None
 
@@ -380,7 +378,8 @@ class QueueItemAdd(ShowQueueItem):
             logger.log(u"Launching backlog for this show since its episodes are WANTED")
             sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])  #@UndefinedVariable
 
-        self.show.writeMetadata(force=self.refresh)
+        self.show.writeMetadata()
+        self.show.updateMetadata()
         self.show.populateCache()
 
         self.show.flushEpisodes()
@@ -410,7 +409,8 @@ class QueueItemRefresh(ShowQueueItem):
         logger.log(u"Performing refresh on " + self.show.name)
 
         self.show.refreshDir()
-        self.show.writeMetadata(force=True)
+        self.show.writeMetadata()
+        self.show.updateMetadata()
         self.show.populateCache()
 
         self.inProgress = False

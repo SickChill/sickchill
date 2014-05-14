@@ -232,7 +232,8 @@ class GenericProvider:
         for epObj in episodes:
             if not epObj.show.air_by_date:
                 if epObj.scene_season == 0 or epObj.scene_episode == 0:
-                    logger.log(u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
+                    logger.log(
+                        u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
                     continue
 
             cacheResult = self.cache.searchCache(epObj, manualSearch)
@@ -265,7 +266,6 @@ class GenericProvider:
         for ep_obj, items in searchItems.items():
             for item in items:
 
-
                 (title, url) = self._get_title_and_url(item)
 
                 quality = self.getQuality(item)
@@ -280,13 +280,13 @@ class GenericProvider:
 
                 if not (self.show.air_by_date or self.show.sports):
                     if not len(parse_result.episode_numbers) and (
-                            parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
+                                    parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
                                     parse_result.season_number == None and ep_obj.season != 1):
                         logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(
                             ep_obj.season) + ", ignoring", logger.DEBUG)
                         continue
                     elif len(parse_result.episode_numbers) and (
-                            parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
+                                    parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
                         logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
                             ep_obj.episode) + ", skipping it", logger.DEBUG)
                         continue
@@ -301,10 +301,17 @@ class GenericProvider:
                             logger.DEBUG)
                         continue
 
+                    if (parse_result.air_by_date and parse_result.air_date != ep_obj.airdate) or (
+                        parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
+                        logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
+                                   logger.DEBUG)
+                        continue
+
                     myDB = db.DBConnection()
-                    sql_results = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                                              [show.indexerid,
-                                               parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()])
+                    sql_results = myDB.select(
+                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                        [show.indexerid,
+                         parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()])
 
                     if len(sql_results) != 1:
                         logger.log(
@@ -324,7 +331,8 @@ class GenericProvider:
 
                 if not wantEp:
                     logger.log(
-                        u"Ignoring result " + title + " because we don't want an episode that is " + Quality.qualityStrings[
+                        u"Ignoring result " + title + " because we don't want an episode that is " +
+                        Quality.qualityStrings[
                             quality], logger.DEBUG)
 
                     continue

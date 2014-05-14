@@ -39,6 +39,10 @@ FEATURES:
 
 To run SickRage from source you will need Python 2.6+ and Cheetah 2.1.0+.
 
-## Bugs
+## Forums
 
-If you find a bug please report [here][githubissues] on Github or at our forums http://www.sickrage.tv. Verify that it hasn't already been submitted and then [log a new bug][githubnewissue]. Be sure to provide a sickrage log in debug mode where is the error evidence or it'll never get fixed.
+Any questions or setup info your looking for can be found at out forums http://www.sickrage.tv
+<br>
+If you find a bug please report at our forums http://sickrage.tv/forums/forum/help-support/bug-issue-reports
+<br>
+Be sure to provide a sickrage log in debug mode where is the error evidence or it'll never get fixed.

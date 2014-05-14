@@ -212,10 +212,11 @@ def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=Fals
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return None
 
-    if json:
-        return r.json() if r.ok else None
+    if r.ok:
+        if json:
+            return r.json()
 
-    return r.content if r.ok else None
+        return r.content
 
 
 def _remove_file_failed(file):
@@ -284,7 +285,7 @@ def makeDir(path):
     return True
 
 
-def searchDBForShow(regShowName):
+def searchDBForShow(regShowName, log=False):
     showNames = [re.sub('[. -]', ' ', regShowName)]
 
     myDB = db.DBConnection()
@@ -303,17 +304,20 @@ def searchDBForShow(regShowName):
             # if we didn't get exactly one result then try again with the year stripped off if possible
             match = re.match(yearRegex, showName)
             if match and match.group(1):
-                logger.log(u"Unable to match original name but trying to manually strip and specify show year",
-                           logger.DEBUG)
+                if log:
+                    logger.log(u"Unable to match original name but trying to manually strip and specify show year",
+                               logger.DEBUG)
                 sqlResults = myDB.select(
                     "SELECT * FROM tv_shows WHERE (show_name LIKE ?) AND startyear = ?",
                     [match.group(1) + '%', match.group(3)])
 
             if len(sqlResults) == 0:
-                logger.log(u"Unable to match a record in the DB for " + showName, logger.DEBUG)
+                if log:
+                    logger.log(u"Unable to match a record in the DB for " + showName, logger.DEBUG)
                 continue
             elif len(sqlResults) > 1:
-                logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name", logger.DEBUG)
+                if log:
+                    logger.log(u"Multiple results for " + showName + " in the DB, unable to match show name", logger.DEBUG)
                 continue
             else:
                 return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
