@@ -973,6 +973,9 @@ class PostProcessor(object):
             with cur_ep.lock:
                 cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
                 cur_ep.saveToDB()
+                # set file modify stamp to show airdate
+                if sickbeard.AIRDATE_EPISODES:
+                    ep_obj.show.airdateModifyStamp(cur_ep)
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)

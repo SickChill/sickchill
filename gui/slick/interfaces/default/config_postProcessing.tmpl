@@ -119,6 +119,18 @@
                         </div>
 
                         <div class="field-pair">
+                            <input type="checkbox" name="airdate_episodes" id="airdate_episodes" #if $sickbeard.AIRDATE_EPISODES == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="airdate_episodes">
+                                <span class="component-title">Change File Date</span>
+                                <span class="component-desc">Set last modified filedate to the date that the episode aired?</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Some systems may ignore this feature.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <input type="checkbox" name="process_automatically" id="process_automatically" #if $sickbeard.PROCESS_AUTOMATICALLY == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="process_automatically">
                                 <span class="component-title">Scan and Process</span>
