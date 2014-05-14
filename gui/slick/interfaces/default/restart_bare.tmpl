@@ -4,14 +4,17 @@
     #set curSBHost = $sbHost
     #set curSBHttpPort = $sbHttpPort
     #set curSBHttpsEnabled = $sbHttpsEnabled
+    #set curSBHandleReverseProxy = $sbHandleReverseProxy
 #except NameMapper.NotFound:
     #set curSBHost = "localhost"
     #set curSBHttpPort = $sickbeard.WEB_PORT
     #set curSBHttpsEnabled = "False"
+    #set curSBHandleReverseProxy = "False"
 #end try
 sbRoot = "$sbRoot";
 sbHttpPort = "$curSBHttpPort";
 sbHttpsEnabled = "$curSBHttpsEnabled";
+sbHandleReverseProxy = "$curSBHandleReverseProxy";
 sbHost = "$curSBHost";
 //-->
 </script>

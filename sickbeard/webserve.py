@@ -95,6 +95,8 @@ class PageTemplate(Template):
         self.sbHttpPort = sickbeard.WEB_PORT
         self.sbHttpsPort = sickbeard.WEB_PORT
         self.sbHttpsEnabled = sickbeard.ENABLE_HTTPS
+        self.sbHandleReverseProxy = sickbeard.HANDLE_REVERSE_PROXY
+
         if cherrypy.request.headers['Host'][0] == '[':
             self.sbHost = re.match("^\[.*\]", cherrypy.request.headers['Host'], re.X | re.M | re.S).group(0)
         else:
@@ -941,7 +943,7 @@ class ConfigGeneral:
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
         sickbeard.save_config()
-        
+
     @cherrypy.expose
     def generateKey(self):
         """ Return a new randomized API_KEY
@@ -1597,7 +1599,7 @@ class ConfigProviders:
         sickbeard.KAT_TRUSTED = config.checkbox_to_value(kat_trusted)
         sickbeard.KAT_RATIO = kat_ratio
         sickbeard.KAT_VERIFIED = config.checkbox_to_value(kat_verified)
-        
+
         sickbeard.PUBLICHD_RATIO = publichd_ratio
 
         sickbeard.TORRENTDAY_USERNAME = torrentday_username.strip()
