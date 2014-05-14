@@ -1284,9 +1284,9 @@ class TVEpisode(object):
                 lang = babel.alpha3
                 languages.add(babelfish.Language(lang))
 
-            video = subliminal.scan_video(self.location)
+            videos = subliminal.scan_videos([self.location])
             providers = sickbeard.subtitles.getEnabledServiceList()
-            downloadedSubs = subliminal.download_best_subtitles([video], languages, providers)
+            downloadedSubs = subliminal.download_best_subtitles(videos, languages, providers)
             if not len(downloadedSubs):
                 logger.log(
                     str(self.show.indexerid) + ": No subtitles found for episode " + str(self.season) + "x" + str(
