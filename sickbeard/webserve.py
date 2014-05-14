@@ -2348,7 +2348,7 @@ class NewHomeAddShows:
                                                             sickbeard.STATUS_DEFAULT,
                                                             sickbeard.QUALITY_DEFAULT,
                                                             sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                            sickbeard.SUBTITLES_DEFAULT, refresh=True)
+                                                            sickbeard.SUBTITLES_DEFAULT)
                 num_added += 1
 
         if num_added:
