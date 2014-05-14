@@ -95,6 +95,9 @@ class WDTVMetadata(generic.GenericMetadata):
     def create_show_metadata(self, show_obj, force=False):
         pass
 
+    def update_show_indexer_metadata(self, show_obj):
+        pass
+
     def get_show_file_path(self, show_obj):
         pass
 
