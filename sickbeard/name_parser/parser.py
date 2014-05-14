@@ -373,7 +373,8 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
-        if self.air_by_date: return self  # scene numbering does not apply to air-by-date
+        if not self.series_name: return self # can't work without a series name
+        if self.air_by_date or self.sports: return self  # scene numbering does not apply to air-by-date
         if self.season_number == None: return self  # can't work without a season
         if len(self.episode_numbers) == 0: return self  # need at least one episode
 

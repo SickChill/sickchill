@@ -153,12 +153,18 @@ class HDBitsProvider(generic.TorrentProvider):
                 'episode': episode.scene_episode
             }                                                                                                                            
                                                                                                                                          
-        if season:                                                                                                                       
-            post_data['tvdb'] = {                                                                                                        
-                'id': show.indexerid,
-                'season': season,                                                                                                        
-            }                                                                                                                            
-                                                                                                                                         
+        if season:
+            if show.air_by_date or show.sports:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'season': str(episode.airdate)[:7],
+                }
+            else:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'season': season,
+                }
+
         if search_term:                                                                                                                  
             post_data['search'] = search_term                                                                                            
                                                                                                                                          
