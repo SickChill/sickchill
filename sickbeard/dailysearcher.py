@@ -87,7 +87,7 @@ class DailySearcher():
 
     def searchForNeededEpisodes(self):
 
-        logger.log(u"Searching all providers for any needed episodes")
+        logger.log(u"Searching ESS Cache for any needed new episodes")
 
         foundResults = {}
 

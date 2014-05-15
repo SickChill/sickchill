@@ -20,7 +20,7 @@ import sickbeard
 
 from sickbeard import db
 from sickbeard.helpers import sanitizeSceneName
-
+from sickbeard import logger
 
 def addNameToCache(name, indexer_id=0):
     """
@@ -58,6 +58,16 @@ def retrieveShowFromCache(name):
     indexerid = retrieveNameFromCache(name)
     if indexerid:
         return sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexerid))
+
+def syncNameCache():
+    cacheDB = db.DBConnection('cache.db')
+
+    for curShow in sickbeard.showList:
+        for show_name in set(sickbeard.show_name_helpers.allPossibleShowNames(curShow)):
+            sqlResult = cacheDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [show_name, 0])
+            if sqlResult:
+                logger.log(u"Removing invalid record for [" + show_name + "] from cache ...")
+                break
 
 def clearCache():
     """

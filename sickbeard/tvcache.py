@@ -249,11 +249,19 @@ class TVCache():
         if cacheResult:
             in_cache = True
             indexerid = int(cacheResult)
+        elif cacheResult == 0:
+            return None
 
         if not indexerid:
             showResult = helpers.searchDBForShow(parse_result.series_name)
             if showResult:
                 indexerid = int(showResult[0])
+
+        if not indexerid:
+            for curShow in sickbeard.showList:
+                if show_name_helpers.isGoodResult(name, curShow, False):
+                    indexerid = curShow.indexerid
+                    break
 
         showObj = None
         if indexerid:
@@ -261,6 +269,7 @@ class TVCache():
 
         if not showObj:
             logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
+            sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
             return None
 
         season = episodes = None
