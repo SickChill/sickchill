@@ -17,6 +17,7 @@
    #end if
 
 <h3>Backlog Search:</h3>
+<a class="btn" href="$sbRoot/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
 <a class="btn" href="$sbRoot/manage/manageSearches/pauseBacklog?paused=#if $backlogPaused then "0" else "1"#"><i class="#if $backlogPaused then "icon-play" else "icon-pause"#"></i> #if $backlogPaused then "Unpause" else "Pause"#</a> 
 #if not $backlogRunning:
 Not in progress<br />

@@ -213,6 +213,18 @@ class ManageSearches:
 
         return _munge(t)
 
+
+    @cherrypy.expose
+    def forceBacklog(self):
+        # force it to run the next time it looks
+        result = sickbeard.backlogSearchScheduler.forceRun()
+        if result:
+            logger.log(u"Backlog search forced")
+            ui.notifications.message('Backlog search started')
+
+        redirect("/manage/manageSearches/")
+
+
     @cherrypy.expose
     def forceSearch(self):
 
