@@ -534,23 +534,23 @@ def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manua
                 continue
 
             # add result if its not a duplicate and
-            if isFinalResult(bestResult):
-                found = False
-                for i, result in enumerate(queueItem.results):
-                    for bestResultEp in bestResult.episodes:
-                        if bestResultEp in result.episodes:
-                            if result.quality < bestResult.quality:
-                                queueItem.results.pop(i)
-                            else:
-                                found = True
-                if not found:
-                    queueItem.results += [bestResult]
+            found = False
+            for i, result in enumerate(queueItem.results):
+                for bestResultEp in bestResult.episodes:
+                    if bestResultEp in result.episodes:
+                        if result.quality < bestResult.quality:
+                            queueItem.results.pop(i)
+                        else:
+                            found = True
+            if not found:
+                queueItem.results += [bestResult]
+
 
         # check that we got all the episodes we wanted first before doing a match and snatch
         wantedEpCount = 0
         for wantedEp in episodes:
             for result in queueItem.results:
-                if wantedEp in result.episodes:
+                if wantedEp in result.episodes and isFinalResult(result):
                     wantedEpCount += 1
 
         # make sure we search every provider for results unless we found everything we wanted

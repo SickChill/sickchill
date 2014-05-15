@@ -207,6 +207,7 @@ class ManageSearches:
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
         t.searchStatus = sickbeard.dailySearchScheduler.action.amActive  # @UndefinedVariable
+        t.rssStatus = sickbeard.updateRSSScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
 
@@ -219,7 +220,18 @@ class ManageSearches:
         result = sickbeard.dailySearchScheduler.forceRun()
         if result:
             logger.log(u"Daily search forced")
-            ui.notifications.message('Daily search started',
+            ui.notifications.message('Daily search for new releases started')
+
+        redirect("/manage/manageSearches/")
+
+    @cherrypy.expose
+    def forceRSS(self):
+
+        # force it to run the next time it looks
+        result = sickbeard.updateRSSScheduler.forceRun()
+        if result:
+            logger.log(u"RSS cache update forced")
+            ui.notifications.message('RSS cache update started',
                                      'Note: RSS feeds may not be updated if retrieved recently')
 
         redirect("/manage/manageSearches/")
