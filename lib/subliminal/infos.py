@@ -15,18 +15,4 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with subliminal.  If not, see <http://www.gnu.org/licenses/>.
-
-
-class Error(Exception):
-    """Base class for exceptions in subliminal"""
-    pass
-
-
-class ServiceError(Error):
-    """"Exception raised by services"""
-    pass
-
-
-class DownloadFailedError(Error):
-    """"Exception raised when a download task has failed in service"""
-    pass
+__version__ = '0.6.3'
