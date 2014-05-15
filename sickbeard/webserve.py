@@ -1067,7 +1067,7 @@ class ConfigSearch:
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
-                   download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
+                   download_propers=None, check_propers_interval=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None, rssupdate_startup=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
@@ -1098,6 +1098,7 @@ class ConfigSearch:
             sickbeard.properFinderScheduler.silent = False
         else:
             sickbeard.properFinderScheduler.silent = True
+        sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.PREFER_EPISODE_RELEASES = config.checkbox_to_value(prefer_episode_releases)
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
