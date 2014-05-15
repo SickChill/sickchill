@@ -65,7 +65,7 @@ def syncNameCache():
     for curShow in sickbeard.showList:
         for show_name in set(sickbeard.show_name_helpers.allPossibleShowNames(curShow)):
             sqlResult = cacheDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [show_name, 0])
-            if sqlResult:
+            if sqlResult.rowcount > 0:
                 logger.log(u"Removing invalid record for [" + show_name + "] from cache ...")
                 break
 
