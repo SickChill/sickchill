@@ -80,6 +80,8 @@ class TVCache():
         return CacheDBConnection(self.providerID)
 
     def _clearCache(self):
+        if not self.shouldClearCache():
+            return
 
         myDB = self._getDB()
 
@@ -201,6 +203,19 @@ class TVCache():
 
         return datetime.datetime.fromtimestamp(lastTime)
 
+    def _getLastSearch(self):
+        myDB = self._getDB()
+        sqlResults = myDB.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
+
+        if sqlResults:
+            lastTime = int(sqlResults[0]["time"])
+            if lastTime > int(time.mktime(datetime.datetime.today().timetuple())):
+                lastTime = 0
+        else:
+            lastTime = 0
+
+        return datetime.datetime.fromtimestamp(lastTime)
+
 
     def setLastUpdate(self, toDate=None):
         if not toDate:
@@ -211,9 +226,18 @@ class TVCache():
                     {'time': int(time.mktime(toDate.timetuple()))},
                     {'provider': self.providerID})
 
+    def setLastSearch(self, toDate=None):
+        if not toDate:
+            toDate = datetime.datetime.today()
+
+        myDB = self._getDB()
+        myDB.upsert("lastSearch",
+                    {'time': int(time.mktime(toDate.timetuple()))},
+                    {'provider': self.providerID})
+
 
     lastUpdate = property(_getLastUpdate)
-
+    lastSearch = property(_getLastSearch)
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update
@@ -224,6 +248,14 @@ class TVCache():
 
         return True
 
+    def shouldClearCache(self):
+        # if daily search hasn't used our previous results yet then don't clear the cache
+        if self.lastUpdate > self.lastSearch:
+            logger.log(
+                u"Daily search has not yet searched our last cache results, skipping clearig cache ...", logger.DEBUG)
+            return False
+
+        return True
 
     def _addCacheEntry(self, name, url, quality=None):
         indexerid = None
@@ -391,6 +423,9 @@ class TVCache():
                     neededEps[epObj] = [result]
                 else:
                     neededEps[epObj].append(result)
+
+        # datetime stamp this search so cache gets cleared
+        self.setLastSearch()
 
         return neededEps
 

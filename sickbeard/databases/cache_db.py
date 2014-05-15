@@ -27,6 +27,7 @@ class InitialSchema(db.SchemaUpgrade):
 
         queries = [
             ("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);",),
+            ("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE db_version (db_version INTEGER);",),
             ("INSERT INTO db_version (db_version) VALUES (?)", 1),
         ]
@@ -69,6 +70,7 @@ class AddXemNumbering(AddNetworkTimezones):
     def execute(self):
         self.connection.action(
             "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER)")
+
 class AddXemRefresh(AddXemNumbering):
     def test(self):
         return self.hasTable("xem_refresh")
@@ -120,3 +122,9 @@ class RemoveKeysFromXemNumbering(ConvertIndexerToInteger):
         self.connection.action("ALTER TABLE xem_numbering DROP UNIQUE (indexer, indexer_id, season, episode)")
         self.connection.action("ALTER TABLE xem_numbering DROP PRIMARY KEY")
 
+class AddLastSearch(RemoveKeysFromXemNumbering):
+    def test(self):
+        return self.hasTable("lastSearch")
+
+    def execute(self):
+        self.connection.action("CREATE TABLE lastSearch (provider TEXT, time NUMERIC)")
