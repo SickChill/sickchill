@@ -180,6 +180,9 @@ class GenericProvider:
 
         return True
 
+    def searchRSS(self):
+        return self.cache.findNeededEpisodes()
+
     def getQuality(self, item):
         """
         Figures out the quality of the given RSS item node
@@ -238,7 +241,7 @@ class GenericProvider:
 
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if len(cacheResult):
-                results.update(cacheResult)
+                results.update({epObj.episode:cacheResult[epObj]})
                 continue
 
             if seasonSearch:
@@ -350,7 +353,6 @@ class GenericProvider:
                 result.quality = quality
                 result.provider = self
                 result.content = None
-                result.extraInfo = [show]
 
                 if len(epObj) == 1:
                     epNum = epObj[0].episode

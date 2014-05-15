@@ -379,9 +379,9 @@ class TVCache():
 
                 # add it to the list
                 if epObj not in neededEps:
-                    neededEps[epObj.episode] = [result]
+                    neededEps[epObj] = [result]
                 else:
-                    neededEps[epObj.episode].append(result)
+                    neededEps[epObj].append(result)
 
         return neededEps
 

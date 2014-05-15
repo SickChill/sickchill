@@ -157,6 +157,14 @@ def change_TV_DOWNLOAD_DIR(tv_download_dir):
     return True
 
 
+def change_DAILYSEARCH_FREQUENCY(freq):
+    sickbeard.DAILYSEARCH_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
+
+    if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_SEARCH_FREQUENCY:
+        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_SEARCH_FREQUENCY
+
+    sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+
 def change_RSSUPDATE_FREQUENCY(freq):
     sickbeard.RSSUPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_SEARCH_FREQUENCY)
 

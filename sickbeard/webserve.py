@@ -206,10 +206,23 @@ class ManageSearches:
         #t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
+        t.searchStatus = sickbeard.dailySearchScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
 
         return _munge(t)
+
+    @cherrypy.expose
+    def forceSearch(self):
+
+        # force it to run the next time it looks
+        result = sickbeard.dailySearchScheduler.forceRun()
+        if result:
+            logger.log(u"Daily search forced")
+            ui.notifications.message('Daily search started',
+                                     'Note: RSS feeds may not be updated if retrieved recently')
+
+        redirect("/manage/manageSearches/")
 
     @cherrypy.expose
     def pauseBacklog(self, paused=None):
@@ -1052,7 +1065,7 @@ class ConfigSearch:
     @cherrypy.expose
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
-                   nzbget_category=None, nzbget_host=None, nzbget_use_https=None,
+                   nzbget_category=None, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
                    download_propers=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None, rssupdate_startup=None,
@@ -1066,6 +1079,8 @@ class ConfigSearch:
 
         if not config.change_TORRENT_DIR(torrent_dir):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
+
+        config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
 
         config.change_RSSUPDATE_FREQUENCY(rssupdate_frequency)
 

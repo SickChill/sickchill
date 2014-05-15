@@ -39,6 +39,7 @@ from sickbeard import helpers, db, exceptions, show_queue, search_queue, schedul
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import rssupdater
+from sickbeard import dailysearcher
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -76,6 +77,7 @@ PIDFILE = ''
 
 DAEMON = None
 
+dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
 versionCheckScheduler = None
@@ -176,6 +178,7 @@ DOWNLOAD_PROPERS = None
 PREFER_EPISODE_RELEASES = None
 ALLOW_HIGH_PRIORITY = None
 
+DAILYSEARCH_FREQUENCY = None
 RSSUPDATE_FREQUENCY = None
 UPDATE_FREQUENCY = None
 BACKLOG_FREQUENCY = 21
@@ -517,7 +520,7 @@ def initialize(consoleLogging=True):
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, AIRDATE_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
             WOMBLE, OMGWTFNZBS, OMGWTFNZBS_USERNAME, OMGWTFNZBS_APIKEY, providerList, newznabProviderList, torrentRssProviderList, \
-            EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, \
+            EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, DAILYSEARCH_FREQUENCY, \
             USE_BOXCAR, BOXCAR_USERNAME, BOXCAR_PASSWORD, BOXCAR_NOTIFY_ONDOWNLOAD, BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD, BOXCAR_NOTIFY_ONSNATCH, \
             USE_BOXCAR2, BOXCAR2_ACCESSTOKEN, BOXCAR2_NOTIFY_ONDOWNLOAD, BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD, BOXCAR2_NOTIFY_ONSNATCH, \
             USE_PUSHOVER, PUSHOVER_USERKEY, PUSHOVER_NOTIFY_ONDOWNLOAD, PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHOVER_NOTIFY_ONSNATCH, \
@@ -525,7 +528,7 @@ def initialize(consoleLogging=True):
             USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, \
             USE_LISTVIEW, METADATA_XBMC, METADATA_XBMC_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
-            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, CLEAR_CACHE, \
+            NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, CLEAR_CACHE, dailySearchScheduler, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
@@ -672,15 +675,19 @@ def initialize(consoleLogging=True):
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        RSSUPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'rssupdate_frequency', 40)
+        DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency', DEFAULT_SEARCH_FREQUENCY)
+        if DAILYSEARCH_FREQUENCY < MIN_SEARCH_FREQUENCY:
+            DAILYSEARCH_FREQUENCY = MIN_SEARCH_FREQUENCY
+
+        RSSUPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'rssupdate_frequency', DEFAULT_SEARCH_FREQUENCY)
         if RSSUPDATE_FREQUENCY < MIN_SEARCH_FREQUENCY:
             RSSUPDATE_FREQUENCY = MIN_SEARCH_FREQUENCY
 
-        BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', 40)
+        BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', DEFAULT_SEARCH_FREQUENCY)
         if BACKLOG_FREQUENCY < MIN_SEARCH_FREQUENCY:
             BACKLOG_FREQUENCY = MIN_SEARCH_FREQUENCY
 
-        UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', 12)
+        UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
         if UPDATE_FREQUENCY < MIN_UPDATE_FREQUENCY:
             UPDATE_FREQUENCY = MIN_UPDATE_FREQUENCY
 
@@ -1070,12 +1077,6 @@ def initialize(consoleLogging=True):
                                                     threadName="CHECKVERSION",
                                                     runImmediately=True)
 
-        updateRSSScheduler = scheduler.Scheduler(rssupdater.RSSUpdater(),
-                                                 cycleTime=datetime.timedelta(minutes=RSSUPDATE_FREQUENCY),
-                                                 threadName="RSSUPDATER",
-                                                 silent=True,
-                                                 runImmediately=RSSUPDATE_STARTUP)
-
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE",
@@ -1117,10 +1118,22 @@ def initialize(consoleLogging=True):
                                                                       silent=True,
                                                                       runImmediately=BACKLOG_STARTUP)
 
+        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
+                                                 cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
+                                                 threadName="DAILYSEARCHER",
+                                                 silent=True,
+                                                 runImmediately=True)
+
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
                                                        threadName="FINDSUBTITLES",
                                                        runImmediately=True)
+
+        updateRSSScheduler = scheduler.Scheduler(rssupdater.RSSUpdater(),
+                                                 cycleTime=datetime.timedelta(minutes=RSSUPDATE_FREQUENCY),
+                                                 threadName="RSSUPDATER",
+                                                 silent=True,
+                                                 runImmediately=RSSUPDATE_STARTUP)
 
         if not USE_SUBTITLES:
             subtitlesFinderScheduler.silent = True
@@ -1148,7 +1161,7 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, started, USE_SUBTITLES, \
-        traktWatchListCheckerSchedular, updateRSSScheduler, started
+        traktWatchListCheckerSchedular, updateRSSScheduler, dailySearchScheduler, started
 
     with INIT_LOCK:
 
@@ -1159,6 +1172,9 @@ def start():
 
             # start the RSS cache updater
             updateRSSScheduler.thread.start()
+
+            # start the daily search scheduler
+            dailySearchScheduler.thread.start()
 
             # start the backlog scheduler
             backlogSearchScheduler.thread.start()
@@ -1191,7 +1207,7 @@ def start():
 def halt():
     global __INITIALIZED__, backlogSearchScheduler, showUpdateScheduler, \
         showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, updateRSSScheduler, started, \
+        subtitlesFinderScheduler, updateRSSScheduler, dailySearchScheduler, started, \
         traktWatchListCheckerSchedular
 
     with INIT_LOCK:
@@ -1206,6 +1222,13 @@ def halt():
             logger.log(u"Waiting for the BACKLOG thread to exit")
             try:
                 backlogSearchScheduler.thread.join(10)
+            except:
+                pass
+
+            dailySearchScheduler.abort = True
+            logger.log(u"Waiting for the DAILYSEARCHER thread to exit")
+            try:
+                dailySearchScheduler.thread.join(10)
             except:
                 pass
 
@@ -1405,6 +1428,7 @@ def save_config():
     new_config['General']['nzb_method'] = NZB_METHOD
     new_config['General']['torrent_method'] = TORRENT_METHOD
     new_config['General']['usenet_retention'] = int(USENET_RETENTION)
+    new_config['General']['dailysearch_frequency'] = int(DAILYSEARCH_FREQUENCY)
     new_config['General']['rssupdate_frequency'] = int(RSSUPDATE_FREQUENCY)
     new_config['General']['backlog_frequency'] = int(BACKLOG_FREQUENCY)
     new_config['General']['update_frequency'] = int(UPDATE_FREQUENCY)
