@@ -150,6 +150,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                     if processPath != sickbeard.TV_DOWNLOAD_DIR:
                         delete_dir(processPath)
 
+    if process_result:
+        returnStr += logHelper(u"Successfully processed")
+    else:
+        returnStr += logHelper(u"Problem(s) during processing", logger.WARNING)
+
     return returnStr
 
 
