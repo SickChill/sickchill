@@ -75,12 +75,12 @@ class FailedProcessor(object):
                 logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
-        episodes = []
+        segment = {parsed.season_number:[]}
         for episode in parsed.episode_numbers:
             epObj = self._show_obj.getEpisode(parsed.season_number, episode)
-            episodes.append(epObj)
+            segment[parsed.season_number].append(epObj)
 
-        cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, episodes)
+        cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, segment)
         sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True

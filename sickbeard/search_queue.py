@@ -27,6 +27,7 @@ from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue, scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
+from sickbeard import searchBacklog
 
 search_queue_lock = threading.Lock()
 
@@ -127,6 +128,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.execute(self)
 
         for season in self.segment:
+            searchBacklog.BacklogSearcher.currentSearchInfo = {'title': self.show.name + " Season " + str(season)}
+
             wantedEps = self.segment[season]
 
             # check if we want to search for season packs instead of just season/episode
