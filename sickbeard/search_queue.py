@@ -42,16 +42,8 @@ class SearchQueue(generic_queue.GenericQueue):
     def is_in_queue(self, show, segment):
         queue =  [x for x in self.queue.queue] + [self.currentItem]
         for cur_item in queue:
-            with search_queue_lock:
-                if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
-                    return True
-        return False
-
-    def is_ep_in_queue(self, ep_obj):
-        queue = [x for x in self.queue.queue] + [self.currentItem]
-        for cur_item in queue:
-            with search_queue_lock:
-                if isinstance(cur_item, ManualSearchQueueItem) and cur_item.ep_obj == ep_obj:
+            if cur_item:
+                if cur_item.show == show and cur_item.segment == segment:
                     return True
         return False
 
@@ -76,9 +68,9 @@ class SearchQueue(generic_queue.GenericQueue):
 
         if isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, ManualSearchQueueItem) and not self.is_ep_in_queue(item.ep_obj):
+        elif isinstance(item, ManualSearchQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.episodes):
+        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
@@ -92,29 +84,29 @@ class SearchQueue(generic_queue.GenericQueue):
             generic_queue.QueueItem.finish(item)
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
-    def __init__(self, ep_obj):
+    def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'MANUAL-' + str(ep_obj.show.indexerid) + '-'
+        self.thread_name = 'MANUAL-' + str(show.indexerid) + '-'
         self.success = None
-        self.show = ep_obj.show
-        self.ep_obj = ep_obj
+        self.show = show
+        self.segment = segment
         self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
         try:
-            logger.log("Beginning manual search for [" + self.ep_obj.prettyName() + "]")
-            searchResult = search.searchProviders(self, self.show, self.ep_obj.season, [self.ep_obj],False,True)
+            logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
+            searchResult = search.searchProviders(self, self.show, self.segment.season, [self.segment],False,True)
 
             if searchResult:
                 SearchQueue().snatch_item(searchResult)
             else:
                 ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>%s</i>" % self.ep_obj.prettyName())
+                                         "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
 
-                logger.log(u"Unable to find a download for " + self.ep_obj.prettyName())
+                logger.log(u"Unable to find a download for " + self.segment.prettyName())
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
@@ -129,86 +121,41 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.success = None
         self.show = show
         self.segment = segment
-        self.wantedEpisodes = []
         self.results = []
-
-        logger.log(u"Seeing if we need any episodes from " + self.show.name + " season " + str(self.segment))
-
-        myDB = db.DBConnection()
-
-        # see if there is anything in this season worth searching for
-        if not self.show.air_by_date:
-            statusResults = myDB.select("SELECT status, episode FROM tv_episodes WHERE showid = ? AND season = ?",
-                                        [self.show.indexerid, self.segment])
-        else:
-            season_year, season_month = map(int, self.segment.split('-'))
-            min_date = datetime.date(season_year, season_month, 1)
-
-            # it's easier to just hard code this than to worry about rolling the year over or making a month length map
-            if season_month == 12:
-                max_date = datetime.date(season_year, 12, 31)
-            else:
-                max_date = datetime.date(season_year, season_month + 1, 1) - datetime.timedelta(days=1)
-
-            statusResults = myDB.select(
-                "SELECT status, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= ?",
-                [self.show.indexerid, min_date.toordinal(), max_date.toordinal()])
-
-        anyQualities, bestQualities = common.Quality.splitQuality(self.show.quality)  #@UnusedVariable
-        self.wantedEpisodes = self._need_any_episodes(statusResults, bestQualities)
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        # check if we want to search for season packs instead of just season/episode
-        seasonSearch = False
-        seasonEps = self.show.getAllEpisodes(self.segment)
-        if len(seasonEps) == len(self.wantedEpisodes):
-            seasonSearch = True
+        for season in self.segment:
+            wantedEps = self.segment[season]
 
-        try:
-            logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(self.segment) + "]")
-            searchResult = search.searchProviders(self, self.show, self.segment, self.wantedEpisodes, seasonSearch, False)
+            # check if we want to search for season packs instead of just season/episode
+            seasonSearch = False
+            seasonEps = self.show.getAllEpisodes(season)
+            if len(seasonEps) == len(wantedEps) and not sickbeard.PREFER_EPISODE_RELEASES:
+                seasonSearch = True
 
-            if searchResult:
-                SearchQueue().snatch_item(searchResult)
-            else:
-                logger.log(u"No needed episodes found during backlog search")
+            try:
+                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(season) + "]")
+                searchResult = search.searchProviders(self, self.show, season, wantedEps, seasonSearch, False)
 
-        except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+                if searchResult:
+                    SearchQueue().snatch_item(searchResult)
+                else:
+                    logger.log(u"No needed episodes found during backlog search")
+
+            except Exception:
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
 
-    def _need_any_episodes(self, statusResults, bestQualities):
-        wantedEpisodes = []
-
-        # check through the list of statuses to see if we want any
-        for curStatusResult in statusResults:
-            curCompositeStatus = int(curStatusResult["status"])
-            curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
-            episode = int(curStatusResult["episode"])
-
-            if bestQualities:
-                highestBestQuality = max(bestQualities)
-            else:
-                highestBestQuality = 0
-
-            # if we need a better one then say yes
-            if (curStatus in (common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
-                              common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
-                epObj = self.show.getEpisode(self.segment, episode)
-                wantedEpisodes.append(epObj)
-
-        return wantedEpisodes
-
 class FailedQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, episodes):
+    def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.thread_name = 'RETRY-' + str(show.indexerid) + '-'
         self.show = show
-        self.episodes = episodes
+        self.segment = segment
         self.success = None
         self.results = []
 
@@ -216,7 +163,9 @@ class FailedQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.execute(self)
 
         failed_episodes = []
-        for i, epObj in enumerate(self.episodes):
+        for season in self.segment:
+            epObj = self.segment[season]
+
             (release, provider) = failed_history.findRelease(epObj)
             if release:
                 logger.log(u"Marking release as bad: " + release)
@@ -226,11 +175,11 @@ class FailedQueueItem(generic_queue.QueueItem):
                 failed_history.revertEpisode(epObj)
                 failed_episodes.append(epObj)
 
+                logger.log(
+                    "Beginning failed download search for [" + epObj.prettyName() + "]")
+
         if len(failed_episodes):
             try:
-                logger.log(
-                    "Beginning failed download search for episodes from Season [" + str(self.episodes[0].season) + "]")
-
                 searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, False, True)
 
                 if searchResult:

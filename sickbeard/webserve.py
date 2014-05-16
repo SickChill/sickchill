@@ -3227,8 +3227,7 @@ class Home:
             else:
                 return _genericMessage("Error", errMsg)
 
-        wanted_segments = []
-        failed_segments = {}
+        segments = {}
 
         if eps is not None:
 
@@ -3244,22 +3243,12 @@ class Home:
                 if epObj is None:
                     return _genericMessage("Error", "Episode couldn't be retrieved")
 
-                if int(status) == WANTED:
+                if int(status) in [WANTED, FAILED]:
                     # figure out what episodes are wanted so we can backlog them
-                    if epObj.show.air_by_date or epObj.show.sports:
-                        segment = str(epObj.airdate)[:7]
+                    if epObj in segments:
+                        segments[epObj.season].append(epObj)
                     else:
-                        segment = epObj.season
-
-                    if segment not in wanted_segments:
-                        wanted_segments.append(segment)
-
-                elif int(status) == FAILED:
-                    # figure out what episodes failed so we can retry them
-                    if epObj.season not in failed_segments:
-                        failed_segments[epObj.season] = []
-                    if epObj.episode not in failed_segments[epObj.season]:
-                        failed_segments[epObj.season].append(epObj.episode)
+                        segments[epObj.season] = [epObj]
 
                 with epObj.lock:
                     # don't let them mess up UNAIRED episodes
@@ -3294,7 +3283,7 @@ class Home:
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
-            for cur_segment in wanted_segments:
+            for cur_segment in segments:
                 msg += "<li>Season " + str(cur_segment) + "</li>"
                 logger.log(u"Sending backlog for " + showObj.name + " season " + str(
                     cur_segment) + " because some eps were set to wanted")
@@ -3302,12 +3291,12 @@ class Home:
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
             msg += "</ul>"
 
-            if wanted_segments:
+            if segments:
                 ui.notifications.message("Backlog started", msg)
 
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
-            for cur_segment in failed_segments:
+            for cur_segment in segments:
                 msg += "<li>Season " + str(cur_segment) + "</li>"
                 logger.log(u"Retrying Search for " + showObj.name + " season " + str(
                     cur_segment) + " because some eps were set to failed")
@@ -3315,7 +3304,7 @@ class Home:
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)  # @UndefinedVariable
             msg += "</ul>"
 
-            if failed_segments:
+            if segments:
                 ui.notifications.message("Retry Search started", msg)
 
         if direct:
@@ -3427,7 +3416,7 @@ class Home:
             return json.dumps({'result': 'failure'})
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.ManualSearchQueueItem(ep_obj)
+        ep_queue_item = search_queue.ManualSearchQueueItem(ep_obj.show, ep_obj)
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
