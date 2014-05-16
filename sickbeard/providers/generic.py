@@ -232,7 +232,13 @@ class GenericProvider:
         searchItems = {}
         itemList = []
 
+        searched_scene_season = None
         for epObj in episodes:
+            scene_season = epObj.scene_season
+            if seasonSearch and searched_scene_season:
+                if scene_season == searched_scene_season:
+                    continue
+
             if not epObj.show.air_by_date:
                 if epObj.scene_season == 0 or epObj.scene_episode == 0:
                     logger.log(
@@ -257,18 +263,17 @@ class GenericProvider:
 
             # remove duplicate items
             itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
+            searchItems[epObj] = itemList
 
-            if epObj.episode in searchItems:
-                searchItems[epObj] += itemList
-            else:
-                searchItems[epObj] = itemList
+            # mark season searched so we can skip anymore searches of this season if this is a season pack search
+            searched_scene_season = scene_season
 
         # if we have cached results return them.
         if len(results):
             return results
 
-        for ep_obj, items in searchItems.items():
-            for item in items:
+        for ep_obj in searchItems:
+            for item in searchItems[ep_obj]:
 
                 (title, url) = self._get_title_and_url(item)
 

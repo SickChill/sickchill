@@ -317,7 +317,10 @@ def filterSearchResults(show, results):
 
 
 def searchProviders(queueItem, show, season, episodes, seasonSearch=False, manualSearch=False):
-    logger.log(u"Searching for stuff we need from " + show.name + " season " + str(season))
+    if seasonSearch:
+        logger.log(u"Searching for " + show.name + " season " + str(season) + " pack")
+    else:
+        logger.log(u"Searching for episodes we need from " + show.name + " season " + str(season))
 
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
