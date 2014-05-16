@@ -138,7 +138,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 seasonSearch = True
 
             try:
-                logger.log("Beginning backlog search for episodes from [" + self.show.name + "]  - Season[" + str(season) + "]")
+                logger.log("Beginning backlog search for [" + self.show.name + "]")
                 searchResult = search.searchProviders(self, self.show, season, wantedEps, seasonSearch, False)
 
                 if searchResult:

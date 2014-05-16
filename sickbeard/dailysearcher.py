@@ -87,14 +87,16 @@ class DailySearcher():
 
     def searchForNeededEpisodes(self):
 
-        logger.log(u"Searching ESS Cache for any needed new episodes")
+        logger.log(u"Searching RSS Cache for any new releases we may want to snatch ...")
 
         foundResults = {}
 
         didSearch = False
 
         # ask all providers for any episodes it finds
+        threadName = threading.currentThread().name
         for curProvider in [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]:
+            threading.currentThread().name = threadName + ":[" + curProvider.name + "]"
 
             try:
                 curFoundResults = curProvider.searchRSS()

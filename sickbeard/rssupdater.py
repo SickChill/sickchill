@@ -32,6 +32,7 @@ class RSSUpdater():
 
     def run(self):
         self.amActive = True
+        threadName = threading.currentThread().name
 
         # remove names from cache that link back to active shows that we watch
         sickbeard.name_cache.syncNameCache()
@@ -39,7 +40,8 @@ class RSSUpdater():
         # update RSS cache
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
         for provider in providers:
-            logger.log(u"Updating RSS cache for provider [" + provider.name + "]")
+            threading.currentThread().name = threadName + ":[" + provider.name + "]"
+            logger.log(u"Updating RSS cache ...")
             provider.cache.updateCache()
 
         self.amActive = False

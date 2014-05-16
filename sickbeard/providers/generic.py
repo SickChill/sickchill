@@ -53,6 +53,8 @@ class GenericProvider:
 
         self.show = None
         self.supportsBacklog = False
+        self.search_mode = None
+        self.search_fallback = False
 
         self.cache = tvcache.TVCache(self)
 
@@ -234,10 +236,12 @@ class GenericProvider:
 
         searched_scene_season = None
         for epObj in episodes:
-            scene_season = epObj.scene_season
             if seasonSearch and searched_scene_season:
-                if scene_season == searched_scene_season:
+                if searched_scene_season == epObj.scene_season:
                     continue
+
+            # mark season searched for season pack searches so we can skip later on
+            searched_scene_season = epObj.scene_season
 
             if not epObj.show.air_by_date:
                 if epObj.scene_season == 0 or epObj.scene_episode == 0:
@@ -265,9 +269,6 @@ class GenericProvider:
             itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
             searchItems[epObj] = itemList
 
-            # mark season searched so we can skip anymore searches of this season if this is a season pack search
-            searched_scene_season = scene_season
-
         # if we have cached results return them.
         if len(results):
             return results
@@ -288,6 +289,12 @@ class GenericProvider:
                     continue
 
                 if not (self.show.air_by_date or self.show.sports):
+                    if seasonSearch and len(parse_result.episode_numbers):
+                        logger.log(
+                            u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
+                            logger.DEBUG)
+                        continue
+
                     if not len(parse_result.episode_numbers) and (
                                     parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
                                     parse_result.season_number == None and ep_obj.season != 1):
