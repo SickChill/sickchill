@@ -247,8 +247,9 @@ class GenericProvider:
             if seasonSearch:
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
-            for curString in self._get_episode_search_strings(epObj):
-                itemList += self._doSearch(curString, len(episodes))
+            else:
+                for curString in self._get_episode_search_strings(epObj):
+                    itemList += self._doSearch(curString, len(episodes))
 
             # next episode if no search results
             if not itemList:

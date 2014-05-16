@@ -203,11 +203,10 @@ class NewznabProvider(generic.NZBProvider):
                 (title, url) = self._get_title_and_url(curItem)
 
                 if title and url:
-                    logger.log(u"RSS Feed provider: [" + self.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
                     results.append(curItem)
                 else:
                     logger.log(
-                        u"The data returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
+                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
                         logger.DEBUG)
 
             return results
