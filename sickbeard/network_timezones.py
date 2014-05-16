@@ -225,7 +225,7 @@ def get_network_timezone(network, network_dict):
 
 
 # parse date and time string into local time
-def parse_date_time(d, t, network):
+def parse_date_time(d, t, network, local=False):
     if network_dict is None:
         load_network_dict()
     mo = time_regex.search(t)
@@ -261,7 +261,9 @@ def parse_date_time(d, t, network):
     foreign_timezone = get_network_timezone(network, network_dict)
     foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
     try:
-        return foreign_naive.replace(tzinfo=sb_timezone).astimezone(sb_timezone)
+        if local:
+            return foreign_naive.replace(tzinfo=sb_timezone).astimezone(sb_timezone)
+        return foreign_naive.astimezone(sb_timezone)
     except (ValueError):
         return foreign_naive
 
