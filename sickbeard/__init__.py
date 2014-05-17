@@ -1009,12 +1009,8 @@ def initialize(consoleLogging=True):
                 curTorrentProvider.username = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                 curTorrentProvider.getID() + '_username', '')
             if hasattr(curTorrentProvider, 'password'):
-                try:
-                    curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                    curTorrentProvider.getID() + '_password', '')
-                except:
-                    curTorrentProvider.password = ''
-
+                curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                                curTorrentProvider.getID() + '_password', '')
             if hasattr(curTorrentProvider, 'proxy'):
                 curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                           curTorrentProvider.getID() + '_proxy', 0))

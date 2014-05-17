@@ -360,6 +360,7 @@ def check_setting_float(config, cfg_name, item_name, def_val):
 def check_setting_str(config, cfg_name, item_name, def_val, log=True):
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     if bool(item_name.find('password') + 1):
+        log = False
         encryption_version = sickbeard.ENCRYPTION_VERSION
     else:
         encryption_version = 0
@@ -378,8 +379,8 @@ def check_setting_str(config, cfg_name, item_name, def_val, log=True):
         logger.log(item_name + " -> " + my_val, logger.DEBUG)
     else:
         logger.log(item_name + " -> ******", logger.DEBUG)
-    return my_val
 
+    return my_val
 
 class ConfigMigrator():
     def __init__(self, config_obj):
