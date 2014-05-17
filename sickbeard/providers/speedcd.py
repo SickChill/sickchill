@@ -284,6 +284,8 @@ class SpeedCDCache(tvcache.TVCache):
             if ci is not None:
                 ql.append(ci)
 
+            time.sleep(0.05)
+
         myDB = self._getDB()
         myDB.mass_action(ql)
 

@@ -17,11 +17,9 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import email.utils
+import time
 import datetime
-import re
 import os
-import copy
 
 try:
     import xml.etree.cElementTree as etree
@@ -274,7 +272,6 @@ class NewznabCache(tvcache.TVCache):
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
 
-
     def updateCache(self):
         if not self.shouldUpdate():
             return
@@ -299,6 +296,8 @@ class NewznabCache(tvcache.TVCache):
                     ci = self._parseItem(item)
                     if ci is not None:
                         ql.append(ci)
+
+                    time.sleep(0.05)
 
                 myDB = self._getDB()
                 myDB.mass_action(ql)

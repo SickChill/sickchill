@@ -361,6 +361,8 @@ class HDTorrentsCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
+            time.sleep(0.05)
+
         myDB = self._getDB()
         myDB.mass_action(cl)
 

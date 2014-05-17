@@ -18,7 +18,7 @@
 
 from __future__ import with_statement
 
-import datetime
+import time
 import traceback
 import threading
 
@@ -79,8 +79,8 @@ class SearchQueue(generic_queue.GenericQueue):
         for result in item.results:
             # just use the first result for now
             logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-            status =  search.snatchEpisode(result)
-            item.success = status
+            item.success =  search.snatchEpisode(result)
+            time.sleep(2)
             generic_queue.QueueItem.finish(item)
 
 class ManualSearchQueueItem(generic_queue.QueueItem):

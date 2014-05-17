@@ -278,6 +278,8 @@ class GenericProvider:
         for ep_obj in searchItems:
             for item in searchItems[ep_obj]:
 
+                time.sleep(0.05)
+
                 (title, url) = self._get_title_and_url(item)
 
                 quality = self.getQuality(item)
