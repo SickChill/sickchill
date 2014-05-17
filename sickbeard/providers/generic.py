@@ -234,10 +234,11 @@ class GenericProvider:
 
         results = {}
         searchItems = {}
-        itemList = []
 
         searched_scene_season = None
         for epObj in episodes:
+            itemList = []
+
             if search_mode == 'sponly' and searched_scene_season:
                 if searched_scene_season == epObj.scene_season:
                     continue
