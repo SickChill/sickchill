@@ -1095,8 +1095,9 @@ class ConfigSearch:
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
-                   download_propers=None, check_propers_interval=None, prefer_episode_releases=None, allow_high_priority=None, backlog_startup=None,
-                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None, rssupdate_startup=None,
+                   download_propers=None, check_propers_interval=None, prefer_episode_releases=None, allow_high_priority=None,
+                   backlog_startup=None, dailysearch_startup=None, rssupdate_startup=None,
+                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
 
@@ -1109,8 +1110,8 @@ class ConfigSearch:
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
-
         config.change_RSSUPDATE_FREQUENCY(rssupdate_frequency)
+        config.change_BACKLOG_FREQUENCY(backlog_frequency)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -1131,7 +1132,7 @@ class ConfigSearch:
         sickbeard.PREFER_EPISODE_RELEASES = config.checkbox_to_value(prefer_episode_releases)
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
 
-        config.change_BACKLOG_FREQUENCY(backlog_frequency)
+        sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
         sickbeard.RSSUPDATE_STARTUP = config.checkbox_to_value(rssupdate_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
 

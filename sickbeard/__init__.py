@@ -188,14 +188,19 @@ ALLOW_HIGH_PRIORITY = None
 DAILYSEARCH_FREQUENCY = None
 RSSUPDATE_FREQUENCY = None
 UPDATE_FREQUENCY = None
-BACKLOG_FREQUENCY = 21
+BACKLOG_FREQUENCY = None
+DAILYSEARCH_STARTUP = None
 RSSUPDATE_STARTUP = None
 BACKLOG_STARTUP = None
 
-MIN_SEARCH_FREQUENCY = 10
+MIN_BACKLOG_FREQUENCY = 10
+MIN_RSSUPDATE_FREQUENCY = 10
+MIN_DAILYSEARCH_FREQUENCY = 10
 MIN_UPDATE_FREQUENCY = 1
-DEFAULT_SEARCH_FREQUENCY = 40
-DEFAULT_UPDATE_FREQUENCY = 12
+DEFAULT_BACKLOG_FREQUENCY = 10080
+DEFAULT_RSSUPDATE_FREQUENCY = 60
+DEFAULT_DAILYSEARCH_FREQUENCY = 30
+DEFAULT_UPDATE_FREQUENCY = 1
 
 ADD_SHOWS_WO_DIR = None
 CREATE_MISSING_SHOW_DIRS = None
@@ -430,7 +435,7 @@ def initialize(consoleLogging=True):
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerSchedular, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
-            PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, BACKLOG_STARTUP, \
+            PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, USENET_RETENTION, TORRENT_DIR, RSSUPDATE_FREQUENCY, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, RSSUPDATE_STARTUP, \
@@ -440,8 +445,8 @@ def initialize(consoleLogging=True):
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
-            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, CPU_PRESET, \
-            KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_SEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, UPDATE_FREQUENCY, \
+            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, CPU_PRESET, MIN_RSSUPDATE_FREQUENCY, \
+            KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_DAILYSEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_STRIP_YEAR, \
             RENAME_EPISODES, AIRDATE_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
@@ -602,22 +607,23 @@ def initialize(consoleLogging=True):
 
         ALLOW_HIGH_PRIORITY = bool(check_setting_int(CFG, 'General', 'allow_high_priority', 1))
 
+        DAILYSEARCH_STARTUP = bool(check_setting_int(CFG, 'General', 'dailysearch_startup', 1))
         RSSUPDATE_STARTUP = bool(check_setting_int(CFG, 'General', 'rssupdate_startup', 1))
         BACKLOG_STARTUP = bool(check_setting_int(CFG, 'General', 'backlog_startup', 1))
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency', DEFAULT_SEARCH_FREQUENCY)
-        if DAILYSEARCH_FREQUENCY < MIN_SEARCH_FREQUENCY:
-            DAILYSEARCH_FREQUENCY = MIN_SEARCH_FREQUENCY
+        DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency', DEFAULT_DAILYSEARCH_FREQUENCY)
+        if DAILYSEARCH_FREQUENCY < MIN_DAILYSEARCH_FREQUENCY:
+            DAILYSEARCH_FREQUENCY = MIN_DAILYSEARCH_FREQUENCY
 
-        RSSUPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'rssupdate_frequency', DEFAULT_SEARCH_FREQUENCY)
-        if RSSUPDATE_FREQUENCY < MIN_SEARCH_FREQUENCY:
-            RSSUPDATE_FREQUENCY = MIN_SEARCH_FREQUENCY
+        RSSUPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'rssupdate_frequency', DEFAULT_RSSUPDATE_FREQUENCY)
+        if RSSUPDATE_FREQUENCY < MIN_RSSUPDATE_FREQUENCY:
+            RSSUPDATE_FREQUENCY = MIN_RSSUPDATE_FREQUENCY
 
-        BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', DEFAULT_SEARCH_FREQUENCY)
-        if BACKLOG_FREQUENCY < MIN_SEARCH_FREQUENCY:
-            BACKLOG_FREQUENCY = MIN_SEARCH_FREQUENCY
+        BACKLOG_FREQUENCY = check_setting_int(CFG, 'General', 'backlog_frequency', DEFAULT_BACKLOG_FREQUENCY)
+        if BACKLOG_FREQUENCY < MIN_BACKLOG_FREQUENCY:
+            BACKLOG_FREQUENCY = MIN_BACKLOG_FREQUENCY
 
         UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
         if UPDATE_FREQUENCY < MIN_UPDATE_FREQUENCY:
@@ -972,7 +978,7 @@ def initialize(consoleLogging=True):
                                                    cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
                                                    threadName="DAILYSEARCHER",
                                                    silent=True,
-                                                   runImmediately=True)
+                                                   runImmediately=DAILYSEARCH_STARTUP)
 
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
@@ -1336,6 +1342,7 @@ def save_config():
     new_config['General']['check_propers_interval'] = CHECK_PROPERS_INTERVAL
     new_config['General']['prefer_episode_releases'] = int(PREFER_EPISODE_RELEASES)
     new_config['General']['allow_high_priority'] = int(ALLOW_HIGH_PRIORITY)
+    new_config['General']['dailysearch_startup'] = int(DAILYSEARCH_STARTUP)
     new_config['General']['rssupdate_startup'] = int(RSSUPDATE_STARTUP)
     new_config['General']['backlog_startup'] = int(BACKLOG_STARTUP)
     new_config['General']['quality_default'] = int(QUALITY_DEFAULT)

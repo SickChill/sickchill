@@ -99,13 +99,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         logger.log(u"Search url: " + self.search_url + " search_params: " + search_params, logger.DEBUG)
 
-        data = self.getURL(self.search_url, post_data=search_params)
-
-        if not data:
-            logger.log(u"No data returned from " + self.search_url, logger.ERROR)
-            return []
-
-        parsedJSON = helpers.parse_json(data)
+        parsedJSON = self.getURL(self.search_url, post_data=search_params, json=True)
 
         if parsedJSON is None:
             logger.log(u"Error trying to load " + self.name + " JSON data", logger.ERROR)
