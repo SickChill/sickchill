@@ -1120,6 +1120,7 @@ class ConfigSearch:
 
         sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
+        sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
 
         sickbeard.SAB_USERNAME = sab_username
         sickbeard.SAB_PASSWORD = sab_password
@@ -1173,7 +1174,7 @@ class ConfigPostProcessing:
                            rename_episodes=None, airdate_episodes=None, unpack=None,
                            move_associated_files=None, tv_download_dir=None, naming_custom_abd=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
-                           delete_failed=None, extra_scripts=None,
+                           delete_failed=None, extra_scripts=None, skip_removed_files=None,
                            naming_custom_sports=None, naming_sports_pattern=None):
 
         results = []

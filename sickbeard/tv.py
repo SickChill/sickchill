@@ -942,20 +942,22 @@ class TVShow(object):
             if not ek.ek(os.path.isfile, curLoc) or not os.path.normpath(curLoc).startswith(
                     os.path.normpath(self.location)):
 
-                with curEp.lock:
-                    # if it used to have a file associated with it and it doesn't anymore then set it to IGNORED
-                    if curEp.location and curEp.status in Quality.DOWNLOADED:
-                        logger.log(str(self.indexerid) + u": Location for " + str(season) + "x" + str(
-                            episode) + " doesn't exist, removing it and changing our status to IGNORED", logger.DEBUG)
-                        curEp.status = IGNORED
-                        curEp.subtitles = list()
-                        curEp.subtitles_searchcount = 0
-                        curEp.subtitles_lastsearch = str(datetime.datetime.min)
-                    curEp.location = ''
-                    curEp.hasnfo = False
-                    curEp.hastbn = False
-                    curEp.release_name = ''
-                    curEp.saveToDB()
+                # check if downloaded files still exist, update our data if this has changed
+                if not SKIP_REMOVED_FILES:
+                    with curEp.lock:
+                        # if it used to have a file associated with it and it doesn't anymore then set it to IGNORED
+                        if curEp.location and curEp.status in Quality.DOWNLOADED:
+                            logger.log(str(self.indexerid) + u": Location for " + str(season) + "x" + str(
+                                episode) + " doesn't exist, removing it and changing our status to IGNORED", logger.DEBUG)
+                            curEp.status = IGNORED
+                            curEp.subtitles = list()
+                            curEp.subtitles_searchcount = 0
+                            curEp.subtitles_lastsearch = str(datetime.datetime.min)
+                        curEp.location = ''
+                        curEp.hasnfo = False
+                        curEp.hastbn = False
+                        curEp.release_name = ''
+                        curEp.saveToDB()
             else:
                 # the file exists, set its modify file stamp
                 if sickbeard.AIRDATE_EPISODES:
