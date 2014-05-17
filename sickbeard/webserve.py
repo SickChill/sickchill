@@ -1010,7 +1010,8 @@ class ConfigGeneral:
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None, use_api=None, api_key=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None, indexer_default=None,):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None,
+                    indexer_default=None, timezone_display=None):
 
         results = []
 
@@ -1046,6 +1047,8 @@ class ConfigGeneral:
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
             sickbeard.TIME_PRESET = sickbeard.TIME_PRESET_W_SECONDS.replace(u":%S", u"")
+
+        sickbeard.TIMEZONE_DISPLAY = timezone_display
 
         if not config.change_LOG_DIR(log_dir, web_log):
             results += ["Unable to create directory " + os.path.normpath(log_dir) + ", log directory not changed."]

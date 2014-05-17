@@ -271,7 +271,7 @@
 	#end if    
     $epResult["name"]
 </td>
-    <td align="center" class="nowrap">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network,True))#</td>
+    <td align="center" class="nowrap">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network))#</td>
     <td class="filename"><small>
 #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
 	#set $epLoc = os.path.basename($epLoc[len($show._location)+1:])

@@ -359,7 +359,18 @@
                                             <option value="$cur_preset" #if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then "selected=\"selected\"" else ""#>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
                                          #end for
                                     </select>
-                                <b>Note:</b> Seconds are only shown on the History Page.
+                                </span>
+                                <span class="component-desc"><b>Note:</b> Seconds are only shown on the History Page.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Timezones:</span>
+                                <span class="component-desc">Display Dates and Times in either your timezone or the shows network timezone?</span>
+                                <span class="component-desc">
+                                    <input type="radio" name="timezone_display" id="local" value="local" class="radio" #if $sickbeard.TIMEZONE_DISPLAY=="local" then "checked=\"checked\"" else ""# />Local Timezone<br />
+                                    <input type="radio" name="timezone_display" id="network" value="network" class="radio" #if $sickbeard.TIMEZONE_DISPLAY=="network" then "checked=\"checked\"" else ""# />Network Timezone<br />
                                 </span>
                             </label>
                         </div>
