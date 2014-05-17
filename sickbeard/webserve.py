@@ -1489,7 +1489,7 @@ class ConfigProviders:
                         newznabProviderDict[cur_id].needs_auth = True
 
                     try:
-                        newznabProviderDict[cur_id].search_mode = kwargs[cur_id + '_search_mode'].strip()
+                        newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
                     except:
                         newznabProviderDict[cur_id].search_mode = 'eponly'
 
@@ -1500,7 +1500,7 @@ class ConfigProviders:
                         newznabProviderDict[cur_id].search_fallback = 0
                 else:
                     try:
-                        newProvider.search_mode = kwargs[cur_id + '_search_mode'].strip()
+                        newProvider.search_mode = str(kwargs[cur_id + '_search_mode']).strip()
                     except:
                         newProvider.search_mode = 'eponly'
 
@@ -1576,37 +1576,37 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'ratio'):
                 try:
-                    curTorrentProvider.ratio = kwargs[curTorrentProvider.getID() + '_ratio'].strip()
+                    curTorrentProvider.ratio = float(str(kwargs[curTorrentProvider.getID() + '_ratio']).strip())
                 except:
                     curTorrentProvider.ratio = None
 
             if hasattr(curTorrentProvider, 'digest'):
                 try:
-                    curTorrentProvider.digest = kwargs[curTorrentProvider.getID() + '_digest'].strip()
+                    curTorrentProvider.digest = str(kwargs[curTorrentProvider.getID() + '_digest']).strip()
                 except:
                     curTorrentProvider.digest = None
 
             if hasattr(curTorrentProvider, 'hash'):
                 try:
-                    curTorrentProvider.hash = kwargs[curTorrentProvider.getID() + '_hash'].strip()
+                    curTorrentProvider.hash = str(kwargs[curTorrentProvider.getID() + '_hash']).strip()
                 except:
                     curTorrentProvider.hash = None
 
             if hasattr(curTorrentProvider, 'api_key'):
                 try:
-                    curTorrentProvider.api_key = kwargs[curTorrentProvider.getID() + '_api_key'].strip()
+                    curTorrentProvider.api_key = str(kwargs[curTorrentProvider.getID() + '_api_key']).strip()
                 except:
                     curTorrentProvider.api_key = None
 
             if hasattr(curTorrentProvider, 'username'):
                 try:
-                    curTorrentProvider.username = kwargs[curTorrentProvider.getID() + '_username'].strip()
+                    curTorrentProvider.username = str(kwargs[curTorrentProvider.getID() + '_username']).strip()
                 except:
                     curTorrentProvider.username = None
 
             if hasattr(curTorrentProvider, 'password'):
                 try:
-                    curTorrentProvider.password = kwargs[curTorrentProvider.getID() + '_password'].strip()
+                    curTorrentProvider.password = str(kwargs[curTorrentProvider.getID() + '_password']).strip()
                 except:
                     curTorrentProvider.password = None
 
@@ -1624,7 +1624,7 @@ class ConfigProviders:
 
                 if hasattr(curTorrentProvider.proxy, 'url'):
                     try:
-                        curTorrentProvider.proxy.url = kwargs[curTorrentProvider.getID() + '_proxy_url'].strip()
+                        curTorrentProvider.proxy.url = str(kwargs[curTorrentProvider.getID() + '_proxy_url']).strip()
                     except:
                         curTorrentProvider.proxy.url = None
 
@@ -1636,7 +1636,7 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'search_mode'):
                 try:
-                    curTorrentProvider.search_mode = kwargs[curTorrentProvider.getID() + '_search_mode'].strip()
+                    curTorrentProvider.search_mode = str(kwargs[curTorrentProvider.getID() + '_search_mode']).strip()
                 except:
                     curTorrentProvider.search_mode = 'eponly'
 
