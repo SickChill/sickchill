@@ -95,18 +95,23 @@ class DailySearcher():
 
         # ask all providers for any episodes it finds
         threadName = threading.currentThread().name
-        for curProvider in [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]:
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+        for curProviderCount, curProvider in enumerate(providers):
             threading.currentThread().name = threadName + ":[" + curProvider.name + "]"
 
             try:
                 curFoundResults = curProvider.searchRSS()
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-                continue
+                if curProviderCount != len(providers):
+                    continue
+                break
             except Exception, e:
                 logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
-                continue
+                if curProviderCount != len(providers):
+                    continue
+                break
 
             didSearch = True
 
@@ -143,4 +148,4 @@ class DailySearcher():
                 u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
                 logger.ERROR)
 
-        return foundResults.values()
+        return foundResults.values() if len(foundResults) else {}

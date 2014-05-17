@@ -354,11 +354,11 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                 searchResults = provider.findSearchResults(show, season, episodes, search_mode, manualSearch)
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-                continue
+                break
             except Exception, e:
                 logger.log(u"Error while searching " + provider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
-                continue
+                break
 
             if len(searchResults):
                 foundResults[provider.name] = filterSearchResults(show, searchResults)
@@ -375,7 +375,10 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
 
         # skip to next provider if we have no results to process
         if not len(foundResults[provider.name]):
-            continue
+            if providerNum != len(providers):
+                continue
+            break
+
 
         anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
@@ -580,7 +583,7 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                     wantedEpCount += 1
 
         # make sure we search every provider for results unless we found everything we wanted
-        if providerNum != len(providers) and wantedEpCount != len(episodes):
-            continue
+        if providerNum == len(providers) or wantedEpCount == len(episodes):
+            break
 
     return queueItem
