@@ -881,9 +881,6 @@ class TVShow(object):
             for sqlEp in sqlResults:
                 curEp = self.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
                 foundEps.append(curEp)
-
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
             return foundEps
 
     def deleteShow(self):

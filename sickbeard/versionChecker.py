@@ -405,7 +405,7 @@ class GitUpdateManager(UpdateManager):
                 logger.log(u"Output doesn't look like a hash, not using it", logger.ERROR)
                 return False
             self._cur_commit_hash = cur_commit_hash
-            sickbeard.CUR_COMMIT_HASH = cur_commit_hash
+            sickbeard.CUR_COMMIT_HASH = str(cur_commit_hash)
             return True
         else:
             return False
