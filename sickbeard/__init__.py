@@ -1413,15 +1413,15 @@ def save_config():
         if hasattr(curTorrentProvider, 'username'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_username'] = curTorrentProvider.username
         if hasattr(curTorrentProvider, 'password'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_password'] = curTorrentProvider.password
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_password'] = helpers.encrypt(curTorrentProvider.password, ENCRYPTION_VERSION)
         if hasattr(curTorrentProvider, 'confirmed'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = curTorrentProvider.confirmed
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = int(curTorrentProvider.confirmed)
         if hasattr(curTorrentProvider, 'ratio'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_ratio'] = float(curTorrentProvider.ratio)
         if hasattr(curTorrentProvider, 'options'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
         if hasattr(curTorrentProvider, 'proxy'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = curTorrentProvider.proxy.enabled
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = int(curTorrentProvider.proxy.enabled)
             if hasattr(curTorrentProvider.proxy, 'url'):
                 new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy_url'] = curTorrentProvider.proxy.url
         if hasattr(curTorrentProvider, 'freeleech'):

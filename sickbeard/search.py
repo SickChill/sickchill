@@ -360,8 +360,10 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 
-            if len(searchResults) and not provider.search_fallback or searchCount == 2:
+            if len(searchResults):
                 foundResults[provider.name] = filterSearchResults(show, searchResults)
+                break
+            elif not provider.search_fallback or searchCount == 2:
                 break
 
             if search_mode == 'sponly':
