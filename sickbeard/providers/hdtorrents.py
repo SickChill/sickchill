@@ -57,6 +57,8 @@ class HDTorrentsProvider(generic.TorrentProvider):
         self.supportsBacklog = True
 
         self.enabled = False
+        self.uid = None
+        self.hash = None
         self.username = None
         self.password = None
         self.ratio = None
