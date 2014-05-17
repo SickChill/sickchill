@@ -94,13 +94,14 @@ class static_or_instance(object):
 # subclass datetime.datetime to add function to display custom date and time formats
 class sbdatetime(datetime.datetime):
     has_locale = True
+    ORIG_LC_TIME = locale.LC_TIME
 
     # display Time in Sickbeard Format
     @static_or_instance
     def sbftime(self, dt=None, show_seconds=False, t_preset=None):
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
         except:
             pass
 
@@ -129,7 +130,7 @@ class sbdatetime(datetime.datetime):
         finally:
             try:
                 if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, '')
+                    locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
             except:
                 sbdatetime.has_locale = False
             return strt
@@ -139,7 +140,7 @@ class sbdatetime(datetime.datetime):
     def sbfdate(self, dt=None, d_preset=None):
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
         except:
             pass
 
@@ -164,7 +165,7 @@ class sbdatetime(datetime.datetime):
     def sbfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
         except:
             pass
 
@@ -206,7 +207,7 @@ class sbdatetime(datetime.datetime):
         finally:
             try:
                 if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, '')
+                    locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
             except:
                 sbdatetime.has_locale = False
             return strd
