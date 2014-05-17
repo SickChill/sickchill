@@ -37,9 +37,9 @@ mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
 
 subtitleExtensions = ['srt', 'sub', 'ass', 'idx', 'ssa']
 
-cpu_presets = {'HIGH': 0.01,
+cpu_presets = {'HIGH': 0.1,
                'NORMAL': 0.05,
-               'LOW': 0.1
+               'LOW': 0.01
 }
 
 ### Other constants

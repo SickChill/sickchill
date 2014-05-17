@@ -247,15 +247,15 @@
                     <fieldset class="component-group-list">
 
                         <div class="field-pair">
-                            <label class="nocheck clearfix" for="cpu_presets">
-                                <span class="component-title">CPU Throttling:</span>
-                                <span class="component-desc">
-                                    <select id="cpu_presets" name="cpu_preset">
-                                    #for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset</option>
-                                    #end for
-                                    </select>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">CPU Throttling:
+                                <select id="cpu_presets" name="cpu_preset">
+                                #for $cur_preset in $cpu_presets:
+                                    <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset</option>
+                                #end for
+                                </select>
                                 </span>
+                                <span class="component-desc">HIGH = Lower CPU usage<br>NORMAL = Defaults<br>LOW =  Higher CPU usage</span>
                             </label>
                         </div>
 
