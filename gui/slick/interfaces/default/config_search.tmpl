@@ -79,17 +79,6 @@
 
                         <div class="field-pair">
                             <label class="nocheck clearfix">
-                                <span class="component-title">RSS Cache Update Frequency</span>
-                                <input type="text" name="rssupdate_frequency" value="$sickbeard.RSSUPDATE_FREQUENCY" size="5" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in minutes between searches (eg. 60)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
                                 <span class="component-title">Daily Search Frequency</span>
                                 <input type="text" name="dailysearch_frequency" value="$sickbeard.DAILYSEARCH_FREQUENCY" size="5" />
                             </label>
@@ -144,13 +133,6 @@
                             <label class="clearfix" for="dailysearch_startup">
                                 <span class="component title">Daily Search on startup</span>
                                 <span class="component-desc">Start daily search upon startup of SickRage?</span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="rssupdate_startup" id="rssupdate_startup" #if $sickbeard.RSSUPDATE_STARTUP == True then "checked=\"checked\"" else ""# />
-                            <label class="clearfix" for="rssupdate_startup">
-                                <span class="component title">RSS Cache Updates on startup</span>
-                                <span class="component-desc">Start RSS cache updates upon startup of SickRage?</span>
                             </label>
                         </div>
                         <div class="field-pair">

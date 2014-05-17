@@ -165,14 +165,6 @@ def change_DAILYSEARCH_FREQUENCY(freq):
 
     sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
 
-def change_RSSUPDATE_FREQUENCY(freq):
-    sickbeard.RSSUPDATE_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_RSSUPDATE_FREQUENCY)
-
-    if sickbeard.RSSUPDATE_FREQUENCY < sickbeard.MIN_RSSUPDATE_FREQUENCY:
-        sickbeard.RSSUPDATE_FREQUENCY = sickbeard.MIN_RSSUPDATE_FREQUENCY
-
-    sickbeard.updateRSSScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.RSSUPDATE_FREQUENCY)
-
 def change_BACKLOG_FREQUENCY(freq):
     sickbeard.BACKLOG_FREQUENCY = to_int(freq, default=sickbeard.DEFAULT_BACKLOG_FREQUENCY)
 

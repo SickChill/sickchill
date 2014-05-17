@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import datetime
 import sickbeard
 from sickbeard.common import *
@@ -114,6 +115,9 @@ class SubtitlesFinder():
         rules = self._getRules()
         now = datetime.datetime.now()
         for epToSub in sqlResults:
+
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
             if not ek.ek(os.path.isfile, epToSub['location']):
                 logger.log('Episode file does not exist, cannot download subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
                 continue

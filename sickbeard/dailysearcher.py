@@ -43,7 +43,10 @@ class DailySearcher():
         self.amActive = True
         self._changeUnairedEpisodes()
 
-        logger.log(u"Searching for todays new releases ...")
+        # remove names from cache that link back to active shows that we watch
+        sickbeard.name_cache.syncNameCache()
+
+        logger.log(u"Starting Daily Searcher ...")
         foundResults = self.searchForNeededEpisodes()
 
         if not len(foundResults):
@@ -87,8 +90,6 @@ class DailySearcher():
 
     def searchForNeededEpisodes(self):
 
-        logger.log(u"Searching RSS Cache for any new releases we may want to snatch ...")
-
         foundResults = {}
 
         didSearch = False
@@ -100,6 +101,10 @@ class DailySearcher():
             threading.currentThread().name = threadName + ":[" + curProvider.name + "]"
 
             try:
+                logger.log(u"Updating RSS cache ...")
+                curProvider.cache.updateCache()
+
+                logger.log(u"Searching RSS cache ...")
                 curFoundResults = curProvider.searchRSS()
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)

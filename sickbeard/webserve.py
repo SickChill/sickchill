@@ -207,7 +207,6 @@ class ManageSearches:
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
         t.searchStatus = sickbeard.dailySearchScheduler.action.amActive  # @UndefinedVariable
-        t.rssStatus = sickbeard.updateRSSScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
 
@@ -233,18 +232,6 @@ class ManageSearches:
         if result:
             logger.log(u"Daily search forced")
             ui.notifications.message('Daily search for new releases started')
-
-        redirect("/manage/manageSearches/")
-
-    @cherrypy.expose
-    def forceRSS(self):
-
-        # force it to run the next time it looks
-        result = sickbeard.updateRSSScheduler.forceRun()
-        if result:
-            logger.log(u"RSS cache update forced")
-            ui.notifications.message('RSS cache update started',
-                                     'Note: RSS feeds may not be updated if retrieved recently')
 
         redirect("/manage/manageSearches/")
 
@@ -1094,9 +1081,9 @@ class ConfigSearch:
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
-                   nzb_method=None, torrent_method=None, usenet_retention=None, rssupdate_frequency=None, backlog_frequency=None,
+                   nzb_method=None, torrent_method=None, usenet_retention=None, backlog_frequency=None,
                    download_propers=None, check_propers_interval=None, prefer_episode_releases=None, allow_high_priority=None,
-                   backlog_startup=None, dailysearch_startup=None, rssupdate_startup=None,
+                   backlog_startup=None, dailysearch_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
@@ -1110,7 +1097,6 @@ class ConfigSearch:
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
-        config.change_RSSUPDATE_FREQUENCY(rssupdate_frequency)
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
@@ -1133,7 +1119,6 @@ class ConfigSearch:
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
 
         sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
-        sickbeard.RSSUPDATE_STARTUP = config.checkbox_to_value(rssupdate_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
 
         sickbeard.SAB_USERNAME = sab_username

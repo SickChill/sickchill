@@ -54,7 +54,7 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
     UNKNOWN, FAILED
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
-
+from common import cpu_presets
 
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
@@ -881,6 +881,9 @@ class TVShow(object):
             for sqlEp in sqlResults:
                 curEp = self.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
                 foundEps.append(curEp)
+
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
             return foundEps
 
     def deleteShow(self):
