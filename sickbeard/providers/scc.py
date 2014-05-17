@@ -24,7 +24,7 @@ import datetime
 import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality
+from sickbeard.common import Quality, cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
@@ -348,7 +348,7 @@ class SCCCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-            time.sleep(0.05)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         myDB = self._getDB()
         myDB.mass_action(cl)

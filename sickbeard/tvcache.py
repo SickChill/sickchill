@@ -34,7 +34,7 @@ from lib.feedcache import cache
 
 from sickbeard import db
 from sickbeard import logger
-from sickbeard.common import Quality
+from sickbeard.common import Quality, cpu_presets
 
 from sickbeard import helpers, show_name_helpers
 from sickbeard.exceptions import MultipleShowObjectsException
@@ -124,7 +124,7 @@ class TVCache():
                     if ci is not None:
                         cl.append(ci)
 
-                    time.sleep(0.05)
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 myDB = self._getDB()
                 myDB.mass_action(cl)
@@ -375,7 +375,7 @@ class TVCache():
         # for each cache entry
         for curResult in sqlResults:
 
-            time.sleep(0.05)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
             # skip non-tv crap (but allow them for Newzbin cause we assume it's filtered well)
             if self.providerID != 'newzbin' and not show_name_helpers.filterBadReleases(curResult["name"]):

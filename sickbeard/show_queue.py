@@ -410,7 +410,7 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.show.refreshDir()
         self.show.writeMetadata()
-        self.show.updateMetadata()
+        #self.show.updateMetadata()
         self.show.populateCache()
 
         self.inProgress = False

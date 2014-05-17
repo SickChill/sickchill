@@ -28,7 +28,7 @@ from sickbeard import scene_exceptions
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.helpers import sanitizeSceneName
-from sickbeard.common import Quality
+from sickbeard.common import cpu_presets
 from sickbeard.exceptions import ex, AuthException
 
 from lib import jsonrpclib
@@ -337,7 +337,7 @@ class BTNCache(tvcache.TVCache):
                     if ci is not None:
                         cl.append(ci)
 
-                    time.sleep(0.05)
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 myDB = self._getDB()
                 myDB.mass_action(cl)

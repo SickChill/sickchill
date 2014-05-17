@@ -31,7 +31,7 @@ import sickbeard
 from lib import requests
 from lib.feedparser import feedparser
 from sickbeard import helpers, classes, logger, db
-from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT  #, SEED_POLICY_TIME, SEED_POLICY_RATIO
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, cpu_presets
 from sickbeard import tvcache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
@@ -278,7 +278,7 @@ class GenericProvider:
         for ep_obj in searchItems:
             for item in searchItems[ep_obj]:
 
-                time.sleep(0.05)
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 (title, url) = self._get_title_and_url(item)
 

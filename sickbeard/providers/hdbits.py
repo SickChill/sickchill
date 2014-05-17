@@ -22,9 +22,8 @@ import sickbeard
 from sickbeard import classes                                                                                                            
 from sickbeard import logger, tvcache, exceptions                                                                                        
 from sickbeard import helpers                                                                                                            
-from sickbeard.common import Quality                                                                                                     
-from sickbeard.exceptions import ex, AuthException                                                                                       
-from sickbeard.name_parser.parser import NameParser, InvalidNameException                                                                
+from sickbeard.common import cpu_presets
+from sickbeard.exceptions import ex, AuthException
                                                                                                                                          
 try:                                                                                                                                     
     import json                                                                                                                          
@@ -226,7 +225,7 @@ class HDBitsCache(tvcache.TVCache):
                     if ci is not None:
                         ql.append(ci)
 
-                    time.sleep(0.05)
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 myDB = self._getDB()
                 myDB.mass_action(ql)

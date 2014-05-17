@@ -25,6 +25,7 @@ import time
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering
+from sickbeard.common import cpu_presets
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
@@ -98,7 +99,7 @@ class NameParser(object):
 
         for (cur_regex_name, cur_regex) in self.compiled_regexes:
 
-            time.sleep(0.05)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
             match = cur_regex.match(name)
 

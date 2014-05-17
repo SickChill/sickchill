@@ -37,6 +37,11 @@ mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
 
 subtitleExtensions = ['srt', 'sub', 'ass', 'idx', 'ssa']
 
+cpu_presets = {'HIGH': 0.01,
+               'NORMAL': 0.05,
+               'LOW': 0.1
+}
+
 ### Other constants
 MULTI_EP_RESULT = -1
 SEASON_RESULT = -2

@@ -23,7 +23,7 @@ import time
 import sickbeard
 import generic
 
-from sickbeard.common import Quality
+from sickbeard.common import Quality, cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
@@ -284,7 +284,7 @@ class SpeedCDCache(tvcache.TVCache):
             if ci is not None:
                 ql.append(ci)
 
-            time.sleep(0.05)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         myDB = self._getDB()
         myDB.mass_action(ql)

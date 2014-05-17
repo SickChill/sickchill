@@ -1011,7 +1011,7 @@ class ConfigGeneral:
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
                     anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None,
-                    indexer_default=None, timezone_display=None):
+                    indexer_default=None, timezone_display=None, cpu_preset=None):
 
         results = []
 
@@ -1025,6 +1025,7 @@ class ConfigGeneral:
         config.change_UPDATE_FREQUENCY(update_frequency)
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
+        sickbeard.CPU_PRESET = cpu_preset
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.GIT_PATH = git_path
@@ -1116,7 +1117,7 @@ class ConfigSearch:
 
         sickbeard.NZB_METHOD = nzb_method
         sickbeard.TORRENT_METHOD = torrent_method
-        sickbeard.USENET_RETENTION = sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
+        sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
 

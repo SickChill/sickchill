@@ -33,7 +33,7 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import scene_exceptions
 from sickbeard import encodingKludge as ek
-
+from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex, AuthException
@@ -297,7 +297,7 @@ class NewznabCache(tvcache.TVCache):
                     if ci is not None:
                         ql.append(ci)
 
-                    time.sleep(0.05)
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 myDB = self._getDB()
                 myDB.mass_action(ql)
