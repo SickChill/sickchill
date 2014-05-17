@@ -43,18 +43,6 @@ from lib import requests
 from lib.requests import exceptions
 from lib.unidecode import unidecode
 
-proxy_dict = {
-    'Getprivate.eu (NL)': 'http://getprivate.eu/',
-    '15bb51.info (US)': 'http://15bb51.info/',
-    'Hideme.nl (NL)': 'http://hideme.nl/',
-    'Proxite.eu (DE)': 'http://proxite.eu/',
-    'Webproxy.cz (CZ)': 'http://webproxy.cz/',
-    '2me2u (CZ)': 'http://2me2u.me/',
-    'Interproxy.net (EU)': 'http://interproxy.net/',
-    'Unblockersurf.info (DK)': 'http://unblockersurf.info',
-    'Hiload.org (NL)': 'http://hiload.org',
-}
-
 
 class ThePirateBayProvider(generic.TorrentProvider):
     def __init__(self):
@@ -449,16 +437,28 @@ class ThePirateBayWebproxy:
         self.Type = 'GlypeProxy'
         self.param = 'browse.php?u='
         self.option = '&b=32'
-        self.proxy = False
-        self.proxy_url = None
+        self.enabled = False
+        self.url = None
+
+        self.urls = {
+            'Getprivate.eu (NL)': 'http://getprivate.eu/',
+            '15bb51.info (US)': 'http://15bb51.info/',
+            'Hideme.nl (NL)': 'http://hideme.nl/',
+            'Proxite.eu (DE)': 'http://proxite.eu/',
+            'Webproxy.cz (CZ)': 'http://webproxy.cz/',
+            '2me2u (CZ)': 'http://2me2u.me/',
+            'Interproxy.net (EU)': 'http://interproxy.net/',
+            'Unblockersurf.info (DK)': 'http://unblockersurf.info',
+            'Hiload.org (NL)': 'http://hiload.org',
+        }
 
     def isEnabled(self):
         """ Return True if we Choose to call TPB via Proxy """
-        return self.proxy
+        return self.enabled
 
     def getProxyURL(self):
         """ Return the Proxy URL Choosen via Provider Setting """
-        return str(self.proxy_url)
+        return str(self.url)
 
     def _buildURL(self, url):
         """ Return the Proxyfied URL of the page """

@@ -425,10 +425,10 @@ def initialize(consoleLogging=True):
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerSchedular, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
-            PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, \
+            PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, BACKLOG_STARTUP, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH,\
-            QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, \
+            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, USENET_RETENTION, TORRENT_DIR, RSSUPDATE_FREQUENCY, \
+            QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, RSSUPDATE_STARTUP, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROG_DIR, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
@@ -1011,12 +1011,11 @@ def initialize(consoleLogging=True):
                                                                 curTorrentProvider.getID() + '_passkey', '')
 
             if hasattr(curTorrentProvider, 'proxy'):
-                curTorrentProvider.proxy = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_proxy', 0))
-
-            if hasattr(curTorrentProvider, 'proxy_url'):
-                curTorrentProvider.proxy_url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_proxy_url', '')
+                curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                 curTorrentProvider.getID() + '_proxy', 0))
+                if hasattr(curTorrentProvider.proxy, 'url'):
+                    curTorrentProvider.proxy.url = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                                   curTorrentProvider.getID() + '_proxy_url', '')
 
             if hasattr(curTorrentProvider, 'confirmed'):
                 curTorrentProvider.confirmed = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
@@ -1420,9 +1419,9 @@ def save_config():
         if hasattr(curTorrentProvider, 'options'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
         if hasattr(curTorrentProvider, 'proxy'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = curTorrentProvider.proxy
-        if hasattr(curTorrentProvider, 'proxy_url'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy_url'] = curTorrentProvider.proxy_url
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy'] = curTorrentProvider.proxy.enabled
+            if hasattr(curTorrentProvider.proxy, 'url'):
+                new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_proxy_url'] = curTorrentProvider.proxy.url
         if hasattr(curTorrentProvider, 'freeleech'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_freeleech'] = int(curTorrentProvider.freeleech)
         if hasattr(curTorrentProvider, 'search_mode'):

@@ -292,27 +292,27 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                         #if $hasattr($curTorrentProvider, 'proxy'):
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" #if $curTorrentProvider.proxy then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" #if $curTorrentProvider.proxy.enabled then "checked=\"checked\"" else ""#/>
                             <label class="clearfix">
                                 <span class="component-title">Access Provider via Proxy</span>
                                 <span class="component-desc">To bypass Country Blocking Mechanism</span>
                             </label>
                         </div>
-                        #end if
 
-                        #if $hasattr($curTorrentProvider, 'proxy_url'):
+                        #if $hasattr($curTorrentProvider.proxy, 'url'):
                         <div class="field-pair content_${curTorrentProvider.getID()}_proxy" id="content_${curTorrentProvider.getID()}_proxy">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Proxy URL:</span>
                                 <span class="component-desc">
-	                              <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url">
-                                	#for $i in $curTorrentProvider.proxy_dict.keys():
-                                  	<option value="$curTorrentProvider.proxy_dict[$i]" #if $curTorrentProvider.proxy_dict[$i] == $curTorrentProvider.proxy_url then "selected=\"selected\"" else ""#>$i</option>
-	                              	#end for
-	                                </select>
+                                  <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url">
+                                    #for $i in $curTorrentProvider.proxy.urls.keys():
+                                    <option value="$curTorrentProvider.proxy.urls[$i]" #if $curTorrentProvider.proxy.urls[$i] == $curTorrentProvider.proxy.url then "selected=\"selected\"" else ""#>$i</option>
+                                    #end for
+                                    </select>
                                 </span>
                             </label>
                         </div>
+                        #end if
                         #end if
 
                         #if $hasattr($curTorrentProvider, 'confirmed'):

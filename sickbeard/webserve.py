@@ -1614,15 +1614,15 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'proxy'):
                 try:
-                    curTorrentProvider.proxy = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_proxy'])
+                    curTorrentProvider.proxy.enabled = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_proxy'])
                 except:
-                    curTorrentProvider.proxy = 0
+                    curTorrentProvider.proxy.enabled = 0
 
-            if hasattr(curTorrentProvider, 'proxy_url'):
-                try:
-                    curTorrentProvider.proxy_url = kwargs[curTorrentProvider.getID() + '_proxy_url'].strip()
-                except:
-                    curTorrentProvider.proxy_url = None
+                if hasattr(curTorrentProvider.proxy, 'url'):
+                    try:
+                        curTorrentProvider.proxy.url = kwargs[curTorrentProvider.getID() + '_proxy_url'].strip()
+                    except:
+                        curTorrentProvider.proxy.url = None
 
             if hasattr(curTorrentProvider, 'freeleech'):
                 try:
