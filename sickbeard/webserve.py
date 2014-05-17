@@ -1449,24 +1449,7 @@ class ConfigProviders:
         return '1'
 
     @cherrypy.expose
-    def saveProviders(self, newznab_string='', torrentrss_string='',
-                      omgwtfnzbs_username=None, omgwtfnzbs_apikey=None,
-                      ezrss_ratio=None,
-                      tvtorrents_digest=None, tvtorrents_hash=None, tvtorrents_ratio=None,
-                      btn_api_key=None, btn_ratio=None,
-                      thepiratebay_ratio=None, thepiratebay_trusted=None, thepiratebay_proxy=None, thepiratebay_proxy_url=None,
-                      torrentleech_username=None, torrentleech_password=None, torrentleech_ratio=None,
-                      iptorrents_username=None, iptorrents_password=None, iptorrents_ratio=None, iptorrents_freeleech=None,
-                      kat_trusted=None, kat_ratio=None, kat_verified=None,
-                      publichd_ratio=None,
-                      scc_username=None, scc_password=None, scc_ratio=None,
-                      hdtorrents_username=None, hdtorrents_password=None, hdtorrents_ratio=None,
-                      torrentday_username=None, torrentday_password=None, torrentday_ratio=None, torrentday_freeleech=None,
-                      hdbits_username=None, hdbits_passkey=None, hdbits_ratio=None,
-                      nextgen_username=None, nextgen_password=None, nextgen_ratio=None,
-                      newzbin_username=None, newzbin_password=None,
-                      speedcd_username=None, speedcd_password=None, speedcd_ratio=None, speedcd_freeleech=None,
-                      provider_order=None):
+    def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
 
         results = []
 
@@ -1487,9 +1470,7 @@ class ConfigProviders:
 
                 cur_name, cur_url, cur_key = curNewznabProviderStr.split('|')
                 cur_url = config.clean_url(cur_url)
-
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
-
                 cur_id = newProvider.getID()
 
                 # if it already exists then update it
@@ -1503,7 +1484,28 @@ class ConfigProviders:
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
 
+                    try:
+                        newznabProviderDict[cur_id].search_mode = kwargs[cur_id + '_search_mode'].strip()
+                    except:
+                        newznabProviderDict[cur_id].search_mode = 'eponly'
+
+                    try:
+                        newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
+                            kwargs[cur_id + '_search_fallback'])
+                    except:
+                        newznabProviderDict[cur_id].search_fallback = 0
                 else:
+                    try:
+                        newProvider.search_mode = kwargs[cur_id + '_search_mode'].strip()
+                    except:
+                        newProvider.search_mode = 'eponly'
+
+                    try:
+                        newProvider.search_fallback = config.checkbox_to_value(
+                            kwargs[cur_id + '_search_fallback'])
+                    except:
+                        newProvider.search_fallback = 0
+
                     sickbeard.newznabProviderList.append(newProvider)
 
                 finishedNames.append(cur_id)
@@ -1557,120 +1559,91 @@ class ConfigProviders:
 
             provider_list.append(curProvider)
 
-            if curProvider == 'nzbs_org_old':
-                sickbeard.NZBS = curEnabled
-            elif curProvider == 'newzbin':
-                sickbeard.NEWZBIN = curEnabled
-            elif curProvider == 'bin_req':
-                sickbeard.BINREQ = curEnabled
-            elif curProvider == 'womble_s_index':
-                sickbeard.WOMBLE = curEnabled
-            elif curProvider == 'omgwtfnzbs':
-                sickbeard.OMGWTFNZBS = curEnabled
-            elif curProvider == 'ezrss':
-                sickbeard.EZRSS = curEnabled
-            elif curProvider == 'tvtorrents':
-                sickbeard.TVTORRENTS = curEnabled
-            elif curProvider == 'torrentleech':
-                sickbeard.TORRENTLEECH = curEnabled
-            elif curProvider == 'btn':
-                sickbeard.BTN = curEnabled
-            elif curProvider == 'thepiratebay':
-                sickbeard.THEPIRATEBAY = curEnabled
-            elif curProvider == 'torrentleech':
-                sickbeard.TORRENTLEECH = curEnabled
-            elif curProvider == 'iptorrents':
-                sickbeard.IPTORRENTS = curEnabled
-            elif curProvider == 'omgwtfnzbs':
-                sickbeard.OMGWTFNZBS = curEnabled
-            elif curProvider == 'kickasstorrents':
-                sickbeard.KAT = curEnabled
-            elif curProvider == 'publichd':
-                sickbeard.PUBLICHD = curEnabled
-            elif curProvider == 'sceneaccess':
-                sickbeard.SCC = curEnabled
-            elif curProvider == 'hdtorrents':
-                sickbeard.HDTORRENTS = curEnabled
-            elif curProvider == 'torrentday':
-                sickbeard.TORRENTDAY = curEnabled
-            elif curProvider == 'hdbits':
-                sickbeard.HDBITS = curEnabled
-            elif curProvider == 'nextgen':
-                sickbeard.NEXTGEN = curEnabled
-            elif curProvider == 'speedcd':
-                sickbeard.SPEEDCD = curEnabled
-            elif curProvider in newznabProviderDict:
-                newznabProviderDict[curProvider].enabled = bool(curEnabled)
-            elif curProvider in torrentRssProviderDict:
-                torrentRssProviderDict[curProvider].enabled = bool(curEnabled)
-            else:
-                logger.log(u"don't know what " + curProvider + " is, skipping")
+            # dynamically set providers enabled/disabled
+            for provider in sickbeard.providers.sortedProviderList():
+                if provider.getID() != curProvider or not hasattr(provider, 'enabled'):
+                    continue
 
-        sickbeard.EZRSS_RATIO = ezrss_ratio
+                provider.enabled = curEnabled
 
-        sickbeard.TVTORRENTS_DIGEST = tvtorrents_digest.strip()
-        sickbeard.TVTORRENTS_HASH = tvtorrents_hash.strip()
-        sickbeard.TVTORRENTS_RATIO = config.to_int(tvtorrents_ratio)
+        # dynamically load provider settings
+        for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
+                                   curProvider.providerType == sickbeard.GenericProvider.TORRENT]:
 
-        sickbeard.BTN_API_KEY = btn_api_key.strip()
-        sickbeard.BTN_RATIO = btn_ratio
+            if hasattr(curTorrentProvider, 'ratio'):
+                try:
+                    curTorrentProvider.ratio = kwargs[curTorrentProvider.getID() + '_ratio'].strip()
+                except:
+                    curTorrentProvider.ratio = None
 
-        sickbeard.THEPIRATEBAY_RATIO = thepiratebay_ratio
-        sickbeard.THEPIRATEBAY_TRUSTED = config.checkbox_to_value(thepiratebay_trusted)
+            if hasattr(curTorrentProvider, 'digest'):
+                try:
+                    curTorrentProvider.digest = kwargs[curTorrentProvider.getID() + '_digest'].strip()
+                except:
+                    curTorrentProvider.digest = None
 
-        thepiratebay_proxy = config.checkbox_to_value(thepiratebay_proxy)
-        if thepiratebay_proxy:
-            sickbeard.THEPIRATEBAY_PROXY_URL = thepiratebay_proxy_url.strip()
-        else:
-            sickbeard.THEPIRATEBAY_PROXY_URL = ""
+            if hasattr(curTorrentProvider, 'hash'):
+                try:
+                    curTorrentProvider.hash = kwargs[curTorrentProvider.getID() + '_hash'].strip()
+                except:
+                    curTorrentProvider.hash = None
 
-        sickbeard.THEPIRATEBAY_PROXY = thepiratebay_proxy
+            if hasattr(curTorrentProvider, 'api_key'):
+                try:
+                    curTorrentProvider.api_key = kwargs[curTorrentProvider.getID() + '_api_key'].strip()
+                except:
+                    curTorrentProvider.api_key = None
 
-        sickbeard.TORRENTLEECH_USERNAME = torrentleech_username
-        sickbeard.TORRENTLEECH_PASSWORD = torrentleech_password
-        sickbeard.TORRENTLEECH_RATIO = torrentleech_ratio
+            if hasattr(curTorrentProvider, 'username'):
+                try:
+                    curTorrentProvider.username = kwargs[curTorrentProvider.getID() + '_username'].strip()
+                except:
+                    curTorrentProvider.username = None
 
-        sickbeard.IPTORRENTS_USERNAME = iptorrents_username.strip()
-        sickbeard.IPTORRENTS_PASSWORD = iptorrents_password.strip()
-        sickbeard.IPTORRENTS_RATIO = iptorrents_ratio
+            if hasattr(curTorrentProvider, 'password'):
+                try:
+                    curTorrentProvider.password = kwargs[curTorrentProvider.getID() + '_password'].strip()
+                except:
+                    curTorrentProvider.password = None
 
-        sickbeard.IPTORRENTS_FREELEECH = config.checkbox_to_value(iptorrents_freeleech)
+            if hasattr(curTorrentProvider, 'confirmed'):
+                try:
+                    curTorrentProvider.confirmed = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_confirmed'])
+                except:
+                    curTorrentProvider.confirmed = 0
 
-        sickbeard.KAT_TRUSTED = config.checkbox_to_value(kat_trusted)
-        sickbeard.KAT_RATIO = kat_ratio
-        sickbeard.KAT_VERIFIED = config.checkbox_to_value(kat_verified)
+            if hasattr(curTorrentProvider, 'proxy'):
+                try:
+                    curTorrentProvider.proxy = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_proxy'])
+                except:
+                    curTorrentProvider.proxy = 0
 
-        sickbeard.PUBLICHD_RATIO = publichd_ratio
+            if hasattr(curTorrentProvider, 'proxy_url'):
+                try:
+                    curTorrentProvider.proxy_url = kwargs[curTorrentProvider.getID() + '_proxy_url'].strip()
+                except:
+                    curTorrentProvider.proxy_url = None
 
-        sickbeard.TORRENTDAY_USERNAME = torrentday_username.strip()
-        sickbeard.TORRENTDAY_PASSWORD = torrentday_password.strip()
-        sickbeard.TORRENTDAY_RATIO = torrentday_ratio
+            if hasattr(curTorrentProvider, 'freeleech'):
+                try:
+                    curTorrentProvider.freeleech = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_freeleech'])
+                except:
+                    curTorrentProvider.freeleech = 0
 
-        sickbeard.TORRENTDAY_FREELEECH = config.checkbox_to_value(torrentday_freeleech)
+            if hasattr(curTorrentProvider, 'search_mode'):
+                try:
+                    curTorrentProvider.search_mode = kwargs[curTorrentProvider.getID() + '_search_mode'].strip()
+                except:
+                    curTorrentProvider.search_mode = 'eponly'
 
-        sickbeard.SCC_USERNAME = scc_username.strip()
-        sickbeard.SCC_PASSWORD = scc_password.strip()
-        sickbeard.SCC_RATIO = scc_ratio
+            if hasattr(curTorrentProvider, 'search_fallback'):
+                try:
+                    curTorrentProvider.search_fallback = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_search_fallback'])
+                except:
+                    curTorrentProvider.search_fallback = 0
 
-        sickbeard.HDTORRENTS_USERNAME = hdtorrents_username.strip()
-        sickbeard.HDTORRENTS_PASSWORD = hdtorrents_password.strip()
-        sickbeard.HDTORRENTS_RATIO = hdtorrents_ratio
-
-        sickbeard.HDBITS_USERNAME = hdbits_username.strip()
-        sickbeard.HDBITS_PASSKEY = hdbits_passkey.strip()
-        sickbeard.HDBITS_RATIO = hdbits_ratio
-
-        sickbeard.OMGWTFNZBS_USERNAME = omgwtfnzbs_username.strip()
-        sickbeard.OMGWTFNZBS_APIKEY = omgwtfnzbs_apikey.strip()
-
-        sickbeard.NEXTGEN_USERNAME = nextgen_username.strip()
-        sickbeard.NEXTGEN_PASSWORD = nextgen_password.strip()
-        sickbeard.NEXTGEN_RATIO = nextgen_ratio
-
-        sickbeard.SPEEDCD_USERNAME = speedcd_username.strip()
-        sickbeard.SPEEDCD_PASSWORD = speedcd_password.strip()
-        sickbeard.SPEEDCD_RATIO = speedcd_ratio
-        sickbeard.SPEEDCD_FREELEECH = config.checkbox_to_value(speedcd_freeleech)
+        sickbeard.OMGWTFNZBS_USERNAME = kwargs['omgwtfnzbs_username'].strip()
+        sickbeard.OMGWTFNZBS_APIKEY = kwargs['omgwtfnzbs_apikey'].strip()
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list

@@ -56,6 +56,11 @@ class NextGenProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+
         self.cache = NextGenCache(self)
 
         self.url = self.urls['base_url']
@@ -67,7 +72,7 @@ class NextGenProvider(generic.TorrentProvider):
         self.login_opener = None
 
     def isEnabled(self):
-        return sickbeard.NEXTGEN
+        return self.enabled
 
     def imageName(self):
         return 'nextgen.png'
@@ -79,8 +84,8 @@ class NextGenProvider(generic.TorrentProvider):
 
     def getLoginParams(self):
         return {
-            'username': sickbeard.NEXTGEN_USERNAME,
-            'password': sickbeard.NEXTGEN_PASSWORD,
+            'username': self.username,
+            'password': self.password,
         }
 
     def loginSuccess(self, output):
@@ -315,7 +320,7 @@ class NextGenProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.NEXTGEN_RATIO
+        return self.ratio
 
 
 class NextGenCache(tvcache.TVCache):

@@ -53,6 +53,12 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+        self.freeleech = False
+
         self.cache = TorrentDayCache(self)
 
         self.url = self.urls['base_url']
@@ -63,7 +69,7 @@ class TorrentDayProvider(generic.TorrentProvider):
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
     def isEnabled(self):
-        return sickbeard.TORRENTDAY
+        return self.enabled
 
     def imageName(self):
         return 'torrentday.png'
@@ -78,14 +84,14 @@ class TorrentDayProvider(generic.TorrentProvider):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        if sickbeard.TORRENTDAY_UID and sickbeard.TORRENTDAY_HASH:
+        if self.uid and self.hash:
 
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
 
         else:
 
-            login_params = {'username': sickbeard.TORRENTDAY_USERNAME,
-                            'password': sickbeard.TORRENTDAY_PASSWORD,
+            login_params = {'username': self.username,
+                            'password': self.password,
                             'submit.x': 0,
                             'submit.y': 0
             }
@@ -105,11 +111,11 @@ class TorrentDayProvider(generic.TorrentProvider):
                 return False
 
             if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                sickbeard.TORRENTDAY_UID = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                sickbeard.TORRENTDAY_HASH = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+                self.uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                self.hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                self.cookies = {'uid': sickbeard.TORRENTDAY_UID,
-                                'pass': sickbeard.TORRENTDAY_HASH
+                self.cookies = {'uid': self.uid,
+                                'pass': self.hash
                 }
                 return True
 
@@ -164,7 +170,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        freeleech = '&free=on' if sickbeard.TORRENTDAY_FREELEECH else ''
+        freeleech = '&free=on' if self.freeleech else ''
 
         if not self._doLogin():
             return []
@@ -179,7 +185,7 @@ class TorrentDayProvider(generic.TorrentProvider):
                 post_data = dict({'/browse.php?': None, 'cata': 'yes', 'jxt': 8, 'jxw': 'b', 'search': search_string},
                                  **self.categories[mode])
 
-                if sickbeard.TORRENTDAY_FREELEECH:
+                if self.freeleech:
                     post_data.update({'free': 'on'})
 
                 data = self.session.post(self.urls['search'], data=post_data).json()
@@ -268,7 +274,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.TORRENTDAY_RATIO
+        return self.ratio
 
 
 class TorrentDayCache(tvcache.TVCache):

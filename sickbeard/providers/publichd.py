@@ -54,6 +54,9 @@ class PublicHDProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.ratio = None
+
         self.cache = PublicHDCache(self)
 
         self.url = 'http://phdproxy.com/'
@@ -63,7 +66,7 @@ class PublicHDProvider(generic.TorrentProvider):
         self.categories = {'Season': ['23'], 'Episode': ['7', '14', '24'], 'RSS': ['7', '14', '23', '24']}
 
     def isEnabled(self):
-        return sickbeard.PUBLICHD
+        return self.enabled
 
     def imageName(self):
         return 'publichd.png'
@@ -290,7 +293,7 @@ class PublicHDProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.PUBLICHD_RATIO
+        return self.ratio
 
 
 class PublicHDCache(tvcache.TVCache):

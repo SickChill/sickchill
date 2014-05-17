@@ -56,6 +56,11 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+
         self.cache = HDTorrentsCache(self)
 
         self.url = self.urls['base_url']
@@ -65,7 +70,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
         self.cookies = None
 
     def isEnabled(self):
-        return sickbeard.HDTORRENTS
+        return self.enabled
 
     def imageName(self):
         return 'hdtorrents.png'
@@ -80,14 +85,14 @@ class HDTorrentsProvider(generic.TorrentProvider):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        if sickbeard.HDTORRENTS_UID and sickbeard.HDTORRENTS_HASH:
+        if self.uid and self.hash:
 
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
 
         else:
 
-            login_params = {'uid': sickbeard.HDTORRENTS_USERNAME,
-                            'pwd': sickbeard.HDTORRENTS_PASSWORD,
+            login_params = {'uid': self.username,
+                            'pwd': self.password,
                             'submit': 'Confirm',
             }
 
@@ -102,11 +107,11 @@ class HDTorrentsProvider(generic.TorrentProvider):
                 logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
                 return False
 
-            sickbeard.HDTORRENTS_UID = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-            sickbeard.HDTORRENTS_HASH = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            self.uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+            self.hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-            self.cookies = {'uid': sickbeard.HDTORRENTS_UID,
-                            'pass': sickbeard.HDTORRENTS_HASH
+            self.cookies = {'uid': self.uid,
+                            'pass': self.hash
             }
 
         return True
@@ -321,7 +326,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.HDTORRENTS_RATIO
+        return self.ratio
 
 
 class HDTorrentsCache(tvcache.TVCache):

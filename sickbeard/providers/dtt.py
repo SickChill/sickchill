@@ -32,11 +32,16 @@ class DTTProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, "DailyTvTorrents")
         self.supportsBacklog = True
+
+        self.enabled = False
+        self.ratio = None
+
         self.cache = DTTCache(self)
+
         self.url = 'http://www.dailytvtorrents.org/'
 
     def isEnabled(self):
-        return sickbeard.DTT
+        return self.enabled
 
     def imageName(self):
         return 'dailytvtorrents.gif'
@@ -46,8 +51,8 @@ class DTTProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(url)
         return quality
 
-    def getSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
-        return generic.TorrentProvider.findSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
+    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
+        return generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
 
     def _dtt_show_id(self, show_name):
         return sanitizeSceneName(show_name).replace('.', '-').lower()

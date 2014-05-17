@@ -54,6 +54,11 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+
         self.cache = TorrentLeechCache(self)
 
         self.url = self.urls['base_url']
@@ -61,7 +66,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
         self.categories = "2,26,27,32"
 
     def isEnabled(self):
-        return sickbeard.TORRENTLEECH
+        return self.enabled
 
     def imageName(self):
         return 'torrentleech.png'
@@ -73,8 +78,8 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
     def _doLogin(self):
 
-        login_params = {'username': sickbeard.TORRENTLEECH_USERNAME,
-                        'password': sickbeard.TORRENTLEECH_PASSWORD,
+        login_params = {'username': self.username,
+                        'password': self.password,
                         'remember_me': 'on',
                         'login': 'submit',
         }
@@ -267,7 +272,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.TORRENTLEECH_RATIO
+        return self.ratio
 
 
 class TorrentLeechCache(tvcache.TVCache):

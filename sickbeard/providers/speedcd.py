@@ -52,6 +52,12 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+        self.freeleech = False
+
         self.cache = SpeedCDCache(self)
 
         self.url = self.urls['base_url']
@@ -59,7 +65,7 @@ class SpeedCDProvider(generic.TorrentProvider):
         self.categories = {'Season': {'c14':1}, 'Episode': {'c2':1, 'c49':1}, 'RSS': {'c14':1, 'c2':1, 'c49':1}}
 
     def isEnabled(self):
-        return sickbeard.SPEEDCD
+        return self.enabled
 
     def imageName(self):
         return 'speedcd.png'
@@ -71,11 +77,9 @@ class SpeedCDProvider(generic.TorrentProvider):
 
     def _doLogin(self):
 
-        login_params = {'username': sickbeard.SPEEDCD_USERNAME,
-                        'password': sickbeard.SPEEDCD_PASSWORD
+        login_params = {'username': self.username,
+                        'password': self.password
                         }
-
-        self.session = requests.Session()
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -157,7 +161,7 @@ class SpeedCDProvider(generic.TorrentProvider):
 
                 for torrent in torrents:
 
-                    if sickbeard.SPEEDCD_FREELEECH and not torrent['free']:
+                    if self.freeleech and not torrent['free']:
                         continue
 
                     title = re.sub('<[^>]*>', '', torrent['name'])
@@ -245,8 +249,7 @@ class SpeedCDProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.SPEEDCD_RATIO
-
+        return self.ratio
 
 class SpeedCDCache(tvcache.TVCache):
 

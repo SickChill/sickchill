@@ -42,7 +42,7 @@ from sickbeard.exceptions import ex, AuthException
 
 
 class NewznabProvider(generic.NZBProvider):
-    def __init__(self, name, url, key='', catIDs='5030,5040,5060'):
+    def __init__(self, name, url, key='', catIDs='5030,5040,5060', search_mode='eponly', search_fallback=False):
 
         generic.NZBProvider.__init__(self, name)
 
@@ -51,6 +51,14 @@ class NewznabProvider(generic.NZBProvider):
         self.url = url
 
         self.key = key
+
+        self.search_mode = search_mode
+        self.search_fallback = search_fallback
+
+        if self.search_fallback == '0':
+            self.search_fallback = False
+        else:
+            self.search_fallback = True
 
         # a 0 in the key spot indicates that no key is needed
         if self.key == '0':
@@ -69,7 +77,7 @@ class NewznabProvider(generic.NZBProvider):
         self.default = False
 
     def configStr(self):
-        return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(int(self.enabled))
+        return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback))
 
     def imageName(self):
         if ek.ek(os.path.isfile,

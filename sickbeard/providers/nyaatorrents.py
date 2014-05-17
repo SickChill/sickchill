@@ -39,12 +39,14 @@ class NyaaProvider(generic.TorrentProvider):
 
         self.supportsAbsoluteNumbering = True
 
+        self.enabled = False
+
         self.cache = NyaaCache(self)
 
         self.url = 'http://www.nyaa.eu/'
 
     def isEnabled(self):
-        return sickbeard.NYAA
+        return self.enabled
 
     def imageName(self):
         return 'nyaatorrents.png'
@@ -54,9 +56,8 @@ class NyaaProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(title)
         return quality
 
-    def getSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
-        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
-        return results
+    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
+        return generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
 
     def _get_season_search_strings(self, ep_obj):
         names = []

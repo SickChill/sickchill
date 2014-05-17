@@ -58,6 +58,11 @@ class SCCProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+
         self.cache = SCCCache(self)
 
         self.url = self.urls['base_url']
@@ -67,7 +72,7 @@ class SCCProvider(generic.TorrentProvider):
         self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
 
     def isEnabled(self):
-        return sickbeard.SCC
+        return self.enabled
 
     def imageName(self):
         return 'scc.png'
@@ -79,8 +84,8 @@ class SCCProvider(generic.TorrentProvider):
 
     def _doLogin(self):
 
-        login_params = {'username': sickbeard.SCC_USERNAME,
-                        'password': sickbeard.SCC_PASSWORD,
+        login_params = {'username': self.username,
+                        'password': self.password,
                         'submit': 'come on in',
         }
 
@@ -162,6 +167,8 @@ class SCCProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
+                nonsceneSearchURL = None
+                foreignSearchURL = None
                 if mode == 'Season':
                     searchURL = self.urls['archive'] % (search_string)
                     data = [self.getURL(searchURL, headers=self.headers)]
@@ -306,7 +313,7 @@ class SCCProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.SCC_RATIO
+        return self.ratio
 
 
 class SCCCache(tvcache.TVCache):

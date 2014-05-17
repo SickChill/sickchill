@@ -115,8 +115,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-title jumbo">Configure Provider:</span>
                                 <span class="component-desc">
                                     #set $provider_config_list = []
-                                    #for $cur_provider in ("thepiratebay", "tvtorrents", "btn", "torrentleech", "iptorrents", "omgwtfnzbs", "kickasstorrents", "sceneaccess", "hdbits", "nextgen", "speedcd"):
-                                        #set $cur_provider_obj = $sickbeard.providers.getProviderClass($cur_provider)
+                                    #for $curProvider in $sickbeard.providers.sortedProviderList():
+                                        #set $cur_provider_obj = $sickbeard.providers.getProviderClass($curProvider.getID())
                                         #if $cur_provider_obj.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
                                         	#continue
                                         #elif $cur_provider_obj.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
@@ -140,8 +140,9 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
 
 <!-- start div for editing providers //-->
-#for $curNewznabProvider in [$curProvider for $curProvider in $sickbeard.newznabProviderList if $curProvider.default and $curProvider.needs_auth]:
+#for $curNewznabProvider in [$curProvider for $curProvider in $sickbeard.newznabProviderList]:
 <div class="providerDiv" id="${curNewznabProvider.getID()}Div">
+                        #if $curProvider.default and $curProvider.needs_auth
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">URL:</span>
@@ -154,6 +155,34 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <input class="component-desc newznab_key" type="text" id="${curNewznabProvider.getID()}_hash" value="$curNewznabProvider.key" newznab_name="${curNewznabProvider.getID()}_hash" size="40" />
                             </label>
                         </div>
+                        #end if
+
+                        #if $hasattr($curNewznabProvider, 'search_fallback'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" #if $curNewznabProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNewznabProvider.getID()}_search_fallback">
+                                <span class="component-title">Search Fallback</span>
+                                <span class="component-desc">This will restart the search using the alternative method from Search Mode if first attempt fails to return any results to snatch.</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curNewznabProvider, 'search_mode'):
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Search Mode</span>
+                                <span class="component-desc">
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                </span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title"></span>
+                                <span class="component-desc">
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                </span>
+                            </label>
+                        </div>
+                        #end if
 </div>
 #end for
 
@@ -172,304 +201,171 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                     </div><!-- /omgwtfnzbsDiv //-->
 
-<div class="providerDiv" id="ezrssDiv">
+#for $curTorrentProvider in [$curProvider for $curProvider in $sickbeard.providers.sortedProviderList() if $curProvider.providerType == $GenericProvider.TORRENT]:
+<div class="providerDiv" id="${curTorrentProvider.getID()}Div">
+                        #if $hasattr($curTorrentProvider, 'api_key'):
                         <div class="field-pair">
                             <label class="clearfix">
-                                <span class="component-title" id="ezrss_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="ezrss_ratio" id="ezrss_ratio" value="$sickbeard.EZRSS_RATIO" size="40" />
+                                <span class="component-title">Api Key:</span>
+                                <input class="component-desc" type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="$curTorrentProvider.api_key" size="40" />
                             </label>
                         </div>
-</div>
+                        #end if
 
-<div class="providerDiv" id="tvtorrentsDiv">
+                        #if $hasattr($curTorrentProvider, 'digest'):
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">Digest:</span>
-                                <input class="component-desc" type="text" name="tvtorrents_digest" value="$sickbeard.TVTORRENTS_DIGEST" size="40" />
+                                <input class="component-desc" type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="$curTorrentProvider.digest" size="40" />
                             </label>
                         </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'hash'):
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">Hash:</span>
-                                <input class="component-desc" type="text" name="tvtorrents_hash" value="$sickbeard.TVTORRENTS_HASH" size="40" />
+                                <input class="component-desc" type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="$curTorrentProvider.hash" size="40" />
                             </label>
                         </div>
+                        #end if
 
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="tvtorrents_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="tvtorrents_ratio" id="tvtorrents_ratio" value="$sickbeard.TVTORRENTS_RATIO" size="40" />
+                        #if $hasattr($curTorrentProvider, 'options'):
+                        <div style="width: 340px; padding-bottom: 10px !important;">
+						<input type="hidden" id="tvtorrents_option_string" />
+						<fieldset style="display: block; border-width: 1px !important; border-radius: 5px !important; border-color: #D0D0D0 !important; border-style: solid !important;">
+						<legend id="seed_options">Advanced Options</legend>
+						<div class="field-pair" style="margin-top: -2px !important;">
+                            <label class="clearfix" >
+                                <span class="component-title" style="width: 130px !important;">Seeding Goal Ratio(%):</span>
+                                <input class="seed_option" type="text" id="tvtorrents_seed_ratio" size="5" style="margin-left: -5px !important;"/>
                             </label>
                         </div>
-</div>
-
-<div class="providerDiv" id="thepiratebayDiv">
-                        <div class="field-pair">
+						<div class="field-pair" style="margin-top: -10px !important;">
                             <label class="clearfix">
-                                <span class="component-title" id="thepiratebay_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="thepiratebay_ratio" id="thepiratebay_ratio" value="$sickbeard.THEPIRATEBAY_RATIO" size="40" />
+                                <span class="component-title" style="width: 130px !important;">Seeding Goal Time(h):</span>
+                                <input class="seed_option" type="text" id="tvtorrents_seed_time" size="5"  style="margin-left: -5px !important;" />
                             </label>
                         </div>
+                        <div style="display: block; text-align: center;margin-top: -10px !important;" class="float-left">
+                                <label class="clearfix">
+                                <span class="component-title" style="margin-left: -49px !important; width: 201px !important;">Process Method:</span>
+                                    <select class="seed_option" id="tvtorrents_process_method" class="input-medium" >
+                                        #set $process_method_text = {'': "", 'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
+                                        #for $curAction in ('', 'copy', 'move', 'hardlink', 'symlink'):
+                                        #set $process_method = ""
+                                        <option class="seed_option" value="$curAction" $process_method>$process_method_text[$curAction]</option>
+                                        #end for
+                                    </select>
+								</label>
+						</div>
+						</fieldset>
+                        </div>
+                        #end if
 
+                        #if $hasattr($curTorrentProvider, 'username'):
                         <div class="field-pair">
-                            <input type="checkbox" class="enabler" name="thepiratebay_proxy" id="thepiratebay_proxy" #if $sickbeard.THEPIRATEBAY_PROXY then "checked=\"checked\"" else ""#/>
                             <label class="clearfix">
-                                <span class="component-title">Access TPB via Proxy</span>
+                                <span class="component-title">Username:</span>
+                                <input class="component-desc" type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="$curTorrentProvider.username" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'password'):
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title">Password:</span>
+                                <input class="component-desc" type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="$curTorrentProvider.password" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'ratio'):
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed Ratio:</span>
+                                <input type="text" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'proxy'):
+                        <div class="field-pair">
+                            <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" #if $curTorrentProvider.proxy then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix">
+                                <span class="component-title">Access Provider via Proxy</span>
                                 <span class="component-desc">To bypass Country Blocking Mechanism</span>
                             </label>
                         </div>
+                        #end if
 
-                        <div class="field-pair content_thepiratebay_proxy" id="content_thepiratebay_proxy">
+                        #if $hasattr($curTorrentProvider, 'proxy_url'):
+                        <div class="field-pair content_${curTorrentProvider.getID()}_proxy" id="content_${curTorrentProvider.getID()}_proxy">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Proxy URL:</span>
                                 <span class="component-desc">
-	                              <select name="thepiratebay_proxy_url" id="thepiratebay_proxy_url">
-                                	#for $i in $thepiratebay.proxy_dict.keys():
-                                  	<option value="$thepiratebay.proxy_dict[$i]" #if $thepiratebay.proxy_dict[$i] == $sickbeard.THEPIRATEBAY_PROXY_URL then "selected=\"selected\"" else ""#>$i</option>
+	                              <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url">
+                                	#for $i in $curTorrentProvider.proxy_dict.keys():
+                                  	<option value="$curTorrentProvider.proxy_dict[$i]" #if $curTorrentProvider.proxy_dict[$i] == $curTorrentProvider.proxy_url then "selected=\"selected\"" else ""#>$i</option>
 	                              	#end for
 	                                </select>
                                 </span>
                             </label>
                         </div>
+                        #end if
 
+                        #if $hasattr($curTorrentProvider, 'confirmed'):
                         <div class="field-pair">
-                            <input type="checkbox" name="thepiratebay_trusted" id="thepiratebay_trusted" #if $sickbeard.THEPIRATEBAY_TRUSTED then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="thepiratebay_trusted">
-                                <span class="component-title">Trusted Download</span>
-                                <span class="component-desc">Download torrent only from trusted uploaders?</span>
+                            <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" #if $curTorrentProvider.confirmed then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curTorrentProvider.getID()}_confirmed">
+                                <span class="component-title">Confirmed Download</span>
+                                <span class="component-desc">Download torrent only from trusted/verified uploaders?</span>
                             </label>
                         </div>
-</div>
+                        #end if
 
-<div class="providerDiv" id="kickasstorrentsDiv">
+                        #if $hasattr($curTorrentProvider, 'freeleech'):
                         <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="kat_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="kat_ratio" id="kat_ratio" value="$sickbeard.KAT_RATIO" size="40" />
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="kat_verified" id="kat_verified" #if $sickbeard.KAT_VERIFIED then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="kat_verified">
-                                <span class="component-title">Verified Only</span>
-                                <span class="component-desc">Download only verified torrent?</span>
-                            </label>
-                        </div>
-</div>
-
-<div class="providerDiv" id="publichdDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="publichd_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="publichd_ratio" id="publichd_ratio" value="$sickbeard.PUBLICHD_RATIO" size="40" />
-                            </label>
-                        </div>
-</div>
-
-<div class="providerDiv btn" id="btnDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Api Key:</span>
-                                <input class="component-desc" type="text" name="btn_api_key" value="$sickbeard.BTN_API_KEY" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="btn_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="btn_ratio" id="btn_ratio" value="$sickbeard.BTN_RATIO" size="40" />
-                            </label>
-                        </div>
-</div>
-
-<div class="providerDiv" id="torrentleechDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="torrentleech_username" value="$sickbeard.TORRENTLEECH_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="torrentleech_password" value="$sickbeard.TORRENTLEECH_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="torrentleech_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="torrentleech_ratio" id="torrentleech_ratio" value="$sickbeard.TORRENTLEECH_RATIO" size="40" />
-                            </label>
-                        </div>
-</div>
-
-<div class="providerDiv" id="iptorrentsDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="iptorrents_username" value="$sickbeard.IPTORRENTS_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="iptorrents_password" value="$sickbeard.IPTORRENTS_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="iptorrents_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="iptorrents_ratio" id="iptorrents_ratio" value="$sickbeard.IPTORRENTS_RATIO" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="iptorrents_freeleech" id="iptorrents_freeleech" #if $sickbeard.IPTORRENTS_FREELEECH then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="iptorrents_freeleech">
+                            <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" #if $curTorrentProvider.freeleech then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curTorrentProvider.getID()}_freeleech">
                                 <span class="component-title">FreeLeech</span>
                                 <span class="component-desc">This will only download <b>[FreeLeech]</b> torrents.</span>
                             </label>
                         </div>
-</div><!-- /iptorrentsDiv //-->
+                        #end if
 
-<div class="providerDiv" id="sceneaccessDiv">
+                        #if $hasattr($curTorrentProvider, 'search_fallback'):
                         <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="scc_username" value="$sickbeard.SCC_USERNAME" size="40" />
+                            <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" #if $curTorrentProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curTorrentProvider.getID()}_search_fallback">
+                                <span class="component-title">Search Fallback</span>
+                                <span class="component-desc">This will restart the search using the alternative method from Search Mode if first attempt fails to return any results to snatch.</span>
                             </label>
                         </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="scc_password" value="$sickbeard.SCC_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="scc_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="scc_ratio" id="scc_ratio" value="$sickbeard.SCC_RATIO" size="40" />
-                            </label>
-                        </div>
-</div><!-- /sceneaccessDiv //-->
+                        #end if
 
-<div class="providerDiv" id="hdtorrentsDiv">
+                        #if $hasattr($curTorrentProvider, 'search_mode'):
                         <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="hdtorrents_username" value="$sickbeard.HDTORRENTS_USERNAME" size="40" />
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Search Mode</span>
+                                <span class="component-desc">
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                </span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title"></span>
+                                <span class="component-desc">
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                </span>
                             </label>
                         </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="hdtorrents_password" value="$sickbeard.HDTORRENTS_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="hdtorrents_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="hdtorrents_ratio" id="hdtorrents_ratio" value="$sickbeard.HDTORRENTS_RATIO" size="40" />
-                            </label>
-                        </div>
-</div><!-- /sceneaccessDiv //-->
+                        #end if
 
-<div class="providerDiv" id="torrentdayDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="torrentday_username" value="$sickbeard.TORRENTDAY_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="torrentday_password" value="$sickbeard.TORRENTDAY_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="torrentday_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="torrentday_ratio" id="torrentday_ratio" value="$sickbeard.TORRENTDAY_RATIO" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="torrentday_freeleech" id="torrentday_freeleech" #if $sickbeard.TORRENTDAY_FREELEECH then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="torrentday_freeleech">
-                                <span class="component-title">FreeLeech</span>
-                                <span class="component-desc">This will only download <b>[FreeLeech]</b> torrents.</span>
-                            </label>
-                        </div>
-</div><!-- /torrentsDayDiv //-->
 
-<div class="providerDiv" id="nextgenDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="nextgen_username" value="$sickbeard.NEXTGEN_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="nextgen_password" value="$sickbeard.NEXTGEN_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="nextgen_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="nextgen_ratio" id="nextgen_ratio" value="$sickbeard.NEXTGEN_RATIO" size="40" />
-                            </label>
-                        </div>
-</div><!-- /nextgenDiv //-->
+</div>
+#end for
 
-<div class="providerDiv" id="hdbitsDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="hdbits_username" value="$sickbeard.HDBITS_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Passkey:</span>
-                                <input class="component-desc" type="text" name="hdbits_passkey" value="$sickbeard.HDBITS_PASSKEY" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="hdbits_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="hdbits_ratio" id="hdbits_ratio" value="$sickbeard.HDBITS_RATIO" size="40" />
-                            </label>
-                        </div>
-</div><!-- /hdbitsDiv //-->   
-
-<div class="providerDiv" id="speedcdDiv">
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Username:</span>
-                                <input class="component-desc" type="text" name="speedcd_username" value="$sickbeard.SPEEDCD_USERNAME" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Password:</span>
-                                <input class="component-desc" type="password" name="speedcd_password" value="$sickbeard.SPEEDCD_PASSWORD" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title" id="speedcd_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="speedcd_ratio" id="speedcd_ratio" value="$sickbeard.SPEEDCD_RATIO" size="40" />
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="speedcd_freeleech" id="speedcd_freeleech" #if $sickbeard.SPEEDCD_FREELEECH then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="iptorrents_freeleech">
-                                <span class="component-title">FreeLeech</span>
-                                <span class="component-desc">This will only download <b>[FreeLeech]</b> torrents.</span>
-                            </label>
-                        </div>
-</div><!-- /speedcdDiv //-->
 
 <!-- end div for editing providers -->
 

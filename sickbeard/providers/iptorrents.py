@@ -53,6 +53,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+        self.freeleech = False
+
         self.cache = IPTorrentsCache(self)
 
         self.url = self.urls['base_url']
@@ -60,7 +66,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
         self.categorie = 'l73=1&l78=1&l66=1&l65=1&l79=1&l5=1&l4=1'
 
     def isEnabled(self):
-        return sickbeard.IPTORRENTS
+        return self.enabled
 
     def imageName(self):
         return 'iptorrents.png'
@@ -72,8 +78,8 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
     def _doLogin(self):
 
-        login_params = {'username': sickbeard.IPTORRENTS_USERNAME,
-                        'password': sickbeard.IPTORRENTS_PASSWORD,
+        login_params = {'username': self.username,
+                        'password': self.password,
                         'login': 'submit',
         }
 
@@ -137,7 +143,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        freeleech = '&free=on' if sickbeard.IPTORRENTS_FREELEECH else ''
+        freeleech = '&free=on' if self.freeleech else ''
 
         if not self._doLogin():
             return []
@@ -266,8 +272,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.IPTORRENTS_RATIO
-
+        return self.ratio
 
 class IPTorrentsCache(tvcache.TVCache):
     def __init__(self, provider):

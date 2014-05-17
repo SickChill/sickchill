@@ -38,8 +38,13 @@ class HDBitsProvider(generic.TorrentProvider):
                                                                                                                                          
         generic.TorrentProvider.__init__(self, "HDBits")                                                                                 
                                                                                                                                          
-        self.supportsBacklog = True                                                                                                      
-                                                                                                                                         
+        self.supportsBacklog = True
+
+        self.enabled = False
+        self.username = None
+        self.password = None
+        self.ratio = None
+
         self.cache = HDBitsCache(self)                                                                                                   
                                                                                                                                          
         self.url = 'https://hdbits.org'                                                                                                  
@@ -48,11 +53,11 @@ class HDBitsProvider(generic.TorrentProvider):
         self.download_url = 'http://hdbits.org/download.php?'                                                                            
                                                                                                                                          
     def isEnabled(self):                                                                                                                 
-        return sickbeard.HDBITS                                                                                                          
+        return self.enabled
                                                                                                                                          
     def _checkAuth(self):                                                                                                                
                                                                                                                                          
-        if not sickbeard.HDBITS_USERNAME  or not sickbeard.HDBITS_PASSKEY:                                                               
+        if not self.username  or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")                 
                                                                                                                                          
         return True                                                                                                                      
@@ -83,7 +88,7 @@ class HDBitsProvider(generic.TorrentProvider):
         if title:                                                                                                                        
             title = title.replace(' ', '.')                                                                                              
                                                                                                                                          
-        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': sickbeard.HDBITS_PASSKEY})                              
+        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.password})
                                                                                                                                          
         return (title, url)                                                                                                              
                                                                                                                                          
@@ -141,8 +146,8 @@ class HDBitsProvider(generic.TorrentProvider):
     def _make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
                                                                                                                                          
         post_data = {                                                                                                                    
-            'username': sickbeard.HDBITS_USERNAME,                                                                                       
-            'passkey': sickbeard.HDBITS_PASSKEY,                                                                                         
+            'username': self.username,
+            'passkey': self.password,
             'category': [2],  # TV Category                                                                                              
         }                                                                                                                                
                                                                                                                                          
@@ -171,7 +176,7 @@ class HDBitsProvider(generic.TorrentProvider):
         return json.dumps(post_data)
     
     def seedRatio(self):
-        return sickbeard.HDBITS_RATIO                                                                                                         
+        return self.ratio
                                                                                                                                          
                                                                                                                                          
 class HDBitsCache(tvcache.TVCache):                                                                                                      

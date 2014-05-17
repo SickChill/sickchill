@@ -63,6 +63,10 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.ratio = None
+        self.confirmed = False
+
         self.cache = ThePirateBayCache(self)
 
         self.proxy = ThePirateBayWebproxy()
@@ -74,7 +78,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.re_title_url = '/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
     def isEnabled(self):
-        return sickbeard.THEPIRATEBAY
+        return self.enabled
 
     def imageName(self):
         return 'thepiratebay.png'
@@ -257,7 +261,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue
 
                         #Accept Torrent only from Good People for every Episode Search
-                    if sickbeard.THEPIRATEBAY_TRUSTED and re.search('(VIP|Trusted|Helper)', torrent.group(0)) is None:
+                    if self.confirmed and re.search('(VIP|Trusted|Helper)', torrent.group(0)) is None:
                         logger.log(u"ThePirateBay Provider found result " + torrent.group(
                             'title') + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
@@ -390,7 +394,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.THEPIRATEBAY_RATIO
+        return self.ratio
 
 
 class ThePirateBayCache(tvcache.TVCache):
@@ -445,14 +449,16 @@ class ThePirateBayWebproxy:
         self.Type = 'GlypeProxy'
         self.param = 'browse.php?u='
         self.option = '&b=32'
+        self.proxy = False
+        self.proxy_url = None
 
     def isEnabled(self):
         """ Return True if we Choose to call TPB via Proxy """
-        return sickbeard.THEPIRATEBAY_PROXY
+        return self.proxy
 
     def getProxyURL(self):
         """ Return the Proxy URL Choosen via Provider Setting """
-        return str(sickbeard.THEPIRATEBAY_PROXY_URL)
+        return str(self.proxy_url)
 
     def _buildURL(self, url):
         """ Return the Proxyfied URL of the page """

@@ -52,7 +52,9 @@ class GenericProvider:
         self.url = ''
 
         self.show = None
+
         self.supportsBacklog = False
+
         self.search_mode = None
         self.search_fallback = False
 
@@ -225,7 +227,7 @@ class GenericProvider:
 
         return (title, url)
 
-    def findSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
+    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
 
         self._checkAuth()
         self.show = show
@@ -236,7 +238,7 @@ class GenericProvider:
 
         searched_scene_season = None
         for epObj in episodes:
-            if seasonSearch and searched_scene_season:
+            if search_mode == 'sponly' and searched_scene_season:
                 if searched_scene_season == epObj.scene_season:
                     continue
 
@@ -254,7 +256,7 @@ class GenericProvider:
                 results.update({epObj.episode:cacheResult[epObj]})
                 continue
 
-            if seasonSearch:
+            if search_mode == 'sponly':
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
             else:
@@ -289,7 +291,7 @@ class GenericProvider:
                     continue
 
                 if not (self.show.air_by_date or self.show.sports):
-                    if seasonSearch and len(parse_result.episode_numbers):
+                    if search_mode == 'sponly' and len(parse_result.episode_numbers):
                         logger.log(
                             u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
                             logger.DEBUG)

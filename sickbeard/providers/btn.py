@@ -39,18 +39,23 @@ class BTNProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BTN")
 
         self.supportsBacklog = True
+
+        self.enabled = False
+        self.api_key = None
+        self.ratio = None
+
         self.cache = BTNCache(self)
 
         self.url = "http://broadcasthe.net"
 
     def isEnabled(self):
-        return sickbeard.BTN
+        return self.enabled
 
     def imageName(self):
         return 'btn.png'
 
     def _checkAuth(self):
-        if not sickbeard.BTN_API_KEY:
+        if not self.api_key:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -73,7 +78,7 @@ class BTNProvider(generic.TorrentProvider):
         self._checkAuth()
 
         params = {}
-        apikey = sickbeard.BTN_API_KEY
+        apikey = self.api_key
 
         # age in seconds
         if age:
@@ -296,8 +301,7 @@ class BTNProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.BTN_RATIO
-
+        return self.ratio
 
 class BTNCache(tvcache.TVCache):
     def __init__(self, provider):

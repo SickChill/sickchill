@@ -56,6 +56,10 @@ class KATProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.confirmed = False
+        self.ratio = None
+
         self.cache = KATCache(self)
 
         self.url = 'http://kickass.to/'
@@ -63,7 +67,7 @@ class KATProvider(generic.TorrentProvider):
         self.searchurl = self.url + 'usearch/%s/?field=seeders&sorder=desc'  #order by seed
 
     def isEnabled(self):
-        return sickbeard.KAT
+        return self.enabled
 
     def imageName(self):
         return 'kat.png'
@@ -261,7 +265,7 @@ class KATProvider(generic.TorrentProvider):
                         if mode != 'RSS' and seeders == 0:
                             continue
 
-                        if sickbeard.KAT_VERIFIED and not verified:
+                        if self.confirmed and not verified:
                             logger.log(
                                 u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it",
                                 logger.DEBUG)
@@ -398,7 +402,7 @@ class KATProvider(generic.TorrentProvider):
         return results
 
     def seedRatio(self):
-        return sickbeard.KAT_RATIO
+        return self.ratio
 
 
 class KATCache(tvcache.TVCache):

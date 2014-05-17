@@ -81,6 +81,8 @@ def getNewznabProviderList(data):
             providerDict[curDefault.name].name = curDefault.name
             providerDict[curDefault.name].url = curDefault.url
             providerDict[curDefault.name].needs_auth = curDefault.needs_auth
+            providerDict[curDefault.name].search_mode = curDefault.search_mode
+            providerDict[curDefault.name].search_fallback = curDefault.search_fallback
 
     return filter(lambda x: x, providerList)
 
@@ -89,16 +91,23 @@ def makeNewznabProvider(configString):
     if not configString:
         return None
 
+    search_mode = 'eponly'
+    search_fallback = 0
+
     try:
-        name, url, key, catIDs, enabled = configString.split('|')
+        name, url, key, catIDs, enabled, search_mode, search_fallback = configString.split('|')
     except ValueError:
-        logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
-        return None
+        try:
+            name, url, key, catIDs, enabled = configString.split('|')
+        except ValueError:
+            logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
+            return None
 
     newznab = sys.modules['sickbeard.providers.newznab']
 
-    newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs)
+    newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode, search_fallback=search_fallback)
     newProvider.enabled = enabled == '1'
+    newProvider.search_fallback = search_fallback == '1'
 
     return newProvider
 
@@ -123,7 +132,7 @@ def makeTorrentRssProvider(configString):
 
 
 def getDefaultNewznabProviders():
-    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0'
+    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0|eponly|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0'
 
 
 def getProviderModule(name):

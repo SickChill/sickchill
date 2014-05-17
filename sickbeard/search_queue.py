@@ -98,7 +98,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
-            searchResult = search.searchProviders(self, self.show, self.segment.season, [self.segment],False,True)
+            searchResult = search.searchProviders(self, self.show, self.segment.season, [self.segment], True)
 
             if searchResult:
                 SearchQueue().snatch_item(searchResult)
@@ -131,15 +131,9 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
             wantedEps = self.segment[season]
 
-            # check if we want to search for season packs instead of just season/episode
-            seasonSearch = False
-            seasonEps = self.show.getAllEpisodes(season)
-            if len(seasonEps) == len(wantedEps) and not sickbeard.PREFER_EPISODE_RELEASES:
-                seasonSearch = True
-
             try:
                 logger.log("Beginning backlog search for [" + self.show.name + "]")
-                searchResult = search.searchProviders(self, self.show, season, wantedEps, seasonSearch, False)
+                searchResult = search.searchProviders(self, self.show, season, wantedEps, False)
 
                 if searchResult:
                     SearchQueue().snatch_item(searchResult)
@@ -182,7 +176,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         if len(failed_episodes):
             try:
-                searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, False, True)
+                searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, True)
 
                 if searchResult:
                     SearchQueue().snatch_item(searchResult)

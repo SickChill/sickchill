@@ -40,12 +40,15 @@ class EZRSSProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
+        self.enabled = False
+        self.ratio = None
+
         self.cache = EZRSSCache(self)
 
         self.url = 'https://www.ezrss.it/'
 
     def isEnabled(self):
-        return sickbeard.EZRSS
+        return self.enabled
 
     def imageName(self):
         return 'ezrss.png'
@@ -57,7 +60,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return quality
 
-    def getSearchResults(self, show, season, episodes, seasonSearch=False, manualSearch=False):
+    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
 
         self.show = show
 
@@ -68,7 +71,7 @@ class EZRSSProvider(generic.TorrentProvider):
                        logger.WARNING)
             return results
 
-        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, seasonSearch, manualSearch)
+        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
 
         return results
 
@@ -158,7 +161,7 @@ class EZRSSProvider(generic.TorrentProvider):
         return None
 
     def seedRatio(self):
-        return sickbeard.EZRSS_RATIO
+        return self.ratio
 
 
 class EZRSSCache(tvcache.TVCache):

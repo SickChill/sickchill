@@ -37,19 +37,25 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
         self.supportsBacklog = False
 
+        self.enabled = False
+        self.hash = None
+        self.digest = None
+        self.ratio = None
+        self.options = None
+
         self.cache = TvTorrentsCache(self)
 
         self.url = 'http://www.tvtorrents.com/'
 
     def isEnabled(self):
-        return sickbeard.TVTORRENTS
+        return self.enabled
 
     def imageName(self):
         return 'tvtorrents.png'
 
     def _checkAuth(self):
 
-        if not sickbeard.TVTORRENTS_DIGEST or not sickbeard.TVTORRENTS_HASH:
+        if not self.digest or not self.hash:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -70,7 +76,7 @@ class TvTorrentsProvider(generic.TorrentProvider):
         return True
 
     def seedRatio(self):
-        return sickbeard.TVTORRENTS_RATIO
+        return self.ratio
 
 
 class TvTorrentsCache(tvcache.TVCache):
@@ -84,7 +90,7 @@ class TvTorrentsCache(tvcache.TVCache):
         # These will be ignored on the serverside.
         ignore_regex = "all.month|month.of|season[\s\d]*complete"
 
-        rss_url = self.provider.url + 'RssServlet?digest=' + sickbeard.TVTORRENTS_DIGEST + '&hash=' + sickbeard.TVTORRENTS_HASH + '&fname=true&exclude=(' + ignore_regex + ')'
+        rss_url = self.provider.url + 'RssServlet?digest=' + provider.digest + '&hash=' + provider.hash + '&fname=true&exclude=(' + ignore_regex + ')'
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
         return self.getRSSFeed(rss_url)
