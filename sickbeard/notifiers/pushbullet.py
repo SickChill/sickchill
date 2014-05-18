@@ -36,17 +36,17 @@ class PushbulletNotifier:
 
     def notify_snatch(self, ep_name):
         if sickbeard.PUSHBULLET_NOTIFY_ONSNATCH:
-            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SNATCH], message=ep_name,
+            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SNATCH] + " : " + ep_name, message=ep_name,
                                  notificationType="note", method="POST")
 
     def notify_download(self, ep_name):
         if sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD:
-            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
+            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD] + " : " + ep_name,
                                  message=ep_name, notificationType="note", method="POST")
 
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
+            self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " : " + ep_name + " : " + lang,
                                  message=ep_name + ": " + lang, notificationType="note", method="POST")
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, event=None, message=None,
