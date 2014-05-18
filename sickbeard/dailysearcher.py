@@ -54,11 +54,12 @@ class DailySearcher():
 
         logger.log(u"Checking to see if any shows have wanted episodes available for the last week ...")
 
-        curDate = datetime.date.today() - datetime.timedelta(weeks=1)
+        fromDate = datetime.date.today() - datetime.timedelta(weeks=1)
+        toDate = datetime.date.today()
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate > ?",
-                                 [common.UNAIRED, common.WANTED, curDate.toordinal()])
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate >= ? AND airdate < ?",
+                                 [common.UNAIRED, common.WANTED, fromDate.toordinal(), toDate.toordinal()])
 
         todaysEps = {}
         for sqlEp in sqlResults:
