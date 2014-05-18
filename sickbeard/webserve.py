@@ -1083,7 +1083,7 @@ class ConfigSearch:
                    nzbget_category=None, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, backlog_frequency=None,
                    download_propers=None, check_propers_interval=None, prefer_episode_releases=None, allow_high_priority=None,
-                   backlog_startup=None, dailysearch_startup=None,
+                   backlog_startup=None, dailysearch_startup=None, skip_removed_files=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_ratio=None, torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
