@@ -312,6 +312,10 @@ class BTNCache(tvcache.TVCache):
 
     def updateCache(self):
 
+        # delete anything older then 7 days
+        logger.log(u"Clearing " + self.provider.name + " cache")
+        self._clearCache()
+
         if not self.shouldUpdate():
             return
 
@@ -324,9 +328,6 @@ class BTNCache(tvcache.TVCache):
                 self.setLastUpdate()
             else:
                 return []
-
-            logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
-            self._clearCache()
 
             if self._checkAuth(data):
                 # By now we know we've got data and no auth errors, all we need to do is put it in the database

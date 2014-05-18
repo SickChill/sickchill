@@ -39,8 +39,18 @@ class DailySearcher():
         self.amActive = False
 
     def run(self):
+
         # remove names from cache that link back to active shows that we watch
         sickbeard.name_cache.syncNameCache()
+
+        logger.log(u"Updating RSS cache ...")
+
+        origThreadName = threading.currentThread().name
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+        for curProviderCount, curProvider in enumerate(providers):
+            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+
+            curProvider.cache.updateCache()
 
         logger.log(u"Checking to see if any shows have wanted episodes available for the last week ...")
 
@@ -79,6 +89,9 @@ class DailySearcher():
                         todaysEps[show] = [ep]
                     else:
                         todaysEps[show].append(ep)
+
+        # reset thread name back to original
+        threading.currentThread().name = origThreadName
 
         if len(todaysEps):
             for show in todaysEps:

@@ -316,22 +316,20 @@ def filterSearchResults(show, results):
     return foundResults
 
 
-def searchForNeededEpisodes(queueItem):
+def searchForNeededEpisodes(episodes):
     foundResults = {}
 
     didSearch = False
 
     # ask all providers for any episodes it finds
+    origThreadName = threading.currentThread().name
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
     for curProviderCount, curProvider in enumerate(providers):
-        threading.currentThread().name = queueItem.thread_name + "[" + curProvider.name + "]"
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         try:
-            logger.log(u"Updating RSS cache ...")
-            curProvider.cache.updateCache()
-
             logger.log(u"Searching RSS cache ...")
-            curFoundResults = curProvider.searchRSS(queueItem.segment)
+            curFoundResults = curProvider.searchRSS(episodes)
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             if curProviderCount != len(providers):
@@ -382,7 +380,10 @@ def searchForNeededEpisodes(queueItem):
     return foundResults.values() if len(foundResults) else {}
 
 
-def searchProviders(queueItem, show, season, episodes, manualSearch=False):
+def searchProviders(show, season, episodes, manualSearch=False):
+    foundResults = {}
+    finalResults = []
+
     # check if we want to search for season packs instead of just season/episode
     seasonSearch = False
     seasonEps = show.getAllEpisodes(season)
@@ -394,17 +395,17 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
     if not len(providers):
         logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
                    logger.ERROR)
-        return queueItem
+        return
 
-    foundResults = {}
+    origThreadName = threading.currentThread().name
     for providerNum, provider in enumerate(providers):
-        threading.currentThread().name = queueItem.thread_name + ":[" + provider.name + "]"
+        threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
         foundResults.setdefault(provider.name, {})
         searchCount = 0
 
         search_mode = 'eponly'
         if seasonSearch and provider.search_mode == 'sponly':
-             search_mode = provider.search_mode
+            search_mode = provider.search_mode
 
         while(True):
             searchCount += 1
@@ -492,8 +493,8 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                 for curEpNum in allEps:
                     epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonNZB.episodes = epObjs
-                queueItem.results = [bestSeasonNZB]
-                return queueItem
+
+                return [bestSeasonNZB]
 
             elif not anyWanted:
                 logger.log(
@@ -612,7 +613,7 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                         del foundResults[provider.name][epNum]
 
         # of all the single ep results narrow it down to the best one for each episode
-        queueItem.results += set(multiResults.values())
+        finalResults += set(multiResults.values())
         for curEp in foundResults[provider.name]:
             if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
@@ -628,20 +629,20 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
 
             # add result if its not a duplicate and
             found = False
-            for i, result in enumerate(queueItem.results):
+            for i, result in enumerate(finalResults):
                 for bestResultEp in bestResult.episodes:
                     if bestResultEp in result.episodes:
                         if result.quality < bestResult.quality:
-                            queueItem.results.pop(i)
+                            finalResults.pop(i)
                         else:
                             found = True
             if not found:
-                queueItem.results += [bestResult]
+                finalResults += [bestResult]
 
         # check that we got all the episodes we wanted first before doing a match and snatch
         wantedEpCount = 0
         for wantedEp in episodes:
-            for result in queueItem.results:
+            for result in finalResults:
                 if wantedEp in result.episodes and isFinalResult(result):
                     wantedEpCount += 1
 
@@ -649,4 +650,4 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
         if providerNum == len(providers) or wantedEpCount == len(episodes):
             break
 
-    return queueItem
+    return finalResults
