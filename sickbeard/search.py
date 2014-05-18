@@ -638,7 +638,6 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
             if not found:
                 queueItem.results += [bestResult]
 
-
         # check that we got all the episodes we wanted first before doing a match and snatch
         wantedEpCount = 0
         for wantedEp in episodes:
