@@ -57,7 +57,8 @@ class GenericProvider:
 
         self.search_mode = None
         self.search_fallback = False
-
+        self.backlog_only = False
+        
         self.cache = tvcache.TVCache(self)
 
         self.session = requests.session()

@@ -323,7 +323,7 @@ def searchForNeededEpisodes(episodes):
 
     # ask all providers for any episodes it finds
     origThreadName = threading.currentThread().name
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
     for curProviderCount, curProvider in enumerate(providers):
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 

@@ -1633,6 +1633,12 @@ class ConfigProviders:
                 except:
                     curTorrentProvider.search_fallback = 0
 
+            if hasattr(curTorrentProvider, 'backlog_only'):
+                try:
+                    curTorrentProvider.backlog_only = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_backlog_only'])
+                except:
+                    curTorrentProvider.backlog_only = 0
+
         sickbeard.OMGWTFNZBS_USERNAME = kwargs['omgwtfnzbs_username'].strip()
         sickbeard.OMGWTFNZBS_APIKEY = kwargs['omgwtfnzbs_apikey'].strip()
 

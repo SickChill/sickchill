@@ -1026,7 +1026,11 @@ def initialize(consoleLogging=True):
                                                                    'eponly')
             if hasattr(curTorrentProvider, 'search_fallback'):
                 curTorrentProvider.search_fallback = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                            curTorrentProvider.getID() + '_search_mode',
+                                                                            curTorrentProvider.getID() + '_search_fallback',
+                                                                            0))
+            if hasattr(curTorrentProvider, 'backlog_only'):
+                curTorrentProvider.backlog_only = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                            curTorrentProvider.getID() + '_backlog_only',
                                                                             0))
         try:
             url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
@@ -1415,6 +1419,9 @@ def save_config():
         if hasattr(curTorrentProvider, 'search_fallback'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_search_fallback'] = int(
                 curTorrentProvider.search_fallback)
+        if hasattr(curTorrentProvider, 'backlog_only'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_backlog_only'] = int(
+                curTorrentProvider.backlog_only)
 
     new_config['NZBs'] = {}
     new_config['NZBs']['nzbs'] = int(NZBS)
