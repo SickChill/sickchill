@@ -339,7 +339,6 @@ def searchForNeededEpisodes(queueItem):
             break
         except Exception, e:
             logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
             if curProviderCount != len(providers):
                 continue
             break
@@ -421,7 +420,6 @@ def searchProviders(queueItem, show, season, episodes, manualSearch=False):
                 break
             except Exception, e:
                 logger.log(u"Error while searching " + provider.name + ", skipping: " + ex(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
                 break
 
             if len(searchResults):

@@ -1068,7 +1068,8 @@ class TVShow(object):
         if self.status:
             toReturn += "status: " + self.status + "\n"
         toReturn += "startyear: " + str(self.startyear) + "\n"
-        toReturn += "genre: " + self.genre + "\n"
+        if self.genre:
+            toReturn += "genre: " + self.genre + "\n"
         toReturn += "classification: " + self.classification + "\n"
         toReturn += "runtime: " + str(self.runtime) + "\n"
         toReturn += "quality: " + str(self.quality) + "\n"

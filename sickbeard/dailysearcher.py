@@ -47,7 +47,7 @@ class DailySearcher():
         curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE (status = ? OR status = ?) AND airdate < ?",
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate > ?",
                                  [common.UNAIRED, common.WANTED, curDate.toordinal()])
 
         todaysEps = {}
