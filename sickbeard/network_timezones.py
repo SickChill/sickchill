@@ -262,11 +262,11 @@ def parse_date_time(d, t, network):
     te = datetime.datetime.fromordinal(helpers.tryInt(d))
     try:
         if sickbeard.TIMEZONE_DISPLAY == 'local':
-            return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=sb_timezone)
-        else:
             foreign_timezone = get_network_timezone(network, network_dict)
             foreign_naive = datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=foreign_timezone)
             return foreign_naive.astimezone(sb_timezone)
+        else:
+            return datetime.datetime(te.year, te.month, te.day, hr, m, tzinfo=sb_timezone)
     except:
         return datetime.datetime(te.year, te.month, te.day, hr, m)
 
