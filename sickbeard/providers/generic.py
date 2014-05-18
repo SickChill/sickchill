@@ -252,10 +252,10 @@ class GenericProvider:
                         u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
                     continue
 
-            cacheResult = self.cache.searchCache([epObj], manualSearch)
-            if len(cacheResult):
-                results.update({epObj.episode:cacheResult[epObj]})
-                continue
+            #cacheResult = self.cache.searchCache([epObj], manualSearch)
+            #if len(cacheResult):
+            #    results.update({epObj.episode:cacheResult[epObj]})
+            #    continue
 
             if search_mode == 'sponly':
                 for curString in self._get_season_search_strings(epObj):
@@ -273,8 +273,8 @@ class GenericProvider:
             searchItems[epObj] = itemList
 
         # if we have cached results return them.
-        if len(results):
-            return results
+        #if len(results):
+        #    return results
 
         for ep_obj in searchItems:
             for item in searchItems[ep_obj]:

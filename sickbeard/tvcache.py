@@ -87,7 +87,7 @@ class TVCache():
 
         curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
-        myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [curDate.toordinal()])
+        myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
     def _getRSSData(self):
 
@@ -102,6 +102,11 @@ class TVCache():
         return True
 
     def updateCache(self):
+
+        # delete anything older then 7 days
+        logger.log(u"Clearing " + self.provider.name + " cache")
+        self._clearCache()
+
         if not self.shouldUpdate():
             return
 
@@ -113,10 +118,6 @@ class TVCache():
                 self.setLastUpdate()
             else:
                 return []
-
-            # now that we've loaded the current RSS feed lets delete the old cache
-            logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
-            self._clearCache()
 
             if self._checkAuth(data):
                 items = data.entries
@@ -238,7 +239,6 @@ class TVCache():
         myDB.upsert("lastSearch",
                     {'time': int(time.mktime(toDate.timetuple()))},
                     {'provider': self.providerID})
-
 
     lastUpdate = property(_getLastUpdate)
     lastSearch = property(_getLastSearch)

@@ -273,6 +273,11 @@ class NewznabCache(tvcache.TVCache):
         return self.provider._checkAuthFromData(data)
 
     def updateCache(self):
+
+        # delete anything older then 7 days
+        logger.log(u"Clearing " + self.provider.name + " cache")
+        self._clearCache()
+
         if not self.shouldUpdate():
             return
 
@@ -284,10 +289,6 @@ class NewznabCache(tvcache.TVCache):
                 self.setLastUpdate()
             else:
                 return []
-
-            # now that we've loaded the current RSS feed lets delete the old cache
-            logger.log(u"Clearing " + self.provider.name + " cache and updating with new information")
-            self._clearCache()
 
             if self._checkAuth(data):
                 items = data.entries

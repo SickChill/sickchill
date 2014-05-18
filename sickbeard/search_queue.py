@@ -81,29 +81,33 @@ class SearchQueue(generic_queue.GenericQueue):
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
     def snatch_item(self, item):
-        for result in item.results:
+        for result in item:
             # just use the first result for now
             logger.log(u"Downloading " + result.name + " from " + result.provider.name)
             item.success =  search.snatchEpisode(result)
 
+            # give the CPU a break
             time.sleep(2)
 
+        # return results of snatch
         return item
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'DAILYSEARCH-' + str(show.indexerid) + '-'
+        self.thread_name = 'DAILYSEARCH-' + str(show.indexerid)
         self.show = show
         self.segment = segment
-        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
         logger.log("Beginning daily search for [" + self.show.name + "]")
-        foundResults = search.searchForNeededEpisodes(self)
+        foundResults = search.searchForNeededEpisodes(self.segment)
+
+        # reset thread back to original name
+        threading.currentThread().name = self.thread_name
 
         if not len(foundResults):
             logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
@@ -117,11 +121,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'MANUAL-' + str(show.indexerid) + '-'
+        self.thread_name = 'MANUAL-' + str(show.indexerid)
         self.success = None
         self.show = show
         self.segment = segment
-        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -130,10 +133,13 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
-            searchResult = search.searchProviders(queueItem, self.show, self.segment.season, [self.segment], True)
+            searchResult = search.searchProviders(self.show, self.segment.season, [self.segment], True)
+
+            # reset thread back to original name
+            threading.currentThread().name = self.thread_name
 
             if searchResult:
-                queueItem = SearchQueue().snatch_item(searchResult)
+                self.success = SearchQueue().snatch_item(searchResult)
             else:
                 ui.notifications.message('No downloads were found',
                                          "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
@@ -143,17 +149,16 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-        generic_queue.QueueItem.finish(queueItem)
+        generic_queue.QueueItem.finish(self)
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.thread_name = 'BACKLOG-' + str(show.indexerid) + '-'
+        self.thread_name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
         self.show = show
         self.segment = segment
-        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -165,7 +170,10 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
             try:
                 logger.log("Beginning backlog search for [" + self.show.name + "]")
-                searchResult = search.searchProviders(self, self.show, season, wantedEps, False)
+                searchResult = search.searchProviders(self.show, season, wantedEps, False)
+
+                # reset thread back to original name
+                threading.currentThread().name = self.thread_name
 
                 if searchResult:
                     SearchQueue().snatch_item(searchResult)
@@ -181,11 +189,10 @@ class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'RETRY-' + str(show.indexerid) + '-'
+        self.thread_name = 'RETRY-' + str(show.indexerid)
         self.show = show
         self.segment = segment
         self.success = None
-        self.results = []
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -208,7 +215,10 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         if len(failed_episodes):
             try:
-                searchResult = search.searchProviders(self, self.show, failed_episodes[0].season, failed_episodes, True)
+                searchResult = search.searchProviders(self.show, failed_episodes[0].season, failed_episodes, True)
+
+                # reset thread back to original name
+                threading.currentThread().name = self.thread_name
 
                 if searchResult:
                     SearchQueue().snatch_item(searchResult)
