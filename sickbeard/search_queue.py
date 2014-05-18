@@ -27,10 +27,13 @@ from sickbeard import db, logger, common, exceptions, helpers
 from sickbeard import generic_queue, scheduler
 from sickbeard import search, failed_history, history
 from sickbeard import ui
+from sickbeard.exceptions import ex
+from sickbeard.search import pickBestResult
 
 search_queue_lock = threading.Lock()
 
 BACKLOG_SEARCH = 10
+DAILY_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
 
@@ -66,7 +69,9 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def add_item(self, item):
 
-        if isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+        if isinstance(item, DailySearchQueueItem) and not self.is_in_queue(item.show, item.segment):
+            generic_queue.GenericQueue.add_item(self, item)
+        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_in_queue(item.show, item.segment):
             generic_queue.GenericQueue.add_item(self, item)
@@ -80,8 +85,33 @@ class SearchQueue(generic_queue.GenericQueue):
             # just use the first result for now
             logger.log(u"Downloading " + result.name + " from " + result.provider.name)
             item.success =  search.snatchEpisode(result)
+
             time.sleep(2)
-            generic_queue.QueueItem.finish(item)
+
+        return item
+
+class DailySearchQueueItem(generic_queue.QueueItem):
+    def __init__(self, show, segment):
+        generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
+        self.priority = generic_queue.QueuePriorities.HIGH
+        self.thread_name = 'DAILYSEARCH-' + str(show.indexerid) + '-'
+        self.show = show
+        self.segment = segment
+        self.results = []
+
+    def execute(self):
+        generic_queue.QueueItem.execute(self)
+
+        logger.log("Beginning daily search for [" + self.show.name + "]")
+        foundResults = search.searchForNeededEpisodes(self)
+
+        if not len(foundResults):
+            logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
+        else:
+            for curResult in foundResults:
+                SearchQueue().snatch_item(curResult)
+
+        generic_queue.QueueItem.finish(self)
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -96,12 +126,14 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
+        queueItem = self
+
         try:
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
-            searchResult = search.searchProviders(self, self.show, self.segment.season, [self.segment], True)
+            searchResult = search.searchProviders(queueItem, self.show, self.segment.season, [self.segment], True)
 
             if searchResult:
-                SearchQueue().snatch_item(searchResult)
+                queueItem = SearchQueue().snatch_item(searchResult)
             else:
                 ui.notifications.message('No downloads were found',
                                          "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
@@ -111,7 +143,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-        self.finish()
+        generic_queue.QueueItem.finish(queueItem)
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -138,7 +170,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 if searchResult:
                     SearchQueue().snatch_item(searchResult)
                 else:
-                    logger.log(u"No needed episodes found during backlog search")
+                    logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
 
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG)

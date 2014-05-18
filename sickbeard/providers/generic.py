@@ -184,8 +184,8 @@ class GenericProvider:
 
         return True
 
-    def searchRSS(self):
-        return self.cache.findNeededEpisodes()
+    def searchRSS(self, episodes):
+        return self.cache.findNeededEpisodes(episodes)
 
     def getQuality(self, item):
         """
@@ -252,7 +252,7 @@ class GenericProvider:
                         u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
                     continue
 
-            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            cacheResult = self.cache.searchCache([epObj], manualSearch)
             if len(cacheResult):
                 results.update({epObj.episode:cacheResult[epObj]})
                 continue

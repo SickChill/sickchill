@@ -339,8 +339,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" #if $curTorrentProvider.search_fallback then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="${curTorrentProvider.getID()}_search_fallback">
-                                <span class="component-title">Search Fallback</span>
-                                <span class="component-desc">This will restart the search using the alternative method from Search Mode if first attempt fails to return any results to snatch.</span>
+                                <span class="component-title">Season Search Fallback</span>
+                                <span class="component-desc">When searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode</span>
                             </label>
                         </div>
                         #end if
@@ -348,8 +348,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         #if $hasattr($curTorrentProvider, 'search_mode'):
                         <div class="field-pair">
                             <label class="nocheck clearfix">
-                                <span class="component-title">Search Mode</span>
-                                <span class="component-desc">
+                                <span class="component-title">Season Search Mode</span>
+                                <span class="component-desc">When searching for complete seasons you can choose to have it look for season packs ONLY or choose to have it build a complete season from just single episodes</span>
                                     <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
                                 </span>
                             </label>

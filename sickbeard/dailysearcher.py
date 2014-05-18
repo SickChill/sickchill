@@ -32,7 +32,6 @@ from sickbeard.exceptions import ex
 from sickbeard.search import pickBestResult, snatchEpisode
 from sickbeard import generic_queue
 
-
 class DailySearcher():
     def __init__(self):
         self.lock = threading.Lock()
@@ -40,33 +39,18 @@ class DailySearcher():
         self.amActive = False
 
     def run(self):
-        self.amActive = True
-        self._changeUnairedEpisodes()
-
         # remove names from cache that link back to active shows that we watch
         sickbeard.name_cache.syncNameCache()
 
-        logger.log(u"Starting Daily Searcher ...")
-        foundResults = self.searchForNeededEpisodes()
+        logger.log(u"Checking to see if any shows have wanted episodes available for the last week ...")
 
-        if not len(foundResults):
-            logger.log(u"No needed episodes found on the RSS feeds")
-        else:
-            for curResult in foundResults:
-                snatchEpisode(curResult)
-
-        self.amActive = False
-
-    def _changeUnairedEpisodes(self):
-
-        logger.log(u"Setting todays new releases to status WANTED")
-
-        curDate = datetime.date.today().toordinal()
+        curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status = ? AND airdate < ?",
-                                 [common.UNAIRED, curDate])
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE (status = ? OR status = ?) AND airdate < ?",
+                                 [common.UNAIRED, common.WANTED, curDate.toordinal()])
 
+        todaysEps = {}
         for sqlEp in sqlResults:
 
             try:
@@ -85,72 +69,21 @@ class DailySearcher():
                 if ep.show.paused:
                     ep.status = common.SKIPPED
                 else:
-                    ep.status = common.WANTED
+                    if ep.status == common.UNAIRED:
+                        ep.status = common.WANTED
+
                 ep.saveToDB()
 
-    def searchForNeededEpisodes(self):
+                if ep.status == common.WANTED:
+                    if show not in todaysEps:
+                        todaysEps[show] = [ep]
+                    else:
+                        todaysEps[show].append(ep)
 
-        foundResults = {}
-
-        didSearch = False
-
-        # ask all providers for any episodes it finds
-        threadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
-        for curProviderCount, curProvider in enumerate(providers):
-            threading.currentThread().name = threadName + ":[" + curProvider.name + "]"
-
-            try:
-                logger.log(u"Updating RSS cache ...")
-                curProvider.cache.updateCache()
-
-                logger.log(u"Searching RSS cache ...")
-                curFoundResults = curProvider.searchRSS()
-            except exceptions.AuthException, e:
-                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-                if curProviderCount != len(providers):
-                    continue
-                break
-            except Exception, e:
-                logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
-                if curProviderCount != len(providers):
-                    continue
-                break
-
-            didSearch = True
-
-            # pick a single result for each episode, respecting existing results
-            for curEp in curFoundResults:
-
-                if curEp.show.paused:
-                    logger.log(
-                        u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
-                        logger.DEBUG)
-                    continue
-
-                # find the best result for the current episode
-                bestResult = None
-                for curResult in curFoundResults[curEp]:
-                    if not bestResult or bestResult.quality < curResult.quality:
-                        bestResult = curResult
-
-                bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
-
-                # if all results were rejected move on to the next episode
-                if not bestResult:
-                    logger.log(u"All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
-                    continue
-
-                # if it's already in the list (from another provider) and the newly found quality is no better then skip it
-                if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
-                    continue
-
-                foundResults[curEp] = bestResult
-
-        if not didSearch:
-            logger.log(
-                u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.",
-                logger.ERROR)
-
-        return foundResults.values() if len(foundResults) else {}
+        if len(todaysEps):
+            for show in todaysEps:
+                segment = todaysEps[show]
+                dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, segment)
+                sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)  #@UndefinedVariable
+        else:
+            logger.log(u"Could not find any wanted show episodes going back 1 week at this current time ...")
