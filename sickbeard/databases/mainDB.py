@@ -129,7 +129,7 @@ class MainSanityCheck(db.DBSanityCheck):
         curDate = datetime.date.today()
 
         sqlResults = self.connection.select(
-            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? ", [curDate.toordinal()])
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status != ?", [curDate.toordinal(), common.UNAIRED])
 
         for cur_orphan in sqlResults:
             logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_orphan["episode_id"]) + " showid: " + str(
