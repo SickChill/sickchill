@@ -450,8 +450,8 @@ class ThePirateBayWebproxy:
             'Webproxy.cz (CZ)': 'http://webproxy.cz/',
             '2me2u (CZ)': 'http://2me2u.me/',
             'Interproxy.net (EU)': 'http://interproxy.net/',
-            'Unblockersurf.info (DK)': 'http://unblockersurf.info',
-            'Hiload.org (NL)': 'http://hiload.org',
+            'Unblockersurf.info (DK)': 'http://unblockersurf.info/',
+            'Hiload.org (NL)': 'http://hiload.org/',
         }
 
     def isEnabled(self):
