@@ -35,6 +35,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
+        self.fix_unaired_episodes()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -122,6 +123,23 @@ class MainSanityCheck(db.DBSanityCheck):
         if not self.connection.select("PRAGMA index_info('idx_sta_epi_sta_air')"):
             logger.log(u"Missing idx_sta_epi_sta_air for TV Episodes table detected!, fixing...")
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate)")
+
+    def fix_unaired_episodes(self):
+
+        curDate = datetime.date.today()
+
+        sqlResults = self.connection.select(
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? ", [curDate.toordinal()])
+
+        for cur_orphan in sqlResults:
+            logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_orphan["episode_id"]) + " showid: " + str(
+                cur_orphan["showid"]), logger.DEBUG)
+            logger.log(u"Fixing unaired episode status with episode_id: " + str(cur_orphan["episode_id"]))
+            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNAIRED, cur_orphan["episode_id"]])
+
+        else:
+            logger.log(u"No UNAIRED episodes, check passed")
+
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
