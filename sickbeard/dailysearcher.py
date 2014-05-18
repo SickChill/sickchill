@@ -50,7 +50,11 @@ class DailySearcher():
         for curProviderCount, curProvider in enumerate(providers):
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
-            curProvider.cache.updateCache()
+            try:
+                curProvider.cache.updateCache()
+            except exceptions.AuthException, e:
+                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+                continue
 
         logger.log(u"Checking to see if any shows have wanted episodes available for the last week ...")
 

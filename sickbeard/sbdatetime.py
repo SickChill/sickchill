@@ -100,16 +100,15 @@ class sbdatetime(datetime.datetime):
     @static_or_instance
     def sbftime(self, dt=None, show_seconds=False, t_preset=None):
 
-        try:
-            locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
-        except:
-            pass
+        try:locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
+        except:pass
 
         try:
             if sbdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, 'us_US')
         except:
             sbdatetime.has_locale = False
+
         strt = ''
         try:
             if self is None:
@@ -133,6 +132,7 @@ class sbdatetime(datetime.datetime):
                     locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
             except:
                 sbdatetime.has_locale = False
+
             return strt
 
     # display Date in Sickbeard Format
@@ -158,6 +158,12 @@ class sbdatetime(datetime.datetime):
                 else:
                     strd = self.strftime(sickbeard.DATE_PRESET)
         finally:
+
+            try:
+                locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
+            except:
+                pass
+
             return strd
 
     # display Datetime in Sickbeard Format
@@ -210,4 +216,5 @@ class sbdatetime(datetime.datetime):
                     locale.setlocale(locale.LC_TIME, self.ORIG_LC_TIME)
             except:
                 sbdatetime.has_locale = False
+
             return strd

@@ -80,18 +80,6 @@ class SearchQueue(generic_queue.GenericQueue):
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
-    def snatch_item(self, item):
-        for result in item:
-            # just use the first result for now
-            logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-            item.success =  search.snatchEpisode(result)
-
-            # give the CPU a break
-            time.sleep(2)
-
-        # return results of snatch
-        return item
-
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
@@ -112,8 +100,14 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         if not len(foundResults):
             logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
         else:
-            for curResult in foundResults:
-                SearchQueue().snatch_item(curResult)
+            for curEp in foundResults:
+                for result in curEp:
+                    # just use the first result for now
+                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                    search.snatchEpisode(result)
+
+                    # give the CPU a break
+                    time.sleep(2)
 
         generic_queue.QueueItem.finish(self)
 
@@ -129,8 +123,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        queueItem = self
-
         try:
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
             searchResult = search.searchProviders(self.show, self.segment.season, [self.segment], True)
@@ -139,7 +131,13 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             threading.currentThread().name = self.thread_name
 
             if searchResult:
-                self.success = SearchQueue().snatch_item(searchResult)
+                # just use the first result for now
+                logger.log(u"Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
+                self.success = search.snatchEpisode(searchResult[0])
+
+                # give the CPU a break
+                time.sleep(2)
+
             else:
                 ui.notifications.message('No downloads were found',
                                          "Couldn't find a download for <i>%s</i>" % self.segment.prettyName())
@@ -149,6 +147,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
+    def finish(self):
+        # don't let this linger if something goes wrong
+        if self.success == None:
+            self.success = False
         generic_queue.QueueItem.finish(self)
 
 class BacklogQueueItem(generic_queue.QueueItem):
@@ -176,7 +178,14 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 threading.currentThread().name = self.thread_name
 
                 if searchResult:
-                    SearchQueue().snatch_item(searchResult)
+                    for result in searchResult:
+                        # just use the first result for now
+                        logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                        search.snatchEpisode(result)
+
+                        # give the CPU a break
+                        time.sleep(2)
+
                 else:
                     logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
 
@@ -221,7 +230,14 @@ class FailedQueueItem(generic_queue.QueueItem):
                 threading.currentThread().name = self.thread_name
 
                 if searchResult:
-                    SearchQueue().snatch_item(searchResult)
+                    for result in searchResult:
+                        # just use the first result for now
+                        logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                        search.snatchEpisode(result)
+
+                        # give the CPU a break
+                        time.sleep(2)
+
                 else:
                     logger.log(u"No episodes found to retry for failed downloads return from providers!")
             except Exception, e:
