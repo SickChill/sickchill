@@ -107,7 +107,6 @@ def makeNewznabProvider(configString):
 
     newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode, search_fallback=search_fallback)
     newProvider.enabled = enabled == '1'
-    newProvider.search_fallback = search_fallback == '1'
 
     return newProvider
 

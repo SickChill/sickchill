@@ -127,7 +127,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                                     #if $provider_config_list:                                        
                                     <select id="editAProvider">
-                                        #for $cur_provider in $provider_config_list + [$curProvider for $curProvider in $sickbeard.newznabProviderList if $curProvider.default and $curProvider.needs_auth and $sickbeard.USE_NZBS]:
+                                        #for $cur_provider in $provider_config_list + [$curProvider for $curProvider in $sickbeard.newznabProviderList if $sickbeard.USE_NZBS]:
                                             <option value="$cur_provider.getID()">$cur_provider.name</option>
                                         #end for
                                     </select>
@@ -142,7 +142,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 <!-- start div for editing providers //-->
 #for $curNewznabProvider in [$curProvider for $curProvider in $sickbeard.newznabProviderList]:
 <div class="providerDiv" id="${curNewznabProvider.getID()}Div">
-                        #if $curProvider.default and $curProvider.needs_auth
+                        #if $curNewznabProvider.default and $curNewznabProvider.needs_auth
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">URL:</span>
