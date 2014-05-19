@@ -45,9 +45,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         self.enabled = False
         self.username = None
-        self.password = None
-        self.uid = None
-        self.hash = None
+        self.passkey = None
         self.ratio = None
 
         self.cache = HDBitsCache(self)
@@ -62,7 +60,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _checkAuth(self):
 
-        if not self.username or not self.password:
+        if not self.username or not self.passkey:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -95,41 +93,9 @@ class HDBitsProvider(generic.TorrentProvider):
         if title:
             title = title.replace(' ', '.')
 
-        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.password})
+        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return (title, url)
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self.session = requests.Session()
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            if sickbeard.PROXY_SETTING:
-                proxies = {
-                    "http": sickbeard.PROXY_SETTING,
-                    "https": sickbeard.PROXY_SETTING,
-                }
-
-                r = self.session.get(url, data=post_data, proxies=proxies, verify=False)
-            else:
-                r = self.session.get(url, data=post_data, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
-            return None
-
-        if r.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
-            return None
-        if json:
-            return r.json()
-        return r.content
 
     def _doSearch(self, search_params, epcount=0, age=0):
         results = []
@@ -180,7 +146,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         post_data = {
             'username': self.username,
-            'passkey': self.password,
+            'passkey': self.passkey,
             'category': [2],
             # TV Category
         }

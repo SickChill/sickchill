@@ -1609,6 +1609,12 @@ class ConfigProviders:
                 except:
                     curTorrentProvider.password = None
 
+            if hasattr(curTorrentProvider, 'passkey'):
+                try:
+                    curTorrentProvider.passkey = str(kwargs[curTorrentProvider.getID() + '_passkey']).strip()
+                except:
+                    curTorrentProvider.passkey = None
+
             if hasattr(curTorrentProvider, 'confirmed'):
                 try:
                     curTorrentProvider.confirmed = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_confirmed'])

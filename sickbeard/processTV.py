@@ -393,7 +393,6 @@ def delete_dir(processPath):
 
 
 def get_path_dir_files(dirName, nzbName, type):
-    path, dirs, files = None
 
     if dirName == sickbeard.TV_DOWNLOAD_DIR and not nzbName or type == "manual":  #Scheduled Post Processing Active
         #Get at first all the subdir in the dirName

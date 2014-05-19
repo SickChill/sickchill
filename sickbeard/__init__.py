@@ -432,8 +432,8 @@ def initialize(consoleLogging=True):
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, USENET_RETENTION, TORRENT_DIR,\
-            QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, DAILYSEARCH_STARTUP,\
+            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, USENET_RETENTION, TORRENT_DIR, \
+            QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, DAILYSEARCH_STARTUP, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROG_DIR, \
             USE_PYTIVO, PYTIVO_NOTIFY_ONSNATCH, PYTIVO_NOTIFY_ONDOWNLOAD, PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD, PYTIVO_UPDATE_LIBRARY, PYTIVO_HOST, PYTIVO_SHARE_NAME, PYTIVO_TIVO_NAME, \
@@ -608,7 +608,8 @@ def initialize(consoleLogging=True):
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency', DEFAULT_DAILYSEARCH_FREQUENCY)
+        DAILYSEARCH_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency',
+                                                  DEFAULT_DAILYSEARCH_FREQUENCY)
         if DAILYSEARCH_FREQUENCY < MIN_DAILYSEARCH_FREQUENCY:
             DAILYSEARCH_FREQUENCY = MIN_DAILYSEARCH_FREQUENCY
 
@@ -1002,6 +1003,9 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'password'):
                 curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                 curTorrentProvider.getID() + '_password', '')
+            if hasattr(curTorrentProvider, 'passkey'):
+                curTorrentProvider.passkey = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                               curTorrentProvider.getID() + '_passkey', '')
             if hasattr(curTorrentProvider, 'proxy'):
                 curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                           curTorrentProvider.getID() + '_proxy', 0))
@@ -1030,8 +1034,8 @@ def initialize(consoleLogging=True):
                                                                             0))
             if hasattr(curTorrentProvider, 'backlog_only'):
                 curTorrentProvider.backlog_only = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                            curTorrentProvider.getID() + '_backlog_only',
-                                                                            0))
+                                                                         curTorrentProvider.getID() + '_backlog_only',
+                                                                         0))
         try:
             url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
             clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
@@ -1395,6 +1399,9 @@ def save_config():
         if hasattr(curTorrentProvider, 'password'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_password'] = helpers.encrypt(
                 curTorrentProvider.password, ENCRYPTION_VERSION)
+        if hasattr(curTorrentProvider, 'passkey'):
+            new_config[curTorrentProvider.getID().upper()][
+                curTorrentProvider.getID() + '_passkey'] = curTorrentProvider.passkey
         if hasattr(curTorrentProvider, 'confirmed'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = int(
                 curTorrentProvider.confirmed)

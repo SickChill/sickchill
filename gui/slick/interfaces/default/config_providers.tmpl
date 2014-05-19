@@ -299,6 +299,15 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
+                        #if $hasattr($curTorrentProvider, 'passkey'):
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title">Passkey:</span>
+                                <input class="component-desc" type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="$curTorrentProvider.passkey" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
                         #if $hasattr($curTorrentProvider, 'ratio'):
                         <div class="field-pair">
                             <label class="clearfix">
