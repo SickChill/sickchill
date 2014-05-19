@@ -298,7 +298,6 @@ class ParseResult(object):
                  extra_info=None,
                  release_group=None,
                  air_date=None,
-                 show=None,
     ):
 
         self.original_name = original_name
@@ -320,7 +319,6 @@ class ParseResult(object):
         self.sports_event_date = sports_event_date
 
         self.which_regex = None
-        self.show = show
 
     def __eq__(self, other):
         if not other:

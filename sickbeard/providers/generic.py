@@ -311,7 +311,7 @@ class GenericProvider:
                             ep_obj.season) + ", ignoring", logger.DEBUG)
                         continue
                     elif len(parse_result.episode_numbers) and (
-                                    parse_result.season_number != ep_obj.scene_season or ep_obj.episode not in parse_result.episode_numbers):
+                                    parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
                         logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
                             ep_obj.episode) + ", skipping it", logger.DEBUG)
                         continue
