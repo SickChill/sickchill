@@ -243,8 +243,13 @@ class PublicHDProvider(generic.TorrentProvider):
         try:
             r = self.session.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
         except Exception, e:
-            logger.log("Unable to connect to Torcache: " + ex(e), logger.ERROR)
-            return False
+            logger.log("Unable to connect to TORCACHE: " + ex(e), logger.ERROR)
+            try:
+                logger.log("Trying TORRAGE cache instead")
+                r = self.session.get('http://torrage.com/torrent/' + torrent_hash + '.torrent', verify=False)
+            except Exception, e:
+                logger.log("Unable to connect to TORRAGE: " + ex(e), logger.ERROR)
+                return False
 
         if not r.status_code == 200:
             return False
