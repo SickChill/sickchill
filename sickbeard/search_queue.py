@@ -100,14 +100,13 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         if not len(foundResults):
             logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
         else:
-            for curEp in foundResults:
-                for result in curEp:
-                    # just use the first result for now
-                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-                    search.snatchEpisode(result)
+            for result in foundResults:
+                # just use the first result for now
+                logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                search.snatchEpisode(result)
 
-                    # give the CPU a break
-                    time.sleep(2)
+                # give the CPU a break
+                time.sleep(2)
 
         generic_queue.QueueItem.finish(self)
 

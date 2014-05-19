@@ -376,23 +376,16 @@ class ParseResult(object):
 
         return to_return.encode('utf-8')
 
-    def convert(self):
-        if not self.series_name: return self # can't work without a series name
+    def convert(self, show):
+        if not show: return self # need show object
+        if not self.season_number: return self  # can't work without a season
+        if not len(self.episode_numbers): return self  # need at least one episode
         if self.air_by_date or self.sports: return self  # scene numbering does not apply to air-by-date
-        if self.season_number == None: return self  # can't work without a season
-        if len(self.episode_numbers) == 0: return self  # need at least one episode
-
-        showResult = helpers.searchDBForShow(self.series_name)
-        if showResult:
-            self.show = helpers.findCertainShow(sickbeard.showList, int(showResult[0]))
-
-        if not self.show:
-            return self
 
         new_episode_numbers = []
         new_season_numbers = []
         for epNo in self.episode_numbers:
-            (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number,
+            (s, e) = scene_numbering.get_indexer_numbering(show.indexerid, show.indexer, self.season_number,
                                                            epNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)

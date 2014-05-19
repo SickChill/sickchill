@@ -13,18 +13,23 @@
 # You should have received a copy of the GNU General Public License                                                                      
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.                                                                    
 
+import re
 import time
 import datetime
 import urllib
+import urlparse
+import sys
 import generic
 import sickbeard
 
+from lib import requests
+from lib.requests import exceptions
 from sickbeard import classes
 from sickbeard import logger, tvcache, exceptions
 from sickbeard import helpers
+from sickbeard import clients
 from sickbeard.common import cpu_presets
 from sickbeard.exceptions import ex, AuthException
-
 try:
     import json
 except ImportError:
@@ -41,13 +46,15 @@ class HDBitsProvider(generic.TorrentProvider):
         self.enabled = False
         self.username = None
         self.password = None
+        self.uid = None
+        self.hash = None
         self.ratio = None
 
         self.cache = HDBitsCache(self)
 
-        self.url = 'https://hdbits.org'
-        self.search_url = 'https://hdbits.org/api/torrents'
-        self.rss_url = 'https://hdbits.org/api/torrents'
+        self.url = 'http://hdbits.org'
+        self.search_url = 'http://hdbits.org/api/torrents'
+        self.rss_url = 'http://hdbits.org/api/torrents'
         self.download_url = 'http://hdbits.org/download.php?'
 
     def isEnabled(self):
@@ -91,6 +98,38 @@ class HDBitsProvider(generic.TorrentProvider):
         url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.password})
 
         return (title, url)
+
+    def getURL(self, url, post_data=None, headers=None, json=False):
+
+        if not self.session:
+            self.session = requests.Session()
+
+        try:
+            # Remove double-slashes from url
+            parsed = list(urlparse.urlparse(url))
+            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
+            url = urlparse.urlunparse(parsed)
+
+            if sickbeard.PROXY_SETTING:
+                proxies = {
+                    "http": sickbeard.PROXY_SETTING,
+                    "https": sickbeard.PROXY_SETTING,
+                }
+
+                r = self.session.get(url, data=post_data, proxies=proxies, verify=False)
+            else:
+                r = self.session.get(url, data=post_data, verify=False)
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+            logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
+            return None
+
+        if r.status_code != 200:
+            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
+                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
+            return None
+        if json:
+            return r.json()
+        return r.content
 
     def _doSearch(self, search_params, epcount=0, age=0):
         results = []

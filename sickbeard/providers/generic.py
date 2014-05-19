@@ -289,10 +289,13 @@ class GenericProvider:
                 # parse the file name
                 try:
                     myParser = NameParser(False)
-                    parse_result = myParser.parse(title).convert()
+                    parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
+
+                # scene -> indexer numbering
+                parse_result = parse_result.convert(self.show)
 
                 if not (self.show.air_by_date or self.show.sports):
                     if search_mode == 'sponly' and len(parse_result.episode_numbers):
@@ -308,13 +311,13 @@ class GenericProvider:
                             ep_obj.season) + ", ignoring", logger.DEBUG)
                         continue
                     elif len(parse_result.episode_numbers) and (
-                                    parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
+                                    parse_result.season_number != ep_obj.scene_season or ep_obj.episode not in parse_result.episode_numbers):
                         logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
                             ep_obj.episode) + ", skipping it", logger.DEBUG)
                         continue
 
                     # we just use the existing info for normal searches
-                    actual_season = season
+                    actual_season = ep_obj.season
                     actual_episodes = parse_result.episode_numbers
                 else:
                     if not (parse_result.air_by_date or parse_result.sports):

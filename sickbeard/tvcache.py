@@ -268,7 +268,7 @@ class TVCache():
         # if we don't have complete info then parse the filename to get it
         try:
             myParser = NameParser()
-            parse_result = myParser.parse(name).convert()
+            parse_result = myParser.parse(name)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
@@ -307,6 +307,9 @@ class TVCache():
             logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
             sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
             return None
+
+        # scene -> indexer numbering
+        parse_result = parse_result.convert(showObj)
 
         season = episodes = None
         if parse_result.air_by_date or parse_result.sports:
