@@ -940,7 +940,7 @@ class TVShow(object):
                     os.path.normpath(self.location)):
 
                 # check if downloaded files still exist, update our data if this has changed
-                if not SKIP_REMOVED_FILES:
+                if not sickbeard.SKIP_REMOVED_FILES:
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to IGNORED
                         if curEp.location and curEp.status in Quality.DOWNLOADED:

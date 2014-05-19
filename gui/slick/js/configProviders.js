@@ -63,12 +63,10 @@ $(document).ready(function(){
 
     }
 
-    $.fn.updateProvider = function (id, url, key, search_mode, search_fallback) {
+    $.fn.updateProvider = function (id, url, key) {
 
         newznabProviders[id][1][1] = url;
         newznabProviders[id][1][2] = key;
-        newznabProviders[id][1][3] = search_mode;
-        newznabProviders[id][1][4] = search_fallback;
 
         $(this).populateNewznabSection();
 
@@ -299,10 +297,8 @@ $(document).ready(function(){
 
         var url = $('#'+provider_id+'_url').val();
         var key = $(this).val();
-        var search_mode = $('#'+provider_id+'_search_mode').val();
-        var search_fallback = $('#'+provider_id+'_search_fallback').val();
 
-        $(this).updateProvider(provider_id, url, key, search_mode, search_fallback);
+        $(this).updateProvider(provider_id, url, key);
 
     });
 
@@ -315,10 +311,8 @@ $(document).ready(function(){
     
         var url = $('#newznab_url').val();
         var key = $('#newznab_key').val();
-        var search_mode = 'eponly';
-        var search_fallback = 0;
 
-        $(this).updateProvider(selectedProvider, url, key, search_mode, search_fallback);
+        $(this).updateProvider(selectedProvider, url, key);
 
     });
 
