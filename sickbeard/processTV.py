@@ -393,6 +393,8 @@ def delete_dir(processPath):
 
 
 def get_path_dir_files(dirName, nzbName, type):
+    path, dirs, files = None
+
     if dirName == sickbeard.TV_DOWNLOAD_DIR and not nzbName or type == "manual":  #Scheduled Post Processing Active
         #Get at first all the subdir in the dirName
         for path, dirs, files in ek.ek(os.walk, dirName):
@@ -416,6 +418,8 @@ def process_failed(dirName, nzbName):
     global returnStr
 
     if sickbeard.USE_FAILED_DOWNLOADS:
+        processor = None
+
         try:
             processor = failedProcessor.FailedProcessor(dirName, nzbName)
             process_result = processor.process()
@@ -424,7 +428,8 @@ def process_failed(dirName, nzbName):
             process_result = False
             process_fail_message = ex(e)
 
-        returnStr += processor.log
+        if processor:
+            returnStr += processor.log
 
         if sickbeard.DELETE_FAILED and process_result:
             delete_dir(dirName)

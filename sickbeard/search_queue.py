@@ -212,37 +212,36 @@ class FailedQueueItem(generic_queue.QueueItem):
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
-        for season in self.segment:
-            epObj = self.segment[season]
+        for season, episodes in self.segment.items():
+            for epObj in episodes:
+                (release, provider) = failed_history.findRelease(epObj)
+                if release:
+                    logger.log(u"Marking release as bad: " + release)
+                    failed_history.markFailed(epObj)
+                    failed_history.logFailed(release)
+                    history.logFailed(epObj, release, provider)
+                    failed_history.revertEpisode(epObj)
 
-            (release, provider) = failed_history.findRelease(epObj)
-            if release:
-                logger.log(u"Marking release as bad: " + release)
-                failed_history.markFailed(epObj)
-                failed_history.logFailed(release)
-                history.logFailed(epObj, release, provider)
-                failed_history.revertEpisode(epObj)
+                    logger.log(
+                        "Beginning failed download search for [" + epObj.prettyName() + "]")
+                    try:
+                        searchResult = search.searchProviders(self.show, season, [epObj], True)
 
-                logger.log(
-                    "Beginning failed download search for [" + epObj.prettyName() + "]")
-                try:
-                    searchResult = search.searchProviders(self.show, season, [epObj], True)
+                        # reset thread back to original name
+                        threading.currentThread().name = self.thread_name
 
-                    # reset thread back to original name
-                    threading.currentThread().name = self.thread_name
+                        if searchResult:
+                            for result in searchResult:
+                                # just use the first result for now
+                                logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                                search.snatchEpisode(result)
 
-                    if searchResult:
-                        for result in searchResult:
-                            # just use the first result for now
-                            logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-                            search.snatchEpisode(result)
+                                # give the CPU a break
+                                time.sleep(2)
 
-                            # give the CPU a break
-                            time.sleep(2)
-
-                    else:
-                        logger.log(u"No episodes found to retry for failed downloads return from providers!")
-                except Exception, e:
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+                        else:
+                            logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")
+                    except Exception, e:
+                        logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
