@@ -55,9 +55,7 @@ def logFailed(release):
 
     if len(sql_results) == 0:
         logger.log(
-            u"Release not found in snatch history. Recording it as bad with no size and no proivder.", logger.WARNING)
-        logger.log(
-            u"Future releases of the same name from providers that don't return size will be skipped.", logger.WARNING)
+            u"Release not found in snatch history.", logger.WARNING)
     elif len(sql_results) > 1:
         logger.log(u"Multiple logged snatches found for release", logger.WARNING)
         sizes = len(set(x["size"] for x in sql_results))
@@ -109,10 +107,9 @@ def hasFailed(release, size, provider="%"):
     myDB = db.DBConnection("failed.db")
     sql_results = myDB.select(
         "SELECT * FROM failed WHERE release=? AND size=? AND provider LIKE ?",
-        [prepareFailedName(release), size, provider])
+        [release, size, provider])
 
     return (len(sql_results) > 0)
-
 
 def revertEpisode(epObj):
     """Restore the episodes of a failed download to their original state"""
