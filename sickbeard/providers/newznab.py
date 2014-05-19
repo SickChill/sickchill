@@ -227,8 +227,31 @@ class NewznabProvider(generic.NZBProvider):
         results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in
                    cache_results]
 
-        for term in search_terms:
-            for item in self._doSearch({'q': term}, age=4):
+        index = 0
+        alt_search = ('nzbs_org' == self.getID())
+        term_items_found = False
+        do_search_alt = False
+
+        while index < len(search_terms):
+            search_params = {'q': search_terms[index]}
+            if alt_search:
+
+                if do_search_alt:
+                    index += 1
+
+                if term_items_found:
+                    do_search_alt = True
+                    term_items_found = False
+                else:
+                    if do_search_alt:
+                        search_params["t"] = "search"
+
+                    do_search_alt = (True, False)[do_search_alt]
+
+            else:
+                index += 1
+
+            for item in self._doSearch(search_params, age=4):
 
                 (title, url) = self._get_title_and_url(item)
 
@@ -243,6 +266,8 @@ class NewznabProvider(generic.NZBProvider):
                 if not search_date or result_date > search_date:
                     search_result = classes.Proper(title, url, result_date)
                     results.append(search_result)
+                    term_items_found = True
+                    do_search_alt = False
 
         return results
 
