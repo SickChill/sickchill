@@ -67,6 +67,13 @@ class SearchQueue(generic_queue.GenericQueue):
                 return True
         return False
 
+    def is_dailysearch_in_progress(self):
+        queue = [x for x in self.queue.queue] + [self.currentItem]
+        for cur_item in queue:
+            if isinstance(cur_item, DailySearchQueueItem):
+                return True
+        return False
+
     def add_item(self, item):
 
         if isinstance(item, DailySearchQueueItem) and not self.is_in_queue(item.show, item.segment):

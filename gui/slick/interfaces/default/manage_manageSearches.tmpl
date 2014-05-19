@@ -29,7 +29,16 @@ Currently running<br />
 
 <h3>Daily Search:</h3>
 <a class="btn" href="$sbRoot/manage/manageSearches/forceSearch"><i class="icon-exclamation-sign"></i> Force</a>
-#if not $searchStatus:
+#if not $dailySearchStatus:
+Not in progress<br />
+#else:
+In Progress<br />
+#end if
+<br />
+
+<h3>Find Propers Search:</h3>
+<a class="btn" href="$sbRoot/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> Force</a>
+#if not $findPropersStatus:
 Not in progress<br />
 #else:
 In Progress<br />

@@ -86,7 +86,7 @@ class SubtitlesFinder():
     The SubtitlesFinder will be executed every hour but will not necessarly search
     and download subtitles. Only if the defined rule is true
     """
-    def run(self):
+    def run(self, force=False):
         # TODO: Put that in the __init__ before starting the thread?
         if not sickbeard.USE_SUBTITLES:
             logger.log(u'Subtitles support disabled', logger.DEBUG)

@@ -26,7 +26,7 @@ from sickbeard import processTV
 
 
 class PostProcesser():
-    def run(self):
+    def run(self, force=False):
         if not sickbeard.PROCESS_AUTOMATICALLY:
             return
 

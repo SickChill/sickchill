@@ -44,6 +44,7 @@ class Scheduler:
         self.initThread()
 
         self.abort = False
+        self.force = False
 
     def initThread(self):
         if self.thread == None or not self.thread.isAlive():
@@ -55,6 +56,7 @@ class Scheduler:
     def forceRun(self):
         if not self.action.amActive:
             self.lastRun = datetime.datetime.fromordinal(1)
+            self.force = True
             return True
         return False
 
@@ -70,7 +72,7 @@ class Scheduler:
                     if not self.silent:
                         logger.log(u"Starting new thread: " + self.threadName, logger.DEBUG)
 
-                    self.action.run()
+                    self.action.run(self.force)
                 except Exception, e:
                     logger.log(u"Exception generated in thread " + self.threadName + ": " + ex(e), logger.ERROR)
                     logger.log(repr(traceback.format_exc()), logger.DEBUG)
@@ -79,5 +81,8 @@ class Scheduler:
                 self.abort = False
                 self.thread = None
                 return
+
+            if self.force:
+                self.force = False
 
             time.sleep(1)

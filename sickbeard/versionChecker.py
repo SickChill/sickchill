@@ -57,7 +57,7 @@ class CheckVersion():
         else:
             self.updater = None
 
-    def run(self):
+    def run(self, force=False):
         updated = None
         if self.check_for_new_version():
             if sickbeard.AUTO_UPDATE:

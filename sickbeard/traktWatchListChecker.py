@@ -32,7 +32,7 @@ class TraktChecker():
         self.todoWanted = []
         self.todoBacklog = []
 
-    def run(self):
+    def run(self, force=False):
         if sickbeard.TRAKT_USE_WATCHLIST:
             self.todoWanted = []  #its about to all get re-added
             if len(sickbeard.ROOT_DIRS.split('|')) < 2:

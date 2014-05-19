@@ -38,7 +38,9 @@ class DailySearcher():
 
         self.amActive = False
 
-    def run(self):
+    def run(self, force=False):
+
+        self.amActive = True
 
         # remove names from cache that link back to active shows that we watch
         sickbeard.name_cache.syncNameCache()

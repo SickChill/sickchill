@@ -19,6 +19,7 @@
 import time
 import datetime
 import operator
+import threading
 
 import sickbeard
 
@@ -37,6 +38,7 @@ from name_parser.parser import NameParser, InvalidNameException
 
 class ProperFinder():
     def __init__(self):
+        self.amActive = False
         self.updateInterval = datetime.timedelta(hours=1)
 
         check_propers_interval = {'15m': 15, '45m': 45, '90m': 90, '4h': 4*60, 'daily': 24*60}
@@ -44,7 +46,7 @@ class ProperFinder():
             if sickbeard.CHECK_PROPERS_INTERVAL == curInterval:
                 self.updateInterval = datetime.timedelta(minutes = check_propers_interval[curInterval])
 
-    def run(self):
+    def run(self, force=False):
 
         if not sickbeard.DOWNLOAD_PROPERS:
             return
@@ -57,16 +59,19 @@ class ProperFinder():
         hourDiff = datetime.datetime.today().time().hour - updateTime.hour
         dayDiff = (datetime.date.today() - self._get_lastProperSearch()).days
 
-        if sickbeard.CHECK_PROPERS_INTERVAL == "daily":
+        if sickbeard.CHECK_PROPERS_INTERVAL == "daily" and not force:
             # if it's less than an interval after the update time then do an update
             if not (hourDiff >= 0 and hourDiff < self.updateInterval.seconds / 3600 or dayDiff >= 1):
                 return
 
         logger.log(u"Beginning the search for new propers")
 
+        self.amActive = True
+
         propers = self._getProperList()
 
-        self._downloadPropers(propers)
+        if propers:
+            self._downloadPropers(propers)
 
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
@@ -76,15 +81,16 @@ class ProperFinder():
         else:
             logger.log(u"%sin ~%s" % (msg, sickbeard.CHECK_PROPERS_INTERVAL))
 
-    def _getProperList(self):
+        self.amActive = False
 
+    def _getProperList(self):
         propers = {}
 
-        # for each provider get a list of the propers
-        for curProvider in providers.sortedProviderList():
-
-            if not curProvider.isActive():
-                continue
+        # for each provider get a list of the
+        origThreadName = threading.currentThread().name
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+        for curProvider in providers:
+            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
             search_date = datetime.datetime.today() - datetime.timedelta(days=2)
 
@@ -97,25 +103,21 @@ class ProperFinder():
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
-                showObj = helpers.findCertainShow(sickbeard.showList, x.indexerid)
-                if not showObj:
-                    logger.log(u"Unable to find the show in our watch list " + str(x.name), logger.DEBUG)
-                    continue
-
                 name = self._genericName(x.name)
-
                 if not name in propers:
                     logger.log(u"Found new proper: " + x.name, logger.DEBUG)
                     x.provider = curProvider
                     propers[name] = x
 
+        # reset thread name back to original
+        threading.currentThread().name = origThreadName
+
         # take the list of unique propers and get it sorted by
         sortedPropers = sorted(propers.values(), key=operator.attrgetter('date'), reverse=True)
         finalPropers = []
-
         for curProper in sortedPropers:
+            in_cache = False
 
-            # parse the file name
             try:
                 myParser = NameParser(False)
                 parse_result = myParser.parse(curProper.name)
@@ -126,8 +128,37 @@ class ProperFinder():
             if not parse_result.series_name:
                 continue
 
+            cacheResult = sickbeard.name_cache.retrieveNameFromCache(parse_result.series_name)
+            if cacheResult:
+                in_cache = True
+                curProper.indexerid = int(cacheResult)
+            elif cacheResult == 0:
+                return None
+
             if not curProper.indexerid:
+                showResult = helpers.searchDBForShow(parse_result.series_name)
+                if showResult:
+                    curProper.indexerid = int(showResult[0])
+
+            if not curProper.indexerid:
+                for curShow in sickbeard.showList:
+                    if show_name_helpers.isGoodResult(curProper.name, curShow, False):
+                        curProper.indexerid = curShow.indexerid
+                        break
+
+            showObj = None
+            if curProper.indexerid:
+                showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
+
+            if not showObj:
+                sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
                 continue
+
+            if not in_cache:
+                sickbeard.name_cache.addNameToCache(parse_result.series_name, curProper.indexerid)
+
+            # scene numbering -> indexer numbering
+            parse_result = parse_result.convert(showObj)
 
             if not parse_result.episode_numbers:
                 logger.log(
@@ -135,14 +166,13 @@ class ProperFinder():
                     logger.DEBUG)
                 continue
 
-
             # populate our Proper instance
             if parse_result.air_by_date or parse_result.sports:
                 curProper.season = -1
                 curProper.episode = parse_result.air_date or parse_result.sports_event_date
             else:
-                curProper.scene_season = parse_result.season_number if parse_result.season_number != None else 1
-                curProper.scene_episode = parse_result.episode_numbers[0]
+                curProper.season = parse_result.season_number if parse_result.season_number != None else 1
+                curProper.episode = parse_result.episode_numbers[0]
 
             curProper.quality = Quality.nameQuality(curProper.name)
 
@@ -214,11 +244,6 @@ class ProperFinder():
                     logger.log(u"Unable to find episode with date " + str(
                         curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
                     continue
-            else:
-                # items stored in cache are scene numbered, convert before lookups
-                epObj = showObj.getEpisode(curProper.season, curProper.episode)
-                curProper.season = epObj.season
-                curProper.episode = epObj.episode
 
             # check if we actually want this proper (if it's the right quality)
             sqlResults = db.DBConnection().select(

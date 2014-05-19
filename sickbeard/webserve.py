@@ -206,7 +206,8 @@ class ManageSearches:
         #t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        t.searchStatus = sickbeard.dailySearchScheduler.action.amActive  # @UndefinedVariable
+        t.dailySearchStatus = sickbeard.searchQueueScheduler.action.is_dailysearch_in_progress()  # @UndefinedVariable
+        t.findPropersStatus = sickbeard.properFinderScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
 
@@ -231,7 +232,18 @@ class ManageSearches:
         result = sickbeard.dailySearchScheduler.forceRun()
         if result:
             logger.log(u"Daily search forced")
-            ui.notifications.message('Daily search for new releases started')
+            ui.notifications.message('Daily search started')
+
+        redirect("/manage/manageSearches/")
+
+    @cherrypy.expose
+    def forceFindPropers(self):
+
+        # force it to run the next time it looks
+        result = sickbeard.properFinderScheduler.forceRun()
+        if result:
+            logger.log(u"Find propers search forced")
+            ui.notifications.message('Find propers search started')
 
         redirect("/manage/manageSearches/")
 
