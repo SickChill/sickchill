@@ -434,7 +434,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 search_mode = 'eponly'
             else:
                 logger.log(u"FALLBACK SEASON PACK SEARCH INITIATED ...")
-                search_mode = 'eponly'
+                search_mode = 'sponly'
 
         # skip to next provider if we have no results to process
         if not len(foundResults[provider.name]):
