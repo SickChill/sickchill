@@ -53,6 +53,7 @@ class FailedProcessor(object):
             raise exceptions.FailedProcessingFailed()
 
         parser = NameParser(False)
+
         try:
             parsed = parser.parse(releaseName)
         except InvalidNameException:
@@ -75,7 +76,9 @@ class FailedProcessor(object):
                 logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
+        # scene -> indexer numbering
         parsed = parsed.convert(self._show_obj)
+
         segment = {parsed.season_number:[]}
         for episode in parsed.episode_numbers:
             epObj = self._show_obj.getEpisode(parsed.season_number, episode)
