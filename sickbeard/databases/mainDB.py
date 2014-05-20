@@ -29,6 +29,7 @@ from sickbeard.name_parser.parser import NameParser, InvalidNameException
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 31
 
+
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
         self.fix_missing_table_indexes()
@@ -129,13 +130,16 @@ class MainSanityCheck(db.DBSanityCheck):
         curDate = datetime.date.today()
 
         sqlResults = self.connection.select(
-            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status != ?", [curDate.toordinal(), common.UNAIRED])
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status not in (?,?,?,?,?)",
+            [curDate.toordinal(), common.UNAIRED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
+             common.SNATCHED_BEST])
 
         for cur_orphan in sqlResults:
             logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_orphan["episode_id"]) + " showid: " + str(
                 cur_orphan["showid"]), logger.DEBUG)
             logger.log(u"Fixing unaired episode status with episode_id: " + str(cur_orphan["episode_id"]))
-            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNAIRED, cur_orphan["episode_id"]])
+            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
+                                   [common.UNAIRED, cur_orphan["episode_id"]])
 
         else:
             logger.log(u"No UNAIRED episodes, check passed")
@@ -329,6 +333,7 @@ class RenameSeasonFolders(AddSizeAndSceneNameFields):
 
         self.incDBVersion()
 
+
 class Add1080pAndRawHDQualities(RenameSeasonFolders):
     """Add support for 1080p related qualities along with RawHD
 
@@ -463,6 +468,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         logger.log(u"Performing a vacuum on the database.", logger.DEBUG)
         self.connection.action("VACUUM")
 
+
 class AddShowidTvdbidIndex(Add1080pAndRawHDQualities):
     """ Adding index on tvdb_id (tv_shows) and showid (tv_episodes) to speed up searches/queries """
 
@@ -483,6 +489,7 @@ class AddShowidTvdbidIndex(Add1080pAndRawHDQualities):
 
         self.incDBVersion()
 
+
 class AddLastUpdateTVDB(AddShowidTvdbidIndex):
     """ Adding column last_update_tvdb to tv_shows for controlling nightly updates """
 
@@ -498,13 +505,14 @@ class AddLastUpdateTVDB(AddShowidTvdbidIndex):
 
         self.incDBVersion()
 
-class AddDBIncreaseTo15(AddLastUpdateTVDB):
 
+class AddDBIncreaseTo15(AddLastUpdateTVDB):
     def test(self):
         return self.checkDBVersion() >= 15
 
     def execute(self):
         self.incDBVersion()
+
 
 class AddIMDbInfo(AddDBIncreaseTo15):
     def test(self):
@@ -518,6 +526,7 @@ class AddIMDbInfo(AddDBIncreaseTo15):
             self.addColumn("tv_shows", "imdb_id")
 
         self.incDBVersion()
+
 
 class AddProperNamingSupport(AddIMDbInfo):
     def test(self):
@@ -535,6 +544,7 @@ class AddEmailSubscriptionTable(AddProperNamingSupport):
     def execute(self):
         self.addColumn('tv_shows', 'notify_list', 'TEXT', None)
         self.incDBVersion()
+
 
 class AddProperSearch(AddEmailSubscriptionTable):
     def test(self):
@@ -561,6 +571,7 @@ class AddDvdOrderOption(AddProperSearch):
 
         self.incDBVersion()
 
+
 class AddSubtitlesSupport(AddDvdOrderOption):
     def test(self):
         return self.checkDBVersion() >= 21
@@ -572,6 +583,7 @@ class AddSubtitlesSupport(AddDvdOrderOption):
             self.addColumn("tv_episodes", "subtitles_searchcount")
             self.addColumn("tv_episodes", "subtitles_lastsearch", "TIMESTAMP", str(datetime.datetime.min))
         self.incDBVersion()
+
 
 class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
     def test(self):
@@ -677,6 +689,7 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
 
         self.incDBVersion()
 
+
 class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
     def test(self):
         return self.checkDBVersion() >= 26
@@ -689,6 +702,7 @@ class AddArchiveFirstMatchOption(ConvertInfoToIndexerScheme):
             self.addColumn("tv_shows", "archive_firstmatch", "NUMERIC", "0")
 
         self.incDBVersion()
+
 
 class AddSceneNumbering(AddArchiveFirstMatchOption):
     def test(self):
@@ -726,6 +740,7 @@ class ConvertIndexerToInteger(AddSceneNumbering):
 
         self.incDBVersion()
 
+
 class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
     """ Adding column rls_require_words and rls_ignore_words to tv_shows """
 
@@ -745,6 +760,7 @@ class AddRequireAndIgnoreWords(ConvertIndexerToInteger):
 
         self.incDBVersion()
 
+
 class AddSportsOption(AddRequireAndIgnoreWords):
     def test(self):
         return self.checkDBVersion() >= 30
@@ -760,13 +776,16 @@ class AddSportsOption(AddRequireAndIgnoreWords):
             # update sports column
             logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.MESSAGE)
             ql = []
-            historyQuality = self.connection.select("SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")
+            historyQuality = self.connection.select(
+                "SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")
             for cur_entry in historyQuality:
-                ql.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?", [cur_entry["air_by_date"], cur_entry["show_id"]]])
+                ql.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?",
+                           [cur_entry["air_by_date"], cur_entry["show_id"]]])
                 ql.append(["UPDATE tv_shows SET air_by_date = 0 WHERE show_id = ?", [cur_entry["show_id"]]])
             self.connection.mass_action(ql)
 
         self.incDBVersion()
+
 
 class AddSceneNumberingToTvEpisodes(AddSportsOption):
     def test(self):
