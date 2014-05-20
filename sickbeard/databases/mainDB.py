@@ -130,16 +130,15 @@ class MainSanityCheck(db.DBSanityCheck):
         curDate = datetime.date.today()
 
         sqlResults = self.connection.select(
-            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status not in (?,?,?,?,?)",
-            [curDate.toordinal(), common.UNAIRED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER,
-             common.SNATCHED_BEST])
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status in (?,?)",
+            [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
-        for cur_orphan in sqlResults:
-            logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_orphan["episode_id"]) + " showid: " + str(
-                cur_orphan["showid"]), logger.DEBUG)
-            logger.log(u"Fixing unaired episode status with episode_id: " + str(cur_orphan["episode_id"]))
+        for cur_unaired in sqlResults:
+            logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_unaired["episode_id"]) + " showid: " + str(
+                cur_unaired["showid"]), logger.DEBUG)
+            logger.log(u"Fixing unaired episode status with episode_id: " + str(cur_unaired["episode_id"]))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
-                                   [common.UNAIRED, cur_orphan["episode_id"]])
+                                   [common.UNAIRED, cur_unaired["episode_id"]])
 
         else:
             logger.log(u"No UNAIRED episodes, check passed")
