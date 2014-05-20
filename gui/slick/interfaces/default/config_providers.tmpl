@@ -204,20 +204,27 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 </div>
 #end for
 
-                    <div class="providerDiv" id="omgwtfnzbsDiv">
+#for $curNzbProvider in [$curProvider for $curProvider in $sickbeard.providers.sortedProviderList() if $curProvider.providerType == $GenericProvider.NZB]:
+<div class="providerDiv" id="${curNzbProvider.getID()}Div">
+                        #if $hasattr($curNzbProvider, 'username'):
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">UserName:</span>
-                                <input class="component-desc" type="text" name="omgwtfnzbs_username" value="$sickbeard.OMGWTFNZBS_USERNAME" size="10" />
+                                <input class="component-desc" type="text" name="${curNzbProvider.getID()}_username" value="$curNzbProvider.username" size="40" />
                             </label>
                         </div>
+                        #end if
+
+                        #if $hasattr($curNzbProvider, 'api_key'):
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title">API Key:</span>
-                                <input class="component-desc" type="text" name="omgwtfnzbs_apikey" value="$sickbeard.OMGWTFNZBS_APIKEY" size="40" />
+                                <input class="component-desc" type="text" name="${curNzbProvider.getID()}_api_key" value="$curNzbProvider.api_key" size="40" />
                             </label>
                         </div>
-                    </div><!-- /omgwtfnzbsDiv //-->
+                        #end if
+</div>
+#end for
 
 #for $curTorrentProvider in [$curProvider for $curProvider in $sickbeard.providers.sortedProviderList() if $curProvider.providerType == $GenericProvider.TORRENT]:
 <div class="providerDiv" id="${curTorrentProvider.getID()}Div">
@@ -256,7 +263,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 						<div class="field-pair" style="margin-top: -2px !important;">
                             <label class="clearfix" >
                                 <span class="component-title" style="width: 130px !important;">Seeding Goal Ratio(%):</span>
-                                <input class="seed_option" type="text" id="tvtorrents_seed_ratio" size="5" style="margin-left: -5px !important;"/>
+                                    <input class="seed_option" type="text" id="tvtorrents_seed_ratio" size="5" style="margin-left: -5px !important;"/>
                             </label>
                         </div>
 						<div class="field-pair" style="margin-top: -10px !important;">

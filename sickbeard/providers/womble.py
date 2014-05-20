@@ -26,11 +26,12 @@ from sickbeard import tvcache
 class WombleProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "Womble's Index")
+        self.enabled = False
         self.cache = WombleCache(self)
         self.url = 'http://newshost.co.za/'
 
     def isEnabled(self):
-        return sickbeard.WOMBLE
+        return self.enabled
 
 
 class WombleCache(tvcache.TVCache):

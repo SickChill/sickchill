@@ -1562,11 +1562,13 @@ class ConfigProviders:
             provider_list.append(curProvider)
 
             # dynamically set providers enabled/disabled
-            for provider in sickbeard.providers.sortedProviderList():
+            providers = sickbeard.providers.sortedProviderList()
+            for provider in providers:
                 if provider.getID() != curProvider or not hasattr(provider, 'enabled'):
                     continue
 
                 provider.enabled = curEnabled
+                break
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
@@ -1656,8 +1658,20 @@ class ConfigProviders:
                 except:
                     curTorrentProvider.backlog_only = 0
 
-        sickbeard.OMGWTFNZBS_USERNAME = kwargs['omgwtfnzbs_username'].strip()
-        sickbeard.OMGWTFNZBS_APIKEY = kwargs['omgwtfnzbs_apikey'].strip()
+        for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
+                                   curProvider.providerType == sickbeard.GenericProvider.NZB]:
+
+            if hasattr(curNzbProvider, 'api_key'):
+                try:
+                    curNzbProvider.api_key = str(kwargs[curNzbProvider.getID() + '_api_key']).strip()
+                except:
+                    curNzbProvider.api_key = None
+
+            if hasattr(curNzbProvider, 'username'):
+                try:
+                    curNzbProvider.username = str(kwargs[curNzbProvider.getID() + '_username']).strip()
+                except:
+                    curNzbProvider.username = None
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list

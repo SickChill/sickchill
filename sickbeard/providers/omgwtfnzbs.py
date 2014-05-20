@@ -42,16 +42,19 @@ except ImportError:
 class OmgwtfnzbsProvider(generic.NZBProvider):
     def __init__(self):
         generic.NZBProvider.__init__(self, "omgwtfnzbs")
+        self.enabled = False
+        self.username = None
+        self.api_key = None
         self.cache = OmgwtfnzbsCache(self)
         self.url = 'https://omgwtfnzbs.org/'
         self.supportsBacklog = True
 
     def isEnabled(self):
-        return sickbeard.OMGWTFNZBS
+        return self.enabled
 
     def _checkAuth(self):
 
-        if not sickbeard.OMGWTFNZBS_USERNAME or not sickbeard.OMGWTFNZBS_APIKEY:
+        if not self.username or not self.api_key:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -98,8 +101,8 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
 
         self._checkAuth()
 
-        params = {'user': sickbeard.OMGWTFNZBS_USERNAME,
-                  'api': sickbeard.OMGWTFNZBS_APIKEY,
+        params = {'user': self.username,
+                  'api': self.api_key,
                   'eng': 1,
                   'catid': '19,20',  # SD,HD
                   'retention': sickbeard.USENET_RETENTION,
@@ -155,8 +158,8 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        params = {'user': sickbeard.OMGWTFNZBS_USERNAME,
-                  'api': sickbeard.OMGWTFNZBS_APIKEY,
+        params = {'user': provider.username,
+                  'api': provider.api_key,
                   'eng': 1,
                   'catid': '19,20'}  # SD,HD
 

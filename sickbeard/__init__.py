@@ -640,12 +640,6 @@ def initialize(consoleLogging=True):
         NEWZBIN_USERNAME = check_setting_str(CFG, 'Newzbin', 'newzbin_username', '')
         NEWZBIN_PASSWORD = check_setting_str(CFG, 'Newzbin', 'newzbin_password', '')
 
-        WOMBLE = bool(check_setting_int(CFG, 'Womble', 'womble', 0))
-
-        OMGWTFNZBS = bool(check_setting_int(CFG, 'omgwtfnzbs', 'omgwtfnzbs', 0))
-        OMGWTFNZBS_USERNAME = check_setting_str(CFG, 'omgwtfnzbs', 'omgwtfnzbs_username', '')
-        OMGWTFNZBS_APIKEY = check_setting_str(CFG, 'omgwtfnzbs', 'omgwtfnzbs_apikey', '')
-
         SAB_USERNAME = check_setting_str(CFG, 'SABnzbd', 'sab_username', '')
         SAB_PASSWORD = check_setting_str(CFG, 'SABnzbd', 'sab_password', '')
         SAB_APIKEY = check_setting_str(CFG, 'SABnzbd', 'sab_apikey', '')
@@ -1033,6 +1027,17 @@ def initialize(consoleLogging=True):
                 curTorrentProvider.backlog_only = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                          curTorrentProvider.getID() + '_backlog_only',
                                                                          0))
+
+        for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
+                               curProvider.providerType == GenericProvider.NZB]:
+            curNzbProvider.enabled = bool(
+                check_setting_int(CFG, curNzbProvider.getID().upper(), curNzbProvider.getID(), 0))
+            if hasattr(curNzbProvider, 'api_key'):
+                curNzbProvider.api_key = check_setting_str(CFG, curNzbProvider.getID().upper(),
+                                                           curNzbProvider.getID() + '_api_key', '')
+            if hasattr(curNzbProvider, 'username'):
+                curNzbProvider.username = check_setting_str(CFG, curNzbProvider.getID().upper(),
+                                                            curNzbProvider.getID() + '_username', '')
         try:
             url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
             clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
@@ -1426,6 +1431,18 @@ def save_config():
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_backlog_only'] = int(
                 curTorrentProvider.backlog_only)
 
+    for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
+                           curProvider.providerType == GenericProvider.NZB]:
+        new_config[curNzbProvider.getID().upper()] = {}
+        new_config[curNzbProvider.getID().upper()][curNzbProvider.getID()] = int(curNzbProvider.enabled)
+
+        if hasattr(curNzbProvider, 'api_key'):
+            new_config[curNzbProvider.getID().upper()][
+                curNzbProvider.getID() + '_api_key'] = curNzbProvider.api_key
+        if hasattr(curNzbProvider, 'username'):
+            new_config[curNzbProvider.getID().upper()][
+                curNzbProvider.getID() + '_username'] = curNzbProvider.username
+
     new_config['NZBs'] = {}
     new_config['NZBs']['nzbs'] = int(NZBS)
     new_config['NZBs']['nzbs_uid'] = NZBS_UID
@@ -1435,14 +1452,6 @@ def save_config():
     new_config['Newzbin']['newzbin'] = int(NEWZBIN)
     new_config['Newzbin']['newzbin_username'] = NEWZBIN_USERNAME
     new_config['Newzbin']['newzbin_password'] = helpers.encrypt(NEWZBIN_PASSWORD, ENCRYPTION_VERSION)
-
-    new_config['Womble'] = {}
-    new_config['Womble']['womble'] = int(WOMBLE)
-
-    new_config['omgwtfnzbs'] = {}
-    new_config['omgwtfnzbs']['omgwtfnzbs'] = int(OMGWTFNZBS)
-    new_config['omgwtfnzbs']['omgwtfnzbs_username'] = OMGWTFNZBS_USERNAME
-    new_config['omgwtfnzbs']['omgwtfnzbs_apikey'] = OMGWTFNZBS_APIKEY
 
     new_config['SABnzbd'] = {}
     new_config['SABnzbd']['sab_username'] = SAB_USERNAME
