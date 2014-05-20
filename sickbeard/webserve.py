@@ -1006,11 +1006,11 @@ class ConfigGeneral:
 
     @cherrypy.expose
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None, use_api=None, api_key=None,
+                    update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None,
+                    use_api=None, api_key=None,indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None,
-                    indexer_default=None, timezone_display=None, cpu_preset=None):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None):
 
         results = []
 
@@ -1573,6 +1573,18 @@ class ConfigProviders:
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                    curProvider.providerType == sickbeard.GenericProvider.TORRENT]:
+
+            if hasattr(curTorrentProvider, 'minseed'):
+                try:
+                    curTorrentProvider.minseed = int(str(kwargs[curTorrentProvider.getID() + '_minseed']).strip())
+                except:
+                    curTorrentProvider.minseed = 0
+
+            if hasattr(curTorrentProvider, 'minleech'):
+                try:
+                    curTorrentProvider.minleech = int(str(kwargs[curTorrentProvider.getID() + '_minleech']).strip())
+                except:
+                    curTorrentProvider.minleech = 0
 
             if hasattr(curTorrentProvider, 'ratio'):
                 try:

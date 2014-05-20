@@ -56,6 +56,8 @@ class PublicHDProvider(generic.TorrentProvider):
 
         self.enabled = False
         self.ratio = None
+        self.minseed = None
+        self.minleech = None
 
         self.cache = PublicHDCache(self)
 
@@ -173,7 +175,7 @@ class PublicHDProvider(generic.TorrentProvider):
                         except (AttributeError, TypeError):
                             continue
 
-                        if mode != 'RSS' and seeders == 0:
+                        if mode != 'RSS' and (seeders == 0 or seeders < self.minseed or leechers < self.minleech):
                             continue
 
                         if not title or not url:

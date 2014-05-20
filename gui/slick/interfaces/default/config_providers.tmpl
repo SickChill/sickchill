@@ -371,6 +371,24 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
+                        #if $hasattr($curTorrentProvider, 'minseed'):
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Min Seeders:</span>
+                                <input type="text" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'minleech'):
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Min Leechers:</span>
+                                <input type="text" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" size="40" />
+                            </label>
+                        </div>
+                        #end if
+
                         #if $hasattr($curTorrentProvider, 'proxy'):
                         <div class="field-pair">
                             <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" #if $curTorrentProvider.proxy.enabled then "checked=\"checked\"" else ""#/>

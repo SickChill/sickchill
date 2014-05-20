@@ -54,6 +54,8 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.enabled = False
         self.ratio = None
         self.confirmed = False
+        self.minseed = None
+        self.minleech = None
 
         self.cache = ThePirateBayCache(self)
 
@@ -245,7 +247,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     leechers = int(torrent.group('leechers'))
 
                     #Filter unseeded torrent
-                    if mode != 'RSS' and seeders == 0:
+                    if mode != 'RSS' and (seeders == 0 or seeders < self.minseed or leechers < self.minleech):
                         continue
 
                         #Accept Torrent only from Good People for every Episode Search

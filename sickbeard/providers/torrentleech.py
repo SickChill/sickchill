@@ -58,6 +58,8 @@ class TorrentLeechProvider(generic.TorrentProvider):
         self.username = None
         self.password = None
         self.ratio = None
+        self.minseed = None
+        self.minleech = None
 
         self.cache = TorrentLeechCache(self)
 
@@ -189,7 +191,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                             continue
 
                         #Filter unseeded torrent
-                        if mode != 'RSS' and seeders == 0:
+                        if mode != 'RSS' and (seeders == 0 or seeders < self.minseed or leechers < self.minleech):
                             continue
 
                         if not title or not download_url:

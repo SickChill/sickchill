@@ -59,6 +59,8 @@ class KATProvider(generic.TorrentProvider):
         self.enabled = False
         self.confirmed = False
         self.ratio = None
+        self.minseed = None
+        self.minleech = None
 
         self.cache = KATCache(self)
 
@@ -262,7 +264,7 @@ class KATProvider(generic.TorrentProvider):
                         except (AttributeError, TypeError):
                             continue
 
-                        if mode != 'RSS' and seeders == 0:
+                        if mode != 'RSS' and (seeders == 0 or seeders < self.minseed or leechers < self.minleech):
                             continue
 
                         if self.confirmed and not verified:

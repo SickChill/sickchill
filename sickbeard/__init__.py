@@ -1012,6 +1012,12 @@ def initialize(consoleLogging=True):
             if hasattr(curTorrentProvider, 'ratio'):
                 curTorrentProvider.ratio = float(check_setting_float(CFG, curTorrentProvider.getID().upper(),
                                                                      curTorrentProvider.getID() + '_ratio', 0))
+            if hasattr(curTorrentProvider, 'minseed'):
+                curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                     curTorrentProvider.getID() + '_minseed', 0)
+            if hasattr(curTorrentProvider, 'minleech'):
+                curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                     curTorrentProvider.getID() + '_minleech', 0)
             if hasattr(curTorrentProvider, 'freeleech'):
                 curTorrentProvider.freeleech = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                       curTorrentProvider.getID() + '_freeleech', 0))
@@ -1422,6 +1428,12 @@ def save_config():
         if hasattr(curTorrentProvider, 'ratio'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_ratio'] = float(
                 curTorrentProvider.ratio)
+        if hasattr(curTorrentProvider, 'minseed'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_minseed'] = int(
+                curTorrentProvider.minseed)
+        if hasattr(curTorrentProvider, 'minleech'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_minleech'] = int(
+                curTorrentProvider.minleech)
         if hasattr(curTorrentProvider, 'options'):
             new_config[curTorrentProvider.getID().upper()][
                 curTorrentProvider.getID() + '_options'] = curTorrentProvider.options
