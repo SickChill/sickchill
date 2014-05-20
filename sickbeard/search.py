@@ -353,10 +353,10 @@ def searchForNeededEpisodes(episodes):
                 continue
 
             # find the best result for the current episode
-            bestResult = None
-            for curResult in curFoundResults[curEp]:
-                if not bestResult or bestResult.quality < curResult.quality:
-                    bestResult = curResult
+            #bestResult = None
+            #for curResult in curFoundResults[curEp]:
+            #    if not bestResult or bestResult.quality < curResult.quality:
+            #        bestResult = curResult
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 

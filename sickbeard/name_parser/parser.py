@@ -159,9 +159,8 @@ class NameParser(object):
             if 'extra_info' in named_groups:
                 tmp_extra_info = match.group('extra_info')
 
-                # Show.S04.Special is almost certainly not every episode in the season
-                if tmp_extra_info and cur_regex_name == 'season_only' and re.match(
-                        r'([. _-]|^)(special|extra)\w*([. _-]|$)', tmp_extra_info, re.I):
+                # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
+                if tmp_extra_info and cur_regex_name == 'season_only' and re.search(r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
                     continue
                 result.extra_info = tmp_extra_info
 

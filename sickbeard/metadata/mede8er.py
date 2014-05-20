@@ -187,9 +187,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             IMDB_ID.attrib["moviedb"] = "imdb"
             IMDB_ID.text = myShow['imdb_id']
 
-        tvdbid = etree.SubElement(tv_node, "indexerid")
+        indexerid = etree.SubElement(tv_node, "indexerid")
         if myShow['id'] != None:
-            tvdbid.text = myShow['id']
+            indexerid.text = myShow['id']
 
         Runtime = etree.SubElement(tv_node, "runtime")
         if myShow['runtime'] != None:
