@@ -54,7 +54,7 @@ from sickbeard import failedProcessor
 from sickbeard import network_timezones
 
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings
+from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
@@ -3114,7 +3114,7 @@ class Home:
             ui.notifications.error("Unable to refresh this show.",
                                    ex(e))
 
-        time.sleep(3)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
@@ -3137,7 +3137,7 @@ class Home:
                                    ex(e))
 
         # just give it some time
-        time.sleep(3)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
@@ -3155,7 +3155,7 @@ class Home:
         # search and download subtitles
         sickbeard.showQueueScheduler.action.downloadSubtitles(showObj, bool(force))  # @UndefinedVariable
 
-        time.sleep(3)
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         redirect("/home/displayShow?show=" + str(showObj.indexerid))
 

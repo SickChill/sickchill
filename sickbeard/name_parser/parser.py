@@ -99,8 +99,6 @@ class NameParser(object):
 
         for (cur_regex_name, cur_regex) in self.compiled_regexes:
 
-            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
             match = cur_regex.match(name)
 
             if not match:

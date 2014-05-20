@@ -29,6 +29,7 @@ import sickbeard
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
+from sickbeard.common import cpu_presets
 
 db_lock = threading.Lock()
 
@@ -99,7 +100,7 @@ class DBConnection:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(1)
+                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -140,7 +141,7 @@ class DBConnection:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(1)
+                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -178,7 +179,7 @@ class DBConnection:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(1)
+                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise

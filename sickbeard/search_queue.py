@@ -43,11 +43,9 @@ class SearchQueue(generic_queue.GenericQueue):
         self.queue_name = "SEARCHQUEUE"
 
     def is_in_queue(self, show, segment):
-        queue =  [x for x in self.queue.queue] + [self.currentItem]
-        for cur_item in queue:
-            if cur_item:
-                if cur_item.show == show and cur_item.segment == segment:
-                    return True
+        for cur_item in self.queue:
+            if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
+                return True
         return False
 
     def pause_backlog(self):
@@ -61,15 +59,13 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_backlog_in_progress(self):
-        queue = [x for x in self.queue.queue] + [self.currentItem]
-        for cur_item in queue:
+        for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, BacklogQueueItem):
                 return True
         return False
 
     def is_dailysearch_in_progress(self):
-        queue = [x for x in self.queue.queue] + [self.currentItem]
-        for cur_item in queue:
+        for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 return True
         return False
@@ -113,7 +109,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
                 search.snatchEpisode(result)
 
                 # give the CPU a break
-                time.sleep(2)
+                time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
         generic_queue.QueueItem.finish(self)
 
@@ -142,7 +138,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 self.success = search.snatchEpisode(searchResult[0])
 
                 # give the CPU a break
-                time.sleep(2)
+                time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
             else:
                 ui.notifications.message('No downloads were found',
@@ -190,7 +186,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                         search.snatchEpisode(result)
 
                         # give the CPU a break
-                        time.sleep(2)
+                        time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
                 else:
                     logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
@@ -237,7 +233,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                                 search.snatchEpisode(result)
 
                                 # give the CPU a break
-                                time.sleep(2)
+                                time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
                         else:
                             logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")

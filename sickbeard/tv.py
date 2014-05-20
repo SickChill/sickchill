@@ -862,6 +862,7 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
+
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
         myDB = db.DBConnection()
@@ -872,7 +873,8 @@ class TVShow(object):
         sqlResults = myDB.select(query, params)
 
         if sqlResults == None or len(sqlResults) == 0:
-            logger.log(str(self.indexerid) + u": No episode found... need to implement show status", logger.DEBUG)
+            logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
+                       logger.DEBUG)
             return []
         else:
             logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
