@@ -67,6 +67,15 @@ def getNewznabProviderList(data):
     defaultList = [makeNewznabProvider(x) for x in getDefaultNewznabProviders().split('!!!')]
     providerList = filter(lambda x: x, [makeNewznabProvider(x) for x in data.split('!!!')])
 
+    seen_values = set()
+    providerListDeduped = []
+    for d in providerList:
+        value = d.name
+        if value not in seen_values:
+            providerListDeduped.append(d)
+            seen_values.add(value)
+
+    providerList = providerListDeduped
     providerDict = dict(zip([x.name for x in providerList], providerList))
 
     for curDefault in defaultList:

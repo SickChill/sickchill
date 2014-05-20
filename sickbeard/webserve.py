@@ -81,15 +81,19 @@ except ImportError:
 
 from sickbeard import browser
 
+
 def _handle_reverse_proxy():
     if sickbeard.HANDLE_REVERSE_PROXY:
         cherrypy.lib.cptools.proxy()
 
+
 cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
+
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
-        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",KWs['file'])
+        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
+                                   KWs['file'])
         super(PageTemplate, self).__init__(*args, **KWs)
         self.sbRoot = sickbeard.WEB_ROOT
         self.sbHttpPort = sickbeard.WEB_PORT
@@ -864,9 +868,9 @@ class History:
         for sql_result in sqlResults:
 
             if not any((history['show_id'] == sql_result['showid']
-                                and history['season'] == sql_result['season']
-                                and history['episode'] == sql_result['episode']
-                                and history['quality'] == sql_result['quality'])
+                        and history['season'] == sql_result['season']
+                        and history['episode'] == sql_result['episode']
+                        and history['quality'] == sql_result['quality'])
                        for history in compact):
 
                 history = {}
@@ -1007,7 +1011,7 @@ class ConfigGeneral:
     @cherrypy.expose
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None,
-                    use_api=None, api_key=None,indexer_default=None, timezone_display=None, cpu_preset=None,
+                    use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
                     anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None):
@@ -1219,7 +1223,7 @@ class ConfigPostProcessing:
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
-        
+
         sickbeard.METADATA_XBMC = xbmc_data
         sickbeard.METADATA_XBMC_12PLUS = xbmc_12plus_data
         sickbeard.METADATA_MEDIABROWSER = mediabrowser_data
@@ -1629,13 +1633,15 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'confirmed'):
                 try:
-                    curTorrentProvider.confirmed = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_confirmed'])
+                    curTorrentProvider.confirmed = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_confirmed'])
                 except:
                     curTorrentProvider.confirmed = 0
 
             if hasattr(curTorrentProvider, 'proxy'):
                 try:
-                    curTorrentProvider.proxy.enabled = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_proxy'])
+                    curTorrentProvider.proxy.enabled = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_proxy'])
                 except:
                     curTorrentProvider.proxy.enabled = 0
 
@@ -1647,7 +1653,8 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'freeleech'):
                 try:
-                    curTorrentProvider.freeleech = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_freeleech'])
+                    curTorrentProvider.freeleech = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_freeleech'])
                 except:
                     curTorrentProvider.freeleech = 0
 
@@ -1659,18 +1666,20 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'search_fallback'):
                 try:
-                    curTorrentProvider.search_fallback = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_search_fallback'])
+                    curTorrentProvider.search_fallback = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_search_fallback'])
                 except:
                     curTorrentProvider.search_fallback = 0
 
             if hasattr(curTorrentProvider, 'backlog_only'):
                 try:
-                    curTorrentProvider.backlog_only = config.checkbox_to_value(kwargs[curTorrentProvider.getID() + '_backlog_only'])
+                    curTorrentProvider.backlog_only = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_backlog_only'])
                 except:
                     curTorrentProvider.backlog_only = 0
 
         for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
-                                   curProvider.providerType == sickbeard.GenericProvider.NZB]:
+                               curProvider.providerType == sickbeard.GenericProvider.NZB]:
 
             if hasattr(curNzbProvider, 'api_key'):
                 try:
@@ -1679,7 +1688,7 @@ class ConfigProviders:
                     curNzbProvider.api_key = None
 
             if hasattr(curNzbProvider, 'username'):
-                try:    
+                try:
                     curNzbProvider.username = str(kwargs[curNzbProvider.getID() + '_username']).strip()
                 except:
                     curNzbProvider.username = None
@@ -1689,14 +1698,14 @@ class ConfigProviders:
                     curNzbProvider.search_mode = str(kwargs[curNzbProvider.getID() + '_search_mode']).strip()
                 except:
                     curNzbProvider.search_mode = 'eponly'
-    
+
             if hasattr(curNzbProvider, 'search_fallback'):
                 try:
                     curNzbProvider.search_fallback = config.checkbox_to_value(
                         kwargs[curNzbProvider.getID() + '_search_fallback'])
                 except:
                     curNzbProvider.search_fallback = 0
-    
+
             if hasattr(curNzbProvider, 'backlog_only'):
                 try:
                     curNzbProvider.backlog_only = config.checkbox_to_value(
@@ -1728,7 +1737,8 @@ class ConfigNotifications:
         return _munge(t)
 
     @cherrypy.expose
-    def saveNotifications(self, use_xbmc=None, xbmc_always_on=None, xbmc_notify_onsnatch=None, xbmc_notify_ondownload=None,
+    def saveNotifications(self, use_xbmc=None, xbmc_always_on=None, xbmc_notify_onsnatch=None,
+                          xbmc_notify_ondownload=None,
                           xbmc_notify_onsubtitledownload=None, xbmc_update_onlyfirst=None,
                           xbmc_update_library=None, xbmc_update_full=None, xbmc_host=None, xbmc_username=None,
                           xbmc_password=None,
@@ -2042,7 +2052,8 @@ class HomePostProcess:
         return _munge(t)
 
     @cherrypy.expose
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto"):
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
+                       is_priority=None, failed="0", type="auto"):
 
         if failed == "0":
             failed = False
@@ -2062,7 +2073,8 @@ class HomePostProcess:
         if not dir:
             redirect("/home/postprocess/")
         else:
-            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force, is_priority=is_priority, failed=failed, type=type)
+            result = processTV.processDir(dir, nzbName, process_method=process_method, force=force,
+                                          is_priority=is_priority, failed=failed, type=type)
             if quiet is not None and int(quiet) == 1:
                 return result
 
@@ -2109,13 +2121,13 @@ class NewHomeAddShows:
             lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            logger.log("Searching for Show with searchterm: %s on Indexer: %s" % (search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+            logger.log("Searching for Show with searchterm: %s on Indexer: %s" % (
+            search_term, sickbeard.indexerApi(indexer).name), logger.DEBUG)
             try:
                 # add search results
                 results.setdefault(indexer, []).extend(t[search_term])
             except Exception, e:
                 continue
-
 
         map(final_results.extend,
             ([[sickbeard.indexerApi(id).name, id, sickbeard.indexerApi(id).config["show_url"], int(show['id']),
@@ -2189,7 +2201,7 @@ class NewHomeAddShows:
 
                 # default to TVDB if indexer was not detected
                 if show_name and not (indexer and indexer_id):
-                    (sn,idx,id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
+                    (sn, idx, id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
 
                     # set indexer and indexer_id from found info
                     if indexer is None and idx:
@@ -2301,7 +2313,8 @@ class NewHomeAddShows:
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.log("Unable to add show due to show selection. Not anough arguments: %s" % (repr(series_pieces)), logger.ERROR)
+                logger.log("Unable to add show due to show selection. Not anough arguments: %s" % (repr(series_pieces)),
+                           logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
                 redirect('/home/addShows/existingShows/')
             indexer = int(series_pieces[1])
@@ -2982,7 +2995,8 @@ class Home:
     @cherrypy.expose
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
-                 indexerLang=None,subtitles=None, archive_firstmatch=None, rls_ignore_words=None, rls_require_words=None):
+                 indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
+                 rls_require_words=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -3569,6 +3583,7 @@ class Home:
 
         return json.dumps({'result': 'failure'})
 
+
 class UI:
     @cherrypy.expose
     def add_message(self):
@@ -3811,13 +3826,16 @@ class WebInterface:
 
             for episode in episode_list:
 
-                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"], show['network']).astimezone(utc)
-                air_date_time_end = air_date_time + datetime.timedelta(minutes=helpers.tryInt(show["runtime"],60))
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
+                                                                  show['network']).astimezone(utc)
+                air_date_time_end = air_date_time + datetime.timedelta(minutes=helpers.tryInt(show["runtime"], 60))
 
                 # Create event for episode
                 ical = ical + 'BEGIN:VEVENT\r\n'
-                ical = ical + 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime("%H%M%S") + 'Z\r\n'
-                ical = ical + 'DTEND:' + air_date_time_end.strftime("%Y%m%d") + 'T' + air_date_time_end.strftime("%H%M%S") + 'Z\r\n'
+                ical = ical + 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime(
+                    "%H%M%S") + 'Z\r\n'
+                ical = ical + 'DTEND:' + air_date_time_end.strftime("%Y%m%d") + 'T' + air_date_time_end.strftime(
+                    "%H%M%S") + 'Z\r\n'
                 ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
                     'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
