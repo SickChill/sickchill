@@ -201,6 +201,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
+
 </div>
 #end for
 
@@ -223,6 +224,52 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
+
+                        #if $hasattr($curNewznabProvider, 'backlog_only'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curNzbProvider.getID()}_backlog_only" id="${curNzbProvider.getID()}_backlog_only" #if $curNzbProvider.backlog_only then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNzbProvider.getID()}_backlog_only">
+                                <span class="component-title">Backlog Only</span>
+                                <span class="component-desc">
+                                Sets the provider to only be used for<br>
+                                backlog searches.</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curNzbProvider, 'search_fallback'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" #if $curNzbProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNzbProvider.getID()}_search_fallback">
+                                <span class="component-title">Season Search Fallback</span>
+                                <span class="component-desc">
+                                When searching for a complete season<br>
+                                depending on search mode you may return<br>
+                                no results, this helps by restarting the<br>
+                                search using the opposite search mode.</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curNzbProvider, 'search_mode'):
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Season Search Mode</span>
+                                <span class="component-desc">
+                                When searching for complete seasons<br>
+                                you can choose to have it look for season<br>
+                                packs ONLY or choose to have it build a<br>
+                                complete season from just single episodes.</span>
+
+                                    <span class="component-title"></span>
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                    <span class="component-title"></span>
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                </span>
+                            </label>
+                        </div>
+                        #end if
+
 </div>
 #end for
 

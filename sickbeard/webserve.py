@@ -1668,10 +1668,30 @@ class ConfigProviders:
                     curNzbProvider.api_key = None
 
             if hasattr(curNzbProvider, 'username'):
-                try:
+                try:    
                     curNzbProvider.username = str(kwargs[curNzbProvider.getID() + '_username']).strip()
                 except:
                     curNzbProvider.username = None
+
+            if hasattr(curNzbProvider, 'search_mode'):
+                try:
+                    curNzbProvider.search_mode = str(kwargs[curNzbProvider.getID() + '_search_mode']).strip()
+                except:
+                    curNzbProvider.search_mode = 'eponly'
+    
+            if hasattr(curNzbProvider, 'search_fallback'):
+                try:
+                    curNzbProvider.search_fallback = config.checkbox_to_value(
+                        kwargs[curNzbProvider.getID() + '_search_fallback'])
+                except:
+                    curNzbProvider.search_fallback = 0
+    
+            if hasattr(curNzbProvider, 'backlog_only'):
+                try:
+                    curNzbProvider.backlog_only = config.checkbox_to_value(
+                        kwargs[curNzbProvider.getID() + '_backlog_only'])
+                except:
+                    curNzbProvider.backlog_only = 0
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list

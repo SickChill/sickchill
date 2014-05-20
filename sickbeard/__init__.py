@@ -1038,6 +1038,19 @@ def initialize(consoleLogging=True):
             if hasattr(curNzbProvider, 'username'):
                 curNzbProvider.username = check_setting_str(CFG, curNzbProvider.getID().upper(),
                                                             curNzbProvider.getID() + '_username', '')
+            if hasattr(curNzbProvider, 'search_mode'):
+                curNzbProvider.search_mode = check_setting_str(CFG, curNzbProvider.getID().upper(),
+                                                                   curNzbProvider.getID() + '_search_mode',
+                                                                   'eponly')
+            if hasattr(curNzbProvider, 'search_fallback'):
+                curNzbProvider.search_fallback = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
+                                                                            curNzbProvider.getID() + '_search_fallback',
+                                                                            0))
+            if hasattr(curNzbProvider, 'backlog_only'):
+                curNzbProvider.backlog_only = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
+                                                                         curNzbProvider.getID() + '_backlog_only',
+                                                                         0))
+
         try:
             url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
             clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
@@ -1442,6 +1455,15 @@ def save_config():
         if hasattr(curNzbProvider, 'username'):
             new_config[curNzbProvider.getID().upper()][
                 curNzbProvider.getID() + '_username'] = curNzbProvider.username
+        if hasattr(curNzbProvider, 'search_mode'):
+            new_config[curNzbProvider.getID().upper()][
+                curNzbProvider.getID() + '_search_mode'] = curNzbProvider.search_mode
+        if hasattr(curNzbProvider, 'search_fallback'):
+            new_config[curNzbProvider.getID().upper()][curNzbProvider.getID() + '_search_fallback'] = int(
+                curNzbProvider.search_fallback)
+        if hasattr(curNzbProvider, 'backlog_only'):
+            new_config[curNzbProvider.getID().upper()][curNzbProvider.getID() + '_backlog_only'] = int(
+                curNzbProvider.backlog_only)
 
     new_config['NZBs'] = {}
     new_config['NZBs']['nzbs'] = int(NZBS)
