@@ -70,8 +70,6 @@ class uTorrentAPI(GenericClient):
         ratio = ''
         if result.ratio:
             ratio = result.ratio
-        elif sickbeard.TORRENT_RATIO:
-            ratio = sickbeard.TORRENT_RATIO
         else:
             return True
 
