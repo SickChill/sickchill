@@ -323,8 +323,6 @@ class NewznabCache(tvcache.TVCache):
                     if ci is not None:
                         ql.append(ci)
 
-                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
                 myDB = self._getDB()
                 myDB.mass_action(ql)
 

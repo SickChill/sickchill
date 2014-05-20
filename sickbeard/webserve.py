@@ -3101,14 +3101,14 @@ class Home:
         if do_update:
             try:
                 sickbeard.showQueueScheduler.action.updateShow(showObj, True)  # @UndefinedVariable
-                time.sleep(1)
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on the show.")
 
         if do_update_exceptions:
             try:
                 scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVariable
-                time.sleep(1)
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
@@ -3454,7 +3454,7 @@ class Home:
 
         # wait until the queue item tells us whether it worked or not
         while ep_queue_item.success is None:  # @UndefinedVariable
-            time.sleep(1)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         # return the correct json value
         if ep_queue_item.success:
@@ -3551,7 +3551,7 @@ class Home:
 
         # wait until the queue item tells us whether it worked or not
         while ep_queue_item.success is None:  # @UndefinedVariable
-            time.sleep(1)
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         # return the correct json value
         if ep_queue_item.success:
