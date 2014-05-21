@@ -114,7 +114,8 @@ def makeNewznabProvider(configString):
 
     newznab = sys.modules['sickbeard.providers.newznab']
 
-    newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode, search_fallback=search_fallback)
+    newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode,
+                                          search_fallback=search_fallback)
     newProvider.enabled = enabled == '1'
 
     return newProvider
@@ -122,6 +123,15 @@ def makeNewznabProvider(configString):
 
 def getTorrentRssProviderList(data):
     providerList = filter(lambda x: x, [makeTorrentRssProvider(x) for x in data.split('!!!')])
+
+    seen_values = set()
+    providerListDeduped = []
+    for d in providerList:
+        value = d.name
+        if value not in seen_values:
+            providerListDeduped.append(d)
+            seen_values.add(value)
+
     return filter(lambda x: x, providerList)
 
 
@@ -129,11 +139,22 @@ def makeTorrentRssProvider(configString):
     if not configString:
         return None
 
-    name, url, enabled = configString.split('|')
+    search_mode = 'eponly'
+    search_fallback = 0
+    backlog_only = 0
+
+    try:
+        name, url, enabled, search_mode, search_fallback, backlog_only = configString.split('|')
+    except ValueError:
+        try:
+            name, url, enabled = configString.split('|')
+        except ValueError:
+            logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format", logger.ERROR)
+            return None
 
     torrentRss = sys.modules['sickbeard.providers.rsstorrent']
 
-    newProvider = torrentRss.TorrentRssProvider(name, url)
+    newProvider = torrentRss.TorrentRssProvider(name, url, search_mode, search_fallback, backlog_only)
     newProvider.enabled = enabled == '1'
 
     return newProvider

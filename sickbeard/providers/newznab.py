@@ -53,11 +53,6 @@ class NewznabProvider(generic.NZBProvider):
         self.search_mode = search_mode
         self.search_fallback = search_fallback
 
-        if self.search_fallback == '0':
-            self.search_fallback = False
-        else:
-            self.search_fallback = True
-
         # a 0 in the key spot indicates that no key is needed
         if self.key == '0':
             self.needs_auth = False

@@ -35,15 +35,20 @@ from lib.requests import exceptions
 from lib.bencode import bdecode
 
 class TorrentRssProvider(generic.TorrentProvider):
-    def __init__(self, name, url):
+    def __init__(self, name, url, search_mode='eponly', search_fallback=False, backlog_only=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
-        self.url = re.sub('\/$', '', url)
+        #self.url = re.sub('\/$', '', url)
+        self.url = url
         self.enabled = True
         self.supportsBacklog = False
 
+        self.search_mode = search_mode
+        self.search_fallback = search_fallback
+        self.backlog_only = backlog_only
+
     def configStr(self):
-        return self.name + '|' + self.url + '|' + str(int(self.enabled))
+        return self.name + '|' + self.url + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
 
     def imageName(self):
         if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
@@ -164,5 +169,5 @@ class TorrentRssCache(tvcache.TVCache):
             logger.log(u"The XML returned from the RSS feed is incomplete, this result is unusable", logger.ERROR)
             return None
 
-        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
+        logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url)
