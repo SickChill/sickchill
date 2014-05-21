@@ -41,11 +41,10 @@ $(document).ready(function () {
         var searchingFor = $('#nameToSearch').val() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
         $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
-        var indexerTimeout = parseInt($('#indexer_timeout').val(), 10);
         searchRequestXhr = $.ajax({
             url: sbRoot + '/home/addShows/searchIndexersForShowName',
             data: {'search_term': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
-            timeout: indexerTimeout * 1000,
+            timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
             dataType: 'json',
             error: function () {
                 $('#searchResults').empty().html('search timed out, try again or try another indexer');

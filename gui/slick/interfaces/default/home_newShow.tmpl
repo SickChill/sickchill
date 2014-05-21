@@ -30,7 +30,7 @@
     <legend class="legendStep">Find a show on the TVDB or TVRAGE</legend>
 
     <div class="stepDiv">
-        <input type="hidden" name="indexer_timeout" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" />
+        <input type="hidden" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" />
 
         #if $use_provided_info:
             Show retrieved from existing metadata: <a href="$sickbeard.indexerApi($provided_indexer).config["show_url"]$provided_indexer_id">$provided_indexer_name</a>
