@@ -26,10 +26,7 @@ import re
 import threading
 import datetime
 import random
-import locale
 import logging
-import itertools
-import operator
 
 from Cheetah.Template import Template
 import cherrypy
@@ -1192,7 +1189,7 @@ class ConfigPostProcessing:
                            move_associated_files=None, tv_download_dir=None, naming_custom_abd=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
-                           naming_custom_sports=None, naming_sports_pattern=None):
+                           naming_custom_sports=None, naming_sports_pattern=None, autopostprocesser_frequency=None):
 
         results = []
 
@@ -1200,6 +1197,7 @@ class ConfigPostProcessing:
             results += ["Unable to create directory " + os.path.normpath(tv_download_dir) + ", dir not changed."]
 
         sickbeard.PROCESS_AUTOMATICALLY = config.checkbox_to_value(process_automatically)
+        config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
 
         if sickbeard.PROCESS_AUTOMATICALLY:
             sickbeard.autoPostProcesserScheduler.silent = False
