@@ -159,6 +159,7 @@ STATUS_DEFAULT = None
 FLATTEN_FOLDERS_DEFAULT = None
 SUBTITLES_DEFAULT = None
 INDEXER_DEFAULT = None
+INDEXER_TIMEOUT = None
 PROVIDER_ORDER = []
 
 NAMING_MULTI_EP = None
@@ -430,7 +431,7 @@ def initialize(consoleLogging=True):
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, USENET_RETENTION, TORRENT_DIR, \
+            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, DAILYSEARCH_STARTUP, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, \
             USE_GROWL, GROWL_HOST, GROWL_PASSWORD, USE_PROWL, PROWL_NOTIFY_ONSNATCH, PROWL_NOTIFY_ONDOWNLOAD, PROWL_NOTIFY_ONSUBTITLEDOWNLOAD, PROWL_API, PROWL_PRIORITY, PROG_DIR, \
@@ -567,6 +568,7 @@ def initialize(consoleLogging=True):
         AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 0)
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
+        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 10)
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 
@@ -1349,6 +1351,7 @@ def save_config():
     new_config['General']['status_default'] = int(STATUS_DEFAULT)
     new_config['General']['flatten_folders_default'] = int(FLATTEN_FOLDERS_DEFAULT)
     new_config['General']['indexer_default'] = int(INDEXER_DEFAULT)
+    new_config['General']['indexer_timeout'] = int(INDEXER_TIMEOUT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)

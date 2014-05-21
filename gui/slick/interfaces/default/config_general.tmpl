@@ -121,10 +121,21 @@
                                 </span>
                             </label>
                         </div>
-                        
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Indexer Timeout:</span>
+                                <input type="text" name="indexer_timeout" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" size="5" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Time in seconds before Indexer search times out for adding shows (eg. 10)</span>
+                            </label>
+                        </div>
+
                         <div class="field-pair">
                             <label class="nocheck clearfix" for="log_dir">
-                                <span class="component-title">Logging Directory</span>
+                                <span class="component-title">Logging Director:y</span>
                                 <input type="text" name="log_dir" id="log_dir" value="$sickbeard.ACTUAL_LOG_DIR" size="40" />
                             </label>
                         </div>
@@ -132,7 +143,7 @@
                         <div class="field-pair">
                             <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" #if $sickbeard.HANDLE_REVERSE_PROXY then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="handle_reverse_proxy">
-                                <span class="component-title">Handle reverse proxies</span>
+                                <span class="component-title">Handle reverse proxies:</span>
                                 <span class="component-desc">Should Sick Beard accept reverse proxy headers? (X-Forwarded-Host, X-Forwarded-For, X-Forwarded-Proto)</span>
                             </label>
                         </div>

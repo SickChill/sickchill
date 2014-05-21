@@ -1014,7 +1014,8 @@ class ConfigGeneral:
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None):
+                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None,
+                    indexer_timeout=None):
 
         results = []
 
@@ -1047,6 +1048,9 @@ class ConfigGeneral:
 
         if indexer_default:
             sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)
+
+        if indexer_timeout:
+            sickbeard.INDEXER_TIMEOUT = config.to_int(indexer_timeout)
 
         if time_preset:
             sickbeard.TIME_PRESET_W_SECONDS = time_preset
