@@ -170,9 +170,10 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
         returnStr += logHelper(u"The directory name indicates that it was previously rejected for being undersized.",
                                logger.DEBUG)
         failed = True
-    elif ek.ek(os.path.basename, dirName).startswith('_UNPACK_'):
+    elif ek.ek(os.path.basename, dirName).upper().startswith('_UNPACK'):
         returnStr += logHelper(u"The directory name indicates that this release is in the process of being unpacked.",
                                logger.DEBUG)
+        return False
 
     if failed:
         process_failed(os.path.join(path, dirName), nzbNameOriginal)
