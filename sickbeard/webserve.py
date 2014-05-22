@@ -3561,8 +3561,11 @@ class Home:
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
+        # create failed segment
+        segment = {season:[ep_obj]}
+        
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj])
+        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, segment)
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
