@@ -179,6 +179,10 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
         process_failed(os.path.join(path, dirName), nzbNameOriginal)
         return False
 
+    if helpers.is_hidden_folder(dirName):
+        returnStr += logHelper(u"Ignoring hidden folder: " + dirName, logger.DEBUG)
+        return False
+
     # make sure the dir isn't inside a show dir
     myDB = db.DBConnection()
     sqlResults = myDB.select("SELECT * FROM tv_shows")
@@ -228,7 +232,6 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
                 pass
 
     return False
-
 
 def unRAR(path, rarFiles, force):
     global process_result, returnStr

@@ -18,15 +18,12 @@
 
 from __future__ import with_statement
 
-import time
 import os.path
 import datetime
 import threading
 import re
 import glob
-from time import sleep
 import traceback
-import shutil
 
 import sickbeard
 
@@ -54,7 +51,6 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
     UNKNOWN, FAILED
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
-from common import cpu_presets
 
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
@@ -858,7 +854,7 @@ class TVShow(object):
 
             #Rename dict keys without spaces for DB upsert
             self.imdb_info = dict(
-                (k.replace(' ', '_'), f(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
+                (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
@@ -866,10 +862,10 @@ class TVShow(object):
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
         myDB = db.DBConnection()
-        innerQuery = "SELECT airdate FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status = ? ORDER BY airdate ASC LIMIT 1"
-        innerParams = [self.indexerid, datetime.date.today().toordinal(), UNAIRED]
-        query = "SELECT * FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= (" + innerQuery + ") and status = ?"
-        params = [self.indexerid, datetime.date.today().toordinal()] + innerParams + [UNAIRED]
+        innerQuery = "SELECT airdate FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1"
+        innerParams = [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED]
+        query = "SELECT * FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= (" + innerQuery + ") and status in (?,?)"
+        params = [self.indexerid, datetime.date.today().toordinal()] + innerParams + [UNAIRED, WANTED]
         sqlResults = myDB.select(query, params)
 
         if sqlResults == None or len(sqlResults) == 0:

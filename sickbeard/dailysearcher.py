@@ -45,27 +45,14 @@ class DailySearcher():
         # remove names from cache that link back to active shows that we watch
         sickbeard.name_cache.syncNameCache()
 
-        logger.log(u"Updating RSS cache ...")
-
-        origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
-        for curProviderCount, curProvider in enumerate(providers):
-            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-
-            try:
-                curProvider.cache.updateCache()
-            except exceptions.AuthException, e:
-                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-                continue
-
-        logger.log(u"Checking to see if any shows have wanted episodes available for the last week ...")
+        logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
 
         fromDate = datetime.date.today() - datetime.timedelta(weeks=1)
-        toDate = datetime.date.today() + datetime.timedelta(days=1)
+        curDate = datetime.date.today()
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate >= ? AND airdate < ?",
-                                 [common.UNAIRED, common.WANTED, fromDate.toordinal(), toDate.toordinal()])
+        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate >= ? AND airdate <= ?",
+                                 [common.UNAIRED, common.WANTED, fromDate.toordinal(), curDate.toordinal()])
 
         todaysEps = {}
         for sqlEp in sqlResults:
@@ -87,6 +74,7 @@ class DailySearcher():
                     ep.status = common.SKIPPED
                 else:
                     if ep.status == common.UNAIRED:
+                        logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
                         ep.status = common.WANTED
 
                 ep.saveToDB()
@@ -97,13 +85,10 @@ class DailySearcher():
                     else:
                         todaysEps[show].append(ep)
 
-        # reset thread name back to original
-        threading.currentThread().name = origThreadName
-
         if len(todaysEps):
             for show in todaysEps:
                 segment = todaysEps[show]
                 dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, segment)
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)  #@UndefinedVariable
         else:
-            logger.log(u"Could not find any wanted show episodes going back 1 week at this current time ...")
+            logger.log(u"Could not find any needed episodes to search for ...")

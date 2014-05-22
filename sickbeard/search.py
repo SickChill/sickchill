@@ -328,6 +328,8 @@ def searchForNeededEpisodes(episodes):
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         try:
+            logger.log(u"Updating RSS cache ...")
+            curProvider.cache.updateCache()
             logger.log(u"Searching RSS cache ...")
             curFoundResults = curProvider.searchRSS(episodes)
         except exceptions.AuthException, e:
