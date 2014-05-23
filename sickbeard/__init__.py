@@ -11,7 +11,7 @@
 # Sick Beard is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
@@ -944,7 +944,8 @@ def initialize(consoleLogging=True):
             properFinderScheduler.silent = True
 
         autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
-                                                         cycleTime=datetime.timedelta(minutes=AUTOPOSTPROCESSER_FREQUENCY),
+                                                         cycleTime=datetime.timedelta(
+                                                             minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
                                                          runImmediately=True)
         if not PROCESS_AUTOMATICALLY:
@@ -1018,14 +1019,14 @@ def initialize(consoleLogging=True):
                 curTorrentProvider.options = check_setting_str(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_options', '')
             if hasattr(curTorrentProvider, 'ratio'):
-                curTorrentProvider.ratio = float(check_setting_float(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_ratio', 0))
+                curTorrentProvider.ratio = check_setting_str(CFG, curTorrentProvider.getID().upper(),
+                                                                     curTorrentProvider.getID() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
                 curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_minseed', 0)
+                                                               curTorrentProvider.getID() + '_minseed', 0)
             if hasattr(curTorrentProvider, 'minleech'):
                 curTorrentProvider.minleech = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_minleech', 0)
+                                                                curTorrentProvider.getID() + '_minleech', 0)
             if hasattr(curTorrentProvider, 'freeleech'):
                 curTorrentProvider.freeleech = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                       curTorrentProvider.getID() + '_freeleech', 0))
@@ -1054,16 +1055,16 @@ def initialize(consoleLogging=True):
                                                             curNzbProvider.getID() + '_username', '')
             if hasattr(curNzbProvider, 'search_mode'):
                 curNzbProvider.search_mode = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                                   curNzbProvider.getID() + '_search_mode',
-                                                                   'eponly')
+                                                               curNzbProvider.getID() + '_search_mode',
+                                                               'eponly')
             if hasattr(curNzbProvider, 'search_fallback'):
                 curNzbProvider.search_fallback = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                            curNzbProvider.getID() + '_search_fallback',
-                                                                            0))
+                                                                        curNzbProvider.getID() + '_search_fallback',
+                                                                        0))
             if hasattr(curNzbProvider, 'backlog_only'):
                 curNzbProvider.backlog_only = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                         curNzbProvider.getID() + '_backlog_only',
-                                                                         0))
+                                                                     curNzbProvider.getID() + '_backlog_only',
+                                                                     0))
 
         try:
             url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
@@ -1436,8 +1437,8 @@ def save_config():
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_confirmed'] = int(
                 curTorrentProvider.confirmed)
         if hasattr(curTorrentProvider, 'ratio'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_ratio'] = float(
-                curTorrentProvider.ratio)
+            new_config[curTorrentProvider.getID().upper()][
+                curTorrentProvider.getID() + '_ratio'] = curTorrentProvider.ratio
         if hasattr(curTorrentProvider, 'minseed'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_minseed'] = int(
                 curTorrentProvider.minseed)

@@ -366,7 +366,13 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed Ratio:</span>
-                                <input type="text" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" size="40" />
+                                <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" size="2" />
+                            </label>
+                            <label class="clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">
+                                Stop transfer when reaching ratio<br>
+                                (blank for default)</span>
                             </label>
                         </div>
                         #end if
@@ -375,7 +381,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Min Seeders:</span>
-                                <input type="text" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" size="40" />
+                                <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" size="40" />
                             </label>
                         </div>
                         #end if
@@ -384,7 +390,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Min Leechers:</span>
-                                <input type="text" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" size="40" />
+                                <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" size="40" />
                             </label>
                         </div>
                         #end if

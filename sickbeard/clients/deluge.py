@@ -164,31 +164,24 @@ class DelugeAPI(GenericClient):
 
     def _set_torrent_ratio(self, result):
 
-        ratio = ''
+        ratio = None
         if result.ratio:
             ratio = result.ratio
-        else:
-            return True
 
-        try:
-            float(ratio)
-        except ValueError:
-            logger.log(self.name + u': Invalid Ratio. "' + ratio + u'" is not a number', logger.ERROR)
-            return False
+        if ratio:
+            post_data = json.dumps({"method": "core.set_torrent_stop_at_ratio",
+                                    "params": [result.hash, True],
+                                    "id": 5
+            })
+            self._request(method='post', data=post_data)
 
-        post_data = json.dumps({"method": "core.set_torrent_stop_at_ratio",
-                                "params": [result.hash, True],
-                                "id": 5
-        })
-        self._request(method='post', data=post_data)
+            post_data = json.dumps({"method": "core.set_torrent_stop_ratio",
+                                    "params": [result.hash, float(ratio)],
+                                    "id": 6
+            })
+            self._request(method='post', data=post_data)
 
-        post_data = json.dumps({"method": "core.set_torrent_stop_ratio",
-                                "params": [result.hash, float(ratio)],
-                                "id": 6
-        })
-        self._request(method='post', data=post_data)
-
-        return not self.response.json()['error']
+            return not self.response.json()['error']
 
         return True
 
