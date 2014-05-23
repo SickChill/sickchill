@@ -124,8 +124,11 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.pnotify-1.0.2.min.js"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.form-3.35.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.ui.touch-punch-0.2.2.min.js?$sbPID"></script>
-  <script type="text/javascript" src="$sbRoot/js/script.js?$sbPID"></script>
-
+    <script type="text/javascript" src="$sbRoot/js/script.js?$sbPID"></script>
+    #if $sickbeard.FUZZY_DATING:
+    <script type="text/javascript" src="$sbRoot/js/moment/moment.min.js?$sbPID"></script>
+    <script type="text/javascript" src="$sbRoot/js/fuzzyMoment.js?$sbPID"></script>
+    #end if
     <script type="text/javascript" charset="utf-8">
     <!--
         sbRoot = "$sbRoot"; // needed for browser.js & ajaxNotifications.js
