@@ -83,12 +83,6 @@ class TransmissionAPI(GenericClient):
         ratio = None
         if result.ratio:
             ratio = result.ratio
-        if ratio:
-            try:
-                float(ratio)
-            except ValueError:
-                logger.log(self.name + u': Invalid Ratio. "' + ratio + u'" is not a number', logger.ERROR)
-                return False
 
         torrent_id = self._get_torrent_hash(result)
 
