@@ -92,15 +92,24 @@ class NewznabProvider(generic.NZBProvider):
             cur_params = {}
 
             # search
-            cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
+            if ep_obj.show.indexer == 2:
+                cur_params['rid'] = ep_obj.show.indexerid
+            else:
+                cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
 
             # season
             if ep_obj.show.air_by_date or ep_obj.show.sports:
-                cur_params['season'] = str(ep_obj.airdate)[:7]
+                date_str = str(ep_obj.airdate).split('-')[0]
+                cur_params['season'] = date_str
+                if 'q' in cur_params:
+                    cur_params['q'] += '.' + date_str.replace('-', '.')
+                else:
+                    cur_params['q'] = date_str.replace('-', '.')
             else:
                 cur_params['season'] = str(ep_obj.scene_season)
 
-            to_return.append(cur_params)
+            if not ('rid' in cur_params and to_return):
+                to_return.append(cur_params)
 
         return to_return
 
@@ -112,13 +121,12 @@ class NewznabProvider(generic.NZBProvider):
             return [params]
 
         # search
-        params['q'] = helpers.sanitizeSceneName(self.show.name)
+        if ep_obj.show.indexer == 2:
+            params['rid'] = ep_obj.show.indexerid
+        else:
+            params['q'] = helpers.sanitizeSceneName(self.show.name)
 
-        if self.show.air_by_date:
-            date_str = str(ep_obj.airdate)
-            params['season'] = date_str.partition('-')[0]
-            params['ep'] = date_str.partition('-')[2].replace('-', '/')
-        elif self.show.sports:
+        if self.show.air_by_date or self.show.sports:
             date_str = str(ep_obj.airdate)
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')

@@ -217,7 +217,7 @@ class BTNProvider(generic.TorrentProvider):
             whole_season_params['category'] = 'Season'
             if ep_obj.show.air_by_date or ep_obj.show.sports:
                 # Search for the year of the air by date show
-                whole_season_params['name'] = str(ep_obj.airdate)[:7]
+                whole_season_params['name'] = str(ep_obj.airdate).split('-')[0]
             else:
                 whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
 

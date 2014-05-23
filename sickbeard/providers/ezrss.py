@@ -82,7 +82,7 @@ class EZRSSProvider(generic.TorrentProvider):
         params['show_name'] = helpers.sanitizeSceneName(self.show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
         if ep_obj.show.air_by_date or ep_obj.show.sports:
-            params['season'] = str(ep_obj.airdate)[:7]
+            params['season'] = str(ep_obj.airdate).split('-')[0]
         else:
             params['season'] = ep_obj.scene_season
 
