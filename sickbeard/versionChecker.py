@@ -120,7 +120,7 @@ class CheckVersion():
             if not sickbeard.AUTO_UPDATE:
                 logger.log(u"No update needed")
 
-            if force and not sickbeard.AUTO_UPDATE:
+            if force:
                 ui.notifications.message('No update needed')
             return False
 
