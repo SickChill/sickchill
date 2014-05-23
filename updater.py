@@ -54,7 +54,7 @@ try:
             break
     
     if not sb_closed:
-        log("Sick Beard didn't close, unable to update. You'll have to manually restart it.")
+        log("SickRage didn't close, unable to update. You'll have to manually restart it.")
         sys.exit()
     
     sb_root = os.path.dirname(sb_executable[0])

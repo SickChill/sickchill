@@ -6,7 +6,7 @@ from lib.pynma import pynma
 
 class NMA_Notifier:
     def test_notify(self, nma_api, nma_priority):
-        return self._sendNMA(nma_api, nma_priority, event="Test", message="Testing NMA settings from Sick Beard",
+        return self._sendNMA(nma_api, nma_priority, event="Test", message="Testing NMA settings from SickRage",
                              force=True)
 
     def notify_snatch(self, ep_name):

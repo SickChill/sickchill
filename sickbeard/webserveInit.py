@@ -1,20 +1,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 #import cherrypy
 import cherrypy.lib.auth_basic
@@ -122,7 +122,7 @@ def initWebServer(options={}):
     else:
         protocol = "http"
 
-    logger.log(u"Starting Sick Beard on " + protocol + "://" + str(options['host']) + ":" + str(options['port']) + "/")
+    logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(options['port']) + "/")
     cherrypy.config.update(options_dict)
 
     # setup cherrypy logging
@@ -159,7 +159,7 @@ def initWebServer(options={}):
             app.merge({
                 '/': {
                     'tools.auth_basic.on': True,
-                    'tools.auth_basic.realm': 'SickBeard',
+                    'tools.auth_basic.realm': 'SickRage',
                     'tools.auth_basic.checkpassword': checkpassword
                 },
                 '/api': {
@@ -170,7 +170,7 @@ def initWebServer(options={}):
                 },
                 '/api/builder': {
                     'tools.auth_basic.on': True,
-                    'tools.auth_basic.realm': 'SickBeard',
+                    'tools.auth_basic.realm': 'SickRage',
                     'tools.auth_basic.checkpassword': checkpassword
                 }
             })
@@ -179,7 +179,7 @@ def initWebServer(options={}):
             app.merge({
                 '/': {
                     'tools.auth_basic.on': True,
-                    'tools.auth_basic.realm': 'SickBeard',
+                    'tools.auth_basic.realm': 'SickRage',
                     'tools.auth_basic.checkpassword': checkpassword
                 },
                 '/api': {
@@ -187,7 +187,7 @@ def initWebServer(options={}):
                 },
                 '/api/builder': {
                     'tools.auth_basic.on': True,
-                    'tools.auth_basic.realm': 'SickBeard',
+                    'tools.auth_basic.realm': 'SickRage',
                     'tools.auth_basic.checkpassword': checkpassword
                 }
             })

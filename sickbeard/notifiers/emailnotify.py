@@ -4,20 +4,20 @@
 #
 # URL: https://github.com/echel0n/SickRage
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -37,8 +37,8 @@ class EmailNotifier:
         self.last_err = None
 
     def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
-        msg = MIMEText('This is a test message from Sick Beard.  If you\'re reading this, the test succeeded.')
-        msg['Subject'] = 'Sick Beard: Test Message'
+        msg = MIMEText('This is a test message from SickRage.  If you\'re reading this, the test succeeded.')
+        msg['Subject'] = 'SickRage: Test Message'
         msg['From'] = smtp_from
         msg['To'] = to
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
@@ -59,10 +59,10 @@ class EmailNotifier:
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Snatched</h3>\n<p>Show: <b>" + re.search(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Snatched</h3>\n<p>Show: <b>" + re.search(
                             "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
                             ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
                     msg = MIMEText(ep_name)
@@ -92,10 +92,10 @@ class EmailNotifier:
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Downloaded</h3>\n<p>Show: <b>" + re.search(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Downloaded</h3>\n<p>Show: <b>" + re.search(
                             "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
                             ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                            1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
                     msg = MIMEText(ep_name)
@@ -125,10 +125,10 @@ class EmailNotifier:
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>Sick Beard Notification - Subtitle Downloaded</h3>\n<p>Show: <b>" + re.search(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - Subtitle Downloaded</h3>\n<p>Show: <b>" + re.search(
                             "(.+?) -.+", ep_name).group(1) + "</b></p>\n<p>Episode: <b>" + re.search(
                             ".+ - (.+?-.+) -.+", ep_name).group(
-                            1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by Sick Beard.</footer></body>",
+                            1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
                     msg = MIMEText(ep_name + ": " + lang)

@@ -1,20 +1,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import platform
@@ -160,7 +160,7 @@ class WindowsUpdateManager(UpdateManager):
             version = sickbeard.version.SICKBEARD_VERSION
             return int(version[6:])
         except ValueError:
-            logger.log(u"Unknown SickBeard Windows binary release: " + version, logger.ERROR)
+            logger.log(u"Unknown SickRage Windows binary release: " + version, logger.ERROR)
             return None
 
     def _find_newest_version(self, whole_link=False):
@@ -172,7 +172,7 @@ class WindowsUpdateManager(UpdateManager):
                     only the build number. default: False
         """
 
-        regex = ".*SickBeard\-win32\-alpha\-build(\d+)(?:\.\d+)?\.zip"
+        regex = ".*SickRage\-win32\-alpha\-build(\d+)(?:\.\d+)?\.zip"
 
         version_url_data = helpers.getURL(self.version_url)
 
@@ -207,7 +207,7 @@ class WindowsUpdateManager(UpdateManager):
         sickbeard.NEWEST_VERSION_STRING = None
 
         if not self._cur_version:
-            newest_text = "Unknown SickBeard Windows binary version. Not updating with original version."
+            newest_text = "Unknown SickRage Windows binary version. Not updating with original version."
         else:
             newest_text = 'There is a <a href="' + self.gc_url + '" onclick="window.open(this.href); return false;">newer version available</a> (build ' + str(
                 self._newest_version) + ')'
@@ -293,7 +293,7 @@ class GitUpdateManager(UpdateManager):
         self._num_commits_ahead = 0
 
     def _git_error(self):
-        error_message = 'Unable to find your git executable - Shutdown SickBeard and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
+        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
         sickbeard.NEWEST_VERSION_STRING = error_message
 
     def _find_working_git(self):
@@ -339,7 +339,7 @@ class GitUpdateManager(UpdateManager):
                     logger.log(u"Not using: " + cur_git, logger.DEBUG)
 
         # Still haven't found a working git
-        error_message = 'Unable to find your git executable - Shutdown SickBeard and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
+        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
         sickbeard.NEWEST_VERSION_STRING = error_message
 
         return None
@@ -390,7 +390,7 @@ class GitUpdateManager(UpdateManager):
 
     def _find_installed_version(self):
         """
-        Attempts to find the currently installed version of Sick Beard.
+        Attempts to find the currently installed version of SickRage.
 
         Uses git show to get commit version.
 
@@ -515,7 +515,7 @@ class GitUpdateManager(UpdateManager):
 
     def update(self):
         """
-        Calls git pull origin <branch> in order to update Sick Beard. Returns a bool depending
+        Calls git pull origin <branch> in order to update SickRage. Returns a bool depending
         on the call's success.
         """
 
@@ -573,7 +573,7 @@ class SourceUpdateManager(UpdateManager):
     def _check_github_for_update(self):
         """
         Uses pygithub to ask github if there is a newer version that the provided
-        commit hash. If there is a newer version it sets Sick Beard's version text.
+        commit hash. If there is a newer version it sets SickRage's version text.
 
         commit_hash: hash that we're checking against
         """
@@ -619,7 +619,7 @@ class SourceUpdateManager(UpdateManager):
         if not self._cur_commit_hash:
             logger.log(u"Unknown current version number, don't know if we should update or not", logger.DEBUG)
 
-            newest_text = "Unknown current version number: If you've never used the Sick Beard upgrade system before then current version is not set."
+            newest_text = "Unknown current version number: If you've never used the SickRage upgrade system before then current version is not set."
             newest_text += "&mdash; <a href=\"" + self.get_update_url() + "\">Update Now</a>"
 
         elif self._num_commits_behind > 0:

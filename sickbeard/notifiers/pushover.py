@@ -3,20 +3,20 @@
 # Author: Aaron Bieber <deftly@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib, urllib2
 import time
@@ -28,12 +28,12 @@ from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTI
 from sickbeard.exceptions import ex
 
 API_URL = "https://api.pushover.net/1/messages.json"
-API_KEY = "OKCXmkvHN1syU2e8xvpefTnyvVWGv5"
+API_KEY = "awKfdt263PLaEWV9RXuSn4c46qoAyA"
 
 
 class PushoverNotifier:
     def test_notify(self, userKey=None):
-        return self._sendPushover("This is a test notification from SickBeard", 'Test', userKey)
+        return self._sendPushover("This is a test notification from SickRage", 'Test', userKey)
 
     def _sendPushover(self, msg, title, userKey=None):
         """

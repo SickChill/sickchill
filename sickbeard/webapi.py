@@ -2,20 +2,20 @@
 # Author: Jonathon Saine <thezoggy@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
 
@@ -115,7 +115,7 @@ class Api:
                              "args": args,
                              "kwargs": kwargs}
                 outDict = _responds(RESULT_FATAL, errorData,
-                                    "SickBeard encountered an internal error! Please report to the Devs")
+                                    "SickRage encountered an internal error! Please report to the Devs")
 
         if 'outputType' in outDict:
             outputCallback = outputCallbackDict[outDict['outputType']]
@@ -1527,7 +1527,7 @@ class CMD_SickBeardRestart(ApiCall):
     def run(self):
         """ restart sickbeard """
         threading.Timer(2, sickbeard.invoke_restart, [False]).start()
-        return _responds(RESULT_SUCCESS, msg="SickBeard is restarting...")
+        return _responds(RESULT_SUCCESS, msg="SickRage is restarting...")
 
 
 class CMD_SickBeardSearchIndexers(ApiCall):
@@ -1704,7 +1704,7 @@ class CMD_SickBeardShutdown(ApiCall):
     def run(self):
         """ shutdown sickbeard """
         threading.Timer(2, sickbeard.invoke_shutdown).start()
-        return _responds(RESULT_SUCCESS, msg="SickBeard is shutting down...")
+        return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
 
 
 class CMD_Show(ApiCall):

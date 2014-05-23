@@ -1,14 +1,14 @@
 # Author: Tyler Fenby <tylerfenby@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -72,7 +72,7 @@ class FailedProcessor(object):
         self._show_obj = sickbeard.helpers.get_show_by_name(parsed.series_name)
         if self._show_obj is None:
             self._log(
-                u"Could not create show object. Either the show hasn't been added to SickBeard, or it's still loading (if SB was restarted recently)",
+                u"Could not create show object. Either the show hasn't been added to SickRage, or it's still loading (if SB was restarted recently)",
                 logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 

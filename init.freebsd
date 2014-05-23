@@ -9,23 +9,23 @@
 #
 # sickbeard_enable (bool):	Set to NO by default.
 #			Set it to YES to enable it.
-# sickbeard_user:  The user account Sick Beard daemon runs as what
+# sickbeard_user:  The user account SickRage daemon runs as what
 #			you want it to be. It uses '_sabnzbd' user by
 #			default. Do not sets it as empty or it will run
 #			as root.
-# sickbeard_dir:	Directory where Sick Beard lives.
+# sickbeard_dir:	Directory where SickRage lives.
 #			Default: /usr/local/sickbeard
-# sickbeard_chdir:  Change to this directory before running Sick Beard.
+# sickbeard_chdir:  Change to this directory before running SickRage.
 #     Default is same as sickbeard_dir.
 # sickbeard_pid:  The name of the pidfile to create.
 #     Default is sickbeard.pid in sickbeard_dir.
-# sickbeard_host: The hostname or IP Sick Beard is listening on
+# sickbeard_host: The hostname or IP SickRage is listening on
 #     Default is 127.0.0.1
-# sickbeard_port: The port Sick Beard is listening on
+# sickbeard_port: The port SickRage is listening on
 #     Default is 8081
-# sickbeard_web_user: Username to authenticate to the Sick Beard web interface
+# sickbeard_web_user: Username to authenticate to the SickRage web interface
 #     Default is an empty string (no username)
-# sickbeard_web_password: Password to authenticate to the Sick Beard web interface
+# sickbeard_web_password: Password to authenticate to the SickRage web interface
 #     Default is an empty string (no password)
 PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin"
 
@@ -46,7 +46,7 @@ load_rc_config ${name}
 : ${sickbeard_web_user:=""}
 : ${sickbeard_web_password:=""}
 
-WGET="/usr/local/bin/wget" # You need wget for this script to safely shutdown Sick Beard.
+WGET="/usr/local/bin/wget" # You need wget for this script to safely shutdown SickRage.
 
 status_cmd="${name}_status"
 stop_cmd="${name}_stop"
@@ -56,7 +56,7 @@ command_args="-f -p ${sickbeard_pid} python ${sickbeard_dir}/SickBeard.py --quie
 
 # Check for wget and refuse to start without it.
 if [ ! -x "${WGET}" ]; then
-  warn "Sickbeard not started: You need wget to safely shut down Sick Beard."
+  warn "Sickbeard not started: You need wget to safely shut down SickRage."
   exit 1
 fi
 
@@ -67,13 +67,13 @@ if [ `id -u` != "0" ]; then
 fi
 
 verify_sickbeard_pid() {
-    # Make sure the pid corresponds to the Sick Beard process.
+    # Make sure the pid corresponds to the SickRage process.
     pid=`cat ${sickbeard_pid} 2>/dev/null`
     ps -p ${pid} 2>/dev/null | grep -q "python ${sickbeard_dir}/SickBeard.py"
     return $?
 }
 
-# Try to stop Sick Beard cleanly by calling shutdown over http.
+# Try to stop SickRage cleanly by calling shutdown over http.
 sickbeard_stop() {
     echo "Stopping $name"
     verify_sickbeard_pid

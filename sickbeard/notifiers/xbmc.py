@@ -1,20 +1,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
 import urllib2
@@ -41,7 +41,7 @@ except ImportError:
 
 
 class XBMCNotifier:
-    sb_logo_url = 'http://www.sickbeard.com/xbmc-notify.png'
+    sb_logo_url = 'https://raw.githubusercontent.com/echel0n/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_xbmc_version(self, host, username, password):
         """Returns XBMC JSON-RPC API version (odd # = dev, even # = stable)
@@ -92,7 +92,7 @@ class XBMCNotifier:
             else:
                 return False
 
-    def _notify_xbmc(self, message, title="Sick Beard", host=None, username=None, password=None, force=False):
+    def _notify_xbmc(self, message, title="SickRage", host=None, username=None, password=None, force=False):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Detects JSON-RPC version then branches the logic for either the JSON-RPC or legacy HTTP API methods.
@@ -509,7 +509,7 @@ class XBMCNotifier:
             self._notify_xbmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def test_notify(self, host, username, password):
-        return self._notify_xbmc("Testing XBMC notifications from Sick Beard", "Test Notification", host, username,
+        return self._notify_xbmc("Testing XBMC notifications from SickRage", "Test Notification", host, username,
                                  password, force=True)
 
     def update_library(self, showName=None):

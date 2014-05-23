@@ -1,7 +1,7 @@
-Sick Beard - Failed Downloads
+SickRage - Failed Downloads
 =====
 
-*Sick Beard Failed Downloads is a fork from Sick Beard - ThePirateBay.*
+*SickRage Failed Downloads is a fork from SickRage - ThePirateBay.*
 
 Features added:
 
@@ -9,9 +9,9 @@ Features added:
 * User Interface Toggle for Failed Download Handling
 * Treat directories where no video files were found as if they were failed downloads
 
-Sick Beard - Failed Downloads is almost a direct copy of the following project:
+SickRage - Failed Downloads is almost a direct copy of the following project:
 
-* [Sick Beard - Tolstyak's branch][tolstyak]
+* [SickRage - Tolstyak's branch][tolstyak]
 
 These features can be enabled in the Post Processing Configuration menu.  It must be configured as specified below.
 
