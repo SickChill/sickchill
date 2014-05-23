@@ -38,7 +38,7 @@ class TorrentRssProvider(generic.TorrentProvider):
     def __init__(self, name, url, search_mode='eponly', search_fallback=False, backlog_only=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
-        #self.url = re.sub('\/$', '', url)
+        self.url = re.sub('\/$', '', url)
         self.url = url
         self.enabled = True
         self.supportsBacklog = False
