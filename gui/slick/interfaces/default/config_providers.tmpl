@@ -225,7 +225,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curNewznabProvider, 'backlog_only'):
+                        #if $hasattr($curNzbProvider, 'backlog_only'):
                         <div class="field-pair">
                             <input type="checkbox" name="${curNzbProvider.getID()}_backlog_only" id="${curNzbProvider.getID()}_backlog_only" #if $curNzbProvider.backlog_only then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="${curNzbProvider.getID()}_backlog_only">
