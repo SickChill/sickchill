@@ -1,20 +1,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from httplib import HTTPSConnection, HTTPException
 from urllib import urlencode
@@ -35,7 +35,7 @@ from sickbeard import logger, common
 class ProwlNotifier:
     def test_notify(self, prowl_api, prowl_priority):
         return self._sendProwl(prowl_api, prowl_priority, event="Test",
-                               message="Testing Prowl settings from Sick Beard", force=True)
+                               message="Testing Prowl settings from SickRage", force=True)
 
     def notify_snatch(self, ep_name):
         if sickbeard.PROWL_NOTIFY_ONSNATCH:
@@ -63,7 +63,7 @@ class ProwlNotifier:
         if prowl_priority == None:
             prowl_priority = sickbeard.PROWL_PRIORITY
 
-        title = "Sick Beard"
+        title = "SickRage"
 
         logger.log(u"Prowl title: " + title, logger.DEBUG)
         logger.log(u"Prowl event: " + event, logger.DEBUG)

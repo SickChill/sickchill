@@ -3,20 +3,20 @@
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib, urllib2
 import time
@@ -32,7 +32,7 @@ API_URL = "https://new.boxcar.io/api/notifications"
 
 class Boxcar2Notifier:
     def test_notify(self, accesstoken, title="SickRage : Test"):
-        return self._sendBoxcar2("This is a test notification from SickBeard", title, accesstoken)
+        return self._sendBoxcar2("This is a test notification from SickRage", title, accesstoken)
 
     def _sendBoxcar2(self, msg, title, accesstoken):
         """

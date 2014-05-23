@@ -1,20 +1,20 @@
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
 #
-# This file is part of Sick Beard.
+# This file is part of SickRage.
 #
-# Sick Beard is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Sick Beard is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import socket
 
@@ -29,7 +29,7 @@ from lib.growl import gntp
 class GrowlNotifier:
     def test_notify(self, host, password):
         self._sendRegistration(host, password, 'Test')
-        return self._sendGrowl("Test Growl", "Testing Growl settings from Sick Beard", "Test", host, password,
+        return self._sendGrowl("Test Growl", "Testing Growl settings from SickRage", "Test", host, password,
                                force=True)
 
     def notify_snatch(self, ep_name):
@@ -64,7 +64,7 @@ class GrowlNotifier:
             notice.add_header('Notification-Priority', options['priority'])
         if options['icon']:
             notice.add_header('Notification-Icon',
-                              'https://raw.github.com/midgetspy/Sick-Beard/master/data/images/sickbeard.png')
+                              'https://raw.github.com/echel0n/SickRage/master/gui/slick/images/sickrage.png')
 
         if message:
             notice.add_header('Notification-Text', message)
@@ -86,7 +86,7 @@ class GrowlNotifier:
 
         return response
 
-    def _sendGrowl(self, title="Sick Beard Notification", message=None, name=None, host=None, password=None,
+    def _sendGrowl(self, title="SickRage Notification", message=None, name=None, host=None, password=None,
                    force=False):
         if not sickbeard.USE_GROWL and not force:
             return False
@@ -111,7 +111,7 @@ class GrowlNotifier:
         opts['name'] = name
 
         opts['title'] = title
-        opts['app'] = 'SickBeard'
+        opts['app'] = 'SickRage'
 
         opts['sticky'] = None
         opts['priority'] = None
@@ -140,7 +140,7 @@ class GrowlNotifier:
                 logger.log(u"Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + ": " + ex(e))
                 return False
 
-    def _sendRegistration(self, host=None, password=None, name='Sick Beard Notification'):
+    def _sendRegistration(self, host=None, password=None, name='SickRage Notification'):
         opts = {}
 
         if host == None:
@@ -161,14 +161,14 @@ class GrowlNotifier:
         else:
             opts['password'] = password
 
-        opts['app'] = 'SickBeard'
+        opts['app'] = 'SickRage'
         opts['debug'] = False
 
         #Send Registration
         register = gntp.GNTPRegister()
         register.add_header('Application-Name', opts['app'])
         register.add_header('Application-Icon',
-                            'https://raw.github.com/midgetspy/Sick-Beard/master/data/images/sickbeard.png')
+                            'https://raw.githubusercontent.com/echel0n/SickRage/master/gui/slick/images/sickrage-shark-mascot.png')
 
         register.add_notification('Test', True)
         register.add_notification(common.notifyStrings[common.NOTIFY_SNATCH], True)
