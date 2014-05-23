@@ -1593,9 +1593,9 @@ class ConfigProviders:
 
             if hasattr(curTorrentProvider, 'ratio'):
                 try:
-                    curTorrentProvider.ratio = float(str(kwargs[curTorrentProvider.getID() + '_ratio']).strip())
+                    curTorrentProvider.ratio = str(kwargs[curTorrentProvider.getID() + '_ratio']).strip()
                 except:
-                    curTorrentProvider.ratio = 0
+                    curTorrentProvider.ratio = None
 
             if hasattr(curTorrentProvider, 'digest'):
                 try:

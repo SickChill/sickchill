@@ -67,33 +67,27 @@ class uTorrentAPI(GenericClient):
 
     def _set_torrent_ratio(self, result):
 
-        ratio = ''
+        ratio = None
         if result.ratio:
             ratio = result.ratio
-        else:
-            return True
 
-        try:
-            float(ratio)
-        except ValueError:
-            logger.log(self.name + u': Invalid Ratio. "' + ratio + u'" is not a number', logger.ERROR)
-            return False
-
-        ratio = 10 * float(ratio)
-        params = {'action': 'setprops',
-                  'hash': result.hash,
-                  's': 'seed_override',
-                  'v': '1'
-        }
-        if self._request(params=params):
+        if ratio:
             params = {'action': 'setprops',
                       'hash': result.hash,
-                      's': 'seed_ratio',
-                      'v': ratio
+                      's': 'seed_override',
+                      'v': '1'
             }
-            return self._request(params=params)
-        else:
-            return False     
+            if self._request(params=params):
+                params = {'action': 'setprops',
+                          'hash': result.hash,
+                          's': 'seed_ratio',
+                          'v': float(ratio) * 10
+                }
+                return self._request(params=params)
+            else:
+                return False
+
+        return True
 
     def _set_torrent_seed_time(self, result):
 
