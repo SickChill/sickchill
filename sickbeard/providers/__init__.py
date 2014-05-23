@@ -58,7 +58,6 @@ def sortedProviderList():
 
     return newList
 
-
 def makeProviderList():
     return [x.provider for x in [getProviderModule(y) for y in __all__] if x]
 

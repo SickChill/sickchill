@@ -1476,7 +1476,9 @@ class ConfigProviders:
 
                 cur_name, cur_url, cur_key = curNewznabProviderStr.split('|')
                 cur_url = config.clean_url(cur_url)
+
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
+
                 cur_id = newProvider.getID()
 
                 # if it already exists then update it
@@ -1489,37 +1491,10 @@ class ConfigProviders:
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
-
-                    try:
-                        newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
-                    except:
-                        newznabProviderDict[cur_id].search_mode = 'eponly'
-
-                    try:
-                        newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
-                            kwargs[cur_id + '_search_fallback'])
-                    except:
-                        newznabProviderDict[cur_id].search_fallback = 0
                 else:
-                    try:
-                        newProvider.search_mode = str(kwargs[cur_id + '_search_mode']).strip()
-                    except:
-                        newProvider.search_mode = 'eponly'
-
-                    try:
-                        newProvider.search_fallback = config.checkbox_to_value(
-                            kwargs[cur_id + '_search_fallback'])
-                    except:
-                        newProvider.search_fallback = 0
-
                     sickbeard.newznabProviderList.append(newProvider)
 
                 finishedNames.append(cur_id)
-
-            # delete anything that is missing
-            for curProvider in sickbeard.newznabProviderList:
-                if curProvider.getID() not in finishedNames:
-                    sickbeard.newznabProviderList.remove(curProvider)
 
         # delete anything that is missing
         for curProvider in sickbeard.newznabProviderList:
@@ -1553,7 +1528,6 @@ class ConfigProviders:
                 finishedNames.append(curID)
 
         # delete anything that is missing
-        #logger.log(u"sickbeard.anyRssProviderList =  " + repr(sickbeard.anyRssProviderList))
         for curProvider in sickbeard.torrentRssProviderList:
             if curProvider.getID() not in finishedNames:
                 sickbeard.torrentRssProviderList.remove(curProvider)
@@ -1563,16 +1537,15 @@ class ConfigProviders:
             curProvider, curEnabled = curProviderStr.split(':')
             curEnabled = config.to_int(curEnabled)
 
+            curProvObj = [x for x in sickbeard.providers.sortedProviderList() if x.getID() == curProvider and hasattr(x, 'enabled')]
+            if curProvObj:
+                curProvObj[0].enabled = bool(curEnabled)
+
             provider_list.append(curProvider)
-
-            # dynamically set providers enabled/disabled
-            providers = sickbeard.providers.sortedProviderList()
-            for provider in providers:
-                if provider.getID() != curProvider or not hasattr(provider, 'enabled'):
-                    continue
-
-                provider.enabled = curEnabled
-                break
+            if curProvider in newznabProviderDict:
+                newznabProviderDict[curProvider].enabled = bool(curEnabled)
+            elif curProvider in torrentRssProviderDict:
+                torrentRssProviderDict[curProvider].enabled = bool(curEnabled)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
