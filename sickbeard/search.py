@@ -155,8 +155,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     if sickbeard.USE_FAILED_DOWNLOADS:
         failed_history.logSnatch(result)
-    else:
-        ui.notifications.message('Episode snatched', result.name)
+
+    ui.notifications.message('Episode snatched', result.name)
 
     history.logSnatch(result)
 
