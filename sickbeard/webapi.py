@@ -905,7 +905,7 @@ class CMD_EpisodeSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.ManualSearchQueueItem(epObj)
+        ep_queue_item = search_queue.ManualSearchQueueItem(showObj, epObj)
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  #@UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
