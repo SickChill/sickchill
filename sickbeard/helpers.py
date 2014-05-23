@@ -986,7 +986,6 @@ def is_hidden_folder(folder):
 
     return False
 
-
 def real_path(path):
     """
     Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
