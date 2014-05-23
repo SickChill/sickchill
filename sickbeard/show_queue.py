@@ -288,7 +288,9 @@ class QueueItemAdd(ShowQueueItem):
             # be smartish about this
             if self.show.genre and "talk show" in self.show.genre.lower():
                 self.show.air_by_date = 1
-            elif self.show.classification and "sports" in self.show.classification.lower():
+            if self.show.genre and "documentary" in self.show.genre.lower():
+                self.show.air_by_date = 0
+            if self.show.classification and "sports" in self.show.classification.lower():
                 self.show.sports = 1
 
 

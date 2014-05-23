@@ -432,7 +432,7 @@ input:not(.btn){margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4
 }
 .sickbeardTable tfoot a {
   text-decoration: none;
-  color: #bde433;
+  color: #6196c2;
   float: left;
 }
 .sickbeardTable td {
@@ -1437,7 +1437,7 @@ span.true {
 
 .btn:focus,
 .btn:active {
-  border: 1px solid #4d90fe;
+  border: 1px solid #6196c2;
   outline: none;
   -moz-box-shadow: none;
        box-shadow: none;
@@ -1851,7 +1851,7 @@ pre {
 .vertical {
     display: inline-block;
 
-    background-color: #79DF46;
+    background-color: #6196c2;
     border-radius: 0 4px 4px 0;
     border-width: 3px 3px 3px 0;
     border-style: solid;
