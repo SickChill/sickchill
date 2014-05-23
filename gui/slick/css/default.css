@@ -115,7 +115,7 @@ form {
   padding: 0;
 }
 a{
-  color: #75add8;
+  color: #6196c2;
   -moz-text-decoration-line: none;
   text-decoration: none;
 }
@@ -364,7 +364,7 @@ input:not(.btn){margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4
   font-size: 11px;
 }
 .footer a {
-  color: #75add8;
+  color: #6196c2;
   text-decoration: none;
 }
 .footer ul li {
@@ -519,17 +519,19 @@ width: 30%;
   text-align: center;
   vertical-align: middle;
 }
+
 .ui-progressbar .ui-widget-header {
-  background-image: -moz-linear-gradient(#a3e532, #90cc2a) !important;
-  background-image: linear-gradient(#a3e532, #90cc2a) !important;
-  background-image: -webkit-linear-gradient(#a3e532, #90cc2a) !important;
-  background-image: -o-linear-gradient(#a3e532, #90cc2a) !important;
+  background-image: -moz-linear-gradient(#d9eef8, #6194be) !important;
+  background-image: linear-gradient(#d9eef8, #6194be) !important;
+  background-image: -webkit-linear-gradient(#d9eef8, #6194be) !important;
+  background-image: -o-linear-gradient(#d9eef8, #6194be) !important;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr=#fdf0d5, endColorstr=#fff9ee) !important;
   -ms-filter: progid:dximagetransform.microsoft.gradient(startColorstr=#fdf0d5, endColorstr=#fff9ee) !important;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
+
 tr.seasonheader {
   background-color: #FFFFFF;
   padding-bottom: 5px;
