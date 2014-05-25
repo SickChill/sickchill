@@ -136,7 +136,7 @@ class TVCache():
 
         return []
 
-    def getRSSFeed(self, url, post_data=None):
+    def getRSSFeed(self, url, post_data=None, request_headers=None):
         # create provider storaqe cache
         storage = Shove('sqlite:///' + ek.ek(os.path.join, sickbeard.CACHE_DIR, self.provider.name) + '.db')
         fc = cache.Cache(storage)
@@ -147,7 +147,7 @@ class TVCache():
         if post_data:
             url = url + 'api?' + urllib.urlencode(post_data)
 
-        f = fc.fetch(url)
+        f = fc.fetch(url, request_headers=request_headers)
 
         if not f:
             logger.log(u"Error loading " + self.providerID + " URL: " + url, logger.ERROR)
