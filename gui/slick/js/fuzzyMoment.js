@@ -121,7 +121,7 @@
             else
                 fuzzer = (6 == day);
             if (fuzzer)
-                result = result.replace(/\bOn\b/, 'Next');
+                result = result.replace(/\bOn\b/i, 'Next');
 
         } else if (! /\b((yester|to)day\b|tomo|last\b)/i.test(result)) {
             if (14 > day)
