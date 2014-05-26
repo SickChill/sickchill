@@ -151,6 +151,8 @@ class AllShowsListUI:
 
     def selectSeries(self, allSeries):
         searchResults = []
+        seriesnames = []
+
         # get all available shows
         if allSeries:
             if 'searchterm' in self.config:
@@ -159,14 +161,22 @@ class AllShowsListUI:
                 for curShow in allSeries:
                     if curShow in searchResults:
                         continue
+
                     if 'seriesname' in curShow:
-                        if searchterm.lower() in curShow['seriesname'].lower():
+                        seriesnames.append(str(curShow['seriesname']))
+                    if 'aliasnames' in curShow:
+                        seriesnames.extend(str(curShow['aliasnames']).split('|'))
+                        
+                    for name in seriesnames:
+                        if searchterm.lower() in name.lower():
                             if 'firstaired' not in curShow:
                                 curShow['firstaired'] = str(datetime.date.fromordinal(1))
                                 curShow['firstaired'] = re.sub("([-]0{2}){1,}", "", curShow['firstaired'])
                                 fixDate = parser.parse(curShow['firstaired'], fuzzy=True).date()
                                 curShow['firstaired'] = fixDate.strftime("%Y-%m-%d")
-                            searchResults.append(curShow)
+
+                            if curShow not in searchResults:
+                                searchResults += [curShow]
 
         return searchResults
 
