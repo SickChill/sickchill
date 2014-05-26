@@ -1,5 +1,5 @@
 $(function () {
-    $('.showTitle a').each(function () {
+    $('.title a').each(function () {
         match = $(this).parent().attr("id").match(/^scene_exception_(\d+)$/);
         $(this).qtip({
             content: {
@@ -32,7 +32,7 @@ $(function () {
                     corner: true,
                     method: 'polygon'
                 },
-                classes: 'ui-tooltip-rounded ui-tooltip-shadow ui-tooltip-sb'
+                classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'
             }
         });
     });

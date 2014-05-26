@@ -22,7 +22,7 @@
 
 <script type="text/javascript" src="$sbRoot/js/displayShow.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/sceneExceptionsTooltip.js"></script>
+<script type="text/javascript" src="$sbRoot/js/sceneExceptionsTooltip.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSubtitles.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpRetry.js?$sbPID"></script>
@@ -54,7 +54,7 @@
 </div>
 
 <div class="showInfo">
-<h1 class="title"><a>$show.name</a></h1>
+<h1 class="title" id="scene_exception_$show.indexerid"><a>$show.name</a></h1>
 <span class="headerInfo" style="color: #b7b7b7; line-height: 16px;">
 #if not $show.imdbid
 	($show.startyear) - $show.runtime min 

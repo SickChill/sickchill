@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import threading
 import sickbeard
 
 from lib import adba
@@ -38,13 +39,17 @@ def get_scene_exceptions(indexer_id, season=-1):
 
     if indexer_id not in exceptionCache or season not in exceptionCache[indexer_id]:
         myDB = db.DBConnection("cache.db")
-        exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?", [indexer_id, season])
-        exceptionsList = [cur_exception["show_name"] for cur_exception in exceptions]
-        if not indexer_id in exceptionCache:
-            exceptionCache[indexer_id] = {}
-        exceptionCache[indexer_id][season] = exceptionsList
+        exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
+                                 [indexer_id, season])
+        exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
+
+        if len(exceptionsList):
+            try:
+                exceptionCache[indexer_id][season] = exceptionsList
+            except:
+                exceptionCache[indexer_id] = {season:exceptionsList}
     else:
-        exceptionsList = exceptionCache[indexer_id][season]
+        exceptionsList = list(set(exceptionCache[indexer_id][season]))
 
     if season == 1:  # if we where looking for season 1 we can add generic names
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
@@ -70,13 +75,16 @@ def get_scene_seasons(indexer_id):
     global exceptionSeasonCache
     if indexer_id not in exceptionSeasonCache:
         myDB = db.DBConnection("cache.db")
-        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
+                                 [indexer_id])
         exceptionSeasonCache[indexer_id] = [int(x["season"]) for x in sqlResults]
 
     return exceptionSeasonCache[indexer_id]
 
+
 def get_scene_exception_by_name(show_name):
     return get_scene_exception_by_name_multiple(show_name)[0]
+
 
 def get_scene_exception_by_name_multiple(show_name):
     """
@@ -87,7 +95,9 @@ def get_scene_exception_by_name_multiple(show_name):
     myDB = db.DBConnection("cache.db")
 
     # try the obvious case first
-    exception_result = myDB.select("SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season ASC", [show_name.lower()])
+    exception_result = myDB.select(
+        "SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season ASC",
+        [show_name.lower()])
     if exception_result:
         return [(int(x["indexer_id"]), int(x["season"])) for x in exception_result]
 
@@ -99,7 +109,8 @@ def get_scene_exception_by_name_multiple(show_name):
         cur_indexer_id = int(cur_exception["indexer_id"])
         cur_season = int(cur_exception["season"])
 
-        if show_name.lower() in (cur_exception_name.lower(), sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
+        if show_name.lower() in (
+        cur_exception_name.lower(), sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
             logger.log(u"Scene exception lookup got indexer id " + str(cur_indexer_id) + u", using that", logger.DEBUG)
             out.append((cur_indexer_id, cur_season))
     if out:
@@ -107,18 +118,21 @@ def get_scene_exception_by_name_multiple(show_name):
     else:
         return [(None, None)]
 
+
 def retrieve_exceptions():
     """
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
 
-    global exceptionCache, exceptionSeasonCache
+    global exceptionCache, exceptionSeasonCache, exceptionIndexerCache
 
     exception_dict = {}
+    exceptionCache = {}
+    exceptionSeasonCache = {}
+    exceptionIndexerCache = {}
 
     # exceptions are stored on github pages
-
     for indexer in sickbeard.indexerApi().indexers:
         logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
 
@@ -135,7 +149,7 @@ def retrieve_exceptions():
             # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
             for cur_line in url_data.splitlines():
                 cur_line = cur_line.decode('utf-8')
-                indexer_id, sep, aliases = cur_line.partition(':')  #@UnusedVariable
+                indexer_id, sep, aliases = cur_line.partition(':')  # @UnusedVariable
 
                 if not aliases:
                     continue
@@ -143,7 +157,7 @@ def retrieve_exceptions():
                 indexer_id = int(indexer_id)
 
                 # regex out the list of shows, taking \' into account
-                #alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
+                # alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
                 alias_list = [{re.sub(r'\\(.)', r'\1', x): -1} for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
 
                 exception_dict[indexer_id] = alias_list
@@ -177,6 +191,10 @@ def retrieve_exceptions():
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
             cur_exception, curSeason = cur_exception_dict.items()[0]
+
+            # updating internal scene cache
+            exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = cur_indexer_id
+
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
@@ -187,49 +205,29 @@ def retrieve_exceptions():
     if changed_exceptions:
         logger.log(u"Updated scene exceptions")
         name_cache.clearCache()
-        exceptionCache = {}
-        exceptionSeasonCache = {}
     else:
         logger.log(u"No scene exceptions update needed")
-
-    # update indexer cache
-    updateIndexerCache()
 
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
 
+    global exceptionIndexerCache
+
     myDB = db.DBConnection("cache.db")
 
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
 
-    for cur_exception in scene_exceptions:
-        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [indexer_id, cur_exception])
+    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
+    for cur_exception, cur_season in scene_exceptions:
+        exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = indexer_id
+        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
+                    [indexer_id, cur_exception, cur_season])
 
     name_cache.clearCache()
 
-def updateIndexerCache():
-    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
-    _excpetionDots = []
-    global exceptionIndexerCache
-    exceptionIndexerCache = {}
-
-    for show in sickbeard.showList:
-        for curSeason in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
-            exceptionIndexerCache[helpers.full_sanitizeSceneName(show.name)] = show.indexerid
-            _excpetionDots.append(".")
-            for name in get_scene_exceptions(show.indexerid, season=curSeason):
-                exceptionIndexerCache[name] = show.indexerid
-                exceptionIndexerCache[helpers.full_sanitizeSceneName(name)] = show.indexerid
-                _excpetionDots.append(".")
-
-    logger.log(u"Updated internal scene name cache " + "".join(_excpetionDots), logger.MESSAGE)
-    logger.log(u"Internal scene name cache set to: " + str(exceptionIndexerCache), logger.DEBUG)
-
-
 def _retrieve_anidb_mainnames():
-
     anidb_mainNames = {}
     for show in sickbeard.showList:
         if show.is_anime and show.indexer == 1:
@@ -239,10 +237,10 @@ def _retrieve_anidb_mainnames():
                 continue
             else:
                 if anime.name and anime.name != show.name:
-                    anidb_mainNames[show.indexerid] = [{anime.name:-1}]
+                    anidb_mainNames[show.indexerid] = [{anime.name: -1}]
 
-    #logger.log("anidb anime names: " + str(anidb_mainNames), logger.DEBUG)
     return anidb_mainNames
+
 
 def _xem_excpetions_fetcher(indexer):
     exception_dict = {}
@@ -260,8 +258,8 @@ def _xem_excpetions_fetcher(indexer):
     for indexerid, names in url_data['data'].items():
         exception_dict[int(indexerid)] = names
 
-    #logger.log(u"xem exception dict: " + str(exception_dict), logger.DEBUG)
     return exception_dict
+
 
 def getSceneSeasons(indexer_id):
     """get a list of season numbers that have scene excpetions

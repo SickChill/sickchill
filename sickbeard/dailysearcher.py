@@ -42,9 +42,6 @@ class DailySearcher():
 
         self.amActive = True
 
-        # remove names from cache that link back to active shows that we watch
-        sickbeard.name_cache.syncNameCache()
-
         logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
 
         fromDate = datetime.date.today() - datetime.timedelta(weeks=1)
@@ -88,6 +85,10 @@ class DailySearcher():
         if len(todaysEps):
             for show in todaysEps:
                 segment = todaysEps[show]
+
+                # remove show from name cache if marked invalid
+                sickbeard.name_cache.clearCache(show)
+
                 dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, segment)
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)  #@UndefinedVariable
         else:
