@@ -125,12 +125,11 @@ def retrieve_exceptions():
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
 
-    global exceptionCache, exceptionSeasonCache, exceptionIndexerCache
+    global exceptionCache, exceptionSeasonCache
 
     exception_dict = {}
     exceptionCache = {}
     exceptionSeasonCache = {}
-    exceptionIndexerCache = {}
 
     # exceptions are stored on github pages
     for indexer in sickbeard.indexerApi().indexers:
@@ -192,9 +191,6 @@ def retrieve_exceptions():
         for cur_exception_dict in exception_dict[cur_indexer_id]:
             cur_exception, curSeason = cur_exception_dict.items()[0]
 
-            # updating internal scene cache
-            exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = cur_indexer_id
-
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
@@ -207,6 +203,9 @@ def retrieve_exceptions():
         name_cache.clearCache()
     else:
         logger.log(u"No scene exceptions update needed")
+
+    # build indexer scene name cache
+    buildIndexerCache()
 
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
@@ -267,3 +266,18 @@ def getSceneSeasons(indexer_id):
     myDB = db.DBConnection("cache.db")
     seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     return [cur_exception["season"] for cur_exception in seasons]
+
+def buildIndexerCache():
+    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
+    global exceptionIndexerCache
+    exceptionIndexerCache = {}
+
+    for show in sickbeard.showList:
+        for curSeason in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
+            exceptionIndexerCache[helpers.full_sanitizeSceneName(show.name)] = show.indexerid
+            for name in get_scene_exceptions(show.indexerid, season=curSeason):
+                exceptionIndexerCache[name] = show.indexerid
+                exceptionIndexerCache[helpers.full_sanitizeSceneName(name)] = show.indexerid
+
+    logger.log(u"Updated internal scene name cache", logger.MESSAGE)
+    logger.log(u"Internal scene name cache set to: " + str(exceptionIndexerCache), logger.DEBUG)
