@@ -65,7 +65,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     if ek.ek(os.path.isdir, dirName):
         dirName = ek.ek(os.path.realpath, dirName)
 
-    # if the client and Sickbeard are not on the same machine translate the Dir in a network dir
+    # if the client and SickRage are not on the same machine translate the Dir in a network dir
     elif sickbeard.TV_DOWNLOAD_DIR and ek.ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR) \
             and ek.ek(os.path.normpath, dirName) != ek.ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
         dirName = ek.ek(os.path.join, sickbeard.TV_DOWNLOAD_DIR, ek.ek(os.path.abspath, dirName).split(os.path.sep)[-1])

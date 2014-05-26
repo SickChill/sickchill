@@ -152,7 +152,7 @@ class Quality:
     @staticmethod
     def nameQuality(name, anime=False):
         """
-        Return The quality from an episode File renamed by Sickbeard
+        Return The quality from an episode File renamed by SickRage
         If no quality is achieved it will try sceneQuality regex
         """
 

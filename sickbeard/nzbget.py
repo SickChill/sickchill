@@ -52,7 +52,7 @@ def sendNZB(nzb, proper=False):
 
     nzbGetRPC = xmlrpclib.ServerProxy(url)
     try:
-        if nzbGetRPC.writelog("INFO", "Sickbeard connected to drop of %s any moment now." % (nzb.name + ".nzb")):
+        if nzbGetRPC.writelog("INFO", "SickRage connected to drop of %s any moment now." % (nzb.name + ".nzb")):
             logger.log(u"Successful connected to NZBget", logger.DEBUG)
         else:
             logger.log(u"Successful connected to NZBget, but unable to send a message", logger.ERROR)
@@ -76,9 +76,9 @@ def sendNZB(nzb, proper=False):
     for curEp in nzb.episodes:
         if dupekey == "":
             if curEp.show.indexer == 1:
-                dupekey = "Sickbeard-" + str(curEp.show.indexerid)
+                dupekey = "SickRage-" + str(curEp.show.indexerid)
             elif curEp.show.indexer == 2:
-                dupekey = "Sickbeard-tvr" + str(curEp.show.indexerid)
+                dupekey = "SickRage-tvr" + str(curEp.show.indexerid)
         dupekey += "-" + str(curEp.season) + "." + str(curEp.episode)
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True

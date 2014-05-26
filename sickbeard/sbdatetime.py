@@ -96,7 +96,7 @@ class sbdatetime(datetime.datetime):
     has_locale = True
     ORIG_LC_TIME = locale.LC_TIME
 
-    # display Time in Sickbeard Format
+    # display Time in SickRage Format
     @static_or_instance
     def sbftime(self, dt=None, show_seconds=False, t_preset=None):
 
@@ -135,7 +135,7 @@ class sbdatetime(datetime.datetime):
 
             return strt
 
-    # display Date in Sickbeard Format
+    # display Date in SickRage Format
     @static_or_instance
     def sbfdate(self, dt=None, d_preset=None):
 
@@ -166,7 +166,7 @@ class sbdatetime(datetime.datetime):
 
             return strd
 
-    # display Datetime in Sickbeard Format
+    # display Datetime in SickRage Format
     @static_or_instance
     def sbfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
 
