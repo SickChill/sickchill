@@ -54,12 +54,12 @@ class DailySearcher():
                 show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
             except exceptions.MultipleShowObjectsException:
                 logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
-                return None
+                break
 
-            if show == None:
+            if not show:
                 logger.log(u"Unable to find the show with ID " + str(
                     sqlEp["showid"]) + " in your show list! DB value was " + str(sqlEp), logger.ERROR)
-                return None
+                break
 
             ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
@@ -89,3 +89,5 @@ class DailySearcher():
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
         else:
             logger.log(u"Could not find any needed episodes to search for ...")
+
+        self.amActive = False
