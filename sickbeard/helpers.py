@@ -1009,24 +1009,34 @@ def _check_against_names(nameInQuestion, show, season=-1):
 def get_show_by_name(name, useIndexer=False):
     name = full_sanitizeSceneName(name)
 
-    showObj = sickbeard.name_cache.retrieveShowFromCache(name)
-    if not showObj and sickbeard.showList:
-        showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
-        for showName in showNames:
-            if showName in sickbeard.scene_exceptions.exceptionIndexerCache:
-                showObj = findCertainShow(sickbeard.showList, int(sickbeard.scene_exceptions.exceptionIndexerCache[showName]))
-                if showObj:
-                    break
+    try:
+        # check cache for show
+        showObj = sickbeard.name_cache.retrieveShowFromCache(name)
+        if showObj:
+            return showObj
 
-            if useIndexer and not showObj:
-                (sn, idx, id) = searchIndexerForShowID(showName, ui=classes.ShowListUI)
-                if id:
-                    showObj = findCertainShow(sickbeard.showList, int(id))
+        if not showObj and sickbeard.showList:
+            showNames = list(set(sickbeard.show_name_helpers.sceneToNormalShowNames(name)))
+            for showName in showNames:
+                if showName in sickbeard.scene_exceptions.exceptionIndexerCache:
+                    showObj = findCertainShow(sickbeard.showList, int(sickbeard.scene_exceptions.exceptionIndexerCache[showName]))
                     if showObj:
                         break
 
-    return showObj
+                if useIndexer and not showObj:
+                    (sn, idx, id) = searchIndexerForShowID(showName, ui=classes.ShowListUI)
+                    if id:
+                        showObj = findCertainShow(sickbeard.showList, int(id))
+                        if showObj:
+                            break
 
+        # add show to cache
+        if showObj:
+            sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
+    except:
+        showObj = None
+
+    return showObj
 
 def is_hidden_folder(folder):
     """

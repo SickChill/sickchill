@@ -202,6 +202,7 @@ class NameParser(object):
                     result.show = show
                     return result
                 elif cur_regex_type == 'normal':
+                    result.show = show if show else None
                     return result
 
         return None
@@ -254,7 +255,7 @@ class NameParser(object):
 
             return result
 
-    def parse(self, name):
+    def parse(self, name, cache_result=True):
         name = self._unicodify(name)
 
         cached = name_parser_cache.get(name)
@@ -329,7 +330,9 @@ class NameParser(object):
         if final_result.season_number == None and not final_result.episode_numbers and final_result.air_date == None and not final_result.series_name:
             raise InvalidNameException("Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
-        name_parser_cache.add(name, final_result)
+        if cache_result:
+            name_parser_cache.add(name, final_result)
+
         return final_result
 
 
@@ -436,8 +439,8 @@ class ParseResult(object):
 
         return to_return.encode('utf-8')
 
-    def convert(self, show):
-        if not show: return self  # need show object
+    def convert(self):
+        if not self.show: return self  # need show object
         if not self.season_number: return self  # can't work without a season
         if not len(self.episode_numbers): return self  # need at least one episode
         if self.air_by_date or self.sports: return self  # scene numbering does not apply to air-by-date
@@ -451,7 +454,7 @@ class ParseResult(object):
             if len(self.ab_episode_numbers):
                 abNo = self.ab_episode_numbers[i]
 
-            (s, e, a) = scene_numbering.get_indexer_numbering(show.indexerid, show.indexer, self.season_number,
+            (s, e, a) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number,
                                                               epNo, abNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)
@@ -491,7 +494,8 @@ class ParseResult(object):
 
     def _is_anime(self):
         if self.ab_episode_numbers:
-            return True
+            if self.show and self.show.is_anime:
+                return True
         return False
 
     is_anime = property(_is_anime)

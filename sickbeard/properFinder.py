@@ -146,19 +146,12 @@ class ProperFinder():
                         curProper.indexerid = curShow.indexerid
                         break
 
-            showObj = None
-            if curProper.indexerid:
-                showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
-
-            if not showObj:
+            if not parse_result.show:
                 sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
                 continue
 
             if not in_cache:
-                sickbeard.name_cache.addNameToCache(parse_result.series_name, curProper.indexerid)
-
-            # scene numbering -> indexer numbering
-            parse_result = parse_result.convert(showObj)
+                sickbeard.name_cache.addNameToCache(parse_result.series_name, parse_result.show.indexerid)
 
             if not parse_result.episode_numbers:
                 logger.log(

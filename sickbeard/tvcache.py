@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -44,6 +44,7 @@ from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException
 
 cache_lock = threading.Lock()
+
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -260,13 +261,10 @@ class TVCache():
         return True
 
     def _addCacheEntry(self, name, url, quality=None):
-        indexerid = None
-        in_cache = False
-
         # if we don't have complete info then parse the filename to get it
         try:
             myParser = NameParser()
-            parse_result = myParser.parse(name)
+            parse_result = myParser.parse(name).convert()
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
@@ -279,35 +277,25 @@ class TVCache():
             logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
             return None
 
-        cacheResult = sickbeard.name_cache.retrieveNameFromCache(parse_result.series_name)
-        if cacheResult:
-            in_cache = True
-            indexerid = int(cacheResult)
-        elif cacheResult == 0:
-            return None
+        showObj = None
+        if parse_result.show:
+            showObj = parse_result.show
 
-        if not indexerid:
+        if not showObj:
             showResult = helpers.searchDBForShow(parse_result.series_name)
             if showResult:
-                indexerid = int(showResult[0])
+                showObj = helpers.findCertainShow(sickbeard.showList, int(showResult[0]))
 
-        if not indexerid:
+        if not showObj:
             for curShow in sickbeard.showList:
                 if show_name_helpers.isGoodResult(name, curShow, False):
-                    indexerid = curShow.indexerid
+                    showObj = curShow
                     break
-
-        showObj = None
-        if indexerid:
-            showObj = helpers.findCertainShow(sickbeard.showList, indexerid)
 
         if not showObj:
             logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
             sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
             return None
-
-        # scene -> indexer numbering
-        parse_result = parse_result.convert(showObj)
 
         season = episodes = None
         if parse_result.air_by_date or parse_result.sports:
@@ -316,7 +304,7 @@ class TVCache():
             airdate = parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()
             sql_results = myDB.select(
                 "SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
-                [indexerid, showObj.indexer, airdate])
+                [showObj.indexerid, showObj.indexer, airdate])
             if sql_results > 0:
                 season = int(sql_results[0]["season"])
                 episodes = [int(sql_results[0]["episode"])]
@@ -340,12 +328,9 @@ class TVCache():
 
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
-            if not in_cache:
-                sickbeard.name_cache.addNameToCache(parse_result.series_name, indexerid)
-
             return [
                 "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                [name, season, episodeText, indexerid, url, curTimestamp, quality]]
+                [name, season, episodeText, showObj.indexerid, url, curTimestamp, quality]]
 
 
     def searchCache(self, episodes, manualSearch=False):
@@ -420,7 +405,7 @@ class TVCache():
                     result.quality = curQuality
                     result.content = self.provider.getURL(url) \
                         if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                        and not url.startswith('magnet') else None
+                           and not url.startswith('magnet') else None
 
                     # add it to the list
                     if epObj not in neededEps:

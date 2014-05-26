@@ -286,15 +286,12 @@ class GenericProvider:
                 # parse the file name
                 try:
                     myParser = NameParser(False, show=show, useIndexers=manualSearch)
-                    parse_result = myParser.parse(title)
+                    parse_result = myParser.parse(title).convert()
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
 
                 quality = self.getQuality(item, parse_result.is_anime)
-
-                # scene -> indexer numbering
-                parse_result = parse_result.convert(self.show)
 
                 if not (self.show.air_by_date or self.show.sports):
                     if search_mode == 'sponly' and len(parse_result.episode_numbers):

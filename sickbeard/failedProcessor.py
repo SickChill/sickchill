@@ -55,7 +55,7 @@ class FailedProcessor(object):
         parser = NameParser(False)
 
         try:
-            parsed = parser.parse(releaseName)
+            parsed = parser.parse(releaseName).convert()
         except InvalidNameException:
             self._log(u"Error: release name is invalid: " + releaseName, logger.WARNING)
             raise exceptions.FailedProcessingFailed()
@@ -69,22 +69,18 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
         logger.log(u" - " + str(parsed.sports_event_date), logger.DEBUG)
 
-        self._show_obj = sickbeard.helpers.get_show_by_name(parsed.series_name)
-        if self._show_obj is None:
+        if parsed.show is None:
             self._log(
                 u"Could not create show object. Either the show hasn't been added to SickRage, or it's still loading (if SB was restarted recently)",
                 logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
-        # scene -> indexer numbering
-        parsed = parsed.convert(self._show_obj)
-
         segment = {parsed.season_number:[]}
         for episode in parsed.episode_numbers:
-            epObj = self._show_obj.getEpisode(parsed.season_number, episode)
+            epObj = parsed.show.getEpisode(parsed.season_number, episode)
             segment[parsed.season_number].append(epObj)
 
-        cur_failed_queue_item = search_queue.FailedQueueItem(self._show_obj, segment)
+        cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, segment)
         sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True
