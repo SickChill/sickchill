@@ -187,10 +187,12 @@ class NewznabProvider(generic.NZBProvider):
                   "cat": self.catIDs}
 
         # sports and anime catIDs
-        if self.show.is_sports:
+        if self.show and self.show.is_sports:
             params['cat'] += ',5060'
-        elif self.show.is_anime:
+        elif self.show and self.show.is_anime:
             params['cat'] += ',5070,5090'
+        elif not self.show:
+            params['cat'] += ',5060,5070,5090'
 
         # if max_age is set, use it, don't allow it to be missing
         if age or not params['maxage']:
@@ -254,7 +256,7 @@ class NewznabProvider(generic.NZBProvider):
                     term_items_found = False
                 else:
                     if do_search_alt:
-                        search_params["t"] = "search"
+                        search_params['t'] = "search"
 
                     do_search_alt = (True, False)[do_search_alt]
 
