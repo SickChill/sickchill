@@ -20,7 +20,7 @@ from __future__ import with_statement
 
 import cherrypy
 import webbrowser
-import sqlite3
+import time
 import datetime
 import socket
 import os, sys, subprocess, re
@@ -41,6 +41,7 @@ from sickbeard import helpers, db, exceptions, show_queue, search_queue, schedul
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
+from sickbeard import maintenance
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -77,6 +78,7 @@ PIDFILE = ''
 
 DAEMON = None
 
+maintenanceScheduler = None
 dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
@@ -472,7 +474,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME
+            ANIME_SPLIT_HOME, maintenanceScheduler
 
         if __INITIALIZED__:
             return False
@@ -904,7 +906,7 @@ def initialize(consoleLogging=True):
         # initialize the cache database
         db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
 
-        # initalize the failed downloads database
+        # initialize the failed downloads database
         db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
 
         # fix up any db problems
@@ -933,10 +935,20 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
         providerList = providers.makeProviderList()
 
-        # the interval for this is stored inside the ShowUpdater class
-        showUpdaterInstance = showUpdater.ShowUpdater()
-        showUpdateScheduler = scheduler.Scheduler(showUpdaterInstance,
-                                                  cycleTime=showUpdaterInstance.updateInterval,
+        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
+                                                   cycleTime=datetime.timedelta(hours=1),
+                                                   threadName="MAINTENANCE",
+                                                   silent=True,
+                                                   runImmediately=True)
+
+        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
+                                                   cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
+                                                   threadName="DAILYSEARCHER",
+                                                   silent=True,
+                                                   runImmediately=DAILYSEARCH_STARTUP)
+
+        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
+                                                  cycleTime=showUpdater.ShowUpdater().updateInterval,
                                                   threadName="SHOWUPDATER",
                                                   runImmediately=False)
 
@@ -956,29 +968,30 @@ def initialize(consoleLogging=True):
                                                    threadName="SEARCHQUEUE",
                                                    silent=True)
 
-        properFinderInstance = properFinder.ProperFinder()
-        properFinderScheduler = scheduler.Scheduler(properFinderInstance,
-                                                    cycleTime=properFinderInstance.updateInterval,
+        properFinderScheduler = scheduler.Scheduler(properFinder.ProperFinder(),
+                                                    cycleTime=properFinder.ProperFinder().updateInterval,
                                                     threadName="FINDPROPERS",
+                                                    silent=False if DOWNLOAD_PROPERS else True,
                                                     runImmediately=True)
-        if not DOWNLOAD_PROPERS:
-            properFinderScheduler.silent = True
 
         autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
+                                                         silent=False if PROCESS_AUTOMATICALLY else True,
                                                          runImmediately=True)
-        if not PROCESS_AUTOMATICALLY:
-            autoPostProcesserScheduler.silent = True
 
         traktWatchListCheckerSchedular = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
                                                              cycleTime=datetime.timedelta(hours=1),
                                                              threadName="TRAKTWATCHLIST",
+                                                             silent=False if USE_TRAKT else True,
                                                              runImmediately=True)
 
-        if not USE_TRAKT:
-            traktWatchListCheckerSchedular.silent = True
+        subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
+                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
+                                                       threadName="FINDSUBTITLES",
+                                                       silent=False if USE_SUBTITLES else True,
+                                                       runImmediately=True)
 
         backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
                                                                       cycleTime=datetime.timedelta(
@@ -986,23 +999,6 @@ def initialize(consoleLogging=True):
                                                                       threadName="BACKLOG",
                                                                       silent=True,
                                                                       runImmediately=BACKLOG_STARTUP)
-
-        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
-                                                   cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
-                                                   threadName="DAILYSEARCHER",
-                                                   silent=True,
-                                                   runImmediately=DAILYSEARCH_STARTUP)
-
-        subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
-                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
-                                                       threadName="FINDSUBTITLES",
-                                                       runImmediately=True)
-
-        if not USE_SUBTITLES:
-            subtitlesFinderScheduler.silent = True
-
-        showList = []
-        loadingShowList = {}
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
@@ -1041,7 +1037,7 @@ def initialize(consoleLogging=True):
                                                                curTorrentProvider.getID() + '_options', '')
             if hasattr(curTorrentProvider, 'ratio'):
                 curTorrentProvider.ratio = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_ratio', '')
+                                                             curTorrentProvider.getID() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
                 curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_minseed', 0)
@@ -1099,23 +1095,29 @@ def initialize(consoleLogging=True):
         except:
             pass
 
+        showList = []
+        loadingShowList = {}
+
         __INITIALIZED__ = True
         return True
 
 
 def start():
-    global __INITIALIZED__, backlogSearchScheduler, \
+    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, started, USE_SUBTITLES, \
-        traktWatchListCheckerSchedular, dailySearchScheduler, started
+        subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerSchedular, \
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
 
-            # start the version checker
-            versionCheckScheduler.thread.start()
+            # start the maintenance scheduler
+            maintenanceScheduler.thread.start()
+            logger.log(u"Performing initial maintenance tasks, please wait ...")
+            while maintenanceScheduler.action.amActive:
+                time.sleep(1)
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
@@ -1123,17 +1125,20 @@ def start():
             # start the backlog scheduler
             backlogSearchScheduler.thread.start()
 
+            # start the show updater
+            showUpdateScheduler.thread.start()
+
+            # start the version checker
+            versionCheckScheduler.thread.start()
+
+            # start the queue checker
+            showQueueScheduler.thread.start()
+
             # start the search queue checker
             searchQueueScheduler.thread.start()
 
             # start the queue checker
             properFinderScheduler.thread.start()
-
-            # start the queue checker
-            showQueueScheduler.thread.start()
-
-            # start the show updater
-            showUpdateScheduler.thread.start()
 
             # start the proper finder
             autoPostProcesserScheduler.thread.start()
@@ -1149,10 +1154,11 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, backlogSearchScheduler, showUpdateScheduler, \
-        showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, dailySearchScheduler, started, \
-        traktWatchListCheckerSchedular
+    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+        showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
+        properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
+        subtitlesFinderScheduler, traktWatchListCheckerSchedular, \
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
@@ -1162,10 +1168,10 @@ def halt():
 
             # abort all the threads
 
-            backlogSearchScheduler.abort = True
-            logger.log(u"Waiting for the BACKLOG thread to exit")
+            maintenanceScheduler.abort = True
+            logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
             try:
-                backlogSearchScheduler.thread.join(10)
+                maintenanceScheduler.thread.join(10)
             except:
                 pass
 
@@ -1173,6 +1179,13 @@ def halt():
             logger.log(u"Waiting for the DAILYSEARCHER thread to exit")
             try:
                 dailySearchScheduler.thread.join(10)
+            except:
+                pass
+
+            backlogSearchScheduler.abort = True
+            logger.log(u"Waiting for the BACKLOG thread to exit")
+            try:
+                backlogSearchScheduler.thread.join(10)
             except:
                 pass
 
@@ -1234,7 +1247,7 @@ def halt():
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
-                #ADBA_CONNECTION.stop()
+                # ADBA_CONNECTION.stop()
                 logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
                 try:
                     ADBA_CONNECTION.join(5)
@@ -1336,7 +1349,7 @@ def restart(soft=True):
     if soft:
         halt()
         saveAll()
-        #logger.log(u"Restarting cherrypy")
+        # logger.log(u"Restarting cherrypy")
         #cherrypy.engine.restart()
         logger.log(u"Re-initializing all data")
         initialize()

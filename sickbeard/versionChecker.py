@@ -33,12 +33,8 @@ import sickbeard
 from sickbeard import helpers
 from sickbeard import version, ui
 from sickbeard import logger
-from sickbeard import scene_exceptions
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
-from sickbeard import failed_history
-from sickbeard import network_timezones
-
 
 class CheckVersion():
     """
@@ -68,17 +64,6 @@ class CheckVersion():
 
                     # do a soft restart
                     threading.Timer(2, sickbeard.invoke_restart, [False]).start()
-
-        if not updated:
-            # refresh scene exceptions too
-            scene_exceptions.retrieve_exceptions()
-
-            # refresh network timezones
-            network_timezones.update_network_dict()
-
-            # sure, why not?
-            if sickbeard.USE_FAILED_DOWNLOADS:
-                failed_history.trimHistory()
 
     def find_install_type(self):
         """

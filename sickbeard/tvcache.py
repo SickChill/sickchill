@@ -261,7 +261,7 @@ class TVCache():
         return True
 
     def _addCacheEntry(self, name, url, quality=None):
-        # if we don't have complete info then parse the filename to get it
+
         try:
             myParser = NameParser()
             parse_result = myParser.parse(name).convert()
@@ -269,32 +269,11 @@ class TVCache():
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
 
-        if not parse_result:
-            logger.log(u"Giving up because I'm unable to parse this name: " + name, logger.DEBUG)
+        if not parse_result or not parse_result.series_name:
             return None
 
-        if not parse_result.series_name:
-            logger.log(u"No series name retrieved from " + name + ", unable to cache it", logger.DEBUG)
-            return None
-
-        showObj = None
-        if parse_result.show:
-            showObj = parse_result.show
-
-        if not showObj:
-            showResult = helpers.searchDBForShow(parse_result.series_name)
-            if showResult:
-                showObj = helpers.findCertainShow(sickbeard.showList, int(showResult[0]))
-
-        if not showObj:
-            for curShow in sickbeard.showList:
-                if show_name_helpers.isGoodResult(name, curShow, False):
-                    showObj = curShow
-                    break
-
-        if not showObj:
+        if not parse_result.show:
             logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
-            sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
             return None
 
         season = episodes = None
@@ -304,7 +283,7 @@ class TVCache():
             airdate = parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()
             sql_results = myDB.select(
                 "SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
-                [showObj.indexerid, showObj.indexer, airdate])
+                [parse_result.show.indexerid, parse_result.show.indexer, airdate])
             if sql_results > 0:
                 season = int(sql_results[0]["season"])
                 episodes = [int(sql_results[0]["episode"])]
@@ -330,7 +309,7 @@ class TVCache():
 
             return [
                 "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                [name, season, episodeText, showObj.indexerid, url, curTimestamp, quality]]
+                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality]]
 
 
     def searchCache(self, episodes, manualSearch=False):

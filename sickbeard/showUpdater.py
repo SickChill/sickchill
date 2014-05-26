@@ -27,7 +27,8 @@ from sickbeard import ui
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 from sickbeard import db
-
+from sickbeard import network_timezones
+from sickbeard import failed_history
 
 class ShowUpdater():
     def __init__(self):

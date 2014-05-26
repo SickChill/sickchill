@@ -205,7 +205,7 @@ class ManageSearches:
         #t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
         t.backlogPaused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        t.dailySearchStatus = sickbeard.searchQueueScheduler.action.is_dailysearch_in_progress()  # @UndefinedVariable
+        t.dailySearchStatus = sickbeard.searchQueueScheduler.action.amActive  # @UndefinedVariable
         t.findPropersStatus = sickbeard.properFinderScheduler.action.amActive  # @UndefinedVariable
 
         t.submenu = ManageMenu()
