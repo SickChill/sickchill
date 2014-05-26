@@ -77,9 +77,9 @@ class NextGenProvider(generic.TorrentProvider):
     def imageName(self):
         return 'nextgen.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
-        quality = Quality.sceneQuality(item[0])
+        quality = Quality.sceneQuality(item[0], anime)
         return quality
 
     def getLoginParams(self):

@@ -586,7 +586,7 @@ class ConfigMigrator():
                                logger.ERROR)
                     continue
 
-                if name == 'SickRage Index':
+                if name == 'Sick Beard Index':
                     key = '0'
 
                 if name == 'NZBs.org':

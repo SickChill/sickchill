@@ -20,7 +20,7 @@ import os
 import sickbeard
 
 from urllib import urlencode
-from urllib2 import Request, urlopen, URLError
+from urllib2 import Request, urlopen, HTTPError
 
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
@@ -87,7 +87,7 @@ class pyTivoNotifier:
 
         try:
             response = urlopen(request)  #@UnusedVariable
-        except URLError, e:
+        except HTTPError , e:
             if hasattr(e, 'reason'):
                 logger.log(u"pyTivo notification: Error, failed to reach a server")
                 logger.log(u"'Error reason: " + e.reason)

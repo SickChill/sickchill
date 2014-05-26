@@ -418,7 +418,7 @@ class TVRage:
             'airtime': 'airs_time',
             'airday': 'airs_dayofweek',
             'image': 'fanart',
-            'epnum': 'id',
+            'epnum': 'absolute_number',
             'title': 'episodename',
             'airdate': 'firstaired',
             'screencap': 'filename',

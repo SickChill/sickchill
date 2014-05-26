@@ -63,7 +63,7 @@ class Boxcar2Notifier:
             handle = urllib2.urlopen(req, data)
             handle.close()
 
-        except urllib2.URLError, e:
+        except urllib2.HTTPError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
                 logger.log("Boxcar2 notification failed." + ex(e), logger.ERROR)

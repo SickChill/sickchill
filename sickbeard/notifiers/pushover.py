@@ -68,7 +68,7 @@ class PushoverNotifier:
             handle = urllib2.urlopen(req, data)
             handle.close()
 
-        except urllib2.URLError, e:
+        except urllib2.HTTPError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
                 logger.log("Pushover notification failed." + ex(e), logger.ERROR)
@@ -126,10 +126,6 @@ class PushoverNotifier:
         if not sickbeard.USE_PUSHOVER:
             logger.log("Notification for Pushover not enabled, skipping this notification", logger.DEBUG)
             return False
-
-        # if no userKey was given then use the one from the config
-        if not userKey:
-            userKey = sickbeard.PUSHOVER_USERKEY
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 

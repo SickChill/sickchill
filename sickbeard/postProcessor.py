@@ -21,15 +21,12 @@ from __future__ import with_statement
 import glob
 import os
 import re
-import shlex
 import subprocess
 import stat
-import copy
 
 import sickbeard
 
 from sickbeard import db
-from sickbeard import classes
 from sickbeard import common
 from sickbeard import exceptions
 from sickbeard import helpers
@@ -37,7 +34,6 @@ from sickbeard import history
 from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import show_name_helpers
-from sickbeard import scene_exceptions
 from sickbeard import failed_history
 from sickbeard import name_cache
 
@@ -46,6 +42,7 @@ from sickbeard.exceptions import ex
 
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
+from lib import adba
 
 class PostProcessor(object):
     """
@@ -483,7 +480,7 @@ class PostProcessor(object):
             return to_return
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file)
+        np = NameParser(file, useIndexers=True)
         parse_result = np.parse(name)
 
         self._log(u"Parsed " + name + " into " + str(parse_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
@@ -507,6 +504,72 @@ class PostProcessor(object):
 
         self._finalize(parse_result)
         return to_return
+
+    def _analyze_anidb(self, filePath):
+        # TODO: rewrite this
+        return (None, None, None)
+
+        if not helpers.set_up_anidb_connection():
+            return (None, None, None)
+
+        ep = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+        try:
+            self._log(u"Trying to lookup " + str(filePath) + " on anidb", logger.MESSAGE)
+            ep.load_data()
+        except Exception, e:
+            self._log(u"exception msg: " + str(e))
+            raise InvalidNameException
+        else:
+            self.anidbEpisode = ep
+
+        #TODO: clean code. it looks like it's from hell
+        for name in ep.allNames:
+
+            indexer_id = name_cache.retrieveNameFromCache(name)
+            if not indexer_id:
+                show = helpers.get_show_by_name(name)
+                if show:
+                    indexer_id = show.indexerid
+                else:
+                    indexer_id = 0
+
+                if indexer_id:
+                    name_cache.addNameToCache(name, indexer_id)
+            if indexer_id:
+                try:
+                    show = helpers.findCertainShow(sickbeard.showList, indexer_id)
+                    (season, episodes) = helpers.get_all_episodes_from_absolute_number(show, None, [ep.epno])
+                except exceptions.EpisodeNotFoundByAbsoluteNumberException:
+                    self._log(str(indexer_id) + ": Indexer object absolute number " + str(
+                        ep.epno) + " is incomplete, skipping this episode")
+                else:
+                    if len(episodes):
+                        self._log(u"Lookup successful from anidb. ", logger.DEBUG)
+                        return (indexer_id, season, episodes)
+
+        if ep.anidb_file_name:
+            self._log(u"Lookup successful, using anidb filename " + str(ep.anidb_file_name), logger.DEBUG)
+            return self._analyze_name(ep.anidb_file_name)
+        raise InvalidNameException
+
+
+    def _build_anidb_episode(self, connection, filePath):
+        ep = adba.Episode(connection, filePath=filePath,
+                          paramsF=["quality", "anidb_file_name", "crc32"],
+                          paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"])
+
+        return ep
+
+    def _add_to_anidb_mylist(self, filePath):
+        if helpers.set_up_anidb_connection():
+            if not self.anidbEpisode:  # seams like we could parse the name before, now lets build the anidb object
+                self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+
+            self._log(u"Adding the file to the anidb mylist", logger.DEBUG)
+            try:
+                self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
+            except Exception, e:
+                self._log(u"exception msg: " + str(e))
 
     def _find_info(self):
         """
@@ -676,7 +739,7 @@ class PostProcessor(object):
             if not cur_name:
                 continue
 
-            ep_quality = common.Quality.nameQuality(cur_name)
+            ep_quality = common.Quality.nameQuality(cur_name, ep_obj.show.is_anime)
             self._log(
                 u"Looking up quality for name " + cur_name + u", got " + common.Quality.qualityStrings[ep_quality],
                 logger.DEBUG)
@@ -940,6 +1003,10 @@ class PostProcessor(object):
             # if we're not renaming then there's no new base name, we'll just use the existing name
             new_base_name = None
             new_file_name = self.file_name
+
+        # add to anidb
+        if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
+            self._add_to_anidb_mylist(self.file_path)
 
         try:
             # move the episode and associated files to the show dir

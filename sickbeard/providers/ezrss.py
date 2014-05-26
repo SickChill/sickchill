@@ -53,7 +53,7 @@ class EZRSSProvider(generic.TorrentProvider):
     def imageName(self):
         return 'ezrss.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
         filename = item.filename
         quality = Quality.nameQuality(filename)

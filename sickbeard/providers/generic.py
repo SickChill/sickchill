@@ -54,6 +54,7 @@ class GenericProvider:
         self.show = None
 
         self.supportsBacklog = False
+        self.supportsAbsoluteNumbering = False
 
         self.search_mode = None
         self.search_fallback = False
@@ -188,7 +189,7 @@ class GenericProvider:
     def searchRSS(self, episodes):
         return self.cache.findNeededEpisodes(episodes)
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
         """
         Figures out the quality of the given RSS item node
         
@@ -197,7 +198,7 @@ class GenericProvider:
         Returns a Quality value obtained from the node's data 
         """
         (title, url) = self._get_title_and_url(item)  # @UnusedVariable
-        quality = Quality.sceneQuality(title)
+        quality = Quality.sceneQuality(title, anime)
         return quality
 
     def _doSearch(self, search_params, epcount=0, age=0):
@@ -282,15 +283,15 @@ class GenericProvider:
 
                 (title, url) = self._get_title_and_url(item)
 
-                quality = self.getQuality(item)
-
                 # parse the file name
                 try:
-                    myParser = NameParser(False)
+                    myParser = NameParser(False, show=show, useIndexers=manualSearch)
                     parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
+
+                quality = self.getQuality(item, parse_result.is_anime)
 
                 # scene -> indexer numbering
                 parse_result = parse_result.convert(self.show)

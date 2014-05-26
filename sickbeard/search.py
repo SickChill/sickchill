@@ -141,7 +141,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
-            #Sets per provider seed ratio
+            # Sets per provider seed ratio
             result.ratio = result.provider.seedRatio()
             result.content = result.provider.getURL(result.url) if not result.url.startswith('magnet') else None
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
@@ -298,14 +298,15 @@ def isFirstBestMatch(result):
     return False
 
 
-def filterSearchResults(show, results):
+def filterSearchResults(show, season, results):
     foundResults = {}
 
     # make a list of all the results for this provider
     for curEp in results:
         # skip non-tv crap
         results[curEp] = filter(
-            lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show),
+            lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show,
+                                                                                                     season=season),
             results[curEp])
 
         if curEp in foundResults:
@@ -353,12 +354,6 @@ def searchForNeededEpisodes(episodes):
                     u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
                     logger.DEBUG)
                 continue
-
-            # find the best result for the current episode
-            #bestResult = None
-            #for curResult in curFoundResults[curEp]:
-            #    if not bestResult or bestResult.quality < curResult.quality:
-            #        bestResult = curResult
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
@@ -408,7 +403,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
         if seasonSearch and provider.search_mode == 'sponly':
             search_mode = provider.search_mode
 
-        while(True):
+        while (True):
             searchCount += 1
 
             if search_mode == 'sponly':
@@ -426,7 +421,20 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 break
 
             if len(searchResults):
-                foundResults[provider.name] = filterSearchResults(show, searchResults)
+                # make a list of all the results for this provider
+                for curEp in searchResults:
+                    # skip non-tv crap
+                    searchResults[curEp] = filter(
+                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
+                                                                                                                 show,
+                                                                                                                 season=season),
+                        searchResults[curEp])
+
+                    if curEp in foundResults:
+                        foundResults[provider.name][curEp] += searchResults[curEp]
+                    else:
+                        foundResults[provider.name][curEp] = searchResults[curEp]
+
                 break
             elif not provider.search_fallback or searchCount == 2:
                 break
@@ -443,7 +451,6 @@ def searchProviders(show, season, episodes, manualSearch=False):
             if providerNum != len(providers):
                 continue
             break
-
 
         anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
@@ -511,7 +518,8 @@ def searchProviders(show, season, episodes, manualSearch=False):
 
                     individualResults = filter(
                         lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                                 show),
+                                                                                                                 show,
+                                                                                                                 season=season),
                         individualResults)
 
                     for curResult in individualResults:
@@ -563,7 +571,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     if epNum in foundResults[provider.name] and len(foundResults[provider.name][epNum]) > 0:
                         # but the multi-ep is worse quality, we don't want it
                         # TODO: wtf is this False for
-                        #if False and multiResult.quality <= pickBestResult(foundResults[epNum]):
+                        # if False and multiResult.quality <= pickBestResult(foundResults[epNum]):
                         #    notNeededEps.append(epNum)
                         #else:
                         neededEps.append(epNum)

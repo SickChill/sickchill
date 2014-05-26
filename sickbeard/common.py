@@ -150,7 +150,7 @@ class Quality:
         return (sorted(anyQualities), sorted(bestQualities))
 
     @staticmethod
-    def nameQuality(name):
+    def nameQuality(name, anime=False):
         """
         Return The quality from an episode File renamed by Sickbeard
         If no quality is achieved it will try sceneQuality regex
@@ -162,8 +162,9 @@ class Quality:
         for x in sorted(Quality.qualityStrings.keys(), reverse=True):
             if x == Quality.UNKNOWN:
                 continue
+
             if x == Quality.NONE:  #Last chance
-                return Quality.sceneQuality(name)
+                return Quality.sceneQuality(name, anime)
 
             regex = '\W' + Quality.qualityStrings[x].replace(' ', '\W') + '\W'
             regex_match = re.search(regex, name, re.I)
@@ -171,7 +172,7 @@ class Quality:
                 return x
 
     @staticmethod
-    def sceneQuality(name):
+    def sceneQuality(name, anime=False):
         """
         Return The quality from the scene episode File 
         """
@@ -179,6 +180,26 @@ class Quality:
         name = os.path.basename(name)
 
         checkName = lambda list, func: func([re.search(x, name, re.I) for x in list])
+
+        if anime:
+            blueRayOptions = checkName(["bluray", "blu-ray"], any)
+            hdOptions = checkName(["720p", "1280x720", "960x720"], any)
+            fullHD = checkName(["1080p", "1920x1080"], any)
+
+            if checkName(["360p", "XviD"], any):
+                return Quality.SDTV
+            elif checkName(["dvd", "480p", "848x480"], any):
+                return Quality.SDDVD
+            elif hdOptions and not blueRayOptions and not fullHD:
+                return Quality.HDTV
+            elif hdOptions and not blueRayOptions and not fullHD:
+                return Quality.HDWEBDL
+            elif blueRayOptions and hdOptions and not fullHD:
+                return Quality.HDBLURAY
+            elif fullHD:
+                return Quality.FULLHDBLURAY
+            else:
+                return Quality.UNKNOWN
 
         if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x264|h.?264)"], all) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDTV

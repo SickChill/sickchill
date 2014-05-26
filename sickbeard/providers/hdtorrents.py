@@ -79,7 +79,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
     def imageName(self):
         return 'hdtorrents.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
         quality = Quality.sceneQuality(item[0])
         return quality

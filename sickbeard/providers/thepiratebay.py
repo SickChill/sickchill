@@ -73,9 +73,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
     def imageName(self):
         return 'thepiratebay.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
-        quality = Quality.sceneQuality(item[0])
+        quality = Quality.sceneQuality(item[0], anime)
         return quality
 
     def _reverseQuality(self, quality):

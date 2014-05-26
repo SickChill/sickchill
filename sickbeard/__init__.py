@@ -32,7 +32,7 @@ from threading import Lock
 from sickbeard import providers, metadata, config
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd, nyaatorrents, fanzub
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -159,6 +159,7 @@ FLATTEN_FOLDERS_DEFAULT = None
 SUBTITLES_DEFAULT = None
 INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
+ANIME_DEFAULT = None
 PROVIDER_ORDER = []
 
 NAMING_MULTI_EP = None
@@ -169,6 +170,7 @@ NAMING_SPORTS_PATTERN = None
 NAMING_CUSTOM_SPORTS = None
 NAMING_FORCE_FOLDERS = False
 NAMING_STRIP_YEAR = None
+NAMING_ANIME = None
 
 USE_NZBS = None
 USE_TORRENTS = None
@@ -320,6 +322,14 @@ NMJ_HOST = None
 NMJ_DATABASE = None
 NMJ_MOUNT = None
 
+ANIMESUPPORT = False
+USE_ANIDB = False
+ANIDB_USERNAME = None
+ANIDB_PASSWORD = None
+ANIDB_USE_MYLIST = 0
+ADBA_CONNECTION = None
+ANIME_SPLIT_HOME = False
+
 USE_SYNOINDEX = False
 
 USE_NMJv2 = False
@@ -460,7 +470,9 @@ def initialize(consoleLogging=True):
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
-            AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY
+            AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
+            ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
+            ANIME_SPLIT_HOME
 
         if __INITIALIZED__:
             return False
@@ -572,6 +584,7 @@ def initialize(consoleLogging=True):
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 10)
+        ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 
@@ -584,6 +597,7 @@ def initialize(consoleLogging=True):
         NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = bool(check_setting_int(CFG, 'General', 'naming_strip_year', 0))
+        NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
 
         USE_NZBS = bool(check_setting_int(CFG, 'General', 'use_nzbs', 0))
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))
@@ -841,6 +855,13 @@ def initialize(consoleLogging=True):
                          x.strip()]
 
         USE_LISTVIEW = bool(check_setting_int(CFG, 'General', 'use_listview', 0))
+
+        ANIMESUPPORT = False
+        USE_ANIDB = check_setting_str(CFG, 'ANIDB', 'use_anidb', '')
+        ANIDB_USERNAME = check_setting_str(CFG, 'ANIDB', 'anidb_username', '')
+        ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '')
+        ANIDB_USE_MYLIST = check_setting_str(CFG, 'ANIDB', 'anidb_use_mylist', '')
+        ANIME_SPLIT_HOME = bool(check_setting_int(CFG, 'ANIME', 'anime_split_home', 0))
 
         METADATA_XBMC = check_setting_str(CFG, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
         METADATA_XBMC_12PLUS = check_setting_str(CFG, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
@@ -1211,6 +1232,15 @@ def halt():
             except:
                 pass
 
+            if ADBA_CONNECTION:
+                ADBA_CONNECTION.logout()
+                #ADBA_CONNECTION.stop()
+                logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
+                try:
+                    ADBA_CONNECTION.join(5)
+                except:
+                    pass
+
             __INITIALIZED__ = False
 
 
@@ -1362,6 +1392,7 @@ def save_config():
     new_config['General']['flatten_folders_default'] = int(FLATTEN_FOLDERS_DEFAULT)
     new_config['General']['indexer_default'] = int(INDEXER_DEFAULT)
     new_config['General']['indexer_timeout'] = int(INDEXER_TIMEOUT)
+    new_config['General']['anime_default'] = int(ANIME_DEFAULT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)
@@ -1372,6 +1403,7 @@ def save_config():
     new_config['General']['naming_custom_sports'] = int(NAMING_CUSTOM_SPORTS)
     new_config['General']['naming_sports_pattern'] = NAMING_SPORTS_PATTERN
     new_config['General']['naming_multi_ep'] = int(NAMING_MULTI_EP)
+    new_config['General']['naming_anime'] = int(NAMING_ANIME)
     new_config['General']['launch_browser'] = int(LAUNCH_BROWSER)
     new_config['General']['update_shows_on_start'] = int(UPDATE_SHOWS_ON_START)
     new_config['General']['sort_article'] = int(SORT_ARTICLE)
@@ -1710,6 +1742,15 @@ def save_config():
     new_config['FailedDownloads'] = {}
     new_config['FailedDownloads']['use_failed_downloads'] = int(USE_FAILED_DOWNLOADS)
     new_config['FailedDownloads']['delete_failed'] = int(DELETE_FAILED)
+
+    new_config['ANIDB'] = {}
+    new_config['ANIDB']['use_anidb'] = USE_ANIDB
+    new_config['ANIDB']['anidb_username'] = ANIDB_USERNAME
+    new_config['ANIDB']['anidb_password'] = helpers.encrypt(ANIDB_PASSWORD, ENCRYPTION_VERSION)
+    new_config['ANIDB']['anidb_use_mylist'] = ANIDB_USE_MYLIST
+
+    new_config['ANIME'] = {}
+    new_config['ANIME']['anime_split_home'] = int(ANIME_SPLIT_HOME)
 
     new_config.write()
 

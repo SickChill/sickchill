@@ -171,10 +171,15 @@ class ProperFinder():
                 curProper.season = -1
                 curProper.episode = parse_result.air_date or parse_result.sports_event_date
             else:
-                curProper.season = parse_result.season_number if parse_result.season_number != None else 1
-                curProper.episode = parse_result.episode_numbers[0]
+                if parse_result.is_anime:
+                    logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
+                    continue
+                    curProper.episode = parse_result.ab_episode_numbers[0]
+                else:
+                    curProper.season = parse_result.season_number if parse_result.season_number != None else 1
+                    curProper.episode = parse_result.episode_numbers[0]
 
-            curProper.quality = Quality.nameQuality(curProper.name)
+            curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
             # for each show in our list
             for curShow in sickbeard.showList:

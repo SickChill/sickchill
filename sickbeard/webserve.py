@@ -59,7 +59,6 @@ from sickbeard.webapi import Api
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show
-from sickbeard.providers.generic import TorrentProvider
 
 from lib.dateutil import tz
 from lib.unrar2 import RarFile, RarInfo
@@ -77,7 +76,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 from sickbeard import browser
-
+from lib import adba
 
 def _handle_reverse_proxy():
     if sickbeard.HANDLE_REVERSE_PROXY:
@@ -565,6 +564,9 @@ class Manage:
         paused_all_same = True
         last_paused = None
 
+        anime_all_same = True
+        last_anime = None
+
         quality_all_same = True
         last_quality = None
 
@@ -587,6 +589,13 @@ class Manage:
                 else:
                     last_paused = curShow.paused
 
+            if anime_all_same:
+                # if we had a value already and this value is different then they're not all the same
+                if last_anime not in (curShow.is_anime, None):
+                    anime_all_same = False
+                else:
+                    last_anime = curShow.is_anime
+
             if flatten_folders_all_same:
                 if last_flatten_folders not in (None, curShow.flatten_folders):
                     flatten_folders_all_same = False
@@ -607,6 +616,7 @@ class Manage:
 
         t.showList = toEdit
         t.paused_value = last_paused if paused_all_same else None
+        t.anime_value = last_anime if anime_all_same else None
         t.flatten_folders_value = last_flatten_folders if flatten_folders_all_same else None
         t.quality_value = last_quality if quality_all_same else None
         t.subtitles_value = last_subtitles if subtitles_all_same else None
@@ -615,7 +625,7 @@ class Manage:
         return _munge(t)
 
     @cherrypy.expose
-    def massEditSubmit(self, paused=None, flatten_folders=None, quality_preset=False, subtitles=None,
+    def massEditSubmit(self, paused=None, anime=None, flatten_folders=None, quality_preset=False, subtitles=None,
                        anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
 
         dir_map = {}
@@ -649,6 +659,12 @@ class Manage:
                 new_paused = True if paused == 'enable' else False
             new_paused = 'on' if new_paused else 'off'
 
+            if anime == 'keep':
+                new_anime = showObj.is_anime
+            else:
+                new_anime = True if anime == 'enable' else False
+            new_anime = 'on' if new_anime else 'off'
+
             if flatten_folders == 'keep':
                 new_flatten_folders = showObj.flatten_folders
             else:
@@ -668,7 +684,7 @@ class Manage:
             exceptions_list = []
 
             curErrors += Home().editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
-                                         new_flatten_folders, new_paused, subtitles=new_subtitles, directCall=True)
+                                         new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime, directCall=True)
 
             if curErrors:
                 logger.log(u"Errors: " + str(curErrors), logger.ERROR)
@@ -942,6 +958,7 @@ ConfigMenu = [
     {'title': 'Subtitles Settings', 'path': 'config/subtitles/'},
     {'title': 'Post Processing', 'path': 'config/postProcessing/'},
     {'title': 'Notifications', 'path': 'config/notifications/'},
+    {'title': 'Anime', 'path': 'config/anime/'},
 ]
 
 
@@ -958,7 +975,7 @@ class ConfigGeneral:
         sickbeard.ROOT_DIRS = rootDirString
 
     @cherrypy.expose
-    def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False):
+    def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False, anime=False):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -977,6 +994,8 @@ class ConfigGeneral:
 
         sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(defaultFlattenFolders)
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
+
+        sickbeard.ANIME_DEFAULT = int(anime)
 
         sickbeard.save_config()
 
@@ -1185,7 +1204,7 @@ class ConfigPostProcessing:
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, process_automatically=None,
                            rename_episodes=None, airdate_episodes=None, unpack=None,
-                           move_associated_files=None, tv_download_dir=None, naming_custom_abd=None,
+                           move_associated_files=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
                            naming_custom_sports=None, naming_sports_pattern=None, autopostprocesser_frequency=None):
@@ -1221,6 +1240,7 @@ class ConfigPostProcessing:
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
+        sickbeard.NAMING_ANIME = config.checkbox_to_value(naming_anime)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
@@ -1273,12 +1293,12 @@ class ConfigPostProcessing:
         redirect("/config/postProcessing/")
 
     @cherrypy.expose
-    def testNaming(self, pattern=None, multi=None, abd=False, sports=False):
+    def testNaming(self, pattern=None, multi=None, abd=False, sports=False, anime=None):
 
         if multi is not None:
             multi = int(multi)
 
-        result = naming.test_name(pattern, multi, abd, sports)
+        result = naming.test_name(pattern, multi, abd, sports, anime)
 
         result = ek.ek(os.path.join, result['dir'], result['name'])
 
@@ -1966,6 +1986,52 @@ class ConfigSubtitles:
 
         redirect("/config/subtitles/")
 
+class ConfigAnime:
+
+    @cherrypy.expose
+    def index(self):
+
+        t = PageTemplate(file="config_anime.tmpl")
+        t.submenu = ConfigMenu
+        return _munge(t)
+
+    @cherrypy.expose
+    def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None, split_home=None):
+
+        results = []
+
+        if use_anidb == "on":
+            use_anidb = 1
+        else:
+            use_anidb = 0
+
+        if anidb_use_mylist == "on":
+            anidb_use_mylist = 1
+        else:
+            anidb_use_mylist = 0
+
+        if split_home == "on":
+            split_home = 1
+        else:
+            split_home = 0
+
+        sickbeard.USE_ANIDB = use_anidb
+        sickbeard.ANIDB_USERNAME = anidb_username
+        sickbeard.ANIDB_PASSWORD = anidb_password
+        sickbeard.ANIDB_USE_MYLIST = anidb_use_mylist
+        sickbeard.ANIME_SPLIT_HOME = split_home
+
+        sickbeard.save_config()
+
+        if len(results) > 0:
+            for x in results:
+                logger.log(x, logger.ERROR)
+            ui.notifications.error('Error(s) Saving Configuration',
+                        '<br />\n'.join(results))
+        else:
+            ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE) )
+
+        redirect("/config/anime/")
 
 class Config:
     @cherrypy.expose
@@ -1987,6 +2053,7 @@ class Config:
 
     subtitles = ConfigSubtitles()
 
+    anime = ConfigAnime()
 
 def haveXBMC():
     return sickbeard.USE_XBMC and sickbeard.XBMC_UPDATE_LIBRARY
@@ -2250,7 +2317,7 @@ class NewHomeAddShows:
     @cherrypy.expose
     def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None):
+                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2295,7 +2362,7 @@ class NewHomeAddShows:
             indexer_id = int(series_pieces[3])
             show_name = series_pieces[4]
         else:
-            indexer = 1
+            indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
             show_name = os.path.basename(os.path.normpath(fullShowPath))
 
@@ -2324,8 +2391,10 @@ class NewHomeAddShows:
                 helpers.chmodAsParent(show_dir)
 
         # prepare the inputs for passing along
+        anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
+
 
         if not anyQualities:
             anyQualities = []
@@ -2339,7 +2408,7 @@ class NewHomeAddShows:
 
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    flatten_folders, subtitles, indexerLang)  # @UndefinedVariable
+                                                    flatten_folders, subtitles, indexerLang, anime)  # @UndefinedVariable
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2522,6 +2591,20 @@ class Home:
     def index(self):
 
         t = PageTemplate(file="home.tmpl")
+
+        if sickbeard.ANIME_SPLIT_HOME:
+            shows = []
+            anime = []
+            for show in sickbeard.showList:
+                if show.is_anime:
+                    anime.append(show)
+                else:
+                    shows.append(show)
+            t.showlists = [["Shows",shows],
+                           ["Anime",anime]]
+        else:
+            t.showlists = [["Shows",sickbeard.showList]]
+
         t.submenu = HomeMenu()
         return _munge(t)
 
@@ -2946,7 +3029,18 @@ class Home:
                 x = x[4:]
             return x
 
-        t.sortedShowList = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+        if sickbeard.ANIME_SPLIT_HOME:
+            shows = []
+            anime = []
+            for show in sickbeard.showList:
+                if show.is_anime:
+                    anime.append(show)
+                else:
+                    shows.append(show)
+            t.sortedShowLists = [["Shows",sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
+                           ["Anime",sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+        else:
+            t.sortedShowLists = [["Shows",sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
 
         t.epCounts = epCounts
         t.epCats = epCats
@@ -2967,10 +3061,23 @@ class Home:
         return result['description'] if result else 'Episode not found.'
 
     @cherrypy.expose
+    def sceneExceptions(self, show):
+        exceptionsList = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
+        if not exceptionsList:
+            return "No scene exceptions"
+
+        out = []
+        for season, names in iter(sorted(exceptionsList.iteritems())):
+            if season == -1:
+                season = "*"
+            out.append("S" + str(season) + ": " + ", ".join(names))
+        return "<br/>".join(out)
+
+    @cherrypy.expose
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
-                 rls_require_words=None):
+                 rls_require_words=None, anime=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -2993,6 +3100,13 @@ class Home:
         if not location and not anyQualities and not bestQualities and not flatten_folders:
             t = PageTemplate(file="editShow.tmpl")
             t.submenu = HomeMenu()
+
+            if showObj.is_anime:
+                t.groups = []
+                if helpers.set_up_anidb_connection():
+                    anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
+                    t.groups = anime.get_groups()
+
             with showObj.lock:
                 t.show = showObj
 
@@ -3008,6 +3122,7 @@ class Home:
         paused = config.checkbox_to_value(paused)
         air_by_date = config.checkbox_to_value(air_by_date)
         sports = config.checkbox_to_value(sports)
+        anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
 
         indexer_lang = indexerLang
@@ -3055,6 +3170,7 @@ class Home:
             if not directCall:
                 showObj.air_by_date = air_by_date
                 showObj.sports = sports
+                showObj.anime = anime
                 showObj.subtitles = subtitles
                 showObj.lang = indexer_lang
                 showObj.dvdorder = dvdorder

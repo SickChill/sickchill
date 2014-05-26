@@ -71,9 +71,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
     def imageName(self):
         return 'iptorrents.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
-        quality = Quality.sceneQuality(item[0])
+        quality = Quality.sceneQuality(item[0], anime)
         return quality
 
     def _doLogin(self):

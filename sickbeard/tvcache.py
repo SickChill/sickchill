@@ -145,7 +145,7 @@ class TVCache():
         parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
         if post_data:
-            url = url + 'api?' + urllib.urlencode(post_data)
+            url += urllib.urlencode(post_data)
 
         f = fc.fetch(url)
 
@@ -333,7 +333,7 @@ class TVCache():
 
             # get quality of release
             if quality is None:
-                quality = Quality.sceneQuality(name)
+                quality = Quality.sceneQuality(name, parse_result.is_anime)
 
             if not isinstance(name, unicode):
                 name = unicode(name, 'utf-8')

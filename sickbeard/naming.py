@@ -53,13 +53,15 @@ class TVShow():
         self.genre = "Comedy"
         self.air_by_date = 0
         self.sports = 0
+        self.anime = 0
 
 class TVEpisode(tv.TVEpisode):
-    def __init__(self, season, episode, name):
+    def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
         self._name = name
         self._season = season
         self._episode = episode
+        self._absolute_number = absolute_number
         self._scene_season = season
         self._scene_episode = episode
         self._airdate = datetime.date(2010, 3, 9)
@@ -173,9 +175,9 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
     return True
 
 
-def _generate_sample_ep(multi=None, abd=False, sports=False):
+def _generate_sample_ep(multi=None, abd=False, sports=False, anime=False):
     # make a fake episode object
-    ep = TVEpisode(2, 3, "Ep Name")
+    ep = TVEpisode(2, 3, 3, "Ep Name")
 
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
@@ -186,6 +188,9 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
     elif sports:
         ep._release_name = 'Show.Name.100.Fighter.vs.Fighter.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
+    elif anime:
+        ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+        ep.show.anime = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
 
@@ -193,11 +198,11 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
         ep._name = "Ep Name (1)"
         ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-RLSGROUP'
 
-        secondEp = TVEpisode(2, 4, "Ep Name (2)")
+        secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
         secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
         secondEp._release_name = ep._release_name
 
-        thirdEp = TVEpisode(2, 5, "Ep Name (3)")
+        thirdEp = TVEpisode(2, 5, 5, "Ep Name (3)")
         thirdEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
         thirdEp._release_name = ep._release_name
 
@@ -207,7 +212,7 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
     return ep
 
 
-def test_name(pattern, multi=None, abd=False, sports=False):
-    ep = _generate_sample_ep(multi, abd, sports)
+def test_name(pattern, multi=None, abd=False, sports=False, anime=False):
+    ep = _generate_sample_ep(multi, abd, sports, anime)
 
     return {'name': ep.formatted_filename(pattern, multi), 'dir': ep.formatted_dir(pattern, multi)}

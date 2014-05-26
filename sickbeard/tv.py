@@ -79,6 +79,7 @@ class TVShow(object):
         self.archive_firstmatch = 0
         self.lang = lang
         self.last_update_indexer = 1
+        self.anime = 0
 
         self.rls_ignore_words = ""
         self.rls_require_words = ""
@@ -93,6 +94,20 @@ class TVShow(object):
             raise exceptions.MultipleShowObjectsException("Can't create a show if it already exists")
 
         self.loadFromDB()
+
+    def _is_anime(self):
+        if(self.anime > 0):
+            return True
+        else:
+            return False
+    is_anime = property(_is_anime)
+
+    def _is_sports(self):
+        if(self.sports > 0):
+            return True
+        else:
+            return False
+    is_sports = property(_is_sports)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -166,12 +181,29 @@ class TVShow(object):
         return ep_list
 
 
-    def getEpisode(self, season, episode, file=None, noCreate=False):
+    def getEpisode(self, season, episode, file=None, noCreate=False, absolute_number=None):
 
         if not season in self.episodes:
             self.episodes[season] = {}
 
         ep = None
+
+        # if we get an anime get the real season and episode
+        if self.anime and absolute_number != None and season == None and episode == None:
+            myDB = db.DBConnection()
+            sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
+            sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
+
+            if len(sqlResults) == 1:
+                episode = int(sqlResults[0]["episode"])
+                season = int(sqlResults[0]["season"])
+                logger.log("Found episode by absolute_number:"+str(absolute_number)+" which is "+str(season)+"x"+str(episode), logger.DEBUG)
+            elif len(sqlResults) > 1:
+                logger.log("Multiple entries for absolute number: "+str(absolute_number)+" in show: "+self.name+" found ", logger.ERROR)
+                return None
+            else:
+                logger.log("No entries for absolute number: "+str(absolute_number)+" in show: "+self.name+" found.", logger.DEBUG)
+                return None
 
         if not episode in self.episodes[season] or self.episodes[season][episode] == None:
             if noCreate:
@@ -190,6 +222,7 @@ class TVShow(object):
 
         epObj = self.episodes[season][episode]
         epObj.convertToSceneNumbering()
+
         return epObj
 
     def should_update(self, update_date=datetime.date.today()):
@@ -515,7 +548,7 @@ class TVShow(object):
         logger.log(str(self.indexerid) + u": Creating episode object from " + file, logger.DEBUG)
 
         try:
-            myParser = NameParser()
+            myParser = NameParser(show=self, useIndexers=True)
             parse_result = myParser.parse(file)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.ERROR)
@@ -601,7 +634,7 @@ class TVShow(object):
 
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
-                newQuality = Quality.nameQuality(file)
+                newQuality = Quality.nameQuality(file, self.is_anime)
                 logger.log(u"Since this file has been renamed, I checked " + file + " and found quality " +
                            Quality.qualityStrings[newQuality], logger.DEBUG)
                 if newQuality != Quality.UNKNOWN:
@@ -613,7 +646,7 @@ class TVShow(object):
                 ARCHIVED, IGNORED]:
 
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
-                newQuality = Quality.nameQuality(file)
+                newQuality = Quality.nameQuality(file, self.is_anime)
                 if newQuality == Quality.UNKNOWN:
                     newQuality = Quality.assumeQuality(file)
 
@@ -719,6 +752,10 @@ class TVShow(object):
 
             if not self.lang:
                 self.lang = sqlResults[0]["lang"]
+
+            self.anime = sqlResults[0]["anime"]
+            if self.anime == None:
+                self.anime = 0
 
             self.last_update_indexer = sqlResults[0]["last_update_indexer"]
 
@@ -1040,12 +1077,14 @@ class TVShow(object):
                         "archive_firstmatch": self.archive_firstmatch,
                         "startyear": self.startyear,
                         "lang": self.lang,
+                        "anime": self.anime,
                         "imdb_id": self.imdbid,
                         "last_update_indexer": self.last_update_indexer,
                         "rls_ignore_words": self.rls_ignore_words,
                         "rls_require_words": self.rls_require_words
         }
         myDB.upsert("tv_shows", newValueDict, controlValueDict)
+        helpers.update_anime_support()
 
         if self.imdbid:
             controlValueDict = {"indexer_id": self.indexerid}
@@ -1071,6 +1110,7 @@ class TVShow(object):
         toReturn += "classification: " + self.classification + "\n"
         toReturn += "runtime: " + str(self.runtime) + "\n"
         toReturn += "quality: " + str(self.quality) + "\n"
+        toReturn += "anime: " + str(self.is_anime) + "\n"
         return toReturn
 
 
@@ -1183,8 +1223,10 @@ class TVEpisode(object):
         self._name = ""
         self._season = season
         self._episode = episode
+        self._absolute_number = 0
         self._scene_season = season
         self._scene_episode = episode
+        self._scene_absolute_number = 0
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1218,8 +1260,10 @@ class TVEpisode(object):
     name = property(lambda self: self._name, dirty_setter("_name"))
     season = property(lambda self: self._season, dirty_setter("_season"))
     episode = property(lambda self: self._episode, dirty_setter("_episode"))
+    absolute_number = property(lambda self: self._absolute_number, dirty_setter("_absolute_number"))
     scene_season = property(lambda self: self._scene_season, dirty_setter("_scene_season"))
     scene_episode = property(lambda self: self._scene_episode, dirty_setter("_scene_episode"))
+    scene_absolute_number = property(lambda self: self._scene_absolute_number, dirty_setter("_scene_absolute_number"))
     description = property(lambda self: self._description, dirty_setter("_description"))
     subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
     subtitles_searchcount = property(lambda self: self._subtitles_searchcount, dirty_setter("_subtitles_searchcount"))
@@ -1396,6 +1440,7 @@ class TVEpisode(object):
 
             self.season = season
             self.episode = episode
+            self.absolute_number = sqlResults[0]["absolute_number"]
             self.description = sqlResults[0]["description"]
             if not self.description:
                 self.description = ""
@@ -1487,6 +1532,14 @@ class TVEpisode(object):
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
+
+        if myEp["absolute_number"] == None or myEp["absolute_number"] == "":
+            logger.log(u"This episode ("+self.show.name+" - "+str(season)+"x"+str(episode)+") has no absolute number on " + sickbeard.indexerApi(
+                self.indexer).name
+                       , logger.DEBUG)
+        else:
+            logger.log(str(self.show.indexerid) + ": The absolute_number for " + str(season) + "x" + str(episode)+" is : "+myEp["absolute_number"], logger.DEBUG)
+            self.absolute_number = int(myEp["absolute_number"])
 
         self.name = getattr(myEp, 'episodename', "")
         self.season = season
@@ -1724,12 +1777,12 @@ class TVEpisode(object):
 
         # use a custom update/insert method to get the data into the DB
         return [
-            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode) VALUES "
-            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
+            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
             [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
              ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
              self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode]]
+             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.absolute_number]]
 
     def saveToDB(self, forceSave=False):
         """
@@ -1763,7 +1816,9 @@ class TVEpisode(object):
                         "location": self.location,
                         "file_size": self.file_size,
                         "release_name": self.release_name,
-                        "is_proper": self.is_proper}
+                        "is_proper": self.is_proper,
+                        "absolute_number": self.absolute_number
+                        }
         controlValueDict = {"showid": self.show.indexerid,
                             "season": self.season,
                             "episode": self.episode}
@@ -1784,6 +1839,7 @@ class TVEpisode(object):
 
         Returns: A string representing the episode's name and season/ep numbers 
         """
+
         return self._format_pattern('%SN - %Sx%0E - %EN')
 
     def prettySceneName(self):
@@ -1898,6 +1954,7 @@ class TVEpisode(object):
             '%0XS': '%02d' % self.scene_season,
             '%XE': str(self.scene_episode),
             '%0XE': '%02d' % self.scene_episode,
+            '%AN': '%03d' % self.absolute_number,
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),
@@ -2183,13 +2240,15 @@ class TVEpisode(object):
                 relEp.saveToDB()
 
     def convertToSceneNumbering(self):
-        (self.scene_season, self.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
+        (self.scene_season, self.scene_episode, self.scene_absolute_number) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
                                                                                                 self.show.indexer,
                                                                                                 self.season,
-                                                                                                self.episode)
+                                                                                                self.episode,
+                                                                                                self.absolute_number)
 
     def convertToIndexerNumbering(self):
-        (self.season, self.episode) = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid,
+        (self.season, self.episode, self.absolute_number) = sickbeard.scene_numbering.get_indexer_numbering(self.show.indexerid,
                                                                                       self.show.indexer,
                                                                                       self.scene_season,
-                                                                                      self.scene_episode)
+                                                                                      self.scene_episode,
+                                                                                      self.scene_absolute_number)
