@@ -139,6 +139,18 @@
 	            5: { sorter: 'eps' },
 	        }
     });
+
+    #set $fuzzydate = 'airdate'
+    #if $sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        containerClass : '.${fuzzydate}',
+        dateHasTime : false,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET}',
+        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+    });
+    #end if
+
 });
 
 //-->
@@ -227,7 +239,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
   <tr>
     #if len($curEp) != 0:
     #set $ldatetime = $network_timezones.parse_date_time($curEp[0].airdate.toordinal(),$curShow.airs,$curShow.network)
-    	<td align="center" class="nowrap" style="color: #555555;font-weight:bold;">$sbdatetime.sbdatetime.sbfdate($ldatetime)<span class="sort_data">$time.mktime($ldatetime.timetuple())</span> </td>
+    	<td align="center" class="nowrap" style="color: #555555;font-weight:bold;"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$time.mktime($ldatetime.timetuple())</span> </td>
     #else:
     	<td align="center" class="nowrap" style="color: #555555;font-weight:bold;"></td>
     #end if

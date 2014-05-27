@@ -1031,7 +1031,8 @@ class ConfigGeneral:
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None, date_preset=None, time_preset=None,
+                    anon_redirect=None, git_path=None, calendar_unprotected=None,
+                    fuzzy_dating=None, trim_zero=None, date_preset=None, time_preset=None,
                     indexer_timeout=None):
 
         results = []
@@ -1059,6 +1060,9 @@ class ConfigGeneral:
         sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version)
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = web_password
+
+        sickbeard.FUZZY_DATING = config.checkbox_to_value(fuzzy_dating)
+        sickbeard.TRIM_ZERO = config.checkbox_to_value(trim_zero)
 
         if date_preset:
             sickbeard.DATE_PRESET = date_preset

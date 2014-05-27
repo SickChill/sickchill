@@ -26,7 +26,23 @@
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSubtitles.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpRetry.js?$sbPID"></script>
-
+<script type="text/javascript" charset="utf-8">
+<!--
+\$(document).ready(function(){
+##  #if not $network_timezones.test_timeformat($show.airs) #
+    #set $fuzzydate = 'airdate'
+    #if $sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        containerClass : '.${fuzzydate}',
+        dateHasTime : false,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET}',
+        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+    });
+    #end if
+});
+//-->
+</script>
 <div class="navShows">
 </br>
 <div class="align-left"><b>Change Show:</b>
@@ -322,7 +338,7 @@
 	#end if    
     $epResult["name"]
 </td>
-    <td align="center" class="nowrap">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network))#</td>
+    <td align="center" class="nowrap"><div class="${fuzzydate}">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network))#</div></td>
     <td class="filename"><small>
 #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
 	#set $epLoc = os.path.basename($epLoc[len($show._location)+1:])

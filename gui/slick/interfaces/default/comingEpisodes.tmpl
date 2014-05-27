@@ -107,6 +107,17 @@
 
     \$('#sbRoot').ajaxEpSearch();
 
+    #set $fuzzydate = 'airdate'
+    #if $sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        containerClass : '.${fuzzydate}',
+        dateHasTime : true,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET}',
+        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+    });
+    #end if
+
 });
 //-->
 </script>
@@ -146,7 +157,8 @@
 
     <!-- start $cur_result["show_name"] //-->
       <tr class="$show_div">
-        <td align="center" class="nowrap">$sbdatetime.sbdatetime.sbfdatetime($cur_result["localtime"]).decode($sickbeard.SYS_ENCODING)<span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span></td>
+        ## forced to use a div to wrap airdate, the column sort went crazy with a span
+        <td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result["localtime"]).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span></td>
         <td class="tvShow"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]</a>
             #if int($cur_result["paused"]):
             <span class="pause">[paused]</span>
@@ -212,7 +224,7 @@
     #set $show_div = "ep_listing listing_default"
 
     #if $sort == "show": 
-       <br/><br/>
+       <br /><br />
     #end if
     
     #for $cur_result in $sql_results:
