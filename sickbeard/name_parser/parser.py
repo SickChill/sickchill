@@ -24,7 +24,7 @@ import regexes
 import time
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering
+from sickbeard import logger, helpers, scene_numbering, db
 from sickbeard.exceptions import EpisodeNotFoundByAbsoluteNumberException
 from dateutil import parser
 
@@ -53,6 +53,7 @@ class NameParser(object):
         self._compile_regexes(self.regexMode)
         self.showList = sickbeard.showList
         self.useIndexers = useIndexers
+        self.show = show
 
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
@@ -194,7 +195,12 @@ class NameParser(object):
                 if 'release_group' in named_groups:
                     result.release_group = match.group('release_group')
 
-                show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
+                # determin show object for correct regex matching
+                if not self.show:
+                    show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
+                else:
+                    show = self.show
+
                 if show and show.is_anime and cur_regex_type in ['anime', 'normal']:
                     result.show = show
                     return result
@@ -336,6 +342,140 @@ class NameParser(object):
         return final_result
 
 
+    def scene2indexer(self, show, scene_name, season, episodes, absolute_numbers):
+        if not show: return self  # need show object
+
+        # TODO: check if adb and make scene2indexer useable with correct numbers
+        out_season = None
+        out_episodes = []
+        out_absolute_numbers = []
+
+        # is the scene name a special season ?
+        # TODO: define if we get scene seasons or indexer seasons ... for now they are mostly the same ... and i will use them as scene seasons
+        _possible_seasons = sickbeard.scene_exceptions.get_scene_exception_by_name_multiple(scene_name)
+        # filter possible_seasons
+        possible_seasons = []
+        for cur_scene_indexer_id, cur_scene_season in _possible_seasons:
+            if cur_scene_indexer_id and str(cur_scene_indexer_id) != str(show.indexerid):
+                logger.log("Indexer ID mismatch: " + str(show.indexerid) + " now: " + str(cur_scene_indexer_id),
+                           logger.ERROR)
+                raise MultipleSceneShowResults("indexerid mismatch")
+            # don't add season -1 since this is a generic name and not a real season... or if we get None
+            # if this was the only result possible_seasons will stay empty and the next parts will look in the general matter
+            if cur_scene_season == -1 or cur_scene_season == None:
+                continue
+            possible_seasons.append(cur_scene_season)
+        # if not possible_seasons: # no special season name was used or we could not find it
+        logger.log(
+            "possible seasons for '" + scene_name + "' (" + str(show.indexerid) + ") are " + str(possible_seasons),
+            logger.DEBUG)
+
+        # lets just get a db connection we will need it anyway
+        cacheDB = db.DBConnection('cache.db')
+        # should we use absolute_numbers -> anime or season, episodes -> normal show
+        if show.is_anime:
+            logger.log(
+                u"'" + show.name + "' is an anime i will scene convert the absolute numbers " + str(absolute_numbers),
+                logger.DEBUG)
+            if possible_seasons:
+                # check if we have a scene_absolute_number in the possible seasons
+                for cur_possible_season in possible_seasons:
+                    # and for all absolute numbers
+                    for cur_ab_number in absolute_numbers:
+                        namesSQlResult = cacheDB.select(
+                            "SELECT season, episode, absolute_number FROM xem_numbering WHERE indexer_id = ? and scene_season = ? and scene_absolute_number = ?",
+                            [show.indexerid, cur_possible_season, cur_ab_number])
+                        if len(namesSQlResult) > 1:
+                            logger.log(
+                                "Multiple episodes for a absolute number and season. check XEM numbering",
+                                logger.ERROR)
+                            raise MultipleSceneEpisodeResults("Multiple episodes for a absolute number and season")
+                        elif len(namesSQlResult) == 0:
+                            break  # break out of current absolute_numbers -> next season ... this is not a good sign
+                        # if we are here we found ONE episode for this season absolute number
+                        # logger.log(u"I found matching episode: " + namesSQlResult[0]['name'], logger.DEBUG)
+                        out_episodes.append(int(namesSQlResult[0]['episode']))
+                        out_absolute_numbers.append(int(namesSQlResult[0]['absolute_number']))
+                        out_season = int(namesSQlResult[0][
+                            'season'])  # note this will always use the last season we got ... this will be a problem on double episodes that break the season barrier
+                    if out_season:  # if we found a episode in the cur_possible_season we dont need / want to look at the other season possibilities
+                        break
+            else:  # no possible seasons from the scene names lets look at this more generic
+                for cur_ab_number in absolute_numbers:
+                    namesSQlResult = cacheDB.select(
+                        "SELECT season, episode, absolute_number FROM xem_numbering WHERE indexer_id = ? and scene_absolute_number = ?",
+                        [show.indexerid, cur_ab_number])
+                    if len(namesSQlResult) > 1:
+                        logger.log(
+                            "Multiple episodes for a absolute number. this might happend because we are missing a scene name for this season. xem lacking behind ?",
+                            logger.ERROR)
+                        raise MultipleSceneEpisodeResults("Multiple episodes for a absolute number")
+                    elif len(namesSQlResult) == 0:
+                        continue
+                    # if we are here we found ONE episode for this season absolute number
+                    # logger.log(u"I found matching episode: " + namesSQlResult[0]['name'], logger.DEBUG)
+                    out_episodes.append(int(namesSQlResult[0]['episode']))
+                    out_absolute_numbers.append(int(namesSQlResult[0]['absolute_number']))
+                    out_season = int(namesSQlResult[0][
+                        'season'])  # note this will always use the last season we got ... this will be a problem on double episodes that break the season barrier
+            if not out_season:  # we did not find anything in the loops ? damit there is no episode
+                logger.log("No episode found for these scene numbers. asuming indexer numbers", logger.DEBUG)
+                # we still have to convert the absolute number to sxxexx ... but that is done not here
+        else:
+            logger.log(u"'" + show.name + "' is a normal show i will scene convert the season and episodes " + str(
+                season) + "x" + str(episodes), logger.DEBUG)
+            out_absolute_numbers = None
+            if possible_seasons:
+                # check if we have a scene_absolute_number in the possible seasons
+                for cur_possible_season in possible_seasons:
+                    # and for all episode
+                    for cur_episode in episodes:
+                        namesSQlResult = cacheDB.select(
+                            "SELECT season, episode FROM xem_numbering WHERE indexer_id = ? and scene_season = ? and scene_episode = ?",
+                            [show.indexerid, cur_possible_season, cur_episode])
+                        if len(namesSQlResult) > 1:
+                            logger.log(
+                                "Multiple episodes for season episode number combination. this should not be check xem configuration",
+                                logger.ERROR)
+                            raise MultipleSceneEpisodeResults("Multiple episodes for season episode number combination")
+                        elif len(namesSQlResult) == 0:
+                            break  # break out of current episode -> next season ... this is not a good sign
+                        # if we are here we found ONE episode for this season absolute number
+                        # logger.log(u"I found matching episode: " + namesSQlResult[0]['name'], logger.DEBUG)
+                        out_episodes.append(int(namesSQlResult[0]['episode']))
+                        out_season = int(namesSQlResult[0][
+                            'season'])  # note this will always use the last season we got ... this will be a problem on double episodes that break the season barrier
+                    if out_season:  # if we found a episode in the cur_possible_season we dont need / want to look at the other posibilites
+                        break
+            else:  # no possible seasons from the scene names lets look at this more generic
+                for cur_episode in episodes:
+                    namesSQlResult = cacheDB.select(
+                        "SELECT season, episode FROM xem_numbering WHERE indexer_id = ? and scene_episode = ? and scene_season = ?",
+                        [show.indexerid, cur_episode, season])
+                    if len(namesSQlResult) > 1:
+                        logger.log(
+                            "Multiple episodes for season episode number combination. this might happend because we are missing a scene name for this season. xem lacking behind ?",
+                            logger.ERROR)
+                        raise MultipleSceneEpisodeResults("Multiple episodes for season episode number combination")
+                    elif len(namesSQlResult) == 0:
+                        continue
+                    # if we are here we found ONE episode for this season absolute number
+                    # logger.log(u"I found matching episode: " + namesSQlResult[0]['name'], logger.DEBUG)
+                    out_episodes.append(int(namesSQlResult[0]['episode']))
+                    out_season = int(namesSQlResult[0][
+                        'season'])  # note this will always use the last season we got ... this will be a problem on double episodes that break the season barrier
+            # this is only done for normal shows
+            if not out_season:  # we did not find anything in the loops ? darn there is no episode
+                logger.log("No episode found for these scene numbers. assuming these are valid indexer numbers",
+                           logger.DEBUG)
+                out_season = season
+                out_episodes = episodes
+                out_absolute_numbers = absolute_numbers
+
+        # okay that was easy we found the correct season and episode numbers
+        return (out_season, out_episodes, out_absolute_numbers)
+
+
 class ParseResult(object):
     def __init__(self,
                  original_name,
@@ -454,7 +594,8 @@ class ParseResult(object):
             if len(self.ab_episode_numbers):
                 abNo = self.ab_episode_numbers[i]
 
-            (s, e, a) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer, self.season_number,
+            (s, e, a) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
+                                                              self.season_number,
                                                               epNo, abNo)
             new_episode_numbers.append(e)
             new_season_numbers.append(s)
@@ -530,3 +671,11 @@ name_parser_cache = NameParserCache()
 
 class InvalidNameException(Exception):
     "The given name is not valid"
+
+
+class MultipleSceneShowResults(Exception):
+    pass
+
+
+class MultipleSceneEpisodeResults(Exception):
+    pass

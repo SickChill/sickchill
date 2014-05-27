@@ -42,7 +42,7 @@ from sickbeard import providers
 from sickbeard import failed_history
 from sickbeard.exceptions import ex
 from sickbeard.providers.generic import GenericProvider, tvcache
-
+from sickbeard.blackandwhitelist import BlackAndWhiteList
 
 def _downloadResult(result):
     """
@@ -197,10 +197,22 @@ def filter_release_name(name, filter_words):
 def pickBestResult(results, show, quality_list=None):
     logger.log(u"Picking the best result out of " + str([x.name for x in results]), logger.DEBUG)
 
+    # build the black And white list
+    bwl = None
+    if show:
+        bwl = BlackAndWhiteList(show.indexerid)
+    else:
+        logger.log("Could not create black and white list no show was given", logger.DEBUG)
+
     # find the best result for the current episode
     bestResult = None
     for cur_result in results:
         logger.log("Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
+
+        if bwl:
+            if not bwl.is_valid(cur_result):
+                logger.log(cur_result.name+" does not match the blacklist or the whitelist, rejecting it. Result: " + bwl.get_last_result_msg(), logger.MESSAGE)
+                continue
 
         if quality_list and cur_result.quality not in quality_list:
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
@@ -254,10 +266,16 @@ def isFinalResult(result):
 
     show_obj = result.episodes[0].show
 
+    bwl = BlackAndWhiteList(show_obj.indexerid)
+
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
     # if there is a redownload that's higher than this then we definitely need to keep looking
     if best_qualities and result.quality < max(best_qualities):
+        return False
+
+    # if it does not match the shows black and white list its no good
+    elif not bwl.is_valid(result):
         return False
 
     # if there's no redownload that's higher (above) and this is the highest initial download then we're good
@@ -317,7 +335,7 @@ def filterSearchResults(show, season, results):
     return foundResults
 
 
-def searchForNeededEpisodes(episodes):
+def searchForNeededEpisodes(show, episodes):
     foundResults = {}
 
     didSearch = False
@@ -327,6 +345,10 @@ def searchForNeededEpisodes(episodes):
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
     for curProviderCount, curProvider in enumerate(providers):
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+
+        if curProvider.anime_only and not show.is_anime:
+            logger.log(u"" + str(show.name) + " is not an anime skiping ...")
+            continue
 
         try:
             logger.log(u"Updating RSS cache ...")
@@ -382,9 +404,10 @@ def searchProviders(show, season, episodes, manualSearch=False):
 
     # check if we want to search for season packs instead of just season/episode
     seasonSearch = False
-    seasonEps = show.getAllEpisodes(season)
-    if len(seasonEps) == len(episodes):
-        seasonSearch = True
+    if not manualSearch:
+        seasonEps = show.getAllEpisodes(season)
+        if len(seasonEps) == len(episodes):
+            seasonSearch = True
 
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
 
@@ -398,6 +421,10 @@ def searchProviders(show, season, episodes, manualSearch=False):
         threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
         foundResults.setdefault(provider.name, {})
         searchCount = 0
+
+        if provider.anime_only and not show.is_anime:
+            logger.log(u"" + str(show.name) + " is not an anime skiping ...")
+            continue
 
         search_mode = 'eponly'
         if seasonSearch and provider.search_mode == 'sponly':

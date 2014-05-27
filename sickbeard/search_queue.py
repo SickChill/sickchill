@@ -97,7 +97,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.execute(self)
 
         logger.log("Beginning daily search for [" + self.show.name + "]")
-        foundResults = search.searchForNeededEpisodes(self.segment)
+        foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
         # reset thread back to original name
         threading.currentThread().name = self.thread_name

@@ -37,7 +37,7 @@ class NyaaProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
         self.supportsAbsoluteNumbering = True
-
+        self.anime_only = True
         self.enabled = False
         self.ratio = None
 
@@ -60,9 +60,7 @@ class NyaaProvider(generic.TorrentProvider):
         return generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
 
     def _get_season_search_strings(self, ep_obj):
-        names = []
-        names.extend(show_name_helpers.makeSceneShowSearchStrings(self.show))
-        return names
+        return show_name_helpers.makeSceneShowSearchStrings(self.show)
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return self._get_season_search_strings(ep_obj)

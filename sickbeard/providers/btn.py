@@ -39,6 +39,7 @@ class BTNProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BTN")
 
         self.supportsBacklog = True
+        self.supportsAbsoluteNumbering = True
 
         self.enabled = False
         self.api_key = None
@@ -211,13 +212,14 @@ class BTNProvider(generic.TorrentProvider):
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params = current_params.copy()
-            partial_season_params = current_params.copy()
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
             if ep_obj.show.air_by_date or ep_obj.show.sports:
                 # Search for the year of the air by date show
                 whole_season_params['name'] = str(ep_obj.airdate).split('-')[0]
+            elif ep_obj.show.is_anime:
+                whole_season_params['name'] = "%d" % ep_obj.scene_absolute_number
             else:
                 whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
@@ -232,9 +234,9 @@ class BTNProvider(generic.TorrentProvider):
 
         search_params = {'category': 'Episode'}
 
-        if self.show.indexer == 1:
+        if self.show.indexer == 1 and not self.show.is_anime:
             search_params['tvdb'] = self.show.indexerid
-        elif self.show.indexer == 2:
+        elif self.show.indexer == 2 and not self.show.is_anime:
             search_params['tvrage'] = self.show.indexerid
         else:
             search_params['series'] = sanitizeSceneName(self.show.name)
@@ -251,6 +253,8 @@ class BTNProvider(generic.TorrentProvider):
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
+        elif self.show.is_anime:
+            search_params['name'] = "%i" % int(ep_obj.scene_absolute_number)
         else:
             # Do a general name search for the episode, formatted like SXXEYY
             search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)

@@ -55,11 +55,12 @@ class GenericProvider:
 
         self.supportsBacklog = False
         self.supportsAbsoluteNumbering = False
+        self.anime_only = False
 
         self.search_mode = None
         self.search_fallback = False
         self.backlog_only = False
-        
+
         self.cache = tvcache.TVCache(self)
 
         self.session = requests.session()
@@ -254,7 +255,7 @@ class GenericProvider:
                         u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
                     continue
 
-            #cacheResult = self.cache.searchCache([epObj], manualSearch)
+            # cacheResult = self.cache.searchCache([epObj], manualSearch)
             #if len(cacheResult):
             #    results.update({epObj.episode:cacheResult[epObj]})
             #    continue
@@ -275,7 +276,7 @@ class GenericProvider:
             searchItems[epObj] = itemList
 
         # if we have cached results return them.
-        #if len(results):
+        # if len(results):
         #    return results
 
         for ep_obj in searchItems:
@@ -323,7 +324,7 @@ class GenericProvider:
                         continue
 
                     if (parse_result.air_by_date and parse_result.air_date != ep_obj.airdate) or (
-                        parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
+                                parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
                         logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
                                    logger.DEBUG)
                         continue

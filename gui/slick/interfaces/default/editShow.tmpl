@@ -1,4 +1,5 @@
 #import sickbeard
+#import lib.adba as adba
 #from sickbeard import common
 #from sickbeard import exceptions
 #from sickbeard import scene_exceptions
@@ -138,6 +139,53 @@ Separate words with a comma, e.g. "word1,word2,word3"
 Results without one of these words in the title will be filtered out <br />
 Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
+
+#if $show.is_anime
+<p>
+Realease Groups:
+</p>
+<input type="text" id="addToPoolText"/>
+<input type="button" value="Add to White" id="addToWhite">
+<input type="button" value="Add to Black" id="addToBlack"><br/>
+<div class="blackwhiteliste white">
+	<span>White:</span>
+	<select multiple id="white">
+			#for $keyword in $whitelist:
+				<option value="$keyword">$keyword</option>
+			#end for
+	</select>
+	<br/>
+	<input id="removeW" value="Remove &gt;&gt;" type="button"/>
+</div>
+
+<div class="blackwhiteliste pool">
+	<span>Pool (Name|Rating|Subed Ep):</span>
+	<select multiple id="pool">
+	#for $group in $groups
+		#if $group not in $whitelist and $group['name'] not in $blacklist:
+			<option value="$group['name']">$group['name'] | $group['rating'] | $group['range']</option>
+		#end if
+	#end for
+	</select>
+	<br/>
+	<input id="addW" value="&lt;&lt; Add" type="button"/>
+	<input id="addB" value="Add &gt;&gt;" type="button"/>
+</div>
+
+<div class="blackwhiteliste black">
+	<span>Black:</span>
+	<select multiple id="black">
+		#for $keyword in $blacklist:
+			<option value="$keyword">$keyword</option>
+		#end for
+	</select>
+	<br/>
+	<input id="removeB" value="&lt;&lt; Remove" type="button"/>
+</div>
+<br style="clear:both;"/>
+#end if
+<input type="hidden" name="whitelist" id="whitelist"/>
+<input type="hidden" name="blacklist" id="blacklist"/>
 
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>

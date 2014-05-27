@@ -98,7 +98,7 @@
     	\$(this).remove();
     });
 
-    \$("#showListTable:has(tbody tr)").tablesorter({
+    \$("#showListTableShows:has(tbody tr)").tablesorter({
 	
 	        sortList: [[6,1],[2,0]],
 	        textExtraction: {
@@ -119,6 +119,26 @@
 	        }
     });
 
+    \$("#showListTableAnime:has(tbody tr)").tablesorter({
+
+	        sortList: [[6,1],[2,0]],
+	        textExtraction: {
+				0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+	        #if ( $layout != 'simple'):
+		        3: function(node) { return \$(node).find("img").attr("alt"); },
+	        #end if
+	            4: function(node) { return \$(node).find("span").text(); },
+	            6: function(node) { return \$(node).find("img").attr("alt"); }
+	        },
+	        widgets: ['saveSort', 'zebra'],
+	        headers: {
+				0: { sorter: 'cDate' },
+	            2: { sorter: 'loadingNames' },
+	            3: { sorter: 'network' },
+	            4: { sorter: 'quality' },
+	            5: { sorter: 'eps' },
+	        }
+    });
 });
 
 //-->
@@ -138,7 +158,14 @@
 	</span>
 </div>
 
-<table id="showListTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+#for $curShowlist in $showlists:
+#set $curListType = $curShowlist[0]
+#set $myShowList = $list($curShowlist[1])
+#if $curListType == "Anime":
+<h2>Anime List</h2>
+#end if
+
+<table id="showListTable$curListType" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
 
   <thead><tr><th class="nowrap">Next Ep</th>#if $layout=="poster" then "<th>Poster</th>" else "<th style='display: none;'></th>"#<th>Show</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
   <tfoot>
@@ -173,7 +200,6 @@
   </tr>
 #end for
 
-#set $myShowList = $list($sickbeard.showList)
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
 #set $curEp = $curShow.nextEpisode()
@@ -258,7 +284,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         //-->
         </script>
     </td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status != "Ended" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 0 and "Ended" not in $curShow.status then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center" style="color: #555555; font-weight: bold;">$curShow.status</td>
   </tr>
 
@@ -266,5 +292,8 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #end for
 </tbody>
 </table>
+#end for
+
+<script type="text/javascript" src="$sbRoot/js/tableClick.js"></script>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

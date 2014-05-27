@@ -60,6 +60,8 @@ from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
     get_xem_numbering_for_show
 
+from sickbeard.blackandwhitelist import BlackAndWhiteList
+
 from lib.dateutil import tz
 from lib.unrar2 import RarFile, RarInfo
 
@@ -3042,6 +3044,8 @@ class Home:
         else:
             t.sortedShowLists = [["Shows",sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
 
+        t.bwl = BlackAndWhiteList(showObj.indexerid)
+
         t.epCounts = epCounts
         t.epCats = epCats
 
@@ -3077,7 +3081,7 @@ class Home:
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
-                 rls_require_words=None, anime=None):
+                 rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -3101,7 +3105,24 @@ class Home:
             t = PageTemplate(file="editShow.tmpl")
             t.submenu = HomeMenu()
 
+            bwl = BlackAndWhiteList(showObj.indexerid)
+            t.whiteWords = ""
+            if "global" in bwl.whiteDict:
+                t.whiteWords = ", ".join(bwl.whiteDict["global"])
+            t.blackWords = ""
+            if "global" in bwl.blackDict:
+                t.blackWords = ", ".join(bwl.blackDict["global"])
+
             if showObj.is_anime:
+
+                t.whitelist = []
+                if bwl.whiteDict.has_key("release_group"):
+                    t.whitelist = bwl.whiteDict["release_group"]
+
+                t.blacklist = []
+                if bwl.blackDict.has_key("release_group"):
+                    t.blacklist = bwl.blackDict["release_group"]
+
                 t.groups = []
                 if helpers.set_up_anidb_connection():
                     anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
@@ -3150,6 +3171,55 @@ class Home:
                 do_update_exceptions = False
             else:
                 do_update_exceptions = True
+
+        bwl = BlackAndWhiteList(showObj.indexerid)
+        if whitelist:
+            whitelist = whitelist.split(",")
+            shortWhiteList = []
+            if helpers.set_up_anidb_connection():
+                for groupName in whitelist:
+                    group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                    for line in group.datalines:
+                        if line["shortname"]:
+                            shortWhiteList.append(line["shortname"])
+                    else:
+                        if not groupName in shortWhiteList:
+                            shortWhiteList.append(groupName)
+            else:
+                shortWhiteList = whitelist
+            bwl.set_white_keywords_for("release_group", shortWhiteList)
+        else:
+            bwl.set_white_keywords_for("release_group", [])
+
+        if blacklist:
+            blacklist = blacklist.split(",")
+            shortBlacklist = []
+            if helpers.set_up_anidb_connection():
+                for groupName in blacklist:
+                    group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                    for line in group.datalines:
+                        if line["shortname"]:
+                            shortBlacklist.append(line["shortname"])
+                    else:
+                        if not groupName in shortBlacklist:
+                            shortBlacklist.append(groupName)
+            else:
+                shortBlacklist = blacklist
+            bwl.set_black_keywords_for("release_group", shortBlacklist)
+        else:
+            bwl.set_black_keywords_for("release_group", [])
+
+        if whiteWords:
+            whiteWords = [x.strip() for x in whiteWords.split(",")]
+            bwl.set_white_keywords_for("global", whiteWords)
+        else:
+            bwl.set_white_keywords_for("global", [])
+
+        if blackWords:
+            blackWords = [x.strip() for x in blackWords.split(",")]
+            bwl.set_black_keywords_for("global", blackWords)
+        else:
+            bwl.set_black_keywords_for("global", [])
 
         errors = []
         with showObj.lock:

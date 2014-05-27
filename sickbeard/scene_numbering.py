@@ -68,7 +68,6 @@ def get_scene_numbering(indexer_id, indexer, season, episode, absolute_number=No
                 return xem_result
         return (season, episode, absolute_number)
 
-
 def find_scene_numbering(indexer_id, indexer, season, episode, absolute_number=None):
     """
     Same as get_scene_numbering(), but returns None if scene numbering is not set
@@ -400,7 +399,6 @@ def get_xem_numbering_for_season(indexer_id, indexer, season):
 
     return result
 
-
 def fix_scene_numbering():
     ql = []
 
@@ -436,3 +434,40 @@ def fix_scene_numbering():
 
     if ql:
         myDB.mass_action(ql)
+
+def get_ep_mapping(epObj, parse_result):
+    # scores
+    indexer_numbering = 0
+    scene_numbering = 0
+    absolute_numbering = 0
+
+    _possible_seasons = sickbeard.scene_exceptions.get_scene_exception_by_name_multiple(parse_result.series_name)
+
+    # indexer numbering
+    if epObj.season == parse_result.season_number:
+        indexer_numbering += 1
+    elif epObj.episode in parse_result.episode_numbers:
+        indexer_numbering += 1
+
+    # scene numbering
+    if epObj.scene_season == parse_result.season_number:
+        scene_numbering += 1
+    elif epObj.scene_episode in parse_result.episode_numbers:
+        scene_numbering += 1
+
+    # absolute numbering
+    if epObj.show.is_anime and parse_result.is_anime:
+
+        if epObj.absolute_number in parse_result.ab_episode_numbers:
+            absolute_numbering +=1
+        elif epObj.scene_absolute_number in parse_result.ab_episode_numbers:
+            absolute_numbering += 1
+
+    if indexer_numbering == 2:
+        print "indexer numbering"
+    elif scene_numbering == 2:
+        print "scene numbering"
+    elif absolute_numbering == 1:
+        print "indexer numbering"
+    else:
+        print "could not determin numbering"

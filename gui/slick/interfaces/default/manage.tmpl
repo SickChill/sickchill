@@ -82,6 +82,8 @@
 <!--       <th>Lang</th>//-->
       <th class="nowrap" style="text-align: left;">Show Name</th>
       <th>Quality</th>
+      <th>Sports</th>
+      <th>Anime</th>
       <th>Flat Folders</th>
       <th>Paused</th>
       <th>Status</th>
@@ -141,7 +143,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
 #else:
     <td align="center"><span class="quality Custom">Custom</span></td>
-#end if 
+#end if
+    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center">$curShow.status</td>

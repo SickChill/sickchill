@@ -17,6 +17,7 @@
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
+import datetime
 
 import sickbeard
 import generic
@@ -36,6 +37,7 @@ class Fanzub(generic.NZBProvider):
 
         self.supportsBacklog = False
         self.supportsAbsoluteNumbering = True
+        self.anime_only = True
 
         self.enabled = False
 
@@ -101,24 +103,21 @@ class Fanzub(generic.NZBProvider):
         results = []
 
         for i in [2, 3, 4]: # we will look for a version 2, 3 and 4
-            """
-            because of this the proper search failed !!
-            well more precisly because _doSearch does not accept a dict rather then a string
-            params = {
-                "q":"v"+str(i).encode('utf-8')
-                  }
-            """
-            for curResult in self._doSearch("v" + str(i)):
+            for item in self._doSearch("v" + str(i)):
 
-                match = re.search('(\w{3}, \d{1,2} \w{3} \d{4} \d\d:\d\d:\d\d) [\+\-]\d{4}', curResult.findtext('pubDate'))
-                if not match:
+                (title, url) = self._get_title_and_url(item)
+
+                if item.has_key('published_parsed') and item['published_parsed']:
+                    result_date = item.published_parsed
+                    if result_date:
+                        result_date = datetime.datetime(*result_date[0:6])
+                else:
+                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
                     continue
 
-                dateString = match.group(1)
-                resultDate = parseDate(dateString).replace(tzinfo=None)
-
-                if date == None or resultDate > date:
-                    results.append(classes.Proper(curResult.findtext('title'), curResult.findtext('link'), resultDate))
+                if not date or result_date > date:
+                    search_result = classes.Proper(title, url, result_date)
+                    results.append(search_result)
 
         return results
 
@@ -145,7 +144,7 @@ class FanzubCache(tvcache.TVCache):
 
         return self.getRSSFeed(rss_url)
 
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
+    def _checkItemAuth(self, title, url):
+        return True
 
 provider = Fanzub()
