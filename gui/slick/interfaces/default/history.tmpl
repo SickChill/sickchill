@@ -65,6 +65,19 @@
         url = '$sbRoot/history/?limit='+\$(this).val()
         window.location.href = url
     });
+
+    #set $fuzzydate = 'airdate'
+    #if $sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        containerClass : '.${fuzzydate}',
+        dateHasTime : true,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET_W_SECONDS}',
+        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#,
+        dtGlue : ', ',
+    });
+    #end if
+
 });
 //-->
 </script>
@@ -97,7 +110,7 @@
   #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($hItem["action"]))
     <tr>
       #set $curdatetime = $datetime.datetime.strptime(str($hItem["date"]), $history.dateFormat)
-      <td class="nowrap">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)<span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
+      <td class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
       <td width="35%"><a style="color: #000000; text-align: center;" href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%=str(hItem["season"]) +"x"+ "%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
       <td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#><span style="cursor: help;" title="$os.path.basename($hItem["resource"])">$statusStrings[$curStatus]</span>
         #if $curStatus == SUBTITLED:
