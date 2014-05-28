@@ -784,9 +784,9 @@ class GenericMetadata():
         if image_url is None:
             for show_name in set(allPossibleShowNames(show_obj)):
                 if image_type in ('poster', 'poster_thumb'):
-                    image_url = self._retrieve_show_images_from_tmdb(show_name, poster=True)
+                    image_url = self._retrieve_show_images_from_tmdb(show_obj, poster=True)
                 elif image_type == 'fanart':
-                    image_url = self._retrieve_show_images_from_tmdb(show_name, backdrop=True)
+                    image_url = self._retrieve_show_images_from_tmdb(show_obj, backdrop=True)
 
                 if image_url:
                     break
@@ -964,11 +964,11 @@ class GenericMetadata():
 
         return (indexer_id, name, indexer)
 
-    def _retrieve_show_images_from_tmdb(self, name, id=None, backdrop=False, poster=False):
-        tmdb = TMDB(sickbeard.TMDB_API_KEY)
-        result = None
+    def _retrieve_show_images_from_tmdb(self, show, backdrop=False, poster=False):
+        tmdb_id = None
 
         # get TMDB configuration info
+        tmdb = TMDB(sickbeard.TMDB_API_KEY)
         config = tmdb.Configuration()
         response = config.info()
         base_url = response['images']['base_url']
@@ -980,38 +980,28 @@ class GenericMetadata():
         max_size = max(sizes, key=size_str_to_int)
 
         try:
-            if id is None:
-                search = tmdb.Search()
-                response = search.collection({'query': name})
-                id = response['results'][0]['id']
+            search = tmdb.Search()
+            for result in search.collection({'query': show.name}) + search.tv({'query': show.name}):
+                tmdb_id = result['id']
+                external_ids = tmdb.TV(tmdb_id).external_ids()
+                if show.indexerid in [external_ids['tvdb_id'], external_ids['tvrage_id']]:
+                    break
 
-            result = tmdb.Collections(id)
+            if tmdb_id:
+                images = tmdb.Collections(tmdb_id).images()
+                if len(images) > 0:
+                    # get backdrop urls
+                    if backdrop:
+                        rel_path = images['backdrops'][0]['file_path']
+                        url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+                        return url
+
+                    # get poster urls
+                    if poster:
+                        rel_path = images['posters'][0]['file_path']
+                        url = "{0}{1}{2}".format(base_url, max_size, rel_path)
+                        return url
         except:
-            try:
-                if id is None:
-                    search = tmdb.Search()
-                    response = search.tv({'query': name})
-                    id = response['results'][0]['id']
+            pass
 
-                result = tmdb.TV(id)
-            except:
-                pass
-
-        if result is None:
-            return None
-
-        images = result.images()
-        if len(images) > 0:
-            # get backdrop urls
-            if backdrop:
-                rel_path = images['backdrops'][0]['file_path']
-                url = "{0}{1}{2}".format(base_url, max_size, rel_path)
-                return url
-
-            # get poster urls
-            if poster:
-                rel_path = images['posters'][0]['file_path']
-                url = "{0}{1}{2}".format(base_url, max_size, rel_path)
-                return url
-
-        return None
+        logger.log(u"Could not find any posters or background for " + show.name, logger.DEBUG)

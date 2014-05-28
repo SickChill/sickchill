@@ -30,6 +30,7 @@ from sickbeard import db
 from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException
 from lib.unidecode import unidecode
+from sickbeard.blackandwhitelist import BlackAndWhiteList
 
 resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
@@ -58,7 +59,8 @@ def filterBadReleases(name):
     filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in resultFilters]
     for regfilter in filters:
         if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it", logger.DEBUG)
+            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it",
+                       logger.DEBUG)
             return False
 
     return True
@@ -135,7 +137,8 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
 
             # if we need a better one then add it to the list of episodes to fetch
             if (curStatus in (
-                    common.DOWNLOADED, common.SNATCHED) and curQuality < highestBestQuality) or curStatus == common.WANTED:
+                    common.DOWNLOADED,
+                    common.SNATCHED) and curQuality < highestBestQuality) or curStatus == common.WANTED:
                 ab_number = episode.scene_absolute_number
                 if ab_number > 0:
                     seasonStrings.append("%d" % ab_number)
@@ -148,6 +151,7 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
         numseasons = int(numseasonsSQlResult[0][0])
         seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
 
+    bwl = BlackAndWhiteList(show.indexerid)
     showNames = set(makeSceneShowSearchStrings(show, ep_obj.scene_season))
 
     toReturn = []
@@ -162,7 +166,12 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
             # for providers that don't allow multiple searches in one request we only search for Sxx style stuff
             else:
                 for cur_season in seasonStrings:
-                    toReturn.append(curShow + "." + cur_season)
+                    if len(bwl.whiteList) > 0:
+                        for keyword in bwl.whiteList:
+                            toReturn.append(keyword + '.' + curShow+ "." + cur_season)
+                    else:
+                        toReturn.append(curShow + "." + cur_season)
+
 
     return toReturn
 
@@ -188,13 +197,18 @@ def makeSceneSearchString(show, ep_obj):
     if numseasons == 1 and not ep_obj.show.is_anime:
         epStrings = ['']
 
+    bwl = BlackAndWhiteList(ep_obj.show.indexerid)
     showNames = set(makeSceneShowSearchStrings(show, ep_obj.scene_season))
 
     toReturn = []
 
     for curShow in showNames:
         for curEpString in epStrings:
-            toReturn.append(curShow + '.' + curEpString)
+            if len(bwl.whiteList) > 0:
+                for keyword in bwl.whiteList:
+                    toReturn.append(keyword + '.' + curShow + '.' + curEpString)
+            else:
+                toReturn.append(curShow + '.' + curEpString)
 
     return toReturn
 
@@ -228,7 +242,8 @@ def isGoodResult(name, show, log=True, season=-1):
             return True
 
     if log:
-        logger.log(u"Provider gave result " + name + " but that doesn't seem like a valid result for " + show.name + " so I'm ignoring it")
+        logger.log(
+            u"Provider gave result " + name + " but that doesn't seem like a valid result for " + show.name + " so I'm ignoring it")
     return False
 
 

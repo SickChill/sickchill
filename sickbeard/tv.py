@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import json
 
 import os.path
 import datetime
@@ -24,6 +25,7 @@ import threading
 import re
 import glob
 import traceback
+import requests
 
 import sickbeard
 
@@ -186,6 +188,10 @@ class TVShow(object):
 
     def getEpisode(self, season, episode, file=None, noCreate=False, absolute_number=None):
 
+        # Load XEM data to DB for show
+        if sickbeard.scene_numbering.xem_refresh_needed(self.indexerid, self.indexer):
+            sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer)
+
         if not season in self.episodes:
             self.episodes[season] = {}
 
@@ -212,12 +218,6 @@ class TVShow(object):
                     "No entries for absolute number: " + str(absolute_number) + " in show: " + self.name + " found.",
                     logger.DEBUG)
                 return None
-
-        def createCurSeasonDict():
-            if not season in self.episodes:
-                self.episodes[season] = {}
-
-        createCurSeasonDict()
 
         if not episode in self.episodes[season] or self.episodes[season][episode] == None:
             if noCreate:
@@ -274,7 +274,6 @@ class TVShow(object):
 
         last_update_indexer = datetime.date.fromordinal(self.last_update_indexer)
 
-        # in the first year after ended (last airdate), update every 30 days
         # in the first year after ended (last airdate), update every 30 days
         if (update_date - last_airdate) < datetime.timedelta(days=450) and (
                     update_date - last_update_indexer) > datetime.timedelta(days=30):
@@ -531,33 +530,6 @@ class TVShow(object):
         self.saveToDB()
 
         return scannedEps
-
-    def loadEpisodeSceneNumbers(self):
-        epList = self.loadEpisodesFromDB()
-
-        sql_l = []
-        for curSeason in epList:
-            for curEp in epList[curSeason]:
-                epObj = self.getEpisode(curSeason, curEp)
-
-                with epObj.lock:
-                    (epObj.scene_season, epObj.scene_episode, epObj.scene_absolute_number) = \
-                        sickbeard.scene_numbering.get_scene_numbering(self.indexerid, self.indexer, epObj.season,
-                                                                      epObj.episode, epObj.absolute_number)
-                    logger.log(
-                        str(self.indexerid) + ": adding scene numbering. Indexer: " + str(epObj.season) + "x" + str(
-                            epObj.episode) + "| Scene: " + str(epObj.scene_season) + "x" + str(epObj.scene_episode),
-                        logger.DEBUG)
-
-                    # mass add to database
-                    if epObj.dirty:
-                        sql_l.append(epObj.get_sql())
-
-        if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
-
-        return True
 
     def getImages(self, fanart=None, poster=None):
         fanart_result = poster_result = banner_result = False
@@ -1460,7 +1432,6 @@ class TVEpisode(object):
                             "Couldn't find episode " + str(season) + "x" + str(episode))
 
     def loadFromDB(self, season, episode):
-
         logger.log(
             str(self.show.indexerid) + u": Loading episode details from DB for episode " + str(season) + "x" + str(
                 episode), logger.DEBUG)
@@ -1520,15 +1491,6 @@ class TVEpisode(object):
 
             if sqlResults[0]["is_proper"]:
                 self.is_proper = int(sqlResults[0]["is_proper"])
-
-            if self.scene_season == 0 or self.scene_episode == 0 or self.scene_absolute_number == 0:
-                (self.scene_season, self.scene_episode, self.scene_absolute_number) = \
-                    sickbeard.scene_numbering.get_scene_numbering(
-                    self.show.indexerid,
-                    self.show.indexer,
-                    self.season,
-                    self.episode,
-                    self.absolute_number)
 
             self.dirty = False
             return True
@@ -2302,19 +2264,3 @@ class TVEpisode(object):
             self.saveToDB()
             for relEp in self.relatedEps:
                 relEp.saveToDB()
-
-    def convertToSceneNumbering(self):
-        (self.scene_season, self.scene_episode,
-         self.scene_absolute_number) = sickbeard.scene_numbering.get_scene_numbering(self.show.indexerid,
-                                                                                     self.show.indexer,
-                                                                                     self.season,
-                                                                                     self.episode,
-                                                                                     self.absolute_number)
-
-    def convertToIndexerNumbering(self):
-        (self.season, self.episode, self.absolute_number) = sickbeard.scene_numbering.get_indexer_numbering(
-            self.show.indexerid,
-            self.show.indexer,
-            self.scene_season,
-            self.scene_episode,
-            self.scene_absolute_number)

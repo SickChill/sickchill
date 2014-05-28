@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 36
+MAX_DB_VERSION = 37
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -859,5 +859,18 @@ class AddSceneAbsoluteNumbering(AddAnimeBlacklistWhitelist):
 
         logger.log(u"Adding column scene_absolute_number to tv_episodes")
         self.addColumn("tv_episodes", "scene_absolute_number", "NUMERIC", "0")
+
+        self.incDBVersion()
+
+class AddXemRefresh(AddSceneAbsoluteNumbering):
+    def test(self):
+        return self.checkDBVersion() >= 37
+
+    def execute(self):
+        backupDatabase(37)
+
+        logger.log(u"Creating table xem_refresh")
+        self.connection.action(
+            "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
 
         self.incDBVersion()

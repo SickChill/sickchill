@@ -354,13 +354,6 @@ class QueueItemAdd(ShowQueueItem):
         # before we parse local files lets update exceptions
         sickbeard.scene_exceptions.retrieve_exceptions()
 
-        # and get scene numbers
-        logger.log(u"Attempting to load scene numbers", logger.DEBUG)
-        if self.show.loadEpisodeSceneNumbers():
-            logger.log(u"loading scene numbers successfull", logger.DEBUG)
-        else:
-            logger.log(u"loading scene numbers NOT successfull or no scene numbers available", logger.DEBUG)
-
         try:
             self.show.loadEpisodesFromDir()
         except Exception, e:
@@ -547,12 +540,6 @@ class QueueItemUpdate(ShowQueueItem):
                         curEp.deleteEpisode()
                     except exceptions.EpisodeDeletedException:
                         pass
-
-        logger.log(u"Attempting to load scene numbers", logger.DEBUG)
-        if self.show.loadEpisodeSceneNumbers():
-            logger.log(u"loading scene numbers successfull", logger.DEBUG)
-        else:
-            logger.log(u"loading scene numbers NOT successfull or no scene numbers available", logger.DEBUG)
 
         sickbeard.showQueueScheduler.action.refreshShow(self.show, True)
 

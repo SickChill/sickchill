@@ -46,7 +46,6 @@ class AddSceneExceptions(InitialSchema):
         self.connection.action(
             "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
 
-
 class AddSceneNameCache(AddSceneExceptions):
     def test(self):
         return self.hasTable("scene_names")
@@ -62,37 +61,12 @@ class AddNetworkTimezones(AddSceneNameCache):
     def execute(self):
         self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT)")
 
-
-class AddXemNumbering(AddNetworkTimezones):
-    def test(self):
-        return self.hasTable("xem_numbering")
-
-    def execute(self):
-        self.connection.action(
-            "CREATE TABLE xem_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, absolute_number INTEGER, scene_season INTEGER, scene_episode INTEGER, scene_absolute_number INTEGER, PRIMARY KEY (indexer_id, scene_season, scene_episode))")
-
-class AddXemRefresh(AddXemNumbering):
-    def test(self):
-        return self.hasTable("xem_refresh")
-
-    def execute(self):
-        self.connection.action(
-            "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
-
-class AddLastSearch(AddXemRefresh):
+class AddLastSearch(AddNetworkTimezones):
     def test(self):
         return self.hasTable("lastSearch")
 
     def execute(self):
         self.connection.action("CREATE TABLE lastSearch (provider TEXT, time NUMERIC)")
-
-class AddAbsoluteNumbering(AddLastSearch):
-    def test(self):
-        return self.hasColumn("xem_numbering", "absolute_number")
-
-    def execute(self):
-        self.addColumn("xem_numbering", "absolute_number", "NUMERIC", "0")
-        self.addColumn("xem_numbering", "scene_absolute_number", "NUMERIC", "0")
 
 class AddSceneExceptionsSeasons(AddSceneNameCache):
     def test(self):

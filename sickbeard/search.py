@@ -344,11 +344,11 @@ def searchForNeededEpisodes(show, episodes):
     origThreadName = threading.currentThread().name
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
     for curProviderCount, curProvider in enumerate(providers):
-        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime skiping ...")
             continue
+
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         try:
             logger.log(u"Updating RSS cache ...")
@@ -418,13 +418,13 @@ def searchProviders(show, season, episodes, manualSearch=False):
 
     origThreadName = threading.currentThread().name
     for providerNum, provider in enumerate(providers):
-        threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
-        foundResults.setdefault(provider.name, {})
-        searchCount = 0
-
         if provider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime skiping ...")
             continue
+
+        threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
+        foundResults.setdefault(provider.name, {})
+        searchCount = 0
 
         search_mode = 'eponly'
         if seasonSearch and provider.search_mode == 'sponly':

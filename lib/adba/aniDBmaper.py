@@ -22,11 +22,11 @@ class AniDBMaper:
     
     def getAnimeBitsA(self,amask):
         map = self.getAnimeMapA()
-        return self._getBitChain(map,amask);
+        return self._getBitChain(map,amask)
     
     def getAnimeCodesA(self,aBitChain):
         amap = self.getAnimeMapA()
-        return self._getCodes(amap,aBitChain);
+        return self._getCodes(amap,aBitChain)
 
         
     def getFileBitsF(self,fmask):

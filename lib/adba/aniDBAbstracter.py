@@ -103,7 +103,7 @@ class aniDBabstractObject(object):
 
 
 class Anime(aniDBabstractObject):
-    def __init__(self, aniDB, name=None, aid=None, tvdbid=None, tvrageid=None, paramsA=None, autoCorrectName=False, load=False):
+    def __init__(self, aniDB, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
 
         self.maper = AniDBMaper()
         self.tvDBMap = TvDBMap()
