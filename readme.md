@@ -29,7 +29,7 @@ FEATURES:
 - DVD Order numbering for returning the results in DVD order instead of Air-By-Date order.
 - Improved Failed handling code for both NZB and Torrent downloads.
 - DupeKey/DupeScore for NZBGet 12+
-- Searches both TheTVDB.com and TVRage.com for shows, seasons, episodes
+- Searches both TheTVDB.com, TVRage.com and AniDB.net for shows, seasons, episodes
 - Importing of existing video files now allows you to choose which indexer you wish to have SickBeard download its show info from.
 - Your tvshow.nfo files are now tagged with a indexer key so that SickBeard can easily tell if the shows info comes from TheTVDB or TVRage.
 - Failed download handling has been improved now for both NZB and Torrents.
