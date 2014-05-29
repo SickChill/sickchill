@@ -435,10 +435,6 @@ class TVRage:
 
             # clean up value and do type changes
             if value:
-                if key == 'link':
-                    value = value.rsplit('/', 1)[1]
-                    key = 'id'
-
                 if isinstance(value, dict):
                     if key == 'network':
                         value = value['#text']
@@ -612,6 +608,9 @@ class TVRage:
                     try:
                         k = k.lower()
                         if v is not None:
+                            if k == 'link':
+                                v = v.rsplit('/', 1)[1]
+                                k = 'id'
                             v = self._cleanData(v)
 
                         self._setItem(sid, seas_no, ep_no, k, v)
