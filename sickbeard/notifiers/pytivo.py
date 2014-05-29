@@ -93,7 +93,7 @@ class pyTivoNotifier:
                 logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
                 return False
             elif hasattr(e, 'code'):
-                logger.log(u"pyTivo notification: Error, the server couldn't fulfill the request - ", + e.code, logger.ERROR) 
+                logger.log(u"pyTivo notification: Error, the server couldn't fulfill the request - " + e.code, logger.ERROR)
             return False
         except Exception, e:
             logger.log(u"PYTIVO: Unknown exception: " + ex(e), logger.ERROR)
