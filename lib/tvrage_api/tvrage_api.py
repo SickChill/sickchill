@@ -548,6 +548,8 @@ class TVRage:
         BaseUI is used to select the first result.
         """
         allSeries = self.search(series)
+        if not isinstance(allSeries, list):
+            allSeries = [allSeries]
 
         if len(allSeries) == 0:
             log().debug('Series result returned zero')
