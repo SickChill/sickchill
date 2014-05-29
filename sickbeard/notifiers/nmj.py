@@ -22,6 +22,7 @@ import telnetlib
 import re
 
 from sickbeard import logger
+from sickbeard.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -44,7 +45,7 @@ class NMJNotifier:
         try:
             terminal = telnetlib.Telnet(host)
         except Exception:
-            logger.log(u"Warning: unable to get a telnet session to %s" % (host), logger.ERROR)
+            logger.log(u"Warning: unable to get a telnet session to %s" % (host), logger.WARNING)
             return False
 
         # tell the terminal to output the necessary info to the screen so we can search it later
@@ -66,7 +67,7 @@ class NMJNotifier:
             logger.log(u"Found NMJ database %s on device %s" % (database, device), logger.DEBUG)
             sickbeard.NMJ_DATABASE = database
         else:
-            logger.log(u"Could not get current NMJ database on %s, NMJ is probably not running!" % (host), logger.ERROR)
+            logger.log(u"Could not get current NMJ database on %s, NMJ is probably not running!" % (host), logger.WARNING)
             return False
 
         # if the device is a remote host then try to parse the mounting URL and save it to the config
@@ -79,7 +80,7 @@ class NMJNotifier:
                 sickbeard.NMJ_MOUNT = mount
             else:
                 logger.log(u"Detected a network share on the Popcorn Hour, but could not get the mounting url",
-                           logger.DEBUG)
+                           logger.WARNING)
                 return False
 
         return True
@@ -117,7 +118,13 @@ class NMJNotifier:
                 logger.log(u"Try to mount network drive via url: %s" % (mount), logger.DEBUG)
                 handle = urllib2.urlopen(req)
             except IOError, e:
-                logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e))
+                if hasattr(e, 'reason'):
+                    logger.log(u"NMJ: Could not contact Popcorn Hour on host %s: %s" % (host, e.reason), logger.WARNING)
+                elif hasattr(e, 'code'):
+                    logger.log(u"NMJ: Problem with Popcorn Hour on host %s: %s" % (host, e.code), logger.WARNING)
+                return False
+            except Exception, e:
+                logger.log(u"NMJ: Unknown exception: " + ex(e), logger.ERROR)
                 return False
 
         # build up the request URL and parameters
@@ -126,7 +133,8 @@ class NMJNotifier:
             "arg0": "scanner_start",
             "arg1": database,
             "arg2": "background",
-            "arg3": ""}
+            "arg3": ""
+        }
         params = urllib.urlencode(params)
         updateUrl = UPDATE_URL % {"host": host, "params": params}
 
@@ -137,7 +145,13 @@ class NMJNotifier:
             handle = urllib2.urlopen(req)
             response = handle.read()
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact Popcorn Hour on host %s: %s" % (host, e))
+            if hasattr(e, 'reason'):
+                logger.log(u"NMJ: Could not contact Popcorn Hour on host %s: %s" % (host, e.reason), logger.WARNING)
+            elif hasattr(e, 'code'):
+                logger.log(u"NMJ: Problem with Popcorn Hour on host %s: %s" % (host, e.code), logger.WARNING)
+            return False
+        except Exception, e:
+            logger.log(u"NMJ: Unknown exception: " + ex(e), logger.ERROR)
             return False
 
         # try to parse the resulting XML
@@ -150,10 +164,10 @@ class NMJNotifier:
 
         # if the result was a number then consider that an error
         if int(result) > 0:
-            logger.log(u"Popcorn Hour returned an errorcode: %s" % (result))
+            logger.log(u"Popcorn Hour returned an errorcode: %s" % (result), logger.ERROR)
             return False
         else:
-            logger.log(u"NMJ started background scan")
+            logger.log(u"NMJ started background scan", logger.MESSAGE)
             return True
 
     def _notifyNMJ(self, host=None, database=None, mount=None, force=False):

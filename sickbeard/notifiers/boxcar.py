@@ -30,8 +30,8 @@ API_URL = "https://boxcar.io/devices/providers/fWc4sgSmpcN6JujtBmR6/notification
 
 
 class BoxcarNotifier:
-    def test_notify(self, email, title="Test"):
-        return self._sendBoxcar("This is a test notification from SickRage", title, email)
+    def test_notify(self, boxcar_username):
+        return self._notify("This is a test notification from Sick Beard", "Test", boxcar_username, force=True)
 
     def _sendBoxcar(self, msg, title, email, subscribe=False):
         """
@@ -73,7 +73,7 @@ class BoxcarNotifier:
         except urllib2.HTTPError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
-                logger.log("Boxcar notification failed." + ex(e), logger.ERROR)
+                logger.log("Boxcar notification failed. Error code: " + ex(e), logger.ERROR)
                 return False
             else:
                 logger.log("Boxcar notification failed. Error code: " + str(e.code), logger.WARNING)
@@ -104,10 +104,10 @@ class BoxcarNotifier:
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
             elif e.code == 400:
-                logger.log("Wrong data send to boxcar", logger.ERROR)
+                logger.log("Wrong data sent to boxcar", logger.ERROR)
                 return False
 
-        logger.log("Boxcar notification successful.", logger.DEBUG)
+        logger.log("Boxcar notification successful.", logger.MESSAGE)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -143,8 +143,7 @@ class BoxcarNotifier:
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 
-        self._sendBoxcar(message, title, username)
-        return True
+        return self._sendBoxcar(message, title, username)
 
 
 notifier = BoxcarNotifier

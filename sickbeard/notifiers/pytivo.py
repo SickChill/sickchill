@@ -23,6 +23,7 @@ from urllib import urlencode
 from urllib2 import Request, urlopen, HTTPError
 
 from sickbeard import logger
+from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 
 
@@ -81,7 +82,7 @@ class pyTivoNotifier:
         requestUrl = "http://" + host + "/TiVoConnect?" + urlencode(
             {'Command': 'Push', 'Container': container, 'File': file, 'tsn': tsn})
 
-        logger.log(u"pyTivo notification: Requesting " + requestUrl)
+        logger.log(u"pyTivo notification: Requesting " + requestUrl, logger.DEBUG)
 
         request = Request(requestUrl)
 
@@ -89,13 +90,14 @@ class pyTivoNotifier:
             response = urlopen(request)  #@UnusedVariable
         except HTTPError , e:
             if hasattr(e, 'reason'):
-                logger.log(u"pyTivo notification: Error, failed to reach a server")
-                logger.log(u"'Error reason: " + e.reason)
+                logger.log(u"pyTivo notification: Error, failed to reach a server - " + e.reason, logger.ERROR)
                 return False
             elif hasattr(e, 'code'):
-                logger.log(u"pyTivo notification: Error, the server couldn't fulfill the request")
-                logger.log(u"Error code: " + e.code)
-                return False
+                logger.log(u"pyTivo notification: Error, the server couldn't fulfill the request - ", + e.code, logger.ERROR) 
+            return False
+        except Exception, e:
+            logger.log(u"PYTIVO: Unknown exception: " + ex(e), logger.ERROR)
+            return False
         else:
             logger.log(u"pyTivo notification: Successfully requested transfer of file")
             return True

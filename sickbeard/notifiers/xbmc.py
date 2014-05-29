@@ -66,7 +66,7 @@ class XBMCNotifier:
                  3  | (pre Eden)
                  4  | v11 (Eden)
                  5  | (pre Frodo)
-                 6  | v12 (Frodo)
+                 6  | v12 (Frodo) / v13 (Gotham)
 
         """
 
@@ -327,7 +327,7 @@ class XBMCNotifier:
                     time.sleep(5)
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library XBMC update on host: " + host, logger.DEBUG)
+            logger.log(u"Doing Full Library XBMC update on host: " + host, logger.MESSAGE)
             updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'XBMC.updatelibrary(video)'}
             request = self._send_to_xbmc(updateCommand, host)
 

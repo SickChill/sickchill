@@ -42,7 +42,7 @@ import emailnotify
 
 from sickbeard.common import *
 
-# home theater
+# home theater / nas
 xbmc_notifier = xbmc.XBMCNotifier()
 plex_notifier = plex.PLEXNotifier()
 nmj_notifier = nmj.NMJNotifier()
@@ -60,7 +60,7 @@ boxcar2_notifier = boxcar2.Boxcar2Notifier()
 nma_notifier = nma.NMA_Notifier()
 pushalot_notifier = pushalot.PushalotNotifier()
 pushbullet_notifier = pushbullet.PushbulletNotifier()
-# online
+# social
 twitter_notifier = tweet.TwitterNotifier()
 trakt_notifier = trakt.TraktNotifier()
 email_notifier = emailnotify.EmailNotifier()

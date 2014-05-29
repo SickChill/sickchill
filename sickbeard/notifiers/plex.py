@@ -82,7 +82,7 @@ class PLEXNotifier(XBMCNotifier):
 
         if sickbeard.USE_PLEX and sickbeard.PLEX_UPDATE_LIBRARY:
             if not sickbeard.PLEX_SERVER_HOST:
-                logger.log(u"No Plex Server host specified, check your settings", logger.DEBUG)
+                logger.log(u"No Plex Media Server host specified, check your settings", logger.DEBUG)
                 return False
 
             logger.log(u"Updating library for the Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST,

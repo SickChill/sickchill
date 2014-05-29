@@ -33,7 +33,7 @@ API_KEY = "awKfdt263PLaEWV9RXuSn4c46qoAyA"
 
 class PushoverNotifier:
     def test_notify(self, userKey=None):
-        return self._sendPushover("This is a test notification from SickRage", 'Test', userKey)
+        return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey, force=True)
 
     def _sendPushover(self, msg, title, userKey=None):
         """
@@ -74,7 +74,7 @@ class PushoverNotifier:
                 logger.log("Pushover notification failed." + ex(e), logger.ERROR)
                 return False
             else:
-                logger.log("Pushover notification failed. Error code: " + str(e.code), logger.WARNING)
+                logger.log("Pushover notification failed. Error code: " + str(e.code), logger.ERROR)
 
             # HTTP status 404 if the provided email address isn't a Pushover user.
             if e.code == 404:
@@ -98,7 +98,7 @@ class PushoverNotifier:
                 logger.log("Wrong data sent to pushover", logger.ERROR)
                 return False
 
-        logger.log("Pushover notification successful.", logger.DEBUG)
+        logger.log("Pushover notification successful.", logger.MESSAGE)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -114,24 +114,24 @@ class PushoverNotifier:
         if sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyPushover(title, ep_name + ": " + lang)
 
-    def _notifyPushover(self, title, message, userKey=None):
+    def _notifyPushover(self, title, message, userKey=None, force=False):
         """
         Sends a pushover notification based on the provided info or SB config
 
         title: The title of the notification to send
         message: The message string to send
         userKey: The userKey to send the notification to 
+        force: Enforce sending, for instance for testing
         """
 
-        if not sickbeard.USE_PUSHOVER:
+        if not sickbeard.USE_PUSHOVER and not force:
             logger.log("Notification for Pushover not enabled, skipping this notification", logger.DEBUG)
             return False
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 
         # self._sendPushover(message, title, userKey)
-        self._sendPushover(message, title)
-        return True
+        return self._sendPushover(message, title)
 
 
 notifier = PushoverNotifier
