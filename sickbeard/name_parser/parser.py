@@ -58,15 +58,15 @@ class NameParser(object):
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
         characters, along with any trailing hyphens.
-    
+
         Is basically equivalent to replacing all _ and . with a
         space, but handles decimal numbers in string, for example:
-    
+
         >>> cleanRegexedSeriesName("an.example.1.0.test")
         'an example 1.0 test'
         >>> cleanRegexedSeriesName("an_example_1.0_test")
         'an example 1.0 test'
-        
+
         Stolen from dbr's tvnamer
         """
 
