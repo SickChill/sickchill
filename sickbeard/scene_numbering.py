@@ -133,7 +133,7 @@ def get_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to
         return (int(rows[0]["season"]), int(rows[0]["episode"]), int(rows[0]["absolute_number"]))
     else:
         if fallback_to_xem:
-            return get_indexer_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber)
+            return get_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber)
     return (None, None, None)
 
 def get_scene_numbering_for_show(indexer_id, indexer):

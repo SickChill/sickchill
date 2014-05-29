@@ -431,10 +431,14 @@ class TVRage:
             try:
                 key = name_map[key.lower()]
             except (ValueError, TypeError, KeyError):
-                key.lower()
+                key = key.lower()
 
             # clean up value and do type changes
             if value:
+                if key == 'link':
+                    value = value.rsplit('/', 1)[1]
+                    key = 'id'
+
                 if isinstance(value, dict):
                     if key == 'network':
                         value = value['#text']
@@ -445,13 +449,6 @@ class TVRage:
                         value = '|' + '|'.join(value) + '|'
 
                 try:
-                    # convert to integer if needed
-                    if value.isdigit():
-                        value = int(value)
-                except:
-                    pass
-
-                try:
                     if key == 'firstaired' and value in "0000-00-00":
                         new_value = str(dt.date.fromordinal(1))
                         new_value = re.sub("([-]0{2}){1,}", "", new_value)
@@ -460,14 +457,17 @@ class TVRage:
                     elif key == 'firstaired':
                         value = parse(value, fuzzy=True).date()
                         value = value.strftime("%Y-%m-%d")
+
+                    if key == 'airs_time':
+                        value = parse(value).time()
+                        value = value.strftime("%I:%M")
                 except:
                     pass
 
-            value = self._cleanData(value)
             return (key, value)
 
         if resp.ok:
-            return xmltodict.parse(resp.text.strip(), postprocessor=remap_keys)
+            return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -526,9 +526,8 @@ class TVRage:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        if isinstance(data, str):
-            data = data.replace(u"&amp;", u"&")
-            data = data.strip()
+        data = data.replace(u"&amp;", u"&")
+        data = data.strip()
         return data
 
     def search(self, series):
@@ -582,6 +581,9 @@ class TVRage:
             return False
 
         for k, v in seriesInfoEt.items():
+            if v is not None:
+                v = self._cleanData(v)
+
             self._setShowData(sid, k, v)
 
         # series search ends here
@@ -608,13 +610,6 @@ class TVRage:
                     try:
                         k = k.lower()
                         if v is not None:
-                            if k == 'link':
-                                v = v.rsplit('/', 1)[1]
-                                k = 'id'
-
-                            if k == 'id':
-                                v = int(v)
-
                             v = self._cleanData(v)
 
                         self._setItem(sid, seas_no, ep_no, k, v)

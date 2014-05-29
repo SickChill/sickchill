@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+# !/usr/bin/env python2
 #encoding:utf-8
 #author:dbr/Ben
 #project:tvdb_api
@@ -41,8 +41,10 @@ from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound,
                              tvdb_seasonnotfound, tvdb_episodenotfound, tvdb_attributenotfound)
 
+
 def log():
     return logging.getLogger("tvdb_api")
+
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
@@ -86,6 +88,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
         return f_retry  # true decorator
 
     return deco_retry
+
 
 class ShowContainer(dict):
     """Simple dict that holds a series of Show instances
@@ -570,18 +573,6 @@ class Tvdb:
             # clean up value and do type changes
             if value:
                 try:
-                    # convert to integer if needed
-                    if value.isdigit():
-                        value = int(value)
-                except:
-                    pass
-
-                if key in ['banner', 'fanart', 'poster']:
-                    value = self.config['url_artworkPrefix'] % (value)
-                else:
-                    value = self._cleanData(value)
-
-                try:
                     if key == 'firstaired' and value in "0000-00-00":
                         new_value = str(dt.date.fromordinal(1))
                         new_value = re.sub("([-]0{2}){1,}", "", new_value)
@@ -590,10 +581,13 @@ class Tvdb:
                     elif key == 'firstaired':
                         value = parse(value, fuzzy=True).date()
                         value = value.strftime("%Y-%m-%d")
+
+                    if key == 'airs_time':
+                        value = parse(value).time()
+                        value = value.strftime("%I:%M")
                 except:
                     pass
 
-            value = self._cleanData(value)
             return (key, value)
 
         if resp.ok:
@@ -604,11 +598,11 @@ class Tvdb:
                     zipdata = StringIO.StringIO()
                     zipdata.write(resp.content)
                     myzipfile = zipfile.ZipFile(zipdata)
-                    return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
+                    return xmltodict.parse(myzipfile.read('%s.xml' % language).strip(), postprocessor=process)
                 except zipfile.BadZipfile:
                     raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
             else:
-                return xmltodict.parse(resp.text.strip(), postprocessor=process)
+                return xmltodict.parse(resp.content.strip(), postprocessor=process)
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -667,9 +661,8 @@ class Tvdb:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        if isinstance(data, str):
-            data = data.replace(u"&amp;", u"&")
-            data = data.strip()
+        data = data.replace(u"&amp;", u"&")
+        data = data.strip()
         return data
 
     def search(self, series):
@@ -729,13 +722,12 @@ class Tvdb:
         log().debug('Getting season banners for %s' % (sid))
         bannersEt = self._getetsrc(self.config['url_seriesBanner'] % (sid))
         banners = {}
-        for cur_banner in bannersEt.findall('Banner'):
-            bid = cur_banner.find('id').text
-            btype = cur_banner.find('BannerType')
-            btype2 = cur_banner.find('BannerType2')
+        for cur_banner in bannersEt['banner']:
+            bid = cur_banner['id']
+            btype = cur_banner['bannertype']
+            btype2 = cur_banner['bannertype2']
             if btype is None or btype2 is None:
                 continue
-            btype, btype2 = btype.text, btype2.text
             if not btype in banners:
                 banners[btype] = {}
             if not btype2 in banners[btype]:
@@ -743,13 +735,12 @@ class Tvdb:
             if not bid in banners[btype][btype2]:
                 banners[btype][btype2][bid] = {}
 
-            for cur_element in cur_banner.getchildren():
-                tag = cur_element.tag.lower()
-                value = cur_element.text
-                if tag is None or value is None:
+            for k, v in cur_banner.items():
+                if k is None or v is None:
                     continue
-                tag, value = tag.lower(), value.lower()
-                banners[btype][btype2][bid][tag] = value
+
+                k, v = k.lower(), v.lower()
+                banners[btype][btype2][bid][k] = v
 
             for k, v in banners[btype][btype2][bid].items():
                 if k.endswith("path"):
@@ -788,17 +779,16 @@ class Tvdb:
         actorsEt = self._getetsrc(self.config['url_actorsInfo'] % (sid))
 
         cur_actors = Actors()
-        for curActorItem in actorsEt.findall("Actor"):
+        for curActorItem in actorsEt["actor"]:
             curActor = Actor()
-            for curInfo in curActorItem:
-                tag = curInfo.tag.lower()
-                value = curInfo.text
-                if value is not None:
-                    if tag == "image":
-                        value = self.config['url_artworkPrefix'] % (value)
+            for k, v in curActorItem.items():
+                k = k.lower()
+                if v is not None:
+                    if k == "image":
+                        v = self.config['url_artworkPrefix'] % (v)
                     else:
-                        value = self._cleanData(value)
-                curActor[tag] = value
+                        v = self._cleanData(v)
+                curActor[k] = v
             cur_actors.append(curActor)
         self._setShowData(sid, '_actors', cur_actors)
 
@@ -833,6 +823,12 @@ class Tvdb:
             return False
 
         for k, v in seriesInfoEt['series'].items():
+            if v is not None:
+                if k in ['banner', 'fanart', 'poster']:
+                    v = self.config['url_artworkPrefix'] % (v)
+                else:
+                    v = self._cleanData(v)
+
             self._setShowData(sid, k, v)
 
         if seriesSearch:
@@ -871,25 +867,22 @@ class Tvdb:
             if seasnum is None or epno is None:
                 log().warning("An episode has incomplete season/episode number (season: %r, episode: %r)" % (
                     seasnum, epno))
-                continue # Skip to next episode
+                continue  # Skip to next episode
 
             # float() is because https://github.com/dbr/tvnamer/issues/95 - should probably be fixed in TVDB data
             seas_no = int(float(seasnum))
             ep_no = int(float(epno))
 
-            for k,v in cur_ep.items():
+            for k, v in cur_ep.items():
                 k = k.lower()
 
                 if v is not None:
-                    if k == 'id':
-                        v = int(v)
-
                     if k == 'filename':
                         v = self.config['url_artworkPrefix'] % (v)
                     else:
                         v = self._cleanData(v)
 
-                    self._setItem(sid, seas_no, ep_no, k, v)
+                self._setItem(sid, seas_no, ep_no, k, v)
 
         return True
 
@@ -906,7 +899,8 @@ class Tvdb:
             selected_series = self._getSeries(name)
             if isinstance(selected_series, dict):
                 selected_series = [selected_series]
-            sids = list(int(x['id']) for x in selected_series if self._getShowData(int(x['id']), self.config['language'], seriesSearch=True))
+            sids = list(int(x['id']) for x in selected_series if
+                        self._getShowData(int(x['id']), self.config['language'], seriesSearch=True))
             self.corrections.update(dict((x['seriesname'], int(x['id'])) for x in selected_series))
             return sids
 
@@ -925,7 +919,7 @@ class Tvdb:
         selected_series = self._getSeries(key)
         if isinstance(selected_series, dict):
             selected_series = [selected_series]
-        [[self._setShowData(show['id'], k, v) for k,v in show.items()] for show in selected_series]
+        [[self._setShowData(show['id'], k, v) for k, v in show.items()] for show in selected_series]
         return selected_series
         #test = self._getSeries(key)
         #sids = self._nameToSid(key)

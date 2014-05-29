@@ -367,6 +367,10 @@ class QueueItemAdd(ShowQueueItem):
             myDB.action("UPDATE tv_episodes SET status = ? WHERE status = ? AND showid = ? AND season != 0",
                         [self.default_status, SKIPPED, self.show.indexerid])
 
+        # Load XEM data to DB for show
+        if sickbeard.scene_numbering.xem_refresh_needed(self.show.indexerid, self.show.indexer):
+            sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+
         # if they started with WANTED eps then run the backlog
         if self.default_status == WANTED:
             logger.log(u"Launching backlog for this show since its episodes are WANTED")
@@ -404,7 +408,6 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.show.refreshDir()
         self.show.writeMetadata()
-        #self.show.updateMetadata()
         self.show.populateCache()
 
         self.inProgress = False
@@ -417,6 +420,9 @@ class QueueItemRename(ShowQueueItem):
     def execute(self):
 
         ShowQueueItem.execute(self)
+
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         logger.log(u"Performing rename on " + self.show.name)
 
@@ -475,6 +481,9 @@ class QueueItemUpdate(ShowQueueItem):
         ShowQueueItem.execute(self)
 
         logger.log(u"Beginning update of " + self.show.name)
+
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         logger.log(u"Retrieving show info from " + sickbeard.indexerApi(self.show.indexer).name + "", logger.DEBUG)
         try:

@@ -812,8 +812,7 @@ class TVShow(object):
         myEp = t[self.indexerid]
 
         try:
-            if getattr(myEp, 'seriesname', None) is not None:
-                self.name = myEp['seriesname'].strip()
+            self.name = myEp['seriesname'].strip()
         except AttributeError:
             raise sickbeard.indexer_attributenotfound(
                 "Found %s, but attribute 'seriesname' was empty." % (self.indexerid))
@@ -935,7 +934,9 @@ class TVShow(object):
 
         sql_l = [["DELETE FROM tv_episodes WHERE showid = ?", [self.indexerid]],
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
-                 ["DELETE FROM imdb_info WHERE indexer_id = ?", [self.indexerid]]]
+                 ["DELETE FROM imdb_info WHERE indexer_id = ?", [self.indexerid]],
+                 ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
+                 ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
 
         myDB.mass_action(sql_l)
 
