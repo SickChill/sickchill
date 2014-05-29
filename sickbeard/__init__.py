@@ -1303,6 +1303,7 @@ def saveAndShutdown(restart=False):
         logger.log(u"Removing pidfile " + str(PIDFILE))
         remove_pid_file(PIDFILE)
 
+    status = 0
     if restart:
         install_type = versionCheckScheduler.action.install_type
 
@@ -1325,9 +1326,11 @@ def saveAndShutdown(restart=False):
                 popen_list += ['--nolaunch']
             logger.log(u"Restarting SickRage with " + str(popen_list))
             logger.close()
-            subprocess.Popen(popen_list, cwd=os.getcwd())
+            p = subprocess.Popen(popen_list, cwd=os.getcwd())
+            p.wait()
+            status = p.returncode
 
-    os._exit(0)
+    os._exit(status)
 
 
 def invoke_command(to_call, *args, **kwargs):
