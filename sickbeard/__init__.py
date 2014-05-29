@@ -1293,7 +1293,6 @@ def saveAll():
 
 def saveAndShutdown(restart=False):
     halt()
-
     saveAll()
 
     logger.log(u"Killing cherrypy")
@@ -1303,7 +1302,6 @@ def saveAndShutdown(restart=False):
         logger.log(u"Removing pidfile " + str(PIDFILE))
         remove_pid_file(PIDFILE)
 
-    status = 0
     if restart:
         install_type = versionCheckScheduler.action.install_type
 
@@ -1324,15 +1322,13 @@ def saveAndShutdown(restart=False):
             popen_list += MY_ARGS
             if '--nolaunch' not in popen_list:
                 popen_list += ['--nolaunch']
+
             logger.log(u"Restarting SickRage with " + str(popen_list))
             logger.close()
-            subprocess.Popen(popen_list, cwd=os.getcwd())
-            time.sleep(5)
 
-            logger.log(u"SickRage successfully restarted ...")
+            subprocess.Popen(popen_list, cwd=os.getcwd())
 
     os._exit(0)
-
 
 def invoke_command(to_call, *args, **kwargs):
     global invoked_command

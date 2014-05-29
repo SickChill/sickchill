@@ -107,7 +107,7 @@ def daemonize():
         sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
-    os.setsid(pid)  # @UndefinedVariable - only available in UNIX
+    os.setsid() # unix
 
     # Make sure I can read my own files and shut out others
     prev = os.umask(0)
