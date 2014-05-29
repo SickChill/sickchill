@@ -11,6 +11,7 @@ __author__ = "dbr/Ben"
 __version__ = "1.9"
 
 import os
+import re
 import time
 import getpass
 import StringIO
@@ -18,8 +19,10 @@ import tempfile
 import warnings
 import logging
 import zipfile
+import datetime as dt
 import requests
 import cachecontrol
+import xmltodict
 
 try:
     import xml.etree.cElementTree as ElementTree
@@ -31,6 +34,7 @@ try:
 except ImportError:
     gzip = None
 
+from lib.dateutil.parser import parse
 from cachecontrol import caches
 
 from tvdb_ui import BaseUI, ConsoleUI
@@ -560,44 +564,71 @@ class Tvdb:
         except requests.Timeout, e:
             raise tvdb_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
-        if 'application/zip' in resp.headers.get("Content-Type", '') and resp.ok:
-            try:
-                # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                log().debug("We recived a zip file unpacking now ...")
-                zipdata = StringIO.StringIO()
-                zipdata.write(resp.content)
-                myzipfile = zipfile.ZipFile(zipdata)
-                return myzipfile.read('%s.xml' % language)
-            except zipfile.BadZipfile:
-                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        def process(path, key, value):
+            key = key.lower()
 
-        return resp.content if resp.ok else None
+            # clean up value and do type changes
+            if value:
+                try:
+                    # convert to integer if needed
+                    if value.isdigit():
+                        value = int(value)
+                except:
+                    pass
+
+                if key in ['banner', 'fanart', 'poster']:
+                    value = self.config['url_artworkPrefix'] % (value)
+                else:
+                    value = self._cleanData(value)
+
+                try:
+                    if key == 'firstaired' and value in "0000-00-00":
+                        new_value = str(dt.date.fromordinal(1))
+                        new_value = re.sub("([-]0{2}){1,}", "", new_value)
+                        fixDate = parse(new_value, fuzzy=True).date()
+                        value = fixDate.strftime("%Y-%m-%d")
+                    elif key == 'firstaired':
+                        value = parse(value, fuzzy=True).date()
+                        value = value.strftime("%Y-%m-%d")
+                except:
+                    pass
+
+            value = self._cleanData(value)
+            return (key, value)
+
+        if resp.ok:
+            if 'application/zip' in resp.headers.get("Content-Type", ''):
+                try:
+                    # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
+                    log().debug("We recived a zip file unpacking now ...")
+                    zipdata = StringIO.StringIO()
+                    zipdata.write(resp.content)
+                    myzipfile = zipfile.ZipFile(zipdata)
+                    return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
+                except zipfile.BadZipfile:
+                    raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+            else:
+                return xmltodict.parse(resp.text.strip(), postprocessor=process)
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
         """
-        src = self._loadUrl(url, params=params, language=language)
         try:
-            # TVDB doesn't sanitize \r (CR) from user input in some fields,
-            # remove it to avoid errors. Change from SickBeard, from will14m
-            return ElementTree.fromstring(src.rstrip("\r")) if src else None
-        except SyntaxError:
             src = self._loadUrl(url, params=params, language=language)
-            try:
-                return ElementTree.fromstring(src.rstrip("\r")) if src else None
-            except SyntaxError, exceptionmsg:
-                errormsg = "There was an error with the XML retrieved from thetvdb.com:\n%s" % (
-                    exceptionmsg
+            src = [src[item] for item in src][0]
+        except:
+            errormsg = "There was an error with the XML retrieved from thetvdb.com:"
+
+            if self.config['cache_enabled']:
+                errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
+                    self.config['cache_location']
                 )
 
-                if self.config['cache_enabled']:
-                    errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
-                        self.config['cache_location']
-                    )
+            errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on"
+            errormsg += "\nhttp://dbr.lighthouseapp.com/projects/13342-tvdb_api/overview\n"
+            raise tvdb_error(errormsg)
 
-                errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on"
-                errormsg += "\nhttp://dbr.lighthouseapp.com/projects/13342-tvdb_api/overview\n"
-                raise tvdb_error(errormsg)
+        return src
 
     def _setItem(self, sid, seas, ep, attrib, value):
         """Creates a new episode, creating Show(), Season() and
@@ -649,9 +680,8 @@ class Tvdb:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = list(dict((s.tag.lower(), s.text) for s in x.getchildren()) for x in seriesEt)
 
-        return allSeries
+        return [seriesEt[item] for item in seriesEt][0]
 
     def _getSeries(self, series):
         """This searches TheTVDB.com for the series name,
@@ -798,24 +828,13 @@ class Tvdb:
             self.config['url_seriesInfo'] % (sid, getShowInLanguage)
         )
 
-        if seriesInfoEt is None: return False
-        for curInfo in seriesInfoEt.findall("Series")[0]:
-            tag = curInfo.tag.lower()
-            value = curInfo.text
+        # check and make sure we have data to process and that it contains a series name
+        if seriesInfoEt is None or 'seriesname' not in seriesInfoEt['series']:
+            return False
 
-            if tag == 'seriesname' and value is None:
-                return False
+        for k, v in seriesInfoEt['series'].items():
+            self._setShowData(sid, k, v)
 
-            if value is not None:
-                if tag == 'id':
-                    value = int(value)
-
-                if tag in ['banner', 'fanart', 'poster']:
-                    value = self.config['url_artworkPrefix'] % (value)
-                else:
-                    value = self._cleanData(value)
-
-            self._setShowData(sid, tag, value)
         if seriesSearch:
             return True
 
@@ -837,63 +856,40 @@ class Tvdb:
 
         epsEt = self._getetsrc(url, language=language)
 
-        for cur_ep in epsEt.findall("Episode"):
-
+        for cur_ep in epsEt["episode"]:
             if self.config['dvdorder']:
                 log().debug('Using DVD ordering.')
-                use_dvd = cur_ep.find('DVD_season').text != None and cur_ep.find('DVD_episodenumber').text != None
+                use_dvd = cur_ep['dvd_season'] != None and cur_ep['dvd_episodenumber'] != None
             else:
                 use_dvd = False
 
             if use_dvd:
-                elem_seasnum, elem_epno = cur_ep.find('DVD_season'), cur_ep.find('DVD_episodenumber')
+                seasnum, epno = cur_ep['dvd_season'], cur_ep['dvd_episodenumber']
             else:
-                elem_seasnum, elem_epno = cur_ep.find('SeasonNumber'), cur_ep.find('EpisodeNumber')
+                seasnum, epno = cur_ep['seasonnumber'], cur_ep['episodenumber']
 
-            if elem_seasnum is None or elem_epno is None:
-
+            if seasnum is None or epno is None:
                 log().warning("An episode has incomplete season/episode number (season: %r, episode: %r)" % (
-                    elem_seasnum, elem_epno))
-                log().debug(
-                    " ".join(
-                        "%r is %r" % (child.tag, child.text) for child in cur_ep.getchildren()))
-                # TODO: Should this happen?
+                    seasnum, epno))
                 continue # Skip to next episode
 
-
             # float() is because https://github.com/dbr/tvnamer/issues/95 - should probably be fixed in TVDB data
-            seas_no = int(float(elem_seasnum.text))
-            ep_no = int(float(elem_epno.text))
+            seas_no = int(float(seasnum))
+            ep_no = int(float(epno))
 
-            useDVD = False
+            for k,v in cur_ep.items():
+                k = k.lower()
 
-            if (self.config['dvdorder']):
-                log().debug('DVD Order?  Yes')
-                useDVD = (cur_ep.find('DVD_season').text != None and cur_ep.find('DVD_episodenumber').text != None)
-            else:
-                log().debug('DVD Order? No')
+                if v is not None:
+                    if k == 'id':
+                        v = int(v)
 
-            if (useDVD):
-                log().debug('Use DVD Order? Yes')
-                seas_no = int(cur_ep.find('DVD_season').text)
-                ep_no = int(float(cur_ep.find('DVD_episodenumber').text))
-            else:
-                log().debug('Use DVD Order? No')
-                seas_no = int(cur_ep.find('SeasonNumber').text)
-                ep_no = int(cur_ep.find('EpisodeNumber').text)
-
-            for cur_item in cur_ep.getchildren():
-                tag = cur_item.tag.lower()
-                value = cur_item.text
-                if value is not None:
-                    if tag == 'id':
-                        value = int(value)
-
-                    if tag == 'filename':
-                        value = self.config['url_artworkPrefix'] % (value)
+                    if k == 'filename':
+                        v = self.config['url_artworkPrefix'] % (v)
                     else:
-                        value = self._cleanData(value)
-                self._setItem(sid, seas_no, ep_no, tag, value)
+                        v = self._cleanData(v)
+
+                    self._setItem(sid, seas_no, ep_no, k, v)
 
         return True
 

@@ -5,9 +5,9 @@ This module provides the HTMLSearchCharacterParser class (and the
 search_character_parser instance), used to parse the results of a search
 for a given character.
 E.g., when searching for the name "Jesse James", the parsed page would be:
-    http://akas.imdb.com/find?s=Characters;mx=20;q=Jesse+James
+    http://akas.imdb.com/find?s=ch;mx=20;q=Jesse+James
 
-Copyright 2007-2009 Davide Alberani <da@erlug.linux.it>
+Copyright 2007-2012 Davide Alberani <da@erlug.linux.it>
                2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ class DOMBasicCharacterParser(DOMBasicMovieParser):
 
 class DOMHTMLSearchCharacterParser(DOMHTMLSearchMovieParser):
     _BaseParser = DOMBasicCharacterParser
-    _notDirectHitTitle = '<title>imdb search'
+    _notDirectHitTitle = '<title>find - imdb'
     _titleBuilder = lambda self, x: build_name(x, canonical=False)
     _linkPrefix = '/character/ch'
 
@@ -57,7 +57,7 @@ class DOMHTMLSearchCharacterParser(DOMHTMLSearchMovieParser):
                             {'name': x.get('name')}
                         ))]
     extractors = [Extractor(label='search',
-                            path="//td[3]/a[starts-with(@href, " \
+                            path="//td[@class='result_text']/a[starts-with(@href, " \
                                     "'/character/ch')]/..",
                             attrs=_attrs)]
 

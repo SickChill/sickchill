@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+# !/usr/bin/env python2
 #encoding:utf-8
 #author:echel0n
 #project:tvrage_api
@@ -24,6 +24,7 @@ import logging
 import datetime as dt
 import requests
 import cachecontrol
+import xmltodict
 
 try:
     import xml.etree.cElementTree as ElementTree
@@ -35,10 +36,12 @@ from cachecontrol import caches
 
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
-    tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
+                               tvrage_seasonnotfound, tvrage_episodenotfound, tvrage_attributenotfound)
+
 
 def log():
     return logging.getLogger("tvrage_api")
+
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
@@ -83,6 +86,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
 
     return deco_retry
 
+
 class ShowContainer(dict):
     """Simple dict that holds a series of Show instances
     """
@@ -105,13 +109,14 @@ class ShowContainer(dict):
 
             _lastgc = time.time()
             del tbd
-                    
+
         super(ShowContainer, self).__setitem__(key, value)
 
 
 class Show(dict):
     """Holds a dict of seasons, and show data.
     """
+
     def __init__(self):
         dict.__init__(self)
         self.data = {}
@@ -157,7 +162,7 @@ class Show(dict):
             raise tvrage_episodenotfound("Could not find any episodes that aired on %s" % date)
         return ret
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """
         Search all episodes in show. Can search all data, or a specific key (for
         example, episodename)
@@ -173,7 +178,7 @@ class Show(dict):
         """
         results = []
         for cur_season in self.values():
-            searchresult = cur_season.search(term = term, key = key)
+            searchresult = cur_season.search(term=term, key=key)
             if len(searchresult) != 0:
                 results.extend(searchresult)
 
@@ -181,7 +186,7 @@ class Show(dict):
 
 
 class Season(dict):
-    def __init__(self, show = None):
+    def __init__(self, show=None):
         """The show attribute points to the parent show
         """
         self.show = show
@@ -202,13 +207,13 @@ class Season(dict):
         else:
             return dict.__getitem__(self, episode_number)
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """Search all episodes in season, returns a list of matching Episode
         instances.
         """
         results = []
         for ep in self.values():
-            searchresult = ep.search(term = term, key = key)
+            searchresult = ep.search(term=term, key=key)
             if searchresult is not None:
                 results.append(
                     searchresult
@@ -217,7 +222,7 @@ class Season(dict):
 
 
 class Episode(dict):
-    def __init__(self, season = None):
+    def __init__(self, season=None):
         """The season attribute points to the parent season
         """
         self.season = season
@@ -242,7 +247,7 @@ class Episode(dict):
         except KeyError:
             raise tvrage_attributenotfound("Cannot find attribute %s" % (repr(key)))
 
-    def search(self, term = None, key = None):
+    def search(self, term=None, key=None):
         """Search episode data for term, if it matches, return the Episode (self).
         The key parameter can be used to limit the search to a specific element,
         for example, episodename.
@@ -258,25 +263,27 @@ class Episode(dict):
             if key is not None and cur_key != key:
                 # Do not search this key
                 continue
-            if cur_value.find( unicode(term).lower() ) > -1:
+            if cur_value.find(unicode(term).lower()) > -1:
                 return self
+
 
 class TVRage:
     """Create easy-to-use interface to name of season/episode name"""
+
     def __init__(self,
-                interactive = False,
-                select_first = False,
-                debug = False,
-                cache = True,
-                banners = False,
-                actors = False,
-                custom_ui = None,
-                language = None,
-                search_all_languages = False,
-                apikey = None,
-                forceConnect=False,
-                useZip=False,
-                dvdorder=False):
+                 interactive=False,
+                 select_first=False,
+                 debug=False,
+                 cache=True,
+                 banners=False,
+                 actors=False,
+                 custom_ui=None,
+                 language=None,
+                 search_all_languages=False,
+                 apikey=None,
+                 forceConnect=False,
+                 useZip=False,
+                 dvdorder=False):
 
         """
         cache (True/False/str/unicode/urllib2 opener):
@@ -294,18 +301,18 @@ class TVRage:
             return an exception immediately.
         """
 
-        self.shows = ShowContainer() # Holds all Show classes
-        self.corrections = {} # Holds show-name to show_id mapping
-        self.sess = requests.session() # HTTP Session
+        self.shows = ShowContainer()  # Holds all Show classes
+        self.corrections = {}  # Holds show-name to show_id mapping
+        self.sess = requests.session()  # HTTP Session
 
         self.config = {}
 
         if apikey is not None:
             self.config['apikey'] = apikey
         else:
-            self.config['apikey'] = "Uhewg1Rr0o62fvZvUIZt" # tvdb_api's API key
+            self.config['apikey'] = "Uhewg1Rr0o62fvZvUIZt"  # tvdb_api's API key
 
-        self.config['debug_enabled'] = debug # show debugging messages
+        self.config['debug_enabled'] = debug  # show debugging messages
 
         self.config['custom_ui'] = custom_ui
 
@@ -322,8 +329,8 @@ class TVRage:
 
         if self.config['debug_enabled']:
             warnings.warn("The debug argument to tvrage_api.__init__ will be removed in the next version. "
-            "To enable debug messages, use the following code before importing: "
-            "import logging; logging.basicConfig(level=logging.DEBUG)")
+                          "To enable debug messages, use the following code before importing: "
+                          "import logging; logging.basicConfig(level=logging.DEBUG)")
             logging.basicConfig(level=logging.DEBUG)
 
 
@@ -331,8 +338,8 @@ class TVRage:
         # Hard-coded here as it is realtively static, and saves another HTTP request, as
         # recommended on http://tvrage.com/wiki/index.php/API:languages.xml
         self.config['valid_languages'] = [
-            "da", "fi", "nl", "de", "it", "es", "fr","pl", "hu","el","tr",
-            "ru","he","ja","pt","zh","cs","sl", "hr","ko","en","sv","no"
+            "da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr",
+            "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"
         ]
 
         # tvrage.com should be based around numeric language codes,
@@ -340,9 +347,9 @@ class TVRage:
         # requires the language ID, thus this mapping is required (mainly
         # for usage in tvrage_ui - internally tvrage_api will use the language abbreviations)
         self.config['langabbv_to_id'] = {'el': 20, 'en': 7, 'zh': 27,
-        'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
-        'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
-        'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
+                                         'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
+                                         'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
+                                         'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30}
 
         if language is None:
             self.config['language'] = 'en'
@@ -390,9 +397,9 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
-                resp = self.sess.get(url, cache_auto=True, params=params)
+                resp = self.sess.get(url.strip(), cache_auto=True, params=params)
             else:
-                resp = requests.get(url, params=params)
+                resp = requests.get(url.strip(), params=params)
 
         except requests.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
@@ -403,81 +410,84 @@ class TVRage:
         except requests.Timeout, e:
             raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
 
-        return resp.content if resp.ok else None
+        def remap_keys(path, key, value):
+            name_map = {
+                'showid': 'id',
+                'showname': 'seriesname',
+                'name': 'seriesname',
+                'summary': 'overview',
+                'started': 'firstaired',
+                'genres': 'genre',
+                'airtime': 'airs_time',
+                'airday': 'airs_dayofweek',
+                'image': 'fanart',
+                'epnum': 'absolute_number',
+                'title': 'episodename',
+                'airdate': 'firstaired',
+                'screencap': 'filename',
+                'seasonnum': 'episodenumber'
+            }
+
+            try:
+                key = name_map[key.lower()]
+            except (ValueError, TypeError, KeyError):
+                key.lower()
+
+            # clean up value and do type changes
+            if value:
+                if isinstance(value, dict):
+                    if key == 'network':
+                        value = value['#text']
+                    if key == 'genre':
+                        value = value['genre']
+                        if not isinstance(value, list):
+                            value = [value]
+                        value = '|' + '|'.join(value) + '|'
+
+                try:
+                    # convert to integer if needed
+                    if value.isdigit():
+                        value = int(value)
+                except:
+                    pass
+
+                try:
+                    if key == 'firstaired' and value in "0000-00-00":
+                        new_value = str(dt.date.fromordinal(1))
+                        new_value = re.sub("([-]0{2}){1,}", "", new_value)
+                        fixDate = parse(new_value, fuzzy=True).date()
+                        value = fixDate.strftime("%Y-%m-%d")
+                    elif key == 'firstaired':
+                        value = parse(value, fuzzy=True).date()
+                        value = value.strftime("%Y-%m-%d")
+                except:
+                    pass
+
+            value = self._cleanData(value)
+            return (key, value)
+
+        if resp.ok:
+            return xmltodict.parse(resp.text.strip(), postprocessor=remap_keys)
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
         """
-        reDict = {
-            'showid': 'id',
-            'showname': 'seriesname',
-            'name': 'seriesname',
-            'summary': 'overview',
-            'started': 'firstaired',
-            'genres': 'genre',
-            'airtime': 'airs_time',
-            'airday': 'airs_dayofweek',
-            'image': 'fanart',
-            'epnum': 'absolute_number',
-            'title': 'episodename',
-            'airdate': 'firstaired',
-            'screencap': 'filename',
-            'seasonnum': 'episodenumber',
-        }
 
-        robj = re.compile('|'.join(reDict.keys()))
-        src = self._loadUrl(url, params)
         try:
-            # TVRAGE doesn't sanitize \r (CR) from user input in some fields,
-            # remove it to avoid errors. Change from SickBeard, from will14m
-            xml = ElementTree.fromstring(src.rstrip("\r"))
-            tree = ElementTree.ElementTree(xml)
-            for elm in tree.findall('.//*'):
-                elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
-
-                if elm.tag in 'firstaired':
-                    try:
-                        if elm.text in "0000-00-00":
-                            elm.text = str(dt.date.fromordinal(1))
-                        elm.text = re.sub("([-]0{2}){1,}", "", elm.text)
-                        fixDate = parse(elm.text, fuzzy=True).date()
-                        elm.text = fixDate.strftime("%Y-%m-%d")
-                    except:
-                        pass
-            return ElementTree.fromstring(ElementTree.tostring(xml))
-        except SyntaxError:
             src = self._loadUrl(url, params)
-            try:
-                xml = ElementTree.fromstring(src.rstrip("\r"))
-                tree = ElementTree.ElementTree(xml)
-                for elm in tree.findall('.//*'):
-                    elm.tag = robj.sub(lambda m: reDict[m.group(0)], elm.tag)
+            src = [src[item] for item in src][0]
+        except:
+            errormsg = "There was an error with the XML retrieved from tvrage.com"
 
-                    if elm.tag in 'firstaired' and elm.text:
-                        if elm.text == "0000-00-00":
-                            elm.text = str(dt.date.fromordinal(1))
-                        try:
-                            #month = strptime(match.group('air_month')[:3],'%b').tm_mon
-                            #day = re.sub("(st|nd|rd|th)", "", match.group('air_day'))
-                            #dtStr = '%s/%s/%s' % (year, month, day)
-
-                            fixDate = parse(elm.text, fuzzy=True)
-                            elm.text = fixDate.strftime("%Y-%m-%d")
-                        except:
-                            pass
-                    return ElementTree.fromstring(ElementTree.tostring(xml))
-            except SyntaxError, exceptionmsg:
-                errormsg = "There was an error with the XML retrieved from tvrage.com:\n%s" % (
-                    exceptionmsg
+            if self.config['cache_enabled']:
+                errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
+                    self.config['cache_location']
                 )
 
-                if self.config['cache_enabled']:
-                    errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
-                        self.config['cache_location']
-                    )
+            errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on\n"
+            raise tvrage_error(errormsg)
 
-                errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on\n"
-                raise tvrage_error(errormsg)
+        return src
 
     def _setItem(self, sid, seas, ep, attrib, value):
         """Creates a new episode, creating Show(), Season() and
@@ -497,9 +507,9 @@ class TVRage:
         if sid not in self.shows:
             self.shows[sid] = Show()
         if seas not in self.shows[sid]:
-            self.shows[sid][seas] = Season(show = self.shows[sid])
+            self.shows[sid][seas] = Season(show=self.shows[sid])
         if ep not in self.shows[sid][seas]:
-            self.shows[sid][seas][ep] = Episode(season = self.shows[sid][seas])
+            self.shows[sid][seas][ep] = Episode(season=self.shows[sid][seas])
         self.shows[sid][seas][ep][attrib] = value
 
     def _setShowData(self, sid, key, value):
@@ -529,9 +539,8 @@ class TVRage:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['show'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        allSeries = list(dict((s.tag.lower(),s.text) for s in x.getchildren()) for x in seriesEt)
 
-        return allSeries
+        return [seriesEt[item] for item in seriesEt][0]
 
     def _getSeries(self, series):
         """This searches tvrage.com for the series name,
@@ -547,10 +556,10 @@ class TVRage:
 
         if self.config['custom_ui'] is not None:
             log().debug("Using custom UI %s" % (repr(self.config['custom_ui'])))
-            ui = self.config['custom_ui'](config = self.config)
+            ui = self.config['custom_ui'](config=self.config)
         else:
             log().debug('Auto-selecting first search result using BaseUI')
-            ui = BaseUI(config = self.config)
+            ui = BaseUI(config=self.config)
 
         return ui.selectSeries(allSeries)
 
@@ -568,62 +577,49 @@ class TVRage:
             self.config['params_seriesInfo']
         )
 
-        if seriesInfoEt is None: return False
-        for curInfo in seriesInfoEt:
-            tag = curInfo.tag.lower()
-            value = curInfo.text
+        # check and make sure we have data to process and that it contains a series name
+        if seriesInfoEt is None or 'seriesname' not in seriesInfoEt:
+            return False
 
-            if tag == 'seriesname' and value is None:
-                return False
+        for k, v in seriesInfoEt.items():
+            self._setShowData(sid, k, v)
 
-            if tag == 'id':
-                value = int(value)
-
-            if value is not None:
-                value = self._cleanData(value)
-
-            self._setShowData(sid, tag, value)
-        if seriesSearch: return True
-
-        try:
-            # Parse genre data
-            log().debug('Getting genres of %s' % (sid))
-            for genre in seriesInfoEt.find('genres'):
-                tag = genre.tag.lower()
-
-                value = genre.text
-                if value is not None:
-                    value = self._cleanData(value)
-
-                self._setShowData(sid, tag, value)
-        except Exception:
-            log().debug('No genres for %s' % (sid))
+        # series search ends here
+        if seriesSearch:
+            return True
 
         # Parse episode data
         log().debug('Getting all episodes of %s' % (sid))
 
         self.config['params_epInfo']['sid'] = sid
         epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
-        for cur_list in epsEt.findall("Episodelist"):
-            for cur_seas in cur_list:
-                try:
-                    seas_no = int(cur_seas.attrib['no'])
-                    for cur_ep in cur_seas:
-                        ep_no = int(cur_ep.find('episodenumber').text)
-                        self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
-                        for cur_item in cur_ep:
-                            tag = cur_item.tag.lower()
 
-                            value = cur_item.text
-                            if value is not None:
-                                if tag == 'id':
-                                    value = int(value)
+        for season in epsEt['Episodelist']['Season']:
+            episodes =  season['episode']
+            if not isinstance(episodes, list):
+                episodes = [episodes]
 
-                                value = self._cleanData(value)
+            for episode in episodes:
+                seas_no = int(season['@no'])
+                ep_no = int(episode['episodenumber'])
+                self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
 
-                            self._setItem(sid, seas_no, ep_no, tag, value)
-                except:
-                    continue
+                for k,v in episode.items():
+                    try:
+                        k = k.lower()
+                        if v is not None:
+                            if k == 'link':
+                                v = v.rsplit('/', 1)[1]
+                                k = 'id'
+
+                            if k == 'id':
+                                v = int(v)
+
+                            v = self._cleanData(v)
+
+                        self._setItem(sid, seas_no, ep_no, k, v)
+                    except:
+                        continue
         return True
 
     def _nameToSid(self, name):
@@ -632,7 +628,7 @@ class TVRage:
         the correct SID.
         """
         if name in self.corrections:
-            log().debug('Correcting %s to %s' % (name, self.corrections[name]) )
+            log().debug('Correcting %s to %s' % (name, self.corrections[name]))
             return self.corrections[name]
         else:
             log().debug('Getting show %s' % (name))
@@ -673,11 +669,13 @@ def main():
     grabs an episode name interactively.
     """
     import logging
+
     logging.basicConfig(level=logging.DEBUG)
 
     tvrage_instance = TVRage(cache=False)
     print tvrage_instance['Lost']['seriesname']
     print tvrage_instance['Lost'][1][4]['episodename']
+
 
 if __name__ == '__main__':
     main()

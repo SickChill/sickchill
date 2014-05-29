@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 """Generate binary message catalog from textual translation description.
 

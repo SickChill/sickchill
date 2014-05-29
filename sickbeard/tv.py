@@ -829,7 +829,7 @@ class TVShow(object):
             self.airs = myEp["airs_dayofweek"] + " " + myEp["airs_time"]
 
         if getattr(myEp, 'firstaired', None) is not None:
-            self.startyear = int(myEp["firstaired"].split('-')[0])
+            self.startyear = int(str(myEp["firstaired"]).split('-')[0])
 
         self.status = getattr(myEp, 'status', '')
 
@@ -855,7 +855,6 @@ class TVShow(object):
             i = imdb.IMDb()
             imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
 
-            test = imdbTv.keys()
             for key in filter(lambda x: x.replace('_', ' ') in imdbTv.keys(), imdb_info.keys()):
                 # Store only the first value for string type
                 if type(imdb_info[key]) == type('') and type(imdbTv.get(key)) == type([]):
@@ -1556,7 +1555,7 @@ class TVEpisode(object):
                 self.deleteEpisode()
             return False
 
-        if myEp["absolute_number"] == None or myEp["absolute_number"] == "":
+        if getattr(myEp, 'absolute_number', None) is None:
             logger.log(u"This episode (" + self.show.name + " - " + str(season) + "x" + str(
                 episode) + ") has no absolute number on " + sickbeard.indexerApi(
                 self.indexer).name
@@ -1564,7 +1563,7 @@ class TVEpisode(object):
         else:
             logger.log(
                 str(self.show.indexerid) + ": The absolute_number for " + str(season) + "x" + str(episode) + " is : " +
-                myEp["absolute_number"], logger.DEBUG)
+                str(myEp["absolute_number"]), logger.DEBUG)
             self.absolute_number = int(myEp["absolute_number"])
 
         self.name = getattr(myEp, 'episodename', "")
@@ -1603,8 +1602,9 @@ class TVEpisode(object):
                 u"The show dir is missing, not bothering to change the episode statuses since it'd probably be invalid")
             return
 
-        logger.log(str(self.show.indexerid) + u": Setting status for " + str(season) + "x" + str(
-            episode) + " based on status " + str(self.status) + " and existence of " + self.location, logger.DEBUG)
+        if self.location:
+            logger.log(str(self.show.indexerid) + u": Setting status for " + str(season) + "x" + str(
+                episode) + " based on status " + str(self.status) + " and existence of " + self.location, logger.DEBUG)
 
         if not ek.ek(os.path.isfile, self.location):
 

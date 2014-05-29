@@ -6,7 +6,7 @@ a person from the IMDb database.
 It can fetch data through different media (e.g.: the IMDb web pages,
 a SQL database, etc.)
 
-Copyright 2004-2012 Davide Alberani <da@erlug.linux.it>
+Copyright 2004-2014 Davide Alberani <da@erlug.linux.it>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 __all__ = ['IMDb', 'IMDbError', 'Movie', 'Person', 'Character', 'Company',
             'available_access_systems']
-__version__ = VERSION = '4.9'
+__version__ = VERSION = '5.0'
 
 # Import compatibility module (importing it is enough).
 import _compat
@@ -160,6 +160,7 @@ def IMDb(accessSystem=None, *arguments, **keywords):
             kwds.update(keywords)
             keywords = kwds
         except Exception, e:
+            import logging
             logging.getLogger('imdbpy').warn('Unable to read configuration' \
                                             ' file; complete error: %s' % e)
             # It just LOOKS LIKE a bad habit: we tried to read config
@@ -303,7 +304,7 @@ class IMDbBase:
         # http://akas.imdb.com/keyword/%s/
         imdbURL_keyword_main=imdbURL_base + 'keyword/%s/'
         # http://akas.imdb.com/chart/top
-        imdbURL_top250=imdbURL_base + 'chart/top',
+        imdbURL_top250=imdbURL_base + 'chart/top'
         # http://akas.imdb.com/chart/bottom
         imdbURL_bottom100=imdbURL_base + 'chart/bottom'
         # http://akas.imdb.com/find?%s
@@ -824,22 +825,23 @@ class IMDbBase:
         #      subclass, somewhere under the imdb.parser package.
         raise NotImplementedError('override this method')
 
-    def _searchIMDb(self, kind, ton):
+    def _searchIMDb(self, kind, ton, title_kind=None):
         """Search the IMDb akas server for the given title or name."""
         # The Exact Primary search system has gone AWOL, so we resort
         # to the mobile search. :-/
         if not ton:
             return None
+        ton = ton.strip('"')
         aSystem = IMDb('mobile')
         if kind == 'tt':
             searchFunct = aSystem.search_movie
-            check = 'long imdb canonical title'
+            check = 'long imdb title'
         elif kind == 'nm':
             searchFunct = aSystem.search_person
-            check = 'long imdb canonical name'
+            check = 'long imdb name'
         elif kind == 'char':
             searchFunct = aSystem.search_character
-            check = 'long imdb canonical name'
+            check = 'long imdb name'
         elif kind == 'co':
             # XXX: are [COUNTRY] codes included in the results?
             searchFunct = aSystem.search_company
@@ -852,24 +854,42 @@ class IMDbBase:
         # exact match.
         if len(searchRes) == 1:
             return searchRes[0].getID()
+        title_only_matches = []
         for item in searchRes:
             # Return the first perfect match.
-            if item[check] == ton:
-                return item.getID()
+            if item[check].strip('"') == ton:
+                # For titles do additional check for kind
+                if kind != 'tt' or title_kind == item['kind']:
+                    return item.getID()
+                elif kind == 'tt':
+                    title_only_matches.append(item.getID())
+        # imdbpy2sql.py could detected wrong type, so if no title and kind
+        # matches found - collect all results with title only match
+        # Return list of IDs if multiple matches (can happen when searching
+        # titles with no title_kind specified)
+        # Example: DB: Band of Brothers "tv series" vs "tv mini-series"
+        if title_only_matches:
+            if len(title_only_matches) == 1:
+                return title_only_matches[0]
+            else:
+                return title_only_matches
         return None
 
-    def title2imdbID(self, title):
+    def title2imdbID(self, title, kind=None):
         """Translate a movie title (in the plain text data files format)
         to an imdbID.
         Try an Exact Primary Title search on IMDb;
-        return None if it's unable to get the imdbID."""
-        return self._searchIMDb('tt', title)
+        return None if it's unable to get the imdbID;
+        Always specify kind: movie, tv series, video game etc. or search can
+        return list of IDs if multiple matches found
+        """
+        return self._searchIMDb('tt', title, kind)
 
     def name2imdbID(self, name):
         """Translate a person name in an imdbID.
         Try an Exact Primary Name search on IMDb;
         return None if it's unable to get the imdbID."""
-        return self._searchIMDb('tt', name)
+        return self._searchIMDb('nm', name)
 
     def character2imdbID(self, name):
         """Translate a character name in an imdbID.
@@ -896,7 +916,8 @@ class IMDbBase:
                 imdbID = aSystem.get_imdbMovieID(mop.movieID)
             else:
                 imdbID = aSystem.title2imdbID(build_title(mop, canonical=0,
-                                                ptdf=1))
+                                                ptdf=0, appendKind=False),
+                                                mop['kind'])
         elif isinstance(mop, Person.Person):
             if mop.personID is not None:
                 imdbID = aSystem.get_imdbPersonID(mop.personID)

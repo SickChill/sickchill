@@ -8,7 +8,7 @@ E.g., for when searching for the title "the passion", the parsed
 page would be:
     http://akas.imdb.com/find?q=the+passion&tt=on&mx=20
 
-Copyright 2004-2010 Davide Alberani <da@erlug.linux.it>
+Copyright 2004-2013 Davide Alberani <da@erlug.linux.it>
                2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ class DOMBasicMovieParser(DOMParserBase):
 def custom_analyze_title(title):
     """Remove garbage notes after the (year), (year/imdbIndex) or (year) (TV)"""
     # XXX: very crappy. :-(
-    nt = title.split('    ')[0]
+    nt = title.split(' aka ')[0]
     if nt:
         title = nt
     if not title:
@@ -92,7 +92,7 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
     "new search system" is used, for movies."""
 
     _BaseParser = DOMBasicMovieParser
-    _notDirectHitTitle = '<title>imdb title'
+    _notDirectHitTitle = '<title>find - imdb</title>'
     _titleBuilder = lambda self, x: build_title(x)
     _linkPrefix = '/title/tt'
 
@@ -101,8 +101,7 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
                         path={
                             'link': "./a[1]/@href",
                             'info': ".//text()",
-                            #'akas': ".//div[@class='_imdbpyAKA']//text()"
-                            'akas': ".//p[@class='find-aka']//text()"
+                            'akas': "./i//text()"
                             },
                         postprocess=lambda x: (
                             analyze_imdbid(x.get('link') or u''),
@@ -110,7 +109,7 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
                             x.get('akas')
                         ))]
     extractors = [Extractor(label='search',
-                        path="//td[3]/a[starts-with(@href, '/title/tt')]/..",
+                        path="//td[@class='result_text']",
                         attrs=_attrs)]
     def _init(self):
         self.url = u''
@@ -119,14 +118,11 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
         self.url = u''
 
     def preprocess_string(self, html_string):
-        if self._notDirectHitTitle in html_string[:1024].lower():
+        if self._notDirectHitTitle in html_string[:10240].lower():
             if self._linkPrefix == '/title/tt':
                 # Only for movies.
+                # XXX (HTU): does this still apply?
                 html_string = html_string.replace('(TV mini-series)', '(mini)')
-                html_string = html_string.replace('<p class="find-aka">',
-                        '<p class="find-aka">::')
-                #html_string = _reAKAStitles.sub(
-                #        r'<div class="_imdbpyAKA">\1::</div>\2', html_string)
             return html_string
         # Direct hit!
         dbme = self._BaseParser(useModule=self._useModule)
@@ -141,7 +137,7 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
         title = self._titleBuilder(res[0][1])
         if not (link and title): return u''
         link = link.replace('http://pro.imdb.com', '')
-        new_html = '<td></td><td></td><td><a href="%s">%s</a></td>' % (link,
+        new_html = '<td class="result_text"><a href="%s">%s</a></td>' % (link,
                                                                     title)
         return new_html
 
@@ -161,11 +157,14 @@ class DOMHTMLSearchMovieParser(DOMParserBase):
                 if not datum[0] and datum[1]:
                     continue
                 if datum[2] is not None:
-                    akas = filter(None, datum[2].split('::'))
+                    #akas = filter(None, datum[2].split('::'))
                     if self._linkPrefix == '/title/tt':
-                        akas = [a.replace('" - ', '::').rstrip() for a in akas]
-                        akas = [a.replace('aka "', '', 1).replace('aka  "',
-                                '', 1).lstrip() for a in akas]
+                        # XXX (HTU): couldn't find a result with multiple akas
+                        aka = datum[2]
+                        akas = [aka[1:-1]]      # remove the quotes
+                        #akas = [a.replace('" - ', '::').rstrip() for a in akas]
+                        #akas = [a.replace('aka "', '', 1).replace('aka  "',
+                                #'', 1).lstrip() for a in akas]
                     datum[1]['akas'] = akas
                     data['data'][idx] = (datum[0], datum[1])
                 else:

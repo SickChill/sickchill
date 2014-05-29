@@ -7,7 +7,7 @@ for a given company.
 E.g., when searching for the name "Columbia Pictures", the parsed page would be:
     http://akas.imdb.com/find?s=co;mx=20;q=Columbia+Pictures
 
-Copyright 2008-2009 Davide Alberani <da@erlug.linux.it>
+Copyright 2008-2012 Davide Alberani <da@erlug.linux.it>
           2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ class DOMBasicCompanyParser(DOMBasicMovieParser):
 
 class DOMHTMLSearchCompanyParser(DOMHTMLSearchMovieParser):
     _BaseParser = DOMBasicCompanyParser
-    _notDirectHitTitle = '<title>imdb company'
+    _notDirectHitTitle = '<title>find - imdb'
     _titleBuilder = lambda self, x: build_company_name(x)
     _linkPrefix = '/company/co'
 
@@ -59,7 +59,7 @@ class DOMHTMLSearchCompanyParser(DOMHTMLSearchMovieParser):
                                                 or u''), stripNotes=True)
                         ))]
     extractors = [Extractor(label='search',
-                            path="//td[3]/a[starts-with(@href, " \
+                            path="//td[@class='result_text']/a[starts-with(@href, " \
                                     "'/company/co')]/..",
                             attrs=_attrs)]
 

@@ -104,15 +104,24 @@ PY_VERSION = sys.version_info[:2]
 # The cookies for the "adult" search.
 # Please don't mess with these account.
 # Old 'IMDbPY' account.
-_old_cookie_id = 'boM2bYxz9MCsOnH9gZ0S9QHs12NWrNdApxsls1Vb5/NGrNdjcHx3dUas10UASoAjVEvhAbGagERgOpNkAPvxdbfKwaV2ikEj9SzXY1WPxABmDKQwdqzwRbM+12NSeJFGUEx3F8as10WwidLzVshDtxaPIbP13NdjVS9UZTYqgTVGrNcT9vyXU1'
-_old_cookie_uu = '3M3AXsquTU5Gur/Svik+ewflPm5Rk2ieY3BIPlLjyK3C0Dp9F8UoPgbTyKiGtZp4x1X+uAUGKD7BM2g+dVd8eqEzDErCoYvdcvGLvVLAen1y08hNQtALjVKAe+1hM8g9QbNonlG1/t4S82ieUsBbrSIQbq1yhV6tZ6ArvSbA7rgHc8n5AdReyAmDaJ5Wm/ee3VDoCnGj/LlBs2ieUZNorhHDKK5Q=='
-# New 'IMDbPYweb' account.
-_cookie_id = 'rH1jNAkjTlNXvHolvBVBsgaPICNZbNdjVjzFwzas9JRmusdjVoqBs/Hs12NR+1WFxEoR9bGKEDUg6sNlADqXwkas12N131Rwdb+UQNGKN8PWrNdjcdqBQVLq8mbGDHP3hqzxhbD692NQi9D0JjpBtRaPIbP1zNdjUOqENQYv1ADWrNcT9vyXU1'
-_cookie_uu = 'su4/m8cho4c6HP+W1qgq6wchOmhnF0w+lIWvHjRUPJ6nRA9sccEafjGADJ6hQGrMd4GKqLcz2X4z5+w+M4OIKnRn7FpENH7dxDQu3bQEHyx0ZEyeRFTPHfQEX03XF+yeN1dsPpcXaqjUZAw+lGRfXRQEfz3RIX9IgVEffdBAHw2wQXyf9xdMPrQELw0QNB8dsffsqcdQemjPB0w+moLcPh0JrKrHJ9hjBzdMPpcXTH7XRwwOk='
+_IMDbPY_cookie_id = 'boM2bYxz9MCsOnH9gZ0S9QHs12NWrNdApxsls1Vb5/NGrNdjcHx3dUas10UASoAjVEvhAbGagERgOpNkAPvxdbfKwaV2ikEj9SzXY1WPxABmDKQwdqzwRbM+12NSeJFGUEx3F8as10WwidLzVshDtxaPIbP13NdjVS9UZTYqgTVGrNcT9vyXU1'
+_IMDbPY_cookie_uu = '3M3AXsquTU5Gur/Svik+ewflPm5Rk2ieY3BIPlLjyK3C0Dp9F8UoPgbTyKiGtZp4x1X+uAUGKD7BM2g+dVd8eqEzDErCoYvdcvGLvVLAen1y08hNQtALjVKAe+1hM8g9QbNonlG1/t4S82ieUsBbrSIQbq1yhV6tZ6ArvSbA7rgHc8n5AdReyAmDaJ5Wm/ee3VDoCnGj/LlBs2ieUZNorhHDKK5Q=='
+# 'imdbpy2010' account.
+_imdbpy2010_cookie_id = 'QrCdxVi+L+WgqOLrQJJgBgRRXGInphxiBPU/YXSFDyExMFzCp6YcYgSVXyEUhS/xMID8wqemHGID4DlntwZ49vemP5UXsAxiJ4D6goSmHGIgNT9hMXBaRSF2vMS3phxB0bVfQiQlP1RxdrzhB6YcRHFASyIhQVowwXCKtDSlD2YhgRvxBsCKtGemHBKH9mxSI='
+_imdbpy2010_cookie_uu = 'oiEo2yoJFCA2Zbn/o7Z1LAPIwotAu6QdALv3foDb1x5F/tdrFY63XkSfty4kntS8Y8jkHSDLt3406+d+JThEilPI0mtTaOQdA/t2/iErp22jaLdeVU5ya4PIREpj7HFdpzhEHadcIAngSER50IoHDpD6Bz4Qy3b+UIhE/hBbhz5Q63ceA2hEvhPo5B0FnrL9Q8jkWjDIbA0Au3d+AOtnXoCIRL4Q28c+UOtnXpP4RL4T6OQdA+6ijUCI5B0AW2d+UOtnXpPYRL4T6OQdA8jkTUOYlC0A=='
+# old 'IMDbPYweb' account.
+_old_IMDbPYweb_cookie_id = 'rH1jNAkjTlNXvHolvBVBsgaPICNZbNdjVjzFwzas9JRmusdjVoqBs/Hs12NR+1WFxEoR9bGKEDUg6sNlADqXwkas12N131Rwdb+UQNGKN8PWrNdjcdqBQVLq8mbGDHP3hqzxhbD692NQi9D0JjpBtRaPIbP1zNdjUOqENQYv1ADWrNcT9vyXU1'
+_old_IMDbPYweb_cookie_uu = 'su4/m8cho4c6HP+W1qgq6wchOmhnF0w+lIWvHjRUPJ6nRA9sccEafjGADJ6hQGrMd4GKqLcz2X4z5+w+M4OIKnRn7FpENH7dxDQu3bQEHyx0ZEyeRFTPHfQEX03XF+yeN1dsPpcXaqjUZAw+lGRfXRQEfz3RIX9IgVEffdBAHw2wQXyf9xdMPrQELw0QNB8dsffsqcdQemjPB0w+moLcPh0JrKrHJ9hjBzdMPpcXTH7XRwwOk='
+# old 'IMDbPYweb' account values (as of 2012-12-30)
+_IMDbPYweb_cookie_id = 'BCYjtpb46Go0cMHAMewWZEauhwqPL7ASCPpPVNutu6BuayHZd0U6Dk3UAqVlEM8DHLDsSr02RGQn5ff3245-R4A130NAWJ_5yqXx7X-zJey8vQM8JKdv3rTUSEJznJQlojUW1Bije-Q0FXAixs4I0sePWhd_tA41i-9AF2q3lPmaksram6ilMhN9i3IPESW1PMbk'
+_IMDbPYweb_cookie_uu = 'BCYttQjEMc-NyUdFUGxThidAnBo7wwalEzj4un9uzf2XoEjtqDhNfrH7bOSuwlRkMEQ11SNyTajl-b9Q-21m4HwYu0e3jXZrjYLXLYzFkrEroCDyUREqaTwPJPSjGtFmvlaVBZEZmsWpaxe18DT5KiygKyGPZKH78Xu4im6ba-Sd31WvbXHzP8KGXPpGjhhVuv7Dcv314HCWkE832Srf9ya-Uv0FdGAmYyLbIAXuxnvpYQd6oZ8-CYkSGLIqcKWdrf5S'
+# 'IMDbPY2013' account
+_IMDbPY2013_cookie_id = 'BCYmoyqSm2WglmOzG-SrFWSvVpxsTZOB0qEOOqmAwCBxCbaNgKOxd0DTKzUvt7t04Pya5gV2tUrpDmYxrc1Dr54DQj2UXI7QI35__M5-HI2KrbOI3PjDz6M-_U3HG8topMfN64R24tmBixoZhMYXVaEc556lf0Z4gQNJVYRANXvwytP5v1lpfeToRlu9aVJwN4kT'
+_IMDbPY2013_cookie_uu = 'BCYquDS8Y2i8R1pJxS4nB77YrhjHHXeOea2Xl9KtZvE6RZKVfMvzTGU4Vl5-yxfPbgRSiFJasyf-hhPuVvXyaHlfeBjNlbFT8hz2HzFFkQ_SxKxq05J51gi7Fv4SaAws1M-i7zmQ1TRunfJqCVIYqPwIs2NO7s4_YDH2ZoISVGLgca8OY2K58HychOZB1oRWHVeAJNhLJMrCWJBuGRLCNnQK5X9tA0dPPntr2Ussy0ouul-N1GQz-8y5vda3JJ_C6xkwmHcA6JrOdOFO_HqMWjVSXuxGEdrXC919JM9H0vooVvKeVgAEJnTh2GiVlUJUoH3c'
 
-# imdbpy2010 account.
-#_cookie_id = 'QrCdxVi+L+WgqOLrQJJgBgRRXGInphxiBPU/YXSFDyExMFzCp6YcYgSVXyEUhS/xMID8wqemHGID4DlntwZ49vemP5UXsAxiJ4D6goSmHGIgNT9hMXBaRSF2vMS3phxB0bVfQiQlP1RxdrzhB6YcRHFASyIhQVowwXCKtDSlD2YhgRvxBsCKtGemHBKH9mxSI='
-#_cookie_uu = 'oiEo2yoJFCA2Zbn/o7Z1LAPIwotAu6QdALv3foDb1x5F/tdrFY63XkSfty4kntS8Y8jkHSDLt3406+d+JThEilPI0mtTaOQdA/t2/iErp22jaLdeVU5ya4PIREpj7HFdpzhEHadcIAngSER50IoHDpD6Bz4Qy3b+UIhE/hBbhz5Q63ceA2hEvhPo5B0FnrL9Q8jkWjDIbA0Au3d+AOtnXoCIRL4Q28c+UOtnXpP4RL4T6OQdA+6ijUCI5B0AW2d+UOtnXpPYRL4T6OQdA8jkTUOYlC0A=='
+# Currently used account.
+_cookie_id = _IMDbPY2013_cookie_id
+_cookie_uu = _IMDbPY2013_cookie_uu
 
 
 class _FakeURLOpener(object):
@@ -141,9 +150,10 @@ class IMDbURLopener(FancyURLopener):
         for header in ('User-Agent', 'User-agent', 'user-agent'):
             self.del_header(header)
         self.set_header('User-Agent', 'Mozilla/5.0')
+        self.set_header('Accept-Language', 'en-us,en;q=0.5')
         # XXX: This class is used also to perform "Exact Primary
         #      [Title|Name]" searches, and so by default the cookie is set.
-        c_header = 'id=%s; uu=%s' % (_cookie_id, _cookie_uu)
+        c_header = 'uu=%s; id=%s' % (_cookie_uu, _cookie_id)
         self.set_header('Cookie', c_header)
 
     def get_proxy(self):
@@ -199,12 +209,11 @@ class IMDbURLopener(FancyURLopener):
             server_encode = uopener.info().getparam('charset')
             # Otherwise, look at the content-type HTML meta tag.
             if server_encode is None and content:
-                first_bytes = content[:512]
-                begin_h = first_bytes.find('text/html; charset=')
+                begin_h = content.find('text/html; charset=')
                 if begin_h != -1:
-                    end_h = first_bytes[19+begin_h:].find('"')
+                    end_h = content[19+begin_h:].find('"')
                     if end_h != -1:
-                        server_encode = first_bytes[19+begin_h:19+begin_h+end_h]
+                        server_encode = content[19+begin_h:19+begin_h+end_h]
             if server_encode:
                 try:
                     if lookup(server_encode):
@@ -455,16 +464,16 @@ class IMDbHTTPAccessSystem(IMDbBase):
         results is the maximum number of results to be retrieved."""
         if isinstance(ton, unicode):
             try:
-                ton = ton.encode('iso8859-1')
+                ton = ton.encode('utf-8')
             except Exception, e:
                 try:
-                    ton = ton.encode('utf-8')
+                    ton = ton.encode('iso8859-1')
                 except Exception, e:
                     pass
         ##params = 'q=%s&%s=on&mx=%s' % (quote_plus(ton), kind, str(results))
-        params = 'q=%s;s=%s;mx=%s' % (quote_plus(ton), kind, str(results))
+        params = 'q=%s&s=%s&mx=%s' % (quote_plus(ton), kind, str(results))
         if kind == 'ep':
-            params = params.replace('s=ep;', 's=tt;ttype=ep;', 1)
+            params = params.replace('s=ep&', 's=tt&ttype=ep&', 1)
         cont = self._retrieve(self.urls['find'] % params)
         #print 'URL:', imdbURL_find % params
         if cont.find('Your search returned more than') == -1 or \
@@ -472,7 +481,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
             return cont
         # The retrieved page contains no results, because too many
         # titles or names contain the string we're looking for.
-        params = 'q=%s;ls=%s;lm=0' % (quote_plus(ton), kind)
+        params = 'q=%s&ls=%s&lm=0' % (quote_plus(ton), kind)
         size = 131072 + results * 512
         return self._retrieve(self.urls['find'] % params, size=size)
 
@@ -586,6 +595,10 @@ class IMDbHTTPAccessSystem(IMDbBase):
     def get_movie_recommendations(self, movieID):
         cont = self._retrieve(self.urls['movie_main'] % movieID + 'recommendations')
         return self.mProxy.rec_parser.parse(cont)
+
+    def get_movie_critic_reviews(self, movieID):
+        cont = self._retrieve(self.urls['movie_main'] % movieID + 'criticreviews')
+        return self.mProxy.criticrev_parser.parse(cont)
 
     def get_movie_external_reviews(self, movieID):
         cont = self._retrieve(self.urls['movie_main'] % movieID + 'externalreviews')
@@ -754,7 +767,7 @@ class IMDbHTTPAccessSystem(IMDbBase):
         return self.pProxy.person_keywords_parser.parse(cont)
 
     def _search_character(self, name, results):
-        cont = self._get_search_content('char', name, results)
+        cont = self._get_search_content('ch', name, results)
         return self.scProxy.search_character_parser.parse(cont, results=results)['data']
 
     def get_character_main(self, characterID):

@@ -8,7 +8,7 @@ E.g., for "Mel Gibson" the referred pages would be:
     biography:      http://akas.imdb.com/name/nm0000154/bio
     ...and so on...
 
-Copyright 2004-20101 Davide Alberani <da@erlug.linux.it>
+Copyright 2004-2013 Davide Alberani <da@erlug.linux.it>
                2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,7 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
         result = cparser.parse(categorized_html_string)
     """
     _containsObjects = True
+    _name_imdb_index = re.compile(r'\([IVXLCDM]+\)')
 
     _birth_attrs = [Attribute(key='birth date',
                         path='.//time[@itemprop="birthDate"]/@datetime'),
@@ -100,6 +101,10 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
                             path=".//text()",
                             postprocess=lambda x: analyze_name(x,
                                                                canonical=1))),
+            Extractor(label='name_index',
+                        path="//h1[@class='header']/span[1]",
+                        attrs=Attribute(key='name_index',
+                            path="./text()")),
 
             Extractor(label='birth info',
                         path="//div[h4='Born:']",
@@ -110,7 +115,7 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
                         attrs=_death_attrs),
 
             Extractor(label='headshot',
-                        path="//td[@id='img_primary']/a",
+                        path="//td[@id='img_primary']/div[@class='image']/a",
                         attrs=Attribute(key='headshot',
                             path="./img/@src")),
 
@@ -152,6 +157,11 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
         for what in 'birth date', 'death date':
             if what in data and not data[what]:
                 del data[what]
+        name_index = (data.get('name_index') or '').strip()
+        if name_index:
+            if self._name_imdb_index.match(name_index):
+                data['imdbIndex'] = name_index[1:-1]
+            del data['name_index']
         # XXX: the code below is for backwards compatibility
         # probably could be removed
         for key in data.keys():
@@ -220,13 +230,13 @@ class DOMHTMLBioParser(DOMParserBase):
                         attrs=Attribute(key='headshot',
                             path="./img/@src")),
             Extractor(label='birth info',
-                        path="//div[h5='Date of Birth']",
+                        path="//table[@id='overviewTable']//td[text()='Date of Birth']/following-sibling::td[1]",
                         attrs=_birth_attrs),
             Extractor(label='death info',
-                        path="//div[h5='Date of Death']",
+                        path="//table[@id='overviewTable']//td[text()='Date of Death']/following-sibling::td[1]",
                         attrs=_death_attrs),
             Extractor(label='nick names',
-                        path="//div[h5='Nickname']",
+                        path="//table[@id='overviewTable']//td[text()='Nickenames']/following-sibling::td[1]",
                         attrs=Attribute(key='nick names',
                             path="./text()",
                             joiner='|',
@@ -234,25 +244,25 @@ class DOMHTMLBioParser(DOMParserBase):
                                     '::(', 1) for n in x.split('|')
                                     if n.strip()])),
             Extractor(label='birth name',
-                        path="//div[h5='Birth Name']",
+                        path="//table[@id='overviewTable']//td[text()='Birth Name']/following-sibling::td[1]",
                         attrs=Attribute(key='birth name',
                             path="./text()",
                             postprocess=lambda x: canonicalName(x.strip()))),
             Extractor(label='height',
-                        path="//div[h5='Height']",
+                path="//table[@id='overviewTable']//td[text()='Height']/following-sibling::td[1]",
                         attrs=Attribute(key='height',
                             path="./text()",
                             postprocess=lambda x: x.strip())),
             Extractor(label='mini biography',
-                        path="//div[h5='Mini Biography']",
+                        path="//a[@name='mini_bio']/following-sibling::div[1 = count(preceding-sibling::a[1] | ../a[@name='mini_bio'])]",
                         attrs=Attribute(key='mini biography',
                             multi=True,
                             path={
-                                'bio': "./p//text()",
-                                'by': "./b/following-sibling::a/text()"
+                                'bio': ".//text()",
+                                'by': ".//a[@name='ba']//text()"
                                 },
                             postprocess=lambda x: "%s::%s" % \
-                                (x.get('bio').strip(),
+                                ((x.get('bio') or u'').split('- IMDb Mini Biography By:')[0].strip(),
                                 (x.get('by') or u'').strip() or u'Anonymous'))),
             Extractor(label='spouse',
                         path="//div[h5='Spouse']/table/tr",

@@ -64,8 +64,10 @@ LANG_ARTICLES = {
     'English': ('the', 'a', 'an'),
     'Italian': ('la', 'le', "l'", 'il', 'i', 'un', 'una', 'gli', 'lo', "un'",
                 'uno'),
-    'Spanish': ('la', 'le', 'el', 'les', 'un', 'los', 'una', 'uno', 'unos',
-                'unas'),
+    'Spanish': ('la', 'lo', 'el', 'las', 'un', 'los', 'una', 'al', 'del',
+                'unos', 'unas', 'uno'),
+    'French': ('le', "l'", 'la', 'les', 'un', 'une', 'des', 'au', 'du', '\xc3\xa0 la',
+                'de la', 'aux'),
     'Portuguese': ('a', 'as', 'o', 'os', 'um', 'uns', 'uma', 'umas'),
     'Turkish': (), # Some languages doesn't have articles.
 }
