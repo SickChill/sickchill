@@ -1326,11 +1326,12 @@ def saveAndShutdown(restart=False):
                 popen_list += ['--nolaunch']
             logger.log(u"Restarting SickRage with " + str(popen_list))
             logger.close()
-            p = subprocess.Popen(popen_list, cwd=os.getcwd())
-            p.wait()
-            status = p.returncode
+            subprocess.Popen(popen_list, cwd=os.getcwd())
+            time.sleep(5)
 
-    os._exit(status)
+            logger.log(u"SickRage successfully restarted ...")
+
+    os._exit(0)
 
 
 def invoke_command(to_call, *args, **kwargs):
