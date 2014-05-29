@@ -54,15 +54,11 @@ class CheckVersion():
             self.updater = None
 
     def run(self, force=False):
-        updated = None
         if self.check_for_new_version():
             if sickbeard.AUTO_UPDATE:
                 logger.log(u"New update found for SickRage, starting auto-updater ...")
-                updated = sickbeard.versionCheckScheduler.action.update()
-                if updated:
+                if sickbeard.versionCheckScheduler.action.update():
                     logger.log(u"Update was successfull, restarting SickRage ...")
-
-                    # do a soft restart
                     threading.Timer(2, sickbeard.invoke_restart, [False]).start()
 
     def find_install_type(self):
@@ -141,6 +137,8 @@ class WindowsUpdateManager(UpdateManager):
         self.version_url = 'https://raw.github.com/' + self.github_repo_user + '/' + self.github_repo + '/' + self.branch + '/updates.txt'
 
     def _find_installed_version(self):
+        version = ''
+
         try:
             version = sickbeard.version.SICKBEARD_VERSION
             return int(version[6:])
@@ -278,7 +276,7 @@ class GitUpdateManager(UpdateManager):
         self._num_commits_ahead = 0
 
     def _git_error(self):
-        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
+        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
         sickbeard.NEWEST_VERSION_STRING = error_message
 
     def _find_working_git(self):
@@ -324,7 +322,7 @@ class GitUpdateManager(UpdateManager):
                     logger.log(u"Not using: " + cur_git, logger.DEBUG)
 
         # Still haven't found a working git
-        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER <a href="http://code.google.com/p/sickbeard/wiki/AdvancedSettings" onclick="window.open(this.href); return false;">set git_path in your config.ini</a> OR delete your .git folder and run from source to enable updates.'
+        error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
         sickbeard.NEWEST_VERSION_STRING = error_message
 
         return None
