@@ -76,6 +76,7 @@ class FailedProcessor(object):
             raise exceptions.FailedProcessingFailed()
 
         segment = {parsed.season_number:[]}
+
         for episode in parsed.episode_numbers:
             epObj = parsed.show.getEpisode(parsed.season_number, episode)
             segment[parsed.season_number].append(epObj)

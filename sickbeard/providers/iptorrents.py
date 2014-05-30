@@ -261,14 +261,14 @@ class IPTorrentsProvider(generic.TorrentProvider):
             return []
 
         for sqlshow in sqlResults:
-            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if not self.show: continue
-            curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
-            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            if self.show:
+                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-            for item in self._doSearch(searchString[0]):
-                title, url = self._get_title_and_url(item)
-                results.append(classes.Proper(title, url, datetime.datetime.today()))
+                for item in self._doSearch(searchString[0]):
+                    title, url = self._get_title_and_url(item)
+                    results.append(classes.Proper(title, url, datetime.datetime.today()))
 
         return results
 

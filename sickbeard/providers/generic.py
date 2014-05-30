@@ -248,21 +248,15 @@ class GenericProvider:
             # mark season searched for season pack searches so we can skip later on
             searched_scene_season = epObj.scene_season
 
-            if not epObj.show.air_by_date:
-                if epObj.scene_season == 0 or epObj.scene_episode == 0:
-                    logger.log(
-                        u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
-                    continue
-
-            # cacheResult = self.cache.searchCache([epObj], manualSearch)
-            #if len(cacheResult):
-            #    results.update({epObj.episode:cacheResult[epObj]})
-            #    continue
-
             if search_mode == 'sponly':
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
             else:
+                cacheResult = self.cache.searchCache([epObj], manualSearch)
+                if len(cacheResult):
+                    results.update({epObj.episode: cacheResult[epObj]})
+                    continue
+
                 for curString in self._get_episode_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
 
@@ -271,12 +265,11 @@ class GenericProvider:
                 continue
 
             # remove duplicate items
-            #itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
             searchItems[epObj] = itemList
 
-        # if we have cached results return them.
-        # if len(results):
-        #    return results
+        #if we have cached results return them.
+        if len(results):
+            return results
 
         for ep_obj in searchItems:
             for item in searchItems[ep_obj]:
