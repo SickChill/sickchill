@@ -168,17 +168,14 @@ def _getEpisode(show, season=None, episode=None, absolute=None):
     showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
     if showObj is None:
-        return "Show not in show list"
+        return "Invalid show paramaters"
 
-    if showObj.is_anime and not absolute is None:
-        return "Invalid absolute number parameters"
-    elif season is None or episode is None:
-        return "Invalid season or episode number parameters"
-
-    if showObj.is_anime:
-        epObj = showObj.getEpisode(absolute_number=int(absolute))
-    else:
+    if absolute:
+        epObj = showObj.getEpisode(absolute=int(absolute))
+    elif season and episode:
         epObj = showObj.getEpisode(int(season), int(episode))
+    else:
+        return "Invalid paramaters"
 
     if epObj is None:
         return "Episode couldn't be retrieved"
