@@ -216,13 +216,14 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 
     myDB = db.DBConnection("cache.db")
 
-    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
+    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
 
     logger.log(u"Updating internal scene name cache", logger.MESSAGE)
-    for cur_exception, cur_season in scene_exceptions:
-        exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = indexer_id
-        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
-                    [indexer_id, cur_exception, cur_season])
+    for cur_season in [-1] + sickbeard.scene_exceptions.get_scene_seasons(indexer_id):
+        for cur_exception in scene_exceptions:
+            exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = indexer_id
+            myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
+                        [indexer_id, cur_exception, cur_season, 1])
 
     name_cache.clearCache()
 

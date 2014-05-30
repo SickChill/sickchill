@@ -74,3 +74,10 @@ class AddSceneExceptionsSeasons(AddSceneNameCache):
 
     def execute(self):
         self.addColumn("scene_exceptions", "season", "NUMERIC", -1)
+
+class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):
+    def test(self):
+        return self.hasColumn("scene_exceptions", "custom")
+
+    def execute(self):
+        self.addColumn("scene_exceptions", "custom", "NUMERIC", 0)
