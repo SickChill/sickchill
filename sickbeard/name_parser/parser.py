@@ -137,13 +137,18 @@ class NameParser(object):
                         result.series_name = self.clean_series_name(result.series_name)
 
                         cur_show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-                        if self.show and cur_show:
+                        if not cur_show:
+                            continue
+
+                        # if we have a show object to compare against then do so else return the result anyways
+                        if self.show:
                             if self.show.indexerid != cur_show.indexerid:
                                 logger.log(
                                     u"I expected an episode of the show " + self.show.name + " but the parser thinks its the show " + cur_show.name + ". I will continue thinking its " + self.show.name,
                                     logger.WARNING)
-                            else:
-                                result.show = self.show
+                                continue
+
+                        result.show = cur_show
 
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))

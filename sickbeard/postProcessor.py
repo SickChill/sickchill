@@ -416,6 +416,9 @@ class PostProcessor(object):
                 continue
 
             show = helpers.findCertainShow(sickbeard.showList, int(sql_results[0]["showid"]))
+            if not show:
+                continue
+
             season = int(sql_results[0]["season"])
             quality = int(sql_results[0]["quality"])
 
@@ -480,6 +483,10 @@ class PostProcessor(object):
         parse_result = np.parse(name).convert()
 
         self._log(u"Parsed " + name + " into " + str(parse_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
+
+        # couldn't find this in our show list
+        if not parse_result.show:
+            return to_return
 
         if parse_result.air_by_date:
             season = -1
