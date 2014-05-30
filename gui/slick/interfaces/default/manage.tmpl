@@ -56,9 +56,12 @@
             6: { sorter: false},
             7: { sorter: false},
             8: { sorter: false},
-            9: { sorter: false}
+            9: { sorter: false},
+           10: { sorter: false},
+           11: { sorter: false},
+           12: { sorter: false}
 #if $sickbeard.USE_SUBTITLES            
-         , 10: { sorter: false}
+         , 13: { sorter: false}
 #end if         	            
         }
     }); 
@@ -79,10 +82,11 @@
       <th width="1%">Edit<br/>
       	<input type="checkbox" class="bulkCheck" id="editCheck" />
       </th>
-<!--       <th>Lang</th>//-->
+
       <th class="nowrap" style="text-align: left;">Show Name</th>
       <th>Quality</th>
       <th>Sports</th>
+      <th>Scene</th>
       <th>Anime</th>
       <th>Flat Folders</th>
       <th>Paused</th>
@@ -100,7 +104,7 @@
 <tfoot>
   <tr>
     <td rowspan="1" colspan="1" class="align-center alt"><input class="btn" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-    <td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 11 else 10#" class="align-right alt"><input class="btn btn-primary" type="button" value="Submit" id="submitMassUpdate" /></td>
+    <td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 13 else 12#" class="align-right alt"><input class="btn btn-primary" type="button" value="Submit" id="submitMassUpdate" /></td>
   </tr>
 </tfoot>
   <tbody>
@@ -137,7 +141,6 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
   <tr>
     <td align="center"><input type="checkbox" class="editCheck" id="edit-$curShow.indexerid" /></td>
-<!--     <td align="center"><img src="$sbRoot/images/flags/${curShow.lang}.png" width="16" height="11" alt="$curShow.lang" /></td>//-->
     <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
 #if $curShow.quality in $qualityPresets:
     <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
@@ -145,6 +148,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td align="center"><span class="quality Custom">Custom</span></td>
 #end if
     <td align="center"><img src="$sbRoot/images/#if int($curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
@@ -155,7 +159,6 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #if $sickbeard.USE_SUBTITLES:
     <td align="center">$curSubtitle</td>
 #end if
-<!--    <td align="center"><input type="checkbox" class="metadataCheck" id="metadata-$curShow.indexerid" /></td>//-->
     <td align="center">$curDelete</td>
   </tr>
 #end for

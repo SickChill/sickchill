@@ -79,11 +79,11 @@ class DailySearcher():
                     else:
                         todaysEps[show].append(ep)
 
-                    sql_l.append(ep.get_sql())
+                sql_l.append(ep.get_sql())
 
-            if len(sql_l) > 0:
-                myDB = db.DBConnection()
-                myDB.mass_action(sql_l)
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         if len(todaysEps):
             for show in todaysEps:
