@@ -141,13 +141,15 @@ class XBMCNotifier:
                 else:
                     logger.log(u"Detected XBMC version >= 12, using XBMC JSON API", logger.DEBUG)
                     command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
-                    title.encode("utf-8"), message.encode("utf-8"), self.sb_logo_url)
+                        title.encode("utf-8"), message.encode("utf-8"), self.sb_logo_url)
                     notifyResult = self._send_to_xbmc_json(command, curHost, username, password)
                     if notifyResult:
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.XBMC_ALWAYS_ON or force:
-                    logger.log(u"Failed to detect XBMC version for '" + curHost + "', check configuration and try again.", logger.ERROR)
+                    logger.log(
+                        u"Failed to detect XBMC version for '" + curHost + "', check configuration and try again.",
+                        logger.ERROR)
                 result += curHost + ':False'
 
         return result
@@ -191,7 +193,7 @@ class XBMCNotifier:
 
         return False
 
-    ##############################################################################
+    # #############################################################################
     # Legacy HTTP API (pre XBMC 12) methods
     ##############################################################################
 
@@ -281,7 +283,7 @@ class XBMCNotifier:
 
             # use this to get xml back for the path lookups
             xmlCommand = {
-            'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
+                'command': 'SetResponseFormat(webheader;false;webfooter;false;header;<xml>;footer;</xml>;opentag;<tag>;closetag;</tag>;closefinaltag;false)'}
             # sql used to grab path(s)
             sqlCommand = {'command': 'QueryVideoDatabase(%s)' % (pathSql)}
             # set output back to default
@@ -432,9 +434,12 @@ class XBMCNotifier:
             # get tvshowid by showName
             showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","id":1}'
             showsResponse = self._send_to_xbmc_json(showsCommand, host)
-            if (showsResponse == False):
+
+            if showsResponse and "result" in showsResponse and "tvshows" in showsResponse["result"]:
+                shows = showsResponse["result"]["tvshows"]
+            else:
+                logger.log(u"XBMC: No tvshows in XBMC TV show list", logger.DEBUG)
                 return False
-            shows = showsResponse["result"]["tvshows"]
 
             for show in shows:
                 if (show["label"] == showName):
@@ -451,7 +456,7 @@ class XBMCNotifier:
 
             # lookup tv-show path
             pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (
-            tvshowid)
+                tvshowid)
             pathResponse = self._send_to_xbmc_json(pathCommand, host)
 
             path = pathResponse["result"]["tvshowdetails"]["file"]
@@ -465,7 +470,7 @@ class XBMCNotifier:
 
             logger.log(u"XBMC Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","params":{"directory":%s},"id":1}' % (
-            json.dumps(path))
+                json.dumps(path))
             request = self._send_to_xbmc_json(updateCommand, host)
             if not request:
                 logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + path,
@@ -543,7 +548,9 @@ class XBMCNotifier:
                         return True
                 else:
                     if sickbeard.XBMC_ALWAYS_ON:
-                        logger.log(u"Failed to detect XBMC version for '" + host + "', check configuration and try again.", logger.ERROR)
+                        logger.log(
+                            u"Failed to detect XBMC version for '" + host + "', check configuration and try again.",
+                            logger.ERROR)
                     result = result + 1
 
             # needed for the 'update xbmc' submenu command
