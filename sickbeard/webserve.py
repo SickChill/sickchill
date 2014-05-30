@@ -26,7 +26,6 @@ import re
 import threading
 import datetime
 import random
-import logging
 
 from Cheetah.Template import Template
 import cherrypy
@@ -46,8 +45,6 @@ from sickbeard import image_cache
 from sickbeard import naming
 from sickbeard import scene_exceptions
 from sickbeard import subtitles
-from sickbeard import failed_history
-from sickbeard import failedProcessor
 from sickbeard import network_timezones
 
 from sickbeard.providers import newznab, rsstorrent
@@ -58,12 +55,13 @@ from sickbeard.exceptions import ex
 from sickbeard.webapi import Api
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
-    get_xem_numbering_for_show
+    get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
+    get_scene_absolute_numbering
 
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 
 from lib.dateutil import tz
-from lib.unrar2 import RarFile, RarInfo
+from lib.unrar2 import RarFile
 
 from lib import subliminal
 
@@ -163,16 +161,24 @@ def _genericMessage(subject, message):
     return _munge(t)
 
 
-def _getEpisode(show, season, episode):
-    if show is None or season is None or episode is None:
-        return "Invalid parameters"
+def _getEpisode(show, season=None, episode=None, absolute=None):
+    if show is None:
+        return "Invalid show parameters"
 
     showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
     if showObj is None:
         return "Show not in show list"
 
-    epObj = showObj.getEpisode(int(season), int(episode))
+    if showObj.is_anime and not absolute is None:
+        return "Invalid absolute number parameters"
+    elif season is None or episode is None:
+        return "Invalid season or episode number parameters"
+
+    if showObj.is_anime:
+        epObj = showObj.getEpisode(absolute_number=int(absolute))
+    else:
+        epObj = showObj.getEpisode(int(season), int(episode))
 
     if epObj is None:
         return "Episode couldn't be retrieved"
@@ -485,7 +491,7 @@ class Manage:
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 
             for epResult in to_download[cur_indexer_id]:
-                season, episode = epResult.split('x');
+                season, episode = epResult.split('x')
 
                 show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
                 subtitles = show.getEpisode(int(season), int(episode)).downloadSubtitles()
@@ -866,7 +872,7 @@ class History:
 
         myDB = db.DBConnection()
 
-        #        sqlResults = myDB.select("SELECT h.*, show_name, name FROM history h, tv_shows s, tv_episodes e WHERE h.showid=s.indexer_id AND h.showid=e.showid AND h.season=e.season AND h.episode=e.episode ORDER BY date DESC LIMIT "+str(numPerPage*(p-1))+", "+str(numPerPage))
+        #sqlResults = myDB.select("SELECT h.*, show_name, name FROM history h, tv_shows s, tv_episodes e WHERE h.showid=s.indexer_id AND h.showid=e.showid AND h.season=e.season AND h.episode=e.episode ORDER BY date DESC LIMIT "+str(numPerPage*(p-1))+", "+str(numPerPage))
         if limit == "0":
             sqlResults = myDB.select(
                 "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC")
@@ -3058,6 +3064,8 @@ class Home:
         t.all_scene_exceptions = get_scene_exceptions(indexerid)
         t.scene_numbering = get_scene_numbering_for_show(indexerid, indexer)
         t.xem_numbering = get_xem_numbering_for_show(indexerid, indexer)
+        t.scene_absolute_numbering = get_scene_absolute_numbering_for_show(indexerid, indexer)
+        t.xem_absolute_numbering = get_xem_absolute_numbering_for_show(indexerid, indexer)
 
         return _munge(t)
 
@@ -3085,7 +3093,8 @@ class Home:
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
-                 rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None):
+                 rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None,
+                 scene=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -3146,6 +3155,7 @@ class Home:
         archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
         air_by_date = config.checkbox_to_value(air_by_date)
+        scene = config.checkbox_to_value(scene)
         sports = config.checkbox_to_value(sports)
         anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
@@ -3243,6 +3253,7 @@ class Home:
             # if this routine was called via the mass edit, do not change the options that are not passed
             if not directCall:
                 showObj.air_by_date = air_by_date
+                showObj.scene = scene
                 showObj.sports = sports
                 showObj.anime = anime
                 showObj.subtitles = subtitles
@@ -3663,7 +3674,7 @@ class Home:
         # try do download subtitles for that episode
         previous_subtitles = ep_obj.subtitles
         try:
-            subtitles = ep_obj.downloadSubtitles()
+            ep_obj.subtitles = ep_obj.downloadSubtitles()
         except:
             return json.dumps({'result': 'failure'})
 
@@ -3679,23 +3690,49 @@ class Home:
         return json.dumps({'result': status, 'subtitles': ','.join([x for x in ep_obj.subtitles])})
 
     @cherrypy.expose
-    def setEpisodeSceneNumbering(self, show, indexer, forSeason, forEpisode, sceneSeason=None, sceneEpisode=None):
+    def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None, sceneEpisode=None, sceneAbsolute=None):
 
         # sanitize:
+        if forSeason in ['null', '']: forSeason = None
+        if forEpisode in ['null', '']: forEpisode = None
+        if forAbsolute in ['null', '']: forAbsolute = None
         if sceneSeason in ['null', '']: sceneSeason = None
         if sceneEpisode in ['null', '']: sceneEpisode = None
+        if sceneAbsolute in ['null', '']: sceneAbsolute = None
 
-        result = {
-            'success': True,
-            'forSeason': forSeason,
-            'forEpisode': forEpisode,
-        }
+        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+        if showObj.is_anime:
+            result = {
+                'success': True,
+                'forAbsolute': forAbsolute,
+            }
+        else:
+            result = {
+                'success': True,
+                'forSeason': forSeason,
+                'forEpisode': forEpisode,
+            }
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = _getEpisode(show, forSeason, forEpisode)
+        if showObj.is_anime:
+            ep_obj = _getEpisode(show, absolute=forAbsolute)
+        else:
+            ep_obj = _getEpisode(show, forSeason, forEpisode)
+
         if isinstance(ep_obj, str):
             result['success'] = False
             result['errorMessage'] = ep_obj
+        elif showObj.is_anime:
+            logger.log(u"setAbsoluteSceneNumbering for %s from %s to %s" %
+                       (show, forAbsolute, sceneAbsolute), logger.DEBUG)
+
+            show = int(show)
+            indexer = int(indexer)
+            forAbsolute = int(forAbsolute)
+            if sceneAbsolute is not None: sceneAbsolute = int(sceneAbsolute)
+
+            set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
             logger.log(u"setEpisodeSceneNumbering for %s from %sx%s to %sx%s" %
                        (show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
@@ -3707,13 +3744,20 @@ class Home:
             if sceneSeason is not None: sceneSeason = int(sceneSeason)
             if sceneEpisode is not None: sceneEpisode = int(sceneEpisode)
 
-            set_scene_numbering(show, indexer, forSeason, forEpisode, sceneSeason, sceneEpisode)
+            set_scene_numbering(show, indexer, season=forSeason, episode=forEpisode, sceneSeason=sceneSeason, sceneEpisode=sceneEpisode)
 
-        sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
-        if sn:
-            (result['sceneSeason'], result['sceneEpisode']) = sn
+        if showObj.is_anime:
+            sn = get_scene_absolute_numbering(show, indexer, forAbsolute)
+            if sn:
+                result['sceneAbsolute'] = sn
+            else:
+                result['sceneAbsolute'] = None
         else:
-            (result['sceneSeason'], result['sceneEpisode']) = (None, None)
+            sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
+            if sn:
+                (result['sceneSeason'], result['sceneEpisode']) = sn
+            else:
+                (result['sceneSeason'], result['sceneEpisode']) = (None, None)
 
         return json.dumps(result)
 

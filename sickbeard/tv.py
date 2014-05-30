@@ -83,6 +83,7 @@ class TVShow(object):
         self.lang = lang
         self.last_update_indexer = 1
         self.anime = 0
+        self.scene = 0
 
         self.rls_ignore_words = ""
         self.rls_require_words = ""
@@ -113,6 +114,14 @@ class TVShow(object):
             return False
 
     is_sports = property(_is_sports)
+
+    def _is_scene(self):
+        if (self.scene > 0):
+            return True
+        else:
+            return False
+
+    is_scene = property(_is_scene)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -186,7 +195,7 @@ class TVShow(object):
         return ep_list
 
 
-    def getEpisode(self, season, episode, file=None, noCreate=False, absolute_number=None):
+    def getEpisode(self, season=None, episode=None, file=None, noCreate=False, absolute_number=None):
 
         # Load XEM data to DB for show
         if sickbeard.scene_numbering.xem_refresh_needed(self.indexerid, self.indexer):
@@ -198,7 +207,7 @@ class TVShow(object):
         ep = None
 
         # if we get an anime get the real season and episode
-        if self.anime and absolute_number != None and season == None and episode == None:
+        if self.is_anime and not self.is_scene and absolute_number != None and season == None and episode == None:
             myDB = db.DBConnection()
             sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
             sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
@@ -236,6 +245,15 @@ class TVShow(object):
 
         epObj = self.episodes[season][episode]
 
+        # get scene absolute numbering
+        epObj.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
+                                                                                             self.indexer,
+                                                                                             epObj.absolute_number)
+
+        # get scene season and episode numbering
+        (epObj.scene_season, epObj.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
+                                                                                                  self.indexer,
+                                                                                                  season, episode)
         return epObj
 
     def should_update(self, update_date=datetime.date.today()):
@@ -738,9 +756,17 @@ class TVShow(object):
             if not self.air_by_date:
                 self.air_by_date = 0
 
+            self.anime = sqlResults[0]["anime"]
+            if self.anime == None:
+                self.anime = 0
+
             self.sports = sqlResults[0]["sports"]
             if not self.sports:
                 self.sports = 0
+
+            self.scene = sqlResults[0]["scene"]
+            if not self.scene:
+                self.scene = 0
 
             self.subtitles = sqlResults[0]["subtitles"]
             if self.subtitles:
@@ -764,10 +790,6 @@ class TVShow(object):
 
             if not self.lang:
                 self.lang = sqlResults[0]["lang"]
-
-            self.anime = sqlResults[0]["anime"]
-            if self.anime == None:
-                self.anime = 0
 
             self.last_update_indexer = sqlResults[0]["last_update_indexer"]
 
@@ -905,7 +927,6 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
-
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
         myDB = db.DBConnection()
@@ -1085,13 +1106,14 @@ class TVShow(object):
                         "flatten_folders": self.flatten_folders,
                         "paused": self.paused,
                         "air_by_date": self.air_by_date,
+                        "anime": self.anime,
+                        "scene": self.scene,
                         "sports": self.sports,
                         "subtitles": self.subtitles,
                         "dvdorder": self.dvdorder,
                         "archive_firstmatch": self.archive_firstmatch,
                         "startyear": self.startyear,
                         "lang": self.lang,
-                        "anime": self.anime,
                         "imdb_id": self.imdbid,
                         "last_update_indexer": self.last_update_indexer,
                         "rls_ignore_words": self.rls_ignore_words,
@@ -1124,6 +1146,8 @@ class TVShow(object):
         toReturn += "classification: " + self.classification + "\n"
         toReturn += "runtime: " + str(self.runtime) + "\n"
         toReturn += "quality: " + str(self.quality) + "\n"
+        toReturn += "scene: " + str(self.is_scene) + "\n"
+        toReturn += "sports: " + str(self.is_sports) + "\n"
         toReturn += "anime: " + str(self.is_anime) + "\n"
         return toReturn
 

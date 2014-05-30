@@ -296,6 +296,8 @@ class QueueItemAdd(ShowQueueItem):
                 self.show.sports = 1
             if self.show.genre and "animation" in self.show.genre.lower():
                 self.show.anime = 1
+            if sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
+                self.show.scene = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -395,11 +397,14 @@ class QueueItemAdd(ShowQueueItem):
 
 
 class QueueItemRefresh(ShowQueueItem):
-    def __init__(self, show=None):
+    def __init__(self, show=None, force=False):
         ShowQueueItem.__init__(self, ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
         self.priority = generic_queue.QueuePriorities.HIGH
+
+        # force refresh certain items
+        self.force = force
 
     def execute(self):
         ShowQueueItem.execute(self)
@@ -408,6 +413,8 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.show.refreshDir()
         self.show.writeMetadata()
+        if self.force:
+            self.show.updateMetadata()
         self.show.populateCache()
 
         self.inProgress = False
@@ -420,9 +427,6 @@ class QueueItemRename(ShowQueueItem):
     def execute(self):
 
         ShowQueueItem.execute(self)
-
-        # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         logger.log(u"Performing rename on " + self.show.name)
 
@@ -483,7 +487,8 @@ class QueueItemUpdate(ShowQueueItem):
         logger.log(u"Beginning update of " + self.show.name)
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+        if sickbeard.scene_numbering.xem_refresh_needed(self.show.indexerid, self.show.indexer) or self.force:
+            sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         logger.log(u"Retrieving show info from " + sickbeard.indexerApi(self.show.indexer).name + "", logger.DEBUG)
         try:
@@ -550,7 +555,7 @@ class QueueItemUpdate(ShowQueueItem):
                     except exceptions.EpisodeDeletedException:
                         pass
 
-        sickbeard.showQueueScheduler.action.refreshShow(self.show, True)
+        sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
 
 class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):

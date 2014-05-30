@@ -345,6 +345,7 @@ class NameParser(object):
 
         return final_result
 
+
 class ParseResult(object):
     def __init__(self,
                  original_name,
@@ -449,35 +450,29 @@ class ParseResult(object):
         return to_return.encode('utf-8')
 
     def convert(self):
-        if not self.show: return self  # need show object
-        if self.air_by_date or self.sports: return self  # scene numbering does not apply to air-by-date
+        if not self.show:
+            return self  # can't convert with out a show object
 
-        # check if show is anime
-        if self.show.is_anime and not (len(self.episode_numbers) or self.season_number) and not len(self.ab_episode_numbers):
-            return self  # can't work without a season
-        elif not self.show._is_anime and not (len(self.episode_numbers) or self.season_number):
+        if self.air_by_date or self.sports:  # scene numbering does not apply to air-by-date or sports shows
             return self
 
         new_episode_numbers = []
         new_season_numbers = []
         new_absolute_numbers = []
 
-        if len(self.ab_episode_numbers) and not len(self.episode_numbers):
-            for epAbNo in self.ab_episode_numbers:
-                (s, e, a) = scene_numbering.get_absolute_numbering(self.show.indexerid, self.show.indexer, epAbNo)
+        if self.show.is_anime and len(self.ab_episode_numbers):
+            for epAbsNo in self.ab_episode_numbers:
+                a = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
 
-                if (s or e or a):
-                    new_episode_numbers.append(e)
-                    new_season_numbers.append(s)
-                    new_absolute_numbers.append(a)
-        else:
+                new_absolute_numbers.append(a)
+
+        if self.season_number and len(self.episode_numbers):
             for epNo in self.episode_numbers:
-                (s, e, a) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
-                                                                  self.season_number,
-                                                                  epNo, None)
+                (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
+                                                               self.season_number,
+                                                               epNo)
                 new_episode_numbers.append(e)
                 new_season_numbers.append(s)
-                new_absolute_numbers.append(a)
 
         # need to do a quick sanity check here.  It's possible that we now have episodes
         # from more than one season (by tvdb numbering), and this is just too much
@@ -494,13 +489,16 @@ class ParseResult(object):
         new_episode_numbers = list(set(new_episode_numbers))
         new_episode_numbers.sort()
 
-        # dedupe absolute numbers
+        # maybe even duplicate absolute numbers so why not do them as well
         new_absolute_numbers = list(set(new_absolute_numbers))
         new_absolute_numbers.sort()
 
-        self.ab_episode_numbers = new_absolute_numbers
-        self.episode_numbers = new_episode_numbers
-        self.season_number = new_season_numbers[0]
+        if len(new_absolute_numbers):
+            self.ab_episode_numbers = new_absolute_numbers
+
+        if len(new_season_numbers) and len(new_episode_numbers):
+            self.episode_numbers = new_episode_numbers
+            self.season_number = new_season_numbers[0]
 
         return self
 

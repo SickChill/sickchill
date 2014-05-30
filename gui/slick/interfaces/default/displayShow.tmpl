@@ -189,6 +189,7 @@
     <tr><td class="showLegend">Sports: </td><td><img src="$sbRoot/images/#if int($show.is_sports) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
     <tr><td class="showLegend">Anime: </td><td><img src="$sbRoot/images/#if int($show.is_anime) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
     <tr><td class="showLegend">DVD Order: </td><td><img src="$sbRoot/images/#if int($show.dvdorder) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
+    <tr><td class="showLegend">Scene Numbering: </td><td><img src="$sbRoot/images/#if int($show.scene) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 #if $anyQualities + $bestQualities
     <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 #end if
@@ -260,19 +261,37 @@
   	#continue
   #end if	
 
+  #set $scene = False
+  #set $scene_anime = False
+  #if not $show.air_by_date and not $show.is_sports and not $show.is_anime and $show.is_scene:
+    #set $scene = True
+  #elif not $show.air_by_date and not $show.is_sports and $show.is_anime and $show.is_scene:
+    #set $scene_anime = True
+  #end if
+
+  #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (0, 0, 0)
+
   #if (epResult["season"], epResult["episode"]) in $xem_numbering:
-      #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = $xem_numbering[(epResult["season"], epResult["episode"])]
-  #elif $xem_numbering and (epResult["season"], epResult["episode"]) not in $xem_numbering:
-      #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (0,0,0)
-  #else:
-      #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (epResult["season"], epResult["episode"], epResult["absolute_number"])
+      #set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
+  #end if
+
+  #if epResult["absolute_number"] in $xem_absolute_numbering:
+      #set $dfltAbsolute = $xem_absolute_numbering[epResult["absolute_number"]]
+  #end if
+
+  #if epResult["absolute_number"] in $scene_absolute_numbering:
+      #set $scAbsolute = $scene_absolute_numbering[epResult["absolute_number"]]
+      #set $dfltAbsNumbering = False
+  #else
+      #set $scAbsolute = $dfltAbsolute
+      #set $dfltAbsNumbering = True
   #end if
 
   #if (epResult["season"], epResult["episode"]) in $scene_numbering:
-      #set ($scSeas, $scEpis, $scAbsolute) = $scene_numbering[(epResult["season"], epResult["episode"])]
+      #set ($scSeas, $scEpis) = $scene_numbering[(epResult["season"], epResult["episode"])]
       #set $dfltEpNumbering = False
   #else
-      #set ($scSeas, $scEpis, $scAbsolute) = ($dfltSeas, $dfltEpis, $dfltAbsolute)
+      #set ($scSeas, $scEpis) = ($dfltSeas, $dfltEpis)
       #set $dfltEpNumbering = True
   #end if
 
@@ -283,7 +302,7 @@
         <h2>#if int($epResult["season"]) == 0 then "Specials" else "Season "+str($epResult["season"])#</h2>
     </td>
   </tr>
-  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th><th>NFO</th><th>TBN</th><th>Episode</th><th class="nowrap">Scene #</th><th class="nowrap">Absolute #</th><th>Name</th><th class="nowrap">Airdate</th><th>Filename</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
+  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th><th>NFO</th><th>TBN</th><th>Episode</th>#if $scene then "<th>Scene #</th>" else ""# #if $scene_anime then "<th>Scene Absolute #</th>" else ""#<th>Name</th><th class="nowrap">Airdate</th><th>Filename</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
         #set $curSeason = int($epResult["season"])
   #end if    
 
@@ -298,8 +317,9 @@
     <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
     <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
     <td align="center">$epResult["episode"]</td>
+
+    #if $scene:
     <td align="center">
-		#if not $show.air_by_date and not $show.is_sports
             <input type="text" placeholder="<%=str(dfltSeas) + 'x' + str(dfltEpis)%>" size="6" maxlength="8"
                 class="sceneSeasonXEpisode" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
                 id="sceneSeasonXEpisode_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>"
@@ -311,27 +331,23 @@
                 #end if
                 style="padding: 0; text-align: center; max-width: 60px;"
             />
-    	#else
-    		-
-    	#end if
     </td>
+    #elif $scene_anime:
     <td align="center">
-        #if not $show.air_by_date and not $show.is_sports
             <input type="text" placeholder="<%=str(dfltAbsolute)%>" size="6" maxlength="8"
-                class="sceneAbsolute" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
-                id="sceneAbsolute_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>"
+                class="sceneAbsolute" data-for-absolute="$epResult["absolute_number"]"
+                id="sceneAbsolute_$show.indexerid<%="_"+str(epResult["absolute_number"])%>"
                 title="Change the value here if scene absolute numbering differs from the indexer absolute numbering"
-                #if $dfltEpNumbering:
+                #if $dfltAbsNumbering:
                     value=""
                 #else
                     value="<%=str(scAbsolute)%>"
                 #end if
                 style="padding: 0; text-align: center; max-width: 60px;"
             />
-        #else
-    		-
-    	#end if
     </td>
+    #end if
+
     <td class="title">
     #if $epResult["description"] != "" and $epResult["description"] != None:
     <img style="padding-top: 3px;" src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>" />

@@ -114,6 +114,10 @@ This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 <b>Paused:</b> <input type="checkbox" name="paused" #if $show.paused == 1 then "checked=\"checked\"" else ""# /><br /><br />
 <b>Subtitles:</b> <input type="checkbox" name="subtitles"#if $show.subtitles == 1 and $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""##if not $sickbeard.USE_SUBTITLES then " disabled=\"disabled\"" else ""#/><br /><br />
 
+<b>Scene Numbering: </b>
+<input type="checkbox" name="scene" #if $show.scene == 1 then "checked=\"checked\"" else ""# /><br/>
+(check this if you wish to search by scene numbering, uncheck to search by indexer numbering)
+<br/><br/>
 <b>Air by date: </b> 
 <input type="checkbox" name="air_by_date" #if $show.air_by_date == 1 then "checked=\"checked\"" else ""# /><br />
 (check this if the show is released as Show.03.02.2010 rather than Show.S02E03) 
