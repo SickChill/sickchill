@@ -834,6 +834,9 @@ class PostProcessor(object):
         # reset per-file stuff
         self.in_history = False
 
+        # reset the anidb episode object
+        self.anidbEpisode = None
+
         # try to find the file info
         (show, season, episodes, quality) = self._find_info()
         if not show:
