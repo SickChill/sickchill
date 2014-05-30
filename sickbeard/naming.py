@@ -63,9 +63,9 @@ class TVEpisode(tv.TVEpisode):
         self._season = season
         self._episode = episode
         self._absolute_number = absolute_number
-        self._scene_season = season
-        self._scene_episode = episode
-        self._scene_absolute_number = absolute_number
+        self.scene_season = season
+        self.scene_episode = episode
+        self.scene_absolute_number = absolute_number
         self._airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)

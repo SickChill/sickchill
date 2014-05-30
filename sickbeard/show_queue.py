@@ -284,7 +284,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.subtitles = self.subtitles if self.subtitles != None else sickbeard.SUBTITLES_DEFAULT
             self.show.quality = self.quality if self.quality else sickbeard.QUALITY_DEFAULT
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders != None else sickbeard.FLATTEN_FOLDERS_DEFAULT
-            #self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
+            self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
             self.show.paused = False
 
             # be smartish about this
@@ -294,10 +294,8 @@ class QueueItemAdd(ShowQueueItem):
                 self.show.air_by_date = 0
             if self.show.classification and "sports" in self.show.classification.lower():
                 self.show.sports = 1
-            if self.show.genre and "animation" in self.show.genre.lower():
-                self.show.anime = 1
-            if sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
-                self.show.scene = 1
+            #if self.show.genre and "animation" in self.show.genre.lower():
+            #    self.show.anime = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -385,6 +383,10 @@ class QueueItemAdd(ShowQueueItem):
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
+
+        # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
+        if sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
+            self.show.scene = 1
 
         self.finish()
 

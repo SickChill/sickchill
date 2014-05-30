@@ -161,16 +161,22 @@ def snatchEpisode(result, endStatus=SNATCHED):
     history.logSnatch(result)
 
     # don't notify when we re-download an episode
+    sql_l = []
     for curEpObj in result.episodes:
         with curEpObj.lock:
             if isFirstBestMatch(result):
                 curEpObj.status = Quality.compositeStatus(SNATCHED_BEST, result.quality)
             else:
                 curEpObj.status = Quality.compositeStatus(endStatus, result.quality)
-            curEpObj.saveToDB()
+
+            sql_l.append(curEpObj.get_sql())
 
         if curEpObj.status not in Quality.DOWNLOADED:
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+
+    if len(sql_l) > 0:
+        myDB = db.DBConnection()
+        myDB.mass_action(sql_l)
 
     return True
 

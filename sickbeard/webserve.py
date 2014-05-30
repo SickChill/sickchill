@@ -3526,8 +3526,7 @@ class Home:
                     epObj.status = int(status)
 
                     # mass add to database
-                    if epObj.dirty:
-                        sql_l.append(epObj.get_sql())
+                    sql_l.append(epObj.get_sql())
 
                 if len(sql_l) > 0:
                     myDB = db.DBConnection()

@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import json
 
 import os.path
 import datetime
@@ -25,7 +24,6 @@ import threading
 import re
 import glob
 import traceback
-import requests
 
 import sickbeard
 
@@ -378,6 +376,7 @@ class TVShow(object):
         mediaFiles = helpers.listMediaFiles(self._location)
 
         # create TVEpisodes from each media file (if possible)
+        sql_l = []
         for mediaFile in mediaFiles:
             parse_result = None
             curEpisode = None
@@ -419,7 +418,12 @@ class TVShow(object):
                     except:
                         logger.log(str(self.indexerid) + ": Could not refresh subtitles", logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
-                curEpisode.saveToDB()
+
+                sql_l.append(curEpisode.get_sql())
+
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
     def loadEpisodesFromDB(self):
 
@@ -533,8 +537,8 @@ class TVShow(object):
                     logger.log(str(self.indexerid) + u": Loading info from " + sickbeard.indexerApi(
                         self.indexer).name + " for episode " + str(season) + "x" + str(episode), logger.DEBUG)
                     ep.loadFromIndexer(season, episode, tvapi=t)
-                    if ep.dirty:
-                        sql_l.append(ep.get_sql())
+
+                    sql_l.append(ep.get_sql())
 
                 scannedEps[season][episode] = True
 
@@ -612,6 +616,7 @@ class TVShow(object):
                     parse_result.air_date) + " for show " + self.name + ", skipping", logger.WARNING)
                 return None
 
+        sql_l = []
         for curEpNum in episodes:
 
             episode = int(curEpNum)
@@ -705,7 +710,11 @@ class TVShow(object):
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
-                curEp.saveToDB()
+                sql_l.append(curEp.get_sql())
+
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         # creating metafiles on the root should be good enough
         if sickbeard.USE_FAILED_DOWNLOADS and rootEp is not None:
@@ -990,6 +999,7 @@ class TVShow(object):
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
+        sql_l = []
         for ep in sqlResults:
             curLoc = os.path.normpath(ep["location"])
             season = int(ep["season"])
@@ -1022,11 +1032,16 @@ class TVShow(object):
                         curEp.hasnfo = False
                         curEp.hastbn = False
                         curEp.release_name = ''
-                        curEp.saveToDB()
+
+                        sql_l.append(curEp.get_sql())
             else:
                 # the file exists, set its modify file stamp
                 if sickbeard.AIRDATE_EPISODES:
                     self.airdateModifyStamp(curEp)
+
+        if len(sql_l):
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
     def airdateModifyStamp(self, ep_obj):
         """
@@ -1261,9 +1276,6 @@ class TVEpisode(object):
         self._season = season
         self._episode = episode
         self._absolute_number = 0
-        self._scene_season = 0
-        self._scene_episode = 0
-        self._scene_absolute_number = 0
         self._description = ""
         self._subtitles = list()
         self._subtitles_searchcount = 0
@@ -1282,6 +1294,10 @@ class TVEpisode(object):
 
         self.show = show
 
+        self.scene_season = 0
+        self.scene_episode = 0
+        self.scene_absolute_number = 0
+
         self._location = file
 
         self._indexer = int(self.show.indexer)
@@ -1298,9 +1314,6 @@ class TVEpisode(object):
     season = property(lambda self: self._season, dirty_setter("_season"))
     episode = property(lambda self: self._episode, dirty_setter("_episode"))
     absolute_number = property(lambda self: self._absolute_number, dirty_setter("_absolute_number"))
-    scene_season = property(lambda self: self._scene_season, dirty_setter("_scene_season"))
-    scene_episode = property(lambda self: self._scene_episode, dirty_setter("_scene_episode"))
-    scene_absolute_number = property(lambda self: self._scene_absolute_number, dirty_setter("_scene_absolute_number"))
     description = property(lambda self: self._description, dirty_setter("_description"))
     subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
     subtitles_searchcount = property(lambda self: self._subtitles_searchcount, dirty_setter("_subtitles_searchcount"))
@@ -1827,13 +1840,12 @@ class TVEpisode(object):
 
         # use a custom update/insert method to get the data into the DB
         return [
-            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, scene_season, scene_episode, absolute_number, scene_absolute_number) VALUES "
-            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
+            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
             [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
              ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
              self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.scene_season,
-             self.scene_episode, self.absolute_number, self.scene_absolute_number]]
+             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.absolute_number]]
 
     def saveToDB(self, forceSave=False):
         """
@@ -1868,10 +1880,7 @@ class TVEpisode(object):
                         "file_size": self.file_size,
                         "release_name": self.release_name,
                         "is_proper": self.is_proper,
-                        "scene_season": self.scene_season,
-                        "scene_episode": self.scene_episode,
-                        "absolute_number": self.absolute_number,
-                        "scene_absolute_number": self.scene_absolute_number
+                        "absolute_number": self.absolute_number
         }
         controlValueDict = {"showid": self.show.indexerid,
                             "season": self.season,
@@ -2277,6 +2286,7 @@ class TVEpisode(object):
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_file, logger.ERROR)
 
         for cur_related_sub in related_subs:
+            absolute_proper_subs_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
             cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
                                                 absolute_current_path_no_ext_length)
             if not cur_result:
@@ -2294,7 +2304,14 @@ class TVEpisode(object):
             curEp.checkForMetaFiles()
 
         # save any changes to the database
+
+        sql_l = []
         with self.lock:
-            self.saveToDB()
+            sql_l.append(self.get_sql())
+
             for relEp in self.relatedEps:
-                relEp.saveToDB()
+                sql_l.append(relEp.get_sql())
+
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)

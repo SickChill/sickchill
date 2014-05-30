@@ -915,6 +915,7 @@ class PostProcessor(object):
             ep_obj.show.writeMetadata(True)
 
         # update the ep info before we rename so the quality & release name go into the name properly
+        sql_l = []
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
                 cur_release_name = None
@@ -951,7 +952,7 @@ class PostProcessor(object):
 
                 cur_ep.is_proper = self.is_proper
 
-                cur_ep.saveToDB()
+                sql_l.append(cur_ep.get_sql())
 
                 # Just want to keep this consistent for failed handling right now
                 releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
@@ -960,10 +961,13 @@ class PostProcessor(object):
                 else:
                     self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
+
         # find the destination folder
         try:
             proper_path = ep_obj.proper_path()
-            test = proper_path
             proper_absolute_path = ek.ek(os.path.join, ep_obj.show.location, proper_path)
 
             dest_path = ek.ek(os.path.dirname, proper_absolute_path)
@@ -1019,23 +1023,30 @@ class PostProcessor(object):
                     cur_ep.downloadSubtitles(force=True)
 
         # put the new location in the database
+        sql_l = []
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
                 cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
-                cur_ep.saveToDB()
+
+                sql_l.append(cur_ep.get_sql())
+
                 # set file modify stamp to show airdate
                 if sickbeard.AIRDATE_EPISODES:
                     ep_obj.show.airdateModifyStamp(cur_ep)
+
+        # generate nfo/tbn
+        ep_obj.createMetaFiles()
+        sql_l.append(ep_obj.get_sql())
+
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)
 
         # send notifications
         notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-        # generate nfo/tbn
-        ep_obj.createMetaFiles()
-        ep_obj.saveToDB()
 
         # do the library update for XBMC
         notifiers.xbmc_notifier.update_library(ep_obj.show.name)
