@@ -198,8 +198,7 @@ class TVShow(object):
     def getEpisode(self, season=None, episode=None, file=None, noCreate=False, absolute_number=None):
 
         # Load XEM data to DB for show
-        if sickbeard.scene_numbering.xem_refresh_needed(self.indexerid, self.indexer):
-            sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer)
+        sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer)
 
         if not season in self.episodes:
             self.episodes[season] = {}

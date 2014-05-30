@@ -369,10 +369,6 @@ class QueueItemAdd(ShowQueueItem):
             myDB.action("UPDATE tv_episodes SET status = ? WHERE status = ? AND showid = ? AND season != 0",
                         [self.default_status, SKIPPED, self.show.indexerid])
 
-        # Load XEM data to DB for show
-        if sickbeard.scene_numbering.xem_refresh_needed(self.show.indexerid, self.show.indexer):
-            sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
-
         # if they started with WANTED eps then run the backlog
         if self.default_status == WANTED:
             logger.log(u"Launching backlog for this show since its episodes are WANTED")
@@ -386,6 +382,9 @@ class QueueItemAdd(ShowQueueItem):
 
         # if there are specific episodes that need to be added by trakt
         sickbeard.traktWatchListCheckerSchedular.action.manageNewShow(self.show)
+
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
         self.finish()
 
@@ -416,6 +415,9 @@ class QueueItemRefresh(ShowQueueItem):
         if self.force:
             self.show.updateMetadata()
         self.show.populateCache()
+
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=self.force)
 
         self.inProgress = False
 
@@ -486,10 +488,6 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log(u"Beginning update of " + self.show.name)
 
-        # Load XEM data to DB for show
-        if sickbeard.scene_numbering.xem_refresh_needed(self.show.indexerid, self.show.indexer) or self.force:
-            sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
-
         logger.log(u"Retrieving show info from " + sickbeard.indexerApi(self.show.indexer).name + "", logger.DEBUG)
         try:
             self.show.loadFromIndexer(cache=not self.force)
@@ -533,9 +531,7 @@ class QueueItemUpdate(ShowQueueItem):
         if IndexerEpList == None:
             logger.log(u"No data returned from " + sickbeard.indexerApi(
                 self.show.indexer).name + ", unable to update this show", logger.ERROR)
-
         else:
-
             # for each ep we found on TVDB delete it from the DB list
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:

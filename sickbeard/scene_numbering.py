@@ -241,8 +241,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -270,8 +269,7 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -298,8 +296,7 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -327,8 +324,7 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -383,8 +379,7 @@ def get_xem_numbering_for_show(indexer_id, indexer):
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -444,8 +439,7 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    if xem_refresh_needed(indexer_id, indexer):
-        xem_refresh(indexer_id, indexer)
+    xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
 
@@ -462,30 +456,7 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
 
     return result
 
-
-def xem_refresh_needed(indexer_id, indexer):
-    """
-    Is a refresh needed on a show?
-    
-    @param indexer_id: int
-    @return: bool
-    """
-    if indexer_id is None:
-        return False
-
-    indexer_id = int(indexer_id)
-    indexer = int(indexer)
-
-    myDB = db.DBConnection()
-    rows = myDB.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
-                       [indexer, indexer_id])
-    if rows:
-        return time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
-    else:
-        return True
-
-
-def xem_refresh(indexer_id, indexer):
+def xem_refresh(indexer_id, indexer, force=False):
     """
     Refresh data from xem for a tv show
     
@@ -497,69 +468,78 @@ def xem_refresh(indexer_id, indexer):
     indexer_id = int(indexer_id)
     indexer = int(indexer)
 
-    try:
-        logger.log(
-            u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
-            logger.DEBUG)
-        data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
-            indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
+    myDB = db.DBConnection()
 
-        if data is None or data == '':
-            logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
-                indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
-            data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
+    rows = myDB.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
+                       [indexer, indexer_id])
+    if rows:
+        refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
+    else:
+        refresh = True
+
+    if refresh or force:
+        try:
+            logger.log(
+                u'Looking up XEM scene mapping for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
+                logger.DEBUG)
+            data = requests.get("http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
                 indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
+
             if data is None or data == '':
-                logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
-                           logger.MESSAGE)
-                return None
+                logger.log(u'No XEN data for show "%s on %s", trying TVTumbler' % (
+                    indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
+                data = requests.get("http://show-api.tvtumbler.com/api/thexem/all?id=%s&origin=%s&destination=scene" % (
+                    indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'],), verify=False).json()
+                if data is None or data == '':
+                    logger.log(u'TVTumbler also failed for show "%s on %s".  giving up.' % (indexer_id, indexer,),
+                               logger.MESSAGE)
+                    return None
 
-        result = data
-        myDB = db.DBConnection()
+            result = data
 
-        ql = []
-        if result:
-            ql.append(["INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
-                       [indexer, indexer_id, time.time()]])
-            if 'success' in result['result']:
-                for entry in result['data']:
-                    if 'scene' in entry:
-                        ql.append([
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [entry['scene']['season'],
-                             entry['scene']['episode'],
-                             entry['scene']['absolute'],
-                             indexer_id,
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                            ]])
-                    if 'scene_2' in entry:  # for doubles
-                        ql.append([
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [entry['scene_2']['season'],
-                             entry['scene_2']['episode'],
-                             entry['scene_2']['absolute'],
-                             indexer_id,
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                            ]])
+            ql = []
+            if result:
+                ql.append(["INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
+                           [indexer, indexer_id, time.time()]])
+                if 'success' in result['result']:
+                    for entry in result['data']:
+                        if 'scene' in entry:
+                            ql.append([
+                                "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
+                                [entry['scene']['season'],
+                                 entry['scene']['episode'],
+                                 entry['scene']['absolute'],
+                                 indexer_id,
+                                 entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                                 entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
+                                ]])
+                        if 'scene_2' in entry:  # for doubles
+                            ql.append([
+                                "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
+                                [entry['scene_2']['season'],
+                                 entry['scene_2']['episode'],
+                                 entry['scene_2']['absolute'],
+                                 indexer_id,
+                                 entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                                 entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
+                                ]])
+                else:
+                    logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
+                        indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.DEBUG)
             else:
-                logger.log(u'Failed to get XEM scene data for show %s from %s because "%s"' % (
-                    indexer_id, sickbeard.indexerApi(indexer).name, result['message']), logger.DEBUG)
-        else:
-            logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
-                indexer_id, sickbeard.indexerApi(indexer).name,), logger.DEBUG)
-    except Exception, e:
-        logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
-            indexer).name + ": " + ex(e), logger.WARNING)
-        logger.log(traceback.format_exc(), logger.DEBUG)
-        return None
+                logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
+                    indexer_id, sickbeard.indexerApi(indexer).name,), logger.DEBUG)
+        except Exception, e:
+            logger.log(u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
+                indexer).name + ": " + ex(e), logger.WARNING)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            return None
 
-    if ql:
-        myDB.mass_action(ql)
+        if ql:
+            myDB.mass_action(ql)
 
-        # fix xem scene numbering issues
-        # fix_xem_numbering(indexer_id, indexer)
+            # fix xem scene numbering issues
+            # fix_xem_numbering(indexer_id, indexer)
 
 
 def fix_xem_numbering(indexer_id, indexer):
