@@ -1895,7 +1895,16 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers 
         """
 
-        return self._format_pattern('Indexer#:[%SN - %Sx%0E - %EN] | Scene#:[%SN - %XSx%0XE - %EN]')
+        if self.show.is_anime and not self.show.is_scene:
+            return self._format_pattern('%SN - %A - %EN')
+        elif self.show.is_anime and self.show.is_scene:
+            return self._format_pattern('%SN - %XA - %EN')
+        elif self.show.is_scene:
+            return self._format_pattern('%SN - %XSx%0XE - %EN')
+        elif self.show.air_by_date:
+            return self._format_pattern('%SN - %AD - %EN')
+        else:
+            return self._format_pattern('%SN - %Sx%0E - %EN')
 
     def _ep_name(self):
         """
@@ -2000,7 +2009,8 @@ class TVEpisode(object):
             '%0XS': '%02d' % self.scene_season,
             '%XE': str(self.scene_episode),
             '%0XE': '%02d' % self.scene_episode,
-            '%AN': '%(#)03d' % {'#': self.absolute_number},
+            '%A': '%(#)03d' % {'#': self.absolute_number},
+            '%XA': '%(#)03d' % {'#': self.scene_absolute_number},
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),

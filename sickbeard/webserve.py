@@ -581,6 +581,9 @@ class Manage:
         subtitles_all_same = True
         last_subtitles = None
 
+        scene_all_same = True
+        last_scene = None
+
         root_dir_list = []
 
         for curShow in showList:
@@ -622,12 +625,19 @@ class Manage:
                 else:
                     last_subtitles = curShow.subtitles
 
+            if scene_all_same:
+                if last_scene not in (None, curShow.scene):
+                    scene_all_same = False
+                else:
+                    last_scene = curShow.scene
+
         t.showList = toEdit
         t.paused_value = last_paused if paused_all_same else None
         t.anime_value = last_anime if anime_all_same else None
         t.flatten_folders_value = last_flatten_folders if flatten_folders_all_same else None
         t.quality_value = last_quality if quality_all_same else None
         t.subtitles_value = last_subtitles if subtitles_all_same else None
+        t.scene_value = last_scene if scene_all_same else None
         t.root_dir_list = root_dir_list
 
         return _munge(t)
@@ -3168,6 +3178,16 @@ class Home:
         else:
             do_update = True
 
+        if scene == showObj.scene:
+            do_update_scene_numbering = False
+        else:
+            do_update_scene_numbering = True
+
+        if anime == showObj.anime:
+            do_update_scene_absolute_numbering = False
+        else:
+            do_update_scene_absolute_numbering = True
+
         if type(anyQualities) != list:
             anyQualities = [anyQualities]
 
@@ -3181,7 +3201,7 @@ class Home:
         if directCall:
             do_update_exceptions = False
         else:
-            if set(exceptions_list) == set(showObj.exceptions):
+            if directCall or set(exceptions_list) == set(showObj.exceptions):
                 do_update_exceptions = False
             else:
                 do_update_exceptions = True
@@ -3302,6 +3322,13 @@ class Home:
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
+
+        if do_update_scene_numbering or do_update_scene_absolute_numbering:
+            try:
+                sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)  # @UndefinedVariable
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+            except exceptions.CantUpdateException, e:
+                errors.append("Unable to force an update on scene numbering of the show.")
 
         if directCall:
             return errors

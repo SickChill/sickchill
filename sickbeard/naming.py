@@ -54,6 +54,7 @@ class TVShow():
         self.air_by_date = 0
         self.sports = 0
         self.anime = 0
+        self.scene = 0
 
 class TVEpisode(tv.TVEpisode):
     def __init__(self, season, episode, absolute_number, name):
@@ -64,6 +65,7 @@ class TVEpisode(tv.TVEpisode):
         self._absolute_number = absolute_number
         self._scene_season = season
         self._scene_episode = episode
+        self._scene_absolute_number = absolute_number
         self._airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
