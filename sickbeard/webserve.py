@@ -3321,14 +3321,14 @@ class Home:
 
         if do_update_exceptions:
             try:
-                scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list, force=True)  # @UndefinedVariable
+                scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVariable
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
         if do_update_scene_numbering or do_update_scene_absolute_numbering:
             try:
-                sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)  # @UndefinedVariable
+                sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer, force=True)  # @UndefinedVariable
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene numbering of the show.")
