@@ -1011,7 +1011,7 @@ class CMD_EpisodeSetStatus(ApiCall):
                     start_backlog = True
                 ep_results.append(_epResult(RESULT_SUCCESS, epObj))
 
-        if len(sql_l):
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 

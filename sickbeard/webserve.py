@@ -3528,7 +3528,7 @@ class Home:
                     # mass add to database
                     sql_l.append(epObj.get_sql())
 
-                if len(sql_l) > 0:
+                if sql_l:
                     myDB = db.DBConnection()
                     myDB.mass_action(sql_l)
 

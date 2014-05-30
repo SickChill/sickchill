@@ -357,8 +357,9 @@ class NextGenCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-        myDB = self._getDB()
-        myDB.mass_action(cl)
+        if cl:
+            myDB = self._getDB()
+            myDB.mass_action(cl)
 
     def _parseItem(self, item):
 

@@ -128,8 +128,9 @@ class TVCache():
                     if ci is not None:
                         cl.append(ci)
 
-                myDB = self._getDB()
-                myDB.mass_action(cl)
+                if cl:
+                    myDB = self._getDB()
+                    myDB.mass_action(cl)
 
             else:
                 raise AuthException(

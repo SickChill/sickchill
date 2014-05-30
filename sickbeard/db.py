@@ -30,6 +30,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard.common import cpu_presets
+from itertools import ifilter
 
 db_lock = threading.Lock()
 
@@ -113,6 +114,8 @@ class DBConnection:
     def mass_action(self, querylist, logTransaction=False):
 
         with db_lock:
+            # remove None types
+            querylist = [i for i in querylist if i!=None]
 
             if querylist == None:
                 return

@@ -174,7 +174,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if curEpObj.status not in Quality.DOWNLOADED:
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
-    if len(sql_l) > 0:
+    if sql_l:
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 

@@ -421,7 +421,7 @@ class TVShow(object):
 
                 sql_l.append(curEpisode.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -542,7 +542,7 @@ class TVShow(object):
 
                 scannedEps[season][episode] = True
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -712,7 +712,7 @@ class TVShow(object):
             with curEp.lock:
                 sql_l.append(curEp.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1039,7 +1039,7 @@ class TVShow(object):
                 if sickbeard.AIRDATE_EPISODES:
                     self.airdateModifyStamp(curEp)
 
-        if len(sql_l):
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -2312,6 +2312,6 @@ class TVEpisode(object):
             for relEp in self.relatedEps:
                 sql_l.append(relEp.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)

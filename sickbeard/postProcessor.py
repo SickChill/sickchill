@@ -961,7 +961,7 @@ class PostProcessor(object):
                 else:
                     self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1038,7 +1038,7 @@ class PostProcessor(object):
         ep_obj.createMetaFiles()
         sql_l.append(ep_obj.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 

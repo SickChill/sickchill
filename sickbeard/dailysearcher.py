@@ -81,7 +81,7 @@ class DailySearcher():
 
                 sql_l.append(ep.get_sql())
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
