@@ -479,9 +479,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 if not ep_obj.relatedEps:
                     Rating = etree.SubElement(episode, "Rating")
                     if getattr(myEp, 'rating', None) is not None:
-                        rating_text = myEp['rating']
-                    if rating_text != None:
-                        Rating.text = rating_text
+                        Rating.text = myEp['rating']
 
                     IMDB_ID = etree.SubElement(episode, "IMDB_ID")
                     IMDB = etree.SubElement(episode, "IMDB")
