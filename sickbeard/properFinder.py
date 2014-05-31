@@ -119,7 +119,7 @@ class ProperFinder():
 
             try:
                 myParser = NameParser(False)
-                parse_result = myParser.parse(curProper.name).convert()
+                parse_result = myParser.parse(curProper.name)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
@@ -138,7 +138,7 @@ class ProperFinder():
 
             showObj = parse_result.show
             logger.log(
-                u"Successful match! Result " + parse_result.series_name + " matched to show " + showObj.name,
+                u"Successful match! Result " + parse_result.original_name + " matched to show " + showObj.name,
                 logger.DEBUG)
 
             # set the indexerid in the db to the show's indexerid

@@ -56,6 +56,31 @@ class TVShow():
         self.anime = 0
         self.scene = 0
 
+    def _is_anime(self):
+        if (self.anime > 0):
+            return True
+        else:
+            return False
+
+    is_anime = property(_is_anime)
+
+    def _is_sports(self):
+        if (self.sports > 0):
+            return True
+        else:
+            return False
+
+    is_sports = property(_is_sports)
+
+    def _is_scene(self):
+        if (self.scene > 0):
+            return True
+        else:
+            return False
+
+    is_scene = property(_is_scene)
+
+
 class TVEpisode(tv.TVEpisode):
     def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
@@ -139,9 +164,7 @@ def check_valid_sports_naming(pattern=None):
     return valid
 
 def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False):
-    ep = _generate_sample_ep(multi, abd, sports)
-
-    parser = NameParser(True)
+    ep = generate_sample_ep(multi, abd, sports)
 
     new_name = ep.formatted_filename(pattern, multi) + '.ext'
     new_path = ep.formatted_dir(pattern, multi)
@@ -154,9 +177,11 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
 
     logger.log(u"Trying to parse " + new_name, logger.DEBUG)
 
+    parser = NameParser(True)
+
     try:
         result = parser.parse(new_name)
-    except InvalidNameException, e  :
+    except Exception, e:
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
 
@@ -177,7 +202,7 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
     return True
 
 
-def _generate_sample_ep(multi=None, abd=False, sports=False, anime=False):
+def generate_sample_ep(multi=None, abd=False, sports=False, anime=False):
     # make a fake episode object
     ep = TVEpisode(2, 3, 3, "Ep Name")
 
@@ -215,6 +240,6 @@ def _generate_sample_ep(multi=None, abd=False, sports=False, anime=False):
 
 
 def test_name(pattern, multi=None, abd=False, sports=False, anime=False):
-    ep = _generate_sample_ep(multi, abd, sports, anime)
+    ep = generate_sample_ep(multi, abd, sports, anime)
 
     return {'name': ep.formatted_filename(pattern, multi), 'dir': ep.formatted_dir(pattern, multi)}

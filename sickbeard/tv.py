@@ -1895,6 +1895,26 @@ class TVEpisode(object):
         else:
             return ek.ek(os.path.join, self.show.location, self.location)
 
+    def createStrings(self, pattern=None):
+        patterns = [
+            '%S.N.S%SE%0E',
+            '%S.N.S%0SE%E',
+            '%S.N.S%SE%E',
+            '%S.N.S%0SE%0E',
+            '%SN S%SE%0E',
+            '%SN S%0SE%E',
+            '%SN S%SE%E',
+            '%SN S%0SE%0E'
+
+        ]
+
+        strings = []
+        if not pattern:
+            for p in patterns:
+                strings += [self._format_pattern(p)]
+            return strings
+        return self._format_pattern(pattern)
+
     def prettyName(self):
         """
         Returns the name of this episode in a "pretty" human-readable format. Used for logging
@@ -1903,16 +1923,12 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers 
         """
 
-        if self.show.is_anime and not self.show.is_scene:
-            return self._format_pattern('%SN - %A - %EN')
-        elif self.show.is_anime and self.show.is_scene:
-            return self._format_pattern('%SN - %XA - %EN')
-        elif self.show.is_scene:
-            return self._format_pattern('%SN - %XSx%0XE - %EN')
+        if self.show.anime and not self.show.scene:
+            return self._format_pattern('%SN - %AB - %EN')
         elif self.show.air_by_date:
             return self._format_pattern('%SN - %AD - %EN')
-        else:
-            return self._format_pattern('%SN - %Sx%0E - %EN')
+
+        return self._format_pattern('%SN - %Sx%0E - %EN')
 
     def _ep_name(self):
         """
@@ -1980,9 +1996,8 @@ class TVEpisode(object):
             if not name:
                 return ''
 
-            np = NameParser(name)
-
             try:
+                np = NameParser(name)
                 parse_result = np.parse(name)
             except InvalidNameException, e:
                 logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)
@@ -2017,7 +2032,7 @@ class TVEpisode(object):
             '%0XS': '%02d' % self.scene_season,
             '%XE': str(self.scene_episode),
             '%0XE': '%02d' % self.scene_episode,
-            '%A': '%(#)03d' % {'#': self.absolute_number},
+            '%AB': '%(#)03d' % {'#': self.absolute_number},
             '%XA': '%(#)03d' % {'#': self.scene_absolute_number},
             '%RN': release_name(self.release_name),
             '%RG': release_group(self.release_name),
