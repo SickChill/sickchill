@@ -24,7 +24,6 @@ import regexes
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering
-from regex import regex
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
@@ -104,8 +103,8 @@ class NameParser(object):
             for regex_type, regex_pattern in regexItem.items():
                 for (cur_pattern_name, cur_pattern) in regex_pattern:
                     try:
-                        cur_regex = regex.compile(cur_pattern, regex.V1 | regex.VERBOSE | regex.IGNORECASE | regex.BESTMATCH)
-                    except regex.error, errormsg:
+                        cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
+                    except re.error, errormsg:
                         logger.log(u"WARNING: Invalid episode_pattern, %s. %s" % (errormsg, cur_pattern))
                     else:
                         self.compiled_regexes[(regex_type,cur_pattern_name)] = cur_regex
@@ -116,7 +115,7 @@ class NameParser(object):
 
         result = ParseResult(name)
         for (cur_regex_type, cur_regex_name), cur_regex in self.compiled_regexes.items():
-            match = cur_regex.fullmatch(name)
+            match = cur_regex.match(name)
 
             if not match:
                 continue
@@ -185,8 +184,8 @@ class NameParser(object):
                 tmp_extra_info = match.group('extra_info')
 
                 # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                if tmp_extra_info and cur_regex_name == 'season_only' and regex.search(
-                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, regex.I):
+                if tmp_extra_info and cur_regex_name == 'season_only' and re.search(
+                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
                     continue
                 result.extra_info = tmp_extra_info
 
@@ -286,7 +285,7 @@ class NameParser(object):
 
         # break it into parts if there are any (dirname, file name, extension)
         dir_name, file_name = os.path.split(name)
-        ext_match = regex.match('(.*)\.\w{3,4}$', file_name)
+        ext_match = re.match('(.*)\.\w{3,4}$', file_name)
         if ext_match and self.file_name:
             base_file_name = ext_match.group(1)
         else:
