@@ -466,10 +466,13 @@ class ParseResult(object):
         if self.show.is_anime and len(self.ab_episode_numbers):
             for epAbsNo in self.ab_episode_numbers:
                 a = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
+                (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, a)
 
                 new_absolute_numbers.append(a)
+                new_episode_numbers.append(e)
+                new_season_numbers.append(s)
 
-        if self.season_number and len(self.episode_numbers):
+        elif self.season_number and len(self.episode_numbers):
             for epNo in self.episode_numbers:
                 (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
                                                                self.season_number,
