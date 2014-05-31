@@ -494,6 +494,8 @@ class PostProcessor(object):
         elif parse_result.sports:
             season = -1
             episodes = [parse_result.sports_event_date]
+        elif parse_result.is_anime:
+            (season, episodes) = helpers.get_all_episodes_from_absolute_number(parse_result.show, None, parse_result.ab_episode_numbers)
         else:
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
