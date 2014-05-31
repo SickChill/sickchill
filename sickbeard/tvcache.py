@@ -264,8 +264,8 @@ class TVCache():
     def _addCacheEntry(self, name, url, quality=None):
 
         try:
-            myParser = NameParser()
-            parse_result = myParser.parse(name).convert()
+            myParser = NameParser(convert=True)
+            parse_result = myParser.parse(name)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None

@@ -479,8 +479,8 @@ class PostProcessor(object):
             return to_return
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file, useIndexers=True)
-        parse_result = np.parse(name).convert()
+        np = NameParser(file, useIndexers=True, convert=True)
+        parse_result = np.parse(name)
 
         self._log(u"Parsed " + name + " into " + str(parse_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
 

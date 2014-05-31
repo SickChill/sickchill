@@ -7,14 +7,13 @@
 #set global $topmenu="config"#
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
+<script type="text/javascript" src="$sbRoot/js/configAnime.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 #if $varExists('header')
 	<h1 class="header">$header</h1>
 #else
 	<h1 class="title">$title</h1>
 #end if
-
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
-
 <div id="config">
 <div id="config-content">
 

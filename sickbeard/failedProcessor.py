@@ -52,10 +52,10 @@ class FailedProcessor(object):
             self._log(u"Warning: unable to find a valid release name.", logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
-        parser = NameParser(False)
 
         try:
-            parsed = parser.parse(releaseName).convert()
+            parser = NameParser(False, convert=True)
+            parsed = parser.parse(releaseName)
         except InvalidNameException:
             self._log(u"Error: release name is invalid: " + releaseName, logger.WARNING)
             raise exceptions.FailedProcessingFailed()
