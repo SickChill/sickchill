@@ -81,3 +81,11 @@ class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):
 
     def execute(self):
         self.addColumn("scene_exceptions", "custom", "NUMERIC", 0)
+
+class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):
+    def test(self):
+        return self.hasTable("scene_exceptions_refresh")
+
+    def execute(self):
+        self.connection.action(
+            "CREATE TABLE scene_exceptions_refresh (list TEXT, last_refreshed INTEGER)")

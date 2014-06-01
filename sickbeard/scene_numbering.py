@@ -41,7 +41,6 @@ from lib import requests
 
 MAX_XEM_AGE_SECS = 86400  # 1 day
 
-
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),

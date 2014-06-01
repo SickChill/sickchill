@@ -17,7 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import threading
+import time
 import sickbeard
 
 from lib import adba
@@ -25,6 +25,9 @@ from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
+
+MAX_XEM_AGE_SECS = 86400  # 1 day
+MAX_ANIDB_AGE_SECS = 86400  # 1 day
 
 exceptionCache = {}
 exceptionSeasonCache = {}
@@ -228,35 +231,71 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     name_cache.clearCache()
 
 def _retrieve_anidb_mainnames():
+    global MAX_ANIDB_AGE_SECS
+
+    success = False
+
     anidb_mainNames = {}
-    for show in sickbeard.showList:
-        if show.is_anime and show.indexer == 1:
-            try:
-                anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
-            except:
-                continue
-            else:
-                if anime.name and anime.name != show.name:
-                    anidb_mainNames[show.indexerid] = [{anime.name: -1}]
+
+    cacheDB = db.DBConnection('cache.db')
+
+    rows = cacheDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
+                          ['anidb'])
+    if rows:
+        refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_ANIDB_AGE_SECS)
+    else:
+        refresh = True
+
+    if refresh:
+        for show in sickbeard.showList:
+            if show.is_anime and show.indexer == 1:
+                try:
+                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
+                except:
+                    continue
+                else:
+                    success = True
+
+                    if anime.name and anime.name != show.name:
+                        anidb_mainNames[show.indexerid] = [{anime.name: -1}]
+
+        if success:
+            cacheDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
+                           ['anidb', time.time()])
 
     return anidb_mainNames
 
 
 def _xem_excpetions_fetcher(indexer):
+    global  MAX_XEM_AGE_SECS
+
     exception_dict = {}
 
-    url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config['xem_origin']
+    cacheDB = db.DBConnection('cache.db')
 
-    url_data = helpers.getURL(url, json=True)
-    if url_data is None:
-        logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
-        return exception_dict
+    rows = cacheDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
+                       ['xem'])
+    if rows:
+        refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
+    else:
+        refresh = True
 
-    if url_data['result'] == 'failure':
-        return exception_dict
+    if refresh:
+        url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config['xem_origin']
 
-    for indexerid, names in url_data['data'].items():
-        exception_dict[int(indexerid)] = names
+        url_data = helpers.getURL(url, json=True)
+        if url_data is None:
+            logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
+            return exception_dict
+
+        if url_data['result'] == 'failure':
+            return exception_dict
+
+        cacheDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
+                       ['xem', time.time()])
+
+        for indexerid, names in url_data['data'].items():
+            exception_dict[int(indexerid)] = names
 
     return exception_dict
 
