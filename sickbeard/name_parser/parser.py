@@ -113,6 +113,7 @@ class NameParser(object):
         if not name:
             return
 
+        matches = []
         result = None
         for (cur_regex_type, cur_regex_name), cur_regex in self.compiled_regexes.items():
             match = cur_regex.match(name)
@@ -122,50 +123,62 @@ class NameParser(object):
 
             result = ParseResult(name)
             result.which_regex = [cur_regex_name]
+            result.score = 0
 
             named_groups = match.groupdict().keys()
 
             if 'series_name' in named_groups:
                 result.series_name = match.group('series_name')
-                if result.series_name:
-                    result.series_name = self.clean_series_name(result.series_name)
-                else:continue
+                if not result.series_name:
+                    continue
+
+                result.series_name = self.clean_series_name(result.series_name)
+                result.score += 1
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
                 if cur_regex_name == 'bare' and tmp_season in (19, 20):
                     continue
+
                 result.season_number = tmp_season
+                result.score += 1
 
             if 'ep_num' in named_groups:
                 ep_num = self._convert_number(match.group('ep_num'))
                 if 'extra_ep_num' in named_groups and match.group('extra_ep_num'):
                     result.episode_numbers = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
+                    result.score += 1
                 else:
                     result.episode_numbers = [ep_num]
+                    result.score += 1
 
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
                 if 'extra_ab_ep_num' in named_groups and match.group('extra_ab_ep_num'):
                     result.ab_episode_numbers = range(ep_ab_num, self._convert_number(match.group('extra_ab_ep_num')) + 1)
+                    result.score += 1
                 else:
                     result.ab_episode_numbers = [ep_ab_num]
+                    result.score += 1
 
             if 'sports_event_id' in named_groups:
                 sports_event_id = match.group('sports_event_id')
                 if sports_event_id:
                     result.sports_event_id = int(match.group('sports_event_id'))
+                    result.score += 1
 
             if 'sports_event_name' in named_groups:
                 result.sports_event_name = match.group('sports_event_name')
                 if result.sports_event_name:
                     result.sports_event_name = self.clean_series_name(result.sports_event_name)
+                    result.score += 1
 
             if 'sports_event_date' in named_groups:
                 sports_event_date = match.group('sports_event_date')
                 if sports_event_date:
                     try:
                         result.sports_event_date = parser.parse(sports_event_date, fuzzy=True).date()
+                        result.score += 1
                     except:
                         continue
 
@@ -177,6 +190,7 @@ class NameParser(object):
                 try:
                     dtStr = '%s-%s-%s' % (year, month, day)
                     result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                    result.score += 1
                 except:
                     continue
 
@@ -187,27 +201,35 @@ class NameParser(object):
                 if tmp_extra_info and cur_regex_name == 'season_only' and re.search(
                         r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
                     continue
+
                 result.extra_info = tmp_extra_info
+                result.score += 1
 
             if 'release_group' in named_groups:
                 result.release_group = match.group('release_group')
+                result.score += 1
 
             cur_show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-            if cur_show:
-                if self.showObj:
-                    if self.showObj.indexerid != cur_show.indexerid:
-                        logger.log(
-                            u"I expected an episode of the show " + self.showObj.name + " but the parser thinks its the show " + cur_show.name + ". I will continue thinking its " + self.showObj.name,
-                            logger.WARNING)
-                        return
-
-                result.show = cur_show
-
-            if not result.show:
+            if not cur_show:
+                matches.append(result)
                 continue
+
+            if self.showObj and self.showObj.indexerid != cur_show.indexerid:
+                logger.log(
+                    u"I expected an episode of the show " + self.showObj.name + " but the parser thinks its the show " + cur_show.name + ". I will continue thinking its " + self.showObj.name,
+                    logger.WARNING)
+                continue
+
+            result.show = cur_show
 
             if self.convert:
                 result = result.convert()
+
+            result.score += 1
+            matches.append(result)
+
+        if len(matches):
+            result = sorted(matches, key=lambda k: k.score, reverse=True)[0]
 
         return result
 
