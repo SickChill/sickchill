@@ -198,9 +198,6 @@ class TVShow(object):
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer, force=forceUpdate)
 
-        if not season in self.episodes:
-            self.episodes[season] = {}
-
         ep = None
 
         # if we get an anime get the real season and episode
@@ -224,6 +221,9 @@ class TVShow(object):
                     "No entries for absolute number: " + str(absolute_number) + " in show: " + self.name + " found.",
                     logger.DEBUG)
                 return None
+
+        if not season in self.episodes:
+            self.episodes[season] = {}
 
         if not episode in self.episodes[season] or self.episodes[season][episode] == None:
             if noCreate:

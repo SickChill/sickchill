@@ -327,7 +327,7 @@ def searchDBForShow(regShowName, log=False):
 
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
-    showNames = list(set([re.sub('[. -]', ' ', regShowName), regShowName]))
+    showNames = [re.sub('[. -]', ' ', regShowName)]
 
     # Query Indexers for each search term and build the list of results
     for i in sickbeard.indexerApi().indexers if not indexer else int(indexer or []):
@@ -679,6 +679,23 @@ def is_anime_in_show_list():
 
 def update_anime_support():
     sickbeard.ANIMESUPPORT = is_anime_in_show_list()
+
+def get_absolute_number_from_season_and_episode(show, season, episode):
+    myDB = db.DBConnection()
+    sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
+    sqlResults = myDB.select(sql, [show.indexerid, season, episode])
+
+    if len(sqlResults) == 1:
+        absolute_number = int(sqlResults[0]["absolute_number"])
+        logger.log(
+            "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode), logger.DEBUG)
+
+        return absolute_number
+    else:
+        logger.log(
+            "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(episode),logger.DEBUG)
+
+    return None
 
 def get_all_episodes_from_absolute_number(show, indexer_id, absolute_numbers):
     if len(absolute_numbers) == 0:

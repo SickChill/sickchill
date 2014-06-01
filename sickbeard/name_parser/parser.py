@@ -93,7 +93,7 @@ class NameParser(object):
 
         elif regexMode == self.ANIME_REGEX:
             logger.log(u"Using ANIME regexs", logger.DEBUG)
-            uncompiled_regex = [regexes.anime_regexes, regexes.normal_regexes]
+            uncompiled_regex = [regexes.anime_regexes]
 
         else:
             logger.log(u"This is a programing ERROR. Fallback Using NORMAL regexs", logger.ERROR)
@@ -113,13 +113,14 @@ class NameParser(object):
         if not name:
             return
 
-        result = ParseResult(name)
+        result = None
         for (cur_regex_type, cur_regex_name), cur_regex in self.compiled_regexes.items():
             match = cur_regex.match(name)
 
             if not match:
                 continue
 
+            result = ParseResult(name)
             result.which_regex = [cur_regex_name]
 
             named_groups = match.groupdict().keys()
@@ -146,8 +147,7 @@ class NameParser(object):
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
                 if 'extra_ab_ep_num' in named_groups and match.group('extra_ab_ep_num'):
-                    result.ab_episode_numbers = range(ep_ab_num,
-                                                      self._convert_number(match.group('extra_ab_ep_num')) + 1)
+                    result.ab_episode_numbers = range(ep_ab_num, self._convert_number(match.group('extra_ab_ep_num')) + 1)
                 else:
                     result.ab_episode_numbers = [ep_ab_num]
 
@@ -206,12 +206,8 @@ class NameParser(object):
             if not result.show:
                 continue
 
-            # Natch found!
-            break
-
-
-        if self.convert:
-            result = result.convert()
+            if self.convert:
+                result = result.convert()
 
         return result
 
@@ -385,7 +381,7 @@ class ParseResult(object):
         self.sports_event_name = sports_event_name
         self.sports_event_date = sports_event_date
 
-        self.which_regex = None
+        self.which_regex = []
         self.show = show
         self.score = score
 
@@ -466,17 +462,23 @@ class ParseResult(object):
         if self.show.is_anime and len(self.ab_episode_numbers):
             for epAbsNo in self.ab_episode_numbers:
                 a = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
-                (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [a])
+                if a:
+                    (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [a])
 
-                new_absolute_numbers.append(a)
-                new_episode_numbers.append(e)
-                new_season_numbers.append(s)
+                    new_absolute_numbers.append(a)
+                    new_episode_numbers.extend(e)
+                    new_season_numbers.append(s)
 
         elif self.season_number and len(self.episode_numbers):
             for epNo in self.episode_numbers:
                 (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
                                                                self.season_number,
                                                                epNo)
+                if self.show.is_anime:
+                    a = helpers.get_absolute_number_from_season_and_episode(self.show, s, e)
+                    if a:
+                        new_absolute_numbers.append(a)
+
                 new_episode_numbers.append(e)
                 new_season_numbers.append(s)
 

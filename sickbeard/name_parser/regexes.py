@@ -280,6 +280,16 @@ anime_regexes = {'anime':[
      .*?                                                          # Separator and EOL
      '''),
 
+    ('anime_codec_crc',
+     '''
+    ^(?:\[(?P<release_group>.*?)\][ ._-]*)?
+    (?:(?P<series_name>.*?)[ ._-]*)?
+    (?:(?P<ep_ab_num>\d{1,3})[ ._-]*).+?
+    (?:\[(?P<codec>.*?)\][ ._-]*)
+    (?:\[(?P<crc>\w{8})\])?
+    .*?
+    '''),
+
     ('anime_and_normal',
      # Bleach - s16e03-04 - 313-314
      # Bleach.s16e03-04.313-314
@@ -360,6 +370,7 @@ anime_regexes = {'anime':[
     .*?
      """
     ),
+
     ('anime_bare',
      # One Piece - 102
      # [ACX]_Wolf's_Spirit_001.mkv
