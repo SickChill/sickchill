@@ -445,7 +445,8 @@ input:not(.btn){margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4
 }
 
 .sickbeardTable td.filename {
-width: 30%;
+width: 10%;
+text-align: center;
 
 }
 

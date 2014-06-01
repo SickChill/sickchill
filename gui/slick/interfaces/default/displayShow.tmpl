@@ -364,7 +364,11 @@
 #elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
 	#set $epLoc = os.path.basename($epLoc)
 #end if
+#if $epLoc != "" and $epLoc != None:
+<a href="#" title="$epLoc">[details]</a>
+#else
 $epLoc
+#end if
 	</small>
     </td>
 #if $sickbeard.USE_SUBTITLES and $show.subtitles:
