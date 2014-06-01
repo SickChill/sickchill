@@ -28,6 +28,7 @@ from dateutil import parser
 
 nameparser_lock = threading.Lock()
 
+
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1
@@ -107,7 +108,7 @@ class NameParser(object):
                     except re.error, errormsg:
                         logger.log(u"WARNING: Invalid episode_pattern, %s. %s" % (errormsg, cur_pattern))
                     else:
-                        self.compiled_regexes[(regex_type,cur_pattern_name)] = cur_regex
+                        self.compiled_regexes[(regex_type, cur_pattern_name)] = cur_regex
 
     def _parse_string(self, name):
         if not name:
@@ -155,7 +156,8 @@ class NameParser(object):
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
                 if 'extra_ab_ep_num' in named_groups and match.group('extra_ab_ep_num'):
-                    result.ab_episode_numbers = range(ep_ab_num, self._convert_number(match.group('extra_ab_ep_num')) + 1)
+                    result.ab_episode_numbers = range(ep_ab_num,
+                                                      self._convert_number(match.group('extra_ab_ep_num')) + 1)
                     result.score += 1
                 else:
                     result.ab_episode_numbers = [ep_ab_num]
@@ -229,7 +231,7 @@ class NameParser(object):
             matches.append(result)
 
         if len(matches):
-            result = sorted(matches, key=lambda k: k.score, reverse=True)[0]
+            result = max(matches, key=lambda x: x.score)
 
         return result
 
@@ -571,7 +573,9 @@ class NameParserCache(object):
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
             return self._previous_parsed[name]
 
+
 name_parser_cache = NameParserCache()
+
 
 class InvalidNameException(Exception):
     "The given name is not valid"
