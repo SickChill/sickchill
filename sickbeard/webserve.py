@@ -3325,7 +3325,7 @@ class Home:
 
         if do_update_scene_numbering or do_update_scene_absolute_numbering:
             try:
-                sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer, force=True)  # @UndefinedVariable
+                sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)  # @UndefinedVariable
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene numbering of the show.")
