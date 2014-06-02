@@ -132,9 +132,9 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                subtitles=None, lang="en", anime=None):
+                subtitles=None, lang="en", anime=None, scene=None):
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime)
+                                    subtitles, anime, scene)
 
         self.add_item(queueItemObj)
 
@@ -189,7 +189,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 
 class QueueItemAdd(ShowQueueItem):
-    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime):
+    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime, scene):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -200,6 +200,7 @@ class QueueItemAdd(ShowQueueItem):
         self.lang = lang
         self.subtitles = subtitles
         self.anime = anime
+        self.scene = scene
 
         self.show = None
 
@@ -285,6 +286,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.quality = self.quality if self.quality else sickbeard.QUALITY_DEFAULT
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders != None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
+            self.show.scene = self.scene if self.scene != None else sickbeard.SCENE_DEFAULT
             self.show.paused = False
 
             # be smartish about this
@@ -294,8 +296,6 @@ class QueueItemAdd(ShowQueueItem):
                 self.show.air_by_date = 0
             if self.show.classification and "sports" in self.show.classification.lower():
                 self.show.sports = 1
-            #if self.show.genre and "animation" in self.show.genre.lower():
-            #    self.show.anime = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -385,7 +385,7 @@ class QueueItemAdd(ShowQueueItem):
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
         # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
-        if sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
+        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
             self.show.scene = 1
 
         self.finish()

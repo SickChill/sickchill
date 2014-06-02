@@ -990,7 +990,8 @@ class ConfigGeneral:
         sickbeard.ROOT_DIRS = rootDirString
 
     @cherrypy.expose
-    def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False, anime=False):
+    def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
+                            anime=False, scene=False):
 
         if anyQualities:
             anyQualities = anyQualities.split(',')
@@ -1010,7 +1011,8 @@ class ConfigGeneral:
         sickbeard.FLATTEN_FOLDERS_DEFAULT = config.checkbox_to_value(defaultFlattenFolders)
         sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
-        sickbeard.ANIME_DEFAULT = int(anime)
+        sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
+        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
 
         sickbeard.save_config()
 
@@ -2336,7 +2338,8 @@ class NewHomeAddShows:
     @cherrypy.expose
     def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None):
+                   fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
+                   scene=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2381,6 +2384,10 @@ class NewHomeAddShows:
             indexer_id = int(series_pieces[3])
             show_name = series_pieces[4]
         else:
+            # if no indexer was provided use the default indexer set in General settings
+            if not providedIndexer:
+                providedIndexer = sickbeard.INDEXER_DEFAULT
+
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
             show_name = os.path.basename(os.path.normpath(fullShowPath))
@@ -2410,10 +2417,10 @@ class NewHomeAddShows:
                 helpers.chmodAsParent(show_dir)
 
         # prepare the inputs for passing along
+        scene = config.checkbox_to_value(scene)
         anime = config.checkbox_to_value(anime)
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
-
 
         if not anyQualities:
             anyQualities = []
@@ -2427,7 +2434,7 @@ class NewHomeAddShows:
 
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
-                                                    flatten_folders, subtitles, indexerLang, anime)  # @UndefinedVariable
+                                                    flatten_folders, subtitles, indexerLang, anime, scene)  # @UndefinedVariable
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -2498,7 +2505,9 @@ class NewHomeAddShows:
                                                             sickbeard.STATUS_DEFAULT,
                                                             sickbeard.QUALITY_DEFAULT,
                                                             sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                            sickbeard.SUBTITLES_DEFAULT)
+                                                            sickbeard.SUBTITLES_DEFAULT,
+                                                            sickbeard.ANIME_DEFAULT,
+                                                            sickbeard.SCENE_DEFAULT)
                 num_added += 1
 
         if num_added:

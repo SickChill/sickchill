@@ -3,15 +3,23 @@ $(document).ready(function () {
     $('#saveDefaultsButton').click(function () {
         var anyQualArray = [];
         var bestQualArray = [];
-        $('#anyQualities option:selected').each(function (i, d) {anyQualArray.push($(d).val()); });
-        $('#bestQualities option:selected').each(function (i, d) {bestQualArray.push($(d).val()); });
+        $('#anyQualities option:selected').each(function (i, d) {
+            anyQualArray.push($(d).val());
+        });
+        $('#bestQualities option:selected').each(function (i, d) {
+            bestQualArray.push($(d).val());
+        });
 
-        $.get(sbRoot + '/config/general/saveAddShowDefaults', {defaultStatus: $('#statusSelect').val(),
-                                                             anyQualities: anyQualArray.join(','),
-                                                             bestQualities: bestQualArray.join(','),
-                                                             defaultFlattenFolders: $('#flatten_folders').prop('checked'),
-                                                             subtitles: $('#subtitles').prop('checked') });
-                                                             
+        $.get(sbRoot + '/config/general/saveAddShowDefaults', {
+            defaultStatus: $('#statusSelect').val(),
+            anyQualities: anyQualArray.join(','),
+            bestQualities: bestQualArray.join(','),
+            defaultFlattenFolders: $('#flatten_folders').prop('checked'),
+            subtitles: $('#subtitles').prop('checked'),
+            anime: $('#anime').prop('checked'),
+            scene: $('#scene').prop('checked')
+        });
+
         $(this).attr('disabled', true);
         $.pnotify({
             pnotify_title: 'Saved Defaults',
@@ -20,7 +28,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles').change(function () {
+    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime').change(function () {
         $('#saveDefaultsButton').attr('disabled', false);
     });
 

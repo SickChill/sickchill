@@ -161,6 +161,7 @@ FLATTEN_FOLDERS_DEFAULT = None
 SUBTITLES_DEFAULT = None
 INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
+SCENE_DEFAULT = None
 ANIME_DEFAULT = None
 PROVIDER_ORDER = []
 
@@ -476,7 +477,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -589,6 +590,7 @@ def initialize(consoleLogging=True):
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 10)
         ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
+        SCENE_DEFAULT = bool(check_setting_int(CFG, 'General', 'scene_default', 0))
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 
@@ -1410,6 +1412,7 @@ def save_config():
     new_config['General']['indexer_default'] = int(INDEXER_DEFAULT)
     new_config['General']['indexer_timeout'] = int(INDEXER_TIMEOUT)
     new_config['General']['anime_default'] = int(ANIME_DEFAULT)
+    new_config['General']['scene_default'] = int(SCENE_DEFAULT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)
