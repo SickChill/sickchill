@@ -781,18 +781,19 @@ class Tvdb:
         actorsEt = self._getetsrc(self.config['url_actorsInfo'] % (sid))
 
         cur_actors = Actors()
-        for curActorItem in actorsEt["actor"]:
-            curActor = Actor()
-            for k, v in curActorItem.items():
-                k = k.lower()
-                if v is not None:
-                    if k == "image":
-                        v = self.config['url_artworkPrefix'] % (v)
-                    else:
-                        v = self._cleanData(v)
-                curActor[k] = v
-            cur_actors.append(curActor)
-        self._setShowData(sid, '_actors', cur_actors)
+        if actorsEt:
+            for curActorItem in actorsEt["actor"]:
+                curActor = Actor()
+                for k, v in curActorItem.items():
+                    k = k.lower()
+                    if v is not None:
+                        if k == "image":
+                            v = self.config['url_artworkPrefix'] % (v)
+                        else:
+                            v = self._cleanData(v)
+                    curActor[k] = v
+                cur_actors.append(curActor)
+            self._setShowData(sid, '_actors', cur_actors)
 
     def _getShowData(self, sid, language, seriesSearch=False):
         """Takes a series ID, gets the epInfo URL and parses the TVDB
