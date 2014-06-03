@@ -108,8 +108,8 @@
             airdate = airdatetime.clone().hour(0).minute(0).second(0).millisecond(0),
             today = moment({}),
             day = Math.abs(airdate.diff(today, 'days')),
-            week = airdate.diff(today, 'week'), isPast = week < 0, week = Math.abs(week),
-            titleThis = false, qTipTime = false
+            week = Math.abs(weekdiff = airdate.diff(today, 'week')), isPast = weekdiff < 0,
+            titleThis = false, qTipTime = false,
             result = (0 == week ? airdatetime.calendar() : '');
 
         if (/\bOn\b/i.test(result)) {
