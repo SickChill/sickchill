@@ -472,6 +472,10 @@ text-align: center;
 .sickbeardTable td.search img {
   padding-right: 2px;
 }
+.sickbeardTable td.search {
+    text-align: center;
+    width:5%
+}
 
 .sickbeardTable td small {
   font-size: 11px;
