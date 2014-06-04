@@ -640,7 +640,7 @@ class Manage:
         return _munge(t)
 
     @cherrypy.expose
-    def massEditSubmit(self, paused=None, anime=None, flatten_folders=None, quality_preset=False, subtitles=None,
+    def massEditSubmit(self, paused=None, anime=None, scene=None, flatten_folders=None, quality_preset=False, subtitles=None,
                        anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
 
         dir_map = {}
@@ -680,6 +680,12 @@ class Manage:
                 new_anime = True if anime == 'enable' else False
             new_anime = 'on' if new_anime else 'off'
 
+            if scene == 'keep':
+                new_scene = showObj.is_anime
+            else:
+                new_scene = True if scene == 'enable' else False
+            new_scene = 'on' if new_scene else 'off'
+
             if flatten_folders == 'keep':
                 new_flatten_folders = showObj.flatten_folders
             else:
@@ -699,7 +705,8 @@ class Manage:
             exceptions_list = []
 
             curErrors += Home().editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
-                                         new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime, directCall=True)
+                                         new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime,
+                                         scene=new_scene, directCall=True)
 
             if curErrors:
                 logger.log(u"Errors: " + str(curErrors), logger.ERROR)
