@@ -3278,32 +3278,15 @@ class Home:
                 except exceptions.CantRefreshException, e:
                     errors.append("Unable to refresh this show: " + ex(e))
 
-            if paused:
-                showObj.paused = paused
-
-            if air_by_date:
-                showObj.air_by_date = air_by_date
-
-            if scene:
-                showObj.scene = scene
-
-            if sports:
-                showObj.sports = sports
-
-            if anime:
-                showObj.anime = anime
-
-            if subtitles:
-                showObj.subtitles = subtitles
-
-            if indexer_lang:
-                showObj.lang = indexer_lang
-
-            if dvdorder:
-                showObj.dvdorder = dvdorder
-
-            if archive_firstmatch:
-                showObj.archive_firstmatch = archive_firstmatch
+            showObj.paused = paused
+            showObj.air_by_date = air_by_date
+            showObj.scene = scene
+            showObj.sports = sports
+            showObj.anime = anime
+            showObj.subtitles = subtitles
+            showObj.lang = indexer_lang
+            showObj.dvdorder = dvdorder
+            showObj.archive_firstmatch = archive_firstmatch
 
             if rls_ignore_words:
                 showObj.rls_ignore_words = rls_ignore_words.strip()
