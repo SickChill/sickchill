@@ -65,11 +65,7 @@ class ProwlNotifier:
 
         title = "SickRage"
 
-        logger.log(u"Prowl title: " + title, logger.DEBUG)
-        logger.log(u"Prowl event: " + event, logger.DEBUG)
-        logger.log(u"Prowl message: " + message, logger.DEBUG)
-        logger.log(u"Prowl api: " + prowl_api, logger.DEBUG)
-        logger.log(u"Prowl priority: " + prowl_priority, logger.DEBUG)
+        logger.log("PROWL: Sending notice with details: event=\"%s\", message=\"%s\", priority=%s, api=%s" % (event, message, prowl_priority, prowl_api), logger.DEBUG)
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -91,7 +87,7 @@ class ProwlNotifier:
         request_status = response.status
 
         if request_status == 200:
-            logger.log(u"Prowl notifications sent.", logger.DEBUG)
+            logger.log(u"Prowl notifications sent.", logger.MESSAGE)
             return True
         elif request_status == 401:
             logger.log(u"Prowl auth failed: %s" % response.reason, logger.ERROR)

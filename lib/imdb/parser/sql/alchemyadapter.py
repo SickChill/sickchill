@@ -466,6 +466,7 @@ class _AlchemyConnection(object):
 
 def setConnection(uri, tables, encoding='utf8', debug=False):
     """Set connection for every table."""
+    params = {'encoding': encoding}
     # FIXME: why on earth MySQL requires an additional parameter,
     #        is well beyond my understanding...
     if uri.startswith('mysql'):
@@ -474,7 +475,11 @@ def setConnection(uri, tables, encoding='utf8', debug=False):
         else:
             uri += '?'
         uri += 'charset=%s' % encoding
-    params = {'encoding': encoding}
+        
+        # On some server configurations, we will need to explictly enable
+        # loading data from local files
+        params['local_infile'] = 1
+   
     if debug:
         params['echo'] = True
     if uri.startswith('ibm_db'):

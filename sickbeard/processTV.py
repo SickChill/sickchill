@@ -65,7 +65,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     if ek.ek(os.path.isdir, dirName):
         dirName = ek.ek(os.path.realpath, dirName)
 
-    # if the client and Sickbeard are not on the same machine translate the Dir in a network dir
+    # if the client and SickRage are not on the same machine translate the Dir in a network dir
     elif sickbeard.TV_DOWNLOAD_DIR and ek.ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR) \
             and ek.ek(os.path.normpath, dirName) != ek.ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR):
         dirName = ek.ek(os.path.join, sickbeard.TV_DOWNLOAD_DIR, ek.ek(os.path.abspath, dirName).split(os.path.sep)[-1])
@@ -208,14 +208,14 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
     #check if the dir have at least one tv video file
     for video in videoFiles:
         try:
-            NameParser().parse(video)
+            NameParser().parse(video, cache_result=False)
             return True
         except InvalidNameException:
             pass
 
     for dir in allDirs:
         try:
-            NameParser().parse(dir)
+            NameParser().parse(dir, cache_result=False)
             return True
         except InvalidNameException:
             pass
@@ -226,7 +226,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
 
         for packed in packedFiles:
             try:
-                NameParser().parse(packed)
+                NameParser().parse(packed, cache_result=False)
                 return True
             except InvalidNameException:
                 pass
@@ -397,6 +397,7 @@ def delete_dir(processPath):
 
 
 def get_path_dir_files(dirName, nzbName, type):
+    path = ""
 
     if dirName == sickbeard.TV_DOWNLOAD_DIR and not nzbName or type == "manual":  #Scheduled Post Processing Active
         #Get at first all the subdir in the dirName

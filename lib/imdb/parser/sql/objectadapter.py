@@ -182,6 +182,10 @@ def setConnection(uri, tables, encoding='utf8', debug=False):
         kw['use_unicode'] = 1
         #kw['sqlobject_encoding'] = encoding
         kw['charset'] = encoding
+
+        # On some server configurations, we will need to explictly enable
+        # loading data from local files
+        kw['local_infile'] = 1
     conn = connectionForURI(uri, **kw)
     conn.debug = debug
     # XXX: doesn't work and a work-around was put in imdbpy2sql.py;

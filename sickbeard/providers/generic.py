@@ -54,18 +54,19 @@ class GenericProvider:
         self.show = None
 
         self.supportsBacklog = False
+        self.supportsAbsoluteNumbering = False
+        self.anime_only = False
 
         self.search_mode = None
         self.search_fallback = False
         self.backlog_only = False
-        
+
         self.cache = tvcache.TVCache(self)
 
         self.session = requests.session()
         self.session.verify = False
         self.session.headers.update({
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'})
-
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -188,7 +189,7 @@ class GenericProvider:
     def searchRSS(self, episodes):
         return self.cache.findNeededEpisodes(episodes)
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
         """
         Figures out the quality of the given RSS item node
         
@@ -197,7 +198,7 @@ class GenericProvider:
         Returns a Quality value obtained from the node's data 
         """
         (title, url) = self._get_title_and_url(item)  # @UnusedVariable
-        quality = Quality.sceneQuality(title)
+        quality = Quality.sceneQuality(title, anime)
         return quality
 
     def _doSearch(self, search_params, epcount=0, age=0):
@@ -247,21 +248,15 @@ class GenericProvider:
             # mark season searched for season pack searches so we can skip later on
             searched_scene_season = epObj.scene_season
 
-            if not epObj.show.air_by_date:
-                if epObj.scene_season == 0 or epObj.scene_episode == 0:
-                    logger.log(
-                        u"Incomplete Indexer <-> Scene mapping detected for " + epObj.prettyName() + ", skipping search!")
-                    continue
-
-            #cacheResult = self.cache.searchCache([epObj], manualSearch)
-            #if len(cacheResult):
-            #    results.update({epObj.episode:cacheResult[epObj]})
-            #    continue
-
             if search_mode == 'sponly':
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
             else:
+                cacheResult = self.cache.searchCache([epObj], manualSearch)
+                if len(cacheResult):
+                    results.update({epObj.episode: cacheResult[epObj]})
+                    continue
+
                 for curString in self._get_episode_search_strings(epObj):
                     itemList += self._doSearch(curString, len(episodes))
 
@@ -270,30 +265,26 @@ class GenericProvider:
                 continue
 
             # remove duplicate items
-            #itemList = [i for n, i in enumerate(itemList) if i not in itemList[n + 1:]]
             searchItems[epObj] = itemList
 
-        # if we have cached results return them.
-        #if len(results):
-        #    return results
+        #if we have cached results return them.
+        if len(results):
+            return results
 
         for ep_obj in searchItems:
             for item in searchItems[ep_obj]:
 
                 (title, url) = self._get_title_and_url(item)
 
-                quality = self.getQuality(item)
-
                 # parse the file name
                 try:
-                    myParser = NameParser(False)
+                    myParser = NameParser(False, showObj=show, epObj=ep_obj, convert=True)
                     parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
 
-                # scene -> indexer numbering
-                parse_result = parse_result.convert(self.show)
+                quality = self.getQuality(item, parse_result.is_anime)
 
                 if not (self.show.air_by_date or self.show.sports):
                     if search_mode == 'sponly' and len(parse_result.episode_numbers):
@@ -325,7 +316,7 @@ class GenericProvider:
                         continue
 
                     if (parse_result.air_by_date and parse_result.air_date != ep_obj.airdate) or (
-                        parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
+                                parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
                         logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
                                    logger.DEBUG)
                         continue

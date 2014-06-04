@@ -220,7 +220,7 @@ $(document).ready(function () {
     $('#naming_custom_sports').change(function () {
         setup_sports_naming();
     });
-    
+
     $('#naming_multi_ep').change(fill_examples);
     $('#naming_pattern').focusout(fill_examples);
     $('#naming_pattern').keyup(function () {

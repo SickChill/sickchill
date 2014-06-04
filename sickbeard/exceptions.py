@@ -18,6 +18,7 @@
 
 from sickbeard.encodingKludge import fixStupidEncodings
 
+
 def ex(e):
     """
     Returns a unicode string from the exception text if it exists.
@@ -137,3 +138,7 @@ class FailedHistoryMultiSnatchException(SickBeardException):
 
 class FailedHistoryNotFoundException(SickBeardException):
     "The release was not found in the failed download history tracker"
+
+
+class EpisodeNotFoundByAbsoluteNumberException(SickBeardException):
+    "The show wasn't found in the DB while looking at Absolute Numbers"

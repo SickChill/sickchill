@@ -53,15 +53,44 @@ class TVShow():
         self.genre = "Comedy"
         self.air_by_date = 0
         self.sports = 0
+        self.anime = 0
+        self.scene = 0
+
+    def _is_anime(self):
+        if (self.anime > 0):
+            return True
+        else:
+            return False
+
+    is_anime = property(_is_anime)
+
+    def _is_sports(self):
+        if (self.sports > 0):
+            return True
+        else:
+            return False
+
+    is_sports = property(_is_sports)
+
+    def _is_scene(self):
+        if (self.scene > 0):
+            return True
+        else:
+            return False
+
+    is_scene = property(_is_scene)
+
 
 class TVEpisode(tv.TVEpisode):
-    def __init__(self, season, episode, name):
+    def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
         self._name = name
         self._season = season
         self._episode = episode
-        self._scene_season = season
-        self._scene_episode = episode
+        self._absolute_number = absolute_number
+        self.scene_season = season
+        self.scene_episode = episode
+        self.scene_absolute_number = absolute_number
         self._airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
@@ -135,9 +164,7 @@ def check_valid_sports_naming(pattern=None):
     return valid
 
 def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False):
-    ep = _generate_sample_ep(multi, abd, sports)
-
-    parser = NameParser(True)
+    ep = generate_sample_ep(multi, abd, sports)
 
     new_name = ep.formatted_filename(pattern, multi) + '.ext'
     new_path = ep.formatted_dir(pattern, multi)
@@ -150,9 +177,11 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
 
     logger.log(u"Trying to parse " + new_name, logger.DEBUG)
 
+    parser = NameParser(True)
+
     try:
         result = parser.parse(new_name)
-    except InvalidNameException, e  :
+    except Exception, e:
         logger.log(u"Unable to parse " + new_name + ", not valid", logger.DEBUG)
         return False
 
@@ -173,9 +202,9 @@ def validate_name(pattern, multi=None, file_only=False, abd=False, sports=False)
     return True
 
 
-def _generate_sample_ep(multi=None, abd=False, sports=False):
+def generate_sample_ep(multi=None, abd=False, sports=False, anime=False):
     # make a fake episode object
-    ep = TVEpisode(2, 3, "Ep Name")
+    ep = TVEpisode(2, 3, 3, "Ep Name")
 
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
@@ -186,6 +215,9 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
     elif sports:
         ep._release_name = 'Show.Name.100.Fighter.vs.Fighter.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
+    elif anime:
+        ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+        ep.show.anime = 1
     else:
         ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
 
@@ -193,11 +225,11 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
         ep._name = "Ep Name (1)"
         ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-RLSGROUP'
 
-        secondEp = TVEpisode(2, 4, "Ep Name (2)")
+        secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
         secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
         secondEp._release_name = ep._release_name
 
-        thirdEp = TVEpisode(2, 5, "Ep Name (3)")
+        thirdEp = TVEpisode(2, 5, 5, "Ep Name (3)")
         thirdEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
         thirdEp._release_name = ep._release_name
 
@@ -207,7 +239,7 @@ def _generate_sample_ep(multi=None, abd=False, sports=False):
     return ep
 
 
-def test_name(pattern, multi=None, abd=False, sports=False):
-    ep = _generate_sample_ep(multi, abd, sports)
+def test_name(pattern, multi=None, abd=False, sports=False, anime=False):
+    ep = generate_sample_ep(multi, abd, sports, anime)
 
     return {'name': ep.formatted_filename(pattern, multi), 'dir': ep.formatted_dir(pattern, multi)}

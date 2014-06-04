@@ -37,6 +37,7 @@ DAILY_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 30
 
+
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
         generic_queue.GenericQueue.__init__(self)
@@ -83,6 +84,7 @@ class SearchQueue(generic_queue.GenericQueue):
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
+
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
@@ -95,7 +97,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.execute(self)
 
         logger.log("Beginning daily search for [" + self.show.name + "]")
-        foundResults = search.searchForNeededEpisodes(self.segment)
+        foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
         # reset thread back to original name
         threading.currentThread().name = self.thread_name
@@ -112,6 +114,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
                 time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
         generic_queue.QueueItem.finish(self)
+
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -155,6 +158,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             self.success = False
         generic_queue.QueueItem.finish(self)
 
+
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
@@ -168,7 +172,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.execute(self)
 
         for season in self.segment:
-            sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {'title': self.show.name + " Season " + str(season)}
+            sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {
+            'title': self.show.name + " Season " + str(season)}
 
             wantedEps = self.segment[season]
 
@@ -195,6 +200,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
+
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):

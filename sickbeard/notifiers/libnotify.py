@@ -67,15 +67,15 @@ class LibnotifyNotifier:
         try:
             import pynotify
         except ImportError:
-            logger.log(u"Unable to import pynotify. libnotify notifications won't work.")
+            logger.log(u"Unable to import pynotify. libnotify notifications won't work.", logger.ERROR)
             return False
         try:
             import gobject
         except ImportError:
-            logger.log(u"Unable to import gobject. We can't catch a GError in display.")
+            logger.log(u"Unable to import gobject. We can't catch a GError in display.", logger.ERROR)
             return False
         if not pynotify.init('SickRage'):
-            logger.log(u"Initialization of pynotify failed. libnotify notifications won't work.")
+            logger.log(u"Initialization of pynotify failed. libnotify notifications won't work.", logger.ERROR)
             return False
         self.pynotify = pynotify
         self.gobject = gobject

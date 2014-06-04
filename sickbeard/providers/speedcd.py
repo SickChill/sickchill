@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -37,14 +37,14 @@ from lib import requests
 from lib.requests import exceptions
 from sickbeard.helpers import sanitizeSceneName
 
-class SpeedCDProvider(generic.TorrentProvider):
 
+class SpeedCDProvider(generic.TorrentProvider):
     urls = {'base_url': 'http://speed.cd/',
             'login': 'http://speed.cd/takelogin.php',
             'detail': 'http://speed.cd/t/%s',
             'search': 'http://speed.cd/V3/API/API.php',
             'download': 'http://speed.cd/download.php?torrent=%s',
-            }
+    }
 
     def __init__(self):
 
@@ -64,7 +64,7 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.categories = {'Season': {'c14':1}, 'Episode': {'c2':1, 'c49':1}, 'RSS': {'c14':1, 'c2':1, 'c49':1}}
+        self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c49': 1}, 'RSS': {'c14': 1, 'c2': 1, 'c49': 1}}
 
     def isEnabled(self):
         return self.enabled
@@ -72,16 +72,16 @@ class SpeedCDProvider(generic.TorrentProvider):
     def imageName(self):
         return 'speedcd.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
-        quality = Quality.sceneQuality(item[0])
+        quality = Quality.sceneQuality(item[0], anime)
         return quality
 
     def _doLogin(self):
 
         login_params = {'username': self.username,
                         'password': self.password
-                        }
+        }
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -90,7 +90,7 @@ class SpeedCDProvider(generic.TorrentProvider):
             return False
 
         if re.search('Incorrect username or Password. Please try again.', response.text) \
-        or response.status_code == 401:
+                or response.status_code == 401:
             logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
 
@@ -104,7 +104,7 @@ class SpeedCDProvider(generic.TorrentProvider):
             if ep_obj.show.air_by_date or ep_obj.show.sports:
                 ep_string = show_name + str(ep_obj.airdate).split('-')[0]
             else:
-                ep_string = show_name +' S%02d' % int(ep_obj.scene_season) #1) showName SXX
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
 
             search_string['Season'].append(ep_string)
 
@@ -130,8 +130,9 @@ class SpeedCDProvider(generic.TorrentProvider):
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-                ep_string = show_name_helpers.sanitizeSceneName(show_name) +' '+ \
-                sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season, 'episodenumber': ep_obj.scene_episode}
+                ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
+                            sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
+                                                                  'episodenumber': ep_obj.scene_episode}
 
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
@@ -152,7 +153,8 @@ class SpeedCDProvider(generic.TorrentProvider):
 
                 search_string = '+'.join(search_string.split())
 
-                post_data  = dict({'/browse.php?' : None, 'cata': 'yes','jxt': 4,'jxw': 'b','search': search_string}, **self.categories[mode])
+                post_data = dict({'/browse.php?': None, 'cata': 'yes', 'jxt': 4, 'jxw': 'b', 'search': search_string},
+                                 **self.categories[mode])
 
                 data = self.session.post(self.urls['search'], data=post_data).json()
 
@@ -167,7 +169,7 @@ class SpeedCDProvider(generic.TorrentProvider):
                         continue
 
                     title = re.sub('<[^>]*>', '', torrent['name'])
-                    url = self.urls['download'] %(torrent['id'])
+                    url = self.urls['download'] % (torrent['id'])
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
 
@@ -192,7 +194,7 @@ class SpeedCDProvider(generic.TorrentProvider):
         title, url, seeders, leechers = item
 
         if url:
-            url = str(url).replace('&amp;','&')
+            url = str(url).replace('&amp;', '&')
 
         return (title, url)
 
@@ -216,11 +218,12 @@ class SpeedCDProvider(generic.TorrentProvider):
             else:
                 r = self.session.get(url, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading "+self.name+" URL: " + ex(e), logger.ERROR)
+            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
             return None
 
         if r.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url +" returned status code is " + str(r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
+            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
+                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
             return None
 
         return r.content
@@ -229,33 +232,34 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         results = []
 
-        sqlResults = db.DBConnection().select('SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-                                              ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-                                              ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-                                              ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-                                              ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-                                              )
+        sqlResults = db.DBConnection().select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+        )
         if not sqlResults:
             return []
 
         for sqlshow in sqlResults:
-            self.show = curshow = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
-            if not self.show: continue
-            curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            if self.show:
+                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
-            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+                searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
 
-            for item in self._doSearch(searchString[0]):
-                title, url = self._get_title_and_url(item)
-                results.append(classes.Proper(title, url, datetime.datetime.today()))
+                for item in self._doSearch(searchString[0]):
+                    title, url = self._get_title_and_url(item)
+                    results.append(classes.Proper(title, url, datetime.datetime.today()))
 
         return results
 
     def seedRatio(self):
         return self.ratio
 
-class SpeedCDCache(tvcache.TVCache):
 
+class SpeedCDCache(tvcache.TVCache):
     def __init__(self, provider):
 
         tvcache.TVCache.__init__(self, provider)
@@ -288,8 +292,9 @@ class SpeedCDCache(tvcache.TVCache):
             if ci is not None:
                 ql.append(ci)
 
-        myDB = self._getDB()
-        myDB.mass_action(ql)
+        if ql:
+            myDB = self._getDB()
+            myDB.mass_action(ql)
 
     def _parseItem(self, item):
 
@@ -298,9 +303,10 @@ class SpeedCDCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Attempting to cache item:[" + title +"]", logger.DEBUG)
+        logger.log(u"Attempting to cache item:[" + title + "]", logger.DEBUG)
 
         return self._addCacheEntry(title, url)
+
 
 provider = SpeedCDProvider()
 

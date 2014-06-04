@@ -33,6 +33,22 @@
             </label>
         </div>
 
+		<div class="field-pair alt">
+            <input type="checkbox" name="anime" id="anime" #if $sickbeard.ANIME_DEFAULT then "checked=\"checked\"" else ""# />
+            <label for="anime" class="clearfix">
+                <span class="component-title">Anime</span>
+                <span class="component-desc">Is this show an Anime?</span>
+            </label>
+        </div>
+
+        <div class="field-pair alt">
+            <input type="checkbox" name="scene" id="scene" #if $sickbeard.SCENE_DEFAULT then "checked=\"checked\"" else ""# />
+            <label for="scene" class="clearfix">
+                <span class="component-title">Scene Numbering</span>
+                <span class="component-desc">Is this show scene numbered?</span>
+            </label>
+        </div>
+
         #set $qualities = $Quality.splitQuality($sickbeard.QUALITY_DEFAULT)
         #set global $anyQualities = $qualities[0]
         #set global $bestQualities = $qualities[1]

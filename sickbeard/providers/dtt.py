@@ -46,7 +46,7 @@ class DTTProvider(generic.TorrentProvider):
     def imageName(self):
         return 'dailytvtorrents.gif'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
         url = item.enclosures[0].href
         quality = Quality.sceneQuality(url)
         return quality

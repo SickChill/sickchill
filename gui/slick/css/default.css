@@ -445,7 +445,8 @@ input:not(.btn){margin-right:6px;margin-top:5px;padding-top:4px;padding-bottom:4
 }
 
 .sickbeardTable td.filename {
-width: 30%;
+width: 10%;
+text-align: center;
 
 }
 
@@ -470,6 +471,10 @@ width: 30%;
 
 .sickbeardTable td.search img {
   padding-right: 2px;
+}
+.sickbeardTable td.search {
+    text-align: center;
+    width:5%
 }
 
 .sickbeardTable td small {
@@ -729,7 +734,7 @@ div#summary tr td {
 #donate a,
 #donate a:hover {
   border: 0 ;
-  padding: 4px 15px 4px;
+  padding: 8px 15px 8px;
 }
 
 #contentWrapper {

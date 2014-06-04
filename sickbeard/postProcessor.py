@@ -21,15 +21,12 @@ from __future__ import with_statement
 import glob
 import os
 import re
-import shlex
 import subprocess
 import stat
-import copy
 
 import sickbeard
 
 from sickbeard import db
-from sickbeard import classes
 from sickbeard import common
 from sickbeard import exceptions
 from sickbeard import helpers
@@ -37,7 +34,6 @@ from sickbeard import history
 from sickbeard import logger
 from sickbeard import notifiers
 from sickbeard import show_name_helpers
-from sickbeard import scene_exceptions
 from sickbeard import failed_history
 from sickbeard import name_cache
 
@@ -46,6 +42,7 @@ from sickbeard.exceptions import ex
 
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
+from lib import adba
 
 class PostProcessor(object):
     """
@@ -392,7 +389,7 @@ class PostProcessor(object):
         Returns a (indexer_id, season, []) tuple. The first two may be None if none were found.
         """
 
-        to_return = (None, None, None, [], None)
+        to_return = (None, None, [], None)
 
         # if we don't have either of these then there's nothing to use to search the history for anyway
         if not self.nzb_name and not self.folder_name:
@@ -418,7 +415,10 @@ class PostProcessor(object):
             if len(sql_results) == 0:
                 continue
 
-            indexer_id = int(sql_results[0]["showid"])
+            show = helpers.findCertainShow(sickbeard.showList, int(sql_results[0]["showid"]))
+            if not show:
+                continue
+
             season = int(sql_results[0]["season"])
             quality = int(sql_results[0]["quality"])
 
@@ -426,7 +426,7 @@ class PostProcessor(object):
                 quality = None
 
             self.in_history = True
-            to_return = (indexer_id, None, season, [], quality)
+            to_return = (show, season, [], quality)
             self._log("Found result in history: " + str(to_return), logger.DEBUG)
 
             return to_return
@@ -439,8 +439,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info,
-                                       re.I) != None
+            self.is_proper = re.search('(^|[\. _-])(proper|repack)([\. _-]|$)', parse_result.extra_info,re.I) != None
 
         # if the result is complete then remember that for later
         if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
@@ -474,19 +473,20 @@ class PostProcessor(object):
 
         logger.log(u"Analyzing name " + repr(name))
 
-        indexer_id = None
-        indexer = None
-
-        to_return = (indexer_id, indexer, None, [], None)
+        to_return = (None, None, [], None)
 
         if not name:
             return to_return
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file)
+        np = NameParser(file, useIndexers=True, convert=True)
         parse_result = np.parse(name)
 
         self._log(u"Parsed " + name + " into " + str(parse_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
+
+        # couldn't find this in our show list
+        if not parse_result.show:
+            return to_return
 
         if parse_result.air_by_date:
             season = -1
@@ -498,22 +498,83 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        showObj = helpers.get_show_by_name(parse_result.series_name)
-        if showObj:
-            indexer_id = showObj.indexerid
-            indexer = showObj.indexer
-
-        to_return = (indexer_id, indexer, season, episodes, None)
+        to_return = (parse_result.show, season, episodes, None)
 
         self._finalize(parse_result)
         return to_return
+
+    def _analyze_anidb(self, filePath):
+        # TODO: rewrite this
+        return (None, None, None, None)
+
+        if not helpers.set_up_anidb_connection():
+            return (None, None, None, None)
+
+        ep = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+        try:
+            self._log(u"Trying to lookup " + str(filePath) + " on anidb", logger.MESSAGE)
+            ep.load_data()
+        except Exception, e:
+            self._log(u"exception msg: " + str(e))
+            raise InvalidNameException
+        else:
+            self.anidbEpisode = ep
+
+        #TODO: clean code. it looks like it's from hell
+        for name in ep.allNames:
+
+            indexer_id = name_cache.retrieveNameFromCache(name)
+            if not indexer_id:
+                show = helpers.get_show_by_name(name)
+                if show:
+                    indexer_id = show.indexerid
+                else:
+                    indexer_id = 0
+
+                if indexer_id:
+                    name_cache.addNameToCache(name, indexer_id)
+            if indexer_id:
+                try:
+                    show = helpers.findCertainShow(sickbeard.showList, indexer_id)
+                    (season, episodes) = helpers.get_all_episodes_from_absolute_number(show, None, [ep.epno])
+                except exceptions.EpisodeNotFoundByAbsoluteNumberException:
+                    self._log(str(indexer_id) + ": Indexer object absolute number " + str(
+                        ep.epno) + " is incomplete, skipping this episode")
+                else:
+                    if len(episodes):
+                        self._log(u"Lookup successful from anidb. ", logger.DEBUG)
+                        return (show, season, episodes, None)
+
+        if ep.anidb_file_name:
+            self._log(u"Lookup successful, using anidb filename " + str(ep.anidb_file_name), logger.DEBUG)
+            return self._analyze_name(ep.anidb_file_name)
+        raise InvalidNameException
+
+
+    def _build_anidb_episode(self, connection, filePath):
+        ep = adba.Episode(connection, filePath=filePath,
+                          paramsF=["quality", "anidb_file_name", "crc32"],
+                          paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"])
+
+        return ep
+
+    def _add_to_anidb_mylist(self, filePath):
+        if helpers.set_up_anidb_connection():
+            if not self.anidbEpisode:  # seams like we could parse the name before, now lets build the anidb object
+                self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+
+            self._log(u"Adding the file to the anidb mylist", logger.DEBUG)
+            try:
+                self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
+            except Exception, e:
+                self._log(u"exception msg: " + str(e))
 
     def _find_info(self):
         """
         For a given file try to find the showid, season, and episode.
         """
 
-        indexer_id = indexer = season = quality = None
+        show = season = quality = None
         episodes = []
 
         # try to look up the nzb in history
@@ -532,23 +593,23 @@ class PostProcessor(object):
                         lambda: self._analyze_name(self.file_path),
 
                         # try to analyze the dir + file name together as one name
-                        lambda: self._analyze_name(self.folder_name + u' ' + self.file_name)
+                        lambda: self._analyze_name(self.folder_name + u' ' + self.file_name),
 
+                        # try to analyze the file path with the help of aniDB
+                        lambda: self._analyze_anidb(self.file_path)
         ]
 
         # attempt every possible method to get our info
         for cur_attempt in attempt_list:
 
             try:
-                (cur_indexer_id, cur_indexer, cur_season, cur_episodes, cur_quality) = cur_attempt()
+                (cur_show, cur_season, cur_episodes, cur_quality) = cur_attempt()
             except InvalidNameException, e:
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
 
-            # check and confirm first that the indexer_id exists in our shows list before setting it
-            if cur_indexer_id != indexer_id and cur_indexer:
-                indexer_id = cur_indexer_id
-                indexer = cur_indexer
+            if cur_show:
+                show = cur_show
 
             if cur_quality and not (self.in_history and quality):
                 quality = cur_quality
@@ -559,46 +620,46 @@ class PostProcessor(object):
                 episodes = cur_episodes
 
             # for air-by-date shows we need to look up the season/episode from database
-            if season == -1 and indexer_id and indexer and episodes:
+            if season == -1 and show and episodes:
                 self._log(u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                           logger.DEBUG)
                 airdate = episodes[0].toordinal()
                 myDB = db.DBConnection()
                 sql_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
-                                         [indexer_id, indexer, airdate])
+                                         [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
                     season = int(sql_result[0][0])
                     episodes = [int(sql_result[0][1])]
                 else:
                     self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
-                        indexer_id) + u", skipping", logger.DEBUG)
+                        show.indexerid) + u", skipping", logger.DEBUG)
                     # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
                     episodes = []
                     continue
 
             # if there's no season then we can hopefully just use 1 automatically
-            elif season == None and indexer_id and indexer:
+            elif season == None and show:
                 myDB = db.DBConnection()
                 numseasonsSQlResult = myDB.select(
                     "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
-                    [indexer_id, indexer])
+                    [show.indexerid, show.indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season == None:
                     self._log(
-                        u"Don't have a season number, but this show appears to only have 1 season, setting seasonnumber to 1...",
+                        u"Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
                         logger.DEBUG)
                     season = 1
 
-            if indexer_id and indexer and season and episodes:
-                return (indexer_id, indexer, season, episodes, quality)
+            if show and season and episodes:
+                return (show, season, episodes, quality)
             
-        return (indexer_id, indexer, season, episodes, quality)
+        return (show, season, episodes, quality)
 
-    def _get_ep_obj(self, indexer_id, indexer, season, episodes):
+    def _get_ep_obj(self, show, season, episodes):
         """
         Retrieve the TVEpisode object requested.
 
-        indexer_id: The indexerid of the show (int)
+        show: The show object belonging to the show we want to process
         season: The season of the episode (int)
         episodes: A list of episodes to find (list of ints)
 
@@ -606,35 +667,16 @@ class PostProcessor(object):
         be instantiated and returned. If the episode can't be found then None will be returned.
         """
 
-        self._log(u"Loading show object with Indexer ID:[" + str(indexer_id) + "] for Indexer:[" + str(sickbeard.indexerApi(indexer).name) + "]", logger.DEBUG)
-        # find the show in the showlist
-        try:
-            show_obj = helpers.findCertainShow(sickbeard.showList, indexer_id)
-        except exceptions.MultipleShowObjectsException:
-            raise  #TODO: later I'll just log this, for now I want to know about it ASAP
-
-        # if we can't find the show then there's nothing we can really do
-        if not show_obj:
-            self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
-                      logger.ERROR)
-            raise exceptions.PostProcessingFailed()
-
         root_ep = None
         for cur_episode in episodes:
             self._log(u"Retrieving episode object for " + str(season) + "x" + str(cur_episode), logger.DEBUG)
 
-            # detect and convert scene numbered releases
-            season, cur_episode = sickbeard.scene_numbering.get_indexer_numbering(indexer_id,indexer,season,cur_episode)
-
             # now that we've figured out which episode this file is just load it manually
             try:
-                curEp = show_obj.getEpisode(season, cur_episode)
+                curEp = show.getEpisode(season, cur_episode)
             except exceptions.EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise exceptions.PostProcessingFailed()
-
-            self._log(u"Episode object has been converted from Scene numbering " + str(curEp.scene_season) + "x" + str(
-                curEp.scene_episode) + " to Indexer numbering" + str(curEp.season) + "x" + str(curEp.episode))
 
             # associate all the episodes together under a single root episode
             if root_ep == None:
@@ -676,7 +718,7 @@ class PostProcessor(object):
             if not cur_name:
                 continue
 
-            ep_quality = common.Quality.nameQuality(cur_name)
+            ep_quality = common.Quality.nameQuality(cur_name, ep_obj.show.is_anime)
             self._log(
                 u"Looking up quality for name " + cur_name + u", got " + common.Quality.qualityStrings[ep_quality],
                 logger.DEBUG)
@@ -792,15 +834,22 @@ class PostProcessor(object):
         # reset per-file stuff
         self.in_history = False
 
+        # reset the anidb episode object
+        self.anidbEpisode = None
+
         # try to find the file info
-        (indexer_id, indexer, season, episodes, quality) = self._find_info()
-        if not indexer_id or not indexer or season == None or not episodes:
+        (show, season, episodes, quality) = self._find_info()
+        if not show:
+            self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
+                      logger.ERROR)
+            raise exceptions.PostProcessingFailed()
+        elif season == None or not episodes:
             self._log(u"Not enough information to determine what episode this is", logger.DEBUG)
             self._log(u"Quitting post-processing", logger.DEBUG)
             return False
 
         # retrieve/create the corresponding TVEpisode objects
-        ep_obj = self._get_ep_obj(indexer_id, indexer, season, episodes)
+        ep_obj = self._get_ep_obj(show, season, episodes)
 
         # get the quality of the episode we're processing
         if quality:
@@ -814,10 +863,6 @@ class PostProcessor(object):
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
         self._log(u"Is ep a priority download: " + str(priority_download), logger.DEBUG)
-
-        # set the status of the episodes
-        for curEp in [ep_obj] + ep_obj.relatedEps:
-            curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # check for an existing file
         existing_file_status = self._checkForExistingFile(ep_obj.location)
@@ -844,6 +889,10 @@ class PostProcessor(object):
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one",
                 logger.DEBUG)
 
+            # set the status of the episodes
+            #for curEp in [ep_obj] + ep_obj.relatedEps:
+            #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
+
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             try:
@@ -869,6 +918,7 @@ class PostProcessor(object):
             ep_obj.show.writeMetadata(True)
 
         # update the ep info before we rename so the quality & release name go into the name properly
+        sql_l = []
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
                 cur_release_name = None
@@ -905,7 +955,7 @@ class PostProcessor(object):
 
                 cur_ep.is_proper = self.is_proper
 
-                cur_ep.saveToDB()
+                sql_l.append(cur_ep.get_sql())
 
                 # Just want to keep this consistent for failed handling right now
                 releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
@@ -914,10 +964,13 @@ class PostProcessor(object):
                 else:
                     self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
+        if sql_l:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
+
         # find the destination folder
         try:
             proper_path = ep_obj.proper_path()
-            test = proper_path
             proper_absolute_path = ek.ek(os.path.join, ep_obj.show.location, proper_path)
 
             dest_path = ek.ek(os.path.dirname, proper_absolute_path)
@@ -940,6 +993,10 @@ class PostProcessor(object):
             # if we're not renaming then there's no new base name, we'll just use the existing name
             new_base_name = None
             new_file_name = self.file_name
+
+        # add to anidb
+        if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
+            self._add_to_anidb_mylist(self.file_path)
 
         try:
             # move the episode and associated files to the show dir
@@ -969,23 +1026,30 @@ class PostProcessor(object):
                     cur_ep.downloadSubtitles(force=True)
 
         # put the new location in the database
+        sql_l = []
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
                 cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
-                cur_ep.saveToDB()
+
+                sql_l.append(cur_ep.get_sql())
+
                 # set file modify stamp to show airdate
                 if sickbeard.AIRDATE_EPISODES:
                     ep_obj.show.airdateModifyStamp(cur_ep)
+
+        # generate nfo/tbn
+        ep_obj.createMetaFiles()
+        sql_l.append(ep_obj.get_sql())
+
+        if sql_l:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)
 
         # send notifications
         notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-        # generate nfo/tbn
-        ep_obj.createMetaFiles()
-        ep_obj.saveToDB()
 
         # do the library update for XBMC
         notifiers.xbmc_notifier.update_library(ep_obj.show.name)

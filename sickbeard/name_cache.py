@@ -45,11 +45,14 @@ def retrieveNameFromCache(name):
     Returns: the TVDB and TVRAGE id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
 
+    cache_results = None
+
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
 
     cacheDB = db.DBConnection('cache.db')
-    cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
+    if cacheDB.hasTable('scene_names'):
+        cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
 
     if cache_results:
         return int(cache_results[0]["indexer_id"])
@@ -59,20 +62,14 @@ def retrieveShowFromCache(name):
     if indexerid:
         return sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexerid))
 
-def syncNameCache():
-    cacheDB = db.DBConnection('cache.db')
-
-    for curShow in sickbeard.showList:
-        for show_name in set(sickbeard.show_name_helpers.allPossibleShowNames(curShow)):
-            sqlResult = cacheDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [show_name, 0])
-            if sqlResult.rowcount > 0:
-                logger.log(u"Removing invalid record for [" + show_name + "] from cache ...")
-                break
-
-def clearCache():
+def clearCache(show=None, season=-1, indexer_id=0):
     """
     Deletes all "unknown" entries from the cache (names with indexer_id of 0).
     """
     cacheDB = db.DBConnection('cache.db')
-    cacheDB.action("DELETE FROM scene_names WHERE indexer_id = ?", [0])
-
+    if show:
+        showNames = sickbeard.show_name_helpers.allPossibleShowNames(show, season=season)
+        for showName in showNames:
+            cacheDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [showName, indexer_id])
+    else:
+        cacheDB.action("DELETE FROM scene_names WHERE indexer_id = ?", [indexer_id])

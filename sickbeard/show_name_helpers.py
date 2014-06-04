@@ -22,7 +22,7 @@ import re
 import datetime
 
 import sickbeard
-from sickbeard.common import countryList
+from sickbeard import common
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard import logger
@@ -30,6 +30,7 @@ from sickbeard import db
 from sickbeard import encodingKludge as ek
 from name_parser.parser import NameParser, InvalidNameException
 from lib.unidecode import unidecode
+from sickbeard.blackandwhitelist import BlackAndWhiteList
 
 resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(bed|ed|s)?",
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
@@ -58,7 +59,8 @@ def filterBadReleases(name):
     filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in resultFilters]
     for regfilter in filters:
         if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it", logger.DEBUG)
+            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it",
+                       logger.DEBUG)
             return False
 
     return True
@@ -90,7 +92,7 @@ def sceneToNormalShowNames(name):
         results.append(re.sub('(\D)(\d{4})$', '\\1(\\2)', cur_name))
 
         # add brackets around the country
-        country_match_str = '|'.join(countryList.values())
+        country_match_str = '|'.join(common.countryList.values())
         results.append(re.sub('(?i)([. _-])(' + country_match_str + ')$', '\\1(\\2)', cur_name))
 
     results += name_list
@@ -98,8 +100,8 @@ def sceneToNormalShowNames(name):
     return list(set(results))
 
 
-def makeSceneShowSearchStrings(show):
-    showNames = allPossibleShowNames(show)
+def makeSceneShowSearchStrings(show, season=-1):
+    showNames = allPossibleShowNames(show, season=season)
 
     # scenify the names
     return map(sanitizeSceneName, showNames)
@@ -112,19 +114,45 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
         numseasons = 0
 
         # the search string for air by date shows is just
+        seasonStrings = [str(ep_obj.airdate).split('-')[0]]
+    elif show.is_anime:
+        numseasons = 0
+        seasonEps = show.getAllEpisodes(ep_obj.season)
+
+        # get show qualities
+        anyQualities, bestQualities = common.Quality.splitQuality(show.quality)
+
+        # compile a list of all the episode numbers we need in this 'season'
         seasonStrings = []
+        for episode in seasonEps:
+
+            # get quality of the episode
+            curCompositeStatus = episode.status
+            curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
+
+            if bestQualities:
+                highestBestQuality = max(bestQualities)
+            else:
+                highestBestQuality = 0
+
+            # if we need a better one then add it to the list of episodes to fetch
+            if (curStatus in (
+                    common.DOWNLOADED,
+                    common.SNATCHED) and curQuality < highestBestQuality) or curStatus == common.WANTED:
+                ab_number = episode.scene_absolute_number
+                if ab_number > 0:
+                    seasonStrings.append("%d" % ab_number)
+
     else:
         numseasonsSQlResult = myDB.select(
             "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
             [show.indexerid])
+
         numseasons = int(numseasonsSQlResult[0][0])
+        seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
 
-        if show.air_by_date or show.sports:
-            seasonStrings = [str(ep_obj.airdate).split('-')[0]]
-        else:
-            seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
-
-    showNames = set(makeSceneShowSearchStrings(show))
+    bwl = BlackAndWhiteList(show.indexerid)
+    showNames = set(makeSceneShowSearchStrings(show, ep_obj.scene_season))
 
     toReturn = []
 
@@ -138,10 +166,12 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
             # for providers that don't allow multiple searches in one request we only search for Sxx style stuff
             else:
                 for cur_season in seasonStrings:
-                    toReturn.append(curShow + "." + cur_season)
+                    if len(bwl.whiteList) > 0:
+                        for keyword in bwl.whiteList:
+                            toReturn.append(keyword + '.' + curShow+ "." + cur_season)
+                    else:
+                        toReturn.append(curShow + "." + cur_season)
 
-    # episode
-    toReturn.extend(makeSceneSearchString(show, ep_obj))
 
     return toReturn
 
@@ -152,50 +182,57 @@ def makeSceneSearchString(show, ep_obj):
         "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
         [show.indexerid])
     numseasons = int(numseasonsSQlResult[0][0])
-    numepisodesSQlResult = myDB.select(
-        "SELECT COUNT(episode) as numepisodes FROM tv_episodes WHERE showid = ? and season != 0",
-        [show.indexerid])
-    numepisodes = int(numepisodesSQlResult[0][0])
 
     # see if we should use dates instead of episodes
-    if show.air_by_date and ep_obj.airdate != datetime.date.fromordinal(1):
+    if (show.air_by_date or show.sports) and ep_obj.airdate != datetime.date.fromordinal(1):
         epStrings = [str(ep_obj.airdate)]
-    elif show.sports:
-        epStrings = [str(ep_obj.airdate)]
+    elif show.is_anime:
+        epStrings = ["%i" % int(ep_obj.scene_absolute_number)]
     else:
         epStrings = ["S%02iE%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode)),
                      "%ix%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode))]
 
     # for single-season shows just search for the show name -- if total ep count (exclude s0) is less than 11
     # due to the amount of qualities and releases, it is easy to go over the 50 result limit on rss feeds otherwise
-    if numseasons == 1 and numepisodes < 11:
+    if numseasons == 1 and not ep_obj.show.is_anime:
         epStrings = ['']
 
-    showNames = set(makeSceneShowSearchStrings(show))
+    bwl = BlackAndWhiteList(ep_obj.show.indexerid)
+    showNames = set(makeSceneShowSearchStrings(show, ep_obj.scene_season))
 
     toReturn = []
 
     for curShow in showNames:
         for curEpString in epStrings:
-            toReturn.append(curShow + '.' + curEpString)
+            if len(bwl.whiteList) > 0:
+                for keyword in bwl.whiteList:
+                    toReturn.append(keyword + '.' + curShow + '.' + curEpString)
+            else:
+                toReturn.append(curShow + '.' + curEpString)
 
     return toReturn
 
 
-def isGoodResult(name, show, log=True):
+def isGoodResult(name, show, log=True, season=-1):
     """
     Use an automatically-created regex to make sure the result actually is the show it claims to be
     """
 
-    all_show_names = allPossibleShowNames(show)
+    all_show_names = allPossibleShowNames(show, season=season)
     showNames = map(sanitizeSceneName, all_show_names) + all_show_names
     showNames += map(unidecode, all_show_names)
 
     for curName in set(showNames):
-        escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(curName))
-        if show.startyear:
-            escaped_name += "(?:\W+" + str(show.startyear) + ")?"
-        curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+        if not show.is_anime:
+            escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(curName))
+            if show.startyear:
+                escaped_name += "(?:\W+" + str(show.startyear) + ")?"
+            curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+        else:
+            escaped_name = re.sub('\\\\[\\s.-]', '[\W_]+', re.escape(curName))
+            # FIXME: find a "automatically-created" regex for anime releases # test at http://regexr.com?2uon3
+            curRegex = '^((\[.*?\])|(\d+[\.-]))*[ _\.]*' + escaped_name + '(([ ._-]+\d+)|([ ._-]+s\d{2})).*'
+
         if log:
             logger.log(u"Checking if show " + name + " matches " + curRegex, logger.DEBUG)
 
@@ -205,11 +242,12 @@ def isGoodResult(name, show, log=True):
             return True
 
     if log:
-        logger.log(u"Provider gave result " + name + " but that doesn't seem like a valid result for " + show.name + " so I'm ignoring it")
+        logger.log(
+            u"Provider gave result " + name + " but that doesn't seem like a valid result for " + show.name + " so I'm ignoring it")
     return False
 
 
-def allPossibleShowNames(show):
+def allPossibleShowNames(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
     country codes on the end, eg. "Show Name (AU)", and any scene exception names.
@@ -219,27 +257,33 @@ def allPossibleShowNames(show):
     Returns: a list of all the possible show names
     """
 
-    showNames = [show.name]
-    showNames += [name for name in get_scene_exceptions(show.indexerid)]
+    showNames = get_scene_exceptions(show.indexerid, season=season)
+    if not showNames:  # if we dont have any season specific exceptions fallback to generic exceptions
+        season = -1
+        showNames = get_scene_exceptions(show.indexerid, season=season)
+
+    if season in [-1, 1]:
+        showNames.append(show.name)
 
     newShowNames = []
 
-    country_list = countryList
-    country_list.update(dict(zip(countryList.values(), countryList.keys())))
+    country_list = common.countryList
+    country_list.update(dict(zip(common.countryList.values(), common.countryList.keys())))
 
     # if we have "Show Name Australia" or "Show Name (Australia)" this will add "Show Name (AU)" for
     # any countries defined in common.countryList
     # (and vice versa)
-    for curName in set(showNames):
-        if not curName:
-            continue
-        for curCountry in country_list:
-            if curName.endswith(' ' + curCountry):
-                newShowNames.append(curName.replace(' ' + curCountry, ' (' + country_list[curCountry] + ')'))
-            elif curName.endswith(' (' + curCountry + ')'):
-                newShowNames.append(curName.replace(' (' + curCountry + ')', ' (' + country_list[curCountry] + ')'))
+    if not show.is_anime:
+        for curName in set(showNames):
+            if not curName:
+                continue
+            for curCountry in country_list:
+                if curName.endswith(' ' + curCountry):
+                    newShowNames.append(curName.replace(' ' + curCountry, ' (' + country_list[curCountry] + ')'))
+                elif curName.endswith(' (' + curCountry + ')'):
+                    newShowNames.append(curName.replace(' (' + curCountry + ')', ' (' + country_list[curCountry] + ')'))
 
-    showNames += newShowNames
+        showNames += newShowNames
 
     return showNames
 

@@ -27,8 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 31
-
+MAX_DB_VERSION = 38
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -714,7 +713,7 @@ class AddSceneNumbering(AddArchiveFirstMatchOption):
             self.connection.action("DROP TABLE scene_numbering")
 
         self.connection.action(
-            "CREATE TABLE scene_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode))")
+            "CREATE TABLE scene_numbering (indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY (indexer_id, season, episode, scene_season, scene_episode))")
 
         self.incDBVersion()
 
@@ -794,10 +793,97 @@ class AddSceneNumberingToTvEpisodes(AddSportsOption):
         backupDatabase(31)
 
         logger.log(u"Adding column scene_season and scene_episode to tvepisodes")
-        if not self.hasColumn("tv_episodes", "scene_season"):
-            self.addColumn("tv_episodes", "scene_season", "NUMERIC", -1)
-
-        if not self.hasColumn("tv_episodes", "scene_episode"):
-            self.addColumn("tv_episodes", "scene_episode", "NUMERIC", -1)
+        self.addColumn("tv_episodes", "scene_season", "NUMERIC", "NULL")
+        self.addColumn("tv_episodes", "scene_episode", "NUMERIC", "NULL")
 
         self.incDBVersion()
+
+class AddAnimeTVShow(AddSceneNumberingToTvEpisodes):
+    def test(self):
+        return self.checkDBVersion() >= 32
+
+    def execute(self):
+        backupDatabase(32)
+
+        logger.log(u"Adding column anime to tv_episodes")
+        self.addColumn("tv_shows", "anime", "NUMERIC", "0")
+
+        self.incDBVersion()
+
+class AddAbsoluteNumbering(AddAnimeTVShow):
+    def test(self):
+        return self.checkDBVersion() >= 33
+
+    def execute(self):
+        backupDatabase(33)
+
+        logger.log(u"Adding column absolute_number to tv_episodes")
+        self.addColumn("tv_episodes", "absolute_number", "NUMERIC", "0")
+
+        self.incDBVersion()
+
+class AddSceneAbsoluteNumbering(AddAbsoluteNumbering):
+    def test(self):
+        return self.checkDBVersion() >= 34
+
+    def execute(self):
+        backupDatabase(34)
+
+        logger.log(u"Adding column absolute_number and scene_absolute_number to scene_numbering")
+        self.addColumn("scene_numbering", "absolute_number", "NUMERIC", "0")
+        self.addColumn("scene_numbering", "scene_absolute_number", "NUMERIC", "0")
+
+        self.incDBVersion()
+
+class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
+
+    def test(self):
+        return self.checkDBVersion() >= 35
+
+    def execute(self):
+        backupDatabase(35)
+
+        ql = []
+        ql.append(["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        ql.append(["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        self.connection.mass_action(ql)
+
+        self.incDBVersion()
+
+class AddSceneAbsoluteNumbering(AddAnimeBlacklistWhitelist):
+    def test(self):
+        return self.checkDBVersion() >= 36
+
+    def execute(self):
+        backupDatabase(36)
+
+        logger.log(u"Adding column scene_absolute_number to tv_episodes")
+        self.addColumn("tv_episodes", "scene_absolute_number", "NUMERIC", "0")
+
+        self.incDBVersion()
+
+class AddXemRefresh(AddSceneAbsoluteNumbering):
+    def test(self):
+        return self.checkDBVersion() >= 37
+
+    def execute(self):
+        backupDatabase(37)
+
+        logger.log(u"Creating table xem_refresh")
+        self.connection.action(
+            "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER)")
+
+        self.incDBVersion()
+
+class AddSceneToTvShows(AddXemRefresh):
+    def test(self):
+        return self.checkDBVersion() >= 38
+
+    def execute(self):
+        backupDatabase(38)
+
+        logger.log(u"Adding column scene to tv_shows")
+        self.addColumn("tv_shows", "scene", "NUMERIC", "0")
+
+        self.incDBVersion()
+

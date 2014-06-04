@@ -30,5 +30,5 @@ except ImportError:
 
 
 __all__ = ['SERVICES', 'LANGUAGE_INDEX', 'SERVICE_INDEX', 'SERVICE_CONFIDENCE',
-           'MATCHING_CONFIDENCE', 'list_subtitles', 'download_subtitles', 'Pool']
+           'MATCHING_CONFIDENCE', 'list_subtitles', 'download_subtitles', 'Pool', 'language']
 logging.getLogger("subliminal").addHandler(NullHandler())

@@ -129,7 +129,6 @@ def revertEpisode(epObj):
                 logger.log(u"WARNING: Episode not found in history. Setting it back to WANTED",
                                        logger.WARNING)
                 epObj.status = WANTED
-
                 epObj.saveToDB()
 
     except EpisodeNotFoundException, e:

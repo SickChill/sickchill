@@ -40,7 +40,7 @@ from sickbeard.exceptions import ex, AuthException
 
 
 class NewznabProvider(generic.NZBProvider):
-    def __init__(self, name, url, key='', catIDs='5030,5040,5060', search_mode='eponly', search_fallback=False):
+    def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False):
 
         generic.NZBProvider.__init__(self, name)
 
@@ -62,7 +62,7 @@ class NewznabProvider(generic.NZBProvider):
         if catIDs:
             self.catIDs = catIDs
         else:
-            self.catIDs = '5030,5040, 5060'
+            self.catIDs = '5030,5040'
 
         self.enabled = True
         self.supportsBacklog = True
@@ -86,7 +86,8 @@ class NewznabProvider(generic.NZBProvider):
         to_return = []
 
         # add new query strings for exceptions
-        name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid) + [self.show.name]
+        name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid, ep_obj.season) + [self.show.name]
+        name_exceptions = set(name_exceptions)
         for cur_exception in name_exceptions:
 
             cur_params = {}
@@ -95,7 +96,7 @@ class NewznabProvider(generic.NZBProvider):
             if ep_obj.show.indexer == 2:
                 cur_params['rid'] = ep_obj.show.indexerid
             else:
-                cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
+                cur_params['q'] = helpers.sanitizeSceneName(cur_exception).replace('.', '_')
 
             # season
             if ep_obj.show.air_by_date or ep_obj.show.sports:
@@ -124,7 +125,7 @@ class NewznabProvider(generic.NZBProvider):
         if ep_obj.show.indexer == 2:
             params['rid'] = ep_obj.show.indexerid
         else:
-            params['q'] = helpers.sanitizeSceneName(self.show.name)
+            params['q'] = helpers.sanitizeSceneName(self.show.name).replace('.', '_')
 
         if self.show.air_by_date or self.show.sports:
             date_str = str(ep_obj.airdate)
@@ -148,7 +149,7 @@ class NewznabProvider(generic.NZBProvider):
                     continue
 
                 cur_return = params.copy()
-                cur_return['q'] = helpers.sanitizeSceneName(cur_exception)
+                cur_return['q'] = helpers.sanitizeSceneName(cur_exception).replace('.', '_')
                 to_return.append(cur_return)
 
         return to_return
@@ -184,6 +185,14 @@ class NewznabProvider(generic.NZBProvider):
                   "maxage": sickbeard.USENET_RETENTION,
                   "limit": 100,
                   "cat": self.catIDs}
+
+        # sports and anime catIDs
+        if self.show and self.show.is_sports:
+            params['cat'] += ',5060'
+        elif self.show and self.show.is_anime:
+            params['cat'] += ',5070,5090'
+        elif not self.show:
+            params['cat'] += ',5060,5070,5090'
 
         # if max_age is set, use it, don't allow it to be missing
         if age or not params['maxage']:
@@ -247,7 +256,7 @@ class NewznabProvider(generic.NZBProvider):
                     term_items_found = False
                 else:
                     if do_search_alt:
-                        search_params["t"] = "search"
+                        search_params['t'] = "search"
 
                     do_search_alt = (True, False)[do_search_alt]
 
@@ -288,6 +297,12 @@ class NewznabCache(tvcache.TVCache):
         params = {"t": "tvsearch",
                   "cat": self.provider.catIDs}
 
+        # sports catIDs
+        params['cat'] += ',5060'
+
+        # anime catIDs
+        params['cat'] += ',5070,5090'
+
         if self.provider.needs_auth and self.provider.key:
             params['apikey'] = self.provider.key
 
@@ -326,8 +341,9 @@ class NewznabCache(tvcache.TVCache):
                     if ci is not None:
                         ql.append(ci)
 
-                myDB = self._getDB()
-                myDB.mass_action(ql)
+                if ql:
+                    myDB = self._getDB()
+                    myDB.mass_action(ql)
 
             else:
                 raise AuthException(

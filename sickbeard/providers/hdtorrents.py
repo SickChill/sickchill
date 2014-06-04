@@ -79,7 +79,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
     def imageName(self):
         return 'hdtorrents.png'
 
-    def getQuality(self, item):
+    def getQuality(self, item, anime=False):
 
         quality = Quality.sceneQuality(item[0])
         return quality
@@ -367,8 +367,9 @@ class HDTorrentsCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-        myDB = self._getDB()
-        myDB.mass_action(cl)
+        if cl:
+            myDB = self._getDB()
+            myDB.mass_action(cl)
 
     def _parseItem(self, item):
 

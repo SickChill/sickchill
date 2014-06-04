@@ -7,7 +7,7 @@ for a given person.
 E.g., when searching for the name "Mel Gibson", the parsed page would be:
     http://akas.imdb.com/find?q=Mel+Gibson&nm=on&mx=20
 
-Copyright 2004-2010 Davide Alberani <da@erlug.linux.it>
+Copyright 2004-2013 Davide Alberani <da@erlug.linux.it>
                2008 H. Turgut Uyar <uyar@tekir.org>
 
 This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class DOMHTMLSearchPersonParser(DOMHTMLSearchMovieParser):
     """Parse the html page that the IMDb web server shows when the
     "new search system" is used, for persons."""
     _BaseParser = DOMBasicPersonParser
-    _notDirectHitTitle = '<title>imdb name'
+    _notDirectHitTitle = '<title>find - imdb'
     _titleBuilder = lambda self, x: build_name(x, canonical=True)
     _linkPrefix = '/name/nm'
 
@@ -74,11 +74,11 @@ class DOMHTMLSearchPersonParser(DOMHTMLSearchMovieParser):
                                          canonical=1), x.get('akas')
                         ))]
     extractors = [Extractor(label='search',
-                            path="//td[3]/a[starts-with(@href, '/name/nm')]/..",
+                            path="//td[@class='result_text']/a[starts-with(@href, '/name/nm')]/..",
                             attrs=_attrs)]
 
     def preprocess_string(self, html_string):
-        if self._notDirectHitTitle in html_string[:1024].lower():
+        if self._notDirectHitTitle in html_string[:10240].lower():
             html_string = _reAKASp.sub(
                                     r'\1<div class="_imdbpyAKA">\2::</div>\3',
                                     html_string)

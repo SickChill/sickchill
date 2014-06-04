@@ -36,14 +36,14 @@ class NyaaProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "NyaaTorrents")
 
         self.supportsBacklog = True
-
         self.supportsAbsoluteNumbering = True
-
+        self.anime_only = True
         self.enabled = False
+        self.ratio = None
 
         self.cache = NyaaCache(self)
 
-        self.url = 'http://www.nyaa.eu/'
+        self.url = 'http://www.nyaa.se/'
 
     def isEnabled(self):
         return self.enabled
@@ -60,16 +60,18 @@ class NyaaProvider(generic.TorrentProvider):
         return generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
 
     def _get_season_search_strings(self, ep_obj):
-        names = []
-        names.extend(show_name_helpers.makeSceneShowSearchStrings(self.show))
-        return names
+        return show_name_helpers.makeSceneShowSearchStrings(self.show)
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return self._get_season_search_strings(ep_obj)
 
     def _doSearch(self, search_string, show=None, age=None):
+        if self.show and not self.show.is_anime:
+            logger.log(u"" + str(self.show.name) + " is not an anime skiping " + str(self.name))
+            return []
 
         params = {"term": search_string.encode('utf-8'),
+                  "cats": '1_37',  #Limit to English-translated Anime (for now)
                   "sort": '2',  #Sort Descending By Seeders
         }
 
@@ -78,7 +80,7 @@ class NyaaProvider(generic.TorrentProvider):
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
 
-        data = self.getURL(searchURL)
+        data = self.cache.getRSSFeed(searchURL)
 
         if not data:
             logger.log(u"Error trying to load NyaaTorrents RSS feed: " + searchURL, logger.ERROR)
@@ -115,6 +117,8 @@ class NyaaProvider(generic.TorrentProvider):
             return match.group(1)
         return None
 
+    def seedRatio(self):
+        return self.ratio
 
 class NyaaCache(tvcache.TVCache):
     def __init__(self, provider):

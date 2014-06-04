@@ -68,6 +68,8 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         name = "Game.of.Thrones.S03.720p.HDTV.x264-CtrlHD"
         release = "Game of Thrones"
 
+        m = re.match('(?P<ep_ab_num>(?>\d{1,3})(?![ip])).+', name)
+
         escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(release))
         curRegex = '^' + escaped_name + '\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
         print(u"Checking if show " + name + " matches " + curRegex)
@@ -76,7 +78,6 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         if match:
             print(u"Matched " + curRegex + " to " + name)
 
-        print(parse_result)
 
 if __name__ == "__main__":
     print "=================="

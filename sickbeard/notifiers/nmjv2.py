@@ -87,7 +87,7 @@ class NMJv2Notifier:
                         return True
 
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e))
+            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e), logger.WARNING)
             return False
         return False
 
@@ -105,7 +105,7 @@ class NMJv2Notifier:
         #if a host is provided then attempt to open a handle to that URL
         try:
             url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
-            logger.log(u"NMJ scan update command send to host: %s" % (host))
+            logger.log(u"NMJ scan update command sent to host: %s" % (host), logger.DEBUG)
             url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
             logger.log(u"Try to mount network drive via url: %s" % (host), logger.DEBUG)
             prereq = urllib2.Request(url_scandir)
@@ -116,7 +116,7 @@ class NMJv2Notifier:
             handle2 = urllib2.urlopen(req)
             response2 = handle2.read()
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e))
+            logger.log(u"Warning: Couldn't contact popcorn hour on host %s: %s" % (host, e), logger.WARNING)
             return False
         try:
             et = etree.fromstring(response1)
@@ -142,15 +142,15 @@ class NMJv2Notifier:
                           "Read only file system"]
         if int(result1) > 0:
             index = error_codes.index(result1)
-            logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]))
+            logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]), logger.ERROR)
             return False
         else:
             if int(result2) > 0:
                 index = error_codes.index(result2)
-                logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]))
+                logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]), logger.ERROR)
                 return False
             else:
-                logger.log(u"NMJv2 started background scan")
+                logger.log(u"NMJv2 started background scan", logger.MESSAGE)
                 return True
 
     def _notifyNMJ(self, host=None, force=False):

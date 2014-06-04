@@ -1,7 +1,9 @@
 #import sickbeard
+#import lib.adba as adba
 #from sickbeard import common
 #from sickbeard import exceptions
 #from sickbeard import scene_exceptions
+#from sickbeard.blackandwhitelist import *
 #set global $title="Edit " + $show.name
 #set global $header=$show.name
 
@@ -112,6 +114,10 @@ This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 <b>Paused:</b> <input type="checkbox" name="paused" #if $show.paused == 1 then "checked=\"checked\"" else ""# /><br /><br />
 <b>Subtitles:</b> <input type="checkbox" name="subtitles"#if $show.subtitles == 1 and $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""##if not $sickbeard.USE_SUBTITLES then " disabled=\"disabled\"" else ""#/><br /><br />
 
+<b>Scene Numbering: </b>
+<input type="checkbox" name="scene" #if $show.scene == 1 then "checked=\"checked\"" else ""# /><br/>
+(check this if you wish to search by scene numbering, uncheck to search by indexer numbering)
+<br/><br/>
 <b>Air by date: </b> 
 <input type="checkbox" name="air_by_date" #if $show.air_by_date == 1 then "checked=\"checked\"" else ""# /><br />
 (check this if the show is released as Show.03.02.2010 rather than Show.S02E03) 
@@ -119,6 +125,10 @@ This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 <b>Sports: </b>
 <input type="checkbox" name="sports" #if $show.sports == 1 then "checked=\"checked\"" else ""# /><br />
 (check this if the show is a sporting or MMA event)
+<br /><br />
+<b>Anime: </b>
+<input type="checkbox" name="anime" #if $show.is_anime then "CHECKED" else ""#><br />
+(check this if the show is released as Show.265 rather than Show.S02E03, this show is an anime)
 <br /><br />
 <b>DVD Order: </b>
 <input type="checkbox" name="dvdorder" #if $show.dvdorder == 1 then "checked=\"checked\"" else ""# /><br/>
@@ -135,6 +145,54 @@ Results without one of these words in the title will be filtered out <br />
 Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
 
+#if $show.is_anime
+<p>
+Realease Groups:
+</p>
+<input type="text" id="addToPoolText"/>
+<input type="button" value="Add to White" id="addToWhite">
+<input type="button" value="Add to Black" id="addToBlack"><br/>
+<div class="blackwhiteliste white">
+	<span>White:</span>
+	<select multiple id="white">
+			#for $keyword in $whitelist:
+				<option value="$keyword">$keyword</option>
+			#end for
+	</select>
+	<br/>
+	<input id="removeW" value="Remove &gt;&gt;" type="button"/>
+</div>
+
+<div class="blackwhiteliste pool">
+	<span>Pool (Name|Rating|Subed Ep):</span>
+	<select multiple id="pool">
+	#for $group in $groups
+		#if $group not in $whitelist and $group['name'] not in $blacklist:
+			<option value="$group['name']">$group['name'] | $group['rating'] | $group['range']</option>
+		#end if
+	#end for
+	</select>
+	<br/>
+	<input id="addW" value="&lt;&lt; Add" type="button"/>
+	<input id="addB" value="Add &gt;&gt;" type="button"/>
+	<input id="removeP" value="Remove" type="button"/>
+</div>
+
+<div class="blackwhiteliste black">
+	<span>Black:</span>
+	<select multiple id="black">
+		#for $keyword in $blacklist:
+			<option value="$keyword">$keyword</option>
+		#end for
+	</select>
+	<br/>
+	<input id="removeB" value="&lt;&lt; Remove" type="button"/>
+</div>
+<br style="clear:both;"/>
+#end if
+<input type="hidden" name="whitelist" id="whitelist"/>
+<input type="hidden" name="blacklist" id="blacklist"/>
+
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>
 
@@ -146,13 +204,26 @@ Separate words with a comma, e.g. "word1,word2,word3"
    
     \$('#submit').click(function(){
 		all_exceptions = []
-		
+
 		\$("#exceptions_list option").each  ( function() {
 			all_exceptions.push( \$(this).val() );
 	    });
 		
 		\$("#exceptions_list").val(all_exceptions);
-		
+
+        var realvalues = [];
+
+		\$('#white option').each(function(i, selected) {
+		    realvalues[i] = \$(selected).val();
+		});
+		\$("#whitelist").val(realvalues.join(","));
+
+		realvalues = [];
+		\$('#black option').each(function(i, selected) {
+		    realvalues[i] = \$(selected).val();
+		});
+		\$("#blacklist").val(realvalues.join(","));
+
 	});  
    
     \$('#addSceneName').click(function() {
@@ -195,8 +266,45 @@ Separate words with a comma, e.g. "word1,word2,word3"
 			\$("#SceneException").show();
 	}
 
-	\$(this).toggle_SceneException();    
-    
+	\$(this).toggle_SceneException();
+
+    \$('#removeW').click(function() {
+		return !\$('#white option:selected').remove().appendTo('#pool');
+	});
+	\$('#addW').click(function() {
+	 	return !\$('#pool option:selected').remove().appendTo('#white');
+	});
+	\$('#addB').click(function() {
+	 	return !\$('#pool option:selected').remove().appendTo('#black');
+	 });
+    \$('#removeP').click(function() {
+        return !\$('#pool option:selected').remove();
+    });
+	\$('#removeB').click(function() {
+        return !\$('#black option:selected').remove().appendTo('#pool');
+    });
+
+    \$('#addToWhite').click(function() {
+        var group = \$('#addToPoolText').attr("value")
+        if(group == "")
+            return
+        \$('#addToPoolText').attr("value", "")
+        var option = \$("<option>")
+        option.attr("value",group)
+        option.html(group)
+        return option.appendTo('#white');
+    });
+    \$('#addToBlack').click(function() {
+        var group = \$('#addToPoolText').attr("value")
+        if(group == "")
+            return
+        \$('#addToPoolText').attr("value", "")
+        var option = \$("<option>")
+        option.attr("value",group)
+        option.html(group)
+        return option.appendTo('#black');
+    });
+
 //-->
 </script>
 

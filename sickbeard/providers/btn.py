@@ -39,6 +39,7 @@ class BTNProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "BTN")
 
         self.supportsBacklog = True
+        self.supportsAbsoluteNumbering = True
 
         self.enabled = False
         self.api_key = None
@@ -46,7 +47,7 @@ class BTNProvider(generic.TorrentProvider):
 
         self.cache = BTNCache(self)
 
-        self.url = "http://broadcasthe.net"
+        self.url = "http://api.btnapps.net"
 
     def isEnabled(self):
         return self.enabled
@@ -133,7 +134,7 @@ class BTNProvider(generic.TorrentProvider):
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
 
-        server = jsonrpclib.Server('http://api.btnapps.net')
+        server = jsonrpclib.Server(self.url)
         parsedJSON = {}
 
         try:
@@ -211,13 +212,15 @@ class BTNProvider(generic.TorrentProvider):
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params = current_params.copy()
-            partial_season_params = current_params.copy()
 
             # Search for entire seasons: no need to do special things for air by date shows
             whole_season_params['category'] = 'Season'
             if ep_obj.show.air_by_date or ep_obj.show.sports:
                 # Search for the year of the air by date show
                 whole_season_params['name'] = str(ep_obj.airdate).split('-')[0]
+            elif ep_obj.show.is_anime:
+                whole_season_params['name'] = 'S' + str(ep_obj.scene_season)
+                #whole_season_params['name'] = "%d" % ep_obj.scene_absolute_number
             else:
                 whole_season_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
@@ -251,7 +254,7 @@ class BTNProvider(generic.TorrentProvider):
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
-        else:
+        elif not self.show.is_anime:
             # Do a general name search for the episode, formatted like SXXEYY
             search_params['name'] = "S%02dE%02d" % (ep_obj.scene_season, ep_obj.scene_episode)
 
@@ -338,8 +341,9 @@ class BTNCache(tvcache.TVCache):
                     if ci is not None:
                         cl.append(ci)
 
-                myDB = self._getDB()
-                myDB.mass_action(cl)
+                if cl:
+                    myDB = self._getDB()
+                    myDB.mass_action(cl)
 
             else:
                 raise AuthException(

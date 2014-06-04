@@ -978,6 +978,8 @@ class CMD_EpisodeSetStatus(ApiCall):
         failure = False
         start_backlog = False
         ep_segment = None
+
+        sql_l = []
         for epObj in ep_list:
             if ep_segment == None and self.status == WANTED:
                 # figure out what segment the episode is in and remember it so we can backlog it
@@ -1003,11 +1005,15 @@ class CMD_EpisodeSetStatus(ApiCall):
                     continue
 
                 epObj.status = self.status
-                epObj.saveToDB()
+                sql_l.append(epObj.get_sql())
 
                 if self.status == WANTED:
                     start_backlog = True
                 ep_results.append(_epResult(RESULT_SUCCESS, epObj))
+
+        if sql_l:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         extra_msg = ""
         if start_backlog:

@@ -116,7 +116,6 @@ class ProperFinder():
         sortedPropers = sorted(propers.values(), key=operator.attrgetter('date'), reverse=True)
         finalPropers = []
         for curProper in sortedPropers:
-            in_cache = False
 
             try:
                 myParser = NameParser(False)
@@ -128,37 +127,8 @@ class ProperFinder():
             if not parse_result.series_name:
                 continue
 
-            cacheResult = sickbeard.name_cache.retrieveNameFromCache(parse_result.series_name)
-            if cacheResult:
-                in_cache = True
-                curProper.indexerid = int(cacheResult)
-            elif cacheResult == 0:
-                return None
-
-            if not curProper.indexerid:
-                showResult = helpers.searchDBForShow(parse_result.series_name)
-                if showResult:
-                    curProper.indexerid = int(showResult[0])
-
-            if not curProper.indexerid:
-                for curShow in sickbeard.showList:
-                    if show_name_helpers.isGoodResult(curProper.name, curShow, False):
-                        curProper.indexerid = curShow.indexerid
-                        break
-
-            showObj = None
-            if curProper.indexerid:
-                showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
-
-            if not showObj:
-                sickbeard.name_cache.addNameToCache(parse_result.series_name, 0)
+            if not parse_result.show:
                 continue
-
-            if not in_cache:
-                sickbeard.name_cache.addNameToCache(parse_result.series_name, curProper.indexerid)
-
-            # scene numbering -> indexer numbering
-            parse_result = parse_result.convert(showObj)
 
             if not parse_result.episode_numbers:
                 logger.log(
@@ -166,54 +136,34 @@ class ProperFinder():
                     logger.DEBUG)
                 continue
 
+            showObj = parse_result.show
+            logger.log(
+                u"Successful match! Result " + parse_result.original_name + " matched to show " + showObj.name,
+                logger.DEBUG)
+
+            # set the indexerid in the db to the show's indexerid
+            curProper.indexerid = showObj.indexerid
+
+            # set the indexer in the db to the show's indexer
+            curProper.indexer = showObj.indexer
+
             # populate our Proper instance
             if parse_result.air_by_date or parse_result.sports:
                 curProper.season = -1
                 curProper.episode = parse_result.air_date or parse_result.sports_event_date
             else:
-                curProper.season = parse_result.season_number if parse_result.season_number != None else 1
-                curProper.episode = parse_result.episode_numbers[0]
+                if parse_result.is_anime:
+                    logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
+                    continue
+                else:
+                    curProper.season = parse_result.season_number if parse_result.season_number != None else 1
+                    curProper.episode = parse_result.episode_numbers[0]
 
-            curProper.quality = Quality.nameQuality(curProper.name)
-
-            # for each show in our list
-            for curShow in sickbeard.showList:
-
-                genericName = self._genericName(parse_result.series_name)
-
-                # get the scene name masks
-                sceneNames = set(show_name_helpers.makeSceneShowSearchStrings(curShow))
-
-                # for each scene name mask
-                for curSceneName in sceneNames:
-
-                    # if it matches
-                    if genericName == self._genericName(curSceneName):
-                        logger.log(
-                            u"Successful match! Result " + parse_result.series_name + " matched to show " + curShow.name,
-                            logger.DEBUG)
-
-                        # set the indexerid in the db to the show's indexerid
-                        curProper.indexerid = curShow.indexerid
-
-                        # set the indexer in the db to the show's indexer
-                        curProper.indexer = curShow.indexer
-
-                        # since we found it, break out
-                        break
-
-                # if we found something in the inner for loop break out of this one
-                if curProper.indexerid != -1:
-                    break
+            curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
             if not show_name_helpers.filterBadReleases(curProper.name):
                 logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, igoring it",
                            logger.DEBUG)
-                continue
-
-            showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
-            if not showObj:
-                logger.log(u"Unable to find the show with indexerID " + str(curProper.indexerid), logger.ERROR)
                 continue
 
             if showObj.rls_ignore_words and search.filter_release_name(curProper.name, showObj.rls_ignore_words):

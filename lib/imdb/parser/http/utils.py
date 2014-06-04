@@ -340,7 +340,7 @@ def build_movie(txt, movieID=None, roleID=None, status=None,
         title = title[:nidx].rstrip()
     if year:
         year = year.strip()
-        if title[-1] == ')':
+        if title[-1:] == ')':
             fpIdx = title.rfind('(')
             if fpIdx != -1:
                 if notes: notes = '%s %s' % (title[fpIdx:], notes)

@@ -170,7 +170,7 @@ $(document).ready(function(){
     	if (sceneSeason === '') sceneSeason = null;
     	if (sceneEpisode === '') sceneEpisode = null;
     	
-    	$.getJSON(sbRoot + '/home/setEpisodeSceneNumbering', 
+    	$.getJSON(sbRoot + '/home/setSceneNumbering',
 			{ 
     			'show': showId,
                 'indexer': indexer,
@@ -200,7 +200,43 @@ $(document).ready(function(){
 	        }
     	);
     }
-    
+
+    function setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute) {
+    	var sbRoot = $('#sbRoot').val();
+    	var showId = $('#showID').val();
+    	var indexer = $('#indexer').val();
+
+    	if (sceneAbsolute === '') sceneAbsolute = null;
+
+    	$.getJSON(sbRoot + '/home/setSceneNumbering',
+			{
+    			'show': showId,
+                'indexer': indexer,
+    			'forAbsolute': forAbsolute,
+    			'sceneAbsolute': sceneAbsolute
+			},
+	    	function(data) {
+				//	Set the values we get back
+				if (data.sceneAbsolute === null)
+				{
+					$('#sceneAbsolute_' + showId +'_' + forAbsolute).val('');
+				}
+				else
+				{
+					$('#sceneAbsolute_' + showId +'_' + forAbsolute).val(data.sceneAbsolute);
+				}
+	            if (!data.success)
+	            {
+	            	if (data.errorMessage) {
+	            		alert(data.errorMessage);
+	            	} else {
+	            		alert('Update failed.');
+	            	}
+	            }
+	        }
+    	);
+    }
+
     $('.sceneSeasonXEpisode').change(function() {
     	//	Strip non-numeric characters
     	$(this).val($(this).val().replace(/[^0-9xX]*/g,''));
@@ -218,5 +254,21 @@ $(document).ready(function(){
     		sceneEpisode = m[2];
     	}
     	setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
+    });
+
+    $('.sceneAbsolute').change(function() {
+    	//	Strip non-numeric characters
+    	$(this).val($(this).val().replace(/[^0-9xX]*/g,''));
+    	var forAbsolute = $(this).attr('data-for-absolute');
+    	var showId = $('#showID').val();
+    	var indexer = $('#indexer').val();
+
+    	var m = $(this).val().match(/^(\d{1,3})$/i);
+    	var sceneAbsolute = null;
+    	if (m)
+    	{
+    		sceneAbsolute = m[1];
+    	}
+    	setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
     });
 });

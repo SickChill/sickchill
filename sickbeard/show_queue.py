@@ -132,9 +132,9 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                subtitles=None, lang="en"):
+                subtitles=None, lang="en", anime=None, scene=None):
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles)
+                                    subtitles, anime, scene)
 
         self.add_item(queueItemObj)
 
@@ -189,7 +189,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 
 class QueueItemAdd(ShowQueueItem):
-    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles):
+    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime, scene):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -199,6 +199,8 @@ class QueueItemAdd(ShowQueueItem):
         self.flatten_folders = flatten_folders
         self.lang = lang
         self.subtitles = subtitles
+        self.anime = anime
+        self.scene = scene
 
         self.show = None
 
@@ -283,6 +285,8 @@ class QueueItemAdd(ShowQueueItem):
             self.show.subtitles = self.subtitles if self.subtitles != None else sickbeard.SUBTITLES_DEFAULT
             self.show.quality = self.quality if self.quality else sickbeard.QUALITY_DEFAULT
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders != None else sickbeard.FLATTEN_FOLDERS_DEFAULT
+            self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
+            self.show.scene = self.scene if self.scene != None else sickbeard.SCENE_DEFAULT
             self.show.paused = False
 
             # be smartish about this
@@ -292,7 +296,6 @@ class QueueItemAdd(ShowQueueItem):
                 self.show.air_by_date = 0
             if self.show.classification and "sports" in self.show.classification.lower():
                 self.show.sports = 1
-
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -348,6 +351,9 @@ class QueueItemAdd(ShowQueueItem):
                 logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
+        # before we parse local files lets update exceptions
+        sickbeard.scene_exceptions.retrieve_exceptions()
+
         try:
             self.show.loadEpisodesFromDir()
         except Exception, e:
@@ -375,6 +381,13 @@ class QueueItemAdd(ShowQueueItem):
         # if there are specific episodes that need to be added by trakt
         sickbeard.traktWatchListCheckerSchedular.action.manageNewShow(self.show)
 
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
+
+        # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
+        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
+            self.show.scene = 1
+
         self.finish()
 
     def _finishEarly(self):
@@ -385,11 +398,14 @@ class QueueItemAdd(ShowQueueItem):
 
 
 class QueueItemRefresh(ShowQueueItem):
-    def __init__(self, show=None):
+    def __init__(self, show=None, force=False):
         ShowQueueItem.__init__(self, ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
         self.priority = generic_queue.QueuePriorities.HIGH
+
+        # force refresh certain items
+        self.force = force
 
     def execute(self):
         ShowQueueItem.execute(self)
@@ -398,8 +414,12 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.show.refreshDir()
         self.show.writeMetadata()
-        #self.show.updateMetadata()
+        if self.force:
+            self.show.updateMetadata()
         self.show.populateCache()
+
+        # Load XEM data to DB for show
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=self.force)
 
         self.inProgress = False
 
@@ -513,9 +533,7 @@ class QueueItemUpdate(ShowQueueItem):
         if IndexerEpList == None:
             logger.log(u"No data returned from " + sickbeard.indexerApi(
                 self.show.indexer).name + ", unable to update this show", logger.ERROR)
-
         else:
-
             # for each ep we found on TVDB delete it from the DB list
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
@@ -535,8 +553,7 @@ class QueueItemUpdate(ShowQueueItem):
                     except exceptions.EpisodeDeletedException:
                         pass
 
-        sickbeard.showQueueScheduler.action.refreshShow(self.show, True)  #@UndefinedVariable
-
+        sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
 
 class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):

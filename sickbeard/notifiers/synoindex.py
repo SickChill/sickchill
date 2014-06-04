@@ -48,7 +48,7 @@ class synoIndexNotifier:
         if sickbeard.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', ek.ek(os.path.abspath, new_path),
                              ek.ek(os.path.abspath, old_path)]
-            logger.log(u"Executing command " + str(synoindex_cmd))
+            logger.log(u"Executing command " + str(synoindex_cmd), logger.DEBUG)
             logger.log(u"Absolute path to command: " + ek.ek(os.path.abspath, synoindex_cmd[0]), logger.DEBUG)
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -56,7 +56,7 @@ class synoIndexNotifier:
                 out, err = p.communicate()  #@UnusedVariable
                 logger.log(u"Script result: " + str(out), logger.DEBUG)
             except OSError, e:
-                logger.log(u"Unable to run synoindex: " + ex(e))
+                logger.log(u"Unable to run synoindex: " + ex(e), logger.ERROR)
 
     def deleteFolder(self, cur_path):
         self.makeObject('-D', cur_path)
@@ -73,7 +73,7 @@ class synoIndexNotifier:
     def makeObject(self, cmd_arg, cur_path):
         if sickbeard.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, ek.ek(os.path.abspath, cur_path)]
-            logger.log(u"Executing command " + str(synoindex_cmd))
+            logger.log(u"Executing command " + str(synoindex_cmd), logger.DEBUG)
             logger.log(u"Absolute path to command: " + ek.ek(os.path.abspath, synoindex_cmd[0]), logger.DEBUG)
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -81,7 +81,7 @@ class synoIndexNotifier:
                 out, err = p.communicate()  #@UnusedVariable
                 logger.log(u"Script result: " + str(out), logger.DEBUG)
             except OSError, e:
-                logger.log(u"Unable to run synoindex: " + ex(e))
+                logger.log(u"Unable to run synoindex: " + ex(e), logger.ERROR)
 
 
 notifier = synoIndexNotifier

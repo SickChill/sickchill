@@ -23,6 +23,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
+from sickbeard import db
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from lib.trakt import *
 
@@ -125,6 +126,7 @@ class TraktChecker():
 
             epObj.status = WANTED
             epObj.saveToDB()
+
             backlog = (show, ep_segment)
             if self.todoBacklog.count(backlog) == 0:
                 self.todoBacklog.append(backlog)

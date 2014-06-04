@@ -31,7 +31,9 @@ __all__ = ['ezrss',
            'iptorrents',
            'omgwtfnzbs',
            'nextgen',
-           'speedcd'
+           'speedcd',
+           'nyaatorrents',
+           'fanzub'
 ]
 
 import sickbeard
@@ -160,7 +162,7 @@ def makeTorrentRssProvider(configString):
 
 
 def getDefaultNewznabProviders():
-    return 'SickRage Index|http://lolo.sickbeard.com/|0|5030,5040,5060|0|eponly|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0'
+    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0!!!NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0'
 
 
 def getProviderModule(name):

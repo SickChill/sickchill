@@ -20,7 +20,7 @@ from __future__ import with_statement
 
 import cherrypy
 import webbrowser
-import sqlite3
+import time
 import datetime
 import socket
 import os, sys, subprocess, re
@@ -32,7 +32,7 @@ from threading import Lock
 from sickbeard import providers, metadata, config
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, publichd, iptorrents, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd, nyaatorrents, fanzub
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -41,6 +41,7 @@ from sickbeard import helpers, db, exceptions, show_queue, search_queue, schedul
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
+from sickbeard import maintenance
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -77,6 +78,7 @@ PIDFILE = ''
 
 DAEMON = None
 
+maintenanceScheduler = None
 dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
@@ -159,6 +161,8 @@ FLATTEN_FOLDERS_DEFAULT = None
 SUBTITLES_DEFAULT = None
 INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
+SCENE_DEFAULT = None
+ANIME_DEFAULT = None
 PROVIDER_ORDER = []
 
 NAMING_MULTI_EP = None
@@ -169,6 +173,7 @@ NAMING_SPORTS_PATTERN = None
 NAMING_CUSTOM_SPORTS = None
 NAMING_FORCE_FOLDERS = False
 NAMING_STRIP_YEAR = None
+NAMING_ANIME = None
 
 USE_NZBS = None
 USE_TORRENTS = None
@@ -320,6 +325,14 @@ NMJ_HOST = None
 NMJ_DATABASE = None
 NMJ_MOUNT = None
 
+ANIMESUPPORT = False
+USE_ANIDB = False
+ANIDB_USERNAME = None
+ANIDB_PASSWORD = None
+ANIDB_USE_MYLIST = 0
+ADBA_CONNECTION = None
+ANIME_SPLIT_HOME = False
+
 USE_SYNOINDEX = False
 
 USE_NMJv2 = False
@@ -390,6 +403,8 @@ COMING_EPS_LAYOUT = None
 COMING_EPS_DISPLAY_PAUSED = None
 COMING_EPS_SORT = None
 COMING_EPS_MISSED_RANGE = None
+FUZZY_DATING = False
+TRIM_ZERO = False
 DATE_PRESET = None
 TIME_PRESET = None
 TIME_PRESET_W_SECONDS = None
@@ -456,11 +471,13 @@ def initialize(consoleLogging=True):
             USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, \
             USE_LISTVIEW, METADATA_XBMC, METADATA_XBMC_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, CLEAR_CACHE, dailySearchScheduler, \
-            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
+            GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
-            AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY
+            AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
+            ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -572,6 +589,8 @@ def initialize(consoleLogging=True):
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 10)
+        ANIME_DEFAULT = bool(check_setting_int(CFG, 'General', 'anime_default', 0))
+        SCENE_DEFAULT = bool(check_setting_int(CFG, 'General', 'scene_default', 0))
 
         PROVIDER_ORDER = check_setting_str(CFG, 'General', 'provider_order', '').split()
 
@@ -584,6 +603,7 @@ def initialize(consoleLogging=True):
         NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = bool(check_setting_int(CFG, 'General', 'naming_strip_year', 0))
+        NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
 
         USE_NZBS = bool(check_setting_int(CFG, 'General', 'use_nzbs', 0))
         USE_TORRENTS = bool(check_setting_int(CFG, 'General', 'use_torrents', 1))
@@ -842,6 +862,13 @@ def initialize(consoleLogging=True):
 
         USE_LISTVIEW = bool(check_setting_int(CFG, 'General', 'use_listview', 0))
 
+        ANIMESUPPORT = False
+        USE_ANIDB = check_setting_str(CFG, 'ANIDB', 'use_anidb', '')
+        ANIDB_USERNAME = check_setting_str(CFG, 'ANIDB', 'anidb_username', '')
+        ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '')
+        ANIDB_USE_MYLIST = check_setting_str(CFG, 'ANIDB', 'anidb_use_mylist', '')
+        ANIME_SPLIT_HOME = bool(check_setting_int(CFG, 'ANIME', 'anime_split_home', 0))
+
         METADATA_XBMC = check_setting_str(CFG, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
         METADATA_XBMC_12PLUS = check_setting_str(CFG, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
         METADATA_MEDIABROWSER = check_setting_str(CFG, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0|0|0|0|0')
@@ -859,6 +886,8 @@ def initialize(consoleLogging=True):
         COMING_EPS_DISPLAY_PAUSED = bool(check_setting_int(CFG, 'GUI', 'coming_eps_display_paused', 0))
         COMING_EPS_SORT = check_setting_str(CFG, 'GUI', 'coming_eps_sort', 'date')
         COMING_EPS_MISSED_RANGE = check_setting_int(CFG, 'GUI', 'coming_eps_missed_range', 7)
+        FUZZY_DATING = bool(check_setting_int(CFG, 'GUI', 'fuzzy_dating', 0))
+        TRIM_ZERO = bool(check_setting_int(CFG, 'GUI', 'trim_zero', 0))
         DATE_PRESET = check_setting_str(CFG, 'GUI', 'date_preset', '%x')
         TIME_PRESET_W_SECONDS = check_setting_str(CFG, 'GUI', 'time_preset', '%I:%M:%S %p')
         TIME_PRESET = TIME_PRESET_W_SECONDS.replace(u":%S", u"")
@@ -883,7 +912,7 @@ def initialize(consoleLogging=True):
         # initialize the cache database
         db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
 
-        # initalize the failed downloads database
+        # initialize the failed downloads database
         db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
 
         # fix up any db problems
@@ -912,10 +941,20 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
         providerList = providers.makeProviderList()
 
-        # the interval for this is stored inside the ShowUpdater class
-        showUpdaterInstance = showUpdater.ShowUpdater()
-        showUpdateScheduler = scheduler.Scheduler(showUpdaterInstance,
-                                                  cycleTime=showUpdaterInstance.updateInterval,
+        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
+                                                   cycleTime=datetime.timedelta(hours=1),
+                                                   threadName="MAINTENANCE",
+                                                   silent=True,
+                                                   runImmediately=True)
+
+        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
+                                                   cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
+                                                   threadName="DAILYSEARCHER",
+                                                   silent=True,
+                                                   runImmediately=DAILYSEARCH_STARTUP)
+
+        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
+                                                  cycleTime=showUpdater.ShowUpdater().updateInterval,
                                                   threadName="SHOWUPDATER",
                                                   runImmediately=False)
 
@@ -935,29 +974,30 @@ def initialize(consoleLogging=True):
                                                    threadName="SEARCHQUEUE",
                                                    silent=True)
 
-        properFinderInstance = properFinder.ProperFinder()
-        properFinderScheduler = scheduler.Scheduler(properFinderInstance,
-                                                    cycleTime=properFinderInstance.updateInterval,
+        properFinderScheduler = scheduler.Scheduler(properFinder.ProperFinder(),
+                                                    cycleTime=properFinder.ProperFinder().updateInterval,
                                                     threadName="FINDPROPERS",
+                                                    silent=False if DOWNLOAD_PROPERS else True,
                                                     runImmediately=True)
-        if not DOWNLOAD_PROPERS:
-            properFinderScheduler.silent = True
 
         autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
+                                                         silent=False if PROCESS_AUTOMATICALLY else True,
                                                          runImmediately=True)
-        if not PROCESS_AUTOMATICALLY:
-            autoPostProcesserScheduler.silent = True
 
         traktWatchListCheckerSchedular = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
                                                              cycleTime=datetime.timedelta(hours=1),
                                                              threadName="TRAKTWATCHLIST",
+                                                             silent=False if USE_TRAKT else True,
                                                              runImmediately=True)
 
-        if not USE_TRAKT:
-            traktWatchListCheckerSchedular.silent = True
+        subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
+                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
+                                                       threadName="FINDSUBTITLES",
+                                                       silent=False if USE_SUBTITLES else True,
+                                                       runImmediately=True)
 
         backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
                                                                       cycleTime=datetime.timedelta(
@@ -965,23 +1005,6 @@ def initialize(consoleLogging=True):
                                                                       threadName="BACKLOG",
                                                                       silent=True,
                                                                       runImmediately=BACKLOG_STARTUP)
-
-        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
-                                                   cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
-                                                   threadName="DAILYSEARCHER",
-                                                   silent=True,
-                                                   runImmediately=DAILYSEARCH_STARTUP)
-
-        subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
-                                                       cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
-                                                       threadName="FINDSUBTITLES",
-                                                       runImmediately=True)
-
-        if not USE_SUBTITLES:
-            subtitlesFinderScheduler.silent = True
-
-        showList = []
-        loadingShowList = {}
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
@@ -1020,7 +1043,7 @@ def initialize(consoleLogging=True):
                                                                curTorrentProvider.getID() + '_options', '')
             if hasattr(curTorrentProvider, 'ratio'):
                 curTorrentProvider.ratio = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                     curTorrentProvider.getID() + '_ratio', '')
+                                                             curTorrentProvider.getID() + '_ratio', '')
             if hasattr(curTorrentProvider, 'minseed'):
                 curTorrentProvider.minseed = check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                curTorrentProvider.getID() + '_minseed', 0)
@@ -1078,23 +1101,29 @@ def initialize(consoleLogging=True):
         except:
             pass
 
+        showList = []
+        loadingShowList = {}
+
         __INITIALIZED__ = True
         return True
 
 
 def start():
-    global __INITIALIZED__, backlogSearchScheduler, \
+    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, started, USE_SUBTITLES, \
-        traktWatchListCheckerSchedular, dailySearchScheduler, started
+        subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerSchedular, \
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
 
-            # start the version checker
-            versionCheckScheduler.thread.start()
+            # start the maintenance scheduler
+            maintenanceScheduler.thread.start()
+            logger.log(u"Performing initial maintenance tasks, please wait ...")
+            while maintenanceScheduler.action.amActive:
+                time.sleep(1)
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
@@ -1102,17 +1131,20 @@ def start():
             # start the backlog scheduler
             backlogSearchScheduler.thread.start()
 
+            # start the show updater
+            showUpdateScheduler.thread.start()
+
+            # start the version checker
+            versionCheckScheduler.thread.start()
+
+            # start the queue checker
+            showQueueScheduler.thread.start()
+
             # start the search queue checker
             searchQueueScheduler.thread.start()
 
             # start the queue checker
             properFinderScheduler.thread.start()
-
-            # start the queue checker
-            showQueueScheduler.thread.start()
-
-            # start the show updater
-            showUpdateScheduler.thread.start()
 
             # start the proper finder
             autoPostProcesserScheduler.thread.start()
@@ -1128,10 +1160,11 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, backlogSearchScheduler, showUpdateScheduler, \
-        showQueueScheduler, properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, dailySearchScheduler, started, \
-        traktWatchListCheckerSchedular
+    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+        showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
+        properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
+        subtitlesFinderScheduler, traktWatchListCheckerSchedular, \
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
@@ -1141,10 +1174,10 @@ def halt():
 
             # abort all the threads
 
-            backlogSearchScheduler.abort = True
-            logger.log(u"Waiting for the BACKLOG thread to exit")
+            maintenanceScheduler.abort = True
+            logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
             try:
-                backlogSearchScheduler.thread.join(10)
+                maintenanceScheduler.thread.join(10)
             except:
                 pass
 
@@ -1152,6 +1185,13 @@ def halt():
             logger.log(u"Waiting for the DAILYSEARCHER thread to exit")
             try:
                 dailySearchScheduler.thread.join(10)
+            except:
+                pass
+
+            backlogSearchScheduler.abort = True
+            logger.log(u"Waiting for the BACKLOG thread to exit")
+            try:
+                backlogSearchScheduler.thread.join(10)
             except:
                 pass
 
@@ -1211,6 +1251,15 @@ def halt():
             except:
                 pass
 
+            if ADBA_CONNECTION:
+                ADBA_CONNECTION.logout()
+                # ADBA_CONNECTION.stop()
+                logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
+                try:
+                    ADBA_CONNECTION.join(5)
+                except:
+                    pass
+
             __INITIALIZED__ = False
 
 
@@ -1246,7 +1295,6 @@ def saveAll():
 
 def saveAndShutdown(restart=False):
     halt()
-
     saveAll()
 
     logger.log(u"Killing cherrypy")
@@ -1276,12 +1324,13 @@ def saveAndShutdown(restart=False):
             popen_list += MY_ARGS
             if '--nolaunch' not in popen_list:
                 popen_list += ['--nolaunch']
+
             logger.log(u"Restarting SickRage with " + str(popen_list))
             logger.close()
+
             subprocess.Popen(popen_list, cwd=os.getcwd())
 
     os._exit(0)
-
 
 def invoke_command(to_call, *args, **kwargs):
     global invoked_command
@@ -1306,7 +1355,7 @@ def restart(soft=True):
     if soft:
         halt()
         saveAll()
-        #logger.log(u"Restarting cherrypy")
+        # logger.log(u"Restarting cherrypy")
         #cherrypy.engine.restart()
         logger.log(u"Re-initializing all data")
         initialize()
@@ -1362,6 +1411,8 @@ def save_config():
     new_config['General']['flatten_folders_default'] = int(FLATTEN_FOLDERS_DEFAULT)
     new_config['General']['indexer_default'] = int(INDEXER_DEFAULT)
     new_config['General']['indexer_timeout'] = int(INDEXER_TIMEOUT)
+    new_config['General']['anime_default'] = int(ANIME_DEFAULT)
+    new_config['General']['scene_default'] = int(SCENE_DEFAULT)
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)
@@ -1372,6 +1423,7 @@ def save_config():
     new_config['General']['naming_custom_sports'] = int(NAMING_CUSTOM_SPORTS)
     new_config['General']['naming_sports_pattern'] = NAMING_SPORTS_PATTERN
     new_config['General']['naming_multi_ep'] = int(NAMING_MULTI_EP)
+    new_config['General']['naming_anime'] = int(NAMING_ANIME)
     new_config['General']['launch_browser'] = int(LAUNCH_BROWSER)
     new_config['General']['update_shows_on_start'] = int(UPDATE_SHOWS_ON_START)
     new_config['General']['sort_article'] = int(SORT_ARTICLE)
@@ -1693,6 +1745,8 @@ def save_config():
     new_config['GUI']['coming_eps_display_paused'] = int(COMING_EPS_DISPLAY_PAUSED)
     new_config['GUI']['coming_eps_sort'] = COMING_EPS_SORT
     new_config['GUI']['coming_eps_missed_range'] = int(COMING_EPS_MISSED_RANGE)
+    new_config['GUI']['fuzzy_dating'] = int(FUZZY_DATING)
+    new_config['GUI']['trim_zero'] = int(TRIM_ZERO)
     new_config['GUI']['date_preset'] = DATE_PRESET
     new_config['GUI']['time_preset'] = TIME_PRESET_W_SECONDS
     new_config['GUI']['timezone_display'] = TIMEZONE_DISPLAY
@@ -1710,6 +1764,15 @@ def save_config():
     new_config['FailedDownloads'] = {}
     new_config['FailedDownloads']['use_failed_downloads'] = int(USE_FAILED_DOWNLOADS)
     new_config['FailedDownloads']['delete_failed'] = int(DELETE_FAILED)
+
+    new_config['ANIDB'] = {}
+    new_config['ANIDB']['use_anidb'] = USE_ANIDB
+    new_config['ANIDB']['anidb_username'] = ANIDB_USERNAME
+    new_config['ANIDB']['anidb_password'] = helpers.encrypt(ANIDB_PASSWORD, ENCRYPTION_VERSION)
+    new_config['ANIDB']['anidb_use_mylist'] = ANIDB_USE_MYLIST
+
+    new_config['ANIME'] = {}
+    new_config['ANIME']['anime_split_home'] = int(ANIME_SPLIT_HOME)
 
     new_config.write()
 

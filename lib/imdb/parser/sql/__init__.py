@@ -7,7 +7,7 @@ the SQLObject _AND_ SQLAlchemy Object Relational Managers is available.
 the imdb.IMDb function will return an instance of this class when
 called with the 'accessSystem' argument set to "sql", "database" or "db".
 
-Copyright 2005-2010 Davide Alberani <da@erlug.linux.it>
+Copyright 2005-2012 Davide Alberani <da@erlug.linux.it>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -452,7 +452,12 @@ def get_movie_data(movieID, kindDict, fromAka=0, _table=None):
     else:
         if not fromAka: Table = Title
         else: Table = AkaTitle
-    m = Table.get(movieID)
+    try:
+        m = Table.get(movieID)
+    except Exception, e:
+        _aux_logger.warn('Unable to fetch information for movieID %s: %s', movieID, e)
+        mdict = {}
+        return mdict
     mdict = {'title': m.title, 'kind': kindDict[m.kindID],
             'year': m.productionYear, 'imdbIndex': m.imdbIndex,
             'season': m.seasonNr, 'episode': m.episodeNr}
@@ -825,14 +830,14 @@ class IMDbSqlAccessSystem(IMDbBase):
         imdbID = movie.imdbID
         if imdbID is not None: return '%07d' % imdbID
         m_dict = get_movie_data(movie.id, self._kind)
-        titline = build_title(m_dict, ptdf=1)
-        imdbID = self.title2imdbID(titline)
+        titline = build_title(m_dict, ptdf=0)
+        imdbID = self.title2imdbID(titline, m_dict['kind'])
         # If the imdbID was retrieved from the web and was not in the
         # database, update the database (ignoring errors, because it's
         # possibile that the current user has not update privileges).
         # There're times when I think I'm a genius; this one of
         # those times... <g>
-        if imdbID is not None:
+        if imdbID is not None and not isinstance(imdbID, list):
             try: movie.imdbID = int(imdbID)
             except: pass
         return imdbID
@@ -847,9 +852,9 @@ class IMDbSqlAccessSystem(IMDbBase):
         imdbID = person.imdbID
         if imdbID is not None: return '%07d' % imdbID
         n_dict = {'name': person.name, 'imdbIndex': person.imdbIndex}
-        namline = build_name(n_dict, canonical=1)
+        namline = build_name(n_dict, canonical=False)
         imdbID = self.name2imdbID(namline)
-        if imdbID is not None:
+        if imdbID is not None and not isinstance(imdbID, list):
             try: person.imdbID = int(imdbID)
             except: pass
         return imdbID
@@ -864,9 +869,9 @@ class IMDbSqlAccessSystem(IMDbBase):
         imdbID = character.imdbID
         if imdbID is not None: return '%07d' % imdbID
         n_dict = {'name': character.name, 'imdbIndex': character.imdbIndex}
-        namline = build_name(n_dict, canonical=1)
+        namline = build_name(n_dict, canonical=False)
         imdbID = self.character2imdbID(namline)
-        if imdbID is not None:
+        if imdbID is not None and not isinstance(imdbID, list):
             try: character.imdbID = int(imdbID)
             except: pass
         return imdbID
@@ -883,7 +888,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         n_dict = {'name': company.name, 'country': company.countryCode}
         namline = build_company_name(n_dict)
         imdbID = self.company2imdbID(namline)
-        if imdbID is not None:
+        if imdbID is not None and not isinstance(imdbID, list):
             try: company.imdbID = int(imdbID)
             except: pass
         return imdbID
@@ -1116,8 +1121,9 @@ class IMDbSqlAccessSystem(IMDbBase):
         if mlinks:
             for ml in mlinks:
                 lmovieData = get_movie_data(ml[0], self._kind)
-                m = Movie(movieID=ml[0], data=lmovieData, accessSystem='sql')
-                ml[0] = m
+                if lmovieData:
+                    m = Movie(movieID=ml[0], data=lmovieData, accessSystem='sql')
+                    ml[0] = m
             res['connections'] = {}
             mlinks[:] = _groupListBy(mlinks, 1)
             for group in mlinks:

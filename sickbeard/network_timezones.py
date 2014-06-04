@@ -186,7 +186,7 @@ def update_network_dict():
         L = list(va for va in old_d)
         ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
     # change all network timezone infos at once (much faster)
-    if len(ql) > 0:
+    if ql:
         myDB.mass_action(ql)
         load_network_dict()
 
