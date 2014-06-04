@@ -71,8 +71,6 @@ class DailySearcher():
                         logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
                         ep.status = common.WANTED
 
-                sql_l.append(ep.get_sql())
-
                 if ep.status == common.WANTED:
                     if show not in todaysEps:
                         todaysEps[show] = [ep]
