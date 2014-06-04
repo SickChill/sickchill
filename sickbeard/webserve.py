@@ -3211,7 +3211,7 @@ class Home:
         if directCall:
             do_update_exceptions = False
         else:
-            if directCall or set(exceptions_list) == set(showObj.exceptions):
+            if set(exceptions_list) == set(showObj.exceptions):
                 do_update_exceptions = False
             else:
                 do_update_exceptions = True
@@ -3278,19 +3278,37 @@ class Home:
                 except exceptions.CantRefreshException, e:
                     errors.append("Unable to refresh this show: " + ex(e))
 
-            showObj.paused = paused
+            if paused:
+                showObj.paused = paused
 
-            # if this routine was called via the mass edit, do not change the options that are not passed
-            if not directCall:
+            if air_by_date:
                 showObj.air_by_date = air_by_date
+
+            if scene:
                 showObj.scene = scene
+
+            if sports:
                 showObj.sports = sports
+
+            if anime:
                 showObj.anime = anime
+
+            if subtitles:
                 showObj.subtitles = subtitles
+
+            if indexer_lang:
                 showObj.lang = indexer_lang
+
+            if dvdorder:
                 showObj.dvdorder = dvdorder
+
+            if archive_firstmatch:
                 showObj.archive_firstmatch = archive_firstmatch
+
+            if rls_ignore_words:
                 showObj.rls_ignore_words = rls_ignore_words.strip()
+
+            if rls_require_words:
                 showObj.rls_require_words = rls_require_words.strip()
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
