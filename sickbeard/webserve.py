@@ -681,7 +681,7 @@ class Manage:
             new_anime = 'on' if new_anime else 'off'
 
             if scene == 'keep':
-                new_scene = showObj.is_anime
+                new_scene = showObj.is_scene
             else:
                 new_scene = True if scene == 'enable' else False
             new_scene = 'on' if new_scene else 'off'
