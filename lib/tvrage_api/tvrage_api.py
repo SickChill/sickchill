@@ -456,7 +456,7 @@ class TVRage:
 
                     if key == 'airs_time':
                         value = parse(value).time()
-                        value = value.strftime("%I:%M")
+                        value = value.strftime("%I:%M %p")
                 except:
                     pass
 
