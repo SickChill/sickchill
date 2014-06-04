@@ -3278,20 +3278,37 @@ class Home:
                 except exceptions.CantRefreshException, e:
                     errors.append("Unable to refresh this show: " + ex(e))
 
-            showObj.paused = paused
-            showObj.air_by_date = air_by_date
-            showObj.scene = scene
-            showObj.sports = sports
-            showObj.anime = anime
-            showObj.subtitles = subtitles
-            showObj.lang = indexer_lang
-            showObj.dvdorder = dvdorder
-            showObj.archive_firstmatch = archive_firstmatch
+            if showObj.paused != paused:
+                showObj.paused = paused
 
-            if rls_ignore_words:
+            if showObj.air_by_date != air_by_date:
+                showObj.air_by_date = air_by_date
+
+            if showObj.scene != scene:
+                showObj.scene = scene
+
+            if showObj.sports != sports:
+                showObj.sports = sports
+
+            if showObj.anime != anime:
+                showObj.anime = anime
+
+            if showObj.subtitles != subtitles:
+                showObj.subtitles = subtitles
+
+            if showObj.lang != indexer_lang:
+                showObj.lang = indexer_lang
+
+            if showObj.dvdorder != dvdorder:
+                showObj.dvdorder = dvdorder
+
+            if showObj.archive_firstmatch != archive_firstmatch:
+                showObj.archive_firstmatch = archive_firstmatch
+
+            if rls_ignore_words and showObj.rls_ignore_words != rls_ignore_words.strip():
                 showObj.rls_ignore_words = rls_ignore_words.strip()
 
-            if rls_require_words:
+            if rls_require_words and showObj.rls_require_words != rls_require_words.strip():
                 showObj.rls_require_words = rls_require_words.strip()
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
