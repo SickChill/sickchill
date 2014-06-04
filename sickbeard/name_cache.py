@@ -45,11 +45,14 @@ def retrieveNameFromCache(name):
     Returns: the TVDB and TVRAGE id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
 
+    cache_results = None
+
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
 
     cacheDB = db.DBConnection('cache.db')
-    cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
+    if cacheDB.hasTable('scene_names'):
+        cache_results = cacheDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
 
     if cache_results:
         return int(cache_results[0]["indexer_id"])

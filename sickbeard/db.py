@@ -115,7 +115,7 @@ class DBConnection:
 
         with db_lock:
             # remove None types
-            querylist = [i for i in querylist if i!=None]
+            querylist = [i for i in querylist if i != None]
 
             if querylist == None:
                 return
@@ -125,7 +125,7 @@ class DBConnection:
 
             # Transaction
             self.connection.isolation_level = None
-            self.connection.execute('begin')
+            self.connection.execute('BEGIN')
 
             while attempt < 5:
                 try:
@@ -140,7 +140,7 @@ class DBConnection:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
                             sqlResult.append(self.connection.execute(qu[0], qu[1]))
 
-                    self.connection.execute('commit')
+                    self.connection.execute('COMMIT')
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
                     return sqlResult
@@ -239,6 +239,9 @@ class DBConnection:
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
+
+    def hasTable(self, tableName):
+        return len(self.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
 
 
 def sanityCheckDatabase(connection, sanity_check):
