@@ -454,9 +454,9 @@ class TVRage:
                         value = parse(value, fuzzy=True).date()
                         value = value.strftime("%Y-%m-%d")
 
-                    if key == 'airs_time':
-                        value = parse(value).time()
-                        value = value.strftime("%I:%M %p")
+                    #if key == 'airs_time':
+                    #    value = parse(value).time()
+                    #    value = value.strftime("%I:%M %p")
                 except:
                     pass
 
