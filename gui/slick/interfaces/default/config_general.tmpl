@@ -370,31 +370,42 @@
                     <fieldset class="component-group-list" style="width:670px">
 
                         <div class="field-pair">
-                            <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" #if $sickbeard.FUZZY_DATING == True then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" #if $sickbeard.FUZZY_DATING == True then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="fuzzy_dating">
                                 <span class="component-title">Display Fuzzy Dates</span>
                                 <span class="component-desc">E.g "Last Thu", "On Tue" and move the absolute date into time tooltips?</span>
                             </label>
                         </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="trim_zero" id="trim_zero" #if $sickbeard.TRIM_ZERO == True then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="trim_zero">
-                                <span class="component-title">Trim Zero Padding</span>
-                                <span class="component-desc">Trim leading number "0" shown on hour of day and date of month?</span>
-                            </label>
+                        <div class="show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
+                            <div class="field-pair">
+                                <input type="checkbox" name="trim_zero" id="trim_zero" #if $sickbeard.TRIM_ZERO == True then "checked=\"checked\"" else ""#/>
+                                <label class="clearfix" for="trim_zero">
+                                    <span class="component-title">Trim Zero Padding</span>
+                                    <span class="component-desc">Trim leading number "0" shown on hour of day and date of month?</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="field-pair">
                             <label class="nocheck clearfix" for="date_presets">
                                 <span class="component-title">Date Style:</span>
                                 <span class="component-desc">
-                                    <select id="date_presets" name="date_preset">
-                                        <option value="%x" #if "%x" == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>Use System Default</option>
-                                        #for $cur_preset in $date_presets:
-                                            <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>$datetime.datetime($datetime.datetime.now().year+1, 1, 1, 14, 30, 47).strftime($cur_preset)</option>
-                                        #end for
-                                    </select>
+                                    <div class="show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
+                                        <select id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
+                                            #for $cur_preset in $date_presets:
+                                                <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then "selected=\"selected\"" else ""#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                            #end for
+                                        </select>
+                                    </div>
+                                    <div class="hide_if_fuzzy_dating#if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
+                                        <select id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
+                                            <option value="%x" #if "%x" == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>Use System Default</option>
+                                            #for $cur_preset in $date_presets:
+                                                <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                            #end for
+                                        </select>
+                                    </div>
+                                    <div id="date_use_system_default" class="metadataDiv"></div>
                                 </span>
                             </label>
                         </div>

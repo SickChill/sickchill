@@ -1047,7 +1047,7 @@ class ConfigGeneral:
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
                     anon_redirect=None, git_path=None, calendar_unprotected=None,
-                    fuzzy_dating=None, trim_zero=None, date_preset=None, time_preset=None,
+                    fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None):
 
         results = []
@@ -1081,6 +1081,7 @@ class ConfigGeneral:
 
         if date_preset:
             sickbeard.DATE_PRESET = date_preset
+            discarded_na_data = date_preset_na
 
         if indexer_default:
             sickbeard.INDEXER_DEFAULT = config.to_int(indexer_default)
