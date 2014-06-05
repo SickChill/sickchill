@@ -2510,12 +2510,12 @@ class NewHomeAddShows:
             if indexer is not None and indexer_id is not None:
                 # add the show
                 sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir,
-                                                            sickbeard.STATUS_DEFAULT,
-                                                            sickbeard.QUALITY_DEFAULT,
-                                                            sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                            sickbeard.SUBTITLES_DEFAULT,
-                                                            sickbeard.ANIME_DEFAULT,
-                                                            sickbeard.SCENE_DEFAULT)
+                                                            default_status=sickbeard.STATUS_DEFAULT,
+                                                            quality=sickbeard.QUALITY_DEFAULT,
+                                                            flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                                                            subtitles=sickbeard.SUBTITLES_DEFAULT,
+                                                            anime=sickbeard.ANIME_DEFAULT,
+                                                            scene=sickbeard.SCENE_DEFAULT)
                 num_added += 1
 
         if num_added:
