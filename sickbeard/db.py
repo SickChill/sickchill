@@ -20,18 +20,15 @@ from __future__ import with_statement
 
 import os.path
 import re
-import time
 import threading
-
+import sqlite3
 import sickbeard
 
 from sqlalchemy import create_engine, exc
-from sqlalchemy.orm import sessionmaker
 
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
-from sickbeard.common import cpu_presets
 
 db_lock = threading.Lock()
 
@@ -54,8 +51,13 @@ class DBConnection:
 
         self.filename = filename
 
-        engine =  create_engine('sqlite:///' + dbFilename(filename))
-        self.connection = engine.connect()
+        #engine =  create_engine('sqlite:///' + dbFilename(filename))
+        #self.connection = engine.connect()
+        self.connection = sqlite3.connect(dbFilename(filename), 20)
+        if row_type == "dict":
+            self.connection.row_factory = self._dict_factory
+        else:
+            self.connection.row_factory = sqlite3.Row
 
     def checkDBVersion(self):
         result = None
@@ -96,7 +98,7 @@ class DBConnection:
 
                     # get out of the connection attempt loop since we were successful
                     break
-                except exc.OperationalError, e:
+                except sqlite3.OperationalError, e:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
@@ -104,7 +106,7 @@ class DBConnection:
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
-                except exc.DatabaseError, e:
+                except sqlite3.DatabaseError, e:
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
@@ -125,31 +127,30 @@ class DBConnection:
             while attempt < 5:
                 try:
 
-                    with self.connection.begin() as trans:
+                    with self.connection as trans:
                         for qu in querylist:
                             if len(qu) == 1:
                                 if logTransaction:
                                     logger.log(qu[0], logger.DEBUG)
-                                sqlResult.append(self.connection.execute(qu[0]))
+                                sqlResult.append(trans.execute(qu[0]))
                             elif len(qu) > 1:
                                 if logTransaction:
                                     logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                                sqlResult.append(self.connection.execute(qu[0], qu[1]))
+                                sqlResult.append(trans.execute(qu[0], qu[1]))
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
                     return sqlResult
-                except exc.OperationalError, e:
+                except sqlite3.OperationalError, e:
                     sqlResult = []
                     if trans.connection:
                         trans.rollback()
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        #time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
-                except exc.DatabaseError, e:
+                except sqlite3.DatabaseError, e:
                     sqlResult = []
                     if trans.connection:
                         trans.rollback()
@@ -178,7 +179,7 @@ class DBConnection:
                         sqlResult = self.connection.execute(query, args)
                     # get out of the connection attempt loop since we were successful
                     break
-                except exc.OperationalError, e:
+                except sqlite3.OperationalError, e:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
@@ -186,7 +187,7 @@ class DBConnection:
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
-                except exc.DatabaseError, e:
+                except sqlite3.DatabaseError, e:
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
@@ -211,7 +212,7 @@ class DBConnection:
 
         result = self.action(query, valueDict.values() + keyDict.values())
 
-        if not result.rowcount > 0:
+        if result.rowcount > 0:
             query = "INSERT INTO " + tableName + " (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
                     " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
             self.action(query, valueDict.values() + keyDict.values())
@@ -223,6 +224,13 @@ class DBConnection:
         for column in cursor:
             columns[column['name']] = {'type': column['type']}
         return columns
+
+    # http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
+    def _dict_factory(self, cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
 
     def hasTable(self, tableName):
         return len(self.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
