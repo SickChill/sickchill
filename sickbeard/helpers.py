@@ -886,6 +886,44 @@ def backupVersionedFile(old_file, version):
 
     return True
 
+def restoreVersionedFile(backup_file, version):
+    numTries = 0
+
+    new_file, backup_version = os.path.splitext(backup_file)
+    restore_file = new_file + '.' + 'v' + str(version)
+
+    if not ek.ek(os.path.isfile, new_file):
+        logger.log(u"Not restoring, " + new_file + " doesn't exist", logger.DEBUG)
+        return False
+
+    try:
+        logger.log(u"Trying to backup " + new_file + " to " + new_file + "." + "r" + str(version) + " before restoring backup", logger.DEBUG)
+        shutil.move(new_file, new_file + '.' + 'r' + str(version))
+    except Exception, e:
+        logger.log(u"Error while trying to backup DB file " + restore_file + " before proceeding with restore: " + ex(e), logger.WARNING)
+        return False
+
+    while not ek.ek(os.path.isfile, new_file):
+        if not ek.ek(os.path.isfile, restore_file):
+            logger.log(u"Not restoring, " + restore_file + " doesn't exist", logger.DEBUG)
+            break
+
+        try:
+            logger.log(u"Trying to restore " + restore_file + " to " + new_file, logger.DEBUG)
+            shutil.copy(restore_file, new_file)
+            logger.log(u"Restore done", logger.DEBUG)
+            break
+        except Exception, e:
+            logger.log(u"Error while trying to restore " + restore_file + ": " + ex(e), logger.WARNING)
+            numTries += 1
+            time.sleep(1)
+            logger.log(u"Trying again.", logger.DEBUG)
+
+        if numTries >= 10:
+            logger.log(u"Unable to restore " + restore_file + " to " + new_file + " please do it manually.", logger.ERROR)
+            return False
+
+    return True
 
 # try to convert to int, if it fails the default will be returned
 def tryInt(s, s_default=0):
