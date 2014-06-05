@@ -29,8 +29,6 @@ import sickbeard
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
-from sickbeard.common import cpu_presets
-from itertools import ifilter
 
 db_lock = threading.Lock()
 
@@ -243,6 +241,8 @@ class DBConnection:
     def hasTable(self, tableName):
         return len(self.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
 
+    def close(self):
+        self.connection.close()
 
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
@@ -268,6 +268,13 @@ def upgradeDatabase(connection, schema):
 def prettyName(class_name):
     return ' '.join([x.group() for x in re.finditer("([A-Z])([a-z0-9]+)", class_name)])
 
+def restoreDatabase(version):
+    logger.log(u"Restoring database before trying upgrade again")
+    if not sickbeard.helpers.restoreVersionedFile(dbFilename(suffix='v'+ str(version)), version):
+        logger.log_error_and_exit(u"Database restore failed, abort upgrading database")
+        return False
+    else:
+        return True
 
 def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
@@ -277,8 +284,23 @@ def _processUpgrade(connection, upgradeClass):
         try:
             instance.execute()
         except sqlite3.DatabaseError, e:
-            print "Error in " + str(upgradeClass.__name__) + ": " + ex(e)
-            raise
+            # attemping to restore previous DB backup and perform upgrade
+            try:
+                instance.execute()
+            except:
+                restored = False
+                result = connection.select("SELECT db_version FROM db_version")
+                if result:
+                    version = int(result[0]["db_version"])
+                    connection.close()
+                    if restoreDatabase(version):
+                        # initialize the main SB database
+                        upgradeDatabase(DBConnection(), sickbeard.mainDB.InitialSchema)
+                        restored = True
+
+                if not restored:
+                    print "Error in " + str(upgradeClass.__name__) + ": " + ex(e)
+                    raise
         logger.log(upgradeClass.__name__ + " upgrade completed", logger.DEBUG)
     else:
         logger.log(upgradeClass.__name__ + " upgrade not required", logger.DEBUG)

@@ -150,7 +150,6 @@ def backupDatabase(version):
     else:
         logger.log(u"Proceeding with upgrade")
 
-
 # ======================
 # = Main DB Migrations =
 # ======================
