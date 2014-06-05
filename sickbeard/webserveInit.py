@@ -113,6 +113,7 @@ def initWebServer(options={}):
         'tools.gzip.mime_types': mime_gzip,
         'error_page.401': http_error_401_hander,
         'error_page.404': http_error_404_hander,
+        'server.thread_pool': 10,
     }
 
     if enable_https:
