@@ -204,6 +204,8 @@ class DBConnection:
 
     def upsert(self, tableName, valueDict, keyDict):
 
+        changesBefore = self.connection.total_changes
+
         genParams = lambda myDict: [x + " = ?" for x in myDict.keys()]
 
         query = "UPDATE " + tableName + " SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
@@ -211,7 +213,7 @@ class DBConnection:
 
         result = self.action(query, valueDict.values() + keyDict.values())
 
-        if result.rowcount > 0:
+        if self.connection.total_changes == changesBefore:
             query = "INSERT INTO " + tableName + " (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
                     " VALUES (" + ", ".join(["?"] * len(valueDict.keys() + keyDict.keys())) + ")"
             self.action(query, valueDict.values() + keyDict.values())
