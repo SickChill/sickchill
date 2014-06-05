@@ -22,7 +22,6 @@ import os
 
 import time
 import datetime
-import sqlite3
 import urllib
 import urlparse
 import re
@@ -52,19 +51,17 @@ class CacheDBConnection(db.DBConnection):
 
         # Create the table if it's not already there
         try:
-            sql = "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT);"
-            self.connection.execute(sql)
-            self.connection.commit()
-        except sqlite3.OperationalError, e:
+            if not self.hasTable(providerName):
+                self.action("CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
+        except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
 
         # Create the table if it's not already there
         try:
-            sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
-            self.connection.execute(sql)
-            self.connection.commit()
-        except sqlite3.OperationalError, e:
+            if not self.hasTable('lastUpdate'):
+                self.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
+        except Exception, e:
             if str(e) != "table lastUpdate already exists":
                 raise
 

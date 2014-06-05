@@ -52,7 +52,6 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
-
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
 
@@ -201,7 +200,7 @@ class TVShow(object):
         ep = None
 
         # if we get an anime get the real season and episode
-        if self.is_anime and not self.is_scene and absolute_number != None and season == None and episode == None:
+        if self.is_anime and not self.is_scene and absolute_number and not season and not episode:
             myDB = db.DBConnection()
             sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
             sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
@@ -225,38 +224,38 @@ class TVShow(object):
         if not season in self.episodes:
             self.episodes[season] = {}
 
-        if not episode in self.episodes[season] or self.episodes[season][episode] == None:
+        if not episode in self.episodes[season] or self.episodes[season][episode] is None:
             if noCreate:
                 return None
 
             logger.log(str(self.indexerid) + u": An object for episode " + str(season) + "x" + str(
                 episode) + " didn't exist in the cache, trying to create it", logger.DEBUG)
 
-            if file != None:
+            if file:
                 ep = TVEpisode(self, season, episode, file)
             else:
                 ep = TVEpisode(self, season, episode)
+
+            # get scene absolute numbering
+            ep.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
+                                                                                                 self.indexer,
+                                                                                                 ep.absolute_number)
+
+            # get scene season and episode numbering
+            ep.scene_season, ep.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
+                                                                                                    self.indexer,
+                                                                                                    season, episode)
 
             if ep != None:
                 self.episodes[season][episode] = ep
 
         epObj = self.episodes[season][episode]
-
-        # get scene absolute numbering
-        epObj.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
-                                                                                             self.indexer,
-                                                                                             epObj.absolute_number)
-
-        # get scene season and episode numbering
-        (epObj.scene_season, epObj.scene_episode) = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
-                                                                                                  self.indexer,
-                                                                                                  season, episode)
         return epObj
 
     def should_update(self, update_date=datetime.date.today()):
 
         # if show is not 'Ended' always update (status 'Continuing' or '')
-        if self.status != 'Ended':
+        if 'Ended' not in self.status:
             return True
 
         # run logic against the current show latest aired and next unaired data to see if we should bypass 'Ended' status
@@ -587,7 +586,7 @@ class TVShow(object):
             logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.ERROR)
             return None
 
-        if len(parse_result.episode_numbers) == 0 and not (parse_result.air_by_date or parse_result.sports):
+        if not len(parse_result.episode_numbers) and not (parse_result.air_by_date or parse_result.sports):
             logger.log("parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.ERROR)
             return None

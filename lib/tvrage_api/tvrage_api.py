@@ -443,7 +443,6 @@ class TVRage:
                         if not isinstance(value, list):
                             value = [value]
                         value = '|' + '|'.join(value) + '|'
-
                 try:
                     if key == 'firstaired' and value in "0000-00-00":
                         new_value = str(dt.date.fromordinal(1))
@@ -513,7 +512,9 @@ class TVRage:
         """
         if sid not in self.shows:
             self.shows[sid] = Show()
-        self.shows[sid].data[key] = value
+
+        if not isinstance(key, dict or list) and not isinstance(value, dict or list):
+            self.shows[sid].data[key] = value
 
     def _cleanData(self, data):
         """Cleans up strings returned by tvrage.com
@@ -522,8 +523,10 @@ class TVRage:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        data = data.replace(u"&amp;", u"&")
-        data = data.strip()
+
+        if not isinstance(data, dict or list):
+            data = data.replace(u"&amp;", u"&")
+            data = data.strip()
         return data
 
     def search(self, series):
@@ -594,7 +597,7 @@ class TVRage:
         self.config['params_epInfo']['sid'] = sid
         epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
 
-        for season in epsEt['Episodelist']['Season']:
+        for season in epsEt['episodelist']['season']:
             episodes =  season['episode']
             if not isinstance(episodes, list):
                 episodes = [episodes]

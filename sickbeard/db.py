@@ -20,17 +20,16 @@ from __future__ import with_statement
 
 import os.path
 import re
+import threading
 import sqlite3
 import time
-import threading
-
 import sickbeard
+
+from sqlalchemy import create_engine, exc
 
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
-from sickbeard.common import cpu_presets
-from itertools import ifilter
 
 db_lock = threading.Lock()
 
@@ -52,6 +51,9 @@ class DBConnection:
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
+
+        #engine =  create_engine('sqlite:///' + dbFilename(filename))
+        #self.connection = engine.connect()
         self.connection = sqlite3.connect(dbFilename(filename), 20)
         if row_type == "dict":
             self.connection.row_factory = self._dict_factory
@@ -63,7 +65,7 @@ class DBConnection:
 
         try:
             result = self.select("SELECT db_version FROM db_version")
-        except sqlite3.OperationalError, e:
+        except exc.OperationalError, e:
             if "no such table: db_version" in e.args[0]:
                 return 0
 
@@ -101,7 +103,7 @@ class DBConnection:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -123,13 +125,8 @@ class DBConnection:
             sqlResult = []
             attempt = 0
 
-            # Transaction
-            self.connection.isolation_level = None
-            self.connection.execute('BEGIN')
-
             while attempt < 5:
                 try:
-
                     for qu in querylist:
                         if len(qu) == 1:
                             if logTransaction:
@@ -140,8 +137,7 @@ class DBConnection:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
                             sqlResult.append(self.connection.execute(qu[0], qu[1]))
 
-                    self.connection.execute('COMMIT')
-
+                    self.connection.commit()
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
                     return sqlResult
                 except sqlite3.OperationalError, e:
@@ -151,7 +147,7 @@ class DBConnection:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -182,14 +178,13 @@ class DBConnection:
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
                         sqlResult = self.connection.execute(query, args)
-                    self.connection.commit()
                     # get out of the connection attempt loop since we were successful
                     break
                 except sqlite3.OperationalError, e:
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -218,7 +213,7 @@ class DBConnection:
         query = "UPDATE " + tableName + " SET " + ", ".join(genParams(valueDict)) + " WHERE " + " AND ".join(
             genParams(keyDict))
 
-        self.action(query, valueDict.values() + keyDict.values())
+        result = self.action(query, valueDict.values() + keyDict.values())
 
         if self.connection.total_changes == changesBefore:
             query = "INSERT INTO " + tableName + " (" + ", ".join(valueDict.keys() + keyDict.keys()) + ")" + \
@@ -243,7 +238,6 @@ class DBConnection:
     def hasTable(self, tableName):
         return len(self.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
 
-
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
 
@@ -254,7 +248,6 @@ class DBSanityCheck(object):
 
     def check(self):
         pass
-
 
 # ===============
 # = Upgrade API =
@@ -276,7 +269,7 @@ def _processUpgrade(connection, upgradeClass):
         logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.MESSAGE)
         try:
             instance.execute()
-        except sqlite3.DatabaseError, e:
+        except exc.DatabaseError, e:
             print "Error in " + str(upgradeClass.__name__) + ": " + ex(e)
             raise
         logger.log(upgradeClass.__name__ + " upgrade completed", logger.DEBUG)
