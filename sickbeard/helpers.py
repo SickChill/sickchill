@@ -897,8 +897,8 @@ def restoreVersionedFile(backup_file, version):
         return False
 
     try:
-        logger.log(u"Trying to backup " + new_file + " to " + new_file + '.rtmp before restoring backup', logger.DEBUG)
-        shutil.move(new_file, new_file + '.rtmp')
+        logger.log(u"Trying to backup " + new_file + " to " + new_file + "." + "r" + str(version) + " before restoring backup", logger.DEBUG)
+        shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception, e:
         logger.log(u"Error while trying to backup DB file " + restore_file + " before proceeding with restore: " + ex(e), logger.WARNING)
         return False
