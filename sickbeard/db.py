@@ -124,8 +124,8 @@ class DBConnection:
             attempt = 0
 
             # Transaction
-            self.connection.isolation_level = 'EXCLUSIVE'
-            self.connection.execute('BEGIN EXCLUSIVE')
+            self.connection.isolation_level = None
+            self.connection.execute('BEGIN')
 
             while attempt < 5:
                 try:
