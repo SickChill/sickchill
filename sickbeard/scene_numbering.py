@@ -206,7 +206,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
 
     myDB = db.DBConnection()
 
-    if season and episode and sceneSeason and sceneEpisode:
+    if season and episode:
         myDB.action(
             "INSERT OR IGNORE INTO scene_numbering (indexer, indexer_id, season, episode) VALUES (?,?,?,?)",
             [indexer, indexer_id, season, episode])
@@ -214,7 +214,7 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
         myDB.action(
             "UPDATE scene_numbering SET scene_season = ?, scene_episode = ? WHERE indexer = ? and indexer_id = ? and season = ? and episode = ?",
             [sceneSeason, sceneEpisode, indexer, indexer_id, season, episode])
-    elif absolute_number and sceneAbsolute:
+    elif absolute_number:
         myDB.action(
             "INSERT OR IGNORE INTO scene_numbering (indexer, indexer_id, absolute_number) VALUES (?,?,?)",
             [indexer, indexer_id, absolute_number])
