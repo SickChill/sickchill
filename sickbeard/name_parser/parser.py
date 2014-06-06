@@ -192,7 +192,7 @@ class NameParser(object):
                     result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
                     result.score += 1
                 except:
-                    continue
+                    pass
 
             if 'extra_info' in named_groups:
                 tmp_extra_info = match.group('extra_info')

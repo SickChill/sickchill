@@ -759,10 +759,10 @@ def create_https_certificates(ssl_cert, ssl_key):
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
     """
     try:
-        from lib.OpenSSL import crypto  # @UnresolvedImport
+        from OpenSSL import crypto  # @UnresolvedImport
         from lib.certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
-    except:
+    except Exception, e:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)
         return False
 
