@@ -1837,14 +1837,36 @@ class TVEpisode(object):
             logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
             return
 
-        # use a custom update/insert method to get the data into the DB
-        return [
-            "INSERT OR REPLACE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
-            "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-            [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
-             ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
-             self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-             self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.absolute_number]]
+        myDB = db.DBConnection()
+
+        rows = myDB.select(
+            'SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
+            [self.show.indexerid, self.season, self.episode])
+
+        epID = None
+        if rows:
+            epID = int(rows[0]['episode_id'])
+
+        if epID:
+            # use a custom update method to get the data into the DB for existing records.
+            return [
+                "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                "absolute_number = ? WHERE episode_id = ?",
+                [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
+                 self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo, self.hastbn,
+                 self.status, self.location, self.file_size,self.release_name, self.is_proper, self.show.indexerid,
+                 self.season, self.episode, self.absolute_number, epID]]
+        else:
+            # use a custom insert method to get the data into the DB.
+            return [
+                "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
+                "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
+                 ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
+                 self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
+                 self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.absolute_number]]
 
     def saveToDB(self, forceSave=False):
         """
