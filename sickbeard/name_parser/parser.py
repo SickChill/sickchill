@@ -130,11 +130,9 @@ class NameParser(object):
 
             if 'series_name' in named_groups:
                 result.series_name = match.group('series_name')
-                if not result.series_name:
-                    continue
-
-                result.series_name = self.clean_series_name(result.series_name)
-                result.score += 1
+                if result.series_name:
+                    result.series_name = self.clean_series_name(result.series_name)
+                    result.score += 1
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
@@ -182,7 +180,7 @@ class NameParser(object):
                         result.sports_event_date = parser.parse(sports_event_date, fuzzy=True).date()
                         result.score += 1
                     except:
-                        continue
+                        pass
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                 year = int(match.group('air_year'))
