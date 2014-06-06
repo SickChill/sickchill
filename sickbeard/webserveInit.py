@@ -16,10 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-#import cherrypy
+import cherrypy
 import cherrypy.lib.auth_basic
 import os.path
-
 import sickbeard
 
 from sickbeard import logger
@@ -118,6 +117,7 @@ def initWebServer(options={}):
     if enable_https:
         options_dict['server.ssl_certificate'] = https_cert
         options_dict['server.ssl_private_key'] = https_key
+
         protocol = "https"
     else:
         protocol = "http"
@@ -192,6 +192,8 @@ def initWebServer(options={}):
                 }
             })
 
+
+    cherrypy.server.thread_pool = 30
     cherrypy.server.start()
     cherrypy.server.wait()
 

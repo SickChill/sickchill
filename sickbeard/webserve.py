@@ -82,9 +82,7 @@ def _handle_reverse_proxy():
     if sickbeard.HANDLE_REVERSE_PROXY:
         cherrypy.lib.cptools.proxy()
 
-
 cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
-
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
