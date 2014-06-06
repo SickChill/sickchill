@@ -2976,9 +2976,6 @@ class Home:
 
         showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
-        # Update scene numbering in DB
-        sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)
-
         myDB = db.DBConnection()
 
         seasonResults = myDB.select(

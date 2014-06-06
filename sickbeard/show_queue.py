@@ -109,7 +109,7 @@ class ShowQueue(generic_queue.GenericQueue):
                 logger.DEBUG)
             return
 
-        queueItemObj = QueueItemRefresh(show)
+        queueItemObj = QueueItemRefresh(show, force=force)
 
         self.add_item(queueItemObj)
 
