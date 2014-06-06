@@ -102,7 +102,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
         search_string = {'Season': []}
         for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
             if ep_obj.show.air_by_date or ep_obj.show.sports:
-                ep_string = show_name + str(ep_obj.airdate).split('-')[0]
+                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
+            elif ep_obj.show.anime:
+                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
             else:
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
 
@@ -127,6 +129,11 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
                             str(ep_obj.airdate).replace('-', '|') + '|' + \
                             ep_obj.airdate.strftime('%b')
+                search_string['Episode'].append(ep_string)
+        elif self.show.anime:
+            for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
+                ep_string = sanitizeSceneName(show_name) + ' ' + \
+                            "%i" % int(ep_obj.scene_absolute_number)
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):

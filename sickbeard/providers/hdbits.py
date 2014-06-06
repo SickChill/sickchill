@@ -158,17 +158,38 @@ class HDBitsProvider(generic.TorrentProvider):
         }
 
         if episode:
-            post_data['tvdb'] = {
-                'id': show.indexerid,
-                'season': episode.scene_season,
-                'episode': episode.scene_episode
-            }
+            if show.air_by_date:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'episode': str(episode.airdate).replace('-', '|')
+                }
+            elif show.sports:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'episode': episode.airdate.strftime('%b')
+                }
+            elif show.anime:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'episode': "%i" % int(episode.scene_absolute_number)
+                }
+            else:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'season': episode.scene_season,
+                    'episode': episode.scene_episode
+                }
 
         if season:
             if show.air_by_date or show.sports:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
                     'season': str(episode.airdate)[:7],
+                }
+            elif show.anime:
+                post_data['tvdb'] = {
+                    'id': show.indexerid,
+                    'season': "%d" % episode.scene_absolute_number,
                 }
             else:
                 post_data['tvdb'] = {
