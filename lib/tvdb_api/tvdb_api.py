@@ -598,11 +598,11 @@ class Tvdb:
                     zipdata = StringIO.StringIO()
                     zipdata.write(resp.content)
                     myzipfile = zipfile.ZipFile(zipdata)
-                    return xmltodict.parse(myzipfile.read('%s.xml' % language).strip(), postprocessor=process)
+                    return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
                 except zipfile.BadZipfile:
                     raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
             else:
-                return xmltodict.parse(resp.content.strip(), postprocessor=process)
+                return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=process)
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source

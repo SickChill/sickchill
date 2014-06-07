@@ -269,10 +269,8 @@
 </div>
 #end for
 
-                        <div class="clearfix" style="clear:left;"></div><br/>
-
-                        <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
-
+                <div class="clearfix" style="clear:left;"></div><br/>
+                    <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
@@ -292,7 +290,7 @@
                                     <select id="name_presets">
                                         #set is_custom = True
                                         #for $cur_preset in $naming.name_presets:
-                                            #set $tmp = $naming.test_name($cur_preset)
+                                            #set $tmp = $naming.test_name($cur_preset, anime_type=3)
                                             #if $cur_preset == $sickbeard.NAMING_PATTERN:
                                                 #set is_custom = False
                                             #end if
@@ -452,7 +450,7 @@
                         </div>
 
                         <div id="naming_example_div">
-                            <h2>Sample:</h2>
+                            <h2>Single-EP Sample:</h2>
                             <div class="example">
                                 <span class="jumbo" id="naming_example">&nbsp;</span>
                             </div>
@@ -467,8 +465,24 @@
                             <br/>
                         </div>
 
+                        <div id="naming_example_anime_div">
+                            <h2>Single-EP Anime Sample:</h2>
+                            <div class="example">
+                                <span class="jumbo" id="naming_example_anime">&nbsp;</span>
+                            </div>
+                            <br/>
+                        </div>
+
+                        <div id="naming_example_multi_anime_div">
+                            <h2>Multi-EP Anime sample:</h2>
+                            <div class="example">
+                                <span class="jumbo" id="naming_example_multi_anime">&nbsp;</span>
+                            </div>
+                            <br/>
+                        </div>
+
 						<div class="field-pair">
-                            <input type="radio" name="naming_anime" id="naming_anime" value="1" #if $sickbeard.NAMING_ANIME == 1then "checked=\"checked\"" else ""#/>
+                            <input type="radio" name="naming_anime" id="naming_anime" value="1" #if $sickbeard.NAMING_ANIME == 1 then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="naming_anime">
                                 <span class="component-title">Add Absolute Number</span>
                                 <span class="component-desc">Add the absolute number to the season/episode format?</span>

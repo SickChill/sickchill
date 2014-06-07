@@ -179,7 +179,7 @@ for curFile in auto_process_files:
 setup(
       options = {'py2exe': {'bundle_files': 1}},
       zipfile = None,
-      console = ['updater.py'],
+      console = ['updater.py'], requires=['Cheetah']
 )
 
 if 'test' in oldArgs:

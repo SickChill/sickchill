@@ -163,9 +163,9 @@ class AllShowsListUI:
                         continue
 
                     if 'seriesname' in curShow:
-                        seriesnames.append(str(curShow['seriesname']))
+                        seriesnames.append(curShow['seriesname'])
                     if 'aliasnames' in curShow:
-                        seriesnames.extend(str(curShow['aliasnames']).split('|'))
+                        seriesnames.extend(curShow['aliasnames'].split('|'))
                         
                     for name in seriesnames:
                         if searchterm.lower() in name.lower():

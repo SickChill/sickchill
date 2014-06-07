@@ -29,7 +29,7 @@ class rTorrentAPI(GenericClient):
         super(rTorrentAPI, self).__init__('rTorrent', host, username, password)
 
     def _get_auth(self):
-        auth = None
+        self.auth = None
 
         if self.auth is not None:
             return self.auth

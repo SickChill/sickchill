@@ -23,7 +23,7 @@ import threading
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering
+from sickbeard import logger, helpers, scene_numbering, common
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
@@ -136,11 +136,9 @@ class NameParser(object):
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
-                if cur_regex_name == 'bare' and tmp_season in (19, 20):
-                    continue
-
-                result.season_number = tmp_season
-                result.score += 1
+                if not (cur_regex_name == 'bare' and tmp_season in (19, 20)):
+                    result.season_number = tmp_season
+                    result.score += 1
 
             if 'ep_num' in named_groups:
                 ep_num = self._convert_number(match.group('ep_num'))
@@ -198,12 +196,10 @@ class NameParser(object):
                 tmp_extra_info = match.group('extra_info')
 
                 # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                if tmp_extra_info and cur_regex_name == 'season_only' and re.search(
-                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
-                    continue
-
-                result.extra_info = tmp_extra_info
-                result.score += 1
+                if not (tmp_extra_info and cur_regex_name == 'season_only' and re.search(
+                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I)):
+                    result.extra_info = tmp_extra_info
+                    result.score += 1
 
             if 'release_group' in named_groups:
                 result.release_group = match.group('release_group')
@@ -211,6 +207,14 @@ class NameParser(object):
 
             cur_show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
             if not cur_show:
+                if self.showObj:
+                    if self.showObj.air_by_date and result.air_date:
+                        result.score += 1
+                    elif self.showObj.sports and result.sports_event_date:
+                        result.score += 1
+                    elif self.showObj.anime and len(result.ab_episode_numbers):
+                        result.score += 1
+
                 matches.append(result)
                 continue
 
@@ -230,6 +234,10 @@ class NameParser(object):
 
         if len(matches):
             result = max(matches, key=lambda x: x.score)
+
+            # get quality
+            if result.show:
+                result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
 
         return result
 
@@ -352,6 +360,7 @@ class NameParser(object):
                 final_result.which_regex += dir_name_result.which_regex
 
         final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
+        final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number == None and not final_result.episode_numbers and final_result.air_date == None and not final_result.series_name:
@@ -377,7 +386,8 @@ class ParseResult(object):
                  air_date=None,
                  ab_episode_numbers=None,
                  show=None,
-                 score=None
+                 score=None,
+                 quality=None
     ):
 
         self.original_name = original_name
@@ -393,6 +403,11 @@ class ParseResult(object):
             self.ab_episode_numbers = []
         else:
             self.ab_episode_numbers = ab_episode_numbers
+
+        if not quality:
+            self.quality = common.Quality.UNKNOWN
+        else:
+            self.quality = quality
 
         self.extra_info = extra_info
         self.release_group = release_group
@@ -434,6 +449,8 @@ class ParseResult(object):
         if self.show != other.show:
             return False
         if self.score != other.score:
+            return False
+        if self.quality != other.quality:
             return False
 
         return True
