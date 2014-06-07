@@ -235,9 +235,9 @@ class NameParser(object):
         if len(matches):
             result = max(matches, key=lambda x: x.score)
 
-        # get quality
-        if result.show:
-            result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
+            # get quality
+            if result.show:
+                result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
 
         return result
 
