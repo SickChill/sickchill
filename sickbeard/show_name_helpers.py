@@ -108,7 +108,6 @@ def makeSceneShowSearchStrings(show, season=-1):
 
 
 def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
-    myDB = db.DBConnection()
 
     if show.air_by_date or show.sports:
         numseasons = 0
@@ -144,9 +143,10 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
                     seasonStrings.append("%d" % ab_number)
 
     else:
-        numseasonsSQlResult = myDB.select(
-            "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
-            [show.indexerid])
+        with db.DBConnection() as myDB:
+            numseasonsSQlResult = myDB.select(
+                "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
+                [show.indexerid])
 
         numseasons = int(numseasonsSQlResult[0][0])
         seasonStrings = ["S%02d" % int(ep_obj.scene_season)]
@@ -177,10 +177,10 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
 
 
 def makeSceneSearchString(show, ep_obj):
-    myDB = db.DBConnection()
-    numseasonsSQlResult = myDB.select(
-        "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
-        [show.indexerid])
+    with db.DBConnection() as myDB:
+        numseasonsSQlResult = myDB.select(
+            "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and season != 0",
+            [show.indexerid])
     numseasons = int(numseasonsSQlResult[0][0])
 
     # see if we should use dates instead of episodes

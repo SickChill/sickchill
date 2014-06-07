@@ -242,8 +242,9 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
         return False
 
     # make sure the dir isn't inside a show dir
-    myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT * FROM tv_shows")
+    with db.DBConnection() as myDB:
+        sqlResults = myDB.select("SELECT * FROM tv_shows")
+
     for sqlShow in sqlResults:
         if dirName.lower().startswith(
                         ek.ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or dirName.lower() == ek.ek(
@@ -344,33 +345,33 @@ def already_postprocessed(dirName, videofile, force):
         dirName = unicode(dirName, 'utf_8')
 
     # Avoid processing the same dir again if we use a process method <> move
-    myDB = db.DBConnection()
-    sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
-    if sqlResult:
-        returnStr += logHelper(u"You're trying to post process a dir that's already been processed, skipping",
-                               logger.DEBUG)
-        return True
+    with db.DBConnection() as myDB:
+        sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
+        if sqlResult:
+            returnStr += logHelper(u"You're trying to post process a dir that's already been processed, skipping",
+                                   logger.DEBUG)
+            return True
 
-    # This is needed for video whose name differ from dirName
-    if not isinstance(videofile, unicode):
-        videofile = unicode(videofile, 'utf_8')
+        # This is needed for video whose name differ from dirName
+        if not isinstance(videofile, unicode):
+            videofile = unicode(videofile, 'utf_8')
 
-    sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [videofile.rpartition('.')[0]])
-    if sqlResult:
-        returnStr += logHelper(u"You're trying to post process a video that's already been processed, skipping",
-                               logger.DEBUG)
-        return True
+        sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [videofile.rpartition('.')[0]])
+        if sqlResult:
+            returnStr += logHelper(u"You're trying to post process a video that's already been processed, skipping",
+                                   logger.DEBUG)
+            return True
 
-    #Needed if we have downloaded the same episode @ different quality
-    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"
-    search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
-    search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
-    search_sql += " and history.resource LIKE ?"
-    sqlResult = myDB.select(search_sql, [u'%' + videofile])
-    if sqlResult:
-        returnStr += logHelper(u"You're trying to post process a video that's already been processed, skipping",
-                               logger.DEBUG)
-        return True
+        #Needed if we have downloaded the same episode @ different quality
+        search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"
+        search_sql += " WHERE history.season=tv_episodes.season and history.episode=tv_episodes.episode"
+        search_sql += " and tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED]) + ")"
+        search_sql += " and history.resource LIKE ?"
+        sqlResult = myDB.select(search_sql, [u'%' + videofile])
+        if sqlResult:
+            returnStr += logHelper(u"You're trying to post process a video that's already been processed, skipping",
+                                   logger.DEBUG)
+            return True
 
     return False
 

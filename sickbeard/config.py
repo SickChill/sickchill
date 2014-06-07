@@ -467,8 +467,8 @@ class ConfigMigrator():
         sickbeard.NAMING_MULTI_EP = int(check_setting_int(self.config_obj, 'General', 'naming_multi_ep_type', 1))
 
         # see if any of their shows used season folders
-        myDB = db.DBConnection()
-        season_folder_shows = myDB.select("SELECT * FROM tv_shows WHERE flatten_folders = 0")
+        with db.DBConnection() as myDB:
+            season_folder_shows = myDB.select("SELECT * FROM tv_shows WHERE flatten_folders = 0")
 
         # if any shows had season folders on then prepend season folder to the pattern
         if season_folder_shows:

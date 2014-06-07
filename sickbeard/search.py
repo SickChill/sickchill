@@ -175,8 +175,8 @@ def snatchEpisode(result, endStatus=SNATCHED):
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
     if sql_l:
-        myDB = db.DBConnection()
-        myDB.mass_action(sql_l)
+        with db.DBConnection() as myDB:
+            myDB.mass_action(sql_l)
 
     return True
 
@@ -511,10 +511,10 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 u"The quality of the season " + bestSeasonNZB.provider.providerType + " is " + Quality.qualityStrings[
                     seasonQual], logger.DEBUG)
 
-            myDB = db.DBConnection()
-            allEps = [int(x["episode"]) for x in
-                      myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND season = ?",
-                                  [show.indexerid, season])]
+            with db.DBConnection() as myDB:
+                allEps = [int(x["episode"]) for x in
+                          myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND season = ?",
+                                      [show.indexerid, season])]
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
             allWanted = True

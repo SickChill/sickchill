@@ -164,42 +164,42 @@ def update_network_dict():
     except (IOError, OSError):
         pass
 
-    myDB = db.DBConnection("cache.db")
-    # load current network timezones
-    old_d = dict(myDB.select("SELECT * FROM network_timezones"))
+    with db.DBConnection('cache.db') as myDB:
+        # load current network timezones
+        old_d = dict(myDB.select("SELECT * FROM network_timezones"))
 
-    # list of sql commands to update the network_timezones table
-    ql = []
-    for cur_d, cur_t in d.iteritems():
-        h_k = old_d.has_key(cur_d)
-        if h_k and cur_t != old_d[cur_d]:
-            # update old record
-            ql.append(
-                ["UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?", [cur_d, cur_t, cur_d]])
-        elif not h_k:
-            # add new record
-            ql.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
-        if h_k:
-            del old_d[cur_d]
-    # remove deleted records
-    if len(old_d) > 0:
-        L = list(va for va in old_d)
-        ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
-    # change all network timezone infos at once (much faster)
-    if ql:
-        myDB.mass_action(ql)
-        load_network_dict()
+        # list of sql commands to update the network_timezones table
+        ql = []
+        for cur_d, cur_t in d.iteritems():
+            h_k = old_d.has_key(cur_d)
+            if h_k and cur_t != old_d[cur_d]:
+                # update old record
+                ql.append(
+                    ["UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?", [cur_d, cur_t, cur_d]])
+            elif not h_k:
+                # add new record
+                ql.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
+            if h_k:
+                del old_d[cur_d]
+        # remove deleted records
+        if len(old_d) > 0:
+            L = list(va for va in old_d)
+            ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
+        # change all network timezone infos at once (much faster)
+        if ql:
+            myDB.mass_action(ql)
+            load_network_dict()
 
 
 # load network timezones from db into dict
 def load_network_dict():
     d = {}
     try:
-        myDB = db.DBConnection("cache.db")
-        cur_network_list = myDB.select("SELECT * FROM network_timezones")
-        if cur_network_list is None or len(cur_network_list) < 1:
-            update_network_dict()
+        with db.DBConnection('cache.db') as myDB:
             cur_network_list = myDB.select("SELECT * FROM network_timezones")
+            if cur_network_list is None or len(cur_network_list) < 1:
+                update_network_dict()
+                cur_network_list = myDB.select("SELECT * FROM network_timezones")
         d = dict(cur_network_list)
     except:
         d = {}

@@ -76,8 +76,8 @@ def loadShowsFromDB():
     Populates the showList with shows from the database
     """
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT * FROM tv_shows")
+    with db.DBConnection() as myDB:
+        sqlResults = myDB.select("SELECT * FROM tv_shows")
 
     for sqlShow in sqlResults:
         try:
@@ -186,16 +186,6 @@ def main():
 
     # Need console logging for SickBeard.py and SickBeard-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sickbeard.MY_NAME.lower().find('-console') > 0)
-
-    # Attempt to rename the process for easier debugging
-    try:
-        from setproctitle import setproctitle
-    except ImportError:
-        if consoleLogging:
-            sys.stderr.write(u"setproctitle module is not available.\n")
-        setproctitle = lambda t: None
-
-    setproctitle(sickbeard.MY_NAME)
 
     # Rename the main thread
     threading.currentThread().name = "MAIN"
@@ -306,16 +296,18 @@ def main():
 
     sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
-    CUR_DB_VERSION = db.DBConnection().checkDBVersion()
+    with db.DBConnection() as myDB:
+        CUR_DB_VERSION = myDB.checkDBVersion()
+
     if CUR_DB_VERSION > 0:
         if CUR_DB_VERSION < MIN_DB_VERSION:
             raise SystemExit("Your database version (" + str(
-                db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of SickRage (" + str(
+                CUR_DB_VERSION) + ") is too old to migrate from with this version of SickRage (" + str(
                 MIN_DB_VERSION) + ").\n" + \
                              "Upgrade using a previous version of SB first, or start with no database file to begin fresh.")
         if CUR_DB_VERSION > MAX_DB_VERSION:
             raise SystemExit("Your database version (" + str(
-                db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of SickRage supports (" + str(
+                CUR_DB_VERSION) + ") has been incremented past what this version of SickRage supports (" + str(
                 MAX_DB_VERSION) + ").\n" + \
                              "If you have used other forks of SB, your database may be unusable due to their modifications.")
 

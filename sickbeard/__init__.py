@@ -433,7 +433,6 @@ TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 
 __INITIALIZED__ = False
 
-
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -906,16 +905,20 @@ def initialize(consoleLogging=True):
         logger.sb_log_instance.initLogging(consoleLogging=consoleLogging)
 
         # initialize the main SB database
-        db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+        with db.DBConnection() as myDB:
+            db.upgradeDatabase(myDB, mainDB.InitialSchema)
 
         # initialize the cache database
-        db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
+        with db.DBConnection('cache.db') as myDB:
+            db.upgradeDatabase(myDB, cache_db.InitialSchema)
 
         # initialize the failed downloads database
-        db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
+        with db.DBConnection('failed.db') as myDB:
+            db.upgradeDatabase(myDB, failed_db.InitialSchema)
 
         # fix up any db problems
-        db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
+        with db.DBConnection() as myDB:
+            db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)
@@ -1803,8 +1806,8 @@ def getEpList(epIDs, showid=None):
         query += " AND showid = ?"
         params.append(showid)
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select(query, params)
+    with db.DBConnection() as myDB:
+        sqlResults = myDB.select(query, params)
 
     epList = []
 

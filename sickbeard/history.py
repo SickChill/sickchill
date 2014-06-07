@@ -31,10 +31,10 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
     if not isinstance(resource, unicode):
         resource = unicode(resource, 'utf-8')
 
-    myDB = db.DBConnection()
-    myDB.action(
-        "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider) VALUES (?,?,?,?,?,?,?,?)",
-        [action, logDate, showid, season, episode, quality, resource, provider])
+    with db.DBConnection() as myDB:
+        myDB.action(
+            "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider) VALUES (?,?,?,?,?,?,?,?)",
+            [action, logDate, showid, season, episode, quality, resource, provider])
 
 
 def logSnatch(searchResult):
