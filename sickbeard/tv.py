@@ -1513,13 +1513,13 @@ class TVEpisode(object):
 
             # does one now a better way to test for NULL in the db field ?
             if sqlResults[0]["scene_season"]:
-                self.scene_season = int(sqlResults[0]["scene_season"])
+                self.scene_season = int(sqlResults[0]["scene_season"] or 0)
 
             if sqlResults[0]["scene_episode"]:
-                self.scene_episode = int(sqlResults[0]["scene_episode"])
+                self.scene_episode = int(sqlResults[0]["scene_episode"] or 0)
 
             if sqlResults[0]["scene_absolute_number"]:
-                self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"])
+                self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"] or 0)
 
             if sqlResults[0]["release_name"] is not None:
                 self.release_name = sqlResults[0]["release_name"]
