@@ -49,22 +49,21 @@ class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
         db.DBConnection.__init__(self, "cache.db")
 
-        with self as myDB:
-            # Create the table if it's not already there
-            try:
-                if not myDB.hasTable(providerName):
-                    myDB.action("CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
-            except Exception, e:
-                if str(e) != "table [" + providerName + "] already exists":
-                    raise
+        # Create the table if it's not already there
+        try:
+            if not self.hasTable(providerName):
+                self.action("CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
+        except Exception, e:
+            if str(e) != "table [" + providerName + "] already exists":
+                raise
 
-            # Create the table if it's not already there
-            try:
-                if not myDB.hasTable('lastUpdate'):
-                    myDB.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
-            except Exception, e:
-                if str(e) != "table lastUpdate already exists":
-                    raise
+        # Create the table if it's not already there
+        try:
+            if not self.hasTable('lastUpdate'):
+                self.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
+        except Exception, e:
+            if str(e) != "table lastUpdate already exists":
+                raise
 
 
 class TVCache():
