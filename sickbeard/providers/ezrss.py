@@ -81,8 +81,12 @@ class EZRSSProvider(generic.TorrentProvider):
 
         params['show_name'] = helpers.sanitizeSceneName(self.show.name, ezrss=True).replace('.', ' ').encode('utf-8')
 
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            params['season'] = str(ep_obj.airdate).split('-')[0]
+        if ep_obj.show.air_by_date:
+            params['date'] = str(ep_obj.airdate).split('-')[0]
+        elif ep_obj.show.sports:
+            params['date'] = str(ep_obj.airdate).split('-')[0]
+        elif ep_obj.show.anime:
+            params['season'] = "%d" % ep_obj.scene_absolute_number
         else:
             params['season'] = ep_obj.scene_season
 
@@ -99,8 +103,10 @@ class EZRSSProvider(generic.TorrentProvider):
 
         if self.show.air_by_date:
             params['date'] = str(ep_obj.airdate)
-        if self.show.sports:
+        elif self.show.sports:
             params['date'] = str(ep_obj.airdate)
+        elif self.show.anime:
+            params['episode'] = "%i" % int(ep_obj.scene_absolute_number)
         else:
             params['season'] = ep_obj.scene_season
             params['episode'] = ep_obj.scene_episode

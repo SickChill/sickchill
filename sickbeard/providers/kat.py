@@ -174,23 +174,22 @@ class KATProvider(generic.TorrentProvider):
     def _get_season_search_strings(self, ep_obj):
         search_string = {'Season': []}
 
-        if not (ep_obj.show.air_by_date or ep_obj.show.sports):
-            for show_name in set(allPossibleShowNames(self.show)):
-                if ep_obj.show.air_by_date or ep_obj.show.sports:
-                    ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
-                    search_string['Season'].append(ep_string)
-                    ep_string = show_name + ' Season ' + str(ep_obj.airdate).split('-')[0]
-                    search_string['Season'].append(ep_string)
-                elif ep_obj.show.anime:
-                    ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
-                    search_string['Season'].append(ep_string)
-                else:
-                    ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(
-                        ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
-                    search_string['Season'].append(ep_string)
-                    ep_string = show_name + ' Season ' + str(
-                        ep_obj.scene_season) + ' -Ep*' + ' category:tv'  # 2) showName Season X
-                    search_string['Season'].append(ep_string)
+        for show_name in set(allPossibleShowNames(self.show)):
+            if ep_obj.show.air_by_date or ep_obj.show.sports:
+                ep_string = show_name + ' ' + str(ep_obj.airdate).split('-')[0]
+                search_string['Season'].append(ep_string)
+                ep_string = show_name + ' Season ' + str(ep_obj.airdate).split('-')[0]
+                search_string['Season'].append(ep_string)
+            elif ep_obj.show.anime:
+                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
+                search_string['Season'].append(ep_string)
+            else:
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(
+                    ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
+                search_string['Season'].append(ep_string)
+                ep_string = show_name + ' Season ' + str(
+                    ep_obj.scene_season) + ' -Ep*' + ' category:tv'  # 2) showName Season X
+                search_string['Season'].append(ep_string)
 
         return [search_string]
 
