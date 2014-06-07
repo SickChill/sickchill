@@ -50,7 +50,7 @@ class DBConnection:
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
-        self.connection = sqlite3.connect(dbFilename(filename), 20)
+        self.connection = sqlite3.connect(dbFilename(filename, suffix), 20)
         if row_type == "dict":
             self.connection.row_factory = self._dict_factory
         else:

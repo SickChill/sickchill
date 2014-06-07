@@ -99,8 +99,7 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     (so the return values will always be set)
 
     @param indexer_id: int
-    @param season: int
-    @param episode: int
+    @param absolute_number: int
     @param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
     @return: (int, int) a tuple with (season, episode)
     """
@@ -258,9 +257,8 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
     Refreshes/Loads as needed.
 
     @param indexer_id: int
-    @param season: int
-    @param episode: int
-    @return: (int, int) a tuple of scene_season, scene_episode, or None if there is no special mapping.
+    @param absolute_number: int
+    @return: int
     """
     if indexer_id is None or absolute_number is None:
         return absolute_number
@@ -313,9 +311,8 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
 
     @param indexer_id: int
-    @param sceneSeason: int
-    @param sceneEpisode: int
-    @return: (int, int) a tuple of (season, episode)
+    @param sceneAbsoluteNumber: int
+    @return: int
     """
     if indexer_id is None or sceneAbsoluteNumber is None:
         return sceneAbsoluteNumber
