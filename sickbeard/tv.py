@@ -52,6 +52,7 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
+
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
 
@@ -238,13 +239,13 @@ class TVShow(object):
 
             # get scene absolute numbering
             ep.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
-                                                                                                 self.indexer,
-                                                                                                 ep.absolute_number)
+                                                                                              self.indexer,
+                                                                                              ep.absolute_number)
 
             # get scene season and episode numbering
             ep.scene_season, ep.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
-                                                                                                    self.indexer,
-                                                                                                    season, episode)
+                                                                                              self.indexer,
+                                                                                              season, episode)
 
             if ep != None:
                 self.episodes[season][episode] = ep
@@ -891,23 +892,13 @@ class TVShow(object):
                     imdb_info[key] = imdbTv.get(key.replace('_', ' '))
 
             # Filter only the value
-            if imdb_info['runtimes']:
-                imdb_info['runtimes'] = re.search('\d+', imdb_info['runtimes']).group(0)
-            else:
-                imdb_info['runtimes'] = self.runtime
+            imdb_info['runtimes'] = re.search('\d+', imdb_info['runtimes']).group(0) or self.runtime
+            imdb_info['akas'] = '|'.join(imdb_info['akas']) or ''
 
-            if imdb_info['akas']:
-                imdb_info['akas'] = '|'.join(imdb_info['akas'])
-            else:
-                imdb_info['akas'] = ''
+            # Join all genres in a string
+            imdb_info['genres'] = '|'.join(imdb_info['genres']) or ''
 
-                # Join all genres in a string
-            if imdb_info['genres']:
-                imdb_info['genres'] = '|'.join(imdb_info['genres'])
-            else:
-                imdb_info['genres'] = ''
-
-                # Get only the production country certificate if any
+            # Get only the production country certificate if any
             if imdb_info['certificates'] and imdb_info['countries']:
                 dct = {}
                 try:
@@ -921,11 +912,7 @@ class TVShow(object):
             else:
                 imdb_info['certificates'] = ''
 
-            if imdb_info['country_codes']:
-                imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
-            else:
-                imdb_info['country_codes'] = ''
-
+            imdb_info['country_codes'] = '|'.join(imdb_info['country_codes']) or ''
             imdb_info['last_update'] = datetime.date.today().toordinal()
 
             # Rename dict keys without spaces for DB upsert
@@ -1855,18 +1842,21 @@ class TVEpisode(object):
                 "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
                 "absolute_number = ? WHERE episode_id = ?",
                 [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
-                 self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo, self.hastbn,
-                 self.status, self.location, self.file_size,self.release_name, self.is_proper, self.show.indexerid,
+                 self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                 self.hastbn,
+                 self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
                  self.season, self.episode, self.absolute_number, epID]]
         else:
             # use a custom insert method to get the data into the DB.
             return [
                 "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
                 "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-                [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name, self.description,
+                [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
+                 self.description,
                  ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
                  self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-                 self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode, self.absolute_number]]
+                 self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
+                 self.absolute_number]]
 
     def saveToDB(self, forceSave=False):
         """

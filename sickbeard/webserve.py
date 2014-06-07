@@ -79,7 +79,6 @@ except ImportError:
 from sickbeard import browser
 from lib import adba
 
-
 def _handle_reverse_proxy():
     if sickbeard.HANDLE_REVERSE_PROXY:
         cherrypy.lib.cptools.proxy()
@@ -2660,7 +2659,7 @@ class Home:
                            ["Anime", anime]]
         else:
             t.showlists = [["Shows", sickbeard.showList]]
-
+        
         t.submenu = HomeMenu()
         return _munge(t)
 
