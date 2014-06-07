@@ -168,7 +168,7 @@ class AllShowsListUI:
                         seriesnames.extend(unicode(curShow['aliasnames']).split('|'))
                         
                     for name in seriesnames:
-                        if searchterm.lower() in name.lower():
+                        if str(searchterm).lower() in str(name).lower():
                             if 'firstaired' not in curShow:
                                 curShow['firstaired'] = str(datetime.date.fromordinal(1))
                                 curShow['firstaired'] = re.sub("([-]0{2}){1,}", "", curShow['firstaired'])
