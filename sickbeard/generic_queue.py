@@ -61,48 +61,47 @@ class GenericQueue(object):
 
         # only start a new task if one isn't already going
         if self.thread == None or self.thread.isAlive() == False:
+            with self.lock:
+                # if the thread is dead then the current item should be finished
+                if self.currentItem != None:
+                    self.currentItem.finish()
+                    self.currentItem = None
 
-            # if the thread is dead then the current item should be finished
-            if self.currentItem != None:
-                self.currentItem.finish()
-                self.currentItem = None
+                # if there's something in the queue then run it in a thread and take it out of the queue
+                if len(self.queue) > 0:
 
-            # if there's something in the queue then run it in a thread and take it out of the queue
-            if len(self.queue) > 0:
+                    # sort by priority
+                    def sorter(x,y):
+                        """
+                        Sorts by priority descending then time ascending
+                        """
+                        if x.priority == y.priority:
+                            if y.added == x.added:
+                                return 0
+                            elif y.added < x.added:
+                                return 1
+                            elif y.added > x.added:
+                                return -1
+                        else:
+                            return y.priority-x.priority
 
-                # sort by priority
-                def sorter(x,y):
-                    """
-                    Sorts by priority descending then time ascending
-                    """
-                    if x.priority == y.priority:
-                        if y.added == x.added:
-                            return 0
-                        elif y.added < x.added:
-                            return 1
-                        elif y.added > x.added:
-                            return -1
-                    else:
-                        return y.priority-x.priority
-
-                with self.lock:
                     self.queue.sort(cmp=sorter)
-                
-                queueItem = self.queue[0]
 
-                if queueItem.priority < self.min_priority:
-                    return
+                    queueItem = self.queue[0]
 
-                # launch the queue item in a thread
-                # TODO: improve thread name
-                threadName = self.queue_name + '-' + queueItem.get_thread_name()
-                self.thread = threading.Thread(None, queueItem.execute, threadName)
-                self.thread.start()
+                    if queueItem.priority < self.min_priority:
+                        return
 
-                self.currentItem = queueItem
+                    # launch the queue item in a thread
+                    # TODO: improve thread name
+                    threadName = self.queue_name + '-' + queueItem.get_thread_name()
+                    self.thread = threading.Thread(None, queueItem.execute, threadName)
+                    self.thread.start()
 
-                # take it out of the queue
-                del self.queue[0]
+                    self.currentItem = queueItem
+
+                    # take it out of the queue
+                    del self.queue[0]
 
 class QueueItem:
     def __init__(self, name, action_id = 0):

@@ -892,11 +892,21 @@ class TVShow(object):
                     imdb_info[key] = imdbTv.get(key.replace('_', ' '))
 
             # Filter only the value
-            imdb_info['runtimes'] = re.search('\d+', imdb_info['runtimes']).group(0) or self.runtime
-            imdb_info['akas'] = '|'.join(imdb_info['akas']) or ''
+            if imdb_info['runtimes']:
+                imdb_info['runtimes'] = re.search('\d+', imdb_info['runtimes']).group(0)
+            else:
+                imdb_info['runtimes'] = self.runtime
+
+            if imdb_info['akas']:
+                imdb_info['akas'] = '|'.join(imdb_info['akas'])
+            else:
+                imdb_info['akas'] = ''
 
             # Join all genres in a string
-            imdb_info['genres'] = '|'.join(imdb_info['genres']) or ''
+            if imdb_info['genres']:
+                imdb_info['genres'] = '|'.join(imdb_info['genres'])
+            else:
+                imdb_info['genres'] = ''
 
             # Get only the production country certificate if any
             if imdb_info['certificates'] and imdb_info['countries']:
@@ -912,7 +922,11 @@ class TVShow(object):
             else:
                 imdb_info['certificates'] = ''
 
-            imdb_info['country_codes'] = '|'.join(imdb_info['country_codes']) or ''
+            if imdb_info['country_codes']:
+                imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
+            else:
+                imdb_info['country_codes'] = ''
+
             imdb_info['last_update'] = datetime.date.today().toordinal()
 
             # Rename dict keys without spaces for DB upsert
@@ -1499,14 +1513,20 @@ class TVEpisode(object):
             self.indexer = int(sqlResults[0]["indexer"])
 
             # does one now a better way to test for NULL in the db field ?
-            if sqlResults[0]["scene_season"]:
-                self.scene_season = int(sqlResults[0]["scene_season"] or 0)
+            try:
+                self.scene_season = int(sqlResults[0]["scene_season"])
+            except:
+                self.scene_season = 0
 
-            if sqlResults[0]["scene_episode"]:
-                self.scene_episode = int(sqlResults[0]["scene_episode"] or 0)
+            try:
+                self.scene_episode = int(sqlResults[0]["scene_episode"])
+            except:
+                self.scene_episode = 0
 
-            if sqlResults[0]["scene_absolute_number"]:
-                self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"] or 0)
+            try:
+                self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"])
+            except:
+                self.scene_absolute_number = 0
 
             if sqlResults[0]["release_name"] is not None:
                 self.release_name = sqlResults[0]["release_name"]
@@ -2355,8 +2375,7 @@ class TVEpisode(object):
         for curEp in [self] + self.relatedEps:
             curEp.checkForMetaFiles()
 
-        # save any changes to the database
-
+        # save any changes to the databas
         sql_l = []
         with self.lock:
             sql_l.append(self.get_sql())
