@@ -693,4 +693,5 @@ def fix_xem_numbering(indexer_id, indexer):
             update_scene_absolute_number = False
 
     if ql:
-        myDB.mass_action(ql)
+        with db.DBConnection() as myDB:
+            myDB.mass_action(ql)

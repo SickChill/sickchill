@@ -203,7 +203,7 @@ class TVShow(object):
         if self.is_anime and absolute_number and not season and not episode:
             with db.DBConnection() as myDB:
                 sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
-            sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
+                sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
 
             if len(sqlResults) == 1:
                 episode = int(sqlResults[0]["episode"])

@@ -82,11 +82,10 @@ class TVCache():
         if not self.shouldClearCache():
             return
 
-        myDB = self._getDB()
-
         curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
-        myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
+        with self._getDB() as myDB:
+            myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
     def _getRSSData(self):
 
@@ -127,8 +126,8 @@ class TVCache():
                         cl.append(ci)
 
                 if cl:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
+                    with self._getDB() as myDB:
+                        myDB.mass_action(cl)
 
             else:
                 raise AuthException(
@@ -194,8 +193,8 @@ class TVCache():
 
 
     def _getLastUpdate(self):
-        myDB = self._getDB()
-        sqlResults = myDB.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
+        with self._getDB() as myDB:
+            sqlResults = myDB.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.providerID])
 
         if sqlResults:
             lastTime = int(sqlResults[0]["time"])
@@ -207,8 +206,8 @@ class TVCache():
         return datetime.datetime.fromtimestamp(lastTime)
 
     def _getLastSearch(self):
-        myDB = self._getDB()
-        sqlResults = myDB.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
+        with self._getDB() as myDB:
+            sqlResults = myDB.select("SELECT time FROM lastSearch WHERE provider = ?", [self.providerID])
 
         if sqlResults:
             lastTime = int(sqlResults[0]["time"])
@@ -224,19 +223,19 @@ class TVCache():
         if not toDate:
             toDate = datetime.datetime.today()
 
-        myDB = self._getDB()
-        myDB.upsert("lastUpdate",
-                    {'time': int(time.mktime(toDate.timetuple()))},
-                    {'provider': self.providerID})
+        with self._getDB() as myDB:
+            myDB.upsert("lastUpdate",
+                        {'time': int(time.mktime(toDate.timetuple()))},
+                        {'provider': self.providerID})
 
     def setLastSearch(self, toDate=None):
         if not toDate:
             toDate = datetime.datetime.today()
 
-        myDB = self._getDB()
-        myDB.upsert("lastSearch",
-                    {'time': int(time.mktime(toDate.timetuple()))},
-                    {'provider': self.providerID})
+        with self._getDB() as myDB:
+            myDB.upsert("lastSearch",
+                        {'time': int(time.mktime(toDate.timetuple()))},
+                        {'provider': self.providerID})
 
     lastUpdate = property(_getLastUpdate)
     lastSearch = property(_getLastSearch)
@@ -316,25 +315,23 @@ class TVCache():
         return neededEps
 
     def listPropers(self, date=None, delimiter="."):
-        myDB = self._getDB()
+        with self._getDB() as myDB:
+            sql = "SELECT * FROM [" + self.providerID + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
 
-        sql = "SELECT * FROM [" + self.providerID + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
+            if date != None:
+                sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
-        if date != None:
-            sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
-
-        return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
+            return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
 
 
     def findNeededEpisodes(self, episodes, manualSearch=False):
         neededEps = {}
 
-        cacheDB = self._getDB()
-
         for epObj in episodes:
-            sqlResults = cacheDB.select(
-                "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"])
+            with self._getDB() as myDB:
+                sqlResults = myDB.select(
+                    "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
+                    [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"])
 
             # for each cache entry
             for curResult in sqlResults:

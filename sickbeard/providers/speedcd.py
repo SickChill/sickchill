@@ -302,8 +302,8 @@ class SpeedCDCache(tvcache.TVCache):
                 ql.append(ci)
 
         if ql:
-            myDB = self._getDB()
-            myDB.mass_action(ql)
+            with self._getDB() as myDB:
+                myDB.mass_action(ql)
 
     def _parseItem(self, item):
 

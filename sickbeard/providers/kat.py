@@ -455,8 +455,8 @@ class KATCache(tvcache.TVCache):
                 cl.append(ci)
 
         if cl:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+            with self._getDB() as myDB:
+                myDB.mass_action(cl)
 
     def _parseItem(self, item):
 
