@@ -29,8 +29,9 @@ $(document).ready(function () {
     function fill_examples() {
         var pattern = $('#naming_pattern').val();
         var multi = $('#naming_multi_ep :selected').val();
+        var anime_type = $('input[name="naming_anime"]:checked').val();
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern},
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: 3},
             function (data) {
                 if (data) {
                     $('#naming_example').text(data + '.ext');
@@ -40,7 +41,7 @@ $(document).ready(function () {
                 }
             });
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi},
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: 3},
             function (data) {
                 if (data) {
                     $('#naming_example_multi').text(data + '.ext');
@@ -50,7 +51,27 @@ $(document).ready(function () {
                 }
             });
 
-        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi},
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type},
+            function (data) {
+                if (data) {
+                    $('#naming_example_anime').text(data + '.ext');
+                    $('#naming_example_anime_div').show();
+                } else {
+                    $('#naming_example_anime_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type},
+            function (data) {
+                if (data) {
+                    $('#naming_example_multi_anime').text(data + '.ext');
+                    $('#naming_example_multi_anime_div').show();
+                } else {
+                    $('#naming_example_multi_anime_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type},
             function (data) {
                 if (data == "invalid") {
                     $('#naming_pattern').qtip('option', {
@@ -219,6 +240,10 @@ $(document).ready(function () {
 
     $('#naming_custom_sports').change(function () {
         setup_sports_naming();
+    });
+
+    $('input[name="naming_anime"]').click(function(){
+        setup_naming();
     });
 
     $('#naming_multi_ep').change(fill_examples);

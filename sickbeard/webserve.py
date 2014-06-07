@@ -1267,7 +1267,6 @@ class ConfigPostProcessing:
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
-        sickbeard.NAMING_ANIME = config.checkbox_to_value(naming_anime)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
         sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
@@ -1288,12 +1287,16 @@ class ConfigPostProcessing:
         sickbeard.metadata_provider_dict['TIVO'].set_config(sickbeard.METADATA_TIVO)
         sickbeard.metadata_provider_dict['Mede8er'].set_config(sickbeard.METADATA_MEDE8ER)
 
-        if self.isNamingValid(naming_pattern, naming_multi_ep) != "invalid":
+        if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
             sickbeard.NAMING_MULTI_EP = int(naming_multi_ep)
+            sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:
-            results.append("You tried saving an invalid naming config, not saving your naming settings")
+            if int(naming_anime) in [1, 2]:
+                results.append("You tried saving an invalid anime naming config, not saving your naming settings")
+            else:
+                results.append("You tried saving an invalid naming config, not saving your naming settings")
 
         if self.isNamingValid(naming_abd_pattern, None, abd=True) != "invalid":
             sickbeard.NAMING_ABD_PATTERN = naming_abd_pattern
@@ -1320,21 +1323,30 @@ class ConfigPostProcessing:
         redirect("/config/postProcessing/")
 
     @cherrypy.expose
-    def testNaming(self, pattern=None, multi=None, abd=False, sports=False, anime=None):
+    def testNaming(self, pattern=None, multi=None, abd=False, sports=False, anime_type=None):
 
         if multi is not None:
             multi = int(multi)
 
-        result = naming.test_name(pattern, multi, abd, sports, anime)
+        if anime_type is not None:
+            anime_type = int(anime_type)
+
+        result = naming.test_name(pattern, multi, abd, sports, anime_type)
 
         result = ek.ek(os.path.join, result['dir'], result['name'])
 
         return result
 
     @cherrypy.expose
-    def isNamingValid(self, pattern=None, multi=None, abd=False, sports=False):
+    def isNamingValid(self, pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         if pattern is None:
             return "invalid"
+
+        if multi is not None:
+            multi = int(multi)
+
+        if anime_type is not None:
+            anime_type = int(anime_type)
 
         # air by date shows just need one check, we don't need to worry about season folders
         if abd:
@@ -1348,10 +1360,10 @@ class ConfigPostProcessing:
 
         else:
             # check validity of single and multi ep cases for the whole path
-            is_valid = naming.check_valid_naming(pattern, multi)
+            is_valid = naming.check_valid_naming(pattern, multi, anime_type)
 
             # check validity of single and multi ep cases for only the file name
-            require_season_folders = naming.check_force_season_folders(pattern, multi)
+            require_season_folders = naming.check_force_season_folders(pattern, multi, anime_type)
 
         if is_valid and not require_season_folders:
             return "valid"

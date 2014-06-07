@@ -136,11 +136,9 @@ class NameParser(object):
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
-                if cur_regex_name == 'bare' and tmp_season in (19, 20):
-                    continue
-
-                result.season_number = tmp_season
-                result.score += 1
+                if not (cur_regex_name == 'bare' and tmp_season in (19, 20)):
+                    result.season_number = tmp_season
+                    result.score += 1
 
             if 'ep_num' in named_groups:
                 ep_num = self._convert_number(match.group('ep_num'))
@@ -198,12 +196,10 @@ class NameParser(object):
                 tmp_extra_info = match.group('extra_info')
 
                 # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                if tmp_extra_info and cur_regex_name == 'season_only' and re.search(
-                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
-                    continue
-
-                result.extra_info = tmp_extra_info
-                result.score += 1
+                if not (tmp_extra_info and cur_regex_name == 'season_only' and re.search(
+                        r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I)):
+                    result.extra_info = tmp_extra_info
+                    result.score += 1
 
             if 'release_group' in named_groups:
                 result.release_group = match.group('release_group')
@@ -211,6 +207,13 @@ class NameParser(object):
 
             cur_show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
             if not cur_show:
+                if self.showObj:
+                    if self.showObj.air_by_date and result.air_date:
+                        result.score += 1
+                    elif self.showObj.sports and result.sports_event_date:
+                        result.score += 1
+                    elif self.showObj.anime and len(result.ab_episode_numbers):
+                        result.score += 1
                 matches.append(result)
                 continue
 
