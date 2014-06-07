@@ -2191,6 +2191,8 @@ class NewHomeAddShows:
         if not lang or lang == 'null':
             lang = "en"
 
+        search_term = search_term.encode('utf-8')
+        
         results = {}
         final_results = []
 

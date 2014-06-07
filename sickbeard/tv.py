@@ -200,7 +200,7 @@ class TVShow(object):
         ep = None
 
         # if we get an anime get the real season and episode
-        if self.is_anime and not self.is_scene and absolute_number and not season and not episode:
+        if self.is_anime and absolute_number and not season and not episode:
             myDB = db.DBConnection()
             sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
             sqlResults = myDB.select(sql, [self.indexerid, absolute_number])

@@ -23,7 +23,7 @@ import threading
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering
+from sickbeard import logger, helpers, scene_numbering, common
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
@@ -214,6 +214,7 @@ class NameParser(object):
                         result.score += 1
                     elif self.showObj.anime and len(result.ab_episode_numbers):
                         result.score += 1
+
                 matches.append(result)
                 continue
 
@@ -233,6 +234,10 @@ class NameParser(object):
 
         if len(matches):
             result = max(matches, key=lambda x: x.score)
+
+        # get quality
+        if result.show:
+            result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
 
         return result
 
@@ -355,6 +360,7 @@ class NameParser(object):
                 final_result.which_regex += dir_name_result.which_regex
 
         final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
+        final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number == None and not final_result.episode_numbers and final_result.air_date == None and not final_result.series_name:
@@ -380,7 +386,8 @@ class ParseResult(object):
                  air_date=None,
                  ab_episode_numbers=None,
                  show=None,
-                 score=None
+                 score=None,
+                 quality=None
     ):
 
         self.original_name = original_name
@@ -396,6 +403,11 @@ class ParseResult(object):
             self.ab_episode_numbers = []
         else:
             self.ab_episode_numbers = ab_episode_numbers
+
+        if not quality:
+            self.quality = common.Quality.UNKNOWN
+        else:
+            self.quality = quality
 
         self.extra_info = extra_info
         self.release_group = release_group
@@ -437,6 +449,8 @@ class ParseResult(object):
         if self.show != other.show:
             return False
         if self.score != other.score:
+            return False
+        if self.quality != other.quality:
             return False
 
         return True

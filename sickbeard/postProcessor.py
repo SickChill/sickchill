@@ -498,7 +498,7 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        to_return = (parse_result.show, season, episodes, None)
+        to_return = (parse_result.show, season, episodes, parse_result.quality)
 
         self._finalize(parse_result)
         return to_return
