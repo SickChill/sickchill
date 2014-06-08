@@ -390,7 +390,7 @@ class TVRage:
 
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
-    @retry(tvrage_error)
+    #@retry(tvrage_error)
     def _loadUrl(self, url, params=None):
         try:
             log().debug("Retrieving URL %s" % url)
@@ -462,7 +462,10 @@ class TVRage:
             return (key, value)
 
         if resp.ok:
-            return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=remap_keys)
+            try:
+                return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=remap_keys)
+            except:
+                return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -598,13 +601,17 @@ class TVRage:
         self.config['params_epInfo']['sid'] = sid
         epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
 
-        for season in epsEt['episodelist'].values():
-            episodes =  season['episode']
+        seasons = epsEt['episodelist']['season']
+        if not isinstance(seasons, list):
+            seasons = [seasons]
+
+        for season in seasons:
+            seas_no = int(season['@no'])
+            episodes = season['episode']
             if not isinstance(episodes, list):
                 episodes = [episodes]
 
             for episode in episodes:
-                seas_no = int(season['@no'])
                 ep_no = int(episode['episodenumber'])
                 self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
 
