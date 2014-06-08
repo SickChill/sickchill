@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 #
-# Uses the Synology Download Station API: http://download.synology.com/download/other/Synology_Download_Station_Official_API_V3.pdf.
+# Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 import sickbeard
 from sickbeard.clients.generic import GenericClient
@@ -51,6 +51,8 @@ class DownloadStationAPI(GenericClient):
                 '_sid':self.auth,
                 'uri':result.url
                 }
+        if sickbeard.TORRENT_PATH:
+            data['destination'] = sickbeard.TORRENT_PATH
         self._request(method='post', data=data)
 
         return self.response.json()['success']
@@ -63,6 +65,8 @@ class DownloadStationAPI(GenericClient):
                 'session':'DownloadStation',
                 '_sid':self.auth
                 }
+        if sickbeard.TORRENT_PATH:
+            data['destination'] = sickbeard.TORRENT_PATH
         files = {'file':(result.name + '.torrent', result.content)}
         self._request(method='post', data=data, files=files)
 

@@ -93,7 +93,7 @@ $(document).ready(function(){
             $('#Torrent_Label').hide();            
             $('#Torrent_username').show();
             $('#Torrent_Paused').hide();
-            $('#Torrent_Path').hide();
+            $('#Torrent_Path').show();
             $('#Torrent_Ratio').hide();
             $('#Torrent_Seed_Time').hide();
             $('#Torrent_High_Bandwidth').hide();
