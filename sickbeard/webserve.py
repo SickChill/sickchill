@@ -86,7 +86,6 @@ def _handle_reverse_proxy():
 
 cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
 
-
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
         KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
