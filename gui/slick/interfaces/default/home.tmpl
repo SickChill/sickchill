@@ -66,10 +66,10 @@
     type: 'numeric'
 });
 
-\$.tablesorter.addParser({ 
+\$.tablesorter.addParser({
     id: 'eps',
     is: function(s) {
-        return false; 
+        return false;
     },
     format: function(s) {
         match = s.match(/^(.*)/);
@@ -78,7 +78,7 @@
             return -10;
 
         var nums = match[1].split(" / ");
-        
+
         if (parseInt(nums[0]) === 0)
         	return parseInt(nums[1]);
 
@@ -170,7 +170,7 @@
 	</span>
 </div>
 
-#for $curShowlist in $showlists:
+#for $curShowlist in $showlists if $varExists('showlists') else $sickbeard.showList
 #set $curListType = $curShowlist[0]
 #set $myShowList = $list($curShowlist[1])
 #if $curListType == "Anime":
@@ -234,7 +234,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
   #set $den = 1
 #end if
 
-#set $which_thumb = $layout+"_thumb" 
+#set $which_thumb = $layout+"_thumb"
 
   <tr>
     #if len($curEp) != 0:
