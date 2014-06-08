@@ -32,7 +32,6 @@ from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.show_name_helpers import allPossibleShowNames
-from sickbeard import tv
 
 from lib.tmdb_api.tmdb_api import TMDB
 
@@ -338,7 +337,7 @@ class GenericMetadata():
     def create_season_posters(self, show_obj):
         if self.season_posters and show_obj:
             result = []
-            for season, episodes in tv.episodeCache.iteritems():  # @UnusedVariable
+            for season, episodes in sickbeard.episodeCache.iteritems():  # @UnusedVariable
                 if not self._has_season_poster(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
@@ -349,7 +348,7 @@ class GenericMetadata():
     def create_season_banners(self, show_obj):
         if self.season_banners and show_obj:
             result = []
-            for season, episodes in tv.episodeCache.iteritems():  # @UnusedVariable
+            for season, episodes in sickbeard.episodeCache.iteritems():  # @UnusedVariable
                 if not self._has_season_banner(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name,
                                logger.DEBUG)
