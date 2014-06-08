@@ -102,6 +102,7 @@ $(document).ready(function(){
             $('#password_desc').text('Synology Password');
             $('#label_desc').text('Synology Label');
             $('#directory_desc').text('Synology Directory');
+            $('#Torrent_Path').find('.fileBrowser').hide();
         } else if (selectedProvider == "rtorrent"){
             $('#t_blackhole_settings').hide();
             $('#torrent_settings').show();
