@@ -34,7 +34,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 <!--
 \$(document).ready(function(){
 #for $curTorrentRssProvider in $sickbeard.torrentRssProviderList:
-    \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url');
+    \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies');
 #end for
 });
 //-->
@@ -589,6 +589,16 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="nocheck clearfix">
                                 <span class="component-title">RSS URL:</span>
                                 <input class="component-desc" type="text" id="torrentrss_url" size="40" />
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Cookies:</span>
+                                <input class="component-desc" type="text" id="torrentrss_cookies" size="40" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">eg. uid=xx;pass=yy</span>
                             </label>
                         </div>
                         
