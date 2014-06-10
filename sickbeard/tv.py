@@ -251,7 +251,7 @@ class TVShow(object):
             if ep != None:
                 episodeCache[season][episode] = ep
 
-        epObj = weakref.proxy(episodeCache[season][episode])
+        epObj = episodeCache[season][episode]
         return epObj
 
     def should_update(self, update_date=datetime.date.today()):
