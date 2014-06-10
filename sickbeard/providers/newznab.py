@@ -96,7 +96,7 @@ class NewznabProvider(generic.NZBProvider):
             if ep_obj.show.indexer == 2:
                 cur_params['rid'] = ep_obj.show.indexerid
             else:
-                cur_params['q'] = helpers.sanitizeSceneName(cur_exception).replace('.', '_')
+                cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
 
             # season
             if ep_obj.show.air_by_date or ep_obj.show.sports:
@@ -125,7 +125,7 @@ class NewznabProvider(generic.NZBProvider):
         if ep_obj.show.indexer == 2:
             params['rid'] = ep_obj.show.indexerid
         else:
-            params['q'] = helpers.sanitizeSceneName(self.show.name).replace('.', '_')
+            params['q'] = helpers.sanitizeSceneName(self.show.name)
 
         if self.show.air_by_date or self.show.sports:
             date_str = str(ep_obj.airdate)
@@ -149,7 +149,7 @@ class NewznabProvider(generic.NZBProvider):
                     continue
 
                 cur_return = params.copy()
-                cur_return['q'] = helpers.sanitizeSceneName(cur_exception).replace('.', '_')
+                cur_return['q'] = helpers.sanitizeSceneName(cur_exception)
                 to_return.append(cur_return)
 
         return to_return
