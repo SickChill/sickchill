@@ -65,7 +65,7 @@
                 maxHeight:   Math.min($(document).height() - 80, $(window).height() - 80),
                 maxWidth:    $(document).width() - 80,
                 modal:       true,
-                autoOpen:    false,
+                autoOpen:    false
             });
         }
 

@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import cherrypy
 import os.path
 import datetime
 import re
@@ -108,7 +107,7 @@ def change_LOG_DIR(log_dir, web_log):
             cherry_log = None
             logger.log(u"Disable cherry logging")
 
-        cherrypy.config.update({'log.access_file': cherry_log})
+        #cherrypy.config.update({'log.access_file': cherry_log})
 
     return True
 

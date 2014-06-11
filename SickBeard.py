@@ -19,6 +19,7 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 import sys
+import tornado.ioloop
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -54,14 +55,13 @@ import getopt
 
 import sickbeard
 
+from sickbeard.webserveInit import webserverInit
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
-
-from sickbeard.webserveInit import initWebServer
 
 from lib.configobj import ConfigObj
 
@@ -107,7 +107,7 @@ def daemonize():
         sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
-    os.setsid() # unix
+    os.setsid()  # unix
 
     # Make sure I can read my own files and shut out others
     prev = os.umask(0)
@@ -239,6 +239,10 @@ def main():
         if o in ('--datadir',):
             sickbeard.DATA_DIR = os.path.abspath(a)
 
+        # Prevent resizing of the banner/posters even if PIL is installed
+        if o in ('--noresize',):
+            sickbeard.NO_RESIZE = True
+
         # Write a pidfile if requested
         if o in ('--pidfile',):
             sickbeard.CREATEPID = True
@@ -343,26 +347,26 @@ def main():
         else:
             webhost = '0.0.0.0'
 
-    try:
-        initWebServer({
-            'port': startPort,
-            'host': webhost,
-            'data_root': os.path.join(sickbeard.PROG_DIR, 'gui/' + sickbeard.GUI_NAME),
-            'web_root': sickbeard.WEB_ROOT,
-            'log_dir': log_dir,
-            'username': sickbeard.WEB_USERNAME,
-            'password': sickbeard.WEB_PASSWORD,
-            'enable_https': sickbeard.ENABLE_HTTPS,
-            'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
-            'https_cert': sickbeard.HTTPS_CERT,
-            'https_key': sickbeard.HTTPS_KEY,
-        })
-    except IOError:
-        logger.log(u"Unable to start web server, is something else running on port %d?" % startPort, logger.ERROR)
-        if sickbeard.LAUNCH_BROWSER and not sickbeard.DAEMON:
-            logger.log(u"Launching browser and exiting", logger.ERROR)
-            sickbeard.launchBrowser(startPort)
-        sys.exit()
+    options = {
+        'port': int(startPort),
+        'host': webhost,
+        'data_root': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
+        'web_root': sickbeard.WEB_ROOT,
+        'log_dir': log_dir,
+        'username': sickbeard.WEB_USERNAME,
+        'password': sickbeard.WEB_PASSWORD,
+        'enable_https': sickbeard.ENABLE_HTTPS,
+        'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
+        'https_cert': sickbeard.HTTPS_CERT,
+        'https_key': sickbeard.HTTPS_KEY,
+    }
+
+    # init tornado web server
+    sickbeard.webserveInitScheduler = sickbeard.scheduler.Scheduler(webserverInit(options),
+                                                                    cycleTime=datetime.timedelta(seconds=3),
+                                                                    threadName="TORNADO",
+                                                                    silent=True,
+                                                                    runImmediately=True)
 
     # Build from the DB to start with
     logger.log(u"Loading initial show list")
@@ -389,6 +393,7 @@ def main():
         time.sleep(1)
 
     return
+
 
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:

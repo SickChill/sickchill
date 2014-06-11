@@ -218,6 +218,7 @@ def get_network_timezone(network, network_dict):
                 n_t = tz.gettz(network_dict[network])
             except:
                 return sb_timezone
+
             if n_t is not None:
                 return n_t
             else:

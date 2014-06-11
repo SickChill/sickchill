@@ -18,9 +18,9 @@
 
 import os
 import string
-import cherrypy
-import time
 
+from tornado.httputil import HTTPHeaders
+from tornado.web import RequestHandler
 from sickbeard import encodingKludge as ek
 
 # use the built-in if it's available (python 2.6), if not use the included library
@@ -100,14 +100,12 @@ def foldersAtPath(path, includeParent=False):
     return entries
 
 
-class WebFileBrowser:
-    @cherrypy.expose
+class WebFileBrowser(RequestHandler):
     def index(self, path=''):
-        cherrypy.response.headers['Content-Type'] = "application/json"
-        return json.dumps(foldersAtPath(path, True))
+        HTTPHeaders()['Content-Type'] = "application/json"
+        return self.finish(json.dumps(foldersAtPath(path, True)))
 
-    @cherrypy.expose
     def complete(self, term):
-        cherrypy.response.headers['Content-Type'] = "application/json"
+        HTTPHeaders()['Content-Type'] = "application/json"
         paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term)) if 'path' in entry]
-        return json.dumps(paths)
+        return self.finish(json.dumps(paths))

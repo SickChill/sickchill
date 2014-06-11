@@ -26,10 +26,9 @@ import datetime
 import threading
 import re
 import traceback
-
-import cherrypy
 import sickbeard
 import webserve
+
 from sickbeard import db, logger, exceptions, history, ui, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
@@ -37,7 +36,8 @@ from sickbeard import search_queue
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
 from sickbeard import image_cache
-
+from tornado.httputil import HTTPHeaders
+from tornado.web import RequestHandler
 
 try:
     import json
@@ -66,13 +66,11 @@ result_type_map = {RESULT_SUCCESS: "success",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
-
-class Api:
+class Api(RequestHandler):
     """ api class that returns json results """
     version = 4  # use an int since float-point is unpredictible
     intent = 4
 
-    @cherrypy.expose
     def default(self, *args, **kwargs):
 
         self.apiKey = sickbeard.API_KEY
@@ -107,8 +105,6 @@ class Api:
         else:  # if debug was not set we wrap the "call_dispatcher" in a try block to assure a json output
             try:
                 outDict = _call_dispatcher(args, kwargs)
-            except cherrypy.HTTPRedirect:  # seams like cherrypy uses exceptions for redirecting apparently this can happen when requesting images but it is ok so lets re raise it
-                raise
             except Exception, e:  # real internal error oohhh nooo :(
                 logger.log(u"API :: " + ex(e), logger.ERROR)
                 errorData = {"error_msg": ex(e),
@@ -124,7 +120,6 @@ class Api:
 
         return outputCallback(outDict)
 
-    @cherrypy.expose
     def builder(self):
         """ expose the api-builder template """
         t = webserve.PageTemplate(file="apiBuilder.tmpl")
@@ -164,16 +159,14 @@ class Api:
         else:
             t.apikey = "api key not generated"
 
-        return webserve._munge(t)
+        return self.finish(webserve._munge(t))
 
     def _out_as_json(self, dict):
         """ set cherrypy response to json """
-        response = cherrypy.response
-        request = cherrypy.request
-        response.headers['Content-Type'] = 'application/json;charset=UTF-8'
+        HTTPHeaders()['Content-Type'] = 'application/json;charset=UTF-8'
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
-            callback = request.params.get('callback') or request.params.get('jsonp')
+            callback = 'callback' in HTTPHeaders() or 'jsonp' in HTTPHeaders()
             if callback != None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
@@ -184,7 +177,7 @@ class Api:
 
     def _grand_access(self, realKey, args, kwargs):
         """ validate api key and log result """
-        remoteIp = cherrypy.request.remote.ip
+        remoteIp = sickbeard.REMOTE_IP
         apiKey = kwargs.get("apikey", None)
         if not apiKey:
             if args:  # if we have keyless vars we assume first one is the api key, always !
@@ -1514,7 +1507,7 @@ class CMD_SickBeardPing(ApiCall):
 
     def run(self):
         """ check to see if sickbeard is running """
-        cherrypy.response.headers['Cache-Control'] = "max-age=0,no-cache,no-store"
+        HTTPHeaders()['Cache-Control'] = "max-age=0,no-cache,no-store"
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:
@@ -2112,7 +2105,7 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.WebInterface().showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2130,7 +2123,7 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.WebInterface().showPoster(self.indexerid, 'banner')}
+        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'banner')}
 
 
 class CMD_ShowPause(ApiCall):

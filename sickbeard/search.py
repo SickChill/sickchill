@@ -21,8 +21,6 @@ from __future__ import with_statement
 import os
 import re
 import threading
-import Queue
-import traceback
 import datetime
 
 import sickbeard

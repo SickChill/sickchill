@@ -17,8 +17,9 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import cherrypy
 import sickbeard
+
+from tornado.httputil import HTTPHeaders
 
 MESSAGE = 'notice'
 ERROR = 'error'
@@ -80,6 +81,8 @@ class Notification(object):
         self.title = title
         self.message = message
 
+        self.remote_ip = sickbeard.REMOTE_IP
+
         self._when = datetime.datetime.now()
         self._seen = []
 
@@ -97,7 +100,7 @@ class Notification(object):
         """
         Returns True if the notification hasn't been displayed to the current client (aka IP address).
         """
-        return cherrypy.request.remote.ip not in self._seen
+        return self.remote_ip not in self._seen
 
     def is_expired(self):
         """
@@ -110,7 +113,7 @@ class Notification(object):
         """
         Returns this notification object and marks it as seen by the client ip
         """
-        self._seen.append(cherrypy.request.remote.ip)
+        self._seen.append(self.remote_ip)
         return self
 
 

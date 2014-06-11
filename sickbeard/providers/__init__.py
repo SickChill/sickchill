@@ -156,7 +156,10 @@ def makeTorrentRssProvider(configString):
                 logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format", logger.ERROR)
                 return None
 
-    torrentRss = sys.modules['sickbeard.providers.rsstorrent']
+    try:
+        torrentRss = sys.modules['sickbeard.providers.rsstorrent']
+    except:
+        return
 
     newProvider = torrentRss.TorrentRssProvider(name, url, cookies, search_mode, search_fallback, backlog_only)
     newProvider.enabled = enabled == '1'
