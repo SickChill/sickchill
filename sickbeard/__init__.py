@@ -48,7 +48,6 @@ from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception,
     indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
-from sickbeard.tv import episodeCache
 
 from lib.configobj import ConfigObj
 
