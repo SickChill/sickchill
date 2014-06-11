@@ -337,7 +337,7 @@ class GenericMetadata():
     def create_season_posters(self, show_obj):
         if self.season_posters and show_obj:
             result = []
-            for season, episodes in sickbeard.episodeCache.iteritems():  # @UnusedVariable
+            for season, episodes in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_poster(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
@@ -348,7 +348,7 @@ class GenericMetadata():
     def create_season_banners(self, show_obj):
         if self.season_banners and show_obj:
             result = []
-            for season, episodes in sickbeard.episodeCache.iteritems():  # @UnusedVariable
+            for season, episodes in show_obj.episodes.iteritems():  # @UnusedVariable
                 if not self._has_season_banner(show_obj, season):
                     logger.log(u"Metadata provider " + self.name + " creating season banners for " + show_obj.name,
                                logger.DEBUG)
