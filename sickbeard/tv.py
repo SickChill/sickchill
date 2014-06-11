@@ -24,7 +24,6 @@ import threading
 import re
 import glob
 import traceback
-import weakref
 
 import sickbeard
 
@@ -53,7 +52,7 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
-episodeCache = {}
+
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
 
@@ -90,7 +89,7 @@ class TVShow(object):
         self.lock = threading.Lock()
         self._isDirGood = False
 
-        #self.episodes = {}
+        self.episodes = {}
 
         otherShow = helpers.findCertainShow(sickbeard.showList, self.indexerid)
         if otherShow != None:
@@ -145,12 +144,11 @@ class TVShow(object):
 
     # delete references to anything that's not in the internal lists
     def flushEpisodes(self):
-        global episodeCache
 
-        for curSeason in episodeCache:
-            for curEp in episodeCache[curSeason]:
-                myEp = episodeCache[curSeason][curEp]
-                episodeCache[curSeason][curEp] = None
+        for curSeason in self.episodes:
+            for curEp in self.episodes[curSeason]:
+                myEp = self.episodes[curSeason][curEp]
+                self.episodes[curSeason][curEp] = None
                 del myEp
 
     def getAllEpisodes(self, season=None, has_location=False):
@@ -223,10 +221,10 @@ class TVShow(object):
                     logger.DEBUG)
                 return None
 
-        if not season in episodeCache:
-            episodeCache[season] = {}
+        if not season in self.episodes:
+            self.episodes[season] = {}
 
-        if not episode in episodeCache[season] or episodeCache[season][episode] is None:
+        if not episode in self.episodes[season] or self.episodes[season][episode] is None:
             if noCreate:
                 return None
 
@@ -249,9 +247,9 @@ class TVShow(object):
                                                                                               season, episode)
 
             if ep != None:
-                episodeCache[season][episode] = ep
+                self.episodes[season][episode] = ep
 
-        epObj = episodeCache[season][episode]
+        epObj = self.episodes[season][episode]
         return epObj
 
     def should_update(self, update_date=datetime.date.today()):
@@ -1818,7 +1816,6 @@ class TVEpisode(object):
         return result
 
     def deleteEpisode(self):
-        global episodeCache
 
         logger.log(u"Deleting " + self.show.name + " " + str(self.season) + "x" + str(self.episode) + " from the DB",
                    logger.DEBUG)
@@ -1826,7 +1823,7 @@ class TVEpisode(object):
         # remove myself from the show dictionary
         if self.show.getEpisode(self.season, self.episode, noCreate=True) == self:
             logger.log(u"Removing myself from my show's list", logger.DEBUG)
-            del episodeCache[self.season][self.episode]
+            del self.show.episodes[self.season][self.episode]
 
         # delete myself from the DB
         logger.log(u"Deleting myself from the database", logger.DEBUG)
