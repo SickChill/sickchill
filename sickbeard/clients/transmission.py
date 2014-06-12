@@ -88,10 +88,10 @@ class TransmissionAPI(GenericClient):
 
         mode = 0
         if ratio:
-            if float(ratio) == 0:
+            if float(ratio) == -1:
                 ratio = 0
                 mode = 2
-            elif float(ratio) > 0:
+            elif float(ratio) >= 0:
                 ratio = float(ratio)
                 mode = 1  # Stop seeding at seedRatioLimit
 
