@@ -386,7 +386,7 @@ class QueueItemAdd(ShowQueueItem):
         self.show.flushEpisodes()
 
         # if there are specific episodes that need to be added by trakt
-        sickbeard.traktWatchListCheckerSchedular.action.manageNewShow(self.show)
+        sickbeard.traktWatchListCheckerScheduler.action.manageNewShow(self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)

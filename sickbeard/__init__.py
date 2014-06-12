@@ -85,9 +85,9 @@ versionCheckScheduler = None
 showQueueScheduler = None
 searchQueueScheduler = None
 properFinderScheduler = None
-autoPostProcesserScheduler = None
+autoPostProcessorScheduler = None
 subtitlesFinderScheduler = None
-traktWatchListCheckerSchedular = None
+traktWatchListCheckerScheduler = None
 
 showList = None
 loadingShowList = None
@@ -432,6 +432,7 @@ TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 
 __INITIALIZED__ = False
 
+
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -442,7 +443,7 @@ def initialize(consoleLogging=True):
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, BACKLOG_FREQUENCY, \
-            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerSchedular, \
+            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerScheduler, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
@@ -458,7 +459,7 @@ def initialize(consoleLogging=True):
             KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_DAILYSEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_STRIP_YEAR, \
-            RENAME_EPISODES, AIRDATE_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcesserScheduler, \
+            RENAME_EPISODES, AIRDATE_EPISODES, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, \
             WOMBLE, OMGWTFNZBS, OMGWTFNZBS_USERNAME, OMGWTFNZBS_APIKEY, providerList, newznabProviderList, torrentRssProviderList, \
             EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, DAILYSEARCH_FREQUENCY, \
             USE_BOXCAR, BOXCAR_USERNAME, BOXCAR_PASSWORD, BOXCAR_NOTIFY_ONDOWNLOAD, BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD, BOXCAR_NOTIFY_ONSNATCH, \
@@ -948,27 +949,27 @@ def initialize(consoleLogging=True):
                                                    silent=True,
                                                    runImmediately=True)
 
+        versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
+                                                    cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
+                                                    threadName="CHECKVERSION",
+                                                    runImmediately=True)
+
         dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
                                                    cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
                                                    threadName="DAILYSEARCHER",
                                                    silent=True,
                                                    runImmediately=DAILYSEARCH_STARTUP)
 
-        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
-                                                  cycleTime=showUpdater.ShowUpdater().updateInterval,
-                                                  threadName="SHOWUPDATER",
-                                                  runImmediately=False)
-
-        versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
-                                                    cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
-                                                    threadName="CHECKVERSION",
-                                                    runImmediately=True)
-
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE",
                                                  silent=True,
                                                  runImmediately=True)
+
+        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
+                                                  cycleTime=showUpdater.ShowUpdater().updateInterval,
+                                                  threadName="SHOWUPDATER",
+                                                  runImmediately=False)
 
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
                                                    cycleTime=datetime.timedelta(seconds=3),
@@ -981,14 +982,14 @@ def initialize(consoleLogging=True):
                                                     silent=False if DOWNLOAD_PROPERS else True,
                                                     runImmediately=True)
 
-        autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
+        autoPostProcessorScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
                                                          silent=False if PROCESS_AUTOMATICALLY else True,
                                                          runImmediately=True)
 
-        traktWatchListCheckerSchedular = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
+        traktWatchListCheckerScheduler = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
                                                              cycleTime=datetime.timedelta(hours=1),
                                                              threadName="TRAKTWATCHLIST",
                                                              silent=False if USE_TRAKT else True,
@@ -1090,18 +1091,6 @@ def initialize(consoleLogging=True):
                                                                      curNzbProvider.getID() + '_backlog_only',
                                                                      0))
 
-        try:
-            url = 'http://raw.github.com/echel0n/sickrage-init/master/settings.ini'
-            clear_cache = ElementTree.XML(helpers.getURL(url)).find('cache/clear').text
-            CLEAR_CACHE = check_setting_str(CFG, 'General', 'clear_cache', '')
-            if CLEAR_CACHE != clear_cache:
-                for curProvider in [x for x in providers.sortedProviderList() if x.isActive()]:
-                    curProvider.cache._clearCache()
-                CLEAR_CACHE = clear_cache
-                save_config()
-        except:
-            pass
-
         showList = []
         loadingShowList = {}
 
@@ -1112,8 +1101,8 @@ def initialize(consoleLogging=True):
 def start():
     global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
-        properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerSchedular, \
+        properFinderScheduler, autoPostProcessorScheduler, searchQueueScheduler, \
+        subtitlesFinderScheduler, USE_SUBTITLES, traktWatchListCheckerScheduler, \
         dailySearchScheduler, started
 
     with INIT_LOCK:
@@ -1148,14 +1137,14 @@ def start():
             properFinderScheduler.thread.start()
 
             # start the proper finder
-            autoPostProcesserScheduler.thread.start()
+            autoPostProcessorScheduler.thread.start()
 
             # start the subtitles finder
             if USE_SUBTITLES:
                 subtitlesFinderScheduler.thread.start()
 
             # start the trakt watchlist
-            traktWatchListCheckerSchedular.thread.start()
+            traktWatchListCheckerScheduler.thread.start()
 
             started = True
 
@@ -1163,8 +1152,8 @@ def start():
 def halt():
     global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
-        properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, traktWatchListCheckerSchedular, \
+        properFinderScheduler, autoPostProcessorScheduler, searchQueueScheduler, \
+        subtitlesFinderScheduler, traktWatchListCheckerScheduler, \
         dailySearchScheduler, started
 
     with INIT_LOCK:
@@ -1224,17 +1213,17 @@ def halt():
             except:
                 pass
 
-            autoPostProcesserScheduler.abort = True
+            autoPostProcessorScheduler.abort = True
             logger.log(u"Waiting for the POSTPROCESSER thread to exit")
             try:
-                autoPostProcesserScheduler.thread.join(10)
+                autoPostProcessorScheduler.thread.join(10)
             except:
                 pass
 
-            traktWatchListCheckerSchedular.abort = True
+            traktWatchListCheckerScheduler.abort = True
             logger.log(u"Waiting for the TRAKTWATCHLIST thread to exit")
             try:
-                traktWatchListCheckerSchedular.thread.join(10)
+                traktWatchListCheckerScheduler.thread.join(10)
             except:
                 pass
 
@@ -1332,6 +1321,7 @@ def saveAndShutdown(restart=False):
             subprocess.Popen(popen_list, cwd=os.getcwd())
 
     os._exit(0)
+
 
 def invoke_command(to_call, *args, **kwargs):
     global invoked_command

@@ -170,7 +170,7 @@
 	</span>
 </div>
 
-#for $curShowlist in $showlists if $varExists('showlists') else $sickbeard.showList
+#for $curShowlist in $showlists:
 #set $curListType = $curShowlist[0]
 #set $myShowList = $list($curShowlist[1])
 #if $curListType == "Anime":
@@ -179,7 +179,7 @@
 
 <table id="showListTable$curListType" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
 
-  <thead><tr><th class="nowrap">Next Ep</th>#if $layout=="poster" then "<th>Poster</th>" else "<th style='display: none;'></th>"#<th>Show</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
+  <thead><tr><th class="nowrap">Next Ep</th>#if $layout=="poster" then "<th>Poster</th>" else "<th style='display: none;'></th>"#<th>$curListType</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
   <tfoot>
     <tr>
       <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">&nbsp Add Show</a></th>

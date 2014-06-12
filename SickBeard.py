@@ -79,15 +79,15 @@ def loadShowsFromDB():
     with db.DBConnection() as myDB:
         sqlResults = myDB.select("SELECT * FROM tv_shows")
 
-    for sqlShow in sqlResults:
-        try:
-            curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
-            sickbeard.showList.append(curShow)
-        except Exception, e:
-            logger.log(
-                u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
-                logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+        for sqlShow in sqlResults:
+            try:
+                curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
+                sickbeard.showList.append(curShow)
+            except Exception, e:
+                logger.log(
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
+                    logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
             # TODO: update the existing shows if the showlist has something in it
 
