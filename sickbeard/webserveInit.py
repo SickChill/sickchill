@@ -180,21 +180,23 @@ class webserverInit():
 
         logger.logging.info('Shutting down tornado')
 
+        self.abort = True
+        self.server.stop()
+
+        deadline = time.time() + 3
+
+        io_loop = IOLoop.instance()
+
+        def stop_loop():
+            now = time.time()
+            if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                io_loop.add_timeout(now + 1, stop_loop)
+            else:
+                io_loop.stop()
+
+        stop_loop()
+
         try:
-            self.abort = True
-            self.server.stop()
-
-            deadline = time.time() + 10
-
-            io_loop = IOLoop.instance()
-            def stop_loop():
-                now = time.time()
-
-                if now < deadline:
-                    if io_loop._callbacks:
-                        io_loop.add_timeout(now + 1, stop_loop)
-                        return
-            stop_loop()
             self.thread.join(10)
         except:
             pass
