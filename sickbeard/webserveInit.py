@@ -95,6 +95,7 @@ def initWebServer(options={}):
     app = Application([],
                         debug=False,
                         gzip=True,
+                        autoreload=True,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
                         login_url='/login'
     )

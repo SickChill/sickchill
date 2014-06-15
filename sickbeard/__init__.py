@@ -1293,14 +1293,14 @@ def saveAll():
     save_config()
 
 def saveAndShutdown(restart=False):
-
-    logger.log('Shutting down tornado')
-    try:
-        IOLoop.current().stop()
-    except RuntimeError:
-        pass
-    except:
-        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+    if not restart:
+        logger.log('Shutting down tornado')
+        try:
+            IOLoop.current().stop()
+        except RuntimeError:
+            pass
+        except:
+            logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
 
     halt()
     saveAll()
