@@ -53,8 +53,6 @@ from lib.configobj import ConfigObj
 from tornado.ioloop import IOLoop
 import xml.etree.ElementTree as ElementTree
 
-invoked_command = None
-
 PID = None
 
 CFG = None
@@ -77,7 +75,6 @@ PIDFILE = ''
 
 DAEMON = None
 NO_RESIZE = False
-WEBSERVER = None
 
 maintenanceScheduler = None
 dailySearchScheduler = None
@@ -1117,14 +1114,11 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerScheduler, \
-        dailySearchScheduler, WEBSERVER, started
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
-
-            # start IOLoop tasks
-            WEBSERVER.start_tasks()
 
             # start the maintenance scheduler
             maintenanceScheduler.thread.start()
@@ -1171,7 +1165,7 @@ def halt():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktWatchListCheckerScheduler, \
-        dailySearchScheduler, WEBSERVER, started
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
@@ -1181,12 +1175,17 @@ def halt():
 
             # abort all the threads
 
-            WEBSERVER.stop_tasks()
-
             maintenanceScheduler.abort = True
             logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
             try:
                 maintenanceScheduler.thread.join(10)
+            except:
+                pass
+
+            dailySearchScheduler.abort = True
+            logger.log(u"Waiting for the DAILYSEARCH thread to exit")
+            try:
+                dailySearchScheduler.thread.join(10)
             except:
                 pass
 
@@ -1281,7 +1280,6 @@ def sig_handler(signum=None, frame=None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         saveAndShutdown()
 
-
 def saveAll():
     global showList
 
@@ -1294,20 +1292,18 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-
 def saveAndShutdown(restart=False):
-    global WEBSERVER
-
-    halt()
-    saveAll()
 
     logger.log('Shutting down tornado')
     try:
-        WEBSERVER.stop()
+        IOLoop.current().stop()
     except RuntimeError:
         pass
     except:
         logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+
+    halt()
+    saveAll()
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
@@ -1341,17 +1337,15 @@ def saveAndShutdown(restart=False):
 
     os._exit(0)
 
-
 def invoke_command(to_call, *args, **kwargs):
-    global invoked_command
 
     def delegate():
         to_call(*args, **kwargs)
 
-    invoked_command = delegate
-    logger.log(u"Placed invoked command: " + repr(invoked_command) + " for " + repr(to_call) + " with " + repr(
+    logger.log(u"Placed invoked command: " + repr(delegate) + " for " + repr(to_call) + " with " + repr(
         args) + " and " + repr(kwargs), logger.DEBUG)
 
+    IOLoop.current().add_callback(delegate)
 
 def invoke_restart(soft=True):
     invoke_command(restart, soft=soft)

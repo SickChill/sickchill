@@ -54,10 +54,10 @@ import getopt
 
 import sickbeard
 
-from sickbeard.webserveInit import webserverInit
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger
+from sickbeard import webserveInit
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
@@ -145,13 +145,6 @@ def daemonize():
     os.dup2(stdin.fileno(), sys.stdin.fileno())
     os.dup2(stdout.fileno(), sys.stdout.fileno())
     os.dup2(stderr.fileno(), sys.stderr.fileno())
-
-
-# background update every x seconds
-def invoke_command():
-    if sickbeard.invoked_command:
-        sickbeard.invoked_command()
-        sickbeard.invoked_command = None
 
 def main():
     """
@@ -368,11 +361,14 @@ def main():
         'https_key': sickbeard.HTTPS_KEY,
     }
 
-    def startup():
-        # Build from the DB to start with
-        logger.log(u"Loading initial show list")
-        loadShowsFromDB()
+    # init tornado
+    webserveInit.initWebServer(options)
 
+    # Build from the DB to start with
+    logger.log(u"Loading initial show list")
+    loadShowsFromDB()
+
+    def startup():
         # Fire up all our threads
         sickbeard.start()
 
@@ -384,17 +380,11 @@ def main():
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
-    # init tornado
-    sickbeard.WEBSERVER = webserverInit(options)
-    sickbeard.WEBSERVER.ioloop.add_timeout(datetime.timedelta(seconds=5), startup)
+    # init startup tasks
+    IOLoop.current().add_timeout(datetime.timedelta(seconds=5), startup)
 
-    # check for commands to be executed in the background
-    task = PeriodicCallback(invoke_command, 1000)
-    sickbeard.WEBSERVER.tasks.append(task)
-
-    # start tornado
-    sickbeard.WEBSERVER.start()
-    sickbeard.WEBSERVER.close()
+    # start IOLoop
+    IOLoop.current().start()
     return
 
 if __name__ == "__main__":
