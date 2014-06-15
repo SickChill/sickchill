@@ -29,7 +29,7 @@ from urllib2 import getproxies
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
-from sickbeard import providers, metadata, config
+from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd, nyaatorrents, fanzub
@@ -77,6 +77,7 @@ PIDFILE = ''
 
 DAEMON = None
 NO_RESIZE = False
+WEBSERVER = None
 
 maintenanceScheduler = None
 dailySearchScheduler = None
@@ -89,7 +90,6 @@ properFinderScheduler = None
 autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
 traktWatchListCheckerScheduler = None
-webserveInitScheduler = None
 
 showList = None
 loadingShowList = None
@@ -479,7 +479,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, REMOTE_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, WEB_DATA_ROOT, webserveInitScheduler
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, WEB_DATA_ROOT, WEBSERVER
 
         if __INITIALIZED__:
             return False
@@ -1119,14 +1119,11 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerScheduler, \
-        dailySearchScheduler, webserveInitScheduler, started
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
-
-            # start tornado web server
-            webserveInitScheduler.thread.start()
 
             # start the maintenance scheduler
             maintenanceScheduler.thread.start()
@@ -1173,7 +1170,7 @@ def halt():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktWatchListCheckerScheduler, \
-        dailySearchScheduler, webserveInitScheduler, started
+        dailySearchScheduler, started
 
     with INIT_LOCK:
 
@@ -1183,24 +1180,10 @@ def halt():
 
             # abort all the threads
 
-            webserveInitScheduler.about = True
-            logger.log(u"Waiting for the TORNADO thread to exit")
-            try:
-                webserveInitScheduler.thread.join(10)
-            except:
-                pass
-
             maintenanceScheduler.abort = True
             logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
             try:
                 maintenanceScheduler.thread.join(10)
-            except:
-                pass
-
-            dailySearchScheduler.abort = True
-            logger.log(u"Waiting for the DAILYSEARCHER thread to exit")
-            try:
-                dailySearchScheduler.thread.join(10)
             except:
                 pass
 
@@ -1310,16 +1293,12 @@ def saveAll():
 
 
 def saveAndShutdown(restart=False):
+    global WEBSERVER
+
     halt()
     saveAll()
 
-    logger.log(u"Killing tornado")
-    try:
-        IOLoop.current().stop()
-    except RuntimeError:
-        pass
-    except:
-        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+    IOLoop.instance().add_callback(WEBSERVER.shutdown)
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))

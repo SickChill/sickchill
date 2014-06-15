@@ -361,12 +361,8 @@ def main():
         'https_key': sickbeard.HTTPS_KEY,
     }
 
-    # init tornado web server
-    sickbeard.webserveInitScheduler = sickbeard.scheduler.Scheduler(webserverInit(options),
-                                                                    cycleTime=datetime.timedelta(seconds=3),
-                                                                    threadName="TORNADO",
-                                                                    silent=True,
-                                                                    runImmediately=True)
+    # init tornado server
+    sickbeard.WEBSERVER = webserverInit(options)
 
     # Build from the DB to start with
     logger.log(u"Loading initial show list")
@@ -374,6 +370,9 @@ def main():
 
     # Fire up all our threads
     sickbeard.start()
+
+    # start tornado thread
+    sickbeard.WEBSERVER.thread.start()
 
     # Launch browser if we're supposed to
     if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:

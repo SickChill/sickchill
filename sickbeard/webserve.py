@@ -190,6 +190,7 @@ class IndexHandler(RedirectHandler):
                 args[arg] = value[0]
         return args
 
+    @asynchronous
     def _dispatch(self):
         """
         Load up the requested URL if it matches one of our own methods.
@@ -235,12 +236,10 @@ class IndexHandler(RedirectHandler):
     def get_current_user(self):
         return self.get_secure_cookie("user")
 
-    @asynchronous
     @authenticated
     def get(self, *args, **kwargs):
         return self._dispatch()
 
-    @asynchronous
     def post(self, *args, **kwargs):
         return self._dispatch()
 
@@ -1065,7 +1064,7 @@ class Manage(IndexHandler):
 
             exceptions_list = []
 
-            curErrors += Home().editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
+            curErrors += self.editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
                                          new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime,
                                          scene=new_scene, directCall=True)
 
@@ -1602,9 +1601,9 @@ class ConfigPostProcessing(IndexHandler):
         config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
 
         if sickbeard.PROCESS_AUTOMATICALLY:
-            sickbeard.autoPostProcessorScheduler.silent = False
+            sickbeard.autoPostProcesserScheduler.silent = False
         else:
-            sickbeard.autoPostProcessorScheduler.silent = True
+            sickbeard.autoPostProcesserScheduler.silent = True
 
         if unpack:
             if self.isRarSupported() != 'not supported':
@@ -3281,8 +3280,7 @@ class Home(IndexHandler):
         title = "Shutting down"
         message = "SickRage is shutting down..."
 
-        return _genericMessage(title, message)
-
+        return self.finish(_genericMessage(title, message))
 
     def restart(self, pid=None):
 
@@ -3311,8 +3309,8 @@ class Home(IndexHandler):
             t = PageTemplate(file="restart_bare.tmpl")
             return self.finish(_munge(t))
         else:
-            return _genericMessage("Update Failed",
-                                   "Update wasn't successful, not restarting. Check your log for more information.")
+            return self.finish(_genericMessage("Update Failed",
+                                   "Update wasn't successful, not restarting. Check your log for more information."))
 
 
     def displayShow(self, show=None):
@@ -3477,7 +3475,7 @@ class Home(IndexHandler):
             if directCall:
                 return [errString]
             else:
-                return _genericMessage("Error", errString)
+                return self.finish(_genericMessage("Error", errString))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
@@ -3486,7 +3484,7 @@ class Home(IndexHandler):
             if directCall:
                 return [errString]
             else:
-                return _genericMessage("Error", errString)
+                return self.finish(_genericMessage("Error", errString))
 
         showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
 
@@ -3727,16 +3725,16 @@ class Home(IndexHandler):
     def deleteShow(self, show=None):
 
         if show is None:
-            return _genericMessage("Error", "Invalid show ID")
+            return self.finish(_genericMessage("Error", "Invalid show ID"))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if showObj is None:
-            return _genericMessage("Error", "Unable to find the specified show")
+            return self.finish(_genericMessage("Error", "Unable to find the specified show"))
 
         if sickbeard.showQueueScheduler.action.isBeingAdded(
                 showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
-            return _genericMessage("Error", "Shows can't be deleted while they're being added or updated.")
+            return self.finish(_genericMessage("Error", "Shows can't be deleted while they're being added or updated."))
 
         showObj.deleteShow()
 
@@ -3747,12 +3745,12 @@ class Home(IndexHandler):
     def refreshShow(self, show=None):
 
         if show is None:
-            return _genericMessage("Error", "Invalid show ID")
+            return self.finish(_genericMessage("Error", "Invalid show ID"))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if showObj is None:
-            return _genericMessage("Error", "Unable to find the specified show")
+            return self.finish(_genericMessage("Error", "Unable to find the specified show"))
 
         # force the update from the DB
         try:
@@ -3769,12 +3767,12 @@ class Home(IndexHandler):
     def updateShow(self, show=None, force=0):
 
         if show is None:
-            return _genericMessage("Error", "Invalid show ID")
+            return self.finish(_genericMessage("Error", "Invalid show ID"))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if showObj is None:
-            return _genericMessage("Error", "Unable to find the specified show")
+            return self.finish(_genericMessage("Error", "Unable to find the specified show"))
 
         # force the update
         try:
@@ -3792,12 +3790,12 @@ class Home(IndexHandler):
     def subtitleShow(self, show=None, force=0):
 
         if show is None:
-            return _genericMessage("Error", "Invalid show ID")
+            return self.finish(_genericMessage("Error", "Invalid show ID"))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if showObj is None:
-            return _genericMessage("Error", "Unable to find the specified show")
+            return self.finish(_genericMessage("Error", "Unable to find the specified show"))
 
         # search and download subtitles
         sickbeard.showQueueScheduler.action.downloadSubtitles(showObj, bool(force))  # @UndefinedVariable
@@ -3840,7 +3838,7 @@ class Home(IndexHandler):
                 ui.notifications.error('Error', errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return _genericMessage("Error", errMsg)
+                return self.finish(_genericMessage("Error", errMsg))
 
         if not statusStrings.has_key(int(status)):
             errMsg = "Invalid status"
@@ -3848,7 +3846,7 @@ class Home(IndexHandler):
                 ui.notifications.error('Error', errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return _genericMessage("Error", errMsg)
+                return self.finish(_genericMessage("Error", errMsg))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
@@ -3858,7 +3856,7 @@ class Home(IndexHandler):
                 ui.notifications.error('Error', errMsg)
                 return json.dumps({'result': 'error'})
             else:
-                return _genericMessage("Error", errMsg)
+                return self.finish(_genericMessage("Error", errMsg))
 
         segment = {}
         if eps is not None:
@@ -3873,7 +3871,7 @@ class Home(IndexHandler):
                 epObj = showObj.getEpisode(int(epInfo[0]), int(epInfo[1]))
 
                 if epObj is None:
-                    return _genericMessage("Error", "Episode couldn't be retrieved")
+                    return self.finish(_genericMessage("Error", "Episode couldn't be retrieved"))
 
                 if int(status) in [WANTED, FAILED]:
                     # figure out what episodes are wanted so we can backlog them
@@ -3949,17 +3947,17 @@ class Home(IndexHandler):
     def testRename(self, show=None):
 
         if show is None:
-            return _genericMessage("Error", "You must specify a show")
+            return self.finish(_genericMessage("Error", "You must specify a show"))
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if showObj is None:
-            return _genericMessage("Error", "Show not in show list")
+            return self.finish(_genericMessage("Error", "Show not in show list"))
 
         try:
             show_loc = showObj.location  # @UnusedVariable
         except exceptions.ShowDirNotFoundException:
-            return _genericMessage("Error", "Can't rename episodes when the show dir is missing.")
+            return self.finish(_genericMessage("Error", "Can't rename episodes when the show dir is missing."))
 
         ep_obj_rename_list = []
 
@@ -3996,18 +3994,18 @@ class Home(IndexHandler):
 
         if show is None or eps is None:
             errMsg = "You must specify a show and at least one episode"
-            return _genericMessage("Error", errMsg)
+            return self.finish(_genericMessage("Error", errMsg))
 
         show_obj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
         if show_obj is None:
             errMsg = "Error", "Show not in show list"
-            return _genericMessage("Error", errMsg)
+            return self.finish(_genericMessage("Error", errMsg))
 
         try:
             show_loc = show_obj.location  # @UnusedVariable
         except exceptions.ShowDirNotFoundException:
-            return _genericMessage("Error", "Can't rename episodes when the show dir is missing.")
+            return self.finish(_genericMessage("Error", "Can't rename episodes when the show dir is missing."))
 
         if eps is None:
             self.redirect("/home/displayShow?show=" + show)

@@ -1,11 +1,17 @@
 import os
+import threading
+import time
+import traceback
+import datetime
 import sickbeard
 import webserve
-import tornado.httpserver
-import tornado.ioloop
+from sickbeard.exceptions import ex
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
-from tornado.web import Application, StaticFileHandler, HTTPError, RedirectHandler
+from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
 
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
@@ -27,17 +33,27 @@ class MultiStaticFileHandler(StaticFileHandler):
         # Oops file not found anywhere!
         raise HTTPError(404)
 
+
 class webserverInit():
-    def __init__(self, options):
+    def __init__(self, options, cycleTime=datetime.timedelta(seconds=3)):
+
         self.amActive = False
-        options.setdefault('port', 8081)
-        options.setdefault('host', '0.0.0.0')
-        options.setdefault('log_dir', None)
-        options.setdefault('username', '')
-        options.setdefault('password', '')
-        options.setdefault('web_root', '/')
-        assert isinstance(options['port'], int)
-        assert 'data_root' in options
+        self.lastRun = datetime.datetime.fromordinal(1)
+        self.cycleTime = cycleTime
+        self.abort = False
+
+        self.server = None
+        self.thread = None
+
+        self.options = options
+        self.options.setdefault('port', 8081)
+        self.options.setdefault('host', '0.0.0.0')
+        self.options.setdefault('log_dir', None)
+        self.options.setdefault('username', '')
+        self.options.setdefault('password', '')
+        self.options.setdefault('web_root', '/')
+        assert isinstance(self.options['port'], int)
+        assert 'data_root' in self.options
 
         def http_error_401_hander(status, message, traceback, version):
             """ Custom handler for 401 error """
@@ -72,12 +88,12 @@ class webserverInit():
             <br/>
         </body>
     </html>
-    ''' % options['web_root']
+    ''' % self.options['web_root']
 
         # tornado setup
-        enable_https = options['enable_https']
-        https_cert = options['https_cert']
-        https_key = options['https_key']
+        enable_https = self.options['enable_https']
+        https_cert = self.options['https_cert']
+        https_key = self.options['https_key']
 
         if enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
@@ -103,42 +119,84 @@ class webserverInit():
 
         # Index Handler
         app.add_handlers(".*$", [
-            (r"/", tornado.web.RedirectHandler, {'url': '/home/'}),
+            (r"/", RedirectHandler, {'url': '/home/'}),
             (r'/login', webserve.LoginHandler),
-            (r'%s(.*)(/?)' % options['web_root'], webserve.IndexHandler)
+            (r'%s(.*)(/?)' % self.options['web_root'], webserve.IndexHandler)
         ])
 
         # Static Path Handler
         app.add_handlers(".*$", [
-            ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'images'), MultiStaticFileHandler,
-             {'paths': [os.path.join(options['data_root'], 'images'),
+            ('%s/%s/(.*)([^/]*)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
+             {'paths': [os.path.join(self.options['data_root'], 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images', 'thumbnails')]}),
-            ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'css'), MultiStaticFileHandler,
-             {'paths': [os.path.join(options['data_root'], 'css')]}),
-            ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'js'), MultiStaticFileHandler,
-             {'paths': [os.path.join(options['data_root'], 'js')]})
+            ('%s/%s/(.*)([^/]*)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
+             {'paths': [os.path.join(self.options['data_root'], 'css')]}),
+            ('%s/%s/(.*)([^/]*)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
+             {'paths': [os.path.join(self.options['data_root'], 'js')]})
 
         ])
 
         if enable_https:
             protocol = "https"
-            server = tornado.httpserver.HTTPServer(app, no_keep_alive=True,
-                                                   ssl_options={"certfile": https_cert, "keyfile": https_key})
+            self.server = HTTPServer(app, no_keep_alive=True,
+                                     ssl_options={"certfile": https_cert, "keyfile": https_key})
         else:
             protocol = "http"
-            server = tornado.httpserver.HTTPServer(app, no_keep_alive=True)
+            self.server = HTTPServer(app, no_keep_alive=True)
 
-        logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(
-            options['port']) + "/")
+        logger.log(u"Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
+            self.options['port']) + "/")
 
-        server.listen(options['port'], options['host'])
+        self.server.listen(self.options['port'], self.options['host'])
 
+        if self.thread == None or not self.thread.isAlive():
+            self.thread = threading.Thread(None, self.monitor, 'TORNADO')
 
-    def run(self, force=False):
+    def monitor(self):
+
+        while True:
+
+            currentTime = datetime.datetime.now()
+
+            if currentTime - self.lastRun > self.cycleTime:
+                self.lastRun = currentTime
+                try:
+                    logger.log(u"Starting tornado", logger.DEBUG)
+
+                    IOLoop.instance().start()
+                except Exception, e:
+                    logger.log(u"Exception generated in tornado: " + ex(e), logger.ERROR)
+                    logger.log(repr(traceback.format_exc()), logger.DEBUG)
+
+            if self.abort:
+                self.abort = False
+                self.thread = None
+                return
+
+            time.sleep(1)
+
+    def shutdown(self):
+
+        logger.logging.info('Shutting down tornado')
+
         try:
-            self.amActive = True
-            tornado.ioloop.IOLoop.instance().start()
+            self.abort = True
+            self.server.stop()
+
+            deadline = time.time() + 10
+
+            io_loop = IOLoop.instance()
+            def stop_loop():
+                now = time.time()
+
+                if now < deadline:
+                    if io_loop._callbacks:
+                        io_loop.add_timeout(now + 1, stop_loop)
+                        return
+            stop_loop()
+            self.thread.join(10)
         except:
-            self.amActive = False
-            raise
+            pass
+
+        logger.logging.info('Tornado is now shutdown')
