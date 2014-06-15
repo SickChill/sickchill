@@ -390,7 +390,7 @@ def main():
 
     # check for commands to be executed in the background
     task = PeriodicCallback(invoke_command, 1000)
-    task.start()
+    sickbeard.WEBSERVER.tasks.append(task)
 
     # start tornado
     sickbeard.WEBSERVER.start()

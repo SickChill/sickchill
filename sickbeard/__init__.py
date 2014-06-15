@@ -1117,11 +1117,14 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerScheduler, \
-        dailySearchScheduler, started
+        dailySearchScheduler, WEBSERVER, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
+
+            # start IOLoop tasks
+            WEBSERVER.start_tasks()
 
             # start the maintenance scheduler
             maintenanceScheduler.thread.start()
@@ -1168,7 +1171,7 @@ def halt():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktWatchListCheckerScheduler, \
-        dailySearchScheduler, started
+        dailySearchScheduler, WEBSERVER, started
 
     with INIT_LOCK:
 
@@ -1177,6 +1180,8 @@ def halt():
             logger.log(u"Aborting all threads")
 
             # abort all the threads
+
+            WEBSERVER.stop_tasks()
 
             maintenanceScheduler.abort = True
             logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")

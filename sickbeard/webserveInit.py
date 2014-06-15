@@ -40,6 +40,7 @@ class webserverInit():
 
         self.server = None
         self.ioloop = None
+        self.tasks = []
 
         self.options = options
         self.options.setdefault('port', 8081)
@@ -156,3 +157,11 @@ class webserverInit():
 
     def close(self):
         self.ioloop.close()
+
+    def start_tasks(self):
+        for task in self.tasks:
+            task.start()
+
+    def stop_tasks(self):
+        for task in self.tasks:
+            task.stop()
