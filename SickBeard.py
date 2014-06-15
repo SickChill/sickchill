@@ -361,15 +361,12 @@ def main():
         'https_key': sickbeard.HTTPS_KEY,
     }
 
-    # init tornado server
-    sickbeard.WEBSERVER = webserverInit(options)
-
     # Build from the DB to start with
     logger.log(u"Loading initial show list")
     loadShowsFromDB()
 
     # start tornado thread
-    sickbeard.WEBSERVER.start()
+    webserverInit(options).start()
 
     # Fire up all our threads
     sickbeard.start()

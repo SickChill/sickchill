@@ -77,7 +77,6 @@ PIDFILE = ''
 
 DAEMON = None
 NO_RESIZE = False
-WEBSERVER = None
 
 maintenanceScheduler = None
 dailySearchScheduler = None
@@ -117,7 +116,6 @@ SOCKET_TIMEOUT = None
 WEB_PORT = None
 WEB_LOG = None
 WEB_ROOT = None
-WEB_DATA_ROOT = None
 WEB_USERNAME = None
 WEB_PASSWORD = None
 WEB_HOST = None
@@ -479,7 +477,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, REMOTE_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, WEB_DATA_ROOT, WEBSERVER
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -529,7 +527,6 @@ def initialize(consoleLogging=True):
         WEB_HOST = check_setting_str(CFG, 'General', 'web_host', '0.0.0.0')
         WEB_IPV6 = bool(check_setting_int(CFG, 'General', 'web_ipv6', 0))
         WEB_ROOT = check_setting_str(CFG, 'General', 'web_root', '').rstrip("/")
-        WEB_DATA_ROOT = os.path.join(PROG_DIR, 'gui/' + GUI_NAME)
         WEB_LOG = bool(check_setting_int(CFG, 'General', 'web_log', 0))
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
         WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '')
@@ -1293,13 +1290,22 @@ def saveAll():
 
 
 def saveAndShutdown(restart=False):
-    global WEBSERVER
 
     halt()
     saveAll()
 
     # Shutdown tornado
-    WEBSERVER.shutdown()
+    logger.log('Shutting down tornado')
+
+    def shutdown():
+        try:
+            IOLoop.current().stop()
+        except RuntimeError:
+            pass
+        except:
+            logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+
+    IOLoop.current().add_callback(shutdown)
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))

@@ -5,13 +5,12 @@ import traceback
 import datetime
 import sickbeard
 import webserve
-from sickbeard.exceptions import ex
+
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
 from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop, PeriodicCallback
-
+from tornado.ioloop import IOLoop
 
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
@@ -152,25 +151,5 @@ class webserverInit():
 
     def start(self):
         if self.thread == None or not self.thread.isAlive():
-            self.thread = threading.Thread(None, IOLoop.current().start, 'TORNADO')
+            self.thread = threading.Thread(target=IOLoop.current().start)
             self.thread.start()
-
-    def shutdown(self):
-
-        if self.thread:
-            logger.log('Shutting down tornado')
-
-            # stop tornado io loop
-            IOLoop.instance().stop()
-
-            # stop tornado thread
-            try:
-                self.thread.join(10)
-            except:
-                pass
-
-            # stop tornado http server
-            self.server.stop()
-
-            # remove thread object
-            self.thread = None
