@@ -1,7 +1,4 @@
 import os
-import threading
-import time
-import traceback
 import datetime
 import sickbeard
 import webserve
@@ -42,7 +39,7 @@ class webserverInit():
         self.abort = False
 
         self.server = None
-        self.thread = None
+        self.ioloop = IOLoop.instance()
 
         self.options = options
         self.options.setdefault('port', 8081)
@@ -113,7 +110,8 @@ class webserverInit():
                             debug=False,
                             gzip=True,
                             cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
-                            login_url='/login'
+                            login_url='/login',
+                            autoreload=True
         )
 
         # Index Handler
@@ -147,9 +145,10 @@ class webserverInit():
         logger.log(u"Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
-        self.server.listen(self.options['port'], self.options['host'])
-
     def start(self):
-        if self.thread == None or not self.thread.isAlive():
-            self.thread = threading.Thread(target=IOLoop.current().start)
-            self.thread.start()
+        self.server.listen(self.options['port'], self.options['host'])
+        self.ioloop.start()
+
+    def stop(self):
+        self.server.stop()
+        self.ioloop.stop()

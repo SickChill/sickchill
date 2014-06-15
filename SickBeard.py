@@ -146,6 +146,12 @@ def daemonize():
     os.dup2(stderr.fileno(), sys.stderr.fileno())
 
 
+# background update every x seconds
+def invoke_command():
+    if sickbeard.invoked_command:
+        sickbeard.invoked_command()
+        sickbeard.invoked_command = None
+
 def main():
     """
     TV for me
@@ -361,35 +367,33 @@ def main():
         'https_key': sickbeard.HTTPS_KEY,
     }
 
-    # Build from the DB to start with
-    logger.log(u"Loading initial show list")
-    loadShowsFromDB()
+    def startup():
+        # Build from the DB to start with
+        logger.log(u"Loading initial show list")
+        loadShowsFromDB()
 
-    # start tornado thread
-    webserverInit(options).start()
+        # Launch browser if we're supposed to
+        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
+            sickbeard.launchBrowser(startPort)
+
+        # Start an update if we're supposed to
+        if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
+            sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+
+    # init tornado
+    sickbeard.WEBSERVER = webserverInit(options)
+    sickbeard.WEBSERVER.ioloop.add_timeout(datetime.timedelta(seconds=5), startup)
 
     # Fire up all our threads
     sickbeard.start()
 
-    # Launch browser if we're supposed to
-    if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
-        sickbeard.launchBrowser(startPort)
+    # check for commands to be executed in the background
+    task = tornado.ioloop.PeriodicCallback(invoke_command, 1000)
+    task.start()
 
-    # Start an update if we're supposed to
-    if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-        sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
-
-    # Stay alive while my threads do the work
-    while (True):
-
-        if sickbeard.invoked_command:
-            sickbeard.invoked_command()
-            sickbeard.invoked_command = None
-
-        time.sleep(1)
-
+    # start tornado
+    sickbeard.WEBSERVER.start()
     return
-
 
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:

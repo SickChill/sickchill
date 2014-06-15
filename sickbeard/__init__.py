@@ -77,6 +77,7 @@ PIDFILE = ''
 
 DAEMON = None
 NO_RESIZE = False
+WEBSERVER = None
 
 maintenanceScheduler = None
 dailySearchScheduler = None
@@ -1290,22 +1291,10 @@ def saveAll():
 
 
 def saveAndShutdown(restart=False):
+    global WEBSERVER
 
     halt()
     saveAll()
-
-    # Shutdown tornado
-    logger.log('Shutting down tornado')
-
-    def shutdown():
-        try:
-            IOLoop.current().stop()
-        except RuntimeError:
-            pass
-        except:
-            logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
-
-    IOLoop.current().add_callback(shutdown)
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
@@ -1336,6 +1325,14 @@ def saveAndShutdown(restart=False):
             logger.close()
 
             subprocess.Popen(popen_list, cwd=os.getcwd())
+
+    logger.log('Shutting down tornado')
+    try:
+        WEBSERVER.stop()
+    except RuntimeError:
+        pass
+    except:
+        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
 
     os._exit(0)
 
