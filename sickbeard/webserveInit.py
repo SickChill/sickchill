@@ -10,7 +10,7 @@ from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
 from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
+from tornado.ioloop import IOLoop, PeriodicCallback
 
 
 class MultiStaticFileHandler(StaticFileHandler):
@@ -154,6 +154,7 @@ class webserverInit():
             self.thread = threading.Thread(None, self.monitor, 'TORNADO')
 
     def monitor(self):
+        io_loop = IOLoop.current()
 
         while True:
 
@@ -164,7 +165,7 @@ class webserverInit():
                 try:
                     logger.log(u"Starting tornado", logger.DEBUG)
 
-                    IOLoop.instance().start()
+                    io_loop.start()
                 except Exception, e:
                     logger.log(u"Exception generated in tornado: " + ex(e), logger.ERROR)
                     logger.log(repr(traceback.format_exc()), logger.DEBUG)
@@ -178,27 +179,14 @@ class webserverInit():
 
     def shutdown(self):
 
-        logger.logging.info('Shutting down tornado')
-
         self.abort = True
-        self.server.stop()
 
-        deadline = time.time() + 3
-
-        io_loop = IOLoop.instance()
-
-        def stop_loop():
-            now = time.time()
-            if now < deadline and (io_loop._callbacks or io_loop._timeouts):
-                io_loop.add_timeout(now + 1, stop_loop)
-            else:
-                io_loop.stop()
-
-        stop_loop()
+        logger.log('Shutting down tornado')
 
         try:
+            IOLoop.instance().stop()
             self.thread.join(10)
         except:
             pass
 
-        logger.logging.info('Tornado is now shutdown')
+        logger.log('Tornado is now shutdown')

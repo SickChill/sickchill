@@ -1298,7 +1298,8 @@ def saveAndShutdown(restart=False):
     halt()
     saveAll()
 
-    IOLoop.instance().add_callback(WEBSERVER.shutdown)
+    # Shutdown tornado
+    WEBSERVER.shutdown()
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
