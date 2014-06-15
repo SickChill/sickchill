@@ -368,11 +368,11 @@ def main():
     logger.log(u"Loading initial show list")
     loadShowsFromDB()
 
+    # start tornado thread
+    sickbeard.WEBSERVER.start()
+
     # Fire up all our threads
     sickbeard.start()
-
-    # start tornado thread
-    sickbeard.WEBSERVER.thread.start()
 
     # Launch browser if we're supposed to
     if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:

@@ -150,43 +150,27 @@ class webserverInit():
 
         self.server.listen(self.options['port'], self.options['host'])
 
+    def start(self):
         if self.thread == None or not self.thread.isAlive():
-            self.thread = threading.Thread(None, self.monitor, 'TORNADO')
-
-    def monitor(self):
-        io_loop = IOLoop.current()
-
-        while True:
-
-            currentTime = datetime.datetime.now()
-
-            if currentTime - self.lastRun > self.cycleTime:
-                self.lastRun = currentTime
-                try:
-                    logger.log(u"Starting tornado", logger.DEBUG)
-
-                    io_loop.start()
-                except Exception, e:
-                    logger.log(u"Exception generated in tornado: " + ex(e), logger.ERROR)
-                    logger.log(repr(traceback.format_exc()), logger.DEBUG)
-
-            if self.abort:
-                self.abort = False
-                self.thread = None
-                return
-
-            time.sleep(1)
+            self.thread = threading.Thread(None, IOLoop.current().start, 'TORNADO')
+            self.thread.start()
 
     def shutdown(self):
 
-        self.abort = True
+        if self.thread:
+            logger.log('Shutting down tornado')
 
-        logger.log('Shutting down tornado')
-
-        try:
+            # stop tornado io loop
             IOLoop.instance().stop()
-            self.thread.join(10)
-        except:
-            pass
 
-        logger.log('Tornado is now shutdown')
+            # stop tornado thread
+            try:
+                self.thread.join(10)
+            except:
+                pass
+
+            # stop tornado http server
+            self.server.stop()
+
+            # remove thread object
+            self.thread = None
