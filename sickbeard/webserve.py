@@ -97,14 +97,20 @@ def require_basic_auth(handler_class):
                 handler.finish()
                 return False
 
+            if not sickbeard.WEB_USERNAME and not sickbeard.WEB_PASSWORD:
+                if not handler.get_secure_cookie("user"):
+                    handler.set_secure_cookie("user", str(time.time()))
+                return True
+
             auth_header = handler.request.headers.get('Authorization')
             if auth_header is None or not auth_header.startswith('Basic '):
                 get_auth()
 
             auth_decoded = base64.decodestring(auth_header[6:])
-            kwargs['basicauth_user'], kwargs['basicauth_pass'] = auth_decoded.split(':', 2)
-            if kwargs['basicauth_user'] == sickbeard.WEB_USERNAME and kwargs['basicauth_pass'] == sickbeard.WEB_PASSWORD:
-                handler.set_secure_cookie("user", kwargs['basicauth_user'])
+            basicauth_user, basicauth_pass = auth_decoded.split(':', 2)
+            if basicauth_user == sickbeard.WEB_USERNAME and basicauth_pass == sickbeard.WEB_PASSWORD:
+                if not handler.get_secure_cookie("user"):
+                    handler.set_secure_cookie("user", str(time.time()))
                 return True
 
             handler.clear_cookie("user")
@@ -132,10 +138,7 @@ class RedirectHandler(RequestHandler):
 
 @require_basic_auth
 class LoginHandler(RedirectHandler):
-    def get(self, basicauth_user, basicauth_pass):
-        if not self.get_secure_cookie("user") and basicauth_user and basicauth_pass:
-            self.set_secure_cookie("user", basicauth_user)
-
+    def get(self, path):
         self.redirect(self.get_argument("next", u"/"))
 
 @require_basic_auth
