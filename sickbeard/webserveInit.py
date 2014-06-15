@@ -39,7 +39,7 @@ class webserverInit():
         self.abort = False
 
         self.server = None
-        self.ioloop = IOLoop.instance()
+        self.ioloop = None
 
         self.options = options
         self.options.setdefault('port', 8081)
@@ -145,10 +145,14 @@ class webserverInit():
         logger.log(u"Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
+        self.ioloop = IOLoop.current()
+
     def start(self):
         self.server.listen(self.options['port'], self.options['host'])
         self.ioloop.start()
 
     def stop(self):
-        self.server.stop()
         self.ioloop.stop()
+
+    def close(self):
+        self.ioloop.close()

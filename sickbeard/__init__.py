@@ -1296,6 +1296,14 @@ def saveAndShutdown(restart=False):
     halt()
     saveAll()
 
+    logger.log('Shutting down tornado')
+    try:
+        WEBSERVER.stop()
+    except RuntimeError:
+        pass
+    except:
+        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
         remove_pid_file(PIDFILE)
@@ -1325,14 +1333,6 @@ def saveAndShutdown(restart=False):
             logger.close()
 
             subprocess.Popen(popen_list, cwd=os.getcwd())
-
-    logger.log('Shutting down tornado')
-    try:
-        WEBSERVER.stop()
-    except RuntimeError:
-        pass
-    except:
-        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
 
     os._exit(0)
 

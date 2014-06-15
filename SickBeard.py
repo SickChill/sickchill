@@ -48,7 +48,6 @@ if sys.hexversion >= 0x020600F0:
 import locale
 import datetime
 import threading
-import time
 import signal
 import traceback
 import getopt
@@ -64,6 +63,8 @@ from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
 
 from lib.configobj import ConfigObj
+
+from tornado.ioloop import IOLoop, PeriodicCallback
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
@@ -372,6 +373,9 @@ def main():
         logger.log(u"Loading initial show list")
         loadShowsFromDB()
 
+        # Fire up all our threads
+        sickbeard.start()
+
         # Launch browser if we're supposed to
         if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
             sickbeard.launchBrowser(startPort)
@@ -384,15 +388,13 @@ def main():
     sickbeard.WEBSERVER = webserverInit(options)
     sickbeard.WEBSERVER.ioloop.add_timeout(datetime.timedelta(seconds=5), startup)
 
-    # Fire up all our threads
-    sickbeard.start()
-
     # check for commands to be executed in the background
-    task = tornado.ioloop.PeriodicCallback(invoke_command, 1000)
+    task = PeriodicCallback(invoke_command, 1000)
     task.start()
 
     # start tornado
     sickbeard.WEBSERVER.start()
+    sickbeard.WEBSERVER.close()
     return
 
 if __name__ == "__main__":
