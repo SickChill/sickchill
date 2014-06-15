@@ -61,7 +61,6 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 
-from webapi import Api
 from browser import WebFileBrowser
 
 from lib.dateutil import tz
@@ -176,9 +175,6 @@ class IndexHandler(RedirectHandler):
         if "X-Forwarded-Proto" in self.h:
             self.sbHttpsEnabled = True if self.h['X-Forwarded-Proto'] == 'https' else False
 
-        if not self.get_secure_cookie('sickrage'):
-            self.set_secure_cookie('sickrage', str(time.time()))
-
     def delist_arguments(self, args):
         """
         Takes a dictionary, 'args' and de-lists any single-item lists then
@@ -204,7 +200,7 @@ class IndexHandler(RedirectHandler):
             return inspect.isclass(c) and c.__module__ == pred.__module__
 
         try:
-            klass = [cls[1] for cls in inspect.getmembers(sys.modules[__name__], pred) if
+            klass = [cls[1] for cls in inspect.getmembers(sys.modules[__name__], pred) + [(self.__class__.__name__, self.__class__)] if
                      cls[0].lower() == method.lower() or method in cls[1].__dict__.keys()][0](self.application, self.request)
         except:
             klass = None
@@ -218,7 +214,7 @@ class IndexHandler(RedirectHandler):
             func = getattr(klass, method, None)
 
             # Special index method handler for classes and subclasses:
-            if path.endswith('/'):
+            if path.startswith('/api') or path.endswith('/'):
                 if func and getattr(func, 'index', None):
                     func = getattr(func(self.application, self.request), 'index', None)
                 elif not func:
@@ -481,7 +477,6 @@ class IndexHandler(RedirectHandler):
 
         return ical
 
-    api = Api
     browser = WebFileBrowser
 
 class PageTemplate(Template):
@@ -2518,7 +2513,7 @@ class HomePostProcess(IndexHandler):
                 return result
 
             result = result.replace("\n", "<br />\n")
-            _genericMessage("Postprocessing results", result)
+            return _genericMessage("Postprocessing results", result)
 
 
 class NewHomeAddShows(IndexHandler):
@@ -3319,8 +3314,8 @@ class Home(IndexHandler):
             t = PageTemplate(file="restart_bare.tmpl")
             return _munge(t)
         else:
-            return self.finish(_genericMessage("Update Failed",
-                                   "Update wasn't successful, not restarting. Check your log for more information."))
+            return _genericMessage("Update Failed",
+                                   "Update wasn't successful, not restarting. Check your log for more information.")
 
 
     def displayShow(self, show=None):

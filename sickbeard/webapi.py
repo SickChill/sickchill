@@ -36,8 +36,6 @@ from sickbeard import search_queue
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
 from sickbeard import image_cache
-from tornado.httputil import HTTPHeaders
-from tornado.web import RequestHandler
 
 try:
     import json
@@ -66,12 +64,12 @@ result_type_map = {RESULT_SUCCESS: "success",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
-class Api(RequestHandler):
+class Api(webserve.IndexHandler):
     """ api class that returns json results """
     version = 4  # use an int since float-point is unpredictible
     intent = 4
 
-    def default(self, *args, **kwargs):
+    def index(self, *args, **kwargs):
 
         self.apiKey = sickbeard.API_KEY
         access, accessMsg, args, kwargs = self._grand_access(self.apiKey, args, kwargs)
@@ -163,10 +161,10 @@ class Api(RequestHandler):
 
     def _out_as_json(self, dict):
         """ set cherrypy response to json """
-        HTTPHeaders()['Content-Type'] = 'application/json;charset=UTF-8'
+        self.h["content-type"] = "application/json;charset=UTF-8"
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
-            callback = 'callback' in HTTPHeaders() or 'jsonp' in HTTPHeaders()
+            callback = self.h.get('callback' ,None) or self.h.get('jsonp' ,None)
             if callback != None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
@@ -299,7 +297,7 @@ def filter_params(cmd, args, kwargs):
     return curArgs, curKwargs
 
 
-class ApiCall(object):
+class ApiCall(Api):
     _help = {"desc": "No help message available. Please tell the devs that a help msg is missing for this cmd"}
 
     def __init__(self, args, kwargs):
@@ -1314,6 +1312,7 @@ class CMD_SickBeardAddRootDir(ApiCall):
 
         self.location = urllib.unquote_plus(self.location)
         location_matched = 0
+        index = 0
 
         # dissallow adding/setting an invalid dir
         if not ek.ek(os.path.isdir, self.location):
@@ -1338,7 +1337,6 @@ class CMD_SickBeardAddRootDir(ApiCall):
 
         if (location_matched == 0):
             if (self.default == 1):
-                index = 0
                 root_dirs.insert(0, self.location)
             else:
                 root_dirs.append(self.location)
@@ -1393,6 +1391,7 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
         if sickbeard.ROOT_DIRS == "":
             return _responds(RESULT_FAILURE, _getRootDirs(), msg="No root directories detected")
 
+        newIndex = 0
         root_dirs_new = []
         root_dirs = sickbeard.ROOT_DIRS.split('|')
         index = int(root_dirs[0])
@@ -1507,7 +1506,7 @@ class CMD_SickBeardPing(ApiCall):
 
     def run(self):
         """ check to see if sickbeard is running """
-        HTTPHeaders()['Cache-Control'] = "max-age=0,no-cache,no-store"
+        self.h['Cache-Control'] = "max-age=0,no-cache,no-store"
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:
