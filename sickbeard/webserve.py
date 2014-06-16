@@ -177,7 +177,12 @@ class IndexHandler(RedirectHandler):
         """
         args = None
         path = self.request.uri.split('?')[0]
+
         method = path.strip('/').split('/')[-1]
+        if path.startswith('/api'):
+            apikey = path.strip('/').split('/')[-1]
+            method = path.strip('/').split('/')[0]
+            self.request.arguments.update({'apikey':[apikey]})
 
         def pred(c):
             return inspect.isclass(c) and c.__module__ == pred.__module__
