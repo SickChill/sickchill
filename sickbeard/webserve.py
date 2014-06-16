@@ -63,6 +63,7 @@ from lib.dateutil import tz
 from lib.unrar2 import RarFile
 
 from lib import subliminal
+import tornado
 
 try:
     import json
@@ -77,8 +78,9 @@ except ImportError:
 from lib import adba
 
 from Cheetah.Template import Template
-from tornado import gen
+from tornado import gen, autoreload
 from tornado.web import RequestHandler, HTTPError, asynchronous, authenticated
+from tornado.ioloop import IOLoop
 
 # def _handle_reverse_proxy():
 #    if sickbeard.HANDLE_REVERSE_PROXY:
@@ -3300,11 +3302,15 @@ class Home(IndexHandler):
         if str(pid) != str(sickbeard.PID):
             self.redirect("/home/")
 
+        # auto-reload
+        tornado.autoreload.start(IOLoop.current())
+        tornado.autoreload.add_reload_hook(sickbeard.autoreload_shutdown)
+
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
 
         if updated:
             # do a hard restart
-            threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+            #threading.Timer(2, sickbeard.invoke_restart, [False]).start()
             t = PageTemplate(file="restart_bare.tmpl")
             return _munge(t)
         else:

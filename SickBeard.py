@@ -387,17 +387,10 @@ def main():
     # init startup tasks
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
 
-    def autoreload_shutdown():
-        logger.log('SickRage is now auto-reloading, please stand by ...')
-        webserveInit.server.stop()
-        sickbeard.halt()
-        sickbeard.saveAll()
-        sickbeard.cleanup_tornado_sockets(io_loop)
-
     # autoreload.
     if sickbeard.AUTO_UPDATE:
         tornado.autoreload.start(io_loop)
-        tornado.autoreload.add_reload_hook(autoreload_shutdown)
+        tornado.autoreload.add_reload_hook(sickbeard.autoreload_shutdown)
 
     # start IOLoop.
     io_loop.start()
