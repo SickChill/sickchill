@@ -18,10 +18,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # Check needed software dependencies to nudge users to fix their setup
-import functools
 import sys
-import tornado.ioloop
-import tornado.autoreload
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -55,6 +52,9 @@ import traceback
 import getopt
 
 import sickbeard
+
+import tornado.ioloop
+import tornado.autoreload
 
 from sickbeard import db
 from sickbeard.tv import TVShow
@@ -395,8 +395,9 @@ def main():
         sickbeard.cleanup_tornado_sockets(io_loop)
 
     # autoreload.
-    tornado.autoreload.start(io_loop)
-    tornado.autoreload.add_reload_hook(autoreload_shutdown)
+    if sickbeard.AUTO_UPDATE:
+        tornado.autoreload.start(io_loop)
+        tornado.autoreload.add_reload_hook(autoreload_shutdown)
 
     # start IOLoop.
     io_loop.start()

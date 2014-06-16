@@ -1,7 +1,6 @@
 import os
 import traceback
 import sickbeard
-from tornado.ioloop import IOLoop
 import webserve
 import webapi
 
@@ -9,6 +8,7 @@ from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
 from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
 
 server = None
 
@@ -100,7 +100,7 @@ def initWebServer(options={}):
                         log_function=lambda x: None,
                         debug=False,
                         gzip=True,
-                        autoreload=True,
+                        autoreload=sickbeard.AUTO_UPDATE,
                         xheaders=True,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
                         login_url='/login'

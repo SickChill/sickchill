@@ -4209,7 +4209,7 @@ class UI(IndexHandler):
         ui.notifications.message('Test 1', 'This is test number 1')
         ui.notifications.error('Test 2', 'This is test number 2')
 
-        "ok"
+        return "ok"
 
 
     def get_messages(self, *args, **kwargs):
@@ -4221,4 +4221,4 @@ class UI(IndexHandler):
                                                                      'type': cur_notification.type}
             cur_notification_num += 1
 
-        json.dumps(messages)
+        return json.dumps(messages)
