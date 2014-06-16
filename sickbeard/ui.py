@@ -25,7 +25,7 @@ MESSAGE = 'notice'
 ERROR = 'error'
 
 
-class Notifications(RequestHandler):
+class Notifications(object):
     """
     A queue of Notification objects.
     """
@@ -71,7 +71,7 @@ class Notifications(RequestHandler):
 notifications = Notifications()
 
 
-class Notification(RequestHandler):
+class Notification(object):
     """
     Represents a single notification. Tracks its own timeout and a list of which clients have
     seen it before.
@@ -80,8 +80,6 @@ class Notification(RequestHandler):
     def __init__(self, title, message='', type=None, timeout=None):
         self.title = title
         self.message = message
-
-        self.remote_ip = sickbeard.REMOTE_IP
 
         self._when = datetime.datetime.now()
         self._seen = []
@@ -100,7 +98,7 @@ class Notification(RequestHandler):
         """
         Returns True if the notification hasn't been displayed to the current client (aka IP address).
         """
-        return self.remote_ip not in self._seen
+        return sickbeard.REMOTE_IP not in self._seen
 
     def is_expired(self):
         """
@@ -113,7 +111,7 @@ class Notification(RequestHandler):
         """
         Returns this notification object and marks it as seen by the client ip
         """
-        self._seen.append(self.remote_ip)
+        self._seen.append(sickbeard.REMOTE_IP)
         return self
 
 

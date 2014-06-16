@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import traceback
 
 import webbrowser
 import time
