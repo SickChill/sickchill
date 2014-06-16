@@ -105,15 +105,13 @@ def require_basic_auth(handler_class):
                 return True
 
             auth_header = handler.request.headers.get('Authorization')
-            if auth_header is None or not auth_header.startswith('Basic '):
-                get_auth()
-
-            auth_decoded = base64.decodestring(auth_header[6:])
-            basicauth_user, basicauth_pass = auth_decoded.split(':', 2)
-            if basicauth_user == sickbeard.WEB_USERNAME and basicauth_pass == sickbeard.WEB_PASSWORD:
-                if not handler.get_secure_cookie("user"):
-                    handler.set_secure_cookie("user", str(time.time()))
-                return True
+            if auth_header and auth_header.startswith('Basic '):
+                auth_decoded = base64.decodestring(auth_header[6:])
+                basicauth_user, basicauth_pass = auth_decoded.split(':', 2)
+                if basicauth_user == sickbeard.WEB_USERNAME and basicauth_pass == sickbeard.WEB_PASSWORD:
+                    if not handler.get_secure_cookie("user"):
+                        handler.set_secure_cookie("user", str(time.time()))
+                    return True
 
             handler.clear_cookie("user")
             get_auth()
@@ -128,28 +126,12 @@ def require_basic_auth(handler_class):
     handler_class._execute = wrap_execute(handler_class._execute)
     return handler_class
 
-
+@require_basic_auth
 class RedirectHandler(RequestHandler):
-    """Redirects the client to the given URL for all GET requests.
 
-    You should provide the keyword argument ``url`` to the handler, e.g.::
-
-        application = web.Application([
-            (r"/oldpath", web.RedirectHandler, {"url": "/newpath"}),
-        ])
-    """
-
-    def get(self, path):
+    def get(self, path, **kwargs):
         self.redirect(path, permanent=True)
 
-
-@require_basic_auth
-class LoginHandler(RedirectHandler):
-    def get(self, path):
-        self.redirect(self.get_argument("next", u"/"))
-
-
-@require_basic_auth
 class IndexHandler(RedirectHandler):
     def __init__(self, application, request, **kwargs):
         super(IndexHandler, self).__init__(application, request, **kwargs)
@@ -171,10 +153,7 @@ class IndexHandler(RedirectHandler):
         return args
 
     def _dispatch(self):
-        """
-        Load up the requested URL if it matches one of our own methods.
-        Skip methods that start with an underscore (_).
-        """
+
         args = None
         path = self.request.uri.split('?')[0]
 
@@ -469,6 +448,9 @@ class IndexHandler(RedirectHandler):
 
     browser = WebFileBrowser
 
+class LoginHandler(IndexHandler):
+    def get(self):
+        self.redirect(self.get_argument("next", u"/"))
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
