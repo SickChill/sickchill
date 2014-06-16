@@ -35,7 +35,7 @@ from lib.requests import exceptions
 from lib.bencode import bdecode
 
 class TorrentRssProvider(generic.TorrentProvider):
-    def __init__(self, name, url, search_mode='eponly', search_fallback=False, backlog_only=False):
+    def __init__(self, name, url, cookies, search_mode='eponly', search_fallback=False, backlog_only=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
         self.url = re.sub('\/$', '', url)
@@ -47,8 +47,13 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.search_fallback = search_fallback
         self.backlog_only = backlog_only
 
+        if cookies:
+          self.cookies = cookies
+        else:
+          self.cookies = None
+
     def configStr(self):
-        return self.name + '|' + self.url + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
+        return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
 
     def imageName(self):
         if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
@@ -84,6 +89,10 @@ class TorrentRssProvider(generic.TorrentProvider):
     def validateRSS(self):
 
         try:
+            if self.cookies:
+                cookie_validator=re.compile("^(\w+=\w+)(;\w+=\w+)*$")
+                if not cookie_validator.match(self.cookies):
+                    return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
             data = self.cache._getRSSData()
             if not data:
@@ -120,6 +129,10 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         if not self.session:
             self.session = requests.Session()
+
+        if self.cookies:
+          requests.utils.add_dict_to_cookiejar(self.session.cookies,
+                                               dict(x.rsplit('=', 1) for x in (self.cookies.split(';'))))
 
         try:
             parsed = list(urlparse.urlparse(url))
@@ -158,9 +171,12 @@ class TorrentRssCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
-        url = self.provider.url
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
-        return self.getRSSFeed(url)
+        if self.provider.cookies:
+          request_headers = { 'Cookie': self.provider.cookies }
+        else:
+          request_headers = None
+        return self.getRSSFeed(self.provider.url, request_headers=request_headers)
 
     def _parseItem(self, item):
 

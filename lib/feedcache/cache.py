@@ -98,7 +98,7 @@ class Cache:
                     del self.storage[url]
         return
 
-    def fetch(self, url, force_update=False, offline=False):
+    def fetch(self, url, force_update=False, offline=False, request_headers=None):
         """Return the feed at url.
 
         url - The URL of the feed.
@@ -175,7 +175,7 @@ class Cache:
                                          agent=self.user_agent,
                                          modified=modified,
                                          etag=etag,
-                                         )
+                                         request_headers=request_headers)
 
         status = parsed_result.get('status', None)
         logger.debug('HTTP status=%s' % status)

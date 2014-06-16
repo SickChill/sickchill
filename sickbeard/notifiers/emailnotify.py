@@ -151,13 +151,13 @@ class EmailNotifier:
                 addrs.append(addr)
 
         # Grab the recipients for the show
-        mydb = db.DBConnection()
-        for s in show:
-            for subs in mydb.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
-                if subs['notify_list']:
-                    for addr in subs['notify_list'].split(','):
-                        if (len(addr.strip()) > 0):
-                            addrs.append(addr)
+        with db.DBConnection() as myDB:
+            for s in show:
+                for subs in myDB.select("SELECT notify_list FROM tv_shows WHERE show_name = ?", (s,)):
+                    if subs['notify_list']:
+                        for addr in subs['notify_list'].split(','):
+                            if (len(addr.strip()) > 0):
+                                addrs.append(addr)
 
         addrs = set(addrs)
         logger.log('Notification recepients: %s' % addrs, logger.DEBUG)

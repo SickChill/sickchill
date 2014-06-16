@@ -305,13 +305,15 @@ class NextGenProvider(generic.TorrentProvider):
 
         results = []
 
-        sqlResults = db.DBConnection().select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
-            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
-            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
-        )
+        with db.DBConnection() as myDB:
+            sqlResults = myDB.select(
+                'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+                ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+                ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+                ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+                ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+            )
+
         if not sqlResults:
             return []
 
@@ -365,8 +367,8 @@ class NextGenCache(tvcache.TVCache):
                 cl.append(ci)
 
         if cl:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
+            with self._getDB() as myDB:
+                myDB.mass_action(cl)
 
     def _parseItem(self, item):
 

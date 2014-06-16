@@ -321,11 +321,11 @@ class GenericProvider:
                                    logger.DEBUG)
                         continue
 
-                    myDB = db.DBConnection()
-                    sql_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                        [show.indexerid,
-                         parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()])
+                    with db.DBConnection() as myDB:
+                        sql_results = myDB.select(
+                            "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                            [show.indexerid,
+                             parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()])
 
                     if len(sql_results) != 1:
                         logger.log(

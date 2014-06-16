@@ -66,10 +66,10 @@
     type: 'numeric'
 });
 
-\$.tablesorter.addParser({ 
+\$.tablesorter.addParser({
     id: 'eps',
     is: function(s) {
-        return false; 
+        return false;
     },
     format: function(s) {
         match = s.match(/^(.*)/);
@@ -78,7 +78,7 @@
             return -10;
 
         var nums = match[1].split(" / ");
-        
+
         if (parseInt(nums[0]) === 0)
         	return parseInt(nums[1]);
 
@@ -179,7 +179,7 @@
 
 <table id="showListTable$curListType" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
 
-  <thead><tr><th class="nowrap">Next Ep</th>#if $layout=="poster" then "<th>Poster</th>" else "<th style='display: none;'></th>"#<th>Show</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
+  <thead><tr><th class="nowrap">Next Ep</th>#if $layout=="poster" then "<th>Poster</th>" else "<th style='display: none;'></th>"#<th>$curListType</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
   <tfoot>
     <tr>
       <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">&nbsp Add Show</a></th>
@@ -234,7 +234,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
   #set $den = 1
 #end if
 
-#set $which_thumb = $layout+"_thumb" 
+#set $which_thumb = $layout+"_thumb"
 
   <tr>
     #if len($curEp) != 0:
@@ -305,7 +305,5 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 </tbody>
 </table>
 #end for
-
-<script type="text/javascript" src="$sbRoot/js/tableClick.js"></script>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

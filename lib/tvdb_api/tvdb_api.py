@@ -602,7 +602,11 @@ class Tvdb:
                 except zipfile.BadZipfile:
                     raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
             else:
-                return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=process)
+                try:
+                    return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=process)
+                except:
+                    return xmltodict.parse(resp.content.strip(), postprocessor=process)
+
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -855,7 +859,11 @@ class Tvdb:
 
         epsEt = self._getetsrc(url, language=language)
 
-        for cur_ep in epsEt["episode"]:
+        episodes =  epsEt["episode"]
+        if not isinstance(episodes, list):
+            episodes = [episodes]
+
+        for cur_ep in episodes:
             if self.config['dvdorder']:
                 log().debug('Using DVD ordering.')
                 use_dvd = cur_ep['dvd_season'] != None and cur_ep['dvd_episodenumber'] != None

@@ -117,8 +117,8 @@ class BacklogSearcher:
 
         logger.log(u"Retrieving the last check time from the DB", logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        with db.DBConnection() as myDB:
+            sqlResults = myDB.select("SELECT * FROM info")
 
         if len(sqlResults) == 0:
             lastBacklog = 1
@@ -137,15 +137,15 @@ class BacklogSearcher:
 
         logger.log(u"Seeing if we need anything from " + show.name)
 
-        myDB = db.DBConnection()
-        if show.air_by_date:
-            sqlResults = myDB.select(
-                "SELECT ep.status, ep.season, ep.episode FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.air_by_date = 1",
-                [fromDate.toordinal(), show.indexerid])
-        else:
-            sqlResults = myDB.select(
-                "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
-                [show.indexerid, fromDate.toordinal()])
+        with db.DBConnection() as myDB:
+            if show.air_by_date:
+                sqlResults = myDB.select(
+                    "SELECT ep.status, ep.season, ep.episode FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.air_by_date = 1",
+                    [fromDate.toordinal(), show.indexerid])
+            else:
+                sqlResults = myDB.select(
+                    "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
+                    [show.indexerid, fromDate.toordinal()])
 
         # check through the list of statuses to see if we want any
         wanted = {}
@@ -175,13 +175,13 @@ class BacklogSearcher:
 
         logger.log(u"Setting the last backlog in the DB to " + str(when), logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM info")
+        with db.DBConnection() as myDB:
+            sqlResults = myDB.select("SELECT * FROM info")
 
-        if len(sqlResults) == 0:
-            myDB.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
-        else:
-            myDB.action("UPDATE info SET last_backlog=" + str(when))
+            if len(sqlResults) == 0:
+                myDB.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
+            else:
+                myDB.action("UPDATE info SET last_backlog=" + str(when))
 
 
     def run(self, force=False):

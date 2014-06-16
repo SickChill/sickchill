@@ -17,8 +17,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import traceback
 
-import cherrypy
 import webbrowser
 import time
 import datetime
@@ -29,7 +29,7 @@ from urllib2 import getproxies
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
-from sickbeard import providers, metadata, config
+from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, nextgen, speedcd, nyaatorrents, fanzub
@@ -47,14 +47,11 @@ from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
     indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
-
 from sickbeard.databases import mainDB, cache_db, failed_db
 
 from lib.configobj import ConfigObj
-
+from tornado.ioloop import IOLoop
 import xml.etree.ElementTree as ElementTree
-
-invoked_command = None
 
 PID = None
 
@@ -77,6 +74,7 @@ CREATEPID = False
 PIDFILE = ''
 
 DAEMON = None
+NO_RESIZE = False
 
 maintenanceScheduler = None
 dailySearchScheduler = None
@@ -88,7 +86,7 @@ searchQueueScheduler = None
 properFinderScheduler = None
 autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
-traktWatchListCheckerSchedular = None
+traktWatchListCheckerScheduler = None
 
 showList = None
 loadingShowList = None
@@ -107,6 +105,7 @@ CUR_COMMIT_HASH = None
 INIT_LOCK = Lock()
 __INITIALIZED__ = False
 started = False
+restarted = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -125,6 +124,7 @@ HANDLE_REVERSE_PROXY = None
 PROXY_SETTING = None
 
 LOCALHOST_IP = None
+REMOTE_IP = None
 
 CPU_PRESET = None
 
@@ -433,7 +433,6 @@ TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 
 __INITIALIZED__ = False
 
-
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -444,7 +443,7 @@ def initialize(consoleLogging=True):
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, BACKLOG_FREQUENCY, \
-            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerSchedular, \
+            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktWatchListCheckerScheduler, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, SORT_ARTICLE, showList, loadingShowList, \
@@ -474,7 +473,7 @@ def initialize(consoleLogging=True):
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
-            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
+            USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, REMOTE_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
@@ -503,6 +502,8 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushalot')
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
+
+        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         # put the log dir inside the data dir, unless an absolute path
@@ -876,8 +877,6 @@ def initialize(consoleLogging=True):
         METADATA_TIVO = check_setting_str(CFG, 'General', 'metadata_tivo', '0|0|0|0|0|0|0|0|0|0')
         METADATA_MEDE8ER = check_setting_str(CFG, 'General', 'metadata_mede8er', '0|0|0|0|0|0|0|0|0|0')
 
-        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-
         HOME_LAYOUT = check_setting_str(CFG, 'GUI', 'home_layout', 'poster')
         HISTORY_LAYOUT = check_setting_str(CFG, 'GUI', 'history_layout', 'detailed')
         DISPLAY_SHOW_SPECIALS = bool(check_setting_int(CFG, 'GUI', 'display_show_specials', 1))
@@ -906,16 +905,20 @@ def initialize(consoleLogging=True):
         logger.sb_log_instance.initLogging(consoleLogging=consoleLogging)
 
         # initialize the main SB database
-        db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+        with db.DBConnection() as myDB:
+            db.upgradeDatabase(myDB, mainDB.InitialSchema)
 
         # initialize the cache database
-        db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
+        with db.DBConnection('cache.db') as myDB:
+            db.upgradeDatabase(myDB, cache_db.InitialSchema)
 
         # initialize the failed downloads database
-        db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
+        with db.DBConnection('failed.db') as myDB:
+            db.upgradeDatabase(myDB, failed_db.InitialSchema)
 
         # fix up any db problems
-        db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
+        with db.DBConnection() as myDB:
+            db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)
@@ -986,7 +989,7 @@ def initialize(consoleLogging=True):
                                                          silent=False if PROCESS_AUTOMATICALLY else True,
                                                          runImmediately=True)
 
-        traktWatchListCheckerSchedular = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
+        traktWatchListCheckerScheduler = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
                                                              cycleTime=datetime.timedelta(hours=1),
                                                              threadName="TRAKTWATCHLIST",
                                                              silent=False if USE_TRAKT else True,
@@ -1111,7 +1114,7 @@ def start():
     global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerSchedular, \
+        subtitlesFinderScheduler, USE_SUBTITLES,traktWatchListCheckerScheduler, \
         dailySearchScheduler, started
 
     with INIT_LOCK:
@@ -1153,7 +1156,7 @@ def start():
                 subtitlesFinderScheduler.thread.start()
 
             # start the trakt watchlist
-            traktWatchListCheckerSchedular.thread.start()
+            traktWatchListCheckerScheduler.thread.start()
 
             started = True
 
@@ -1162,7 +1165,7 @@ def halt():
     global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, traktWatchListCheckerSchedular, \
+        subtitlesFinderScheduler, traktWatchListCheckerScheduler, \
         dailySearchScheduler, started
 
     with INIT_LOCK:
@@ -1181,7 +1184,7 @@ def halt():
                 pass
 
             dailySearchScheduler.abort = True
-            logger.log(u"Waiting for the DAILYSEARCHER thread to exit")
+            logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
                 dailySearchScheduler.thread.join(10)
             except:
@@ -1229,10 +1232,10 @@ def halt():
             except:
                 pass
 
-            traktWatchListCheckerSchedular.abort = True
+            traktWatchListCheckerScheduler.abort = True
             logger.log(u"Waiting for the TRAKTWATCHLIST thread to exit")
             try:
-                traktWatchListCheckerSchedular.thread.join(10)
+                traktWatchListCheckerScheduler.thread.join(10)
             except:
                 pass
 
@@ -1278,7 +1281,6 @@ def sig_handler(signum=None, frame=None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
         saveAndShutdown()
 
-
 def saveAll():
     global showList
 
@@ -1291,19 +1293,15 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-
-def saveAndShutdown(restart=False):
+def saveAndShutdown():
     halt()
     saveAll()
-
-    logger.log(u"Killing cherrypy")
-    cherrypy.engine.exit()
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
         remove_pid_file(PIDFILE)
 
-    if restart:
+    if restarted:
         install_type = versionCheckScheduler.action.install_type
 
         popen_list = []
@@ -1332,35 +1330,34 @@ def saveAndShutdown(restart=False):
     os._exit(0)
 
 def invoke_command(to_call, *args, **kwargs):
-    global invoked_command
 
     def delegate():
         to_call(*args, **kwargs)
 
-    invoked_command = delegate
-    logger.log(u"Placed invoked command: " + repr(invoked_command) + " for " + repr(to_call) + " with " + repr(
+    logger.log(u"Placed invoked command: " + repr(delegate) + " for " + repr(to_call) + " with " + repr(
         args) + " and " + repr(kwargs), logger.DEBUG)
 
+    IOLoop.current().add_callback(delegate)
 
 def invoke_restart(soft=True):
     invoke_command(restart, soft=soft)
 
 
 def invoke_shutdown():
-    invoke_command(saveAndShutdown)
+    invoke_command(webserveInit.shutdown)
 
 
 def restart(soft=True):
+    global restarted
+
     if soft:
         halt()
         saveAll()
-        # logger.log(u"Restarting cherrypy")
-        #cherrypy.engine.restart()
         logger.log(u"Re-initializing all data")
         initialize()
-
     else:
-        saveAndShutdown(restart=True)
+        restarted=True
+        webserveInit.shutdown()
 
 
 def save_config():
@@ -1803,8 +1800,8 @@ def getEpList(epIDs, showid=None):
         query += " AND showid = ?"
         params.append(showid)
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select(query, params)
+    with db.DBConnection() as myDB:
+        sqlResults = myDB.select(query, params)
 
     epList = []
 

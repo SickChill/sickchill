@@ -46,7 +46,7 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
 
-class DBConnection:
+class DBConnection(object):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
@@ -69,45 +69,6 @@ class DBConnection:
             return int(result[0]["db_version"])
         else:
             return 0
-
-    def fetch(self, query, args=None):
-
-        with db_lock:
-
-            if query == None:
-                return
-
-            sqlResult = None
-            attempt = 0
-
-            while attempt < 5:
-                try:
-                    if args == None:
-                        logger.log(self.filename + ": " + query, logger.DB)
-                        cursor = self.connection.cursor()
-                        cursor.execute(query)
-                        sqlResult = cursor.fetchone()[0]
-                    else:
-                        logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
-                        cursor = self.connection.cursor()
-                        cursor.execute(query, args)
-                        sqlResult = cursor.fetchone()[0]
-
-                    # get out of the connection attempt loop since we were successful
-                    break
-                except sqlite3.OperationalError, e:
-                    if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
-                        logger.log(u"DB error: " + ex(e), logger.WARNING)
-                        attempt += 1
-                        time.sleep(0.02)
-                    else:
-                        logger.log(u"DB error: " + ex(e), logger.ERROR)
-                        raise
-                except sqlite3.DatabaseError, e:
-                    logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
-                    raise
-
-            return sqlResult
 
     def mass_action(self, querylist, logTransaction=False):
 
@@ -243,6 +204,12 @@ class DBConnection:
 
     def close(self):
         self.connection.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()

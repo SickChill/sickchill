@@ -113,10 +113,10 @@
             result = (0 == week ? airdatetime.calendar() : '');
 
         if (/\bOn\b/i.test(result)) {
-           var fuzzer = false, weekday = today.format('dd');
-            if (/we/i.test(weekday))
+           var fuzzer = false, weekday = today.day();
+            if (3 == weekday)
                 fuzzer = (5 <= day);
-            else if (/(?:th|fr)/i.test(weekday))
+            else if (4 == weekday || 5 == weekday)
                 fuzzer = (4 <= day);
             else
                 fuzzer = (6 == day);

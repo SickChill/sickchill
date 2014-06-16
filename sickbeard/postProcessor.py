@@ -405,31 +405,30 @@ class PostProcessor(object):
         if self.folder_name:
             names.append(self.folder_name)
 
-        myDB = db.DBConnection()
-
         # search the database for a possible match and return immediately if we find one
-        for curName in names:
-            search_name = re.sub("[\.\-\ ]", "_", curName)
-            sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
+        with db.DBConnection() as myDB:
+            for curName in names:
+                search_name = re.sub("[\.\-\ ]", "_", curName)
+                sql_results = myDB.select("SELECT * FROM history WHERE resource LIKE ?", [search_name])
 
-            if len(sql_results) == 0:
-                continue
+                if len(sql_results) == 0:
+                    continue
 
-            show = helpers.findCertainShow(sickbeard.showList, int(sql_results[0]["showid"]))
-            if not show:
-                continue
+                show = helpers.findCertainShow(sickbeard.showList, int(sql_results[0]["showid"]))
+                if not show:
+                    continue
 
-            season = int(sql_results[0]["season"])
-            quality = int(sql_results[0]["quality"])
+                season = int(sql_results[0]["season"])
+                quality = int(sql_results[0]["quality"])
 
-            if quality == common.Quality.UNKNOWN:
-                quality = None
+                if quality == common.Quality.UNKNOWN:
+                    quality = None
 
-            self.in_history = True
-            to_return = (show, season, [], quality)
-            self._log("Found result in history: " + str(to_return), logger.DEBUG)
+                self.in_history = True
+                to_return = (show, season, [], quality)
+                self._log("Found result in history: " + str(to_return), logger.DEBUG)
 
-            return to_return
+                return to_return
 
         self.in_history = False
         return to_return
@@ -624,9 +623,9 @@ class PostProcessor(object):
                 self._log(u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                           logger.DEBUG)
                 airdate = episodes[0].toordinal()
-                myDB = db.DBConnection()
-                sql_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
-                                         [show.indexerid, show.indexer, airdate])
+                with db.DBConnection() as myDB:
+                    sql_result = myDB.select("SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                                             [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
                     season = int(sql_result[0][0])
@@ -640,10 +639,10 @@ class PostProcessor(object):
 
             # if there's no season then we can hopefully just use 1 automatically
             elif season == None and show:
-                myDB = db.DBConnection()
-                numseasonsSQlResult = myDB.select(
-                    "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
-                    [show.indexerid, show.indexer])
+                with db.DBConnection() as myDB:
+                    numseasonsSQlResult = myDB.select(
+                        "SELECT COUNT(DISTINCT season) as numseasons FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0",
+                        [show.indexerid, show.indexer])
                 if int(numseasonsSQlResult[0][0]) == 1 and season == None:
                     self._log(
                         u"Don't have a season number, but this show appears to only have 1 season, setting season number to 1...",
@@ -965,8 +964,8 @@ class PostProcessor(object):
                     self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
         if sql_l:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            with db.DBConnection() as myDB:
+                myDB.mass_action(sql_l)
 
         # find the destination folder
         try:
@@ -1042,8 +1041,8 @@ class PostProcessor(object):
         sql_l.append(ep_obj.get_sql())
 
         if sql_l:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            with db.DBConnection() as myDB:
+                myDB.mass_action(sql_l)
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)

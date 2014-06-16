@@ -31,6 +31,7 @@ from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
 
+
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
         generic_queue.GenericQueue.__init__(self)
@@ -132,7 +133,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                subtitles=None, lang="en", anime=None, scene=None):
+                lang="en", subtitles=None, anime=None, scene=None):
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
                                     subtitles, anime, scene)
 
@@ -175,7 +176,8 @@ class ShowQueueItem(generic_queue.QueueItem):
         self.show = show
 
     def isInQueue(self):
-        return self in sickbeard.showQueueScheduler.action.queue + [sickbeard.showQueueScheduler.action.currentItem] #@UndefinedVariable
+        return self in sickbeard.showQueueScheduler.action.queue + [
+            sickbeard.showQueueScheduler.action.currentItem]  #@UndefinedVariable
 
     def _getName(self):
         return str(self.show.indexerid)
@@ -189,7 +191,8 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 
 class QueueItemAdd(ShowQueueItem):
-    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime, scene):
+    def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
+                 scene):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -248,7 +251,9 @@ class QueueItemAdd(ShowQueueItem):
 
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, 'seriesname', None) is None:
-                logger.log(u"Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(self.indexer).name) + ", probably the wrong language used to search with.", logger.ERROR)
+                logger.log(u"Show in " + self.showDir + " has no name on " + str(
+                    sickbeard.indexerApi(self.indexer).name) + ", probably the wrong language used to search with.",
+                           logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Show in " + self.showDir + " has no name on " + str(sickbeard.indexerApi(
                                            self.indexer).name) + ", probably the wrong language. Delete .nfo and add manually in the correct language.")
@@ -256,14 +261,16 @@ class QueueItemAdd(ShowQueueItem):
                 return
             # if the show has no episodes/seasons
             if not s:
-                logger.log(u"Show " + str(s['seriesname']) + " is on " + str(sickbeard.indexerApi(self.indexer).name) + " but contains no season/episode data.", logger.ERROR)
+                logger.log(u"Show " + str(s['seriesname']) + " is on " + str(
+                    sickbeard.indexerApi(self.indexer).name) + " but contains no season/episode data.", logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Show " + str(s['seriesname']) + " is on " + str(sickbeard.indexerApi(
                                            self.indexer).name) + " but contains no season/episode data.")
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + str(sickbeard.indexerApi(self.indexer).name), logger.ERROR)
+            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + str(
+                sickbeard.indexerApi(self.indexer).name), logger.ERROR)
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
                                        self.indexer).name) + " using ID " + str(
@@ -363,9 +370,9 @@ class QueueItemAdd(ShowQueueItem):
         # if they gave a custom status then change all the eps to it
         if self.default_status != SKIPPED:
             logger.log(u"Setting all episodes to the specified default status: " + str(self.default_status))
-            myDB = db.DBConnection()
-            myDB.action("UPDATE tv_episodes SET status = ? WHERE status = ? AND showid = ? AND season != 0",
-                        [self.default_status, SKIPPED, self.show.indexerid])
+            with db.DBConnection() as myDB:
+                myDB.action("UPDATE tv_episodes SET status = ? WHERE status = ? AND showid = ? AND season != 0",
+                            [self.default_status, SKIPPED, self.show.indexerid])
 
         # if they started with WANTED eps then run the backlog
         if self.default_status == WANTED:
@@ -379,13 +386,14 @@ class QueueItemAdd(ShowQueueItem):
         self.show.flushEpisodes()
 
         # if there are specific episodes that need to be added by trakt
-        sickbeard.traktWatchListCheckerSchedular.action.manageNewShow(self.show)
+        sickbeard.traktWatchListCheckerScheduler.action.manageNewShow(self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
         # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
-        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
+        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid,
+                                                                                   self.show.indexer):
             self.show.scene = 1
 
         self.finish()
@@ -554,6 +562,7 @@ class QueueItemUpdate(ShowQueueItem):
                         pass
 
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
+
 
 class QueueItemForceUpdate(QueueItemUpdate):
     def __init__(self, show=None):

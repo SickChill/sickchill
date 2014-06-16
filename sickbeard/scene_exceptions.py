@@ -41,9 +41,9 @@ def get_scene_exceptions(indexer_id, season=-1):
     global exceptionCache
 
     if indexer_id not in exceptionCache or season not in exceptionCache[indexer_id]:
-        myDB = db.DBConnection("cache.db")
-        exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
-                                 [indexer_id, season])
+        with db.DBConnection('cache.db') as myDB:
+            exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
+                                     [indexer_id, season])
         exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
 
         if len(exceptionsList):
@@ -60,8 +60,8 @@ def get_scene_exceptions(indexer_id, season=-1):
     return exceptionsList
 
 def get_all_scene_exceptions(indexer_id):
-    myDB = db.DBConnection("cache.db")
-    exceptions = myDB.select("SELECT show_name,season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+    with db.DBConnection('cache.db') as myDB:
+        exceptions = myDB.select("SELECT show_name,season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     exceptionsList = {}
     [cur_exception["show_name"] for cur_exception in exceptions]
     for cur_exception in exceptions:
@@ -77,9 +77,9 @@ def get_scene_seasons(indexer_id):
     """
     global exceptionSeasonCache
     if indexer_id not in exceptionSeasonCache:
-        myDB = db.DBConnection("cache.db")
-        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
-                                 [indexer_id])
+        with db.DBConnection('cache.db') as myDB:
+            sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
+                                     [indexer_id])
         exceptionSeasonCache[indexer_id] = [int(x["season"]) for x in sqlResults]
 
     return exceptionSeasonCache[indexer_id]
@@ -95,17 +95,17 @@ def get_scene_exception_by_name_multiple(show_name):
     is present.
     """
 
-    myDB = db.DBConnection("cache.db")
-
     # try the obvious case first
-    exception_result = myDB.select(
-        "SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season ASC",
-        [show_name.lower()])
-    if exception_result:
-        return [(int(x["indexer_id"]), int(x["season"])) for x in exception_result]
+    with db.DBConnection('cache.db') as myDB:
+        exception_result = myDB.select(
+            "SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season ASC",
+            [show_name.lower()])
+        if exception_result:
+            return [(int(x["indexer_id"]), int(x["season"])) for x in exception_result]
 
-    out = []
-    all_exception_results = myDB.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
+        out = []
+        all_exception_results = myDB.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
+
     for cur_exception in all_exception_results:
 
         cur_exception_name = cur_exception["show_name"]
@@ -180,25 +180,24 @@ def retrieve_exceptions():
         else:
             exception_dict[local_ex] = local_exceptions[local_ex]
 
-    myDB = db.DBConnection("cache.db")
-
     changed_exceptions = False
 
     # write all the exceptions we got off the net into the database
-    for cur_indexer_id in exception_dict:
+    with db.DBConnection('cache.db') as myDB:
+        for cur_indexer_id in exception_dict:
 
-        # get a list of the existing exceptions for this ID
-        existing_exceptions = [x["show_name"] for x in
-                               myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
+            # get a list of the existing exceptions for this ID
+            existing_exceptions = [x["show_name"] for x in
+                                   myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
 
-        for cur_exception_dict in exception_dict[cur_indexer_id]:
-            cur_exception, curSeason = cur_exception_dict.items()[0]
+            for cur_exception_dict in exception_dict[cur_indexer_id]:
+                cur_exception, curSeason = cur_exception_dict.items()[0]
 
-            # if this exception isn't already in the DB then add it
-            if cur_exception not in existing_exceptions:
-                myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
-                            [cur_indexer_id, cur_exception, curSeason])
-                changed_exceptions = True
+                # if this exception isn't already in the DB then add it
+                if cur_exception not in existing_exceptions:
+                    myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
+                                [cur_indexer_id, cur_exception, curSeason])
+                    changed_exceptions = True
 
     # since this could invalidate the results of the cache we clear it out after updating
     if changed_exceptions:
@@ -217,16 +216,15 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 
     global exceptionIndexerCache
 
-    myDB = db.DBConnection("cache.db")
+    with db.DBConnection('cache.db') as myDB:
+        myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
 
-    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
-
-    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
-    for cur_season in [-1] + sickbeard.scene_exceptions.get_scene_seasons(indexer_id):
-        for cur_exception in scene_exceptions:
-            exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = indexer_id
-            myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
-                        [indexer_id, cur_exception, cur_season, 1])
+        logger.log(u"Updating internal scene name cache", logger.MESSAGE)
+        for cur_season in [-1] + sickbeard.scene_exceptions.get_scene_seasons(indexer_id):
+            for cur_exception in scene_exceptions:
+                exceptionIndexerCache[helpers.full_sanitizeSceneName(cur_exception)] = indexer_id
+                myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
+                            [indexer_id, cur_exception, cur_season, 1])
 
     name_cache.clearCache()
 
@@ -237,31 +235,30 @@ def _retrieve_anidb_mainnames():
 
     anidb_mainNames = {}
 
-    cacheDB = db.DBConnection('cache.db')
+    with db.DBConnection('cache.db') as myDB:
+        rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
+                              ['anidb'])
+        if rows:
+            refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_ANIDB_AGE_SECS)
+        else:
+            refresh = True
 
-    rows = cacheDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
-                          ['anidb'])
-    if rows:
-        refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_ANIDB_AGE_SECS)
-    else:
-        refresh = True
+        if refresh:
+            for show in sickbeard.showList:
+                if show.is_anime and show.indexer == 1:
+                    try:
+                        anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
+                    except:
+                        continue
+                    else:
+                        success = True
 
-    if refresh:
-        for show in sickbeard.showList:
-            if show.is_anime and show.indexer == 1:
-                try:
-                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
-                except:
-                    continue
-                else:
-                    success = True
+                        if anime.name and anime.name != show.name:
+                            anidb_mainNames[show.indexerid] = [{anime.name: -1}]
 
-                    if anime.name and anime.name != show.name:
-                        anidb_mainNames[show.indexerid] = [{anime.name: -1}]
-
-        if success:
-            cacheDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
-                           ['anidb', time.time()])
+            if success:
+                myDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
+                               ['anidb', time.time()])
 
     return anidb_mainNames
 
@@ -271,31 +268,30 @@ def _xem_excpetions_fetcher(indexer):
 
     exception_dict = {}
 
-    cacheDB = db.DBConnection('cache.db')
+    with db.DBConnection('cache.db') as myDB:
+        rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
+                           ['xem'])
+        if rows:
+            refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
+        else:
+            refresh = True
 
-    rows = cacheDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
-                       ['xem'])
-    if rows:
-        refresh = time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
-    else:
-        refresh = True
+        if refresh:
+            url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config['xem_origin']
 
-    if refresh:
-        url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config['xem_origin']
+            url_data = helpers.getURL(url, json=True)
+            if url_data is None:
+                logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
+                return exception_dict
 
-        url_data = helpers.getURL(url, json=True)
-        if url_data is None:
-            logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
-            return exception_dict
+            if url_data['result'] == 'failure':
+                return exception_dict
 
-        if url_data['result'] == 'failure':
-            return exception_dict
+            myDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
+                           ['xem', time.time()])
 
-        cacheDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
-                       ['xem', time.time()])
-
-        for indexerid, names in url_data['data'].items():
-            exception_dict[int(indexerid)] = names
+            for indexerid, names in url_data['data'].items():
+                exception_dict[int(indexerid)] = names
 
     return exception_dict
 
@@ -303,8 +299,8 @@ def _xem_excpetions_fetcher(indexer):
 def getSceneSeasons(indexer_id):
     """get a list of season numbers that have scene excpetions
     """
-    myDB = db.DBConnection("cache.db")
-    seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+    with db.DBConnection('cache.db') as myDB:
+        seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
     return [cur_exception["season"] for cur_exception in seasons]
 
 def buildIndexerCache():

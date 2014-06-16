@@ -19,6 +19,7 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 import sys
+import tornado.ioloop
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -47,7 +48,6 @@ if sys.hexversion >= 0x020600F0:
 import locale
 import datetime
 import threading
-import time
 import signal
 import traceback
 import getopt
@@ -57,13 +57,14 @@ import sickbeard
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger
+from sickbeard import webserveInit
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
 
-from sickbeard.webserveInit import initWebServer
-
 from lib.configobj import ConfigObj
+
+from tornado.ioloop import IOLoop, PeriodicCallback
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
@@ -76,18 +77,18 @@ def loadShowsFromDB():
     Populates the showList with shows from the database
     """
 
-    myDB = db.DBConnection()
-    sqlResults = myDB.select("SELECT * FROM tv_shows")
+    with db.DBConnection() as myDB:
+        sqlResults = myDB.select("SELECT * FROM tv_shows")
 
-    for sqlShow in sqlResults:
-        try:
-            curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
-            sickbeard.showList.append(curShow)
-        except Exception, e:
-            logger.log(
-                u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
-                logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+        for sqlShow in sqlResults:
+            try:
+                curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
+                sickbeard.showList.append(curShow)
+            except Exception, e:
+                logger.log(
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
+                    logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
             # TODO: update the existing shows if the showlist has something in it
 
@@ -107,7 +108,7 @@ def daemonize():
         sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
-    os.setsid() # unix
+    os.setsid()  # unix
 
     # Make sure I can read my own files and shut out others
     prev = os.umask(0)
@@ -144,7 +145,6 @@ def daemonize():
     os.dup2(stdin.fileno(), sys.stdin.fileno())
     os.dup2(stdout.fileno(), sys.stdout.fileno())
     os.dup2(stderr.fileno(), sys.stderr.fileno())
-
 
 def main():
     """
@@ -186,16 +186,6 @@ def main():
 
     # Need console logging for SickBeard.py and SickBeard-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sickbeard.MY_NAME.lower().find('-console') > 0)
-
-    # Attempt to rename the process for easier debugging
-    try:
-        from setproctitle import setproctitle
-    except ImportError:
-        if consoleLogging:
-            sys.stderr.write(u"setproctitle module is not available.\n")
-        setproctitle = lambda t: None
-
-    setproctitle(sickbeard.MY_NAME)
 
     # Rename the main thread
     threading.currentThread().name = "MAIN"
@@ -248,6 +238,10 @@ def main():
         # Specify folder to use as the data dir
         if o in ('--datadir',):
             sickbeard.DATA_DIR = os.path.abspath(a)
+
+        # Prevent resizing of the banner/posters even if PIL is installed
+        if o in ('--noresize',):
+            sickbeard.NO_RESIZE = True
 
         # Write a pidfile if requested
         if o in ('--pidfile',):
@@ -306,16 +300,18 @@ def main():
 
     sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
-    CUR_DB_VERSION = db.DBConnection().checkDBVersion()
+    with db.DBConnection() as myDB:
+        CUR_DB_VERSION = myDB.checkDBVersion()
+
     if CUR_DB_VERSION > 0:
         if CUR_DB_VERSION < MIN_DB_VERSION:
             raise SystemExit("Your database version (" + str(
-                db.DBConnection().checkDBVersion()) + ") is too old to migrate from with this version of SickRage (" + str(
+                CUR_DB_VERSION) + ") is too old to migrate from with this version of SickRage (" + str(
                 MIN_DB_VERSION) + ").\n" + \
                              "Upgrade using a previous version of SB first, or start with no database file to begin fresh.")
         if CUR_DB_VERSION > MAX_DB_VERSION:
             raise SystemExit("Your database version (" + str(
-                db.DBConnection().checkDBVersion()) + ") has been incremented past what this version of SickRage supports (" + str(
+                CUR_DB_VERSION) + ") has been incremented past what this version of SickRage supports (" + str(
                 MAX_DB_VERSION) + ").\n" + \
                              "If you have used other forks of SB, your database may be unusable due to their modifications.")
 
@@ -351,51 +347,45 @@ def main():
         else:
             webhost = '0.0.0.0'
 
-    try:
-        initWebServer({
-            'port': startPort,
-            'host': webhost,
-            'data_root': os.path.join(sickbeard.PROG_DIR, 'gui/' + sickbeard.GUI_NAME),
-            'web_root': sickbeard.WEB_ROOT,
-            'log_dir': log_dir,
-            'username': sickbeard.WEB_USERNAME,
-            'password': sickbeard.WEB_PASSWORD,
-            'enable_https': sickbeard.ENABLE_HTTPS,
-            'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
-            'https_cert': sickbeard.HTTPS_CERT,
-            'https_key': sickbeard.HTTPS_KEY,
-        })
-    except IOError:
-        logger.log(u"Unable to start web server, is something else running on port %d?" % startPort, logger.ERROR)
-        if sickbeard.LAUNCH_BROWSER and not sickbeard.DAEMON:
-            logger.log(u"Launching browser and exiting", logger.ERROR)
-            sickbeard.launchBrowser(startPort)
-        sys.exit()
+    options = {
+        'port': int(startPort),
+        'host': webhost,
+        'data_root': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
+        'web_root': sickbeard.WEB_ROOT,
+        'log_dir': log_dir,
+        'username': sickbeard.WEB_USERNAME,
+        'password': sickbeard.WEB_PASSWORD,
+        'enable_https': sickbeard.ENABLE_HTTPS,
+        'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
+        'https_cert': sickbeard.HTTPS_CERT,
+        'https_key': sickbeard.HTTPS_KEY,
+    }
+
+    # init tornado
+    webserveInit.initWebServer(options)
 
     # Build from the DB to start with
     logger.log(u"Loading initial show list")
     loadShowsFromDB()
 
-    # Fire up all our threads
-    sickbeard.start()
+    def startup():
+        # Fire up all our threads
+        sickbeard.start()
 
-    # Launch browser if we're supposed to
-    if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
-        sickbeard.launchBrowser(startPort)
+        # Launch browser if we're supposed to
+        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
+            sickbeard.launchBrowser(startPort)
 
-    # Start an update if we're supposed to
-    if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-        sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+        # Start an update if we're supposed to
+        if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
+            sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
-    # Stay alive while my threads do the work
-    while (True):
+    # init startup tasks
+    IOLoop.current().add_timeout(datetime.timedelta(seconds=5), startup)
 
-        if sickbeard.invoked_command:
-            sickbeard.invoked_command()
-            sickbeard.invoked_command = None
-
-        time.sleep(1)
-
+    # start IOLoop
+    IOLoop.current().start()
+    sickbeard.saveAndShutdown()
     return
 
 if __name__ == "__main__":

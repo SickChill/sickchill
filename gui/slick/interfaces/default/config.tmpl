@@ -14,6 +14,17 @@
 	<h1 class="title">$title</h1>
 #end if
 
+##set cpu_usage = $psutil.cpu_percent()
+##set ram = $psutil.phymem_usage()
+##set ram_total = $ram.total / 2**20
+##set ram_used = $ram.used / 2**20
+##set ram_free = $ram.free / 2**20
+##set ram_percent_used = $ram.percent
+##set disk = $psutil.disk_usage('/')
+##set disk_total = $disk.total / 2**30
+##set disk_used = $disk.used / 2**30
+##set disk_free = $disk.free / 2**30
+##set disk_percent_used = $disk.percent
 
 <div id="summary" class="align-left">
 <table class="infoTable" cellspacing="1" border="0" cellpadding="0">
