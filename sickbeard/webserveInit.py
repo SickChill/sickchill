@@ -10,6 +10,8 @@ from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
 from tornado.httpserver import HTTPServer
 
+server = None
+
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
@@ -95,10 +97,11 @@ def initWebServer(options={}):
 
     # Load the app
     app = Application([],
-                        debug=True,
+                        log_function=lambda x: None,
+                        debug=False,
                         gzip=True,
                         autoreload=True,
-                        xheaders=False,
+                        xheaders=True,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
                         login_url='/login'
     )
@@ -140,9 +143,12 @@ def initWebServer(options={}):
     server.listen(options['port'], options['host'])
 
 def shutdown():
+    global server
+
     logger.log('Shutting down tornado')
     try:
         IOLoop.current().stop()
+        server.stop()
     except RuntimeError:
         pass
     except:

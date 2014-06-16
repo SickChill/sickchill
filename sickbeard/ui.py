@@ -19,13 +19,13 @@
 import datetime
 import sickbeard
 
-from tornado.httputil import HTTPHeaders
+from tornado.web import RequestHandler
 
 MESSAGE = 'notice'
 ERROR = 'error'
 
 
-class Notifications(object):
+class Notifications(RequestHandler):
     """
     A queue of Notification objects.
     """
@@ -71,7 +71,7 @@ class Notifications(object):
 notifications = Notifications()
 
 
-class Notification(object):
+class Notification(RequestHandler):
     """
     Represents a single notification. Tracks its own timeout and a list of which clients have
     seen it before.

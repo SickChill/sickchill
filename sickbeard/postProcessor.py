@@ -481,8 +481,6 @@ class PostProcessor(object):
         np = NameParser(file, useIndexers=True, convert=True)
         parse_result = np.parse(name)
 
-        self._log(u"Parsed " + name + " into " + str(parse_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
-
         # couldn't find this in our show list
         if not parse_result.show:
             return to_return

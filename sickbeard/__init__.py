@@ -1279,7 +1279,7 @@ def remove_pid_file(PIDFILE):
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        saveAndShutdown()
+        webserveInit.shutdown()
 
 def saveAll():
     global showList
@@ -1293,9 +1293,19 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
+def cleanup_tornado_sockets(io_loop):
+    for fd in io_loop._handlers.keys():
+        try:
+            os.close(fd)
+        except Exception:
+            pass
+
 def saveAndShutdown():
+
     halt()
     saveAll()
+
+    cleanup_tornado_sockets(IOLoop.current())
 
     if CREATEPID:
         logger.log(u"Removing pidfile " + str(PIDFILE))
