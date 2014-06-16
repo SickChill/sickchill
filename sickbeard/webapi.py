@@ -157,14 +157,14 @@ class Api(webserve.IndexHandler):
         else:
             t.apikey = "api key not generated"
 
-        return self.finish(webserve._munge(t))
+        return webserve._munge(t)
 
     def _out_as_json(self, dict):
         """ set cherrypy response to json """
-        self.h["content-type"] = "application/json;charset=UTF-8"
+        self.set_header("Content-Type", "application/json")
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
-            callback = self.h.get('callback' ,None) or self.h.get('jsonp' ,None)
+            callback = self.request.headers.get('callback', None) or self.request.headers.get('jsonp', None)
             if callback != None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
@@ -175,7 +175,7 @@ class Api(webserve.IndexHandler):
 
     def _grand_access(self, realKey, args, kwargs):
         """ validate api key and log result """
-        remoteIp = sickbeard.REMOTE_IP
+        remoteIp = self.request.remote_ip
         apiKey = kwargs.get("apikey", None)
         if not apiKey:
             if args:  # if we have keyless vars we assume first one is the api key, always !
@@ -1506,7 +1506,7 @@ class CMD_SickBeardPing(ApiCall):
 
     def run(self):
         """ check to see if sickbeard is running """
-        self.h['Cache-Control'] = "max-age=0,no-cache,no-store"
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:

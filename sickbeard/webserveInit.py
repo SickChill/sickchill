@@ -1,5 +1,7 @@
 import os
+import traceback
 import sickbeard
+from tornado.ioloop import IOLoop
 import webserve
 import webapi
 
@@ -93,9 +95,10 @@ def initWebServer(options={}):
 
     # Load the app
     app = Application([],
-                        debug=False,
+                        debug=True,
                         gzip=True,
                         autoreload=True,
+                        xheaders=False,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
                         login_url='/login'
     )
@@ -135,3 +138,12 @@ def initWebServer(options={}):
         options['port']) + "/")
 
     server.listen(options['port'], options['host'])
+
+def shutdown():
+    logger.log('Shutting down tornado')
+    try:
+        IOLoop.current().stop()
+    except RuntimeError:
+        pass
+    except:
+        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)

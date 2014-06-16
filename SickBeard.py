@@ -385,6 +385,7 @@ def main():
 
     # start IOLoop
     IOLoop.current().start()
+    sickbeard.saveAndShutdown()
     return
 
 if __name__ == "__main__":

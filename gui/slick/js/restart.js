@@ -37,7 +37,7 @@ function is_alive() {
                 $('#restart_loading').hide();
                 $('#restart_success').show();
                 $('#refresh_message').show();
-                window.location = sb_base_url+'/home';
+                window.location = sb_base_url+'/home/';
             }
         }
     }, 'jsonp');
@@ -66,7 +66,7 @@ $(document).ready(function()
                     $('#restart_success').show();
                     $('#refresh_message').show();
                 }, 3000);
-                setTimeout("window.location = sb_base_url+'/home'", 5000);
+                setTimeout("window.location = sb_base_url+'/home/'", 5000);
             }
         }
 

@@ -105,6 +105,7 @@ CUR_COMMIT_HASH = None
 INIT_LOCK = Lock()
 __INITIALIZED__ = False
 started = False
+restarted = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -1292,16 +1293,7 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def saveAndShutdown(restart=False):
-    if not restart:
-        logger.log('Shutting down tornado')
-        try:
-            IOLoop.current().stop()
-        except RuntimeError:
-            pass
-        except:
-            logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
-
+def saveAndShutdown():
     halt()
     saveAll()
 
@@ -1309,7 +1301,7 @@ def saveAndShutdown(restart=False):
         logger.log(u"Removing pidfile " + str(PIDFILE))
         remove_pid_file(PIDFILE)
 
-    if restart:
+    if restarted:
         install_type = versionCheckScheduler.action.install_type
 
         popen_list = []
@@ -1352,18 +1344,20 @@ def invoke_restart(soft=True):
 
 
 def invoke_shutdown():
-    invoke_command(saveAndShutdown)
+    invoke_command(webserveInit.shutdown)
 
 
 def restart(soft=True):
+    global restarted
+
     if soft:
         halt()
         saveAll()
         logger.log(u"Re-initializing all data")
         initialize()
-
     else:
-        saveAndShutdown(restart=True)
+        restarted=True
+        webserveInit.shutdown()
 
 
 def save_config():
