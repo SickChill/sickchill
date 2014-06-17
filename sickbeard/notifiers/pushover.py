@@ -32,10 +32,10 @@ API_KEY = "awKfdt263PLaEWV9RXuSn4c46qoAyA"
 
 
 class PushoverNotifier:
-    def test_notify(self, userKey=None):
+    def test_notify(self, userKey=None, apiKey=None):
         return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey, force=True)
 
-    def _sendPushover(self, msg, title, userKey=None):
+    def _sendPushover(self, msg, title, userKey=None, apiKey=None):
         """
         Sends a pushover notification to the address provided
         
@@ -49,12 +49,17 @@ class PushoverNotifier:
         if not userKey:
             userKey = sickbeard.PUSHOVER_USERKEY
 
+        if not apiKey:
+            apiKey = sickbeard.PUSHOVER_APIKEY or API_KEY
+
+        logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
+        
         # build up the URL and parameters
         msg = msg.strip()
         curUrl = API_URL
 
         data = urllib.urlencode({
-            'token': API_KEY,
+            'token': apiKey,
             'title': title,
             'user': userKey,
             'message': msg.encode('utf-8'),
@@ -85,7 +90,7 @@ class PushoverNotifier:
             elif e.code == 401:
 
                 #HTTP status 401 if the user doesn't have the service added
-                subscribeNote = self._sendPushover(msg, title, userKey)
+                subscribeNote = self._sendPushover(msg, title, userKey, apiKey)
                 if subscribeNote:
                     logger.log("Subscription send", logger.DEBUG)
                     return True
@@ -114,7 +119,7 @@ class PushoverNotifier:
         if sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyPushover(title, ep_name + ": " + lang)
 
-    def _notifyPushover(self, title, message, userKey=None, force=False):
+    def _notifyPushover(self, title, message, userKey=None, apiKey=None, force=False):
         """
         Sends a pushover notification based on the provided info or SB config
 
@@ -130,8 +135,8 @@ class PushoverNotifier:
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 
-        # self._sendPushover(message, title, userKey)
-        return self._sendPushover(message, title)
+        # self._sendPushover(message, title, userKey, apiKey)
+        return self._sendPushover(message, title, userKey, apiKey)
 
 
 notifier = PushoverNotifier
