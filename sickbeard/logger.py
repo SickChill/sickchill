@@ -71,14 +71,12 @@ class SBRotatingLogHandler(object):
             sb_logger = logging.getLogger('sickbeard')
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
-            tornado_general_logger = logging.getLogger('tornado.general')
-            tornado_application_logger = logging.getLogger('tornado.application')
+            tornado_logger = logging.getLogger('tornado')
 
             sb_logger.removeHandler(handler)
             sub_logger.removeHandler(handler)
             imdb_logger.removeHandler(handler)
-            tornado_general_logger.removeHandler(handler)
-            tornado_application_logger.removeHandler(handler)
+            tornado_logger.removeHandler(handler)
 
             handler.flush()
             handler.close()
@@ -145,6 +143,9 @@ class SBRotatingLogHandler(object):
         logging.getLogger('subliminal').setLevel(log_level)
         logging.getLogger('imdbpy').setLevel(log_level)
 
+        # send logging to null
+        logging.getLogger('tornado.access').addHandler(logging.NullHandler())
+
         # already logging in new log folder, close the old handler
         if old_handler:
             self.close_log(old_handler)
@@ -203,8 +204,7 @@ class SBRotatingLogHandler(object):
         sb_logger = logging.getLogger('sickbeard')
         sub_logger = logging.getLogger('subliminal')
         imdb_logger = logging.getLogger('imdbpy')
-        tornado_general_logger = logging.getLogger('tornado.general')
-        tornado_application_logger = logging.getLogger('tornado.application')
+        tornado_logger = logging.getLogger('tornado')
 
         # delete the old handler
         if self.cur_handler:
@@ -229,8 +229,7 @@ class SBRotatingLogHandler(object):
         sb_logger.addHandler(new_file_handler)
         sub_logger.addHandler(new_file_handler)
         imdb_logger.addHandler(new_file_handler)
-        tornado_general_logger.addHandler(new_file_handler)
-        tornado_application_logger.addHandler(new_file_handler)
+        tornado_logger.addHandler(new_file_handler)
 
     def log(self, toLog, logLevel=MESSAGE):
 
@@ -254,8 +253,7 @@ class SBRotatingLogHandler(object):
 
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
-            tornado_general_logger = logging.getLogger('tornado.general')
-            tornado_application_logger = logging.getLogger('tornado.application')
+            tornado_logger = logging.getLogger('tornado')
 
             try:
                 if logLevel == DEBUG:
