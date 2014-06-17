@@ -98,7 +98,7 @@ def initWebServer(options={}):
 
     # Load the app
     app = Application([],
-                        debug=False,
+                        debug=sickbeard.DEBUG,
                         gzip=True,
                         autoreload=sickbeard.AUTO_UPDATE,
                         xheaders=True,
