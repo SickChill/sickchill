@@ -50,7 +50,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         if cookies:
           self.cookies = cookies
         else:
-          self.cookies = None
+          self.cookies = ''
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))

@@ -23,6 +23,7 @@ import inspect
 import os.path
 
 import time
+import traceback
 import urllib
 import re
 import threading
@@ -200,33 +201,27 @@ class IndexHandler(RedirectHandler):
         if self.request.uri != ('/'):
             raise HTTPError(404)
 
-    def get_response(self):
-        raise gen.Return('hello')
-
     def get_current_user(self):
         return self.get_secure_cookie("user")
 
     @authenticated
     @asynchronous
-    @gen.coroutine
     def get(self, *args, **kwargs):
-        try:
-            resp = yield self.get_response()
-            self.finish(resp)
-        except Exception as e:
-            logger.log(e, logger.ERROR)
-            self.finish()
-
-    @gen.coroutine
-    def get_response(self):
-        raise gen.Return(self._dispatch())
-
-    def post(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
         except Exception as e:
-            logger.log(e, logger.ERROR)
-            self.finish()
+            logger.log(ex(e), logger.ERROR)
+            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+            self.finish(ex(e))
+
+    def post(self, *args, **kwargs):
+        try:
+            resp = self._dispatch()
+            self.finish(resp)
+        except Exception as e:
+            logger.log(ex(e), logger.ERROR)
+            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+            self.finish(ex(e))
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
@@ -550,7 +545,6 @@ def _getEpisode(show, season=None, episode=None, absolute=None):
 
     return epObj
 
-
 def ManageMenu():
     manageMenu = [
         {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
@@ -624,17 +618,6 @@ class ManageSearches(IndexHandler):
             sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
 
         self.redirect("/manage/manageSearches/")
-
-
-    def forceVersionCheck(self, *args, **kwargs):
-
-        # force a check to see if there is a new version
-        result = sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)  # @UndefinedVariable
-        if result:
-            logger.log(u"Forcing version check")
-
-        self.redirect("/manage/manageSearches/")
-
 
 class Manage(IndexHandler):
     def index(self, *args, **kwargs):
@@ -2484,6 +2467,14 @@ class HomePostProcess(IndexHandler):
         t.submenu = HomeMenu()
         return _munge(t)
 
+
+    def forceVersionCheck(self, *args, **kwargs):
+
+        # force a check to see if there is a new version
+        if sickbeard.versionCheckScheduler.action.check_for_new_version(force=True):
+            logger.log(u"Forcing version check")
+
+        self.redirect("/home/")
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, failed="0", type="auto"):
