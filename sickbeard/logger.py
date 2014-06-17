@@ -48,6 +48,10 @@ reverseNames = {u'ERROR': ERROR,
                 u'DEBUG': DEBUG,
                 u'DB': DB}
 
+# send logging to null
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
 
 class SBRotatingLogHandler(object):
     def __init__(self, log_file, num_files, num_bytes):
@@ -143,8 +147,7 @@ class SBRotatingLogHandler(object):
         logging.getLogger('subliminal').setLevel(log_level)
         logging.getLogger('imdbpy').setLevel(log_level)
 
-        # send logging to null
-        logging.getLogger('tornado.access').addHandler(logging.NullHandler())
+        logging.getLogger('tornado.access').addHandler(NullHandler())
 
         # already logging in new log folder, close the old handler
         if old_handler:

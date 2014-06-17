@@ -8,6 +8,7 @@ from tornado.test.util import unittest
 
 import contextlib
 import os
+import traceback
 
 
 @contextlib.contextmanager
@@ -60,6 +61,39 @@ class AsyncTestCaseTest(AsyncTestCase):
         self.wait(timeout=0.02)
         self.io_loop.add_timeout(self.io_loop.time() + 0.03, self.stop)
         self.wait(timeout=0.15)
+
+
+class AsyncTestCaseWrapperTest(unittest.TestCase):
+    def test_undecorated_generator(self):
+        class Test(AsyncTestCase):
+            def test_gen(self):
+                yield
+        test = Test('test_gen')
+        result = unittest.TestResult()
+        test.run(result)
+        self.assertEqual(len(result.errors), 1)
+        self.assertIn("should be decorated", result.errors[0][1])
+
+    def test_undecorated_generator_with_skip(self):
+        class Test(AsyncTestCase):
+            @unittest.skip("don't run this")
+            def test_gen(self):
+                yield
+        test = Test('test_gen')
+        result = unittest.TestResult()
+        test.run(result)
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.skipped), 1)
+
+    def test_other_return(self):
+        class Test(AsyncTestCase):
+            def test_other_return(self):
+                return 42
+        test = Test('test_other_return')
+        result = unittest.TestResult()
+        test.run(result)
+        self.assertEqual(len(result.errors), 1)
+        self.assertIn("Return value from test method ignored", result.errors[0][1])
 
 
 class SetUpTearDownTest(unittest.TestCase):
@@ -115,8 +149,17 @@ class GenTest(AsyncTestCase):
         def test(self):
             yield gen.Task(self.io_loop.add_timeout, self.io_loop.time() + 1)
 
-        with self.assertRaises(ioloop.TimeoutError):
+        # This can't use assertRaises because we need to inspect the
+        # exc_info triple (and not just the exception object)
+        try:
             test(self)
+            self.fail("did not get expected exception")
+        except ioloop.TimeoutError:
+            # The stack trace should blame the add_timeout line, not just
+            # unrelated IOLoop/testing internals.
+            self.assertIn(
+                "gen.Task(self.io_loop.add_timeout, self.io_loop.time() + 1)",
+                traceback.format_exc())
 
         self.finished = True
 
@@ -153,6 +196,24 @@ class GenTest(AsyncTestCase):
             with self.assertRaises(ioloop.TimeoutError):
                 test_short_timeout(self)
 
+        self.finished = True
+
+    def test_with_method_args(self):
+        @gen_test
+        def test_with_args(self, *args):
+            self.assertEqual(args, ('test',))
+            yield gen.Task(self.io_loop.add_callback)
+
+        test_with_args(self, 'test')
+        self.finished = True
+
+    def test_with_method_kwargs(self):
+        @gen_test
+        def test_with_kwargs(self, **kwargs):
+            self.assertDictEqual(kwargs, {'test': 'test'})
+            yield gen.Task(self.io_loop.add_callback)
+
+        test_with_kwargs(self, test='test')
         self.finished = True
 
 if __name__ == '__main__':

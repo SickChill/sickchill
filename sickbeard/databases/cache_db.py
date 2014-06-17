@@ -88,4 +88,4 @@ class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE scene_exceptions_refresh (list TEXT, last_refreshed INTEGER)")
+            "CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER)")

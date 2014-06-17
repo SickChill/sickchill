@@ -10,17 +10,18 @@ import re
 import socket
 import sys
 
+from tornado import gen
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httputil import HTTPHeaders
 from tornado.ioloop import IOLoop
-from tornado.log import gen_log
-from tornado.netutil import Resolver
-from tornado.simple_httpclient import SimpleAsyncHTTPClient, _DEFAULT_CA_CERTS
+from tornado.log import gen_log, app_log
+from tornado.netutil import Resolver, bind_sockets
+from tornado.simple_httpclient import SimpleAsyncHTTPClient, _default_ca_certs
 from tornado.test.httpclient_test import ChunkHandler, CountdownHandler, HelloWorldHandler
 from tornado.test import httpclient_test
 from tornado.testing import AsyncHTTPTestCase, AsyncHTTPSTestCase, AsyncTestCase, bind_unused_port, ExpectLog
-from tornado.test.util import unittest, skipOnTravis
-from tornado.web import RequestHandler, Application, asynchronous, url
+from tornado.test.util import skipOnTravis, skipIfNoIPv6
+from tornado.web import RequestHandler, Application, asynchronous, url, stream_request_body
 
 
 class SimpleHTTPClientCommonTestCase(httpclient_test.HTTPClientCommonTestCase):
@@ -70,7 +71,8 @@ class OptionsHandler(RequestHandler):
 class NoContentHandler(RequestHandler):
     def get(self):
         if self.get_argument("error", None):
-            self.set_header("Content-Length", "7")
+            self.set_header("Content-Length", "5")
+            self.write("hello")
         self.set_status(204)
 
 
@@ -94,6 +96,30 @@ class HostEchoHandler(RequestHandler):
         self.write(self.request.headers["Host"])
 
 
+class NoContentLengthHandler(RequestHandler):
+    @gen.coroutine
+    def get(self):
+        # Emulate the old HTTP/1.0 behavior of returning a body with no
+        # content-length.  Tornado handles content-length at the framework
+        # level so we have to go around it.
+        stream = self.request.connection.stream
+        yield stream.write(b"HTTP/1.0 200 OK\r\n\r\n"
+                           b"hello")
+        stream.close()
+
+
+class EchoPostHandler(RequestHandler):
+    def post(self):
+        self.write(self.request.body)
+
+
+@stream_request_body
+class RespondInPrepareHandler(RequestHandler):
+    def prepare(self):
+        self.set_status(403)
+        self.finish("forbidden")
+
+
 class SimpleHTTPClientTestMixin(object):
     def get_app(self):
         # callable objects to finish pending /trigger requests
@@ -112,6 +138,9 @@ class SimpleHTTPClientTestMixin(object):
             url("/see_other_post", SeeOtherPostHandler),
             url("/see_other_get", SeeOtherGetHandler),
             url("/host_echo", HostEchoHandler),
+            url("/no_content_length", NoContentLengthHandler),
+            url("/echo_post", EchoPostHandler),
+            url("/respond_in_prepare", RespondInPrepareHandler),
         ], gzip=True)
 
     def test_singleton(self):
@@ -163,7 +192,7 @@ class SimpleHTTPClientTestMixin(object):
             response.rethrow()
 
     def test_default_certificates_exist(self):
-        open(_DEFAULT_CA_CERTS).close()
+        open(_default_ca_certs()).close()
 
     def test_gzip(self):
         # All the tests in this file should be using gzip, but this test
@@ -213,28 +242,30 @@ class SimpleHTTPClientTestMixin(object):
         # trigger the hanging request to let it clean up after itself
         self.triggers.popleft()()
 
-    @unittest.skipIf(not socket.has_ipv6, 'ipv6 support not present')
+    @skipIfNoIPv6
     def test_ipv6(self):
         try:
-            self.http_server.listen(self.get_http_port(), address='::1')
+            [sock] = bind_sockets(None, '::1', family=socket.AF_INET6)
+            port = sock.getsockname()[1]
+            self.http_server.add_socket(sock)
         except socket.gaierror as e:
             if e.args[0] == socket.EAI_ADDRFAMILY:
                 # python supports ipv6, but it's not configured on the network
                 # interface, so skip this test.
                 return
             raise
-        url = self.get_url("/hello").replace("localhost", "[::1]")
+        url = '%s://[::1]:%d/hello' % (self.get_protocol(), port)
 
-        # ipv6 is currently disabled by default and must be explicitly requested
-        self.http_client.fetch(url, self.stop)
+        # ipv6 is currently enabled by default but can be disabled
+        self.http_client.fetch(url, self.stop, allow_ipv6=False)
         response = self.wait()
         self.assertEqual(response.code, 599)
 
-        self.http_client.fetch(url, self.stop, allow_ipv6=True)
+        self.http_client.fetch(url, self.stop)
         response = self.wait()
         self.assertEqual(response.body, b"Hello world!")
 
-    def test_multiple_content_length_accepted(self):
+    def xtest_multiple_content_length_accepted(self):
         response = self.fetch("/content_length?value=2,2")
         self.assertEqual(response.body, b"ok")
         response = self.fetch("/content_length?value=2,%202,2")
@@ -266,7 +297,8 @@ class SimpleHTTPClientTestMixin(object):
         self.assertEqual(response.headers["Content-length"], "0")
 
         # 204 status with non-zero content length is malformed
-        response = self.fetch("/no_content?error=1")
+        with ExpectLog(app_log, "Uncaught exception"):
+            response = self.fetch("/no_content?error=1")
         self.assertEqual(response.code, 599)
 
     def test_host_header(self):
@@ -312,6 +344,60 @@ class SimpleHTTPClientTestMixin(object):
             self.assertEqual(str(response.error), "HTTP 599: Timeout")
             self.triggers.popleft()()
             self.wait()
+
+    def test_no_content_length(self):
+        response = self.fetch("/no_content_length")
+        self.assertEquals(b"hello", response.body)
+
+    def sync_body_producer(self, write):
+        write(b'1234')
+        write(b'5678')
+
+    @gen.coroutine
+    def async_body_producer(self, write):
+        yield write(b'1234')
+        yield gen.Task(IOLoop.current().add_callback)
+        yield write(b'5678')
+
+    def test_sync_body_producer_chunked(self):
+        response = self.fetch("/echo_post", method="POST",
+                              body_producer=self.sync_body_producer)
+        response.rethrow()
+        self.assertEqual(response.body, b"12345678")
+
+    def test_sync_body_producer_content_length(self):
+        response = self.fetch("/echo_post", method="POST",
+                              body_producer=self.sync_body_producer,
+                              headers={'Content-Length': '8'})
+        response.rethrow()
+        self.assertEqual(response.body, b"12345678")
+
+    def test_async_body_producer_chunked(self):
+        response = self.fetch("/echo_post", method="POST",
+                              body_producer=self.async_body_producer)
+        response.rethrow()
+        self.assertEqual(response.body, b"12345678")
+
+    def test_async_body_producer_content_length(self):
+        response = self.fetch("/echo_post", method="POST",
+                              body_producer=self.async_body_producer,
+                              headers={'Content-Length': '8'})
+        response.rethrow()
+        self.assertEqual(response.body, b"12345678")
+
+    def test_100_continue(self):
+        response = self.fetch("/echo_post", method="POST",
+                              body=b"1234",
+                              expect_100_continue=True)
+        self.assertEqual(response.body, b"1234")
+
+    def test_100_continue_early_response(self):
+        def body_producer(write):
+            raise Exception("should not be called")
+        response = self.fetch("/respond_in_prepare", method="POST",
+                              body_producer=body_producer,
+                              expect_100_continue=True)
+        self.assertEqual(response.code, 403)
 
 
 class SimpleHTTPClientTestCase(SimpleHTTPClientTestMixin, AsyncHTTPTestCase):
@@ -432,4 +518,33 @@ class ResolveTimeoutTestCase(AsyncHTTPTestCase):
 
     def test_resolve_timeout(self):
         response = self.fetch('/hello', connect_timeout=0.1)
+        self.assertEqual(response.code, 599)
+
+
+class MaxHeaderSizeTest(AsyncHTTPTestCase):
+    def get_app(self):
+        class SmallHeaders(RequestHandler):
+            def get(self):
+                self.set_header("X-Filler", "a" * 100)
+                self.write("ok")
+
+        class LargeHeaders(RequestHandler):
+            def get(self):
+                self.set_header("X-Filler", "a" * 1000)
+                self.write("ok")
+
+        return Application([('/small', SmallHeaders),
+                            ('/large', LargeHeaders)])
+
+    def get_http_client(self):
+        return SimpleAsyncHTTPClient(io_loop=self.io_loop, max_header_size=1024)
+
+    def test_small_headers(self):
+        response = self.fetch('/small')
+        response.rethrow()
+        self.assertEqual(response.body, b'ok')
+
+    def test_large_headers(self):
+        with ExpectLog(gen_log, "Unsatisfiable read"):
+            response = self.fetch('/large')
         self.assertEqual(response.code, 599)

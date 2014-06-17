@@ -6,7 +6,7 @@ from tornado.concurrent import Future
 from tornado.httpclient import HTTPError, HTTPRequest
 from tornado.log import gen_log
 from tornado.testing import AsyncHTTPTestCase, gen_test, bind_unused_port, ExpectLog
-from tornado.test.util import unittest, skipOnTravis
+from tornado.test.util import unittest
 from tornado.web import Application, RequestHandler
 
 try:
@@ -37,7 +37,7 @@ class TestWebSocketHandler(WebSocketHandler):
         self.close_future = close_future
 
     def on_close(self):
-        self.close_future.set_result(None)
+        self.close_future.set_result((self.close_code, self.close_reason))
 
 
 class EchoHandler(TestWebSocketHandler):
@@ -47,12 +47,24 @@ class EchoHandler(TestWebSocketHandler):
 
 class HeaderHandler(TestWebSocketHandler):
     def open(self):
+        try:
+            # In a websocket context, many RequestHandler methods
+            # raise RuntimeErrors.
+            self.set_status(503)
+            raise Exception("did not get expected exception")
+        except RuntimeError:
+            pass
         self.write_message(self.request.headers.get('X-Test', ''))
 
 
 class NonWebSocketHandler(RequestHandler):
     def get(self):
         self.write('ok')
+
+
+class CloseReasonHandler(TestWebSocketHandler):
+    def open(self):
+        self.close(1001, "goodbye")
 
 
 class WebSocketTest(AsyncHTTPTestCase):
@@ -62,7 +74,14 @@ class WebSocketTest(AsyncHTTPTestCase):
             ('/echo', EchoHandler, dict(close_future=self.close_future)),
             ('/non_ws', NonWebSocketHandler),
             ('/header', HeaderHandler, dict(close_future=self.close_future)),
+            ('/close_reason', CloseReasonHandler,
+             dict(close_future=self.close_future)),
         ])
+
+    def test_http_request(self):
+        # WS server, HTTP client.
+        response = self.fetch('/echo')
+        self.assertEqual(response.code, 400)
 
     @gen_test
     def test_websocket_gen(self):
@@ -84,8 +103,9 @@ class WebSocketTest(AsyncHTTPTestCase):
         ws.read_message(self.stop)
         response = self.wait().result()
         self.assertEqual(response, 'hello')
+        self.close_future.add_done_callback(lambda f: self.stop())
         ws.close()
-        yield self.close_future
+        self.wait()
 
     @gen_test
     def test_websocket_http_fail(self):
@@ -102,30 +122,16 @@ class WebSocketTest(AsyncHTTPTestCase):
                 'ws://localhost:%d/non_ws' % self.get_http_port(),
                 io_loop=self.io_loop)
 
-    @skipOnTravis
-    @gen_test
-    def test_websocket_network_timeout(self):
-        sock, port = bind_unused_port()
-        sock.close()
-        with self.assertRaises(HTTPError) as cm:
-            with ExpectLog(gen_log, ".*"):
-                yield websocket_connect(
-                    'ws://localhost:%d/' % port,
-                    io_loop=self.io_loop,
-                    connect_timeout=0.01)
-        self.assertEqual(cm.exception.code, 599)
-
     @gen_test
     def test_websocket_network_fail(self):
         sock, port = bind_unused_port()
         sock.close()
-        with self.assertRaises(HTTPError) as cm:
+        with self.assertRaises(IOError):
             with ExpectLog(gen_log, ".*"):
                 yield websocket_connect(
                     'ws://localhost:%d/' % port,
                     io_loop=self.io_loop,
                     connect_timeout=3600)
-        self.assertEqual(cm.exception.code, 599)
 
     @gen_test
     def test_websocket_close_buffered_data(self):
@@ -146,6 +152,97 @@ class WebSocketTest(AsyncHTTPTestCase):
         self.assertEqual(response, 'hello')
         ws.close()
         yield self.close_future
+
+    @gen_test
+    def test_server_close_reason(self):
+        ws = yield websocket_connect(
+            'ws://localhost:%d/close_reason' % self.get_http_port())
+        msg = yield ws.read_message()
+        # A message of None means the other side closed the connection.
+        self.assertIs(msg, None)
+        self.assertEqual(ws.close_code, 1001)
+        self.assertEqual(ws.close_reason, "goodbye")
+
+    @gen_test
+    def test_client_close_reason(self):
+        ws = yield websocket_connect(
+            'ws://localhost:%d/echo' % self.get_http_port())
+        ws.close(1001, 'goodbye')
+        code, reason = yield self.close_future
+        self.assertEqual(code, 1001)
+        self.assertEqual(reason, 'goodbye')
+
+    @gen_test
+    def test_check_origin_valid_no_path(self):
+        port = self.get_http_port()
+
+        url = 'ws://localhost:%d/echo' % port
+        headers = {'Origin': 'http://localhost:%d' % port}
+
+        ws = yield websocket_connect(HTTPRequest(url, headers=headers),
+            io_loop=self.io_loop)
+        ws.write_message('hello')
+        response = yield ws.read_message()
+        self.assertEqual(response, 'hello')
+        ws.close()
+        yield self.close_future
+
+    @gen_test
+    def test_check_origin_valid_with_path(self):
+        port = self.get_http_port()
+
+        url = 'ws://localhost:%d/echo' % port
+        headers = {'Origin': 'http://localhost:%d/something' % port}
+
+        ws = yield websocket_connect(HTTPRequest(url, headers=headers),
+            io_loop=self.io_loop)
+        ws.write_message('hello')
+        response = yield ws.read_message()
+        self.assertEqual(response, 'hello')
+        ws.close()
+        yield self.close_future
+
+    @gen_test
+    def test_check_origin_invalid_partial_url(self):
+        port = self.get_http_port()
+
+        url = 'ws://localhost:%d/echo' % port
+        headers = {'Origin': 'localhost:%d' % port}
+
+        with self.assertRaises(HTTPError) as cm:
+            yield websocket_connect(HTTPRequest(url, headers=headers),
+                                    io_loop=self.io_loop)
+        self.assertEqual(cm.exception.code, 403)
+
+    @gen_test
+    def test_check_origin_invalid(self):
+        port = self.get_http_port()
+
+        url = 'ws://localhost:%d/echo' % port
+        # Host is localhost, which should not be accessible from some other
+        # domain
+        headers = {'Origin': 'http://somewhereelse.com'}
+
+        with self.assertRaises(HTTPError) as cm:
+            yield websocket_connect(HTTPRequest(url, headers=headers),
+                                    io_loop=self.io_loop)
+
+        self.assertEqual(cm.exception.code, 403)
+
+    @gen_test
+    def test_check_origin_invalid_subdomains(self):
+        port = self.get_http_port()
+
+        url = 'ws://localhost:%d/echo' % port
+        # Subdomains should be disallowed by default.  If we could pass a
+        # resolver to websocket_connect we could test sibling domains as well.
+        headers = {'Origin': 'http://subtenant.localhost'}
+
+        with self.assertRaises(HTTPError) as cm:
+            yield websocket_connect(HTTPRequest(url, headers=headers),
+                                    io_loop=self.io_loop)
+
+        self.assertEqual(cm.exception.code, 403)
 
 
 class MaskFunctionMixin(object):

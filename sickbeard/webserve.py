@@ -23,6 +23,7 @@ import inspect
 import os.path
 
 import time
+import traceback
 import urllib
 import re
 import threading
@@ -91,35 +92,41 @@ from tornado.ioloop import IOLoop
 
 req_headers = None
 
-def require_basic_auth(handler_class):
+def basicauth(handler_class):
     def wrap_execute(handler_execute):
-        def require_basic_auth(handler, kwargs):
-            def get_auth():
+        def basicauth(handler, transforms, *args, **kwargs):
+            def _request_basic_auth(handler):
                 handler.set_status(401)
                 handler.set_header('WWW-Authenticate', 'Basic realm=Restricted')
-                handler._transforms = []
                 handler.finish()
                 return False
 
-            if not sickbeard.WEB_USERNAME and not sickbeard.WEB_PASSWORD:
-                if not handler.get_secure_cookie("user"):
-                    handler.set_secure_cookie("user", str(time.time()))
-                return True
+            try:
+                auth_hdr = handler.request.headers.get('Authorization')
 
-            auth_header = handler.request.headers.get('Authorization')
-            if auth_header and auth_header.startswith('Basic '):
-                auth_decoded = base64.decodestring(auth_header[6:])
-                basicauth_user, basicauth_pass = auth_decoded.split(':', 2)
-                if basicauth_user == sickbeard.WEB_USERNAME and basicauth_pass == sickbeard.WEB_PASSWORD:
+                if auth_hdr == None:
+                    return _request_basic_auth(handler)
+                if not auth_hdr.startswith('Basic '):
+                    return _request_basic_auth(handler)
+
+                auth_decoded = base64.decodestring(auth_hdr[6:])
+                username, password = auth_decoded.split(':', 2)
+
+                if username == sickbeard.WEB_USERNAME and password == sickbeard.WEB_PASSWORD:
+                    #logger.log('authenticated user successfully', logger.DEBUG)
                     if not handler.get_secure_cookie("user"):
                         handler.set_secure_cookie("user", str(time.time()))
-                    return True
-
-            handler.clear_cookie("user")
-            get_auth()
+                else:
+                    if handler.get_secure_cookie("user"):
+                        handler.clear_cookie("user")
+                    return _request_basic_auth(handler)
+            except Exception, e:
+                handler.clear_cookie("user")
+                return _request_basic_auth(handler)
+            return True
 
         def _execute(self, transforms, *args, **kwargs):
-            if not require_basic_auth(self, kwargs):
+            if not basicauth(self, transforms, *args, **kwargs):
                 return False
             return handler_execute(self, transforms, *args, **kwargs)
 
@@ -128,12 +135,12 @@ def require_basic_auth(handler_class):
     handler_class._execute = wrap_execute(handler_class._execute)
     return handler_class
 
-@require_basic_auth
 class RedirectHandler(RequestHandler):
 
     def get(self, path, **kwargs):
         self.redirect(path, permanent=True)
 
+@basicauth
 class IndexHandler(RedirectHandler):
     def __init__(self, application, request, **kwargs):
         super(IndexHandler, self).__init__(application, request, **kwargs)
@@ -154,7 +161,7 @@ class IndexHandler(RedirectHandler):
                 args[arg] = value[0]
         return args
 
-    def _dispatch(self):
+    def _dispatch(self, callback):
 
         args = None
         path = self.request.uri.split('?')[0]
@@ -193,32 +200,35 @@ class IndexHandler(RedirectHandler):
 
             if func:
                 if args:
-                    return func(**args)
+                    callback(func(**args))
                 else:
-                    return func()
+                    callback(func())
 
-        if self.request.uri != ('/'):
-            raise HTTPError(404)
-
-    def get_response(self):
-        raise gen.Return('hello')
+        callback(HTTPError(404))
 
     def get_current_user(self):
         return self.get_secure_cookie("user")
 
     @authenticated
     @asynchronous
-    @gen.coroutine
+    @gen.engine
     def get(self, *args, **kwargs):
-        resp = yield self.get_response()
-        self.finish(resp)
-
-    @gen.coroutine
-    def get_response(self):
-        raise gen.Return(self._dispatch())
+        try:
+            result = yield gen.Task(self._dispatch)
+            self.finish(result)
+        except Exception as e:
+            logger.log(ex(e), logger.ERROR)
+            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+            self.finish(ex(e))
 
     def post(self, *args, **kwargs):
-        self.finish(self._dispatch())
+        try:
+            result = yield gen.Task(self._dispatch)
+            self.finish(result)
+        except Exception as e:
+            logger.log(ex(e), logger.ERROR)
+            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+            self.finish(ex(e))
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
@@ -542,7 +552,6 @@ def _getEpisode(show, season=None, episode=None, absolute=None):
 
     return epObj
 
-
 def ManageMenu():
     manageMenu = [
         {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
@@ -616,17 +625,6 @@ class ManageSearches(IndexHandler):
             sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
 
         self.redirect("/manage/manageSearches/")
-
-
-    def forceVersionCheck(self, *args, **kwargs):
-
-        # force a check to see if there is a new version
-        result = sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)  # @UndefinedVariable
-        if result:
-            logger.log(u"Forcing version check")
-
-        self.redirect("/manage/manageSearches/")
-
 
 class Manage(IndexHandler):
     def index(self, *args, **kwargs):
@@ -2477,6 +2475,14 @@ class HomePostProcess(IndexHandler):
         return _munge(t)
 
 
+    def forceVersionCheck(self, *args, **kwargs):
+
+        # force a check to see if there is a new version
+        if sickbeard.versionCheckScheduler.action.check_for_new_version(force=True):
+            logger.log(u"Forcing version check")
+
+        self.redirect("/home/")
+
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, failed="0", type="auto"):
 
@@ -3304,7 +3310,6 @@ class Home(IndexHandler):
 
         # auto-reload
         tornado.autoreload.start(IOLoop.current())
-        tornado.autoreload.add_reload_hook(sickbeard.autoreload_shutdown)
 
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
 

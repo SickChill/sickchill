@@ -101,11 +101,11 @@ def foldersAtPath(path, includeParent=False):
 
 
 class WebFileBrowser(RequestHandler):
-    def index(self, path=''):
+    def index(self, path='', *args, **kwargs):
         self.set_header("Content-Type", "application/json")
-        return self.finish(json.dumps(foldersAtPath(path, True)))
+        return json.dumps(foldersAtPath(path, True))
 
     def complete(self, term):
         self.set_header("Content-Type", "application/json")
         paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term)) if 'path' in entry]
-        return self.finish(json.dumps(paths))
+        return json.dumps(paths)

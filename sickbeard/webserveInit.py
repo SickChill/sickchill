@@ -13,6 +13,7 @@ from tornado.ioloop import IOLoop
 
 server = None
 
+
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
@@ -32,6 +33,7 @@ class MultiStaticFileHandler(StaticFileHandler):
 
         # Oops file not found anywhere!
         raise HTTPError(404)
+
 
 def initWebServer(options={}):
     options.setdefault('port', 8081)
@@ -100,7 +102,6 @@ def initWebServer(options={}):
     app = Application([],
                         debug=sickbeard.DEBUG,
                         gzip=True,
-                        autoreload=sickbeard.AUTO_UPDATE,
                         xheaders=True,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
                         login_url='/login'
@@ -116,13 +117,15 @@ def initWebServer(options={}):
 
     # Static Path Handler
     app.add_handlers(".*$", [
-        ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'images'), MultiStaticFileHandler,
+        (r'/(favicon\.ico)', MultiStaticFileHandler,
+         {'paths': '%s/%s' % (options['web_root'], 'images/ico/favicon.ico')}),
+        (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
                     os.path.join(sickbeard.CACHE_DIR, 'images'),
                     os.path.join(sickbeard.CACHE_DIR, 'images', 'thumbnails')]}),
-        ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'css'), MultiStaticFileHandler,
+        (r'%s/%s/(.*)(/?)' % (options['web_root'], 'css'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'css')]}),
-        ('%s/%s/(.*)([^/]*)' % (options['web_root'], 'js'), MultiStaticFileHandler,
+        (r'%s/%s/(.*)(/?)' % (options['web_root'], 'js'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'js')]})
 
     ])
@@ -132,7 +135,7 @@ def initWebServer(options={}):
     if enable_https:
         protocol = "https"
         server = HTTPServer(app, no_keep_alive=True,
-                                 ssl_options={"certfile": https_cert, "keyfile": https_key})
+                            ssl_options={"certfile": https_cert, "keyfile": https_key})
     else:
         protocol = "http"
         server = HTTPServer(app, no_keep_alive=True)
@@ -140,7 +143,11 @@ def initWebServer(options={}):
     logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(
         options['port']) + "/")
 
-    server.listen(options['port'], options['host'])
+    try:
+        server.listen(options['port'], options['host'])
+    except:
+        pass
+
 
 def shutdown():
     global server
@@ -148,7 +155,6 @@ def shutdown():
     logger.log('Shutting down tornado')
     try:
         IOLoop.current().stop()
-        server.stop()
     except RuntimeError:
         pass
     except:

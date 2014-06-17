@@ -78,7 +78,8 @@ def logFailed(release):
         provider = sql_results[0]["provider"]
 
     if not hasFailed(release, size, provider):
-        myDB.action("INSERT INTO failed (release, size, provider) VALUES (?, ?, ?)", [release, size, provider])
+        with db.DBConnection('failed.db') as myDB:
+            myDB.action("INSERT INTO failed (release, size, provider) VALUES (?, ?, ?)", [release, size, provider])
 
     deleteLoggedSnatch(release, size, provider)
 
