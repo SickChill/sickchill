@@ -1,15 +1,16 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
+import os
 import signal
 import socket
 from subprocess import Popen
 import sys
 import time
 
-from tornado.netutil import BlockingResolver, ThreadedResolver, is_valid_ip
+from tornado.netutil import BlockingResolver, ThreadedResolver, is_valid_ip, bind_sockets
 from tornado.stack_context import ExceptionStackContext
 from tornado.testing import AsyncTestCase, gen_test
-from tornado.test.util import unittest
+from tornado.test.util import unittest, skipIfNoNetwork
 
 try:
     from concurrent import futures
@@ -25,6 +26,7 @@ else:
 
 try:
     import twisted
+    import twisted.names
 except ImportError:
     twisted = None
 else:
@@ -73,12 +75,14 @@ class _ResolverTestMixin(object):
                                         socket.AF_UNSPEC)
 
 
+@skipIfNoNetwork
 class BlockingResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
         super(BlockingResolverTest, self).setUp()
         self.resolver = BlockingResolver(io_loop=self.io_loop)
 
 
+@skipIfNoNetwork
 @unittest.skipIf(futures is None, "futures module not present")
 class ThreadedResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
@@ -90,7 +94,9 @@ class ThreadedResolverTest(AsyncTestCase, _ResolverTestMixin):
         super(ThreadedResolverTest, self).tearDown()
 
 
+@skipIfNoNetwork
 @unittest.skipIf(futures is None, "futures module not present")
+@unittest.skipIf(sys.platform == 'win32', "preexec_fn not available on win32")
 class ThreadedResolverImportTest(unittest.TestCase):
     def test_import(self):
         TIMEOUT = 5
@@ -115,6 +121,7 @@ class ThreadedResolverImportTest(unittest.TestCase):
         self.fail("import timed out")
 
 
+@skipIfNoNetwork
 @unittest.skipIf(pycares is None, "pycares module not present")
 class CaresResolverTest(AsyncTestCase, _ResolverTestMixin):
     def setUp(self):
@@ -122,6 +129,7 @@ class CaresResolverTest(AsyncTestCase, _ResolverTestMixin):
         self.resolver = CaresResolver(io_loop=self.io_loop)
 
 
+@skipIfNoNetwork
 @unittest.skipIf(twisted is None, "twisted module not present")
 @unittest.skipIf(getattr(twisted, '__version__', '0.0') < "12.1", "old version of twisted")
 class TwistedResolverTest(AsyncTestCase, _ResolverTestMixin):
@@ -144,3 +152,17 @@ class IsValidIPTest(unittest.TestCase):
         self.assertTrue(not is_valid_ip(' '))
         self.assertTrue(not is_valid_ip('\n'))
         self.assertTrue(not is_valid_ip('\x00'))
+
+
+class TestPortAllocation(unittest.TestCase):
+    def test_same_port_allocation(self):
+        if 'TRAVIS' in os.environ:
+            self.skipTest("dual-stack servers often have port conflicts on travis")
+        sockets = bind_sockets(None, 'localhost')
+        try:
+            port = sockets[0].getsockname()[1]
+            self.assertTrue(all(s.getsockname()[1] == port
+                                for s in sockets[1:]))
+        finally:
+            for sock in sockets:
+                sock.close()

@@ -12,9 +12,9 @@ unfinished callbacks on the event loop that fail when it resumes)
 from __future__ import absolute_import, division, print_function, with_statement
 import datetime
 import functools
-import os
 
-from tornado.ioloop import IOLoop
+# _Timeout is used for its timedelta_to_seconds method for py26 compatibility.
+from tornado.ioloop import IOLoop, _Timeout
 from tornado import stack_context
 
 try:
@@ -34,7 +34,7 @@ class BaseAsyncIOLoop(IOLoop):
         self.asyncio_loop = asyncio_loop
         self.close_loop = close_loop
         self.asyncio_loop.call_soon(self.make_current)
-        # Maps fd to handler function (as in IOLoop.add_handler)
+        # Maps fd to (fileobj, handler function) pair (as in IOLoop.add_handler)
         self.handlers = {}
         # Set of fds listening for reads/writes
         self.readers = set()
@@ -44,19 +44,18 @@ class BaseAsyncIOLoop(IOLoop):
     def close(self, all_fds=False):
         self.closing = True
         for fd in list(self.handlers):
+            fileobj, handler_func = self.handlers[fd]
             self.remove_handler(fd)
             if all_fds:
-                try:
-                    os.close(fd)
-                except OSError:
-                    pass
+                self.close_fd(fileobj)
         if self.close_loop:
             self.asyncio_loop.close()
 
     def add_handler(self, fd, handler, events):
+        fd, fileobj = self.split_fd(fd)
         if fd in self.handlers:
-            raise ValueError("fd %d added twice" % fd)
-        self.handlers[fd] = stack_context.wrap(handler)
+            raise ValueError("fd %s added twice" % fd)
+        self.handlers[fd] = (fileobj, stack_context.wrap(handler))
         if events & IOLoop.READ:
             self.asyncio_loop.add_reader(
                 fd, self._handle_events, fd, IOLoop.READ)
@@ -67,6 +66,7 @@ class BaseAsyncIOLoop(IOLoop):
             self.writers.add(fd)
 
     def update_handler(self, fd, events):
+        fd, fileobj = self.split_fd(fd)
         if events & IOLoop.READ:
             if fd not in self.readers:
                 self.asyncio_loop.add_reader(
@@ -87,6 +87,7 @@ class BaseAsyncIOLoop(IOLoop):
                 self.writers.remove(fd)
 
     def remove_handler(self, fd):
+        fd, fileobj = self.split_fd(fd)
         if fd not in self.handlers:
             return
         if fd in self.readers:
@@ -98,7 +99,8 @@ class BaseAsyncIOLoop(IOLoop):
         del self.handlers[fd]
 
     def _handle_events(self, fd, events):
-        self.handlers[fd](fd, events)
+        fileobj, handler_func = self.handlers[fd]
+        handler_func(fileobj, events)
 
     def start(self):
         self._setup_logging()
@@ -107,17 +109,11 @@ class BaseAsyncIOLoop(IOLoop):
     def stop(self):
         self.asyncio_loop.stop()
 
-    def _run_callback(self, callback, *args, **kwargs):
-        try:
-            callback(*args, **kwargs)
-        except Exception:
-            self.handle_callback_exception(callback)
-
     def add_timeout(self, deadline, callback):
         if isinstance(deadline, (int, float)):
             delay = max(deadline - self.time(), 0)
         elif isinstance(deadline, datetime.timedelta):
-            delay = deadline.total_seconds()
+            delay = _Timeout.timedelta_to_seconds(deadline)
         else:
             raise TypeError("Unsupported deadline %r", deadline)
         return self.asyncio_loop.call_later(delay, self._run_callback,
@@ -129,13 +125,9 @@ class BaseAsyncIOLoop(IOLoop):
     def add_callback(self, callback, *args, **kwargs):
         if self.closing:
             raise RuntimeError("IOLoop is closing")
-        if kwargs:
-            self.asyncio_loop.call_soon_threadsafe(functools.partial(
-                self._run_callback, stack_context.wrap(callback),
-                *args, **kwargs))
-        else:
-            self.asyncio_loop.call_soon_threadsafe(
-                self._run_callback, stack_context.wrap(callback), *args)
+        self.asyncio_loop.call_soon_threadsafe(
+            self._run_callback,
+            functools.partial(stack_context.wrap(callback), *args, **kwargs))
 
     add_callback_from_signal = add_callback
 

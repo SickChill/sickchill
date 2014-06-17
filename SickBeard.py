@@ -389,9 +389,9 @@ def main():
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
 
     # autoreload.
+    tornado.autoreload.add_reload_hook(autoreload_shutdown)
     if sickbeard.AUTO_UPDATE:
         tornado.autoreload.start(io_loop)
-        tornado.autoreload.add_reload_hook(autoreload_shutdown)
 
     # start IOLoop.
     io_loop.start()

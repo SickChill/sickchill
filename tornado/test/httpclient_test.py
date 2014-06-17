@@ -8,7 +8,6 @@ from contextlib import closing
 import functools
 import sys
 import threading
-import time
 
 from tornado.escape import utf8
 from tornado.httpclient import HTTPRequest, HTTPResponse, _RequestProxy, HTTPError, HTTPClient
@@ -19,7 +18,7 @@ from tornado.log import gen_log
 from tornado import netutil
 from tornado.stack_context import ExceptionStackContext, NullContext
 from tornado.testing import AsyncHTTPTestCase, bind_unused_port, gen_test, ExpectLog
-from tornado.test.util import unittest
+from tornado.test.util import unittest, skipOnTravis
 from tornado.util import u, bytes_type
 from tornado.web import Application, RequestHandler, url
 
@@ -111,6 +110,7 @@ class HTTPClientCommonTestCase(AsyncHTTPTestCase):
             url("/all_methods", AllMethodsHandler),
         ], gzip=True)
 
+    @skipOnTravis
     def test_hello_world(self):
         response = self.fetch("/hello")
         self.assertEqual(response.code, 200)
@@ -356,11 +356,10 @@ Transfer-Encoding: chunked
 
     @gen_test
     def test_future_http_error(self):
-        try:
+        with self.assertRaises(HTTPError) as context:
             yield self.http_client.fetch(self.get_url('/notfound'))
-        except HTTPError as e:
-            self.assertEqual(e.code, 404)
-            self.assertEqual(e.response.code, 404)
+        self.assertEqual(context.exception.code, 404)
+        self.assertEqual(context.exception.response.code, 404)
 
     @gen_test
     def test_reuse_request_from_response(self):

@@ -87,7 +87,6 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
         for curl in self._curls:
             curl.close()
         self._multi.close()
-        self._closed = True
         super(CurlAsyncHTTPClient, self).close()
 
     def fetch_impl(self, request, callback):
@@ -268,6 +267,7 @@ class CurlAsyncHTTPClient(AsyncHTTPClient):
             info["callback"](HTTPResponse(
                 request=info["request"], code=code, headers=info["headers"],
                 buffer=buffer, effective_url=effective_url, error=error,
+                reason=info['headers'].get("X-Http-Reason", None),
                 request_time=time.time() - info["curl_start_time"],
                 time_info=time_info))
         except Exception:
@@ -470,7 +470,11 @@ def _curl_header_callback(headers, header_line):
     header_line = header_line.strip()
     if header_line.startswith("HTTP/"):
         headers.clear()
-        return
+        try:
+            (__, __, reason) = httputil.parse_response_start_line(header_line)
+            header_line = "X-Http-Reason: %s" % reason
+        except httputil.HTTPInputError:
+            return
     if not header_line:
         return
     headers.parse_line(header_line)

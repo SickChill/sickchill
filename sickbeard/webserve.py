@@ -3304,7 +3304,6 @@ class Home(IndexHandler):
 
         # auto-reload
         tornado.autoreload.start(IOLoop.current())
-        tornado.autoreload.add_reload_hook(sickbeard.autoreload_shutdown)
 
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
 

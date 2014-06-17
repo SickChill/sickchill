@@ -139,7 +139,10 @@ def initWebServer(options={}):
     logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(
         options['port']) + "/")
 
-    server.listen(options['port'], options['host'])
+    try:
+        server.listen(options['port'], options['host'])
+    except:
+        pass
 
 def shutdown():
     global server
@@ -147,7 +150,6 @@ def shutdown():
     logger.log('Shutting down tornado')
     try:
         IOLoop.current().stop()
-        server.stop()
     except RuntimeError:
         pass
     except:

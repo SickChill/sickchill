@@ -40,6 +40,7 @@ TEST_MODULES = [
     'tornado.test.process_test',
     'tornado.test.simple_httpclient_test',
     'tornado.test.stack_context_test',
+    'tornado.test.tcpclient_test',
     'tornado.test.template_test',
     'tornado.test.testing_test',
     'tornado.test.twisted_test',
@@ -65,7 +66,8 @@ class TornadoTextTestRunner(unittest.TextTestRunner):
             self.stream.write("\n")
         return result
 
-if __name__ == '__main__':
+
+def main():
     # The -W command-line option does not work in a virtualenv with
     # python 3 (as of virtualenv 1.7), so configure warnings
     # programmatically instead.
@@ -81,6 +83,9 @@ if __name__ == '__main__':
     # our dependencies do (last match wins).
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     warnings.filterwarnings("error", category=DeprecationWarning,
+                            module=r"tornado\..*")
+    warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+    warnings.filterwarnings("error", category=PendingDeprecationWarning,
                             module=r"tornado\..*")
     # The unittest module is aggressive about deprecating redundant methods,
     # leaving some without non-deprecated spellings that work on both
@@ -127,3 +132,6 @@ if __name__ == '__main__':
         kwargs['warnings'] = False
     kwargs['testRunner'] = TornadoTextTestRunner
     tornado.testing.main(**kwargs)
+
+if __name__ == '__main__':
+    main()
