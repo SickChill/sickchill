@@ -210,15 +210,23 @@ class IndexHandler(RedirectHandler):
     @asynchronous
     @gen.coroutine
     def get(self, *args, **kwargs):
-        resp = yield self.get_response()
-        self.finish(resp)
+        try:
+            resp = yield self.get_response()
+            self.finish(resp)
+        except Exception as e:
+            logger.log(e, logger.ERROR)
+            self.finish()
 
     @gen.coroutine
     def get_response(self):
         raise gen.Return(self._dispatch())
 
     def post(self, *args, **kwargs):
-        self.finish(self._dispatch())
+        try:
+            self.finish(self._dispatch())
+        except Exception as e:
+            logger.log(e, logger.ERROR)
+            self.finish()
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
