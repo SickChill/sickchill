@@ -81,7 +81,7 @@ from lib import adba
 
 from Cheetah.Template import Template
 from tornado import gen, autoreload
-from tornado.web import RequestHandler, HTTPError, asynchronous
+from tornado.web import RequestHandler, RedirectHandler, HTTPError, asynchronous
 from tornado.ioloop import IOLoop
 
 # def _handle_reverse_proxy():
@@ -134,14 +134,8 @@ def authenticated(handler_class):
     handler_class._execute = wrap_execute(handler_class._execute)
     return handler_class
 
-
-class RedirectHandler(RequestHandler):
-    def get(self, path, **kwargs):
-        self.redirect(path, permanent=True)
-
-
 @authenticated
-class IndexHandler(RedirectHandler):
+class IndexHandler(RequestHandler):
     def __init__(self, application, request, **kwargs):
         super(IndexHandler, self).__init__(application, request, **kwargs)
         global req_headers
@@ -206,24 +200,23 @@ class IndexHandler(RedirectHandler):
 
         raise HTTPError(404)
 
-    @asynchronous
-    def get(self, *args, **kwargs):
-        try:
-            resp = self._dispatch()
-            if resp:
-                self.finish(resp)
-        except Exception as e:
-            logger.log(ex(e), logger.ERROR)
-            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+    def redirect(self, url, permanent=False, status=None):
+        if not self._transforms:
+            self._transforms = []
+
+        super(IndexHandler, self).redirect(url, permanent, status)
 
     @asynchronous
-    def post(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
         except Exception as e:
             logger.log(ex(e), logger.ERROR)
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
 
+    def post(self, *args, **kwargs):
+        return self._dispatch()
+    
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
         self.set_header('Content-Type', 'text/plain')
@@ -1472,6 +1465,7 @@ class ConfigGeneral(IndexHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        self.redirect("/home/")
 
 class ConfigSearch(IndexHandler):
     def index(self, *args, **kwargs):
