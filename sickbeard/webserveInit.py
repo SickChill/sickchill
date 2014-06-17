@@ -4,6 +4,7 @@ import sickbeard
 import webserve
 import webapi
 
+import tornado.options
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
@@ -97,7 +98,6 @@ def initWebServer(options={}):
 
     # Load the app
     app = Application([],
-                        log_function=lambda x: None,
                         debug=False,
                         gzip=True,
                         autoreload=sickbeard.AUTO_UPDATE,
