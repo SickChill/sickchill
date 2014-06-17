@@ -4,7 +4,6 @@ import sickbeard
 import webserve
 import webapi
 
-import tornado.options
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
@@ -103,14 +102,12 @@ def initWebServer(options={}):
                         debug=sickbeard.DEBUG,
                         gzip=True,
                         xheaders=True,
-                        cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
-                        login_url='/login'
+                        cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
     )
 
     # Index Handler
     app.add_handlers(".*$", [
         (r"/", RedirectHandler, {'url': '/home/'}),
-        (r'/login', webserve.LoginHandler),
         (r'/api/(.*)(/?)', webapi.Api),
         (r'%s(.*)(/?)' % options['web_root'], webserve.IndexHandler)
     ])
