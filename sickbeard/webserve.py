@@ -86,7 +86,7 @@ from tornado.ioloop import IOLoop
 
 # def _handle_reverse_proxy():
 # if sickbeard.HANDLE_REVERSE_PROXY:
-#        cherrypy.lib.cptools.proxy()
+# cherrypy.lib.cptools.proxy()
 
 
 # cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
@@ -105,6 +105,9 @@ def authenticated(handler_class):
                 return False
 
             try:
+                if not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
+                    return True
+
                 auth_hdr = handler.request.headers.get('Authorization')
 
                 if auth_hdr == None:
@@ -135,6 +138,7 @@ def authenticated(handler_class):
 class RedirectHandler(RequestHandler):
     def get(self, path, **kwargs):
         self.redirect(path, permanent=True)
+
 
 @authenticated
 class IndexHandler(RedirectHandler):
@@ -449,6 +453,7 @@ class IndexHandler(RedirectHandler):
         return ical
 
     browser = WebFileBrowser
+
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
