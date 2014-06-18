@@ -28,12 +28,11 @@ from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTI
 from sickbeard.exceptions import ex
 
 API_URL = "https://api.pushover.net/1/messages.json"
-API_KEY = "awKfdt263PLaEWV9RXuSn4c46qoAyA"
 
 
 class PushoverNotifier:
     def test_notify(self, userKey=None, apiKey=None):
-        return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey, force=True)
+        return self._notifyPushover("This is a test notification from SickRage", 'Test', userKey, apiKey, force=True)
 
     def _sendPushover(self, msg, title, userKey=None, apiKey=None):
         """
