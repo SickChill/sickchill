@@ -103,6 +103,11 @@ class PushoverNotifier:
                 logger.log("Wrong data sent to pushover", logger.ERROR)
                 return False
 
+            # If you receive a HTTP status code of 429, it is because the message limit has been reached (free limit is 7,500)
+            elif e.code == 429:
+                logger.log("Pushover API message limit reached - try a different API key", logger.ERROR)
+                return False
+
         logger.log("Pushover notification successful.", logger.MESSAGE)
         return True
 
