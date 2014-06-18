@@ -83,14 +83,7 @@ from Cheetah.Template import Template
 from tornado import gen
 from tornado.web import RequestHandler, HTTPError, asynchronous
 
-# def _handle_reverse_proxy():
-# if sickbeard.HANDLE_REVERSE_PROXY:
-# cherrypy.lib.cptools.proxy()
-
-# cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
-
 req_headers = None
-
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
         def basicauth(handler, transforms, *args, **kwargs):
