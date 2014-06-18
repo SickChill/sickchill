@@ -12,9 +12,11 @@ from tornado.ioloop import IOLoop
 
 server = None
 
+
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
+        self.default_filename = default_filename
 
     def get(self, path, include_body=True):
         for p in self.paths:

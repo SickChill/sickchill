@@ -80,19 +80,16 @@ except ImportError:
 from lib import adba
 
 from Cheetah.Template import Template
-from tornado import gen, autoreload
-from tornado.web import RequestHandler, RedirectHandler, HTTPError, asynchronous
-from tornado.ioloop import IOLoop
+from tornado import gen
+from tornado.web import RequestHandler, HTTPError, asynchronous
 
 # def _handle_reverse_proxy():
 # if sickbeard.HANDLE_REVERSE_PROXY:
 # cherrypy.lib.cptools.proxy()
 
-
 # cherrypy.tools.handle_reverse_proxy = cherrypy.Tool('before_handler', _handle_reverse_proxy)
 
 req_headers = None
-
 
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
@@ -226,12 +223,9 @@ class IndexHandler(RequestHandler):
         response = yield gen.Task(self.getresponse, self._dispatch)
         self.finish(response)
 
-    @asynchronous
-    @gen.engine
     def post(self, *args, **kwargs):
-        response = yield gen.Task(self.getresponse, self._dispatch)
-        self.finish(response)
-
+        return self._dispatch()
+    
     def getresponse(self, func, callback):
         response = func()
         callback(response)
@@ -2713,7 +2707,7 @@ class NewHomeAddShows(IndexHandler):
         def finishAddShow():
             # if there are no extra shows then go home
             if not other_shows:
-                self.redirect('/home/')
+                return self.redirect('/home/')
 
             # peel off the next one
             next_show_dir = other_shows[0]

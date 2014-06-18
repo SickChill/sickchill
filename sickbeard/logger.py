@@ -76,11 +76,13 @@ class SBRotatingLogHandler(object):
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
             tornado_logger = logging.getLogger('tornado')
+            feedcache_logger = logging.getLogger('feedcache')
 
             sb_logger.removeHandler(handler)
             sub_logger.removeHandler(handler)
             imdb_logger.removeHandler(handler)
             tornado_logger.removeHandler(handler)
+            feedcache_logger.removeHandler(handler)
 
             handler.flush()
             handler.close()
@@ -116,7 +118,9 @@ class SBRotatingLogHandler(object):
                                                      '%H:%M:%S'),
                      'imdbpy': logging.Formatter('%(asctime)s %(levelname)s::IMDBPY :: %(message)s', '%H:%M:%S'),
                      'tornado.general': logging.Formatter('%(asctime)s %(levelname)s::TORNADO :: %(message)s', '%H:%M:%S'),
-                     'tornado.application': logging.Formatter('%(asctime)s %(levelname)s::TORNADO :: %(message)s', '%H:%M:%S')
+                     'tornado.application': logging.Formatter('%(asctime)s %(levelname)s::TORNADO :: %(message)s', '%H:%M:%S'),
+                     'feedcache.cache': logging.Formatter('%(asctime)s %(levelname)s::FEEDCACHE :: %(message)s',
+                                                          '%H:%M:%S')
                     },
                     logging.Formatter('%(message)s'), ))
 
@@ -126,15 +130,18 @@ class SBRotatingLogHandler(object):
                 logging.getLogger('tornado.application').addHandler(console)
                 logging.getLogger('subliminal').addHandler(console)
                 logging.getLogger('imdbpy').addHandler(console)
+                logging.getLogger('feedcache').addHandler(console)
 
         self.log_file_path = os.path.join(sickbeard.LOG_DIR, self.log_file)
 
         self.cur_handler = self._config_handler()
         logging.getLogger('sickbeard').addHandler(self.cur_handler)
+        logging.getLogger('tornado.access').addHandler(NullHandler())
         logging.getLogger('tornado.general').addHandler(self.cur_handler)
         logging.getLogger('tornado.application').addHandler(self.cur_handler)
         logging.getLogger('subliminal').addHandler(self.cur_handler)
         logging.getLogger('imdbpy').addHandler(self.cur_handler)
+        logging.getLogger('feedcache').addHandler(self.cur_handler)
 
         logging.getLogger('sickbeard').setLevel(DB)
 
@@ -146,20 +153,20 @@ class SBRotatingLogHandler(object):
         logging.getLogger('tornado.application').setLevel(log_level)
         logging.getLogger('subliminal').setLevel(log_level)
         logging.getLogger('imdbpy').setLevel(log_level)
+        logging.getLogger('feedcache').setLevel(log_level)
 
-        logging.getLogger('tornado.access').addHandler(NullHandler())
 
         # already logging in new log folder, close the old handler
         if old_handler:
             self.close_log(old_handler)
-        #            old_handler.flush()
-        #            old_handler.close()
-        #            sb_logger = logging.getLogger('sickbeard')
-        #            sub_logger = logging.getLogger('subliminal')
-        #            imdb_logger = logging.getLogger('imdbpy')
-        #            sb_logger.removeHandler(old_handler)
-        #            subli_logger.removeHandler(old_handler)
-        #            imdb_logger.removeHandler(old_handler)
+            #            old_handler.flush()
+            #            old_handler.close()
+            #            sb_logger = logging.getLogger('sickbeard')
+            #            sub_logger = logging.getLogger('subliminal')
+            #            imdb_logger = logging.getLogger('imdbpy')
+            #            sb_logger.removeHandler(old_handler)
+            #            subli_logger.removeHandler(old_handler)
+            #            imdb_logger.removeHandler(old_handler)
 
     def _config_handler(self):
         """
@@ -174,7 +181,9 @@ class SBRotatingLogHandler(object):
                                              '%Y-%m-%d %H:%M:%S'),
              'imdbpy': logging.Formatter('%(asctime)s %(levelname)-8s IMDBPY :: %(message)s', '%Y-%m-%d %H:%M:%S'),
              'tornado.general': logging.Formatter('%(asctime)s %(levelname)-8s TORNADO :: %(message)s', '%Y-%m-%d %H:%M:%S'),
-             'tornado.application': logging.Formatter('%(asctime)s %(levelname)-8s TORNADO :: %(message)s', '%Y-%m-%d %H:%M:%S')
+             'tornado.application': logging.Formatter('%(asctime)s %(levelname)-8s TORNADO :: %(message)s', '%Y-%m-%d %H:%M:%S'),
+             'feedcache.cache': logging.Formatter('%(asctime)s %(levelname)-8s FEEDCACHE :: %(message)s',
+                                                      '%Y-%m-%d %H:%M:%S')
             },
             logging.Formatter('%(message)s'), ))
 
@@ -208,6 +217,7 @@ class SBRotatingLogHandler(object):
         sub_logger = logging.getLogger('subliminal')
         imdb_logger = logging.getLogger('imdbpy')
         tornado_logger = logging.getLogger('tornado')
+        feedcache_logger = logging.getLogger('feedcache')
 
         # delete the old handler
         if self.cur_handler:
@@ -233,6 +243,7 @@ class SBRotatingLogHandler(object):
         sub_logger.addHandler(new_file_handler)
         imdb_logger.addHandler(new_file_handler)
         tornado_logger.addHandler(new_file_handler)
+        feedcache_logger.addHandler(new_file_handler)
 
     def log(self, toLog, logLevel=MESSAGE):
 
@@ -257,6 +268,7 @@ class SBRotatingLogHandler(object):
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
             tornado_logger = logging.getLogger('tornado')
+            feedcache_logger = logging.getLogger('feedcache')
 
             try:
                 if logLevel == DEBUG:

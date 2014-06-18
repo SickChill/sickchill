@@ -97,17 +97,7 @@ def change_LOG_DIR(log_dir, web_log):
             return False
 
     if sickbeard.WEB_LOG != web_log_value or log_dir_changed == True:
-
         sickbeard.WEB_LOG = web_log_value
-
-        if sickbeard.WEB_LOG:
-            cherry_log = os.path.join(sickbeard.LOG_DIR, "cherrypy.log")
-            logger.log(u"Change cherry log file to " + cherry_log)
-        else:
-            cherry_log = None
-            logger.log(u"Disable cherry logging")
-
-        #cherrypy.config.update({'log.access_file': cherry_log})
 
     return True
 
