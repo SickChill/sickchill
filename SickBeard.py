@@ -75,7 +75,7 @@ signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
-
+io_loop = IOLoop.current()
 
 def loadShowsFromDB():
     """
@@ -362,9 +362,6 @@ def main():
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
-    # get ioloop
-    io_loop = IOLoop.current()
-
     # init startup tasks
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
 
@@ -379,12 +376,9 @@ def main():
     # Use this PID for everything
     sickbeard.PID = os.getpid()
 
-    # start IOLoop.
-    io_loop.start()
-    sickbeard.saveAndShutdown()
-    return
-
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
     main()
+    io_loop.start()
+    sickbeard.saveAndShutdown()
