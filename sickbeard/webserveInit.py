@@ -65,7 +65,7 @@ def initWebServer(options={}):
 
     # Load the app
     app = Application([],
-                        debug=sickbeard.DEBUG,
+                        debug=False,
                         gzip=True,
                         xheaders=sickbeard.HANDLE_REVERSE_PROXY,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
