@@ -223,9 +223,12 @@ class IndexHandler(RequestHandler):
         response = yield gen.Task(self.getresponse, self._dispatch)
         self.finish(response)
 
+    @asynchronous
+    @gen.engine
     def post(self, *args, **kwargs):
-        return self._dispatch()
-    
+        response = yield gen.Task(self.getresponse, self._dispatch)
+        self.finish(response)
+
     def getresponse(self, func, callback):
         response = func()
         callback(response)
