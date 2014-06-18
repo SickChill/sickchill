@@ -160,7 +160,6 @@ class Api(webserve.IndexHandler):
         return webserve._munge(t)
 
     def _out_as_json(self, dict):
-        """ set cherrypy response to json """
         self.set_header("Content-Type", "application/json")
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
