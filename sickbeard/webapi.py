@@ -2103,7 +2103,7 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': webserve.IndexHandler(self.application, self.request).showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2121,7 +2121,7 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'banner')}
+        return {'outputType': 'image', 'image': webserve.IndexHandler(self.application, self.request).showPoster(self.indexerid, 'banner')}
 
 
 class CMD_ShowPause(ApiCall):
