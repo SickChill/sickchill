@@ -75,7 +75,6 @@ signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
-io_loop = IOLoop.current()
 
 def loadShowsFromDB():
     """
@@ -303,6 +302,12 @@ def main():
                 MAX_DB_VERSION) + ").\n" + \
                              "If you have used other forks of SB, your database may be unusable due to their modifications.")
 
+    if sickbeard.DAEMON:
+        daemonize()
+
+    # Use this PID for everything
+    sickbeard.PID = os.getpid()
+
     # Initialize the config and our threads
     sickbeard.initialize(consoleLogging=consoleLogging)
 
@@ -341,7 +346,7 @@ def main():
         'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
         'https_cert': sickbeard.HTTPS_CERT,
         'https_key': sickbeard.HTTPS_KEY,
-    }
+        }
 
     # init tornado
     webserveInit.initWebServer(options)
@@ -362,6 +367,9 @@ def main():
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
+    # create ioloop
+    io_loop = IOLoop.current()
+
     # init startup tasks
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
 
@@ -370,15 +378,10 @@ def main():
     if sickbeard.AUTO_UPDATE:
         tornado.autoreload.start(io_loop)
 
-    if sickbeard.DAEMON:
-        daemonize()
-
-    # Use this PID for everything
-    sickbeard.PID = os.getpid()
+    io_loop.start()
+    sickbeard.saveAndShutdown()
 
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
     main()
-    io_loop.start()
-    sickbeard.saveAndShutdown()
