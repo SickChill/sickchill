@@ -96,7 +96,7 @@ def authenticated(handler_class):
         def basicauth(handler, transforms, *args, **kwargs):
             def _request_basic_auth(handler):
                 handler.set_status(401)
-                handler.set_header('WWW-Authenticate', 'Basic realm=SickRage')
+                handler.set_header('WWW-Authenticate', 'Basic realm="SickRage"')
                 handler._transforms = []
                 handler.finish()
                 return False
