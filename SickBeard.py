@@ -18,6 +18,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # Check needed software dependencies to nudge users to fix their setup
+from __future__ import with_statement
+
 import sys
 
 if sys.version_info < (2, 6):

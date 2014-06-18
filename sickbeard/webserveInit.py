@@ -103,7 +103,7 @@ def initWebServer(options={}):
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
     )
 
-    # Index Handler
+    # Main Handler
     app.add_handlers(".*$", [
         (r"/", RedirectHandler, {'url': '%s/home/' % options['web_root']}),
         (r'%s/api/(.*)(/?)' % options['web_root'], webapi.Api),
@@ -121,7 +121,9 @@ def initWebServer(options={}):
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'css'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'css')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'js'), MultiStaticFileHandler,
-         {'paths': [os.path.join(options['data_root'], 'js')]})
+         {'paths': [os.path.join(options['data_root'], 'js'),
+                    os.path.join(options['data_root'], 'js/lib'),
+                    os.path.join(options['data_root'], 'js/fancybox')]})
 
     ])
 
