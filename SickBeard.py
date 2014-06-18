@@ -139,8 +139,6 @@ def main():
     TV for me
     """
 
-    io_loop = IOLoop.current()
-
     # do some preliminary stuff
     sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
     sickbeard.MY_NAME = os.path.basename(sickbeard.MY_FULLNAME)
@@ -310,12 +308,6 @@ def main():
 
     sickbeard.showList = []
 
-    if sickbeard.DAEMON:
-        daemonize()
-
-    # Use this PID for everything
-    sickbeard.PID = os.getpid()
-
     if forcedPort:
         logger.log(u"Forcing web server to port " + str(forcedPort))
         startPort = forcedPort
@@ -359,6 +351,12 @@ def main():
     loadShowsFromDB()
 
     def startup():
+        if sickbeard.DAEMON:
+            daemonize()
+
+        # Use this PID for everything
+        sickbeard.PID = os.getpid()
+
         # Fire up all our threads
         sickbeard.start()
 
@@ -369,6 +367,9 @@ def main():
         # Start an update if we're supposed to
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+
+    # get ioloop
+    io_loop = IOLoop.current()
 
     # init startup tasks
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
