@@ -103,7 +103,7 @@ def initWebServer(options={}):
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
     )
 
-    # Index Handler
+    # Main Handler
     app.add_handlers(".*$", [
         (r"/", RedirectHandler, {'url': '%s/home/' % options['web_root']}),
         (r'%s/api/(.*)(/?)' % options['web_root'], webapi.Api),
