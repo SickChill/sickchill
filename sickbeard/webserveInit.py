@@ -16,6 +16,7 @@ server = None
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
+        self.default_filename = default_filename
 
     def get(self, path, include_body=True):
         for p in self.paths:
@@ -44,41 +45,6 @@ def initWebServer(options={}):
     assert isinstance(options['port'], int)
     assert 'data_root' in options
 
-    def http_error_401_hander(status, message, traceback, version):
-        """ Custom handler for 401 error """
-        if status != "401 Unauthorized":
-            logger.log(u"Tornado caught an error: %s %s" % (status, message), logger.ERROR)
-            logger.log(traceback, logger.DEBUG)
-        return r'''<!DOCTYPE html>
-<html>
-    <head>
-        <title>%s</title>
-    </head>
-    <body>
-        <br/>
-        <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
-    </body>
-</html>
-''' % ('Access denied', status)
-
-    def http_error_404_hander(status, message, traceback, version):
-        """ Custom handler for 404 error, redirect back to main page """
-        return r'''<!DOCTYPE html>
-<html>
-    <head>
-        <title>404</title>
-        <script type="text/javascript" charset="utf-8">
-          <!--
-          location.href = "%s/home/"
-          //-->
-        </script>
-    </head>
-    <body>
-        <br/>
-    </body>
-</html>
-''' % options['web_root']
-
     # tornado setup
     enable_https = options['enable_https']
     https_cert = options['https_cert']
@@ -101,25 +67,24 @@ def initWebServer(options={}):
     app = Application([],
                         debug=sickbeard.DEBUG,
                         gzip=True,
-                        xheaders=True,
+                        xheaders=sickbeard.HANDLE_REVERSE_PROXY,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
     )
 
-    # Index Handler
+    # Main Handler
     app.add_handlers(".*$", [
-        (r"/", RedirectHandler, {'url': '/home/'}),
-        (r'/api/(.*)(/?)', webapi.Api),
-        (r'%s(.*)(/?)' % options['web_root'], webserve.IndexHandler)
+        (r"/", RedirectHandler, {'url': '%s/home/' % options['web_root']}),
+        (r'%s/api/(.*)(/?)' % options['web_root'], webapi.Api),
+        (r'%s/(.*)(/?)' % options['web_root'], webserve.IndexHandler)
     ])
 
     # Static Path Handler
     app.add_handlers(".*$", [
-        (r'/(favicon\.ico)', MultiStaticFileHandler,
-         {'paths': '%s/%s' % (options['web_root'], 'images/ico/favicon.ico')}),
+        (r'%s/(favicon\.ico)' % options['web_root'], MultiStaticFileHandler,
+         {'paths': [os.path.join(options['data_root'], 'images/ico/favicon.ico')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
-                    os.path.join(sickbeard.CACHE_DIR, 'images'),
-                    os.path.join(sickbeard.CACHE_DIR, 'images', 'thumbnails')]}),
+                    os.path.join(sickbeard.CACHE_DIR, 'images')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'css'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'css')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'js'), MultiStaticFileHandler,

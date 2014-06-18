@@ -160,7 +160,6 @@ class Api(webserve.IndexHandler):
         return webserve._munge(t)
 
     def _out_as_json(self, dict):
-        """ set cherrypy response to json """
         self.set_header("Content-Type", "application/json")
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
@@ -297,10 +296,11 @@ def filter_params(cmd, args, kwargs):
     return curArgs, curKwargs
 
 
-class ApiCall(Api):
+class ApiCall(webserve.IndexHandler):
     _help = {"desc": "No help message available. Please tell the devs that a help msg is missing for this cmd"}
 
     def __init__(self, args, kwargs):
+
         # missing
         try:
             if self._missing:
@@ -2104,7 +2104,7 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2122,7 +2122,7 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickbeard """
-        return {'outputType': 'image', 'image': webserve.IndexHandler.showPoster(self.indexerid, 'banner')}
+        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'banner')}
 
 
 class CMD_ShowPause(ApiCall):
