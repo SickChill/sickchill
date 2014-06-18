@@ -43,41 +43,6 @@ def initWebServer(options={}):
     assert isinstance(options['port'], int)
     assert 'data_root' in options
 
-    def http_error_401_hander(status, message, traceback, version):
-        """ Custom handler for 401 error """
-        if status != "401 Unauthorized":
-            logger.log(u"Tornado caught an error: %s %s" % (status, message), logger.ERROR)
-            logger.log(traceback, logger.DEBUG)
-        return r'''<!DOCTYPE html>
-<html>
-    <head>
-        <title>%s</title>
-    </head>
-    <body>
-        <br/>
-        <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
-    </body>
-</html>
-''' % ('Access denied', status)
-
-    def http_error_404_hander(status, message, traceback, version):
-        """ Custom handler for 404 error, redirect back to main page """
-        return r'''<!DOCTYPE html>
-<html>
-    <head>
-        <title>404</title>
-        <script type="text/javascript" charset="utf-8">
-          <!--
-          location.href = "%s/home/"
-          //-->
-        </script>
-    </head>
-    <body>
-        <br/>
-    </body>
-</html>
-''' % options['web_root']
-
     # tornado setup
     enable_https = options['enable_https']
     https_cert = options['https_cert']
@@ -116,14 +81,11 @@ def initWebServer(options={}):
          {'paths': [os.path.join(options['data_root'], 'images/ico/favicon.ico')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
-                    os.path.join(sickbeard.CACHE_DIR, 'images'),
-                    os.path.join(sickbeard.CACHE_DIR, 'images', 'thumbnails')]}),
+                    os.path.join(sickbeard.CACHE_DIR, 'images')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'css'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'css')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'js'), MultiStaticFileHandler,
-         {'paths': [os.path.join(options['data_root'], 'js'),
-                    os.path.join(options['data_root'], 'js/lib'),
-                    os.path.join(options['data_root'], 'js/fancybox')]})
+         {'paths': [os.path.join(options['data_root'], 'js')]})
 
     ])
 

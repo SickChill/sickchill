@@ -99,13 +99,16 @@ def authenticated(handler_class):
         def basicauth(handler, transforms, *args, **kwargs):
             def _request_basic_auth(handler):
                 handler.set_status(401)
-                handler.set_header('WWW-Authenticate', 'Basic realm=Restricted')
+                handler.set_header('WWW-Authenticate', 'Basic realm=SickRage')
                 handler._transforms = []
                 handler.finish()
                 return False
 
             try:
                 if not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
+                    return True
+                elif handler.request.uri.startswith('/calendar') or (
+                    handler.request.uri.startswith('/api') and '/api/builder' not in handler.request.uri):
                     return True
 
                 auth_hdr = handler.request.headers.get('Authorization')
@@ -134,6 +137,7 @@ def authenticated(handler_class):
     handler_class._execute = wrap_execute(handler_class._execute)
     return handler_class
 
+
 @authenticated
 class IndexHandler(RequestHandler):
     def __init__(self, application, request, **kwargs):
@@ -141,12 +145,37 @@ class IndexHandler(RequestHandler):
         global req_headers
 
         sickbeard.REMOTE_IP = self.request.remote_ip
-        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
         req_headers = self.request.headers
+
+    def http_error_401_handler(self):
+        """ Custom handler for 401 error """
+        return r'''<!DOCTYPE html>
+    <html>
+        <head>
+            <title>%s</title>
+        </head>
+        <body>
+            <br/>
+            <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
+        </body>
+    </html>
+    ''' % ('Access denied', 401)
+
+    def http_error_404_handler(self):
+        """ Custom handler for 404 error, redirect back to main page """
+        self.redirect('/home/')
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 404:
+            self.redirect('/home/')
+        elif status_code == 401:
+            self.finish(self.http_error_401_handler())
+        else:
+            super(IndexHandler, self).write_error(status_code, **kwargs)
 
     def _dispatch(self):
 
-        path = self.request.uri.replace(sickbeard.WEB_ROOT,'').split('?')[0]
+        path = self.request.uri.replace(sickbeard.WEB_ROOT, '').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
         if path.startswith('/api'):
@@ -186,7 +215,7 @@ class IndexHandler(RequestHandler):
                 return func(**args)
 
         raise HTTPError(404)
-
+    
     def redirect(self, url, permanent=False, status=None):
         self._transforms = []
         super(IndexHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
@@ -194,23 +223,14 @@ class IndexHandler(RequestHandler):
     @asynchronous
     @gen.engine
     def get(self, *args, **kwargs):
-        try:
-            response = yield gen.Task(self.getresponse, self._dispatch)
-            self.finish(response)
-        except Exception as e:
-            logger.log(ex(e), logger.ERROR)
-            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+        response = yield gen.Task(self.getresponse, self._dispatch)
+        self.finish(response)
 
     @asynchronous
     @gen.engine
     def post(self, *args, **kwargs):
-        try:
-            response = yield gen.Task(self.getresponse, self._dispatch)
-            self.finish(response)
-        except Exception as e:
-            logger.log(ex(e), logger.ERROR)
-            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
-
+        response = yield gen.Task(self.getresponse, self._dispatch)
+        self.finish(response)
 
     def getresponse(self, func, callback):
         response = func()
@@ -445,7 +465,6 @@ class IndexHandler(RequestHandler):
         return ical
 
     browser = WebFileBrowser
-
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
@@ -1463,6 +1482,7 @@ class ConfigGeneral(IndexHandler):
                                    '<br />\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
+
 
 class ConfigSearch(IndexHandler):
     def index(self, *args, **kwargs):
