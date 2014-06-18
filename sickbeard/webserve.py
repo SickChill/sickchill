@@ -141,6 +141,7 @@ class IndexHandler(RequestHandler):
         global req_headers
 
         sickbeard.REMOTE_IP = self.request.remote_ip
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
         req_headers = self.request.headers
 
     def _dispatch(self):
