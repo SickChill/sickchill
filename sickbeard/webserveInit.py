@@ -114,8 +114,6 @@ def initWebServer(options={}):
     app.add_handlers(".*$", [
         (r'%s/(favicon\.ico)' % options['web_root'], MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images/ico/favicon.ico')]}),
-        (r'%s/(.*)(/?)' % options['web_root'], MultiStaticFileHandler,
-         {'paths': [options['data_root']]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
                     os.path.join(sickbeard.CACHE_DIR, 'images'),
