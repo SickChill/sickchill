@@ -114,6 +114,8 @@ def initWebServer(options={}):
     app.add_handlers(".*$", [
         (r'%s/(favicon\.ico)' % options['web_root'], MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images/ico/favicon.ico')]}),
+        (r'%s/(.*)(/?)' % options['web_root'], MultiStaticFileHandler,
+         {'paths': [options['data_root']]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
                     os.path.join(sickbeard.CACHE_DIR, 'images'),
@@ -121,7 +123,9 @@ def initWebServer(options={}):
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'css'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'css')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'js'), MultiStaticFileHandler,
-         {'paths': [os.path.join(options['data_root'], 'js')]})
+         {'paths': [os.path.join(options['data_root'], 'js'),
+                    os.path.join(options['data_root'], 'js/lib'),
+                    os.path.join(options['data_root'], 'js/fancybox')]})
 
     ])
 
