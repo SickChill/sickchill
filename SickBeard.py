@@ -351,12 +351,6 @@ def main():
     loadShowsFromDB()
 
     def startup():
-        if sickbeard.DAEMON:
-            daemonize()
-
-        # Use this PID for everything
-        sickbeard.PID = os.getpid()
-
         # Fire up all our threads
         sickbeard.start()
 
@@ -378,6 +372,12 @@ def main():
     tornado.autoreload.add_reload_hook(autoreload_shutdown)
     if sickbeard.AUTO_UPDATE:
         tornado.autoreload.start(io_loop)
+
+    if sickbeard.DAEMON:
+        daemonize()
+
+    # Use this PID for everything
+    sickbeard.PID = os.getpid()
 
     # start IOLoop.
     io_loop.start()
