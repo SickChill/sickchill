@@ -45,11 +45,11 @@ class PushoverNotifier:
         returns: True if the message succeeded, False otherwise
         """
 
-        if not userKey:
+        if userKey == None:
             userKey = sickbeard.PUSHOVER_USERKEY
 
-        if not apiKey:
-            apiKey = sickbeard.PUSHOVER_APIKEY or API_KEY
+        if apiKey == None:
+            apiKey = sickbeard.PUSHOVER_APIKEY
 
         logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
         
