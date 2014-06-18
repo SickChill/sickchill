@@ -12,7 +12,6 @@ from tornado.ioloop import IOLoop
 
 server = None
 
-
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
@@ -101,21 +100,20 @@ def initWebServer(options={}):
     app = Application([],
                         debug=sickbeard.DEBUG,
                         gzip=True,
-                        xheaders=True,
                         cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
     )
 
     # Index Handler
     app.add_handlers(".*$", [
-        (r"/", RedirectHandler, {'url': '/home/'}),
-        (r'/api/(.*)(/?)', webapi.Api),
-        (r'%s(.*)(/?)' % options['web_root'], webserve.IndexHandler)
+        (r"/", RedirectHandler, {'url': '%s/home/' % options['web_root']}),
+        (r'%s/api/(.*)(/?)' % options['web_root'], webapi.Api),
+        (r'%s/(.*)(/?)' % options['web_root'], webserve.IndexHandler)
     ])
 
     # Static Path Handler
     app.add_handlers(".*$", [
-        (r'/(favicon\.ico)', MultiStaticFileHandler,
-         {'paths': '%s/%s' % (options['web_root'], 'images/ico/favicon.ico')}),
+        (r'%s/(favicon\.ico)' % options['web_root'], MultiStaticFileHandler,
+         {'paths': [os.path.join(options['data_root'], 'images/ico/favicon.ico')]}),
         (r'%s/%s/(.*)(/?)' % (options['web_root'], 'images'), MultiStaticFileHandler,
          {'paths': [os.path.join(options['data_root'], 'images'),
                     os.path.join(sickbeard.CACHE_DIR, 'images'),

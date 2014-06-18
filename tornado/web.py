@@ -630,6 +630,7 @@ class RequestHandler(object):
         self.set_status(status)
         self.set_header("Location", urlparse.urljoin(utf8(self.request.uri),
                                                      utf8(url)))
+
         self.finish()
 
     def write(self, chunk):

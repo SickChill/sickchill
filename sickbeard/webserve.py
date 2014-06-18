@@ -143,22 +143,9 @@ class IndexHandler(RequestHandler):
         sickbeard.REMOTE_IP = self.request.remote_ip
         req_headers = self.request.headers
 
-    def delist_arguments(self, args):
-        """
-        Takes a dictionary, 'args' and de-lists any single-item lists then
-        returns the resulting dictionary.
-
-        In other words, {'foo': ['bar']} would become {'foo': 'bar'}
-        """
-        for arg, value in args.items():
-            if len(value) == 1:
-                args[arg] = value[0]
-        return args
-
     def _dispatch(self):
 
-        args = None
-        path = self.request.uri.split('?')[0]
+        path = self.request.uri.replace(sickbeard.WEB_ROOT,'').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
         if path.startswith('/api'):
@@ -179,8 +166,10 @@ class IndexHandler(RequestHandler):
 
         if klass and not method.startswith('_'):
             # Sanitize argument lists:
-            if self.request.arguments:
-                args = self.delist_arguments(self.request.arguments)
+            args = self.request.arguments
+            for arg, value in args.items():
+                if len(value) == 1:
+                    args[arg] = value[0]
 
             # Regular method handler for classes
             func = getattr(klass, method, None)
@@ -193,30 +182,39 @@ class IndexHandler(RequestHandler):
                     func = getattr(klass, 'index', None)
 
             if func:
-                if args:
-                    return func(**args)
-                else:
-                    return func()
+                return func(**args)
 
         raise HTTPError(404)
 
     def redirect(self, url, permanent=False, status=None):
-        if not self._transforms:
-            self._transforms = []
-
-        super(IndexHandler, self).redirect(url, permanent, status)
+        self._transforms = []
+        super(IndexHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
     @asynchronous
+    @gen.engine
     def get(self, *args, **kwargs):
         try:
-            self.finish(self._dispatch())
+            response = yield gen.Task(self.getresponse, self._dispatch)
+            self.finish(response)
         except Exception as e:
             logger.log(ex(e), logger.ERROR)
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
 
+    @asynchronous
+    @gen.engine
     def post(self, *args, **kwargs):
-        return self._dispatch()
-    
+        try:
+            response = yield gen.Task(self.getresponse, self._dispatch)
+            self.finish(response)
+        except Exception as e:
+            logger.log(ex(e), logger.ERROR)
+            logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
+
+
+    def getresponse(self, func, callback):
+        response = func()
+        callback(response)
+
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
         self.set_header('Content-Type', 'text/plain')
@@ -1464,8 +1462,6 @@ class ConfigGeneral(IndexHandler):
                                    '<br />\n'.join(results))
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
-
-        self.redirect("/home/")
 
 class ConfigSearch(IndexHandler):
     def index(self, *args, **kwargs):
