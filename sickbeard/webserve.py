@@ -169,7 +169,7 @@ class MainHandler(RequestHandler):
         path = self.request.uri.replace(sickbeard.WEB_ROOT, '').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
-        if path.startswith('/api'):
+        if path.startswith('/api') and method != 'builder':
             apikey = path.strip('/').split('/')[-1]
             method = path.strip('/').split('/')[0]
             self.request.arguments.update({'apikey': [apikey]})

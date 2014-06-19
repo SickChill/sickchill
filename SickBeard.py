@@ -275,7 +275,7 @@ def main():
         if restore(restoreDir, sickbeard.PROG_DIR):
             logger.log(u"Restore successful...")
         else:
-            logger.log(u"Restore FAILED!")
+            logger.log(u"Restore FAILED!", logger.ERROR)
 
     # If they don't specify a config file then put it in the data dir
     if not sickbeard.CONFIG_FILE:
