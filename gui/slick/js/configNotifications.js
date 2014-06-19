@@ -57,7 +57,8 @@ $(document).ready(function(){
     $('#testPushover').click(function() {
         $('#testPushover-result').html(loading);
         var pushover_userkey = $("#pushover_userkey").val();
-        $.get(sbRoot + "/home/testPushover", {'userKey': pushover_userkey},
+        var pushover_apikey = $("#pushover_apikey").val();
+        $.get(sbRoot + "/home/testPushover", {'userKey': pushover_userkey, 'apiKey': pushover_apikey},
             function (data) { $('#testPushover-result').html(data); });
     });
 
