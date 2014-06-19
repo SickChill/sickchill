@@ -75,7 +75,7 @@ def initWebServer(options={}):
     app.add_handlers(".*$", [
         (r"/", RedirectHandler, {'url': '%s/home/' % options['web_root']}),
         (r'%s/api/(.*)(/?)' % options['web_root'], webapi.Api),
-        (r'%s/(.*)(/?)' % options['web_root'], webserve.IndexHandler)
+        (r'%s/(.*)(/?)' % options['web_root'], webserve.MainHandler)
     ])
 
     # Static Path Handler
