@@ -9,6 +9,7 @@ failed.db*
 autoProcessTV/autoProcessTV.cfg
 server.crt
 server.key
+restore/
 
 #  SB Test Related   #
 ######################

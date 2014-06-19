@@ -192,14 +192,6 @@ def main():
     # Rename the main thread
     threading.currentThread().name = "MAIN"
 
-    # Check if we need to perform a restore first
-    restoreDir = os.path.join(sickbeard.PROG_DIR, 'restore')
-    if os.path.exists(restoreDir):
-        if restore(restoreDir, sickbeard.PROG_DIR):
-            print "Restore successful..."
-        else:
-            print "Restore FAILED!"
-
     try:
         opts, args = getopt.getopt(sys.argv[1:], "qfdp::",
                                    ['quiet', 'forceupdate', 'daemon', 'port=', 'pidfile=', 'nolaunch', 'config=',
@@ -276,6 +268,14 @@ def main():
                 sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
             sickbeard.CREATEPID = False
+
+    # Check if we need to perform a restore first
+    restoreDir = os.path.join(sickbeard.PROG_DIR, 'restore')
+    if os.path.exists(restoreDir):
+        if restore(restoreDir, sickbeard.PROG_DIR):
+            logger.log(u"Restore successful...")
+        else:
+            logger.log(u"Restore FAILED!")
 
     # If they don't specify a config file then put it in the data dir
     if not sickbeard.CONFIG_FILE:
