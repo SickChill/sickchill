@@ -728,7 +728,7 @@ class Tvdb:
         log().debug('Getting season banners for %s' % (sid))
         bannersEt = self._getetsrc(self.config['url_seriesBanner'] % (sid))
         banners = {}
-        for cur_banner in bannersEt['banner']:
+        for cur_banner in bannersEt['banner'] if bannersEt else []:
             bid = cur_banner['id']
             btype = cur_banner['bannertype']
             btype2 = cur_banner['bannertype2']
@@ -785,19 +785,18 @@ class Tvdb:
         actorsEt = self._getetsrc(self.config['url_actorsInfo'] % (sid))
 
         cur_actors = Actors()
-        if actorsEt:
-            for curActorItem in actorsEt["actor"]:
-                curActor = Actor()
-                for k, v in curActorItem.items():
-                    k = k.lower()
-                    if v is not None:
-                        if k == "image":
-                            v = self.config['url_artworkPrefix'] % (v)
-                        else:
-                            v = self._cleanData(v)
-                    curActor[k] = v
-                cur_actors.append(curActor)
-            self._setShowData(sid, '_actors', cur_actors)
+        for curActorItem in actorsEt["actor"] if actorsEt else []:
+            curActor = Actor()
+            for k, v in curActorItem.items():
+                k = k.lower()
+                if v is not None:
+                    if k == "image":
+                        v = self.config['url_artworkPrefix'] % (v)
+                    else:
+                        v = self._cleanData(v)
+                curActor[k] = v
+            cur_actors.append(curActor)
+        self._setShowData(sid, '_actors', cur_actors)
 
     def _getShowData(self, sid, language, seriesSearch=False):
         """Takes a series ID, gets the epInfo URL and parses the TVDB
