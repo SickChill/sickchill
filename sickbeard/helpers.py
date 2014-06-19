@@ -1183,18 +1183,20 @@ def extractZip(archive, targetDir):
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
 
-        with zipfile.ZipFile(archive) as zip_file:
-            for member in zip_file.namelist():
-                filename = os.path.basename(member)
-                # skip directories
-                if not filename:
-                    continue
+        zip_file = zipfile.ZipFile(archive, 'r')
+        for member in zip_file.namelist():
+            filename = os.path.basename(member)
+            # skip directories
+            if not filename:
+                continue
 
-                # copy file (taken from zipfile's extract)
-                source = zip_file.open(member)
-                target = file(os.path.join(targetDir, filename), "wb")
-                with source, target:
-                    shutil.copyfileobj(source, target)
+            # copy file (taken from zipfile's extract)
+            source = zip_file.open(member)
+            target = file(os.path.join(targetDir, filename), "wb")
+            shutil.copyfileobj(source, target)
+            source.close()
+            target.close()
+        zip_file.close()
         return True
     except:
         return False
