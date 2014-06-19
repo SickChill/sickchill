@@ -256,7 +256,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue
 
                         #Accept Torrent only from Good People for every Episode Search
-                    if self.confirmed and re.search('(VIP|Trusted|Helper)', torrent.group(0)) is None:
+                    if self.confirmed and re.search('(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
                         logger.log(u"ThePirateBay Provider found result " + torrent.group(
                             'title') + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
