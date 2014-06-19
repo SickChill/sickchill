@@ -48,7 +48,7 @@ def getWinDrives():
     return drives
 
 
-def foldersAtPath(path, includeParent=False):
+def foldersAtPath(path, includeParent=False, includeFiles=False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
@@ -81,7 +81,8 @@ def foldersAtPath(path, includeParent=False):
         parentPath = ""
 
     fileList = [{'name': filename, 'path': ek.ek(os.path.join, path, filename)} for filename in ek.ek(os.listdir, path)]
-    fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
+    if not includeFiles:
+        fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
 
     # prune out directories to proect the user from doing stupid things (already lower case the dir to reduce calls)
     hideList = ["boot", "bootmgr", "cache", "msocache", "recovery", "$recycle.bin", "recycler",
@@ -101,11 +102,11 @@ def foldersAtPath(path, includeParent=False):
 
 
 class WebFileBrowser(RequestHandler):
-    def index(self, path='', *args, **kwargs):
+    def index(self, path='', includeFiles=False, *args, **kwargs):
         self.set_header("Content-Type", "application/json")
-        return json.dumps(foldersAtPath(path, True))
+        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles))))
 
-    def complete(self, term):
+    def complete(self, term, includeFiles=0):
         self.set_header("Content-Type", "application/json")
-        paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term)) if 'path' in entry]
+        paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term), includeFiles=bool(int(includeFiles))) if 'path' in entry]
         return json.dumps(paths)

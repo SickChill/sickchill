@@ -1,0 +1,83 @@
+#import os.path
+#import datetime
+#import locale
+#import sickbeard
+#from sickbeard.common import *
+#from sickbeard.sbdatetime import *
+#from sickbeard import config
+#from sickbeard import metadata
+#from sickbeard.metadata.generic import GenericMetadata
+#set global $title  = "Config - Backup/Restore"
+#set global $header = "Backup/Restore"
+
+#set global $sbPath="../.."
+
+#set global $topmenu="config"#
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+
+<script type="text/javascript" src="$sbRoot/js/configBackupRestore.js?$sbPID"></script>
+#if $varExists('header')
+	<h1 class="header">$header</h1>
+#else 
+	<h1 class="title">$title</h1>
+#end if
+
+#set $indexer = 0
+#if $sickbeard.INDEXER_DEFAULT
+    #set $indexer = $sickbeard.INDEXER_DEFAULT
+#end if
+
+<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+
+<div id="config">
+<div id="config-content">
+
+<form name="configForm" method="post" action="backuprestore" style="line-height: 44px">
+            <div id="config-components">
+				<ul>
+					<li><a href="#core-component-group1">Backup</a></li>
+					<li><a href="#core-component-group2">Restore</a></li>
+				</ul>
+
+                <div id="core-component-group1" class="component-group clearfix">
+                    <div class="component-group-desc">
+                        <h3>Backup</h3>
+                        <p><b>Backup your main database file and config.</b></p>
+                    </div>
+
+                    <b>Select the folder you wish to save your backup file to:</b>
+                    <br/>
+                    <input type="text" name="backupDir" id="backupDir" size="50" /><br/>
+                    <br/>
+                    <div class="Backup" id="Backup-result"></div>
+                    <input  class="btn" type="button" value="Backup" id="Backup" />
+                </div><!-- /component-group1 //-->
+
+                <div id="core-component-group2" class="component-group clearfix">
+                    <div class="component-group-desc">
+                        <h3>Restore</h3>
+                        <p><b>Restore your main database file and config.</b></p>
+                    </div>
+
+                    <b>Select the backup file you wish to restore:</b>
+                    <br/>
+                    <input type="text" name="backupFile" id="backupFile" size="50" /><br/>
+                    <br/>
+                    <div class="Restore" id="Restore-result"></div>
+                    <input  class="btn" type="button" value="Restore" id="Restore" />
+                </div><!-- /component-group2 //-->
+            </div><!-- /config-components -->
+</form>
+</div></div>
+
+<div class="clearfix"></div>
+
+<script type="text/javascript" charset="utf-8">
+<!--
+    jQuery('#backupDir').fileBrowser({ title: 'Select backup folder to save to', key: 'backupPath' });
+    jQuery('#backupFile').fileBrowser({ title: 'Select backup files to restore', key: 'backupFile', includeFiles: 1 });
+    jQuery('#config-components').tabs();
+//-->
+</script>
+
+#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

@@ -5,13 +5,14 @@
         defaults: {
             title:             'Choose Directory',
             url:               sbRoot + '/browser/',
-            autocompleteURL:   sbRoot + '/browser/complete'
+            autocompleteURL:   sbRoot + '/browser/complete',
+            includeFiles:      0
         }
     };
 
     var fileBrowserDialog, currentBrowserPath, currentRequest = null;
 
-    function browse(path, endpoint) {
+    function browse(path, endpoint, includeFiles) {
 
         if (currentBrowserPath == path) {
             return;
@@ -25,7 +26,7 @@
 
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
-        currentRequest = $.getJSON(endpoint, { path: path }, function (data) {
+        currentRequest = $.getJSON(endpoint, { path: path, includeFiles: includeFiles }, function (data) {
             fileBrowserDialog.empty();
             var first_val = data[0];
             var i = 0;
@@ -36,7 +37,7 @@
             $('<h2>').text(first_val.current_path).appendTo(fileBrowserDialog);
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function (i, entry) {
-                link = $("<a href='javascript:void(0)' />").click(function () { browse(entry.path, endpoint); }).text(entry.name);
+                link = $("<a href='javascript:void(0)' />").click(function () { browse(entry.path, endpoint, includeFiles); }).text(entry.name);
                 $('<span class="ui-icon ui-icon-folder-collapsed"></span>').prependTo(link);
                 link.hover(
                     function () {$("span", this).addClass("ui-icon-folder-open");    },
@@ -93,7 +94,8 @@
         if (options.initialDir) {
             initialDir = options.initialDir;
         }
-        browse(initialDir, options.url);
+
+        browse(initialDir, options.url, options.includeFiles);
         fileBrowserDialog.dialog('open');
 
         return false;
@@ -110,7 +112,7 @@
                 position: { my : "top", at: "bottom", collision: "flipfit" },
                 source: function (request, response) {
                     //keep track of user submitted search term
-                    query = $.ui.autocomplete.escapeRegex(request.term);
+                    query = $.ui.autocomplete.escapeRegex(request.term, options.includeFiles);
                     $.ajax({
                         url: options.autocompleteURL,
                         data: request,

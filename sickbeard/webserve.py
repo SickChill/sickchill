@@ -18,13 +18,12 @@
 
 from __future__ import with_statement
 import base64
-import functools
 import inspect
+import zipfile
 
 import os.path
 
 import time
-import traceback
 import urllib
 import re
 import threading
@@ -84,6 +83,8 @@ from tornado import gen
 from tornado.web import RequestHandler, HTTPError, asynchronous
 
 req_headers = None
+
+
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
         def basicauth(handler, transforms, *args, **kwargs):
@@ -98,7 +99,7 @@ def authenticated(handler_class):
                 if not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
                     return True
                 elif handler.request.uri.startswith('/calendar') or (
-                    handler.request.uri.startswith('/api') and '/api/builder' not in handler.request.uri):
+                            handler.request.uri.startswith('/api') and '/api/builder' not in handler.request.uri):
                     return True
 
                 auth_hdr = handler.request.headers.get('Authorization')
@@ -205,7 +206,7 @@ class MainHandler(RequestHandler):
                 return func(**args)
 
         raise HTTPError(404)
-    
+
     def redirect(self, url, permanent=False, status=None):
         self._transforms = []
         super(MainHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
@@ -455,6 +456,7 @@ class MainHandler(RequestHandler):
         return ical
 
     browser = WebFileBrowser
+
 
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
@@ -728,7 +730,8 @@ class Manage(MainHandler):
                     all_eps = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
                     to_change[cur_indexer_id] = all_eps
 
-                Home(self.application, self.request).setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]), newStatus, direct=True)
+                Home(self.application, self.request).setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
+                                                               newStatus, direct=True)
 
         return self.redirect('/manage/episodeStatuses/')
 
@@ -1319,6 +1322,7 @@ class History(MainHandler):
 
 ConfigMenu = [
     {'title': 'General', 'path': 'config/general/'},
+    {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
     {'title': 'Search Settings', 'path': 'config/search/'},
     {'title': 'Search Providers', 'path': 'config/providers/'},
     {'title': 'Subtitles Settings', 'path': 'config/subtitles/'},
@@ -1474,6 +1478,55 @@ class ConfigGeneral(MainHandler):
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
 
+class ConfigBackupRestore(MainHandler):
+    def index(self, *args, **kwargs):
+        t = PageTemplate(file="config_backuprestore.tmpl")
+        t.submenu = ConfigMenu
+        return _munge(t)
+
+    def backup(self, backupDir=None):
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
+
+        finalResult = ''
+
+        if backupDir:
+            source = [os.path.join(sickbeard.PROG_DIR, 'sickbeard.db'), os.path.join(sickbeard.PROG_DIR, 'config.ini')]
+            target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+
+            if helpers.makeZip(source, target):
+                finalResult += "Successful backup to " + target
+            else:
+                finalResult += "Backup FAILED"
+        else:
+            finalResult += "You need to choose a folder to save your backup to!"
+
+        finalResult += "<br />\n"
+
+        return finalResult
+
+
+    def restore(self, backupFile=None):
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
+
+        finalResult = ''
+
+        if backupFile:
+            source = backupFile
+            target_dir = os.path.join(sickbeard.PROG_DIR, 'restore')
+
+            if helpers.extractZip(source, target_dir):
+                finalResult += "Successfully extracted restore files to " + target_dir
+                finalResult += "<br>Restart sickrage to complete the restore."
+            else:
+                finalResult += "Restore FAILED"
+        else:
+            finalResult += "You need to select a backup file to restore!"
+
+        finalResult += "<br />\n"
+
+        return finalResult
+
+
 class ConfigSearch(MainHandler):
     def index(self, *args, **kwargs):
 
@@ -1558,7 +1611,6 @@ class ConfigSearch(MainHandler):
 
 
 class ConfigPostProcessing(MainHandler):
-    
     def index(self, *args, **kwargs):
 
         t = PageTemplate(file="config_postProcessing.tmpl")
@@ -1730,7 +1782,6 @@ class ConfigPostProcessing(MainHandler):
 
 
 class ConfigProviders(MainHandler):
-    
     def index(self, *args, **kwargs):
         t = PageTemplate(file="config_providers.tmpl")
         t.submenu = ConfigMenu
@@ -2101,7 +2152,6 @@ class ConfigProviders(MainHandler):
 
 
 class ConfigNotifications(MainHandler):
-    
     def index(self, *args, **kwargs):
         t = PageTemplate(file="config_notifications.tmpl")
         t.submenu = ConfigMenu
@@ -2303,7 +2353,6 @@ class ConfigNotifications(MainHandler):
 
 
 class ConfigSubtitles(MainHandler):
-    
     def index(self, *args, **kwargs):
         t = PageTemplate(file="config_subtitles.tmpl")
         t.submenu = ConfigMenu
@@ -2361,7 +2410,6 @@ class ConfigSubtitles(MainHandler):
 
 
 class ConfigAnime(MainHandler):
-    
     def index(self, *args, **kwargs):
 
         t = PageTemplate(file="config_anime.tmpl")
@@ -2407,7 +2455,6 @@ class ConfigAnime(MainHandler):
 
 
 class Config(MainHandler):
-    
     def index(self, *args, **kwargs):
         t = PageTemplate(file="config.tmpl")
         t.submenu = ConfigMenu
@@ -2416,6 +2463,7 @@ class Config(MainHandler):
 
     # map class names to urls
     general = ConfigGeneral
+    backuprestore = ConfigBackupRestore
     search = ConfigSearch
     providers = ConfigProviders
     subtitles = ConfigSubtitles
@@ -2454,7 +2502,6 @@ def HomeMenu():
 
 
 class HomePostProcess(MainHandler):
-    
     def index(self, *args, **kwargs):
 
         t = PageTemplate(file="home_postprocess.tmpl")
@@ -2501,7 +2548,6 @@ class HomePostProcess(MainHandler):
 
 
 class NewHomeAddShows(MainHandler):
-    
     def index(self, *args, **kwargs):
 
         t = PageTemplate(file="home_addShows.tmpl")
@@ -2887,7 +2933,6 @@ ErrorLogsMenu = [
 
 
 class ErrorLogs(MainHandler):
-    
     def index(self, *args, **kwargs):
 
         t = PageTemplate(file="errorlogs.tmpl")
@@ -2956,7 +3001,6 @@ class ErrorLogs(MainHandler):
 
 
 class Home(MainHandler):
-    
     def is_alive(self, *args, **kwargs):
         if 'callback' in kwargs and '_' in kwargs:
             callback, _ = kwargs['callback'], kwargs['_']

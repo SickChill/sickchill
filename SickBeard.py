@@ -21,6 +21,7 @@
 from __future__ import with_statement
 
 import sys
+import shutil
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -133,6 +134,20 @@ def daemonize():
     dev_null = file('/dev/null', 'r')
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
+def restore(srcDir, dstDir):
+    try:
+        for file in os.listdir(srcDir):
+            srcFile = os.path.join(srcDir, file)
+            dstFile = os.path.join(dstDir, file)
+            bakFile = os.path.join(dstDir, file + '.bak')
+            shutil.move(dstFile, bakFile)
+            shutil.move(srcFile, dstFile)
+
+        os.rmdir(srcDir)
+        return True
+    except:
+        return False
+
 def main():
     """
     TV for me
@@ -176,6 +191,14 @@ def main():
 
     # Rename the main thread
     threading.currentThread().name = "MAIN"
+
+    # Check if we need to perform a restore first
+    restoreDir = os.path.join(sickbeard.PROG_DIR, 'restore')
+    if os.path.exists(restoreDir):
+        if restore(restoreDir, sickbeard.PROG_DIR):
+            print "Restore successful..."
+        else:
+            print "Restore FAILED!"
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "qfdp::",
