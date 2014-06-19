@@ -31,26 +31,13 @@ from sickbeard import network_timezones
 from sickbeard import failed_history
 
 class ShowUpdater():
-    def __init__(self):
-        self.updateInterval = datetime.timedelta(hours=1)
 
     def run(self, force=False):
-
-        # update at 3 AM
-        run_updater_time = datetime.time(hour=3)
 
         update_datetime = datetime.datetime.now()
         update_date = update_datetime.date()
 
-        logger.log(u"Checking update interval", logger.DEBUG)
-
-        hour_diff = update_datetime.time().hour - run_updater_time.hour
-
-        # if it's less than an interval after the update time then do an update (or if we're forcing it)
-        if hour_diff >= 0 and hour_diff < self.updateInterval.seconds / 3600 or force:
-            logger.log(u"Doing full update on all shows")
-        else:
-            return
+        logger.log(u"Doing full update on all shows")
 
         # clean out cache directory, remove everything > 12 hours old
         if sickbeard.CACHE_DIR:
@@ -114,3 +101,5 @@ class ShowUpdater():
                 logger.log(u"Automatic update failed: " + ex(e), logger.ERROR)
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", piList))
+
+        logger.log(u"Completed full update on all shows")

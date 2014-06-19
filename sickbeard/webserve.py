@@ -1566,10 +1566,6 @@ class ConfigSearch(MainHandler):
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
 
         sickbeard.DOWNLOAD_PROPERS = config.checkbox_to_value(download_propers)
-        if sickbeard.DOWNLOAD_PROPERS:
-            sickbeard.properFinderScheduler.silent = False
-        else:
-            sickbeard.properFinderScheduler.silent = True
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
