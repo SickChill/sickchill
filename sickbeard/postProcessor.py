@@ -868,16 +868,17 @@ class PostProcessor(object):
         if not priority_download:
 
             # if there's an existing file that we don't want to replace stop here
-            if existing_file_status in (PostProcessor.EXISTS_LARGER, PostProcessor.EXISTS_SAME):
-                self._log(
-                    u"File exists and we are not going to replace it because it's not smaller, quitting post-processing",
-                    logger.ERROR)
-                return False
-            elif existing_file_status == PostProcessor.EXISTS_SMALLER:
-                self._log(u"File exists and is smaller than the new file so I'm going to replace it", logger.DEBUG)
-            elif existing_file_status != PostProcessor.DOESNT_EXIST:
-                self._log(u"Unknown existing file status. This should never happen, please log this as a bug.",
-                          logger.ERROR)
+            if existing_file_status == PostProcessor.EXISTS_LARGER:
+                if self.is_proper:
+                    self._log(u"File exists and new file is smaller, new file is a proper/repack, marking it safe to replace", logger.DEBUG)
+                    return True
+
+                else:
+                    self._log(u"File exists and new file is smaller, marking it unsafe to replace", logger.DEBUG)
+                    return False
+
+            elif existing_file_status == PostProcessor.EXISTS_SAME:
+                self._log(u"File exists and new file is same size, marking it unsafe to replace", logger.DEBUG)
                 return False
 
         # if the file is priority then we're going to replace it even if it exists
