@@ -942,70 +942,76 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(NEWZNAB_DATA)
         providerList = providers.makeProviderList()
 
-        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
-                                                   cycleTime=datetime.timedelta(hours=1),
-                                                   threadName="MAINTENANCE",
-                                                   silent=True,
-                                                   runImmediately=True)
-
-        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
-                                                   cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
-                                                   threadName="DAILYSEARCHER",
-                                                   silent=True,
-                                                   runImmediately=DAILYSEARCH_STARTUP)
-
-        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
-                                                  cycleTime=showUpdater.ShowUpdater().updateInterval,
-                                                  threadName="SHOWUPDATER",
-                                                  runImmediately=False)
-
+        # initialize schedulers
+        # updaters
+        update_now = datetime.timedelta(minutes=0)
         versionCheckScheduler = scheduler.Scheduler(versionChecker.CheckVersion(),
                                                     cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
                                                     threadName="CHECKVERSION",
-                                                    runImmediately=True)
+                                                    silent=False)
+
+        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
+                                                   cycleTime=datetime.timedelta(hours=1),
+                                                   threadName="MAINTENANCE")
 
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
-                                                 threadName="SHOWQUEUE",
-                                                 silent=True,
-                                                 runImmediately=True)
+                                                 threadName="SHOWQUEUE")
 
+        showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
+                                                  cycleTime=datetime.timedelta(hours=1),
+                                                  threadName="SHOWUPDATER",
+                                                  start_time=datetime.time(hour=3))  # 3 AM
+
+        # searchers
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
                                                    cycleTime=datetime.timedelta(seconds=3),
-                                                   threadName="SEARCHQUEUE",
-                                                   silent=True)
+                                                   threadName="SEARCHQUEUE")
+
+        update_interval = datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY)
+        dailySearchScheduler = scheduler.Scheduler(dailysearcher.DailySearcher(),
+                                                   cycleTime=update_interval,
+                                                   threadName="DAILYSEARCHER",
+                                                   run_delay=update_now if DAILYSEARCH_STARTUP
+                                                   else update_interval)
+
+        update_interval = datetime.timedelta(minutes=BACKLOG_FREQUENCY)
+        backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
+                                                                      cycleTime=update_interval,
+                                                                      threadName="BACKLOG",
+                                                                      run_delay=update_now if BACKLOG_STARTUP
+                                                                      else update_interval)
+
+        search_intervals = {'15m': 15, '45m': 45, '90m': 90, '4h': 4*60, 'daily': 24*60}
+        if CHECK_PROPERS_INTERVAL in search_intervals:
+            update_interval = datetime.timedelta(minutes=search_intervals[CHECK_PROPERS_INTERVAL])
+            run_at = None
+        else:
+            update_interval = datetime.timedelta(hours=1)
+            run_at = datetime.time(hour=1)  # 1 AM
 
         properFinderScheduler = scheduler.Scheduler(properFinder.ProperFinder(),
-                                                    cycleTime=properFinder.ProperFinder().updateInterval,
+                                                    cycleTime=update_interval,
                                                     threadName="FINDPROPERS",
-                                                    silent=False if DOWNLOAD_PROPERS else True,
-                                                    runImmediately=True)
+                                                    start_time=run_at,
+                                                    run_delay=update_interval)
 
+        # processors
         autoPostProcesserScheduler = scheduler.Scheduler(autoPostProcesser.PostProcesser(),
                                                          cycleTime=datetime.timedelta(
                                                              minutes=AUTOPOSTPROCESSER_FREQUENCY),
                                                          threadName="POSTPROCESSER",
-                                                         silent=False if PROCESS_AUTOMATICALLY else True,
-                                                         runImmediately=True)
+                                                         silent=not PROCESS_AUTOMATICALLY)
 
         traktWatchListCheckerScheduler = scheduler.Scheduler(traktWatchListChecker.TraktChecker(),
                                                              cycleTime=datetime.timedelta(hours=1),
                                                              threadName="TRAKTWATCHLIST",
-                                                             silent=False if USE_TRAKT else True,
-                                                             runImmediately=True)
+                                                             silent=not USE_TRAKT)
 
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
                                                        threadName="FINDSUBTITLES",
-                                                       silent=False if USE_SUBTITLES else True,
-                                                       runImmediately=True)
-
-        backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(searchBacklog.BacklogSearcher(),
-                                                                      cycleTime=datetime.timedelta(
-                                                                          minutes=BACKLOG_FREQUENCY),
-                                                                      threadName="BACKLOG",
-                                                                      silent=True,
-                                                                      runImmediately=BACKLOG_STARTUP)
+                                                       silent=not USE_SUBTITLES)
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if
