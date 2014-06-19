@@ -13,16 +13,15 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-
+import httplib
 import urllib, urllib2
 import time
 
 import sickbeard
-
 from sickbeard import logger
 from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD
 from sickbeard.exceptions import ex
@@ -52,25 +51,23 @@ class PushoverNotifier:
             apiKey = sickbeard.PUSHOVER_APIKEY
 
         logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
-        
+
         # build up the URL and parameters
         msg = msg.strip()
-        curUrl = API_URL
-
-        data = urllib.urlencode({
-            'token': apiKey,
-            'title': title,
-            'user': userKey,
-            'message': msg.encode('utf-8'),
-            'timestamp': int(time.time())
-        })
-
 
         # send the request to pushover
         try:
-            req = urllib2.Request(curUrl)
-            handle = urllib2.urlopen(req, data)
-            handle.close()
+            conn = httplib.HTTPSConnection("api.pushover.net:443")
+            conn.request("POST", "/1/messages.json",
+                         urllib.urlencode({
+                             "token": apiKey,
+                             "user": userKey,
+                             "title": title.encode('utf-8'),
+                             "message": msg.encode('utf-8'),
+                             'timestamp': int(time.time()),
+                             "retry": 60,
+                             "expire": 3600,
+                         }), {"Content-type": "application/x-www-form-urlencoded"})
 
         except urllib2.HTTPError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
