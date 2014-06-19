@@ -1053,7 +1053,7 @@ class Manage(MainHandler):
 
             exceptions_list = []
 
-            curErrors += self.editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
+            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
                                        new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime,
                                        scene=new_scene, directCall=True)
 
