@@ -1728,8 +1728,8 @@ class CMD_Show(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         showDict = {}
-        showDict["season_list"] = CMD_ShowSeasonList((), {"indexerid": self.indexerid}).run()["data"]
-        showDict["cache"] = CMD_ShowCache((), {"indexerid": self.indexerid}).run()["data"]
+        showDict["season_list"] = CMD_ShowSeasonList(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
+        showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
 
         genreList = []
         if showObj.genre:
@@ -1820,7 +1820,7 @@ class CMD_ShowAddExisting(ApiCall):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexerName = None
-        indexerResult = CMD_SickBeardSearchIndexers([], {"indexerid": self.indexerid, "indexer": self.indexer}).run()
+        indexerResult = CMD_SickBeardSearchIndexers(self.handler, [], {"indexerid": self.indexerid, "indexer": self.indexer}).run()
 
         if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexerResult['data']['results']:
@@ -1974,7 +1974,7 @@ class CMD_ShowAddNew(ApiCall):
             newStatus = self.status
 
         indexerName = None
-        indexerResult = CMD_SickBeardSearchIndexers([], {"indexerid": self.indexerid, "indexer": self.indexer}).run()
+        indexerResult = CMD_SickBeardSearchIndexers(self.handler, [], {"indexerid": self.indexerid, "indexer": self.indexer}).run()
 
         if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexerResult['data']['results']:
@@ -2107,7 +2107,7 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickbeard """
-        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': self.handler.showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2125,7 +2125,7 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickbeard """
-        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'banner')}
+        return {'outputType': 'image', 'image': self.handler.showPoster(self.indexerid, 'banner')}
 
 
 class CMD_ShowPause(ApiCall):
@@ -2522,7 +2522,7 @@ class CMD_Shows(ApiCall):
                         "show_name": curShow.name,
                         "status": curShow.status,
                         "next_ep_airdate": nextAirdate}
-            showDict["cache"] = CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
+            showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": curShow.indexerid}).run()["data"]
             if not showDict["network"]:
                 showDict["network"] = ""
             if self.sort == "name":
