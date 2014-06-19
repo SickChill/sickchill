@@ -1841,3 +1841,7 @@ def autoreload_shutdown():
 
     # save  settings
     saveAll()
+
+    if CREATEPID:
+        logger.log(u"Removing pidfile " + str(PIDFILE))
+        remove_pid_file(PIDFILE)
