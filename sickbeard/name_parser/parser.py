@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import time
 import datetime
 import os.path
 import threading
@@ -25,6 +26,7 @@ import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common
 from dateutil import parser
+from sickbeard.common import cpu_presets
 
 nameparser_lock = threading.Lock()
 
@@ -110,6 +112,8 @@ class NameParser(object):
                     if sickbeard.show_name_helpers.isGoodResult(name, curShow, False):
                         self.showObj = curShow
                         break
+
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
             if not self.showObj:
                 return
