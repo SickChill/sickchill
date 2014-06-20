@@ -2028,7 +2028,7 @@ class TVEpisode(object):
                 return ''
 
             try:
-                np = NameParser(name)
+                np = NameParser(name, naming_pattern=True)
                 parse_result = np.parse(name)
             except InvalidNameException, e:
                 logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)

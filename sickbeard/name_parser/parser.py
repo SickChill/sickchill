@@ -35,7 +35,7 @@ class NameParser(object):
     SPORTS_REGEX = 2
     ANIME_REGEX = 3
 
-    def __init__(self, file_name=True, showObj=None, epObj=None, useIndexers=False, convert=False):
+    def __init__(self, file_name=True, showObj=None, epObj=None, useIndexers=False, convert=False, naming_pattern=False):
 
         self.file_name = file_name
         self.showList = sickbeard.showList or []
@@ -43,6 +43,7 @@ class NameParser(object):
         self.showObj = showObj
         self.epObj = epObj
         self.convert = convert
+        self.naming_pattern = naming_pattern
 
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
@@ -102,6 +103,27 @@ class NameParser(object):
     def _parse_string(self, name):
         if not name:
             return
+
+        if not self.naming_pattern:
+            if not self.showObj:
+                for curShow in self.showList:
+                    if sickbeard.show_name_helpers.isGoodResult(name, curShow, False):
+                        self.showObj = curShow
+                        break
+
+            if not self.showObj:
+                return
+
+        regexMode = self.ALL_REGEX
+        if self.showObj and self.showObj.is_anime:
+            regexMode = self.ANIME_REGEX
+        elif self.showObj and self.showObj.is_sports:
+            regexMode = self.SPORTS_REGEX
+        elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
+            regexMode = self.NORMAL_REGEX
+
+        self.compiled_regexes = {}
+        self._compile_regexes(regexMode)
 
         matches = []
         result = None
@@ -194,8 +216,8 @@ class NameParser(object):
                 result.release_group = match.group('release_group')
                 result.score += 1
 
-            if not self.showObj:
-                self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
+#            if not self.showObj:
+#                self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
             if self.showObj:
                 if self.showObj.air_by_date and result.air_date:
@@ -293,25 +315,6 @@ class NameParser(object):
         if cached:
             return cached
 
-        if not self.showObj:
-            for show in self.showList:
-                if not show.name.lower() in name.lower():
-                    continue
-
-                self.showObj = show
-                break
-
-        regexMode = self.ALL_REGEX
-        if self.showObj and self.showObj.is_anime:
-            regexMode = self.ANIME_REGEX
-        elif self.showObj and self.showObj.is_sports:
-            regexMode = self.SPORTS_REGEX
-        elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
-            regexMode = self.NORMAL_REGEX
-
-        self.compiled_regexes = {}
-        self._compile_regexes(regexMode)
-
         # break it into parts if there are any (dirname, file name, extension)
         dir_name, file_name = os.path.split(name)
         ext_match = re.match('(.*)\.\w{3,4}$', file_name)
@@ -320,14 +323,14 @@ class NameParser(object):
         else:
             base_file_name = file_name
 
-        # use only the direct parent dir
-        dir_name = os.path.basename(dir_name)
-
         # set up a result to use
         final_result = ParseResult(name)
 
         # try parsing the file name
         file_name_result = self._parse_string(base_file_name)
+
+        # use only the direct parent dir
+        dir_name = os.path.basename(dir_name)
 
         # parse the dirname for extra info if needed
         dir_name_result = self._parse_string(dir_name)

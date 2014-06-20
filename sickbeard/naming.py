@@ -181,7 +181,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
 
     logger.log(u"Trying to parse " + new_name, logger.DEBUG)
 
-    parser = NameParser(True, showObj=ep.show)
+    parser = NameParser(True, showObj=ep.show, naming_pattern=True)
 
     try:
         result = parser.parse(new_name)
