@@ -315,7 +315,7 @@ anime_regexes = {'anime':[
      (([. _-]*e|-)                                # linking e/- char
      (?P<extra_ep_num>\d+))*                      # additional E03/etc
      ([ ._-]{2,}|[ ._]+)                          # if "-" is used to separate at least something else has to be there(->{2,}) "s16e03-04-313-314" would make sens any way
-     (?P<ep_ab_num>(?!(1080|720|480)[pi])\d+)                       # absolute number
+     ((?P<ep_ab_num>(?!(1080|720|480)[pi])\d+))?                       # absolute number
      (-(?P<extra_ab_ep_num>(?!(1080|720|480)[pi])\d+))?             # "-" as separator and anditional absolute number, all optinal
      (v(?P<version>[0-9]))?                       # the version e.g. "v2"
      .*?
@@ -334,7 +334,7 @@ anime_regexes = {'anime':[
      (([. _-]*e|-)                                # linking e/- char
      (?P<extra_ep_num>\d+))*                      # additional E03/etc
      ([ ._-]{2,}|[ ._]+)                          # if "-" is used to separate at least something else has to be there(->{2,}) "s16e03-04-313-314" would make sens any way
-     (?P<ep_ab_num>(?!(1080|720|480)[pi])\d+)                       # absolute number
+     ((?P<ep_ab_num>(?!(1080|720|480)[pi])\d+))?                       # absolute number
      (-(?P<extra_ab_ep_num>(?!(1080|720|480)[pi])\d+))?             # "-" as separator and anditional absolute number, all optinal
      (v(?P<version>[0-9]))?                       # the version e.g. "v2"
      .*?
