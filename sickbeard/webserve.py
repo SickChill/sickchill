@@ -160,7 +160,7 @@ class MainHandler(RequestHandler):
         if status_code == 404:
             self.redirect('/home/')
         elif status_code == 401:
-            self.finish(self.http_error_401_handler())
+            self.write(self.http_error_401_handler())
         else:
             super(MainHandler, self).write_error(status_code, **kwargs)
 
@@ -211,21 +211,13 @@ class MainHandler(RequestHandler):
         self._transforms = []
         super(MainHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
-    @asynchronous
-    @gen.engine
     def get(self, *args, **kwargs):
-        response = yield gen.Task(self.getresponse, self._dispatch)
-        self.finish(response)
+        response = self._dispatch()
+        self.write(response)
 
-    @asynchronous
-    @gen.engine
     def post(self, *args, **kwargs):
-        response = yield gen.Task(self.getresponse, self._dispatch)
-        self.finish(response)
-
-    def getresponse(self, func, callback):
-        response = func()
-        callback(response)
+        response = self._dispatch()
+        self.write(response)
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
@@ -3363,8 +3355,6 @@ class Home(MainHandler):
             if showObj is None:
                 return _genericMessage("Error", "Show not in show list")
 
-        showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
-
         with db.DBConnection() as myDB:
             seasonResults = myDB.select(
                 "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season desc",
@@ -3472,9 +3462,11 @@ class Home(MainHandler):
         t.epCounts = epCounts
         t.epCats = epCats
 
+        showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
+
         indexerid = int(showObj.indexerid)
         indexer = int(showObj.indexer)
-        t.all_scene_exceptions = get_scene_exceptions(indexerid)
+        t.all_scene_exceptions = showObj.exceptions
         t.scene_numbering = get_scene_numbering_for_show(indexerid, indexer)
         t.xem_numbering = get_xem_numbering_for_show(indexerid, indexer)
         t.scene_absolute_numbering = get_scene_absolute_numbering_for_show(indexerid, indexer)
