@@ -37,19 +37,8 @@ class NameParser(object):
 
     def __init__(self, file_name=True, showObj=None, epObj=None, useIndexers=False, convert=False):
 
-        regexMode = self.ALL_REGEX
-        if showObj and showObj.is_anime:
-            regexMode = self.ANIME_REGEX
-        elif showObj and showObj.is_sports:
-            regexMode = self.SPORTS_REGEX
-        elif showObj and not showObj.is_anime and not showObj.is_sports:
-            regexMode = self.NORMAL_REGEX
-
         self.file_name = file_name
-        self.regexMode = regexMode
-        self.compiled_regexes = {}
-        self._compile_regexes(self.regexMode)
-        self.showList = sickbeard.showList
+        self.showList = sickbeard.showList or []
         self.useIndexers = useIndexers
         self.showObj = showObj
         self.epObj = epObj
@@ -205,26 +194,21 @@ class NameParser(object):
                 result.release_group = match.group('release_group')
                 result.score += 1
 
-            cur_show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-            if not cur_show:
-                if self.showObj:
-                    if self.showObj.air_by_date and result.air_date:
-                        result.score += 1
-                    elif self.showObj.sports and result.sports_event_date:
-                        result.score += 1
-                    elif self.showObj.anime and len(result.ab_episode_numbers):
-                        result.score += 1
+            if not self.showObj:
+                self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
+            if self.showObj:
+                if self.showObj.air_by_date and result.air_date:
+                    result.score += 1
+                elif self.showObj.sports and result.sports_event_date:
+                    result.score += 1
+                elif self.showObj.anime and len(result.ab_episode_numbers):
+                    result.score += 1
+            else:
                 matches.append(result)
                 continue
 
-            if self.showObj and self.showObj.indexerid != cur_show.indexerid:
-                logger.log(
-                    u"I expected an episode of the show " + self.showObj.name + " but the parser thinks its the show " + cur_show.name + ". I will continue thinking its " + self.showObj.name,
-                    logger.WARNING)
-                continue
-
-            result.show = cur_show
+            result.show = self.showObj
 
             if self.convert:
                 result = result.convert()
@@ -308,6 +292,25 @@ class NameParser(object):
         cached = name_parser_cache.get(name)
         if cached:
             return cached
+
+        if not self.showObj:
+            for show in self.showList:
+                if not show.name.lower() in name.lower():
+                    continue
+
+                self.showObj = show
+                break
+
+        regexMode = self.ALL_REGEX
+        if self.showObj and self.showObj.is_anime:
+            regexMode = self.ANIME_REGEX
+        elif self.showObj and self.showObj.is_sports:
+            regexMode = self.SPORTS_REGEX
+        elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
+            regexMode = self.NORMAL_REGEX
+
+        self.compiled_regexes = {}
+        self._compile_regexes(regexMode)
 
         # break it into parts if there are any (dirname, file name, extension)
         dir_name, file_name = os.path.split(name)
