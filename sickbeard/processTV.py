@@ -242,8 +242,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
         return False
 
     # make sure the dir isn't inside a show dir
-    with db.DBConnection() as myDB:
-        sqlResults = myDB.select("SELECT * FROM tv_shows")
+    myDB = db.DBConnection()
+    sqlResults = myDB.select("SELECT * FROM tv_shows")
 
     for sqlShow in sqlResults:
         if dirName.lower().startswith(
@@ -345,12 +345,12 @@ def already_postprocessed(dirName, videofile, force):
         dirName = unicode(dirName, 'utf_8')
 
     # Avoid processing the same dir again if we use a process method <> move
-    with db.DBConnection() as myDB:
-        sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
-        if sqlResult:
-            returnStr += logHelper(u"You're trying to post process a dir that's already been processed, skipping",
-                                   logger.DEBUG)
-            return True
+    myDB = db.DBConnection()
+    sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
+    if sqlResult:
+        returnStr += logHelper(u"You're trying to post process a dir that's already been processed, skipping",
+                               logger.DEBUG)
+        return True
 
         # This is needed for video whose name differ from dirName
         if not isinstance(videofile, unicode):

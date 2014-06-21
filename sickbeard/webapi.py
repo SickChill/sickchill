@@ -138,18 +138,18 @@ class Api(webserve.MainHandler):
         seasonSQLResults = {}
         episodeSQLResults = {}
 
-        with db.DBConnection(row_type="dict") as myDB:
-            for curShow in t.sortedShowList:
-                seasonSQLResults[curShow.indexerid] = myDB.select(
-                    "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
+        myDB = db.DBConnection(row_type="dict")
+        for curShow in t.sortedShowList:
+            seasonSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
 
-            for curShow in t.sortedShowList:
-                episodeSQLResults[curShow.indexerid] = myDB.select(
-                    "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-                    [curShow.indexerid])
+        for curShow in t.sortedShowList:
+            episodeSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
 
-            t.seasonSQLResults = seasonSQLResults
-            t.episodeSQLResults = episodeSQLResults
+        t.seasonSQLResults = seasonSQLResults
+        t.episodeSQLResults = episodeSQLResults
 
         if len(sickbeard.API_KEY) == 32:
             t.apikey = sickbeard.API_KEY
@@ -805,7 +805,7 @@ class CMD_ComingEpisodes(ApiCall):
                 finalEpResults[status] = []
 
             finalEpResults[status].append(ep)
-        myDB.connection.close()
+
         return _responds(RESULT_SUCCESS, finalEpResults)
 
 
@@ -866,7 +866,6 @@ class CMD_Episode(ApiCall):
         episode["quality"] = _get_quality_string(quality)
         episode["file_size_human"] = _sizeof_fmt(episode["file_size"])
 
-        myDB.connection.close()
         return _responds(RESULT_SUCCESS, episode)
 
 
@@ -1113,7 +1112,6 @@ class CMD_Exceptions(ApiCall):
             for row in sqlResults:
                 scene_exceptions.append(row["show_name"])
 
-        myDB.connection.close()
         return _responds(RESULT_SUCCESS, scene_exceptions)
 
 
@@ -1174,7 +1172,6 @@ class CMD_History(ApiCall):
             row['tvdbid'] = row['indexerid']
             results.append(row)
 
-        myDB.connection.close()
         return _responds(RESULT_SUCCESS, results)
 
 
@@ -1193,7 +1190,6 @@ class CMD_HistoryClear(ApiCall):
         myDB = db.DBConnection()
         myDB.action("DELETE FROM history WHERE 1=1")
 
-        myDB.connection.close()
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
 
@@ -1213,7 +1209,7 @@ class CMD_HistoryTrim(ApiCall):
         myDB.action("DELETE FROM history WHERE date < " + str(
             (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
 
-        myDB.connection.close()
+        
         return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
 
 
@@ -1370,7 +1366,7 @@ class CMD_SickBeardCheckScheduler(ApiCall):
         backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  #@UndefinedVariable
         nextBacklog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
-        myDB.connection.close()
+        
         data = {"backlog_is_paused": int(backlogPaused), "backlog_is_running": int(backlogRunning),
                 "last_backlog": _ordinal_to_dateForm(sqlResults[0]["last_backlog"]),
                 "next_backlog": nextBacklog}
@@ -2221,7 +2217,7 @@ class CMD_ShowSeasonList(ApiCall):
         for row in sqlResults:
             seasonList.append(int(row["season"]))
 
-        myDB.connection.close()
+        
         return _responds(RESULT_SUCCESS, seasonList)
 
 
@@ -2284,7 +2280,7 @@ class CMD_ShowSeasons(ApiCall):
                     seasons[curEpisode] = {}
                 seasons[curEpisode] = row
 
-        myDB.connection.close()
+        
         return _responds(RESULT_SUCCESS, seasons)
 
 
@@ -2453,7 +2449,7 @@ class CMD_ShowStats(ApiCall):
                 ")", "")
             episodes_stats[statusString] = episode_status_counts_total[statusCode]
 
-        myDB.connection.close()
+        
         return _responds(RESULT_SUCCESS, episodes_stats)
 
 
@@ -2559,7 +2555,7 @@ class CMD_ShowsStats(ApiCall):
             "SELECT COUNT(*) FROM tv_episodes WHERE season != 0 AND episode != 0 AND (airdate != 1 OR status IN (" + ",".join(
                 [str(show) for show in (Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER) + [
                     ARCHIVED]]) + ")) AND airdate <= " + today + " AND status != " + str(IGNORED) + "")[0][0]
-        myDB.connection.close()
+        
         return _responds(RESULT_SUCCESS, stats)
 
 # WARNING: never define a cmd call string that contains a "_" (underscore)

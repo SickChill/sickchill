@@ -166,10 +166,10 @@ class ProperFinder():
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)
                 airdate = curProper.episode.toordinal()
-                with db.DBConnection() as myDB:
-                    sql_result = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
-                        [curProper.indexerid, curProper.indexer, airdate])
+                myDB = db.DBConnection()
+                sql_result = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                    [curProper.indexerid, curProper.indexer, airdate])
 
                 if sql_result:
                     curProper.season = int(sql_result[0][0])
@@ -180,10 +180,10 @@ class ProperFinder():
                     continue
 
             # check if we actually want this proper (if it's the right quality)
-            with db.DBConnection() as myDB:
-                sqlResults = myDB.select(
-                    "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                    [curProper.indexerid, curProper.season, curProper.episode])
+            myDB = db.DBConnection()
+            sqlResults = myDB.select(
+                "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                [curProper.indexerid, curProper.season, curProper.episode])
 
             if not sqlResults:
                 continue
@@ -209,13 +209,13 @@ class ProperFinder():
             historyLimit = datetime.datetime.today() - datetime.timedelta(days=30)
 
             # make sure the episode has been downloaded before
-            with db.DBConnection() as myDB:
-                historyResults = myDB.select(
-                    "SELECT resource FROM history "
-                    "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
-                    "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED]) + ")",
-                    [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
-                     historyLimit.strftime(history.dateFormat)])
+            myDB = db.DBConnection()
+            historyResults = myDB.select(
+                "SELECT resource FROM history "
+                "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
+                "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED]) + ")",
+                [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
+                 historyLimit.strftime(history.dateFormat)])
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if len(historyResults) == 0:
@@ -260,19 +260,19 @@ class ProperFinder():
 
         logger.log(u"Setting the last Proper search in the DB to " + str(when), logger.DEBUG)
 
-        with db.DBConnection() as myDB:
-            sqlResults = myDB.select("SELECT * FROM info")
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM info")
 
-            if len(sqlResults) == 0:
-                myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
-                            [0, 0, str(when)])
-            else:
-                myDB.action("UPDATE info SET last_proper_search=" + str(when))
+        if len(sqlResults) == 0:
+            myDB.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
+                        [0, 0, str(when)])
+        else:
+            myDB.action("UPDATE info SET last_proper_search=" + str(when))
 
     def _get_lastProperSearch(self):
 
-        with db.DBConnection() as myDB:
-            sqlResults = myDB.select("SELECT * FROM info")
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM info")
 
         try:
             last_proper_search = datetime.date.fromordinal(int(sqlResults[0]["last_proper_search"]))

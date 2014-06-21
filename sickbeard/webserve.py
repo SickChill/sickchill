@@ -213,11 +213,11 @@ class MainHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         response = self._dispatch()
-        self.write(response)
+        self.finish(response)
 
     def post(self, *args, **kwargs):
         response = self._dispatch()
-        self.write(response)
+        self.finish(response)
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
@@ -309,26 +309,26 @@ class MainHandler(RequestHandler):
         done_show_list = []
         qualList = Quality.DOWNLOADED + Quality.SNATCHED + [ARCHIVED, IGNORED]
 
-        with db.DBConnection() as myDB:
-            sql_results = myDB.select(
-                "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
-                    ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
+        myDB = db.DBConnection()
+        sql_results = myDB.select(
+            "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
+                ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
 
-            for cur_result in sql_results:
-                done_show_list.append(int(cur_result["showid"]))
+        for cur_result in sql_results:
+            done_show_list.append(int(cur_result["showid"]))
 
-            more_sql_results = myDB.select(
-                "SELECT *, tv_shows.status as show_status FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
-                    ['?'] * len(
-                        done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
-                    ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
-                done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
-            sql_results += more_sql_results
+        more_sql_results = myDB.select(
+            "SELECT *, tv_shows.status as show_status FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
+                ['?'] * len(
+                    done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
+                ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
+            done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
+        sql_results += more_sql_results
 
-            more_sql_results = myDB.select(
-                "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
-                    ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
-            sql_results += more_sql_results
+        more_sql_results = myDB.select(
+            "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
+                ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
+        sql_results += more_sql_results
 
         # sort by localtime
         sorts = {
@@ -404,43 +404,43 @@ class MainHandler(RequestHandler):
         future_date = (datetime.date.today() + datetime.timedelta(weeks=52)).toordinal()
 
         # Get all the shows that are not paused and are currently on air (from kjoconnor Fork)
-        with db.DBConnection() as myDB:
-            calendar_shows = myDB.select(
-                "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE ( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
-            for show in calendar_shows:
-                # Get all episodes of this show airing between today and next month
-                episode_list = myDB.select(
-                    "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
-                    (past_date, future_date, int(show["indexer_id"])))
+        myDB = db.DBConnection()
+        calendar_shows = myDB.select(
+            "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE ( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
+        for show in calendar_shows:
+            # Get all episodes of this show airing between today and next month
+            episode_list = myDB.select(
+                "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
+                (past_date, future_date, int(show["indexer_id"])))
 
-                utc = tz.gettz('GMT')
+            utc = tz.gettz('GMT')
 
-                for episode in episode_list:
+            for episode in episode_list:
 
-                    air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
-                                                                      show['network']).astimezone(utc)
-                    air_date_time_end = air_date_time + datetime.timedelta(
-                        minutes=helpers.tryInt(show["runtime"], 60))
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
+                                                                  show['network']).astimezone(utc)
+                air_date_time_end = air_date_time + datetime.timedelta(
+                    minutes=helpers.tryInt(show["runtime"], 60))
 
-                    # Create event for episode
-                    ical = ical + 'BEGIN:VEVENT\r\n'
-                    ical = ical + 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime(
-                        "%H%M%S") + 'Z\r\n'
-                    ical = ical + 'DTEND:' + air_date_time_end.strftime(
-                        "%Y%m%d") + 'T' + air_date_time_end.strftime(
-                        "%H%M%S") + 'Z\r\n'
-                    ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
-                    ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
-                        'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
-                        episode['season']) + '\r\n'
-                    if (episode['description'] is not None and episode['description'] != ''):
-                        ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
-                               episode['description'].splitlines()[0] + '\r\n'
-                    else:
-                        ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\r\n'
-                    ical = ical + 'LOCATION:' + 'Episode ' + str(episode['episode']) + ' - Season ' + str(
-                        episode['season']) + '\r\n'
-                    ical = ical + 'END:VEVENT\r\n'
+                # Create event for episode
+                ical = ical + 'BEGIN:VEVENT\r\n'
+                ical = ical + 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime(
+                    "%H%M%S") + 'Z\r\n'
+                ical = ical + 'DTEND:' + air_date_time_end.strftime(
+                    "%Y%m%d") + 'T' + air_date_time_end.strftime(
+                    "%H%M%S") + 'Z\r\n'
+                ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
+                ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
+                    'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
+                    episode['season']) + '\r\n'
+                if (episode['description'] is not None and episode['description'] != ''):
+                    ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
+                           episode['description'].splitlines()[0] + '\r\n'
+                else:
+                    ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\r\n'
+                ical = ical + 'LOCATION:' + 'Episode ' + str(episode['episode']) + ' - Season ' + str(
+                    episode['season']) + '\r\n'
+                ical = ical + 'END:VEVENT\r\n'
 
         # Ending the iCal
         ical += 'END:VCALENDAR'
@@ -626,10 +626,10 @@ class Manage(MainHandler):
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER
 
-        with db.DBConnection() as myDB:
-            cur_show_results = myDB.select(
-                "SELECT season, episode, name FROM tv_episodes WHERE showid = ? AND season != 0 AND status IN (" + ','.join(
-                    ['?'] * len(status_list)) + ")", [int(indexer_id)] + status_list)
+        myDB = db.DBConnection()
+        cur_show_results = myDB.select(
+            "SELECT season, episode, name FROM tv_episodes WHERE showid = ? AND season != 0 AND status IN (" + ','.join(
+                ['?'] * len(status_list)) + ")", [int(indexer_id)] + status_list)
 
         result = {}
         for cur_result in cur_show_results:
@@ -662,12 +662,12 @@ class Manage(MainHandler):
         if not status_list:
             return _munge(t)
 
-        with db.DBConnection() as myDB:
-            status_results = myDB.select(
-                "SELECT show_name, tv_shows.indexer_id as indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN (" + ','.join(
-                    ['?'] * len(
-                        status_list)) + ") AND season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name",
-                status_list)
+        myDB = db.DBConnection()
+        status_results = myDB.select(
+            "SELECT show_name, tv_shows.indexer_id as indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN (" + ','.join(
+                ['?'] * len(
+                    status_list)) + ") AND season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name",
+            status_list)
 
         ep_counts = {}
         show_names = {}
@@ -710,29 +710,29 @@ class Manage(MainHandler):
 
             to_change[indexer_id].append(what)
 
-        with db.DBConnection() as myDB:
-            for cur_indexer_id in to_change:
+        myDB = db.DBConnection()
+        for cur_indexer_id in to_change:
 
-                # get a list of all the eps we want to change if they just said "all"
-                if 'all' in to_change[cur_indexer_id]:
-                    all_eps_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE status IN (" + ','.join(
-                            ['?'] * len(status_list)) + ") AND season != 0 AND showid = ?",
-                        status_list + [cur_indexer_id])
-                    all_eps = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
-                    to_change[cur_indexer_id] = all_eps
+            # get a list of all the eps we want to change if they just said "all"
+            if 'all' in to_change[cur_indexer_id]:
+                all_eps_results = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE status IN (" + ','.join(
+                        ['?'] * len(status_list)) + ") AND season != 0 AND showid = ?",
+                    status_list + [cur_indexer_id])
+                all_eps = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
+                to_change[cur_indexer_id] = all_eps
 
-                Home(self.application, self.request).setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
-                                                               newStatus, direct=True)
+            Home(self.application, self.request).setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
+                                                           newStatus, direct=True)
 
         return self.redirect('/manage/episodeStatuses/')
 
 
     def showSubtitleMissed(self, indexer_id, whichSubs):
-        with db.DBConnection() as myDB:
-            cur_show_results = myDB.select(
-                "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND status LIKE '%4'",
-                [int(indexer_id)])
+        myDB = db.DBConnection()
+        cur_show_results = myDB.select(
+            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? AND season != 0 AND status LIKE '%4'",
+            [int(indexer_id)])
 
         result = {}
         for cur_result in cur_show_results:
@@ -770,9 +770,9 @@ class Manage(MainHandler):
         if not whichSubs:
             return _munge(t)
 
-        with db.DBConnection() as myDB:
-            status_results = myDB.select(
-                "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles FROM tv_episodes, tv_shows WHERE tv_shows.subtitles = 1 AND tv_episodes.status LIKE '%4' AND tv_episodes.season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
+        myDB = db.DBConnection()
+        status_results = myDB.select(
+            "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles FROM tv_episodes, tv_shows WHERE tv_shows.subtitles = 1 AND tv_episodes.status LIKE '%4' AND tv_episodes.season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
 
         ep_counts = {}
         show_names = {}
@@ -821,10 +821,10 @@ class Manage(MainHandler):
         for cur_indexer_id in to_download:
             # get a list of all the eps we want to download subtitles if they just said "all"
             if 'all' in to_download[cur_indexer_id]:
-                with db.DBConnection() as myDB:
-                    all_eps_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE status LIKE '%4' AND season != 0 AND showid = ?",
-                        [cur_indexer_id])
+                myDB = db.DBConnection()
+                all_eps_results = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE status LIKE '%4' AND season != 0 AND showid = ?",
+                    [cur_indexer_id])
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 
             for epResult in to_download[cur_indexer_id]:
@@ -855,30 +855,30 @@ class Manage(MainHandler):
         showCats = {}
         showSQLResults = {}
 
-        with db.DBConnection() as myDB:
-            for curShow in sickbeard.showList:
+        myDB = db.DBConnection()
+        for curShow in sickbeard.showList:
 
-                epCounts = {}
-                epCats = {}
-                epCounts[Overview.SKIPPED] = 0
-                epCounts[Overview.WANTED] = 0
-                epCounts[Overview.QUAL] = 0
-                epCounts[Overview.GOOD] = 0
-                epCounts[Overview.UNAIRED] = 0
-                epCounts[Overview.SNATCHED] = 0
+            epCounts = {}
+            epCats = {}
+            epCounts[Overview.SKIPPED] = 0
+            epCounts[Overview.WANTED] = 0
+            epCounts[Overview.QUAL] = 0
+            epCounts[Overview.GOOD] = 0
+            epCounts[Overview.UNAIRED] = 0
+            epCounts[Overview.SNATCHED] = 0
 
-                sqlResults = myDB.select(
-                    "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-                    [curShow.indexerid])
+            sqlResults = myDB.select(
+                "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
 
-                for curResult in sqlResults:
-                    curEpCat = curShow.getOverview(int(curResult["status"]))
-                    epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
-                    epCounts[curEpCat] += 1
+            for curResult in sqlResults:
+                curEpCat = curShow.getOverview(int(curResult["status"]))
+                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
+                epCounts[curEpCat] += 1
 
-                showCounts[curShow.indexerid] = epCounts
-                showCats[curShow.indexerid] = epCats
-                showSQLResults[curShow.indexerid] = sqlResults
+            showCounts[curShow.indexerid] = epCounts
+            showCats[curShow.indexerid] = epCats
+            showSQLResults[curShow.indexerid] = sqlResults
 
         t.showCounts = showCounts
         t.showCats = showCats
@@ -1198,17 +1198,17 @@ class Manage(MainHandler):
 
     def failedDownloads(self, limit=100, toRemove=None):
 
-        with db.DBConnection('failed.db') as myDB:
+        myDB = db.DBConnection('failed.db')
 
-            if limit == "0":
-                sqlResults = myDB.select("SELECT * FROM failed")
-            else:
-                sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [limit])
+        if limit == "0":
+            sqlResults = myDB.select("SELECT * FROM failed")
+        else:
+            sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [limit])
 
-            toRemove = toRemove.split("|") if toRemove is not None else []
+        toRemove = toRemove.split("|") if toRemove is not None else []
 
-            for release in toRemove:
-                myDB.action('DELETE FROM failed WHERE release = ?', [release])
+        for release in toRemove:
+            myDB.action('DELETE FROM failed WHERE release = ?', [release])
 
         if toRemove:
             raise self.redirect('/manage/failedDownloads/')
@@ -1225,14 +1225,14 @@ class History(MainHandler):
     def index(self, limit=100):
 
         # sqlResults = myDB.select("SELECT h.*, show_name, name FROM history h, tv_shows s, tv_episodes e WHERE h.showid=s.indexer_id AND h.showid=e.showid AND h.season=e.season AND h.episode=e.episode ORDER BY date DESC LIMIT "+str(numPerPage*(p-1))+", "+str(numPerPage))
-        with db.DBConnection() as myDB:
-            if limit == "0":
-                sqlResults = myDB.select(
-                    "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC")
-            else:
-                sqlResults = myDB.select(
-                    "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC LIMIT ?",
-                    [limit])
+        myDB = db.DBConnection()
+        if limit == "0":
+            sqlResults = myDB.select(
+                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC")
+        else:
+            sqlResults = myDB.select(
+                "SELECT h.*, show_name FROM history h, tv_shows s WHERE h.showid=s.indexer_id ORDER BY date DESC LIMIT ?",
+                [limit])
 
         history = {'show_id': 0, 'season': 0, 'episode': 0, 'quality': 0,
                    'actions': [{'time': '', 'action': '', 'provider': ''}]}
@@ -1295,8 +1295,8 @@ class History(MainHandler):
 
     def clearHistory(self, *args, **kwargs):
 
-        with db.DBConnection() as myDB:
-            myDB.action("DELETE FROM history WHERE 1=1")
+        myDB = db.DBConnection()
+        myDB.action("DELETE FROM history WHERE 1=1")
 
         ui.notifications.message('History cleared')
         return self.redirect("/history/")
@@ -1304,9 +1304,9 @@ class History(MainHandler):
 
     def trimHistory(self, *args, **kwargs):
 
-        with db.DBConnection() as myDB:
-            myDB.action("DELETE FROM history WHERE date < " + str(
-                (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
+        myDB = db.DBConnection()
+        myDB.action("DELETE FROM history WHERE date < " + str(
+            (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
 
         ui.notifications.message('Removed history entries greater than 30 days old')
         return self.redirect("/history/")
@@ -2619,56 +2619,56 @@ class NewHomeAddShows(MainHandler):
 
         dir_list = []
 
-        with db.DBConnection() as myDB:
-            for root_dir in root_dirs:
-                try:
-                    file_list = ek.ek(os.listdir, root_dir)
-                except:
+        myDB = db.DBConnection()
+        for root_dir in root_dirs:
+            try:
+                file_list = ek.ek(os.listdir, root_dir)
+            except:
+                continue
+
+            for cur_file in file_list:
+
+                cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
+                if not ek.ek(os.path.isdir, cur_path):
                     continue
 
-                for cur_file in file_list:
+                cur_dir = {
+                    'dir': cur_path,
+                    'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
+                        os.path.basename,
+                        cur_path),
+                }
 
-                    cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
-                    if not ek.ek(os.path.isdir, cur_path):
-                        continue
+                # see if the folder is in XBMC already
+                dirResults = myDB.select("SELECT * FROM tv_shows WHERE location = ?", [cur_path])
 
-                    cur_dir = {
-                        'dir': cur_path,
-                        'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
-                            os.path.basename,
-                            cur_path),
-                    }
+                if dirResults:
+                    cur_dir['added_already'] = True
+                else:
+                    cur_dir['added_already'] = False
 
-                    # see if the folder is in XBMC already
-                    dirResults = myDB.select("SELECT * FROM tv_shows WHERE location = ?", [cur_path])
+                dir_list.append(cur_dir)
 
-                    if dirResults:
-                        cur_dir['added_already'] = True
-                    else:
-                        cur_dir['added_already'] = False
+                indexer_id = show_name = indexer = None
+                for cur_provider in sickbeard.metadata_provider_dict.values():
+                    (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                    if show_name: break
 
-                    dir_list.append(cur_dir)
+                # default to TVDB if indexer was not detected
+                if show_name and not (indexer and indexer_id):
+                    (sn, idx, id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
 
-                    indexer_id = show_name = indexer = None
-                    for cur_provider in sickbeard.metadata_provider_dict.values():
-                        (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
-                        if show_name: break
+                    # set indexer and indexer_id from found info
+                    if indexer is None and idx:
+                        indexer = idx
 
-                    # default to TVDB if indexer was not detected
-                    if show_name and not (indexer and indexer_id):
-                        (sn, idx, id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
+                    if indexer_id is None and id:
+                        indexer_id = id
 
-                        # set indexer and indexer_id from found info
-                        if indexer is None and idx:
-                            indexer = idx
+                cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
-                        if indexer_id is None and id:
-                            indexer_id = id
-
-                    cur_dir['existing_info'] = (indexer_id, show_name, indexer)
-
-                    if indexer_id and helpers.findCertainShow(sickbeard.showList, indexer_id):
-                        cur_dir['added_already'] = True
+                if indexer_id and helpers.findCertainShow(sickbeard.showList, indexer_id):
+                    cur_dir['added_already'] = True
 
         t.dirList = dir_list
 
@@ -3240,8 +3240,8 @@ class Home(MainHandler):
     def loadShowNotifyLists(self, *args, **kwargs):
         self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
 
-        with db.DBConnection() as myDB:
-            rows = myDB.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        myDB = db.DBConnection()
+        rows = myDB.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
 
         data = {}
         size = 0
@@ -3355,16 +3355,16 @@ class Home(MainHandler):
             if showObj is None:
                 return _genericMessage("Error", "Show not in show list")
 
-        with db.DBConnection() as myDB:
-            seasonResults = myDB.select(
-                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season desc",
-                [showObj.indexerid]
-            )
+        myDB = db.DBConnection()
+        seasonResults = myDB.select(
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season desc",
+            [showObj.indexerid]
+        )
 
-            sqlResults = myDB.select(
-                "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-                [showObj.indexerid]
-            )
+        sqlResults = myDB.select(
+            "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+            [showObj.indexerid]
+        )
 
         t = PageTemplate(file="displayShow.tmpl")
         t.submenu = [{'title': 'Edit', 'path': 'home/editShow?show=%d' % showObj.indexerid}]
@@ -3476,10 +3476,10 @@ class Home(MainHandler):
 
 
     def plotDetails(self, show, season, episode):
-        with db.DBConnection() as myDB:
-            result = myDB.action(
-                "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                (int(show), int(season), int(episode))).fetchone()
+        myDB = db.DBConnection()
+        result = myDB.action(
+            "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+            (int(show), int(season), int(episode))).fetchone()
         return result['description'] if result else 'Episode not found.'
 
 
@@ -3939,8 +3939,8 @@ class Home(MainHandler):
                     sql_l.append(epObj.get_sql())
 
             if sql_l:
-                with db.DBConnection() as myDB:
-                    myDB.mass_action(sql_l)
+                myDB = db.DBConnection()
+                myDB.mass_action(sql_l)
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
@@ -4042,30 +4042,30 @@ class Home(MainHandler):
         if eps is None:
             return self.redirect("/home/displayShow?show=" + show)
 
-        with db.DBConnection() as myDB:
-            for curEp in eps.split('|'):
+        myDB = db.DBConnection()
+        for curEp in eps.split('|'):
 
-                epInfo = curEp.split('x')
+            epInfo = curEp.split('x')
 
-                # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
-                ep_result = myDB.select(
-                    "SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
-                    [show, epInfo[0], epInfo[1]])
-                if not ep_result:
-                    logger.log(u"Unable to find an episode for " + curEp + ", skipping", logger.WARNING)
-                    continue
-                related_eps_result = myDB.select("SELECT * FROM tv_episodes WHERE location = ? AND episode != ?",
-                                                 [ep_result[0]["location"], epInfo[1]])
+            # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
+            ep_result = myDB.select(
+                "SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
+                [show, epInfo[0], epInfo[1]])
+            if not ep_result:
+                logger.log(u"Unable to find an episode for " + curEp + ", skipping", logger.WARNING)
+                continue
+            related_eps_result = myDB.select("SELECT * FROM tv_episodes WHERE location = ? AND episode != ?",
+                                             [ep_result[0]["location"], epInfo[1]])
 
-                root_ep_obj = show_obj.getEpisode(int(epInfo[0]), int(epInfo[1]))
-                root_ep_obj.relatedEps = []
+            root_ep_obj = show_obj.getEpisode(int(epInfo[0]), int(epInfo[1]))
+            root_ep_obj.relatedEps = []
 
-                for cur_related_ep in related_eps_result:
-                    related_ep_obj = show_obj.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
-                    if related_ep_obj not in root_ep_obj.relatedEps:
-                        root_ep_obj.relatedEps.append(related_ep_obj)
+            for cur_related_ep in related_eps_result:
+                related_ep_obj = show_obj.getEpisode(int(cur_related_ep["season"]), int(cur_related_ep["episode"]))
+                if related_ep_obj not in root_ep_obj.relatedEps:
+                    root_ep_obj.relatedEps.append(related_ep_obj)
 
-                root_ep_obj.rename()
+            root_ep_obj.rename()
 
         return self.redirect("/home/displayShow?show=" + show)
 

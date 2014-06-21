@@ -32,8 +32,8 @@ def addNameToCache(name, indexer_id=0):
 
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
-    with db.DBConnection('cache.db') as myDB:
-        myDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
+    myDB = db.DBConnection('cache.db')
+    myDB.action("INSERT INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
 def retrieveNameFromCache(name):
@@ -50,9 +50,9 @@ def retrieveNameFromCache(name):
     # standardize the name we're using to account for small differences in providers
     name = sanitizeSceneName(name)
 
-    with db.DBConnection('cache.db') as myDB:
-        if myDB.hasTable('scene_names'):
-            cache_results = myDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
+    myDB = db.DBConnection('cache.db')
+    if myDB.hasTable('scene_names'):
+        cache_results = myDB.select("SELECT * FROM scene_names WHERE name = ?", [name])
 
     if cache_results:
         return int(cache_results[0]["indexer_id"])
@@ -67,10 +67,10 @@ def clearCache(show=None, season=-1, indexer_id=0):
     Deletes all "unknown" entries from the cache (names with indexer_id of 0).
     """
 
-    with db.DBConnection('cache.db') as myDB:
-        if show:
-            showNames = sickbeard.show_name_helpers.allPossibleShowNames(show, season=season)
-            for showName in showNames:
-                myDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [showName, indexer_id])
-        else:
-            myDB.action("DELETE FROM scene_names WHERE indexer_id = ?", [indexer_id])
+    myDB = db.DBConnection('cache.db')
+    if show:
+        showNames = sickbeard.show_name_helpers.allPossibleShowNames(show, season=season)
+        for showName in showNames:
+            myDB.action("DELETE FROM scene_names WHERE name = ? and indexer_id = ?", [showName, indexer_id])
+    else:
+        myDB.action("DELETE FROM scene_names WHERE indexer_id = ?", [indexer_id])

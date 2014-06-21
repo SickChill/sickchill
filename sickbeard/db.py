@@ -50,13 +50,58 @@ class DBConnection(object):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
-        self.connection = sqlite3.connect(dbFilename(filename, suffix), 20)
-        if row_type == "dict":
+        self.suffix = suffix
+        self.row_type = row_type
+        self.connection = None
+
+        try:
+            self.reconnect()
+        except Exception as e:
+            logger.log(u"DB error: " + ex(e), logger.ERROR)
+            raise
+
+    def reconnect(self):
+        """Closes the existing database connection and re-opens it."""
+        self.close()
+        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20)
+        self.connection.isolation_level = None
+
+        if self.row_type == "dict":
             self.connection.row_factory = self._dict_factory
         else:
             self.connection.row_factory = sqlite3.Row
 
+    def __del__(self):
+        self.close()
+
+    def _cursor(self):
+        """Returns the cursor; reconnects if disconnected."""
+        if self.connection is None: self.reconnect()
+        return self.connection.cursor()
+
+    def execute(self, query, args=None, fetchall=False):
+        """Executes the given query, returning the lastrowid from the query."""
+        cursor = self._cursor()
+
+        try:
+            if fetchall:
+                return self._execute(cursor, query, args).fetchall()
+            return self._execute(cursor, query, args)
+        finally:
+            cursor.close()
+
+    def _execute(self, cursor, query, args):
+        try:
+            if args == None:
+                return cursor.execute(query)
+            return cursor.execute(query, args)
+        except sqlite3.OperationalError as e:
+            logger.log(u"DB error: " + ex(e), logger.ERROR)
+            self.close()
+            raise
+
     def checkDBVersion(self):
+
         result = None
 
         try:
@@ -83,8 +128,7 @@ class DBConnection(object):
             attempt = 0
 
             # Transaction
-            self.connection.isolation_level = None
-            self.connection.execute('BEGIN')
+            #self.execute('BEGIN')
 
             while attempt < 5:
                 try:
@@ -93,13 +137,11 @@ class DBConnection(object):
                         if len(qu) == 1:
                             if logTransaction:
                                 logger.log(qu[0], logger.DEBUG)
-                            sqlResult.append(self.connection.execute(qu[0]))
+                            sqlResult.append(self.execute(qu[0]))
                         elif len(qu) > 1:
                             if logTransaction:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                            sqlResult.append(self.connection.execute(qu[0], qu[1]))
-
-                    self.connection.commit()
+                            sqlResult.append(self.execute(qu[0], qu[1]))
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
                     return sqlResult
@@ -123,7 +165,7 @@ class DBConnection(object):
 
             return sqlResult
 
-    def action(self, query, args=None):
+    def action(self, query, args=None, fetchall=False):
 
         with db_lock:
 
@@ -137,11 +179,11 @@ class DBConnection(object):
                 try:
                     if args == None:
                         logger.log(self.filename + ": " + query, logger.DB)
-                        sqlResult = self.connection.execute(query)
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
-                        sqlResult = self.connection.execute(query, args)
-                    self.connection.commit()
+
+                    sqlResult = self.execute(query, args, fetchall=fetchall)
+
                     # get out of the connection attempt loop since we were successful
                     break
                 except sqlite3.OperationalError, e:
@@ -158,10 +200,9 @@ class DBConnection(object):
 
             return sqlResult
 
-
     def select(self, query, args=None):
 
-        sqlResults = self.action(query, args).fetchall()
+        sqlResults = self.action(query, args, fetchall=True)
 
         if sqlResults == None:
             return []
@@ -185,10 +226,11 @@ class DBConnection(object):
             self.action(query, valueDict.values() + keyDict.values())
 
     def tableInfo(self, tableName):
+
         # FIXME ? binding is not supported here, but I cannot find a way to escape a string manually
-        cursor = self.connection.execute("PRAGMA table_info(%s)" % tableName)
+        sqlResult = self.select("PRAGMA table_info(%s)" % tableName)
         columns = {}
-        for column in cursor:
+        for column in sqlResult:
             columns[column['name']] = {'type': column['type']}
         return columns
 
@@ -200,16 +242,13 @@ class DBConnection(object):
         return d
 
     def hasTable(self, tableName):
-        return len(self.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
+        return len(self.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, ))) > 0
 
     def close(self):
-        self.connection.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+        """Close database connection"""
+        if getattr(self, "connection", None) is not None:
+            self.connection.close()
+        self.connection = None
 
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
@@ -235,13 +274,15 @@ def upgradeDatabase(connection, schema):
 def prettyName(class_name):
     return ' '.join([x.group() for x in re.finditer("([A-Z])([a-z0-9]+)", class_name)])
 
+
 def restoreDatabase(version):
     logger.log(u"Restoring database before trying upgrade again")
-    if not sickbeard.helpers.restoreVersionedFile(dbFilename(suffix='v'+ str(version)), version):
+    if not sickbeard.helpers.restoreVersionedFile(dbFilename(suffix='v' + str(version)), version):
         logger.log_error_and_exit(u"Database restore failed, abort upgrading database")
         return False
     else:
         return True
+
 
 def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
@@ -259,7 +300,6 @@ def _processUpgrade(connection, upgradeClass):
                 result = connection.select("SELECT db_version FROM db_version")
                 if result:
                     version = int(result[0]["db_version"])
-                    connection.close()
                     if restoreDatabase(version):
                         # initialize the main SB database
                         upgradeDatabase(DBConnection(), sickbeard.mainDB.InitialSchema)
@@ -282,7 +322,7 @@ class SchemaUpgrade(object):
         self.connection = connection
 
     def hasTable(self, tableName):
-        return len(self.connection.action("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, )).fetchall()) > 0
+        return len(self.connection.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, ))) > 0
 
     def hasColumn(self, tableName, column):
         return column in self.connection.tableInfo(tableName)
