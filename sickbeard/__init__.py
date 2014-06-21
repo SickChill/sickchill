@@ -907,20 +907,20 @@ def initialize(consoleLogging=True):
         logger.sb_log_instance.initLogging(consoleLogging=consoleLogging)
 
         # initialize the main SB database
-        with db.DBConnection() as myDB:
-            db.upgradeDatabase(myDB, mainDB.InitialSchema)
+        myDB = db.DBConnection()
+        db.upgradeDatabase(myDB, mainDB.InitialSchema)
 
         # initialize the cache database
-        with db.DBConnection('cache.db') as myDB:
-            db.upgradeDatabase(myDB, cache_db.InitialSchema)
+        myDB = db.DBConnection('cache.db')
+        db.upgradeDatabase(myDB, cache_db.InitialSchema)
 
         # initialize the failed downloads database
-        with db.DBConnection('failed.db') as myDB:
-            db.upgradeDatabase(myDB, failed_db.InitialSchema)
+        myDB = db.DBConnection('failed.db')
+        db.upgradeDatabase(myDB, failed_db.InitialSchema)
 
         # fix up any db problems
-        with db.DBConnection() as myDB:
-            db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
+        myDB = db.DBConnection()
+        db.sanityCheckDatabase(myDB, mainDB.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)
@@ -1820,8 +1820,8 @@ def getEpList(epIDs, showid=None):
         query += " AND showid = ?"
         params.append(showid)
 
-    with db.DBConnection() as myDB:
-        sqlResults = myDB.select(query, params)
+    myDB = db.DBConnection()
+    sqlResults = myDB.select(query, params)
 
     epList = []
 

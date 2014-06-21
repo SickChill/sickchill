@@ -96,9 +96,10 @@ class BlackAndWhiteList(object):
         return "Blacklist: " + blackResult + ", Whitelist: " + whiteResult
 
     def _add_keywords(self, table, range, values):
-        with db.DBConnection() as myDB:
-            for value in values:
-                myDB.action("INSERT INTO " + table + " (show_id, range , keyword) VALUES (?,?,?)", [self.show_id, range, value])
+        myDB = db.DBConnection()
+        for value in values:
+            myDB.action("INSERT INTO " + table + " (show_id, range , keyword) VALUES (?,?,?)", [self.show_id, range, value])
+
         self.refresh()
 
     def _del_all_black_keywords(self):
@@ -115,19 +116,19 @@ class BlackAndWhiteList(object):
 
     def _del_all_keywords(self, table):
         logger.log(u"Deleting all " + table + " keywords for " + str(self.show_id), logger.DEBUG)
-        with db.DBConnection() as myDB:
-            myDB.action("DELETE FROM " + table + " WHERE show_id = ?", [self.show_id])
+        myDB = db.DBConnection()
+        myDB.action("DELETE FROM " + table + " WHERE show_id = ?", [self.show_id])
         self.refresh()
 
     def _del_all_keywords_for(self, table, range):
         logger.log(u"Deleting all " + range + " " + table + " keywords for " + str(self.show_id), logger.DEBUG)
-        with db.DBConnection() as myDB:
-            myDB.action("DELETE FROM " + table + " WHERE show_id = ? and range = ?", [self.show_id, range])
+        myDB = db.DBConnection()
+        myDB.action("DELETE FROM " + table + " WHERE show_id = ? and range = ?", [self.show_id, range])
         self.refresh()
 
     def _load_list(self, table):
-        with db.DBConnection() as myDB:
-            sqlResults = myDB.select("SELECT range,keyword FROM " + table + " WHERE show_id = ? ", [self.show_id])
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT range,keyword FROM " + table + " WHERE show_id = ? ", [self.show_id])
         if not sqlResults or not len(sqlResults):
             return ([], {})
 
