@@ -137,16 +137,16 @@ class NameParser(object):
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
 
-                    if not self.showObj:
+                    if not self.showObj and not self.naming_pattern:
                         self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
                     if self.showObj:
                         result.show = self.showObj
-                        if getattr(self.showObj, 'air_by_date', None) and not self.regexMode == self.NORMAL_REGEX:
+                        if getattr(self.showObj, 'air_by_date', None) and not cur_regex_type == 'normal':
                             continue
-                        elif getattr(self.showObj, 'sports', None) and not self.regexMode == self.SPORTS_REGEX:
+                        elif getattr(self.showObj, 'sports', None) and not cur_regex_type == 'sports':
                             continue
-                        elif getattr(self.showObj, 'anime', None) and not self.regexMode == self.ANIME_REGEX:
+                        elif getattr(self.showObj, 'anime', None) and not cur_regex_type == 'anime':
                             continue
 
             # don't continue parsing if we don't have a show object by now, try next regex pattern
