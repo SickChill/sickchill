@@ -47,6 +47,17 @@ class NameParser(object):
         self.convert = convert
         self.naming_pattern = naming_pattern
 
+        self.regexMode = self.ALL_REGEX
+        if self.showObj and self.showObj.is_anime:
+            self.regexMode = self.ANIME_REGEX
+        elif self.showObj and self.showObj.is_sports:
+            self.regexMode = self.SPORTS_REGEX
+        elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
+            self.regexMode = self.NORMAL_REGEX
+
+        self.compiled_regexes = {}
+        self._compile_regexes(self.regexMode)
+
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
         characters, along with any trailing hyphens.
@@ -106,29 +117,6 @@ class NameParser(object):
         if not name:
             return
 
-        if not self.naming_pattern:
-            if not self.showObj:
-                for curShow in self.showList:
-                    if sickbeard.show_name_helpers.isGoodResult(name, curShow, False):
-                        self.showObj = curShow
-                        break
-
-                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
-            if not self.showObj:
-                return
-
-        regexMode = self.ALL_REGEX
-        if self.showObj and self.showObj.is_anime:
-            regexMode = self.ANIME_REGEX
-        elif self.showObj and self.showObj.is_sports:
-            regexMode = self.SPORTS_REGEX
-        elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
-            regexMode = self.NORMAL_REGEX
-
-        self.compiled_regexes = {}
-        self._compile_regexes(regexMode)
-
         matches = []
         result = None
         for (cur_regex_type, cur_regex_name), cur_regex in self.compiled_regexes.items():
@@ -148,6 +136,22 @@ class NameParser(object):
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
+
+                    if not self.showObj:
+                        self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
+
+                    if self.showObj:
+                        result.show = self.showObj
+                        if getattr(self.showObj, 'air_by_date', None) and not self.regexMode == self.NORMAL_REGEX:
+                            continue
+                        elif getattr(self.showObj, 'sports', None) and not self.regexMode == self.SPORTS_REGEX:
+                            continue
+                        elif getattr(self.showObj, 'anime', None) and not self.regexMode == self.ANIME_REGEX:
+                            continue
+
+            # don't continue parsing if we don't have a show object by now, try next regex pattern
+            if not self.showObj and not self.naming_pattern:
+                continue
 
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
@@ -220,21 +224,12 @@ class NameParser(object):
                 result.release_group = match.group('release_group')
                 result.score += 1
 
-#            if not self.showObj:
-#                self.showObj = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-
-            if self.showObj:
-                if self.showObj.air_by_date and result.air_date:
-                    result.score += 1
-                elif self.showObj.sports and result.sports_event_date:
-                    result.score += 1
-                elif self.showObj.anime and len(result.ab_episode_numbers):
-                    result.score += 1
-            else:
-                matches.append(result)
-                continue
-
-            result.show = self.showObj
+            if getattr(self.showObj, 'air_by_date', None) and result.air_date:
+                result.score += 1
+            elif getattr(self.showObj, 'sports', None) and result.sports_event_date:
+                result.score += 1
+            elif getattr(self.showObj, 'anime', None) and len(result.ab_episode_numbers):
+                result.score += 1
 
             if self.convert:
                 result = result.convert()
