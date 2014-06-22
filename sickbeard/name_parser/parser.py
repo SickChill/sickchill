@@ -246,7 +246,7 @@ class NameParser(object):
             result = max(matches, key=lambda x: x.score)
 
             if result.show:
-                if self.convert:
+                if self.convert and not self.naming_pattern:
                     # scene convert result
                     result = result.convert()
 
