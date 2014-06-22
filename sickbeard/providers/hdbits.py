@@ -255,8 +255,8 @@ class HDBitsCache(tvcache.TVCache):
                         ql.append(ci)
 
                 if ql:
-                    with self._getDB() as myDB:
-                        myDB.mass_action(ql)
+                    myDB = self._getDB()
+                    myDB.mass_action(ql)
 
             else:
                 raise exceptions.AuthException(
