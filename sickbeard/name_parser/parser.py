@@ -230,12 +230,14 @@ class NameParser(object):
                 result.release_group = match.group('release_group')
                 result.score += 1
 
-            if getattr(self.showObj, 'air_by_date', None) and result.air_date:
-                result.score += 1
-            elif getattr(self.showObj, 'sports', None) and result.sports_event_date:
-                result.score += 1
-            elif getattr(self.showObj, 'anime', None) and len(result.ab_episode_numbers):
-                result.score += 1
+            if self.showObj:
+                result.show = self.showObj
+                if getattr(self.showObj, 'air_by_date', None) and result.air_date:
+                    result.score += 1
+                elif getattr(self.showObj, 'sports', None) and result.sports_event_date:
+                    result.score += 1
+                elif getattr(self.showObj, 'anime', None) and len(result.ab_episode_numbers):
+                    result.score += 1
 
             result.score += 1
             matches.append(result)
