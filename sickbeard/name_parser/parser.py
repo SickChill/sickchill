@@ -107,7 +107,7 @@ class NameParser(object):
         if not name:
             return
 
-        if not self.naming_pattern:
+        if not self.showObj and not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
             show_pattern = '''^(?:(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOG(P)))?(?:[0-9]+)?(?:\[(?:.+?)\][ ._-])?(?P<series_name>.*?)(?:[ ._-])+?(?:Season|Part)?(?:.[eE][0-9][0-9]?)?(?:.?[sS]?[0-9][0-9]?)'''
             try:
@@ -116,9 +116,11 @@ class NameParser(object):
                 logger.log(u"WARNING: Invalid show series name pattern, %s: [%s]" % (errormsg, show_pattern))
             else:
                 seriesname_match = show_regex.match(name)
-                seriesname_groups = seriesname_match.groupdict().keys()
+                if not seriesname_match:
+                    return
 
-                if not self.showObj and 'series_name' in seriesname_groups:
+                seriesname_groups = seriesname_match.groupdict().keys()
+                if 'series_name' in seriesname_groups:
                     # Do we have recognize this show?
                     series_name = self.clean_series_name(seriesname_match.group('series_name'))
                     self.showObj = helpers.get_show_by_name(series_name, useIndexer=self.useIndexers)
@@ -247,7 +249,7 @@ class NameParser(object):
                     result = result.convert()
 
                 # get quality
-                result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
+                result.quality = common.Quality.nameQuality(name, result.show.is_anime)
 
         return result
 
