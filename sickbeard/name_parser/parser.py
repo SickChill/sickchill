@@ -231,17 +231,18 @@ class NameParser(object):
             elif getattr(self.showObj, 'anime', None) and len(result.ab_episode_numbers):
                 result.score += 1
 
-            if self.convert:
-                result = result.convert()
-
             result.score += 1
             matches.append(result)
 
         if len(matches):
             result = max(matches, key=lambda x: x.score)
 
-            # get quality
             if result.show:
+                if self.convert:
+                    # scene convert result
+                    result = result.convert()
+
+                # get quality
                 result.quality = common.Quality.nameQuality(name, bool(result.show and result.show.is_anime))
 
         return result
