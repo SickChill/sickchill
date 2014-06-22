@@ -873,8 +873,9 @@ class Manage(MainHandler):
 
             for curResult in sqlResults:
                 curEpCat = curShow.getOverview(int(curResult["status"]))
-                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
-                epCounts[curEpCat] += 1
+                if curEpCat:
+                    epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
+                    epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts
             showCats[curShow.indexerid] = epCats
@@ -3429,8 +3430,9 @@ class Home(MainHandler):
 
         for curResult in sqlResults:
             curEpCat = showObj.getOverview(int(curResult["status"]))
-            epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
-            epCounts[curEpCat] += 1
+            if curEpCat:
+                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
+                epCounts[curEpCat] += 1
 
         def titler(x):
             if not x or sickbeard.SORT_ARTICLE:
