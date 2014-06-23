@@ -79,14 +79,17 @@ class DBConnection(object):
         if self.connection is None: self.reconnect()
         return self.connection.cursor()
 
-    def execute(self, query, args=None, fetchall=False):
+    def execute(self, query, args=None, fetchall=False, fetchone=False):
         """Executes the given query, returning the lastrowid from the query."""
         cursor = self._cursor()
 
         try:
             if fetchall:
                 return self._execute(cursor, query, args).fetchall()
-            return self._execute(cursor, query, args)
+            elif fetchone:
+                return self._execute(cursor, query, args).fetchone()
+            else:
+                return self._execute(cursor, query, args)
         finally:
             cursor.close()
 
@@ -165,7 +168,7 @@ class DBConnection(object):
 
             return sqlResult
 
-    def action(self, query, args=None, fetchall=False):
+    def action(self, query, args=None, fetchall=False, fetchone=False):
 
         with db_lock:
 
@@ -182,7 +185,7 @@ class DBConnection(object):
                     else:
                         logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
 
-                    sqlResult = self.execute(query, args, fetchall=fetchall)
+                    sqlResult = self.execute(query, args, fetchall=fetchall, fetchone=fetchone)
 
                     # get out of the connection attempt loop since we were successful
                     break
@@ -203,6 +206,15 @@ class DBConnection(object):
     def select(self, query, args=None):
 
         sqlResults = self.action(query, args, fetchall=True)
+
+        if sqlResults == None:
+            return []
+
+        return sqlResults
+
+    def selectOne(self, query, args=None):
+
+        sqlResults = self.action(query, args, fetchone=True)
 
         if sqlResults == None:
             return []

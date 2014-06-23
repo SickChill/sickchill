@@ -3479,9 +3479,9 @@ class Home(MainHandler):
 
     def plotDetails(self, show, season, episode):
         myDB = db.DBConnection()
-        result = myDB.action(
+        result = myDB.selectOne(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-            (int(show), int(season), int(episode))).fetchone()
+            (int(show), int(season), int(episode)))
         return result['description'] if result else 'Episode not found.'
 
 
