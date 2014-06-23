@@ -477,7 +477,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, REMOTE_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, RES
 
         if __INITIALIZED__:
             return False
@@ -1309,43 +1309,8 @@ def cleanup_tornado_sockets(io_loop):
             pass
 
 def saveAndShutdown():
-
     halt()
     saveAll()
-
-    cleanup_tornado_sockets(IOLoop.current())
-
-    if CREATEPID:
-        logger.log(u"Removing pidfile " + str(PIDFILE))
-        remove_pid_file(PIDFILE)
-
-    if restarted:
-        install_type = versionCheckScheduler.action.install_type
-
-        popen_list = []
-
-        if install_type in ('git', 'source'):
-            popen_list = [sys.executable, MY_FULLNAME]
-        elif install_type == 'win':
-            if hasattr(sys, 'frozen'):
-                # c:\dir\to\updater.exe 12345 c:\dir\to\sickbeard.exe
-                popen_list = [os.path.join(PROG_DIR, 'updater.exe'), str(PID), sys.executable]
-            else:
-                logger.log(u"Unknown SB launch method, please file a bug report about this", logger.ERROR)
-                popen_list = [sys.executable, os.path.join(PROG_DIR, 'updater.py'), str(PID), sys.executable,
-                              MY_FULLNAME]
-
-        if popen_list:
-            popen_list += MY_ARGS
-            if '--nolaunch' not in popen_list:
-                popen_list += ['--nolaunch']
-
-            logger.log(u"Restarting SickRage with " + str(popen_list))
-            logger.close()
-
-            subprocess.Popen(popen_list, cwd=os.getcwd())
-
-    os._exit(0)
 
 def invoke_command(to_call, *args, **kwargs):
 
@@ -1375,6 +1340,7 @@ def restart(soft=True):
         initialize()
     else:
         restarted=True
+        time.sleep(5)
         webserveInit.shutdown()
 
 

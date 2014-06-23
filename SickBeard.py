@@ -53,6 +53,7 @@ import threading
 import signal
 import traceback
 import getopt
+import time
 
 import sickbeard
 
@@ -380,6 +381,9 @@ def main():
     loadShowsFromDB()
 
     def startup():
+        if sickbeard.restarted:
+            sickbeard.restarted = False
+
         # Fire up all our threads
         sickbeard.start()
 
@@ -408,4 +412,16 @@ def main():
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
-    main()
+
+    while(True):
+        main()
+
+        # check if restart was requested
+        if not sickbeard.restarted:
+            if sickbeard.CREATEPID:
+                logger.log(u"Removing pidfile " + str(sickbeard.PIDFILE))
+                sickbeard.remove_pid_file(sickbeard.PIDFILE)
+            break
+
+        # restart
+        logger.log("Restarting SickRage, please stand by...")

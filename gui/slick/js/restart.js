@@ -13,7 +13,7 @@ else
 var base_url = window.location.protocol+'//'+window.location.host+sbRoot;
 var is_alive_url = sbRoot+'/home/is_alive';
 var timeout_id;
-var current_pid = '';
+var restarted = '';
 var num_restart_waits = 0;
 
 function is_alive() {
@@ -28,9 +28,9 @@ function is_alive() {
             setTimeout('is_alive()', 1000);
         } else {
             // if this is before we've even shut down then just try again later
-            if (current_pid == '' || data.msg == current_pid) {
-                current_pid = data.msg;
-                setTimeout(is_alive, 1000);
+            if (restarted == '' || data.restarted == restarted) {
+                restarted = data.restarted;
+                setTimeout('is_alive()', 1000);
 
             // if we're ready to go then redirect to new url
             } else {
