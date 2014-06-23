@@ -105,10 +105,10 @@ class DBConnection(object):
         result = None
 
         try:
-            result = self.select("SELECT db_version FROM db_version")
-        except sqlite3.OperationalError, e:
-            if "no such table: db_version" in e.args[0]:
-                return 0
+            if self.hasTable('db_version'):
+                result = self.select("SELECT db_version FROM db_version")
+        except:
+            pass
 
         if result:
             return int(result[0]["db_version"])
