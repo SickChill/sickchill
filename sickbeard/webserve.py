@@ -3004,9 +3004,9 @@ class Home(MainHandler):
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
         if sickbeard.started:
-            return callback + '(' + json.dumps({"msg": str(sickbeard.PID)}) + ');'
+            return callback + '(' + json.dumps({"msg": str(sickbeard.PID), "restarted": str(sickbeard.restarted)}) + ');'
         else:
-            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+            return callback + '(' + json.dumps({"msg": "nope", "restarted": str(sickbeard.restarted)}) + ');'
 
 
     def index(self, *args, **kwargs):
@@ -3322,8 +3322,8 @@ class Home(MainHandler):
         t = PageTemplate(file="restart.tmpl")
         t.submenu = HomeMenu()
 
-        # do a soft restart
-        threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+        # restart
+        threading.Timer(5, sickbeard.invoke_restart, [False]).start()
 
         return _munge(t)
 

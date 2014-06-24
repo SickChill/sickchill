@@ -1,5 +1,6 @@
 import os
 import traceback
+import time
 import sickbeard
 import webserve
 import webapi
@@ -114,10 +115,10 @@ def initWebServer(options={}):
 def shutdown():
     global server
 
-    logger.log('Shutting down tornado')
+    logger.log('Shutting down tornado io loop')
     try:
         IOLoop.current().stop()
     except RuntimeError:
         pass
     except:
-        logger.log('Failed shutting down the server: %s' % traceback.format_exc(), logger.ERROR)
+        logger.log('Failed shutting down tornado io loop: %s' % traceback.format_exc(), logger.ERROR)

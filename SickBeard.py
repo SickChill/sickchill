@@ -53,6 +53,7 @@ import threading
 import signal
 import traceback
 import getopt
+import time
 
 import sickbeard
 
@@ -384,12 +385,15 @@ def main():
         sickbeard.start()
 
         # Launch browser if we're supposed to
-        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
+        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON and not sickbeard.restarted:
             sickbeard.launchBrowser(startPort)
 
         # Start an update if we're supposed to
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+
+        if sickbeard.restarted:
+            sickbeard.restarted = False
 
     # create ioloop
     io_loop = IOLoop.current()
@@ -408,4 +412,16 @@ def main():
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
-    main()
+
+    while(True):
+        main()
+
+        # check if restart was requested
+        if not sickbeard.restarted:
+            if sickbeard.CREATEPID:
+                logger.log(u"Removing pidfile " + str(sickbeard.PIDFILE))
+                sickbeard.remove_pid_file(sickbeard.PIDFILE)
+            break
+
+        # restart
+        logger.log("Restarting SickRage, please stand by...")
