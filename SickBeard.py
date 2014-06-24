@@ -381,19 +381,19 @@ def main():
     loadShowsFromDB()
 
     def startup():
-        if sickbeard.restarted:
-            sickbeard.restarted = False
-
         # Fire up all our threads
         sickbeard.start()
 
         # Launch browser if we're supposed to
-        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON:
+        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON and not sickbeard.restarted:
             sickbeard.launchBrowser(startPort)
 
         # Start an update if we're supposed to
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+
+        if sickbeard.restarted:
+            sickbeard.restarted = False
 
     # create ioloop
     io_loop = IOLoop.current()

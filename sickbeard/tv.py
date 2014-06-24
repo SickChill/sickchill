@@ -53,42 +53,48 @@ from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMIN
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
 
+def dirty_setter(attr_name):
+    def wrapper(self, val):
+        if getattr(self, attr_name) != val:
+            setattr(self, attr_name, val)
+            self.dirty = True
+
+    return wrapper
+
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
-
-        self.indexerid = int(indexerid)
-        self.indexer = int(indexer)
-        self.name = ""
+        self._indexerid = int(indexerid)
+        self._indexer = int(indexer)
+        self._name = ""
         self._location = ""
-        self.imdbid = ""
-        self.network = ""
-        self.genre = ""
-        self.classification = ""
-        self.runtime = 0
-        self.imdb_info = {}
-        self.quality = int(sickbeard.QUALITY_DEFAULT)
-        self.flatten_folders = int(sickbeard.FLATTEN_FOLDERS_DEFAULT)
+        self._imdbid = ""
+        self._network = ""
+        self._genre = ""
+        self._classification = ""
+        self._runtime = 0
+        self._imdb_info = {}
+        self._quality = int(sickbeard.QUALITY_DEFAULT)
+        self._flatten_folders = int(sickbeard.FLATTEN_FOLDERS_DEFAULT)
+        self._status = ""
+        self._airs = ""
+        self._startyear = 0
+        self._paused = 0
+        self._air_by_date = 0
+        self._subtitles = int(sickbeard.SUBTITLES_DEFAULT if sickbeard.SUBTITLES_DEFAULT else 0)
+        self._dvdorder = 0
+        self._archive_firstmatch = 0
+        self._lang = lang
+        self._last_update_indexer = 1
+        self._sports = 0
+        self._anime = 0
+        self._scene = 0
+        self._rls_ignore_words = ""
+        self._rls_require_words = ""
 
-        self.status = ""
-        self.airs = ""
-        self.startyear = 0
-        self.paused = 0
-        self.air_by_date = 0
-        self.sports = 0
-        self.subtitles = int(sickbeard.SUBTITLES_DEFAULT if sickbeard.SUBTITLES_DEFAULT else 0)
-        self.dvdorder = 0
-        self.archive_firstmatch = 0
-        self.lang = lang
-        self.last_update_indexer = 1
-        self.anime = 0
-        self.scene = 0
-
-        self.rls_ignore_words = ""
-        self.rls_require_words = ""
+        self.dirty = True
 
         self.lock = threading.Lock()
-        self._isDirGood = False
-
+        self.isDirGood = False
         self.episodes = {}
 
         otherShow = helpers.findCertainShow(sickbeard.showList, self.indexerid)
@@ -97,6 +103,34 @@ class TVShow(object):
 
         self.loadFromDB()
 
+    name = property(lambda self: self._name, dirty_setter("_name"))
+    indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
+    indexer = property(lambda self: self._indexer, dirty_setter("_indexer"))
+    #location = property(lambda self: self._location, dirty_setter("_location"))
+    imdbid = property(lambda self: self._imdbid, dirty_setter("_imdbid"))
+    network = property(lambda self: self._network, dirty_setter("_network"))
+    genre = property(lambda self: self._genre, dirty_setter("_genre"))
+    classification = property(lambda self: self._classification, dirty_setter("_classification"))
+    runtime = property(lambda self: self._runtime, dirty_setter("_runtime"))
+    imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
+    quality = property(lambda self: self._quality, dirty_setter("_quality"))
+    flatten_folders = property(lambda self: self._flatten_folders, dirty_setter("_flatten_folders"))
+    status = property(lambda self: self._status, dirty_setter("_status"))
+    airs = property(lambda self: self._airs, dirty_setter("_airs"))
+    startyear = property(lambda self: self._startyear, dirty_setter("_startyear"))
+    paused = property(lambda self: self._paused, dirty_setter("_paused"))
+    air_by_date = property(lambda self: self._air_by_date, dirty_setter("_air_by_date"))
+    subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
+    dvdorder = property(lambda self: self._dvdorder, dirty_setter("_dvdorder"))
+    archive_firstmatch = property(lambda self: self._archive_firstmatch, dirty_setter("_archive_firstmatch"))
+    lang = property(lambda self: self._lang, dirty_setter("_lang"))
+    last_update_indexer = property(lambda self: self._last_update_indexer, dirty_setter("_last_update_indexer"))
+    sports = property(lambda self: self._sports, dirty_setter("_sports"))
+    anime = property(lambda self: self._anime, dirty_setter("_anime"))
+    scene = property(lambda self: self._scene, dirty_setter("_scene"))
+    rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
+    rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
+    
     def _is_anime(self):
         if (self.anime > 0):
             return True
@@ -139,7 +173,6 @@ class TVShow(object):
             self._isDirGood = True
         else:
             raise exceptions.NoNFOException("Invalid folder for the show!")
-
     location = property(_getLocation, _setLocation)
 
     # delete references to anything that's not in the internal lists
@@ -815,6 +848,9 @@ class TVShow(object):
         else:
             self.imdb_info = dict(zip(sqlResults[0].keys(), sqlResults[0]))
 
+        self.dirty = False
+        return True
+
     def loadFromIndexer(self, cache=True, tvapi=None, cachedSeason=None):
 
         logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name)
@@ -1101,7 +1137,12 @@ class TVShow(object):
             return
 
 
-    def saveToDB(self):
+    def saveToDB(self, forceSave=False):
+
+        if not self.dirty and not forceSave:
+            logger.log(str(self.indexerid) + u": Not saving show to db - record is not dirty", logger.DEBUG)
+            return
+
         logger.log(str(self.indexerid) + u": Saving show info to database", logger.DEBUG)
 
         controlValueDict = {"indexer_id": self.indexerid}
@@ -1261,16 +1302,6 @@ class TVShow(object):
             # if it's >= maxBestQuality then it's good
             else:
                 return Overview.GOOD
-
-
-def dirty_setter(attr_name):
-    def wrapper(self, val):
-        if getattr(self, attr_name) != val:
-            setattr(self, attr_name, val)
-            self.dirty = True
-
-    return wrapper
-
 
 class TVEpisode(object):
     def __init__(self, show, season, episode, file=""):
