@@ -1483,7 +1483,7 @@ class ConfigBackupRestore(MainHandler):
         finalResult = ''
 
         if backupDir:
-            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), os.path.join(sickbeard.DATA_DIR, 'config.ini')]
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
             target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
             if helpers.makeZip(source, target):
