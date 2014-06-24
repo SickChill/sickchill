@@ -30,7 +30,7 @@ normal_regexes = {'normal':[
      e(?P<extra_ep_num>\d+))+                    # E03/etc and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
     ('fov_repeat',
@@ -44,7 +44,7 @@ normal_regexes = {'normal':[
      (?P<extra_ep_num>\d+))+                     # 03/etc and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
     ('standard',
@@ -62,7 +62,7 @@ normal_regexes = {'normal':[
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+))*   # additional E03/etc
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
     ('fov',
@@ -80,7 +80,7 @@ normal_regexes = {'normal':[
      \d+))*                                      # additional x03/etc
      [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
     ('scene_date_format',
@@ -93,7 +93,7 @@ normal_regexes = {'normal':[
      (?P<air_day>\d{2})                          # 23 and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
     ('stupid',
@@ -124,7 +124,7 @@ normal_regexes = {'normal':[
      (?P<season_num>\d+)[. _-]*                  # S01 and optional separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''
     ),
 
@@ -139,7 +139,7 @@ normal_regexes = {'normal':[
      (?P<extra_ep_num>(?!(1080|720|480)[pi])(\d+|[ivx]+))[. _-])            # second ep num
      ([. _-]*(?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''
     ),
 
@@ -157,19 +157,9 @@ normal_regexes = {'normal':[
      (\d+|([ivx]+(?=[. _-]))))[. _-])*            # second ep num
      ([. _-]*(?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''
     ),
-
-    ('bare',
-     # Show.Name.102.Source.Quality.Etc-Group
-     '''
-     ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
-     (?P<season_num>\d{1,2})                     # 1
-     (?P<ep_num>\d{2})                           # 02 and separator
-     ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
-     (-(?P<release_group>.+))?)?$                # Group
-     '''),
 
     ('no_season',
      # Show Name - 01 - Ep Name
@@ -177,13 +167,23 @@ normal_regexes = {'normal':[
      # 01 - Ep Name
      '''
      ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?             # Show_Name and separator
-     (?P<ep_num>\d{1,2})                           # 02
+     (e)?(?P<ep_num>\d{1,2})                           # 02
      (?:-(?P<extra_ep_num>\d{1,2}))*               # 02
      [. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+))?)?$              # Group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''
     ),
+
+    ('bare',
+     # Show.Name.102.Source.Quality.Etc-Group
+     '''
+     ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
+     (s)?(?P<season_num>\d{1,2})                     # 1
+     (e)?(?P<ep_num>\d{2})                           # 02 and separator
+     ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
+     (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
+     '''),
 ]}
 
 sports_regexs = {'sports':[
@@ -210,7 +210,7 @@ sports_regexs = {'sports':[
      ((?P<sports_event_name>\.+)[. _-]+)?
      (?P<sports_event_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
-     -(?P<release_group>[^- ]+))?)?$
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
      '''
     ),
 
