@@ -1170,7 +1170,8 @@ def makeZip(fileList, archive):
             a.write(f)
         a.close()
         return True
-    except:
+    except Exception as e:
+        logger.log(u"Zip creation error: " + str(e), logger.ERROR)
         return False
 
 
