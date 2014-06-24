@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+from collections import OrderedDict
 
 import re
 import time
@@ -95,12 +96,15 @@ class NameParser(object):
 
         for regexItem in uncompiled_regex:
             for regex_type, regex_pattern in regexItem.items():
+                i = 0
                 for (cur_pattern_name, cur_pattern) in regex_pattern:
+                    i += 1
                     try:
                         cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
                     except re.error, errormsg:
                         logger.log(u"WARNING: Invalid episode_pattern, %s. %s" % (errormsg, cur_pattern))
                     else:
+                        cur_pattern_name = str(i) + "_" + cur_pattern_name
                         self.compiled_regexes[(regex_type, cur_pattern_name)] = cur_regex
 
     def _parse_string(self, name):
@@ -136,7 +140,7 @@ class NameParser(object):
         elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
             regexMode = self.NORMAL_REGEX
 
-        self.compiled_regexes = {}
+        self.compiled_regexes = OrderedDict()
         self._compile_regexes(regexMode)
 
         matches = []
@@ -243,7 +247,7 @@ class NameParser(object):
             matches.append(result)
 
         if len(matches):
-            result = max(sorted(matches, reverse=True), key=lambda x: x.score)
+            result = max(matches, key=lambda x: x.score)
 
             if result.show:
                 if self.convert and not self.naming_pattern:
