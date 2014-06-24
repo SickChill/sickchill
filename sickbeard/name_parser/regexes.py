@@ -182,7 +182,7 @@ normal_regexes = {'normal':[
      (?P<season_num>\d{1,2})                     # 1
      (?P<ep_num>\d{2})                           # 02 and separator
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
-     (-(?P<release_gr[^- ]+([. _-]\[.*\])?p>.+))?)?$                # Group
+     (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
      '''),
 ]}
 
