@@ -352,6 +352,7 @@ def already_postprocessed(dirName, videofile, force):
                                logger.DEBUG)
         return True
 
+    else:
         # This is needed for video whose name differ from dirName
         if not isinstance(videofile, unicode):
             videofile = unicode(videofile, 'utf_8')
