@@ -270,14 +270,6 @@ def main():
 
             sickbeard.CREATEPID = False
 
-    # Check if we need to perform a restore first
-    restoreDir = os.path.join(sickbeard.PROG_DIR, 'restore')
-    if os.path.exists(restoreDir):
-        if restore(restoreDir, sickbeard.PROG_DIR):
-            logger.log(u"Restore successful...")
-        else:
-            logger.log(u"Restore FAILED!", logger.ERROR)
-
     # If they don't specify a config file then put it in the data dir
     if not sickbeard.CONFIG_FILE:
         sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
@@ -299,6 +291,14 @@ def main():
             raise SystemExit("Config file '" + sickbeard.CONFIG_FILE + "' must be writeable.")
         elif not os.access(os.path.dirname(sickbeard.CONFIG_FILE), os.W_OK):
             raise SystemExit("Config file root dir '" + os.path.dirname(sickbeard.CONFIG_FILE) + "' must be writeable.")
+
+    # Check if we need to perform a restore first
+    restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
+    if os.path.exists(restoreDir):
+        if restore(restoreDir, sickbeard.DATA_DIR):
+            logger.log(u"Restore successful...")
+        else:
+            logger.log(u"Restore FAILED!", logger.ERROR)
 
     os.chdir(sickbeard.DATA_DIR)
 
