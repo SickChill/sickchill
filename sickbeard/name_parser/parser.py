@@ -15,10 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-from collections import OrderedDict
 
 import re
-import time
 import datetime
 import os.path
 import threading
@@ -27,7 +25,6 @@ import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common
 from dateutil import parser
-from sickbeard.common import cpu_presets
 
 nameparser_lock = threading.Lock()
 
@@ -140,7 +137,7 @@ class NameParser(object):
         elif self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
             regexMode = self.NORMAL_REGEX
 
-        self.compiled_regexes = OrderedDict()
+        self.compiled_regexes = {}
         self._compile_regexes(regexMode)
 
         matches = []
