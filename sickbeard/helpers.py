@@ -1199,5 +1199,6 @@ def extractZip(archive, targetDir):
             target.close()
         zip_file.close()
         return True
-    except:
+    except Exception as e:
+        logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
         return False
