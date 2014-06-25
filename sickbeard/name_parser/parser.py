@@ -104,27 +104,32 @@ class NameParser(object):
                         cur_pattern_name = str(i) + "_" + cur_pattern_name
                         self.compiled_regexes[(regex_type, cur_pattern_name)] = cur_regex
 
+    def _matchShowName(self, name, pattern):
+        try:
+            show_regex = re.compile(pattern, re.VERBOSE | re.IGNORECASE)
+        except re.error, errormsg:
+            logger.log(u"WARNING: Invalid show series name pattern, %s: [%s]" % (errormsg, pattern))
+        else:
+            # attempt matching with main show name pattern
+            seriesname_match = show_regex.match(name)
+            if seriesname_match:
+                seriesname_groups = seriesname_match.groupdict().keys()
+                if 'series_name' in seriesname_groups:
+                    series_name = self.clean_series_name(seriesname_match.group('series_name'))
+                    return helpers.get_show_by_name(series_name, useIndexer=self.useIndexers)
+
     def _parse_string(self, name):
         if not name:
             return
 
         if not self.showObj and not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
-            show_pattern = '''((\[.*?\])|(\d+[\.-]))*[ _\.]?(?P<series_name>.*?([ ._-](\d{4}))?)((([ ._-]+\d+)|([ ._-]+s\d{2}))|(\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
-            try:
-                show_regex = re.compile(show_pattern, re.VERBOSE | re.IGNORECASE)
-            except re.error, errormsg:
-                logger.log(u"WARNING: Invalid show series name pattern, %s: [%s]" % (errormsg, show_pattern))
-            else:
-                seriesname_match = show_regex.match(name)
-                if not seriesname_match:
-                    return
+            show_pattern = '''(?:(?:\[.*?\])|(?:\d{3}[\.-]))*[ _\.]?(?P<series_name>.*?(?:[ ._-](\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
+            show_pattern_alt = '''^(?P<series_name>.*?(?:[ ._-](\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
 
-                seriesname_groups = seriesname_match.groupdict().keys()
-                if 'series_name' in seriesname_groups:
-                    # Do we have recognize this show?
-                    series_name = self.clean_series_name(seriesname_match.group('series_name'))
-                    self.showObj = helpers.get_show_by_name(series_name, useIndexer=self.useIndexers)
+            self.showObj = self._matchShowName(name, show_pattern)
+            if not self.showObj:
+                self.showObj = self._matchShowName(name, show_pattern_alt)
 
             if not self.showObj:
                 return
