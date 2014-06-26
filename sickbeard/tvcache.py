@@ -52,7 +52,8 @@ class CacheDBConnection(db.DBConnection):
         # Create the table if it's not already there
         try:
             if not self.hasTable(providerName):
-                self.action("CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
+                self.action(
+                    "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -241,7 +242,7 @@ class TVCache():
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update
-        #if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
+        # if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
         #    logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
         #        datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
         #    return False
@@ -275,7 +276,7 @@ class TVCache():
 
         season = episodes = None
         if parse_result.air_by_date or parse_result.sports:
-            airdate = parse_result.air_date.toordinal() or parse_result.sports_event_date.toordinal()
+            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_event_date.toordinal()
 
             myDB = db.DBConnection()
             sql_results = myDB.select(
