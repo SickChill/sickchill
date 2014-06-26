@@ -167,7 +167,7 @@ normal_regexes = {'normal':[
      # 01 - Ep Name
      '''
      ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?             # Show_Name and separator
-     (e)?(?P<ep_num>\d{1,2})                           # 02
+     (?P<ep_num>\d{1,2})                           # 02
      (?:-(?P<extra_ep_num>\d{1,2}))*               # 02
      [. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
@@ -179,8 +179,8 @@ normal_regexes = {'normal':[
      # Show.Name.102.Source.Quality.Etc-Group
      '''
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
-     (s)?(?P<season_num>\d{1,2})                     # 1
-     (e)?(?P<ep_num>\d{2})                           # 02 and separator
+     (?P<season_num>\d{1,2})                     # 1
+     (?P<ep_num>\d{2})                           # 02 and separator
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
      (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
      '''),
