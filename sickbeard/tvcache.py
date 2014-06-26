@@ -56,7 +56,7 @@ class CacheDBConnection(db.DBConnection):
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
             else:
                 # remove duplicates
-                self.action("DELETE FROM " + providerName + " WHERE url NOT IN (SELECT url FROM " + providerName + " GROUP BY url")
+                self.action("DELETE FROM " + providerName + " WHERE url NOT IN (SELECT url FROM " + providerName + " GROUP BY url)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
