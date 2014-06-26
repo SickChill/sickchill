@@ -106,11 +106,8 @@ def initWebServer(options={}):
     logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(
         options['port']) + "/")
 
-    try:
+    if not sickbeard.restarted:
         server.listen(options['port'], options['host'])
-    except:
-        pass
-
 
 def shutdown():
     global server

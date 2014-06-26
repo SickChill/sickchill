@@ -19,6 +19,7 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 from __future__ import with_statement
+import functools
 
 import sys
 import shutil
@@ -376,7 +377,14 @@ def main():
         }
 
     # init tornado
-    webserveInit.initWebServer(options)
+    try:
+        webserveInit.initWebServer(options)
+    except IOError:
+        logger.log(u"Unable to start web server, is something else running on port %d?" % startPort, logger.ERROR)
+        if sickbeard.LAUNCH_BROWSER and not sickbeard.DAEMON:
+            logger.log(u"Launching browser and exiting", logger.ERROR)
+            sickbeard.launchBrowser(startPort)
+        sys.exit()
 
     def startup():
         # Fire up all our threads
@@ -390,19 +398,14 @@ def main():
         if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
+        # If we restarted then unset the restarted flag
         if sickbeard.restarted:
             sickbeard.restarted = False
 
     # create ioloop
     io_loop = IOLoop.current()
 
-    # init startup tasks
     io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
-
-    # autoreload.
-    tornado.autoreload.add_reload_hook(autoreload_shutdown)
-    if sickbeard.AUTO_UPDATE:
-        tornado.autoreload.start(io_loop)
 
     io_loop.start()
     sickbeard.saveAndShutdown()
