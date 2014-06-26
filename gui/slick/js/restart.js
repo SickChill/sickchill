@@ -16,39 +16,7 @@ var timeout_id;
 var restarted = '';
 var num_restart_waits = 0;
 
-function is_alive() {
-    timeout_id = 0;
-    $.get(is_alive_url, function(data) {
-
-        // if it's still initalizing then just wait and try again
-        if (data.msg == 'nope') {
-            $('#shut_down_loading').hide();
-            $('#shut_down_success').show();
-            $('#restart_message').show();
-            setTimeout('is_alive()', 1000);
-        } else {
-            // if this is before we've even shut down then just try again later
-            if (restarted == '' || data.restarted == restarted) {
-                restarted = data.restarted;
-                setTimeout('is_alive()', 1000);
-
-            // if we're ready to go then redirect to new url
-            } else {
-                $('#restart_loading').hide();
-                $('#restart_success').show();
-                $('#refresh_message').show();
-                window.location = sb_base_url+'/home/';
-            }
-        }
-    }, 'jsonp');
-}
-
-$(document).ready(function()
-{
-
-    is_alive();
-
-    $(document).ajaxError(function(e, jqxhr, settings, exception) {
+function restartHandler() {
         num_restart_waits += 1;
 
         $('#shut_down_loading').hide();
@@ -68,6 +36,14 @@ $(document).ready(function()
                 }, 3000);
                 setTimeout("window.location = sb_base_url+'/home/'", 5000);
             }
+        } else {
+            timeout_id = 1;
+            setTimeout(function(){
+                $('#restart_loading').hide();
+                $('#restart_success').show();
+                $('#refresh_message').show();
+            }, 3000);
+            setTimeout("window.location = sb_base_url+'/home/'", 5000);
         }
 
         // if it is taking forever just give up
@@ -80,6 +56,32 @@ $(document).ready(function()
 
         if (timeout_id == 0)
             timeout_id = setTimeout('is_alive()', 1000);
-    });
+}
 
+function is_alive() {
+    timeout_id = 0;
+
+    $.get(is_alive_url, function(data) {
+
+        // if it's still initalizing then just wait and try again
+        if (data.msg == 'nope') {
+            $('#shut_down_loading').hide();
+            $('#shut_down_success').show();
+            $('#restart_message').show();
+            setTimeout('is_alive()', 1000);
+        } else if (data.restarted == 'True') {
+            restartHandler();
+        } else {
+            // if this is before we've even shut down then just try again later
+            if (restarted == '' || data.restarted == restarted) {
+                restarted = data.restarted;
+                setTimeout(is_alive, 1000);
+            }
+        }
+    }, 'jsonp');
+}
+
+$(document).ready(function()
+{
+    is_alive();
 });

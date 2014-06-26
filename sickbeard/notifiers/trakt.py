@@ -73,7 +73,7 @@ class TraktNotifier:
         """
 
         data = TraktCall("account/test/%API%", api, username, password, {})
-        if data["status"] == "success":
+        if data and data["status"] == "success":
             return True
 
     def _username(self):

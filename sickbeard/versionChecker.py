@@ -57,8 +57,11 @@ class CheckVersion():
         if self.check_for_new_version():
             if sickbeard.AUTO_UPDATE:
                 logger.log(u"New update found for SickRage, starting auto-updater ...")
+                ui.notifications.message('New update found for SickRage, starting auto-updater')
                 if sickbeard.versionCheckScheduler.action.update():
                     logger.log(u"Update was successful!")
+                    ui.notifications.message('Update was successful')
+                    threading.Timer(2, sickbeard.invoke_restart, [False]).start()
 
     def find_install_type(self):
         """
