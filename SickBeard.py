@@ -311,9 +311,7 @@ def main():
 
     sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
 
-    myDB = db.DBConnection()
-
-    CUR_DB_VERSION = myDB.checkDBVersion()
+    CUR_DB_VERSION = db.DBConnection().checkDBVersion()
 
     if CUR_DB_VERSION > 0:
         if CUR_DB_VERSION < MIN_DB_VERSION:
@@ -327,16 +325,20 @@ def main():
                 MAX_DB_VERSION) + ").\n" + \
                              "If you have used other forks of SB, your database may be unusable due to their modifications.")
 
+    # Initialize the config and our threads
+    sickbeard.initialize(consoleLogging=consoleLogging)
+
+    sickbeard.showList = []
+
     if sickbeard.DAEMON:
         daemonize()
 
     # Use this PID for everything
     sickbeard.PID = os.getpid()
 
-    # Initialize the config and our threads
-    sickbeard.initialize(consoleLogging=consoleLogging)
-
-    sickbeard.showList = []
+    # Build from the DB to start with
+    logger.log(u"Loading initial show list")
+    loadShowsFromDB()
 
     if forcedPort:
         logger.log(u"Forcing web server to port " + str(forcedPort))
@@ -375,10 +377,6 @@ def main():
 
     # init tornado
     webserveInit.initWebServer(options)
-
-    # Build from the DB to start with
-    logger.log(u"Loading initial show list")
-    loadShowsFromDB()
 
     def startup():
         # Fire up all our threads
