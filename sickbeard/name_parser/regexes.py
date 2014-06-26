@@ -76,7 +76,7 @@ normal_regexes = {'normal':[
      (?P<ep_num>\d+)                             # 02 and separator
      (([. _-]*x|-)                               # linking x/- char
      (?P<extra_ep_num>
-     (?!(1080|720|480)[pi])(?!(?<=x)264)             # ignore obviously wrong multi-eps
+     (?!(1080|720|480)[pi])(?!(?<=[hx])264)             # ignore obviously wrong multi-eps
      \d+))*                                      # additional x03/etc
      [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
