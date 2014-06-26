@@ -3336,8 +3336,7 @@ class Home(MainHandler):
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
         if updated:
             # do a hard restart
-            if not sickbeard.AUTO_UPDATE:
-                threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+            threading.Timer(2, sickbeard.invoke_restart, [False]).start()
 
             t = PageTemplate(file="restart_bare.tmpl")
             return _munge(t)
