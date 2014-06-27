@@ -27,6 +27,8 @@ from sickbeard import db
 from sickbeard import common
 from sickbeard import helpers
 from sickbeard import exceptions
+from sickbeard.exceptions import ex
+
 
 class DailySearcher():
     def __init__(self):
@@ -37,6 +39,23 @@ class DailySearcher():
     def run(self, force=False):
 
         self.amActive = True
+
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
+        for curProviderCount, curProvider in enumerate(providers):
+
+            try:
+                logger.log(u"Updating [" + curProvider.name + "} RSS cache ...")
+                curProvider.cache.updateCache()
+            except exceptions.AuthException, e:
+                logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+                if curProviderCount != len(providers):
+                    continue
+                break
+            except Exception, e:
+                logger.log(u"Error while updating cache for " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                if curProviderCount != len(providers):
+                    continue
+                break
 
         logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
 
