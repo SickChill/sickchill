@@ -2735,7 +2735,7 @@ class NewHomeAddShows(MainHandler):
 
     def getRecommendedShows(self, *args, **kwargs):
         final_results = []
-        
+
         if sickbeard.USE_TRAKT:
             for myShow in sickbeard.showList:
                 notifiers.trakt_notifier.update_show_library(myShow)
@@ -2753,7 +2753,7 @@ class NewHomeAddShows(MainHandler):
                                        recommendedlist if
                                        not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
 
-            return json.dumps({'results': final_results})
+        return json.dumps({'results': final_results})
 
     def addRecommendedShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                            anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
