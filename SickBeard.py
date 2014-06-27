@@ -331,7 +331,7 @@ def main():
 
     sickbeard.showList = []
 
-    if sickbeard.DAEMON and not sickbeard.restarted:
+    if sickbeard.DAEMON:
         daemonize()
 
     # Use this PID for everything
