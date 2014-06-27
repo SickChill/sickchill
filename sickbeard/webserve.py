@@ -65,6 +65,7 @@ from lib.unrar2 import RarFile
 
 from lib import subliminal
 import tornado
+from trakt import TraktCall
 
 try:
     import json
@@ -1046,9 +1047,11 @@ class Manage(MainHandler):
 
             exceptions_list = []
 
-            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
-                                       new_flatten_folders, new_paused, subtitles=new_subtitles, anime=new_anime,
-                                       scene=new_scene, directCall=True)
+            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
+                                                                       bestQualities, exceptions_list,
+                                                                       new_flatten_folders, new_paused,
+                                                                       subtitles=new_subtitles, anime=new_anime,
+                                                                       scene=new_scene, directCall=True)
 
             if curErrors:
                 logger.log(u"Errors: " + str(curErrors), logger.ERROR)
@@ -1612,7 +1615,8 @@ class ConfigPostProcessing(MainHandler):
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, process_automatically=None,
                            rename_episodes=None, airdate_episodes=None, unpack=None,
-                           move_associated_files=None, nfo_rename=None, tv_download_dir=None, naming_custom_abd=None, naming_anime=None,
+                           move_associated_files=None, nfo_rename=None, tv_download_dir=None, naming_custom_abd=None,
+                           naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
                            naming_custom_sports=None, naming_sports_pattern=None, autopostprocesser_frequency=None):
@@ -2719,6 +2723,57 @@ class NewHomeAddShows(MainHandler):
 
         return _munge(t)
 
+    def recommendedShows(self, *args, **kwargs):
+        """
+        Display the new show page which collects a tvdb id, folder, and extra options and
+        posts them to addNewShow
+        """
+        t = PageTemplate(file="home_recommendedShows.tmpl")
+        t.submenu = HomeMenu()
+
+        return _munge(t)
+
+    def getRecommendedShows(self, *args, **kwargs):
+        final_results = []
+        
+        if sickbeard.USE_TRAKT:
+            for myShow in sickbeard.showList:
+                notifiers.trakt_notifier.update_show_library(myShow)
+
+            logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
+            recommendedlist = TraktCall("recommendations/shows.json/%API%/" + sickbeard.TRAKT_USERNAME,
+                                        sickbeard.TRAKT_API,
+                                        sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+            if recommendedlist is None:
+                logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
+                return
+
+            map(final_results.append, ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
+                                        datetime.date.fromtimestamp(show['first_aired']).strftime('%Y%m%d')] for show in
+                                       recommendedlist if
+                                       not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
+
+            return json.dumps({'results': final_results})
+
+    def addRecommendedShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
+                           anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
+                           fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
+                           scene=None):
+
+        indexer = 1
+        indexer_name = sickbeard.indexerApi(int(indexer)).name
+        show_url = whichSeries.split('|')[1]
+        indexer_id = whichSeries.split('|')[0]
+        show_name = whichSeries.split('|')[2]
+        first_aired = whichSeries.split('|')[4]
+
+        self.addNewShow('|'.join([indexer_name, str(indexer), show_url, indexer_id, show_name, first_aired]),
+                        indexerLang, rootDir,
+                        defaultStatus,
+                        anyQualities, bestQualities, flatten_folders, subtitles, fullShowPath, other_shows,
+                        skipShow, providedIndexer, anime, scene)
+
+        return self.redirect('/home/')
 
     def existingShows(self, *args, **kwargs):
         """
@@ -3004,7 +3059,8 @@ class Home(MainHandler):
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
         if sickbeard.started:
-            return callback + '(' + json.dumps({"msg": str(sickbeard.PID), "restarted": str(sickbeard.restarted)}) + ');'
+            return callback + '(' + json.dumps(
+                {"msg": str(sickbeard.PID), "restarted": str(sickbeard.restarted)}) + ');'
         else:
             return callback + '(' + json.dumps({"msg": "nope", "restarted": str(sickbeard.restarted)}) + ');'
 

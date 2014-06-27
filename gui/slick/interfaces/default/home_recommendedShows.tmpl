@@ -1,0 +1,64 @@
+#import os.path
+#import json
+#import sickbeard
+#set global $header="Recommended Shows"
+#set global $title="Recommended Shows"
+
+#set global $sbPath="../.."
+
+#set global $statpath="../.."#
+#set global $topmenu="home"#
+#import os.path
+
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+
+<link rel="stylesheet" type="text/css" href="$sbRoot/css/formwizard.css?$sbPID" />
+<script type="text/javascript" src="$sbRoot/js/formwizard.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/recommendedShows.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
+
+#if $varExists('header')
+<h1 class="header">$header</h1>
+#else
+<h1 class="title">$title</h1>
+#end if
+
+<div id="displayText"></div>
+<br />
+
+<form id="recommendedShowsForm" method="post" action="$sbRoot/home/addShows/addRecommendedShow" accept-charset="utf-8">
+<fieldset class="sectionwrap">
+    <legend class="legendStep">Select a recommended show</legend>
+
+    <div class="stepDiv">
+        <div id="searchResults" style="height: 225px; overflow: auto;"><br/></div>
+    </div>
+</fieldset>
+
+<fieldset class="sectionwrap">
+    <legend class="legendStep">Pick the parent folder</legend>
+
+    <div class="stepDiv">
+        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+    </div>
+</fieldset>
+
+<fieldset class="sectionwrap">
+    <legend class="legendStep">Customize options</legend>
+
+    <div class="stepDiv">
+        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+    </div>
+</fieldset>
+</form>
+
+<br />
+
+<div style="width: 800px; text-align:">
+<input class="btn" type="button" id="addShowButton" value="Add Show" disabled="disabled" />
+</div>
+
+<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
+
+#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
