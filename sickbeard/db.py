@@ -130,12 +130,8 @@ class DBConnection(object):
             sqlResult = []
             attempt = 0
 
-            # Transaction
-            #self.execute('BEGIN')
-
             while attempt < 5:
                 try:
-
                     for qu in querylist:
                         if len(qu) == 1:
                             if logTransaction:

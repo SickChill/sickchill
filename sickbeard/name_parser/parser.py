@@ -249,7 +249,7 @@ class NameParser(object):
             matches.append(result)
 
         if len(matches):
-            result = max(matches, key=lambda x: x.score)
+            result = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)
 
             if result.show:
                 if self.convert and not self.naming_pattern:

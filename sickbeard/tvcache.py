@@ -54,6 +54,9 @@ class CacheDBConnection(db.DBConnection):
             if not self.hasTable(providerName):
                 self.action(
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
+            else:
+                # remove duplicates
+                self.action("DELETE FROM " + providerName + " WHERE url NOT IN (SELECT url FROM " + providerName + " GROUP BY url)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -66,6 +69,12 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
+
+        # Create unique index for provider table to prevent duplicate entries
+        try:
+            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
+        except Exception, e:
+            raise
 
 class TVCache():
     def __init__(self, provider):
@@ -306,7 +315,7 @@ class TVCache():
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             return [
-                "INSERT INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
+                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
                 [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality]]
 
 
