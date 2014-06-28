@@ -55,8 +55,14 @@ class CacheDBConnection(db.DBConnection):
                 self.action(
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
             else:
-                # remove duplicates
-                self.action("DELETE FROM " + providerName + " WHERE url NOT IN (SELECT url FROM " + providerName + " GROUP BY url)")
+                sqlResults = self.select(
+                    "SELECT url, COUNT(url) as count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+
+                for cur_dupe in sqlResults:
+                    self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
+
+                # add unique index to prevent further dupes from happening if one does not exist
+                self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -68,13 +74,6 @@ class CacheDBConnection(db.DBConnection):
         except Exception, e:
             if str(e) != "table lastUpdate already exists":
                 raise
-
-
-        # Create unique index for provider table to prevent duplicate entries
-        try:
-            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
-        except Exception, e:
-            raise
 
 class TVCache():
     def __init__(self, provider):
