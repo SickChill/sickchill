@@ -213,10 +213,14 @@ class MainHandler(RequestHandler):
         return super(MainHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
     def get(self, *args, **kwargs):
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
+
         response = self._dispatch()
         self.finish(response)
 
     def post(self, *args, **kwargs):
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
+
         response = self._dispatch()
         self.finish(response)
 
