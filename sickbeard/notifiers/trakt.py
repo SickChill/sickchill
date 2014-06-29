@@ -60,26 +60,6 @@ class TraktNotifier:
                 if sickbeard.TRAKT_REMOVE_WATCHLIST:
                     TraktCall("show/episode/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
-
-    def update_show_library(self, show_obj):
-        """
-        Sends a request to trakt indicating that the given show and all its episodes is part of our library.
-
-        show_obj: The TVShow object to add to trakt
-        """
-
-        if sickbeard.USE_TRAKT:
-
-            # URL parameters
-            data = {
-                'tvdb_id': show_obj.indexerid,
-                'title': show_obj.name,
-                'year': show_obj.startyear,
-            }
-
-            if data is not None:
-                TraktCall("show/library/%API%", self._api(), self._username(), self._password(), data)
-
     def test_notify(self, api, username, password):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean

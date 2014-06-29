@@ -210,7 +210,7 @@ class MainHandler(RequestHandler):
 
     def redirect(self, url, permanent=False, status=None):
         self._transforms = []
-        return super(MainHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
+        return super(MainHandler, self).redirect(sickbeard.WEB_ROOT + url, True, 303)
 
     def get(self, *args, **kwargs):
         response = self._dispatch()
@@ -2177,7 +2177,7 @@ class ConfigNotifications(MainHandler):
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
                           use_trakt=None, trakt_username=None, trakt_password=None, trakt_api=None,
                           trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
-                          trakt_start_paused=None,
+                          trakt_start_paused=None, trakt_use_recommended=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -2288,11 +2288,12 @@ class ConfigNotifications(MainHandler):
         sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
         sickbeard.TRAKT_METHOD_ADD = trakt_method_add
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
+        sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
 
         if sickbeard.USE_TRAKT:
-            sickbeard.traktWatchListCheckerScheduler.silent = False
+            sickbeard.traktCheckerScheduler.silent = False
         else:
-            sickbeard.traktWatchListCheckerScheduler.silent = True
+            sickbeard.traktCheckerScheduler.silent = True
 
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
@@ -2735,22 +2736,18 @@ class NewHomeAddShows(MainHandler):
     def getRecommendedShows(self, *args, **kwargs):
         final_results = []
 
-        if sickbeard.USE_TRAKT:
-            for myShow in sickbeard.showList:
-                notifiers.trakt_notifier.update_show_library(myShow)
+        logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
+        recommendedlist = TraktCall("recommendations/shows.json/%API%/" + sickbeard.TRAKT_USERNAME,
+                                    sickbeard.TRAKT_API,
+                                    sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        if recommendedlist is None:
+            logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
+            return
 
-            logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-            recommendedlist = TraktCall("recommendations/shows.json/%API%/" + sickbeard.TRAKT_USERNAME,
-                                        sickbeard.TRAKT_API,
-                                        sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
-            if recommendedlist is None:
-                logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
-                return
-
-            map(final_results.append, ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
-                                        datetime.date.fromtimestamp(show['first_aired']).strftime('%Y%m%d')] for show in
-                                       recommendedlist if
-                                       not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
+        map(final_results.append, ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
+                                    datetime.date.fromtimestamp(show['first_aired']).strftime('%Y%m%d')] for show in
+                                   recommendedlist if
+                                   not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
 
         return json.dumps({'results': final_results})
 
@@ -3822,6 +3819,10 @@ class Home(MainHandler):
         if sickbeard.showQueueScheduler.action.isBeingAdded(
                 showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
             return _genericMessage("Error", "Shows can't be deleted while they're being added or updated.")
+
+        if sickbeard.USE_TRAKT:
+            # remove show from trakt.tv library
+            sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
 
         showObj.deleteShow()
 
