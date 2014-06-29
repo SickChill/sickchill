@@ -218,10 +218,13 @@ class MainHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         response = self._dispatch()
-        self.finish(response)
+        if response:
+            self.finish(response)
 
     def post(self, *args, **kwargs):
-        self._dispatch()
+        response = self._dispatch()
+        if response:
+            self.finish(response)
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
