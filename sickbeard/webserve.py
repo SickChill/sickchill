@@ -19,6 +19,7 @@
 from __future__ import with_statement
 import base64
 import inspect
+import traceback
 import urlparse
 import zipfile
 
@@ -136,7 +137,9 @@ class MainHandler(RequestHandler):
         super(MainHandler, self).__init__(application, request, **kwargs)
         global req_headers
 
-        sickbeard.REMOTE_IP = self.request.remote_ip
+        sickbeard.REMOTE_IP = self.request.headers.get('X-Forwarded-For',
+                                                  self.request.headers.get('X-Real-Ip', self.request.remote_ip))
+
         req_headers = self.request.headers
 
     def http_error_401_handler(self):
@@ -158,11 +161,12 @@ class MainHandler(RequestHandler):
         return self.redirectTo('/home/')
 
     def write_error(self, status_code, **kwargs):
-        if status_code == 404:
-            return self.redirectTo('/home/')
-        elif status_code == 401:
+        if status_code == 401:
             self.finish(self.http_error_401_handler())
+        elif status_code == 404:
+            self.redirectTo('/home/')
         else:
+            logger.log(traceback.format_exc(), logger.DEBUG)
             super(MainHandler, self).write_error(status_code, **kwargs)
 
     def _dispatch(self):
@@ -209,22 +213,17 @@ class MainHandler(RequestHandler):
         raise HTTPError(404)
 
     def redirectTo(self, url):
-        self._transforms = []
-
         url = urlparse.urljoin(sickbeard.WEB_ROOT, url)
         logger.log(u"Redirecting to: " + url, logger.DEBUG)
 
-        self.redirect(url, status=303)
+        self._transforms = []
+        self.redirect(url)
 
     def get(self, *args, **kwargs):
-        response = self._dispatch()
-        if response:
-            self.finish(response)
+        self.write(self._dispatch())
 
     def post(self, *args, **kwargs):
-        response = self._dispatch()
-        if response:
-            self.finish(response)
+        self._dispatch()
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
@@ -456,13 +455,13 @@ class MainHandler(RequestHandler):
 
     browser = WebFileBrowser
 
-
 class PageTemplate(Template):
     def __init__(self, *args, **KWs):
+        global req_headers
+
         KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
                                    KWs['file'])
         super(PageTemplate, self).__init__(*args, **KWs)
-        global req_headers
 
         self.sbRoot = sickbeard.WEB_ROOT
         self.sbHttpPort = sickbeard.WEB_PORT
@@ -495,7 +494,7 @@ class PageTemplate(Template):
             {'title': 'Manage', 'key': 'manage'},
             {'title': 'Config', 'key': 'config'},
             {'title': logPageTitle, 'key': 'errorlogs'},
-        ]
+            ]
 
 
 class IndexerWebUI(MainHandler):
@@ -512,9 +511,7 @@ class IndexerWebUI(MainHandler):
 
 
 def _munge(string):
-    to_return = unicode(string).encode('utf-8', 'xmlcharrefreplace')
-    return to_return
-
+    return unicode(string).encode('utf-8', 'xmlcharrefreplace')
 
 def _genericMessage(subject, message):
     t = PageTemplate(file="genericMessage.tmpl")
@@ -4296,21 +4293,21 @@ class Home(MainHandler):
 
         return json.dumps({'result': 'failure'})
 
-
 class UI(MainHandler):
-    def add_message(self, *args, **kwargs):
+    def add_message(self):
+
         ui.notifications.message('Test 1', 'This is test number 1')
         ui.notifications.error('Test 2', 'This is test number 2')
 
         return "ok"
 
-    def get_messages(self, *args, **kwargs):
+    def get_messages(self):
         messages = {}
         cur_notification_num = 1
         for cur_notification in ui.notifications.get_notifications():
             messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                     'message': cur_notification.message,
-                                                                     'type': cur_notification.type}
+                                                                   'message': cur_notification.message,
+                                                                   'type': cur_notification.type}
             cur_notification_num += 1
 
         return json.dumps(messages)
