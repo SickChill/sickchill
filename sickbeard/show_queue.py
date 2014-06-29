@@ -390,7 +390,8 @@ class QueueItemAdd(ShowQueueItem):
             sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
 
             # add show to trakt.tv library
-            sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+            if sickbeard.TRAKT_SYNC:
+                sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)

@@ -44,7 +44,7 @@ class TraktChecker():
             self.updateEpisodes()
 
         # sync trakt.tv library with sickrage library
-        if sickbeard.TRAKT_USE_RECOMMENDED:
+        if sickbeard.TRAKT_SYNC:
             self.syncLibrary()
 
     def findShow(self, indexerid):

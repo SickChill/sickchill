@@ -257,7 +257,7 @@ def main():
                 sys.exit("PID file: " + sickbeard.PIDFILE + " already exists. Exiting.")
 
     # The pidfile is only useful in daemon mode, make sure we can write the file properly
-    if sickbeard.CREATEPID:
+    if sickbeard.CREATEPID and not sickbeard.restarted:
         if sickbeard.DAEMON:
             pid_dir = os.path.dirname(sickbeard.PIDFILE)
             if not os.access(pid_dir, os.F_OK):

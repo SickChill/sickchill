@@ -61,8 +61,8 @@ class CacheDBConnection(db.DBConnection):
                 for cur_dupe in sqlResults:
                     self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
 
-                # add unique index to prevent further dupes from happening if one does not exist
-                self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
+            # add unique index to prevent further dupes from happening if one does not exist
+            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
