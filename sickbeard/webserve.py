@@ -220,7 +220,9 @@ class MainHandler(RequestHandler):
         self.redirect(url)
 
     def get(self, *args, **kwargs):
-        self.write(self._dispatch())
+        response = self._dispatch()
+        if response:
+            self.write(response)
 
     def post(self, *args, **kwargs):
         self._dispatch()
