@@ -172,6 +172,10 @@ class MainHandler(RequestHandler):
         path = self.request.uri.replace(sickbeard.WEB_ROOT, '').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
+
+        if method == 'robots.txt':
+            method = 'robots_txt'
+
         if path.startswith('/api') and method != 'builder':
             apikey = path.strip('/').split('/')[-1]
             method = path.strip('/').split('/')[0]
@@ -225,7 +229,7 @@ class MainHandler(RequestHandler):
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
         self.set_header('Content-Type', 'text/plain')
-        return 'User-agent: *\nDisallow: /\n'
+        return "User-agent: *\nDisallow: /"
 
     def showPoster(self, show=None, which=None):
         # Redirect initial poster/banner thumb to default images
