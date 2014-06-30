@@ -120,7 +120,7 @@ class Api(webserve.MainHandler):
 
     def builder(self):
         """ expose the api-builder template """
-        t = webserve.PageTemplate(file="apiBuilder.tmpl")
+        t = webserve.PageTemplate(headers=self.request.headers, file="apiBuilder.tmpl")
 
         def titler(x):
             if not x or sickbeard.SORT_ARTICLE:
