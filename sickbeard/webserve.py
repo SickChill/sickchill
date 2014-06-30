@@ -146,8 +146,7 @@ def redirect(url, permanent=False, status=None):
 class MainHandler(RequestHandler):
     def __init__(self, application, request, **kwargs):
         super(MainHandler, self).__init__(application, request, **kwargs)
-        sickbeard.REMOTE_IP = self.request.headers.get('X-Forwarded-For',
-                                                  self.request.headers.get('X-Real-Ip', self.request.remote_ip))
+        sickbeard.REMOTE_IP = self.request.headers.get('X-Forwarded-For', self.request.headers.get('X-Real-Ip', self.request.remote_ip))
 
     def http_error_401_handler(self):
         """ Custom handler for 401 error """
@@ -165,7 +164,7 @@ class MainHandler(RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         if status_code == 401:
-            self.write(self.http_error_401_handler())
+            self.finish(self.http_error_401_handler())
         elif status_code == 404:
             self.redirect('/home/')
         else:
@@ -217,13 +216,13 @@ class MainHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         try:
-            self.write(self._dispatch())
+            self.finish(self._dispatch())
         except HTTPRedirect,inst:
             self.redirect(inst.url, inst.permanent, inst.status)
 
     def post(self, *args, **kwargs):
         try:
-            self.write(self._dispatch())
+            self.finish(self._dispatch())
         except HTTPRedirect, inst:
             self.redirect(inst.url, inst.permanent, inst.status)
 
