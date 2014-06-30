@@ -165,7 +165,7 @@ class MainHandler(RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         if status_code == 401:
-            self.finish(self.http_error_401_handler())
+            self.write(self.http_error_401_handler())
         elif status_code == 404:
             redirect('/home/')
         else:
