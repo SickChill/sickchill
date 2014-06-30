@@ -383,10 +383,10 @@ def main():
             sickbeard.launchBrowser(startPort)
         sys.exit()
 
-    def startup():
-        # Build from the DB to start with
-        loadShowsFromDB()
+    # Build from the DB to start with
+    loadShowsFromDB()
 
+    def startup():
         # Fire up all our threads
         sickbeard.start()
 
