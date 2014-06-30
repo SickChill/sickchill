@@ -143,7 +143,9 @@ class DBConnection(object):
                             sqlResult.append(self.execute(qu[0], qu[1]))
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
-                    return sqlResult
+
+                    # finished
+                    break
                 except sqlite3.OperationalError, e:
                     sqlResult = []
                     if self.connection:
@@ -161,6 +163,9 @@ class DBConnection(object):
                         self.connection.rollback()
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
+
+            # cleanup
+            del querylist
 
             return sqlResult
 
