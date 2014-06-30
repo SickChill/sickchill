@@ -1303,13 +1303,7 @@ def saveAll():
 def saveAndShutdown():
     halt()
     saveAll()
-
-    for fd in IOLoop.current()._handlers.keys():
-        try:
-            os.close(fd)
-        except Exception:
-            pass
-
+    
 def invoke_command(to_call, *args, **kwargs):
 
     def delegate():
