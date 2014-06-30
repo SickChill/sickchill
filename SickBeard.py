@@ -19,11 +19,9 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 from __future__ import with_statement
-import functools
 
 import sys
 import shutil
-from sickbeard.exceptions import MultipleShowObjectsException
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -383,10 +381,10 @@ def main():
             sickbeard.launchBrowser(startPort)
         sys.exit()
 
-    # Build from the DB to start with
-    loadShowsFromDB()
-
     def startup():
+        # Build from the DB to start with
+        loadShowsFromDB()
+
         # Fire up all our threads
         sickbeard.start()
 
