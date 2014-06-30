@@ -26,20 +26,19 @@ from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
 
-MAX_XEM_AGE_SECS = 86400  # 1 day
-MAX_ANIDB_AGE_SECS = 86400  # 1 day
-
-exceptionCache = {}
-exceptionSeasonCache = {}
-exceptionIndexerCache = {}
-
+exception_dict = None
+exceptionCache = None
+exceptionSeasonCache = None
+exceptionIndexerCache = None
 
 def shouldRefresh(list):
+    MAX_REFRESH_AGE_SECS = 86400  # 1 day
+
     myDB = db.DBConnection('cache.db')
     rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
                        [list])
     if rows:
-        return time.time() > (int(rows[0]['last_refreshed']) + MAX_XEM_AGE_SECS)
+        return time.time() > (int(rows[0]['last_refreshed']) + MAX_REFRESH_AGE_SECS)
     else:
         return True
 
@@ -95,6 +94,7 @@ def get_scene_seasons(indexer_id):
     return a list of season numbers that have scene exceptions
     """
     global exceptionSeasonCache
+    
     if indexer_id not in exceptionSeasonCache:
         myDB = db.DBConnection('cache.db')
         sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
@@ -148,11 +148,12 @@ def retrieve_exceptions():
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
 
-    global exceptionCache, exceptionSeasonCache
+    global exception_dict, exceptionCache, exceptionSeasonCache, exceptionIndexerCache
 
     exception_dict = {}
     exceptionCache = {}
     exceptionSeasonCache = {}
+    exceptionIndexerCache = {}
 
     # exceptions are stored on github pages
     if setLastRefresh('normal'):
@@ -253,7 +254,6 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     name_cache.clearCache()
 
 def _retrieve_anidb_mainnames():
-    global MAX_ANIDB_AGE_SECS
 
     success = False
 
@@ -281,7 +281,6 @@ def _retrieve_anidb_mainnames():
 
 
 def _xem_excpetions_fetcher():
-    global MAX_XEM_AGE_SECS
 
     exception_dict = {}
 
@@ -322,9 +321,9 @@ def getSceneSeasons(indexer_id):
 
 
 def buildIndexerCache():
-    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
     global exceptionIndexerCache
-    exceptionIndexerCache = {}
+
+    logger.log(u"Updating internal scene name cache", logger.MESSAGE)
 
     for show in sickbeard.showList:
         for curSeason in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
@@ -335,3 +334,4 @@ def buildIndexerCache():
 
     logger.log(u"Updated internal scene name cache", logger.MESSAGE)
     logger.log(u"Internal scene name cache set to: " + str(exceptionIndexerCache), logger.DEBUG)
+

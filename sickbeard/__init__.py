@@ -1303,7 +1303,7 @@ def saveAll():
 def saveAndShutdown():
     halt()
     saveAll()
-    
+
 def invoke_command(to_call, *args, **kwargs):
 
     def delegate():
