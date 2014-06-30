@@ -144,10 +144,6 @@ def redirect(url, permanent=False, status=None):
 
 @authenticated
 class MainHandler(RequestHandler):
-    def __init__(self, application, request, **kwargs):
-        super(MainHandler, self).__init__(application, request, **kwargs)
-        sickbeard.REMOTE_IP = self.request.headers.get('X-Forwarded-For', self.request.headers.get('X-Real-Ip', self.request.remote_ip))
-
     def http_error_401_handler(self):
         """ Custom handler for 401 error """
         return r'''<!DOCTYPE html>
@@ -4305,7 +4301,7 @@ class UI(MainHandler):
     def get_messages(self):
         messages = {}
         cur_notification_num = 1
-        for cur_notification in ui.notifications.get_notifications():
+        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
             messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
                                                                    'message': cur_notification.message,
                                                                    'type': cur_notification.type}
