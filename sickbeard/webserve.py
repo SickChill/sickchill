@@ -129,17 +129,16 @@ class HTTPRedirect(Exception):
     """Exception raised when the request should be redirected."""
 
     def __init__(self, url, permanent=False, status=None):
-        self.url = url
+        self.url = urlparse.urljoin(sickbeard.WEB_ROOT, url)
         self.permanent = permanent
         self.status = status
-        Exception.__init__(self, url, permanent, status)
+        Exception.__init__(self, self.url, self.permanent, self.status)
 
     def __call__(self):
         """Use this exception as a request.handler (raise self)."""
         raise self
 
 def redirect(url, permanent=False, status=None):
-    url = urlparse.urljoin(sickbeard.WEB_ROOT, url)
     raise HTTPRedirect(url, permanent, status)
 
 @authenticated
