@@ -94,7 +94,7 @@ class TVCache():
             myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
             # clear RSS Feed cache
-            RSSFeeds(self.providerID).clearCache(int(time.mktime(curDate.timetuple())))
+            RSSFeeds(self.providerID).clearCache()
 
     def _getRSSData(self):
 
