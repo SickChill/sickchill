@@ -342,7 +342,7 @@ class PublicHDCache(tvcache.TVCache):
         if ql:
             myDB = self._getDB()
             myDB.mass_action(ql)
-            del ql
+
 
     def _parseItem(self, item):
 

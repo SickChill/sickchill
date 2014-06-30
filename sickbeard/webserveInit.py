@@ -1,6 +1,5 @@
 import os
 import traceback
-import time
 import sickbeard
 import webserve
 import webapi

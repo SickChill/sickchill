@@ -456,7 +456,7 @@ class TVShow(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
     def loadEpisodesFromDB(self):
 
@@ -578,7 +578,7 @@ class TVShow(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
         # Done updating save last update date
         self.last_update_indexer = datetime.date.today().toordinal()
@@ -749,7 +749,7 @@ class TVShow(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
         # creating metafiles on the root should be good enough
         if sickbeard.USE_FAILED_DOWNLOADS and rootEp is not None:
@@ -1005,7 +1005,7 @@ class TVShow(object):
 
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
-        del sql_l
+
 
         # remove self from show list
         sickbeard.showList = [x for x in sickbeard.showList if int(x.indexerid) != self.indexerid]
@@ -1080,7 +1080,7 @@ class TVShow(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
     def airdateModifyStamp(self, ep_obj):
         """
@@ -2420,4 +2420,4 @@ class TVEpisode(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+

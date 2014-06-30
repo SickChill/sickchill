@@ -19,6 +19,7 @@
 
 # Check needed software dependencies to nudge users to fix their setup
 from __future__ import with_statement
+import functools
 
 import sys
 import shutil
@@ -377,31 +378,35 @@ def main():
             sickbeard.launchBrowser(startPort)
         sys.exit()
 
-    def startup():
-        # Build from the DB to start with
-        loadShowsFromDB()
+    # Build from the DB to start with
+    loadShowsFromDB()
 
-        # Fire up all our threads
-        sickbeard.start()
+    # Fire up all our threads
+    sickbeard.start()
 
-        # Launch browser if we're supposed to
-        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON and not sickbeard.restarted:
-            sickbeard.launchBrowser(startPort)
+    # Launch browser if we're supposed to
+    if sickbeard.LAUNCH_BROWSER and not noLaunch:
+        sickbeard.launchBrowser(startPort)
 
-        # Start an update if we're supposed to
-        if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-            sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+    # Start an update if we're supposed to
+    if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
+        sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
-        # If we restarted then unset the restarted flag
-        if sickbeard.restarted:
-            sickbeard.restarted = False
+    # If we restarted then unset the restarted flag
+    if sickbeard.restarted:
+        sickbeard.restarted = False
 
-    # create ioloop
+    # IOLoop
     io_loop = IOLoop.current()
 
-    io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
+    # Open browser window
+    if sickbeard.LAUNCH_BROWSER and not (noLaunch or sickbeard.DAEMON or sickbeard.restarted):
+        io_loop.add_timeout(datetime.timedelta(seconds=5), functools.partial(sickbeard.launchBrowser, startPort))
 
+    # Start web server
     io_loop.start()
+
+    # Save and restart/shutdown
     sickbeard.saveAndShutdown()
 
 if __name__ == "__main__":

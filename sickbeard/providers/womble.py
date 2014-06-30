@@ -70,7 +70,6 @@ class WombleCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
-            del cl
 
         # set last updated
         if data:

@@ -3998,7 +3998,7 @@ class Home(MainHandler):
             if sql_l:
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
-                del sql_l
+
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"

@@ -111,7 +111,7 @@ class DBConnection(object):
             if self.hasTable('db_version'):
                 result = self.select("SELECT db_version FROM db_version")
         except:
-            pass
+            return 0
 
         if result:
             return int(result[0]["db_version"])
@@ -153,7 +153,7 @@ class DBConnection(object):
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(0.02)
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -164,7 +164,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-        return sqlResult
+            return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
 
@@ -191,7 +191,7 @@ class DBConnection(object):
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(0.02)
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -199,7 +199,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-        return sqlResult
+            return sqlResult
 
     def select(self, query, args=None):
 
@@ -342,11 +342,7 @@ class SchemaUpgrade(object):
         self.connection.action("UPDATE %s SET %s = ?" % (table, column), (default,))
 
     def checkDBVersion(self):
-        result = self.connection.select("SELECT db_version FROM db_version")
-        if result:
-            return int(result[0]["db_version"])
-        else:
-            return 0
+        return self.connection.checkDBVersion()
 
     def incDBVersion(self):
         new_version = self.checkDBVersion() + 1

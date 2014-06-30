@@ -192,7 +192,7 @@ def update_network_dict():
     if ql:
         myDB.mass_action(ql)
         load_network_dict()
-        del ql
+
 
 # load network timezones from db into dict
 def load_network_dict():

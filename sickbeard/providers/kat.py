@@ -457,7 +457,7 @@ class KATCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
-            del cl
+
 
     def _parseItem(self, item):
 

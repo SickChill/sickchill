@@ -1007,7 +1007,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
         extra_msg = ""
         if start_backlog:

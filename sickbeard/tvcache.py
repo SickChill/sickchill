@@ -37,6 +37,7 @@ from sickbeard.rssfeeds import RSSFeeds
 
 cache_lock = threading.Lock()
 
+
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
         db.DBConnection.__init__(self, "cache.db")
@@ -67,6 +68,7 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
+
 class TVCache():
     def __init__(self, provider):
 
@@ -75,11 +77,12 @@ class TVCache():
         self.minTime = 10
 
     def _getDB(self):
-
         return CacheDBConnection(self.providerID)
 
     def _clearCache(self):
         if self.shouldClearCache():
+            logger.log(u"Clearing " + self.provider.name + " cache")
+
             curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
             myDB = self._getDB()
@@ -103,14 +106,9 @@ class TVCache():
 
     def updateCache(self):
 
-        # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
-        self._clearCache()
+        if self.shouldUpdate() and self._checkAuth(None):
+            self._clearCache()
 
-        if not self.shouldUpdate():
-            return
-
-        if self._checkAuth(None):
             data = self._getRSSData()
 
             # as long as the http request worked we count this as an update
@@ -129,7 +127,6 @@ class TVCache():
                 if cl:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
-                    del cl
             else:
                 raise AuthException(
                     u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
@@ -219,10 +216,10 @@ class TVCache():
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update
-        # if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
-        #    logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
-        #        datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
-        #    return False
+        if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
+            logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
+                datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
+            return False
 
         return True
 
@@ -230,7 +227,7 @@ class TVCache():
         # if daily search hasn't used our previous results yet then don't clear the cache
         if self.lastUpdate > self.lastSearch:
             logger.log(
-                u"Daily search has not yet searched our last cache results, skipping clearig cache ...", logger.DEBUG)
+                u"Daily search has not yet used our last cache results, not clearing cache ...", logger.DEBUG)
             return False
 
         return True

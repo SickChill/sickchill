@@ -85,10 +85,10 @@ class DailySearcher():
             with ep.lock:
                 if ep.show.paused:
                     ep.status = common.SKIPPED
-                else:
-                    if ep.status == common.UNAIRED:
-                        logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
-                        ep.status = common.WANTED
+
+                if ep.status == common.UNAIRED:
+                    logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
+                    ep.status = common.WANTED
 
                 if ep.status == common.WANTED:
                     if show not in todaysEps:
@@ -101,7 +101,7 @@ class DailySearcher():
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-            del sql_l
+
 
         if len(todaysEps):
             for show in todaysEps:
@@ -114,7 +114,5 @@ class DailySearcher():
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
         else:
             logger.log(u"Could not find any needed episodes to search for ...")
-
-        del todaysEps
 
         self.amActive = False

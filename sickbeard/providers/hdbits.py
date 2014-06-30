@@ -257,7 +257,7 @@ class HDBitsCache(tvcache.TVCache):
                 if ql:
                     myDB = self._getDB()
                     myDB.mass_action(ql)
-                    del ql
+
 
             else:
                 raise exceptions.AuthException(

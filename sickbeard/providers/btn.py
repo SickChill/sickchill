@@ -346,7 +346,6 @@ class BTNCache(tvcache.TVCache):
                 if cl:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
-                    del cl
 
             else:
                 raise AuthException(
