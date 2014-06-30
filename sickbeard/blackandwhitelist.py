@@ -208,6 +208,5 @@ class BlackWhiteKeyword(object):
         self.range = range # "global" or a parser group
         self.value = values # a list of values may contain only one item (still a list)
 
-
 class BlackWhitelistNoShowIDException(Exception):
     "No show_id was given"

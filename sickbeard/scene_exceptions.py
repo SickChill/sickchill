@@ -209,6 +209,10 @@ def retrieve_exceptions():
     else:
         logger.log(u"No scene exceptions update needed")
 
+    # cleanup
+    del existing_exceptions
+    del exception_dict
+
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
@@ -226,7 +230,6 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     name_cache.clearCache()
 
 def _retrieve_anidb_mainnames():
-
 
     anidb_mainNames = {}
 

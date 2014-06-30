@@ -101,6 +101,7 @@ class DailySearcher():
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+            del sql_l
 
         if len(todaysEps):
             for show in todaysEps:
@@ -113,5 +114,7 @@ class DailySearcher():
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
         else:
             logger.log(u"Could not find any needed episodes to search for ...")
+
+        del todaysEps
 
         self.amActive = False

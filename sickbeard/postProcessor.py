@@ -965,6 +965,7 @@ class PostProcessor(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+            del sql_l
 
         # find the destination folder
         try:
@@ -1042,6 +1043,7 @@ class PostProcessor(object):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+            del sql_l
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)

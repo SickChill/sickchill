@@ -129,7 +129,7 @@ class TVCache():
                 if cl:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
-
+                    del cl
             else:
                 raise AuthException(
                     u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
