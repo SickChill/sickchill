@@ -52,34 +52,32 @@ def get_scene_exceptions(indexer_id, season=-1):
     Given a indexer_id, return a list of all the scene exceptions.
     """
 
-    exceptionsList = {}
+    exceptionsList = []
 
     myDB = db.DBConnection('cache.db')
     exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
                              [indexer_id, season])
     if exceptions:
         exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
-        if season == 1:  # if we where looking for season 1 we can add generic names
-            exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
-    del exceptions
+    if season == 1:  # if we where looking for season 1 we can add generic names
+        exceptionsList += get_scene_exceptions(indexer_id, season=-1)
+
     return exceptionsList
 
-
 def get_all_scene_exceptions(indexer_id):
-    exceptionsList = {}
+    exceptionsDict = {}
 
     myDB = db.DBConnection('cache.db')
     exceptions = myDB.select("SELECT show_name,season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
 
     if exceptions:
         for cur_exception in exceptions:
-            if not cur_exception["season"] in exceptionsList:
-                exceptionsList[cur_exception["season"]] = []
-            exceptionsList[cur_exception["season"]].append(cur_exception["show_name"])
+            if not cur_exception["season"] in exceptionsDict:
+                exceptionsDict[cur_exception["season"]] = []
+            exceptionsDict[cur_exception["season"]].append(cur_exception["show_name"])
 
-    del exceptions
-    return exceptionsList
+    return exceptionsDict
 
 
 def get_scene_seasons(indexer_id):
@@ -126,9 +124,6 @@ def get_scene_exception_by_name_multiple(show_name):
                 sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
             logger.log(u"Scene exception lookup got indexer id " + str(cur_indexer_id) + u", using that", logger.DEBUG)
             out.append((cur_indexer_id, cur_season))
-
-    # cleanup
-    del all_exception_results
 
     if out:
         return out
