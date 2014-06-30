@@ -167,7 +167,7 @@ class MainHandler(RequestHandler):
         if status_code == 401:
             self.write(self.http_error_401_handler())
         elif status_code == 404:
-            redirect('/home/')
+            self.redirect('/home/')
         else:
             logger.log(traceback.format_exc(), logger.DEBUG)
             super(MainHandler, self).write_error(status_code, **kwargs)
