@@ -34,7 +34,7 @@ class Maintenance():
     def run(self, force=False):
         self.amActive = True
 
-        # refresh scene exceptions too
+        # get and update scene exceptions lists
         scene_exceptions.retrieve_exceptions()
 
         # refresh network timezones

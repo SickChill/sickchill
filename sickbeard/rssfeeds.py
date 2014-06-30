@@ -36,7 +36,7 @@ class RSSFeeds:
 
         self.fc.purge(age)
 
-    def getRSSFeed(self, url, post_data=None):
+    def getRSSFeed(self, url, post_data=None, request_headers=None):
         if not self.fc:
             return
 
@@ -47,7 +47,7 @@ class RSSFeeds:
             if post_data:
                 url += urllib.urlencode(post_data)
 
-            feed = self.fc.fetch(url)
+            feed = self.fc.fetch(url, False, False, request_headers)
             if not feed:
                 logger.log(u"RSS Error loading URL: " + url, logger.ERROR)
                 return

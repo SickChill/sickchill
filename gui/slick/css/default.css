@@ -888,6 +888,54 @@ td.tvShow a {
   -o-opacity: 1 !important;
   opacity: 1 !important;
 }
+
+/* Anime section for editShow */
+#Anime {
+    clear: both;
+    display: block ;
+    overflow-x: hidden; 
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 0px;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+#Anime div.component-group-desc {
+    float: left;
+    width: 165px;
+}
+#Anime div.component-group-desc p {
+    color: #666666;
+    margin-bottom: 0.4em;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.4em;
+    width: 95%;
+}
+
+div.blackwhitelist{
+  float: left;
+  text-align: center;
+}
+div.blackwhitelist input {
+  margin: 5px 0px;
+}
+div.blackwhitelist.pool select {
+  min-width: 230px;
+}
+div.blackwhitelist.white select, div.blackwhitelist.black select {
+  min-width: 150px;
+}
+div.blackwhitelist span {
+  display: block;
+  text-align: center;
+}
+div.blackwhitelist.anidb, div.blackwhitelist.manual {
+  margin: 7px 0px;
+}
+
 /* for manage_massEdit */
 .optionWrapper {
   width: 450px;
