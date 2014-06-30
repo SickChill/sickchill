@@ -90,10 +90,10 @@ traktCheckerScheduler = None
 showList = None
 loadingShowList = None
 
-providerList = []
-newznabProviderList = []
-torrentRssProviderList = []
-metadata_provider_dict = {}
+providerList = None
+newznabProviderList = None
+torrentRssProviderList = None
+metadata_provider_dict = None
 
 NEWEST_VERSION = None
 NEWEST_VERSION_STRING = None
@@ -161,7 +161,7 @@ INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
 SCENE_DEFAULT = None
 ANIME_DEFAULT = None
-PROVIDER_ORDER = []
+PROVIDER_ORDER = None
 
 NAMING_MULTI_EP = None
 NAMING_PATTERN = None
@@ -413,17 +413,17 @@ TIME_PRESET_W_SECONDS = None
 TIMEZONE_DISPLAY = None
 
 USE_SUBTITLES = False
-SUBTITLES_LANGUAGES = []
+SUBTITLES_LANGUAGES = None
 SUBTITLES_DIR = ''
-SUBTITLES_SERVICES_LIST = []
-SUBTITLES_SERVICES_ENABLED = []
+SUBTITLES_SERVICES_LIST = None
+SUBTITLES_SERVICES_ENABLED = None
 SUBTITLES_HISTORY = False
 SUBTITLES_FINDER_FREQUENCY = 1
 
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
 
-EXTRA_SCRIPTS = []
+EXTRA_SCRIPTS = None
 
 GIT_PATH = None
 

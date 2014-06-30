@@ -23,6 +23,7 @@ import functools
 
 import sys
 import shutil
+from sickbeard.exceptions import MultipleShowObjectsException
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -83,6 +84,8 @@ def loadShowsFromDB():
     """
     Populates the showList with shows from the database
     """
+
+    logger.log(u"Loading initial show list")
 
     myDB = db.DBConnection()
     sqlResults = myDB.select("SELECT * FROM tv_shows")
@@ -329,17 +332,11 @@ def main():
     # Initialize the config and our threads
     sickbeard.initialize(consoleLogging=consoleLogging)
 
-    sickbeard.showList = []
-
     if sickbeard.DAEMON:
         daemonize()
 
     # Use this PID for everything
     sickbeard.PID = os.getpid()
-
-    # Build from the DB to start with
-    logger.log(u"Loading initial show list")
-    loadShowsFromDB()
 
     if forcedPort:
         logger.log(u"Forcing web server to port " + str(forcedPort))
@@ -387,6 +384,9 @@ def main():
         sys.exit()
 
     def startup():
+        # Build from the DB to start with
+        loadShowsFromDB()
+
         # Fire up all our threads
         sickbeard.start()
 
