@@ -22,28 +22,20 @@ import os
 
 import time
 import datetime
-import urllib
-import urlparse
-import re
 import threading
 import sickbeard
 
-from lib.shove import Shove
-from lib.feedcache import cache
-
 from sickbeard import db
 from sickbeard import logger
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 
 from sickbeard import helpers, show_name_helpers
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
-from sickbeard import encodingKludge as ek
-
 from name_parser.parser import NameParser, InvalidNameException
+from sickbeard.rssfeeds import RSSFeeds
 
 cache_lock = threading.Lock()
-
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -55,8 +47,14 @@ class CacheDBConnection(db.DBConnection):
                 self.action(
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
             else:
-                # remove duplicates
-                self.action("DELETE FROM " + providerName + " WHERE url NOT IN (SELECT url FROM " + providerName + " GROUP BY url)")
+                sqlResults = self.select(
+                    "SELECT url, COUNT(url) as count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+
+                for cur_dupe in sqlResults:
+                    self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
+
+            # add unique index to prevent further dupes from happening if one does not exist
+            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -68,13 +66,6 @@ class CacheDBConnection(db.DBConnection):
         except Exception, e:
             if str(e) != "table lastUpdate already exists":
                 raise
-
-
-        # Create unique index for provider table to prevent duplicate entries
-        try:
-            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
-        except Exception, e:
-            raise
 
 class TVCache():
     def __init__(self, provider):
@@ -88,13 +79,15 @@ class TVCache():
         return CacheDBConnection(self.providerID)
 
     def _clearCache(self):
-        if not self.shouldClearCache():
-            return
+        if self.shouldClearCache():
+            curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
-        curDate = datetime.date.today() - datetime.timedelta(weeks=1)
+            myDB = self._getDB()
+            myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
-        myDB = self._getDB()
-        myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
+            # clear RSS Feed cache
+            with RSSFeeds(self.providerID)  as feed:
+                feed.clearCache(int(time.mktime(curDate.timetuple())))
 
     def _getRSSData(self):
 
@@ -127,9 +120,8 @@ class TVCache():
                 return []
 
             if self._checkAuth(data):
-                items = data.entries
                 cl = []
-                for item in items:
+                for item in data.entries:
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
@@ -144,34 +136,10 @@ class TVCache():
 
         return []
 
-    def getRSSFeed(self, url, post_data=None, request_headers=None):
-        # create provider storaqe cache
-        storage = Shove('sqlite:///' + ek.ek(os.path.join, sickbeard.CACHE_DIR, self.provider.name) + '.db')
-        fc = cache.Cache(storage)
-
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-
-        if post_data:
-            url += urllib.urlencode(post_data)
-
-        f = fc.fetch(url, request_headers=request_headers)
-
-        if not f:
-            logger.log(u"Error loading " + self.providerID + " URL: " + url, logger.ERROR)
-            return None
-        elif 'error' in f.feed:
-            logger.log(u"Newznab ERROR:[%s] CODE:[%s]" % (f.feed['error']['description'], f.feed['error']['code']),
-                       logger.DEBUG)
-            return None
-        elif not f.entries:
-            logger.log(u"No items found on " + self.providerID + " using URL: " + url, logger.WARNING)
-            return None
-
-        storage.close()
-
-        return f
-
+    def getRSSFeed(self, url, post_data=None):
+        with RSSFeeds(self.providerID) as feed:
+            data = feed.getRSSFeed(url, post_data)
+        return data
 
     def _translateTitle(self, title):
         return title.replace(' ', '.')

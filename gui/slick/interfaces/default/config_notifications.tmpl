@@ -1185,6 +1185,20 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
+                                <label class="clearfix" for="trakt_sync">
+                                    <span class="component-title">Sync Libraries:</span>
+                                    <span class="component-desc">Syncs SickRage's show library with your trakt.tv show library</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <input type="checkbox" class="enabler" name="trakt_use_recommended" id="trakt_use_recommended" #if $sickbeard.TRAKT_USE_RECOMMENDED then "checked=\"checked\"" else ""# />
+                                <label class="clearfix" for="trakt_use_recommended">
+                                    <span class="component-title">Use Recommended Shows:</span>
+                                    <span class="component-desc">Adds ability to add recommended shows from trakt.tv</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
                                 <input type="checkbox" class="enabler" name="trakt_use_watchlist" id="trakt_use_watchlist" #if $sickbeard.TRAKT_USE_WATCHLIST then "checked=\"checked\"" else ""# />
                                 <label class="clearfix" for="trakt_use_watchlist">
                                     <span class="component-title">Use Watchlist:</span>

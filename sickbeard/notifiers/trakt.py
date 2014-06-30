@@ -46,7 +46,7 @@ class TraktNotifier:
 
             # URL parameters
             data = {
-                'indexer_id': ep_obj.show.indexerid,
+                'tvdb_id': ep_obj.show.indexerid,
                 'title': ep_obj.show.name,
                 'year': ep_obj.show.startyear,
                 'episodes': [{

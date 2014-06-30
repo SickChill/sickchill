@@ -22,14 +22,17 @@ to switch to ``curl_httpclient`` for reasons such as the following:
 
 * ``curl_httpclient`` was the default prior to Tornado 2.0.
 
-Note that if you are using ``curl_httpclient``, it is highly recommended that
-you use a recent version of ``libcurl`` and ``pycurl``.  Currently the minimum
-supported version is 7.18.2, and the recommended version is 7.21.1 or newer.
-It is highly recommended that your ``libcurl`` installation is built with
-asynchronous DNS resolver (threaded or c-ares), otherwise you may encounter
-various problems with request timeouts (for more information, see
+Note that if you are using ``curl_httpclient``, it is highly
+recommended that you use a recent version of ``libcurl`` and
+``pycurl``.  Currently the minimum supported version of libcurl is
+7.21.1, and the minimum version of pycurl is 7.18.2.  It is highly
+recommended that your ``libcurl`` installation is built with
+asynchronous DNS resolver (threaded or c-ares), otherwise you may
+encounter various problems with request timeouts (for more
+information, see
 http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCONNECTTIMEOUTMS
 and comments in curl_httpclient.py).
+
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
@@ -144,12 +147,21 @@ class AsyncHTTPClient(Configurable):
 
     def __new__(cls, io_loop=None, force_instance=False, **kwargs):
         io_loop = io_loop or IOLoop.current()
-        if io_loop in cls._async_clients() and not force_instance:
-            return cls._async_clients()[io_loop]
+        if force_instance:
+            instance_cache = None
+        else:
+            instance_cache = cls._async_clients()
+        if instance_cache is not None and io_loop in instance_cache:
+            return instance_cache[io_loop]
         instance = super(AsyncHTTPClient, cls).__new__(cls, io_loop=io_loop,
                                                        **kwargs)
-        if not force_instance:
-            cls._async_clients()[io_loop] = instance
+        # Make sure the instance knows which cache to remove itself from.
+        # It can't simply call _async_clients() because we may be in
+        # __new__(AsyncHTTPClient) but instance.__class__ may be
+        # SimpleAsyncHTTPClient.
+        instance._instance_cache = instance_cache
+        if instance_cache is not None:
+            instance_cache[instance.io_loop] = instance
         return instance
 
     def initialize(self, io_loop, defaults=None):
@@ -172,9 +184,13 @@ class AsyncHTTPClient(Configurable):
         ``close()``.
 
         """
+        if self._closed:
+            return
         self._closed = True
-        if self._async_clients().get(self.io_loop) is self:
-            del self._async_clients()[self.io_loop]
+        if self._instance_cache is not None:
+            if self._instance_cache.get(self.io_loop) is not self:
+                raise RuntimeError("inconsistent AsyncHTTPClient cache")
+            del self._instance_cache[self.io_loop]
 
     def fetch(self, request, callback=None, **kwargs):
         """Executes a request, asynchronously returning an `HTTPResponse`.

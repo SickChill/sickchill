@@ -630,7 +630,6 @@ class RequestHandler(object):
         self.set_status(status)
         self.set_header("Location", urlparse.urljoin(utf8(self.request.uri),
                                                      utf8(url)))
-
         self.finish()
 
     def write(self, chunk):
@@ -944,26 +943,7 @@ class RequestHandler(object):
         ``kwargs["exc_info"]``.  Note that this exception may not be
         the "current" exception for purposes of methods like
         ``sys.exc_info()`` or ``traceback.format_exc``.
-
-        For historical reasons, if a method ``get_error_html`` exists,
-        it will be used instead of the default ``write_error`` implementation.
-        ``get_error_html`` returned a string instead of producing output
-        normally, and had different semantics for exception handling.
-        Users of ``get_error_html`` are encouraged to convert their code
-        to override ``write_error`` instead.
         """
-        if hasattr(self, 'get_error_html'):
-            if 'exc_info' in kwargs:
-                exc_info = kwargs.pop('exc_info')
-                kwargs['exception'] = exc_info[1]
-                try:
-                    # Put the traceback into sys.exc_info()
-                    raise_exc_info(exc_info)
-                except Exception:
-                    self.finish(self.get_error_html(status_code, **kwargs))
-            else:
-                self.finish(self.get_error_html(status_code, **kwargs))
-            return
         if self.settings.get("serve_traceback") and "exc_info" in kwargs:
             # in debug mode, try to send a traceback
             self.set_header('Content-Type', 'text/plain')
@@ -1385,6 +1365,11 @@ class RequestHandler(object):
             " (" + self.request.remote_ip + ")"
 
     def _handle_request_exception(self, e):
+        if isinstance(e, Finish):
+            # Not an error; just finish the request without logging.
+            if not self._finished:
+                self.finish()
+            return
         self.log_exception(*sys.exc_info())
         if self._finished:
             # Extra errors after the request has been finished should
@@ -1939,6 +1924,9 @@ class HTTPError(Exception):
     `RequestHandler.send_error` since it automatically ends the
     current function.
 
+    To customize the response sent with an `HTTPError`, override
+    `RequestHandler.write_error`.
+
     :arg int status_code: HTTP status code.  Must be listed in
         `httplib.responses <http.client.responses>` unless the ``reason``
         keyword argument is given.
@@ -1965,6 +1953,25 @@ class HTTPError(Exception):
             return message + " (" + (self.log_message % self.args) + ")"
         else:
             return message
+
+
+class Finish(Exception):
+    """An exception that ends the request without producing an error response.
+
+    When `Finish` is raised in a `RequestHandler`, the request will end
+    (calling `RequestHandler.finish` if it hasn't already been called),
+    but the outgoing response will not be modified and the error-handling
+    methods (including `RequestHandler.write_error`) will not be called.
+
+    This can be a more convenient way to implement custom error pages
+    than overriding ``write_error`` (especially in library code)::
+
+        if self.current_user is None:
+            self.set_status(401)
+            self.set_header('WWW-Authenticate', 'Basic realm="something"')
+            raise Finish()
+    """
+    pass
 
 
 class MissingArgumentError(HTTPError):
@@ -2494,9 +2501,9 @@ class FallbackHandler(RequestHandler):
 class OutputTransform(object):
     """A transform modifies the result of an HTTP request (e.g., GZip encoding)
 
-    A new transform instance is created for every request. See the
-    GZipContentEncoding example below if you want to implement a
-    new Transform.
+    Applications are not expected to create their own OutputTransforms
+    or interact with them directly; the framework chooses which transforms
+    (if any) to apply.
     """
     def __init__(self, request):
         pass

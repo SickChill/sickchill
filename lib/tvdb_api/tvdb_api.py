@@ -728,32 +728,36 @@ class Tvdb:
         log().debug('Getting season banners for %s' % (sid))
         bannersEt = self._getetsrc(self.config['url_seriesBanner'] % (sid))
         banners = {}
-        for cur_banner in bannersEt['banner'] if bannersEt else []:
-            bid = cur_banner['id']
-            btype = cur_banner['bannertype']
-            btype2 = cur_banner['bannertype2']
-            if btype is None or btype2 is None:
-                continue
-            if not btype in banners:
-                banners[btype] = {}
-            if not btype2 in banners[btype]:
-                banners[btype][btype2] = {}
-            if not bid in banners[btype][btype2]:
-                banners[btype][btype2][bid] = {}
 
-            for k, v in cur_banner.items():
-                if k is None or v is None:
+        try:
+            for cur_banner in bannersEt['banner']:
+                bid = cur_banner['id']
+                btype = cur_banner['bannertype']
+                btype2 = cur_banner['bannertype2']
+                if btype is None or btype2 is None:
                     continue
+                if not btype in banners:
+                    banners[btype] = {}
+                if not btype2 in banners[btype]:
+                    banners[btype][btype2] = {}
+                if not bid in banners[btype][btype2]:
+                    banners[btype][btype2][bid] = {}
 
-                k, v = k.lower(), v.lower()
-                banners[btype][btype2][bid][k] = v
+                for k, v in cur_banner.items():
+                    if k is None or v is None:
+                        continue
 
-            for k, v in banners[btype][btype2][bid].items():
-                if k.endswith("path"):
-                    new_key = "_%s" % (k)
-                    log().debug("Transforming %s to %s" % (k, new_key))
-                    new_url = self.config['url_artworkPrefix'] % (v)
-                    banners[btype][btype2][bid][new_key] = new_url
+                    k, v = k.lower(), v.lower()
+                    banners[btype][btype2][bid][k] = v
+
+                for k, v in banners[btype][btype2][bid].items():
+                    if k.endswith("path"):
+                        new_key = "_%s" % (k)
+                        log().debug("Transforming %s to %s" % (k, new_key))
+                        new_url = self.config['url_artworkPrefix'] % (v)
+                        banners[btype][btype2][bid][new_key] = new_url
+        except:
+            pass
 
         self._setShowData(sid, "_banners", banners)
 
@@ -785,17 +789,21 @@ class Tvdb:
         actorsEt = self._getetsrc(self.config['url_actorsInfo'] % (sid))
 
         cur_actors = Actors()
-        for curActorItem in actorsEt["actor"] if actorsEt else []:
-            curActor = Actor()
-            for k, v in curActorItem.items():
-                k = k.lower()
-                if v is not None:
-                    if k == "image":
-                        v = self.config['url_artworkPrefix'] % (v)
-                    else:
-                        v = self._cleanData(v)
-                curActor[k] = v
-            cur_actors.append(curActor)
+        try:
+            for curActorItem in actorsEt["actor"]:
+                curActor = Actor()
+                for k, v in curActorItem.items():
+                    k = k.lower()
+                    if v is not None:
+                        if k == "image":
+                            v = self.config['url_artworkPrefix'] % (v)
+                        else:
+                            v = self._cleanData(v)
+                    curActor[k] = v
+                cur_actors.append(curActor)
+        except:
+            pass
+
         self._setShowData(sid, '_actors', cur_actors)
 
     def _getShowData(self, sid, language, seriesSearch=False):

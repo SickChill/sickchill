@@ -34,6 +34,7 @@ class TraktChecker():
         self.todoBacklog = []
 
     def run(self, force=False):
+        # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_USE_WATCHLIST:
             self.todoWanted = []  #its about to all get re-added
             if len(sickbeard.ROOT_DIRS.split('|')) < 2:
@@ -42,6 +43,60 @@ class TraktChecker():
             self.updateShows()
             self.updateEpisodes()
 
+        # sync trakt.tv library with sickrage library
+        if sickbeard.TRAKT_SYNC:
+            self.syncLibrary()
+
+    def findShow(self, indexerid):
+        library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
+                            sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+        results = filter(lambda x: int(x['tvdb_id']) == int(indexerid), library)
+        if len(results) == 0:
+            return None
+        else:
+            return results[0]
+
+    def syncLibrary(self):
+        logger.log(u"Syncing library to trakt.tv show library", logger.DEBUG)
+        for myShow in sickbeard.showList:
+            self.addShowToTraktLibrary(myShow)
+
+    def removeShowFromTraktLibrary(self, show_obj):
+        if not self.findShow(show_obj.indexerid):
+            return
+
+        # URL parameters
+        data = {
+            'tvdb_id': show_obj.indexerid,
+            'title': show_obj.name,
+            'year': show_obj.startyear,
+        }
+
+        if data is not None:
+            logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
+            TraktCall("show/unlibrary/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data)
+
+    def addShowToTraktLibrary(self, show_obj):
+        """
+        Sends a request to trakt indicating that the given show and all its episodes is part of our library.
+
+        show_obj: The TVShow object to add to trakt
+        """
+
+        if self.findShow(show_obj.indexerid):
+           return
+
+        # URL parameters
+        data = {
+            'tvdb_id': show_obj.indexerid,
+            'title': show_obj.name,
+            'year': show_obj.startyear,
+        }
+
+        if data is not None:
+            logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
+            TraktCall("show/library/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data)
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
