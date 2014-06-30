@@ -14,10 +14,10 @@ function check_notifications() {
             poll_interval = 5000;
             $.each(data, function (name, data) {
                 $.pnotify({
-                    type: data.type,
-                    hide: data.type == 'notice',
-                    title: data.title,
-                    text: data.message
+                    pnotify_type: data.type,
+                    pnotify_hide: data.type == 'notice',
+                    pnotify_title: data.title,
+                    pnotify_text: data.message
                 });
             });
         },
