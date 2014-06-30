@@ -1133,9 +1133,6 @@ def start():
 
             # start the maintenance scheduler
             maintenanceScheduler.thread.start()
-            logger.log(u"Performing initial maintenance tasks, please wait ...")
-            while maintenanceScheduler.action.amActive:
-                time.sleep(1)
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
