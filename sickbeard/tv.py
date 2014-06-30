@@ -103,6 +103,9 @@ class TVShow(object):
 
         self.loadFromDB()
 
+    def __del__(self):
+        pass
+
     name = property(lambda self: self._name, dirty_setter("_name"))
     indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
     indexer = property(lambda self: self._indexer, dirty_setter("_indexer"))
@@ -1347,6 +1350,9 @@ class TVEpisode(object):
         self.relatedEps = []
 
         self.checkForMetaFiles()
+
+    def __del__(self):
+        pass
 
     name = property(lambda self: self._name, dirty_setter("_name"))
     season = property(lambda self: self._season, dirty_setter("_season"))

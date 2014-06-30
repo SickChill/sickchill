@@ -33,6 +33,9 @@ class TraktChecker():
         self.todoWanted = []
         self.todoBacklog = []
 
+    def __del__(self):
+        pass
+
     def run(self, force=False):
         # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_USE_WATCHLIST:

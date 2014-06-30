@@ -68,6 +68,8 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
+    def __del__(self):
+        pass
 
 class TVCache():
     def __init__(self, provider):
@@ -75,6 +77,9 @@ class TVCache():
         self.provider = provider
         self.providerID = self.provider.getID()
         self.minTime = 10
+
+    def __del__(self):
+        pass
 
     def _getDB(self):
         return CacheDBConnection(self.providerID)
@@ -134,9 +139,7 @@ class TVCache():
         return []
 
     def getRSSFeed(self, url, post_data=None, request_headers=None):
-        with RSSFeeds(self.providerID) as feed:
-            data = feed.getRSSFeed(url, post_data, request_headers)
-        return data
+        return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers)
 
     def _translateTitle(self, title):
         return title.replace(' ', '.')

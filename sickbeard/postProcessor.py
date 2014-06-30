@@ -96,6 +96,8 @@ class PostProcessor(object):
 
         self.log = ''
 
+    def __del__(self):
+        pass
 
     def _log(self, message, level=logger.MESSAGE):
         """

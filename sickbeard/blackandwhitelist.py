@@ -35,6 +35,9 @@ class BlackAndWhiteList(object):
         self.show_id = show_id
         self.refresh()
 
+    def __del__(self):
+        pass
+
     def refresh(self):
         logger.log(u"Building black and white list for " + str(self.show_id), logger.DEBUG)
 

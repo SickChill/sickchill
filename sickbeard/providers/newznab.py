@@ -69,6 +69,9 @@ class NewznabProvider(generic.NZBProvider):
 
         self.default = False
 
+    def __del__(self):
+        pass
+
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback))
 
@@ -291,6 +294,9 @@ class NewznabCache(tvcache.TVCache):
 
         # only poll newznab providers every 15 minutes max
         self.minTime = 15
+
+    def __del__(self):
+        pass
 
     def _getRSSData(self):
 

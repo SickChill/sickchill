@@ -36,6 +36,9 @@ class DailySearcher():
 
         self.amActive = False
 
+    def __del__(self):
+        pass
+
     def run(self, force=False):
 
         self.amActive = True

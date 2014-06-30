@@ -42,3 +42,6 @@ class PostProcesser():
             return
 
         processTV.processDir(sickbeard.TV_DOWNLOAD_DIR)
+
+    def __del__(self):
+        pass

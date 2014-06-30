@@ -44,6 +44,9 @@ class FailedProcessor(object):
 
         self.log = ""
 
+    def __del__(self):
+        pass
+
     def process(self):
         self._log(u"Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
 
