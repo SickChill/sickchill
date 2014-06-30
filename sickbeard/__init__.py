@@ -1300,16 +1300,15 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def cleanup_tornado_sockets(io_loop):
-    for fd in io_loop._handlers.keys():
+def saveAndShutdown():
+    halt()
+    saveAll()
+
+    for fd in IOLoop.current()._handlers.keys():
         try:
             os.close(fd)
         except Exception:
             pass
-
-def saveAndShutdown():
-    halt()
-    saveAll()
 
 def invoke_command(to_call, *args, **kwargs):
 

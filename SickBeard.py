@@ -53,25 +53,20 @@ import threading
 import signal
 import traceback
 import getopt
-import time
 
 import sickbeard
-
-import tornado.ioloop
-import tornado.autoreload
 
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger
 from sickbeard import webserveInit
-from sickbeard import autoreload_shutdown
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
 
 from lib.configobj import ConfigObj
 
-from tornado.ioloop import IOLoop, PeriodicCallback
+from tornado.ioloop import IOLoop
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
