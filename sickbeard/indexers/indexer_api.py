@@ -25,6 +25,9 @@ class indexerApi(object):
     def __init__(self, indexerID=None):
         self.indexerID = int(indexerID) if indexerID else None
 
+    def __del__(self):
+        pass
+
     def indexer(self, *args, **kwargs):
         if self.indexerID:
             return indexerConfig[self.indexerID]['module'](*args, **kwargs)

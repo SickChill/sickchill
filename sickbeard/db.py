@@ -63,7 +63,7 @@ class DBConnection(object):
     def reconnect(self):
         """Closes the existing database connection and re-opens it."""
         self.close()
-        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20)
+        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
         self.connection.isolation_level = None
 
         if self.row_type == "dict":
@@ -111,7 +111,7 @@ class DBConnection(object):
             if self.hasTable('db_version'):
                 result = self.select("SELECT db_version FROM db_version")
         except:
-            pass
+            return 0
 
         if result:
             return int(result[0]["db_version"])
@@ -143,7 +143,9 @@ class DBConnection(object):
                             sqlResult.append(self.execute(qu[0], qu[1]))
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
-                    return sqlResult
+
+                    # finished
+                    break
                 except sqlite3.OperationalError, e:
                     sqlResult = []
                     if self.connection:
@@ -151,7 +153,7 @@ class DBConnection(object):
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(0.02)
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -189,7 +191,7 @@ class DBConnection(object):
                     if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
                         logger.log(u"DB error: " + ex(e), logger.WARNING)
                         attempt += 1
-                        time.sleep(0.02)
+                        time.sleep(1)
                     else:
                         logger.log(u"DB error: " + ex(e), logger.ERROR)
                         raise
@@ -340,11 +342,7 @@ class SchemaUpgrade(object):
         self.connection.action("UPDATE %s SET %s = ?" % (table, column), (default,))
 
     def checkDBVersion(self):
-        result = self.connection.select("SELECT db_version FROM db_version")
-        if result:
-            return int(result[0]["db_version"])
-        else:
-            return 0
+        return self.connection.checkDBVersion()
 
     def incDBVersion(self):
         new_version = self.checkDBVersion() + 1

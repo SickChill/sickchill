@@ -23,11 +23,10 @@ import threading
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common
+from sickbeard import logger, helpers, scene_numbering, common, exceptions
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
-
 
 class NameParser(object):
     ALL_REGEX = 0
@@ -45,6 +44,9 @@ class NameParser(object):
         self.epObj = epObj
         self.convert = convert
         self.naming_pattern = naming_pattern
+
+    def __del__(self):
+        pass
 
     def clean_series_name(self, series_name):
         """Cleans up series name by removing any . and _
@@ -444,6 +446,9 @@ class ParseResult(object):
         self.show = show
         self.score = score
 
+    def __del__(self):
+        pass
+
     def __eq__(self, other):
         if not other:
             return False
@@ -522,13 +527,18 @@ class ParseResult(object):
 
         if self.show.is_anime and len(self.ab_episode_numbers):
             for epAbsNo in self.ab_episode_numbers:
-                a = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
-                if a:
-                    (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [a])
-
-                    new_absolute_numbers.append(a)
-                    new_episode_numbers.extend(e)
-                    new_season_numbers.append(s)
+                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
+                if ab:
+                    try:
+                        (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [ab])
+                    except exceptions.EpisodeNotFoundByAbsoluteNumberException:
+                        logger.log(str(self.show.indexerid) + ": Indexer object absolute number " + str(
+                            ab) + " is incomplete, skipping this episode")
+                        return self
+                    else:
+                        new_absolute_numbers.append(ab)
+                        new_episode_numbers.extend(e)
+                        new_season_numbers.append(s)
 
         elif self.season_number and len(self.episode_numbers):
             for epNo in self.episode_numbers:
@@ -614,6 +624,8 @@ class NameParserCache(object):
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
             return self._previous_parsed[name]
 
+    def __del__(self):
+        pass
 
 name_parser_cache = NameParserCache()
 

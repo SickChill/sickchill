@@ -44,6 +44,9 @@ class Scheduler:
         self.abort = False
         self.force = False
 
+    def __del__(self):
+        pass
+
     def initThread(self):
         if self.thread == None or not self.thread.isAlive():
             self.thread = threading.Thread(None, self.runAction, self.threadName)

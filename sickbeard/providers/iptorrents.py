@@ -65,6 +65,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         self.categorie = 'l73=1&l78=1&l66=1&l65=1&l79=1&l5=1&l4=1'
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -292,6 +295,9 @@ class IPTorrentsCache(tvcache.TVCache):
         # Only poll IPTorrents every 10 minutes max
         self.minTime = 10
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -320,6 +326,7 @@ class IPTorrentsCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
+
 
     def _parseItem(self, item):
 

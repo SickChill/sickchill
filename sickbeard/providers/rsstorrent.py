@@ -52,6 +52,9 @@ class TorrentRssProvider(generic.TorrentProvider):
         else:
           self.cookies = ''
 
+    def __del__(self):
+        pass
+
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
 
@@ -169,6 +172,9 @@ class TorrentRssCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 15
+
+    def __del__(self):
+        pass
 
     def _getRSSData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)

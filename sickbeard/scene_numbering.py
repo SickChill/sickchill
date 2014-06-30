@@ -529,9 +529,6 @@ def xem_refresh(indexer_id, indexer, force=False):
             myDB = db.DBConnection()
             myDB.mass_action(ql)
 
-            # fix xem scene numbering issues
-            # fix_xem_numbering(indexer_id, indexer)
-
 
 def fix_xem_numbering(indexer_id, indexer):
     """

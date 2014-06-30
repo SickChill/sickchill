@@ -47,6 +47,9 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
         self.url = 'http://www.tvtorrents.com/'
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -85,6 +88,9 @@ class TvTorrentsCache(tvcache.TVCache):
 
         # only poll TvTorrents every 15 minutes max
         self.minTime = 15
+
+    def __del__(self):
+        pass
 
     def _getRSSData(self):
         # These will be ignored on the serverside.

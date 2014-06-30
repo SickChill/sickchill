@@ -73,6 +73,9 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.cookies = None
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -351,6 +354,9 @@ class HDTorrentsCache(tvcache.TVCache):
         # only poll HDTorrents every 10 minutes max
         self.minTime = 20
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -379,6 +385,7 @@ class HDTorrentsCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
+
 
     def _parseItem(self, item):
 

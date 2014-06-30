@@ -37,6 +37,7 @@ from sickbeard.rssfeeds import RSSFeeds
 
 cache_lock = threading.Lock()
 
+
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
         db.DBConnection.__init__(self, "cache.db")
@@ -67,6 +68,9 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
+    def __del__(self):
+        pass
+
 class TVCache():
     def __init__(self, provider):
 
@@ -74,20 +78,23 @@ class TVCache():
         self.providerID = self.provider.getID()
         self.minTime = 10
 
-    def _getDB(self):
+    def __del__(self):
+        pass
 
+    def _getDB(self):
         return CacheDBConnection(self.providerID)
 
     def _clearCache(self):
         if self.shouldClearCache():
+            logger.log(u"Clearing " + self.provider.name + " cache")
+
             curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
             myDB = self._getDB()
             myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
             # clear RSS Feed cache
-            with RSSFeeds(self.providerID)  as feed:
-                feed.clearCache(int(time.mktime(curDate.timetuple())))
+            RSSFeeds(self.providerID).clearCache()
 
     def _getRSSData(self):
 
@@ -103,14 +110,9 @@ class TVCache():
 
     def updateCache(self):
 
-        # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
-        self._clearCache()
+        if self.shouldUpdate() and self._checkAuth(None):
+            self._clearCache()
 
-        if not self.shouldUpdate():
-            return
-
-        if self._checkAuth(None):
             data = self._getRSSData()
 
             # as long as the http request worked we count this as an update
@@ -129,7 +131,6 @@ class TVCache():
                 if cl:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
-
             else:
                 raise AuthException(
                     u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
@@ -137,9 +138,7 @@ class TVCache():
         return []
 
     def getRSSFeed(self, url, post_data=None, request_headers=None):
-        with RSSFeeds(self.providerID) as feed:
-            data = feed.getRSSFeed(url, post_data, request_headers)
-        return data
+        return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers)
 
     def _translateTitle(self, title):
         return title.replace(' ', '.')
@@ -219,10 +218,10 @@ class TVCache():
 
     def shouldUpdate(self):
         # if we've updated recently then skip the update
-        # if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
-        #    logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
-        #        datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
-        #    return False
+        if datetime.datetime.today() - self.lastUpdate < datetime.timedelta(minutes=self.minTime):
+            logger.log(u"Last update was too soon, using old cache: today()-" + str(self.lastUpdate) + "<" + str(
+                datetime.timedelta(minutes=self.minTime)), logger.DEBUG)
+            return False
 
         return True
 
@@ -230,7 +229,7 @@ class TVCache():
         # if daily search hasn't used our previous results yet then don't clear the cache
         if self.lastUpdate > self.lastSearch:
             logger.log(
-                u"Daily search has not yet searched our last cache results, skipping clearig cache ...", logger.DEBUG)
+                u"Daily search has not yet used our last cache results, not clearing cache ...", logger.DEBUG)
             return False
 
         return True

@@ -1078,9 +1078,9 @@ def get_show_by_name(name, useIndexer=False):
         if showObj:
             return showObj
         if not showObj and sickbeard.showList:
-            if name in sickbeard.scene_exceptions.exceptionIndexerCache:
-                showObj = findCertainShow(sickbeard.showList,
-                                          int(sickbeard.scene_exceptions.exceptionIndexerCache[name]))
+            scene_indexerid, scene_season = sickbeard.scene_exceptions.get_scene_exception_by_name(name)
+            if scene_indexerid:
+                showObj = findCertainShow(sickbeard.showList, scene_indexerid)
 
             if useIndexer and not showObj:
                 (sn, idx, id) = searchIndexerForShowID(name, ui=classes.ShowListUI)

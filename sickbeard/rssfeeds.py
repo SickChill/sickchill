@@ -23,23 +23,14 @@ class RSSFeeds:
             logger.log(u"RSS error: " + ex(e), logger.ERROR)
             raise
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, tb):
-        self.fc = None
+    def __del__(self):
         self.fs.close()
 
     def clearCache(self, age=None):
-        if not self.fc:
-            return
+        with feed_lock:
+            self.fc.purge(age)
 
-        self.fc.purge(age)
-
-    def getRSSFeed(self, url, post_data=None, request_headers=None):
-        if not self.fc:
-            return
-
+    def getFeed(self, url, post_data=None, request_headers=None):
         with feed_lock:
             parsed = list(urlparse.urlparse(url))
             parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
@@ -59,4 +50,4 @@ class RSSFeeds:
                 logger.log(u"No RSS items found using URL: " + url, logger.WARNING)
                 return
 
-        return feed
+            return feed

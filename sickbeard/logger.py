@@ -67,6 +67,9 @@ class SBRotatingLogHandler(object):
         self.console_logging = False
         self.log_lock = threading.Lock()
 
+    def __del__(self):
+        pass
+
     def close_log(self, handler=None):
         if not handler:
             handler = self.cur_handler
@@ -301,6 +304,9 @@ class DispatchingFormatter:
     def __init__(self, formatters, default_formatter):
         self._formatters = formatters
         self._default_formatter = default_formatter
+
+    def __del__(self):
+        pass
 
     def format(self, record):
         formatter = self._formatters.get(record.name, self._default_formatter)

@@ -35,6 +35,9 @@ class BlackAndWhiteList(object):
         self.show_id = show_id
         self.refresh()
 
+    def __del__(self):
+        pass
+
     def refresh(self):
         logger.log(u"Building black and white list for " + str(self.show_id), logger.DEBUG)
 
@@ -207,7 +210,6 @@ class BlackWhiteKeyword(object):
     def __init__(self, range, values):
         self.range = range # "global" or a parser group
         self.value = values # a list of values may contain only one item (still a list)
-
 
 class BlackWhitelistNoShowIDException(Exception):
     "No show_id was given"

@@ -66,6 +66,9 @@ class SpeedCDProvider(generic.TorrentProvider):
 
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c49': 1}, 'RSS': {'c14': 1, 'c2': 1, 'c49': 1}}
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -276,6 +279,9 @@ class SpeedCDCache(tvcache.TVCache):
         # only poll Speedcd every 20 minutes max
         self.minTime = 20
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -304,6 +310,7 @@ class SpeedCDCache(tvcache.TVCache):
         if ql:
             myDB = self._getDB()
             myDB.mass_action(ql)
+
 
     def _parseItem(self, item):
 

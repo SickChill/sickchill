@@ -120,7 +120,7 @@ class Api(webserve.MainHandler):
 
     def builder(self):
         """ expose the api-builder template """
-        t = webserve.PageTemplate(file="apiBuilder.tmpl")
+        t = webserve.PageTemplate(headers=self.request.headers, file="apiBuilder.tmpl")
 
         def titler(x):
             if not x or sickbeard.SORT_ARTICLE:
@@ -1007,6 +1007,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+
 
         extra_msg = ""
         if start_backlog:

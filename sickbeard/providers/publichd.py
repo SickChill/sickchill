@@ -67,6 +67,9 @@ class PublicHDProvider(generic.TorrentProvider):
 
         self.categories = {'Season': ['23'], 'Episode': ['7', '14', '24'], 'RSS': ['7', '14', '23', '24']}
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -314,6 +317,9 @@ class PublicHDCache(tvcache.TVCache):
         # only poll ThePirateBay every 10 minutes max
         self.minTime = 20
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -342,6 +348,7 @@ class PublicHDCache(tvcache.TVCache):
         if ql:
             myDB = self._getDB()
             myDB.mass_action(ql)
+
 
     def _parseItem(self, item):
 

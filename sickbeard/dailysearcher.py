@@ -36,6 +36,9 @@ class DailySearcher():
 
         self.amActive = False
 
+    def __del__(self):
+        pass
+
     def run(self, force=False):
 
         self.amActive = True
@@ -85,10 +88,10 @@ class DailySearcher():
             with ep.lock:
                 if ep.show.paused:
                     ep.status = common.SKIPPED
-                else:
-                    if ep.status == common.UNAIRED:
-                        logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
-                        ep.status = common.WANTED
+
+                if ep.status == common.UNAIRED:
+                    logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
+                    ep.status = common.WANTED
 
                 if ep.status == common.WANTED:
                     if show not in todaysEps:
@@ -101,6 +104,7 @@ class DailySearcher():
         if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+
 
         if len(todaysEps):
             for show in todaysEps:

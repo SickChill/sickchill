@@ -54,25 +54,20 @@ import threading
 import signal
 import traceback
 import getopt
-import time
 
 import sickbeard
-
-import tornado.ioloop
-import tornado.autoreload
 
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger
 from sickbeard import webserveInit
-from sickbeard import autoreload_shutdown
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
 
 from lib.configobj import ConfigObj
 
-from tornado.ioloop import IOLoop, PeriodicCallback
+from tornado.ioloop import IOLoop
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
@@ -84,9 +79,12 @@ def loadShowsFromDB():
     Populates the showList with shows from the database
     """
 
+    logger.log(u"Loading initial show list")
+
     myDB = db.DBConnection()
     sqlResults = myDB.select("SELECT * FROM tv_shows")
 
+    sickbeard.showList = []
     for sqlShow in sqlResults:
         try:
             curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
@@ -329,17 +327,11 @@ def main():
     # Initialize the config and our threads
     sickbeard.initialize(consoleLogging=consoleLogging)
 
-    sickbeard.showList = []
-
     if sickbeard.DAEMON:
         daemonize()
 
     # Use this PID for everything
     sickbeard.PID = os.getpid()
-
-    # Build from the DB to start with
-    logger.log(u"Loading initial show list")
-    loadShowsFromDB()
 
     if forcedPort:
         logger.log(u"Forcing web server to port " + str(forcedPort))
@@ -386,28 +378,35 @@ def main():
             sickbeard.launchBrowser(startPort)
         sys.exit()
 
-    def startup():
-        # Fire up all our threads
-        sickbeard.start()
+    # Build from the DB to start with
+    loadShowsFromDB()
 
-        # Launch browser if we're supposed to
-        if sickbeard.LAUNCH_BROWSER and not noLaunch and not sickbeard.DAEMON and not sickbeard.restarted:
-            sickbeard.launchBrowser(startPort)
+    # Fire up all our threads
+    sickbeard.start()
 
-        # Start an update if we're supposed to
-        if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-            sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+    # Launch browser if we're supposed to
+    if sickbeard.LAUNCH_BROWSER and not noLaunch:
+        sickbeard.launchBrowser(startPort)
 
-        # If we restarted then unset the restarted flag
-        if sickbeard.restarted:
-            sickbeard.restarted = False
+    # Start an update if we're supposed to
+    if forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
+        sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
-    # create ioloop
+    # If we restarted then unset the restarted flag
+    if sickbeard.restarted:
+        sickbeard.restarted = False
+
+    # IOLoop
     io_loop = IOLoop.current()
 
-    io_loop.add_timeout(datetime.timedelta(seconds=5), startup)
+    # Open browser window
+    if sickbeard.LAUNCH_BROWSER and not (noLaunch or sickbeard.DAEMON or sickbeard.restarted):
+        io_loop.add_timeout(datetime.timedelta(seconds=5), functools.partial(sickbeard.launchBrowser, startPort))
 
+    # Start web server
     io_loop.start()
+
+    # Save and restart/shutdown
     sickbeard.saveAndShutdown()
 
 if __name__ == "__main__":

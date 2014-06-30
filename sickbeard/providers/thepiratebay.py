@@ -67,6 +67,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         self.re_title_url = '/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -409,6 +412,9 @@ class ThePirateBayCache(tvcache.TVCache):
         # only poll ThePirateBay every 10 minutes max
         self.minTime = 20
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -437,6 +443,7 @@ class ThePirateBayCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
+
 
     def _parseItem(self, item):
 
@@ -469,6 +476,9 @@ class ThePirateBayWebproxy:
             'Unblockersurf.info (DK)': 'http://unblockersurf.info/',
             'Hiload.org (NL)': 'http://hiload.org/',
         }
+
+    def __del__(self):
+        pass
 
     def isEnabled(self):
         """ Return True if we Choose to call TPB via Proxy """

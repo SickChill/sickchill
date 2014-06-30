@@ -33,6 +33,9 @@ class ImageCache:
     def __init__(self):
         pass
 
+    def __del__(self):
+        pass
+
     def _cache_dir(self):
         """
         Builds up the full path to the image cache directory

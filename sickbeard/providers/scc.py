@@ -73,6 +73,9 @@ class SCCProvider(generic.TorrentProvider):
 
         self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -336,6 +339,9 @@ class SCCCache(tvcache.TVCache):
         # only poll SCC every 10 minutes max
         self.minTime = 20
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -364,6 +370,7 @@ class SCCCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
+
 
     def _parseItem(self, item):
 

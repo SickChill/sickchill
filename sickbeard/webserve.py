@@ -129,17 +129,16 @@ class HTTPRedirect(Exception):
     """Exception raised when the request should be redirected."""
 
     def __init__(self, url, permanent=False, status=None):
-        self.url = url
+        self.url = urlparse.urljoin(sickbeard.WEB_ROOT, url)
         self.permanent = permanent
         self.status = status
-        Exception.__init__(self, url, permanent, status)
+        Exception.__init__(self, self.url, self.permanent, self.status)
 
     def __call__(self):
         """Use this exception as a request.handler (raise self)."""
         raise self
 
 def redirect(url, permanent=False, status=None):
-    url = urlparse.urljoin(sickbeard.WEB_ROOT, url)
     raise HTTPRedirect(url, permanent, status)
 
 @authenticated
@@ -172,6 +171,10 @@ class MainHandler(RequestHandler):
         path = self.request.uri.replace(sickbeard.WEB_ROOT, '').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
+
+        if method == 'robots.txt':
+            method = 'robots_txt'
+
         if path.startswith('/api') and method != 'builder':
             apikey = path.strip('/').split('/')[-1]
             method = path.strip('/').split('/')[0]
@@ -225,7 +228,7 @@ class MainHandler(RequestHandler):
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
         self.set_header('Content-Type', 'text/plain')
-        return 'User-agent: *\nDisallow: /\n'
+        return "User-agent: *\nDisallow: /"
 
     def showPoster(self, show=None, which=None):
         # Redirect initial poster/banner thumb to default images
@@ -3995,6 +3998,7 @@ class Home(MainHandler):
             if sql_l:
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
+
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"

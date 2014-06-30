@@ -224,9 +224,6 @@ class Anime(aniDBabstractObject):
 class Episode(aniDBabstractObject):
 
     def __init__(self, aniDB, number=None, epid=None, filePath=None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
-        if not aniDB and not number and not epid and not file and not fid:
-            return None
-
         self.maper = AniDBMaper()
         self.epid = epid
         self.filePath = filePath

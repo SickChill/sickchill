@@ -176,6 +176,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 
+
     return True
 
 

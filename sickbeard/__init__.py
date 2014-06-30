@@ -22,7 +22,8 @@ import webbrowser
 import time
 import datetime
 import socket
-import os, sys, subprocess, re
+import os
+import re
 
 from urllib2 import getproxies
 from threading import Lock
@@ -102,7 +103,6 @@ AUTO_UPDATE = None
 CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
-__INITIALIZED__ = False
 started = False
 restarted = False
 
@@ -433,8 +433,8 @@ CALENDAR_UNPROTECTED = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 
-__INITIALIZED__ = False
 
+__INITIALIZED__ = False
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -478,7 +478,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, RES
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -1300,13 +1300,6 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def cleanup_tornado_sockets(io_loop):
-    for fd in io_loop._handlers.keys():
-        try:
-            os.close(fd)
-        except Exception:
-            pass
-
 def saveAndShutdown():
     halt()
     saveAll()
@@ -1798,17 +1791,3 @@ def getEpList(epIDs, showid=None):
         epList.append(curEpObj)
 
     return epList
-
-
-def autoreload_shutdown():
-    logger.log('SickRage is now auto-reloading, please stand by ...')
-
-    # halt all tasks
-    halt()
-
-    # save  settings
-    saveAll()
-
-    if CREATEPID:
-        logger.log(u"Removing pidfile " + str(PIDFILE))
-        remove_pid_file(PIDFILE)

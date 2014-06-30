@@ -43,6 +43,9 @@ class SearchQueue(generic_queue.GenericQueue):
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "SEARCHQUEUE"
 
+    def __del__(self):
+        pass
+
     def is_in_queue(self, show, segment):
         for cur_item in self.queue:
             if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
@@ -93,6 +96,9 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
 
+    def __del__(self):
+        pass
+
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
@@ -124,6 +130,9 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.success = None
         self.show = show
         self.segment = segment
+
+    def __del__(self):
+        pass
 
     def execute(self):
         generic_queue.QueueItem.execute(self)
@@ -168,6 +177,9 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
 
+    def __del__(self):
+        pass
+
     def execute(self):
         generic_queue.QueueItem.execute(self)
 
@@ -210,6 +222,9 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.success = None
+
+    def __del__(self):
+        pass
 
     def execute(self):
         generic_queue.QueueItem.execute(self)

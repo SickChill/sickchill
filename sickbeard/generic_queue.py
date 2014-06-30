@@ -43,6 +43,9 @@ class GenericQueue(object):
 
         self.lock = threading.Lock()
 
+    def __del__(self):
+        pass
+
     def pause(self):
         logger.log(u"Pausing queue")
         self.min_priority = 999999999999
@@ -115,6 +118,9 @@ class QueueItem:
         self.action_id = action_id
         
         self.added = None
+
+    def __del__(self):
+        pass
 
     def get_thread_name(self):
         if self.thread_name:

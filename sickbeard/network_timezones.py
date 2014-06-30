@@ -165,6 +165,7 @@ def update_network_dict():
         pass
 
     myDB = db.DBConnection('cache.db')
+
     # load current network timezones
     old_d = dict(myDB.select("SELECT * FROM network_timezones"))
 
@@ -181,10 +182,12 @@ def update_network_dict():
             ql.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
         if h_k:
             del old_d[cur_d]
+
     # remove deleted records
     if len(old_d) > 0:
         L = list(va for va in old_d)
         ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
+
     # change all network timezone infos at once (much faster)
     if ql:
         myDB.mass_action(ql)

@@ -103,3 +103,6 @@ class ShowUpdater():
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", piList))
 
         logger.log(u"Completed full update on all shows")
+
+    def __del__(self):
+        pass

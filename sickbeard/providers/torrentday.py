@@ -72,6 +72,9 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.categories = {'Season': {'c14': 1}, 'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1},
                            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c14': 1}}
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -300,6 +303,9 @@ class TorrentDayCache(tvcache.TVCache):
         # Only poll IPTorrents every 10 minutes max
         self.minTime = 10
 
+    def __del__(self):
+        pass
+
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -328,6 +334,7 @@ class TorrentDayCache(tvcache.TVCache):
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
+
 
     def _parseItem(self, item):
 

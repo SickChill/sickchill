@@ -49,6 +49,9 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.url = 'https://omgwtfnzbs.org/'
         self.supportsBacklog = True
 
+    def __del__(self):
+        pass
+
     def isEnabled(self):
         return self.enabled
 
@@ -156,6 +159,9 @@ class OmgwtfnzbsCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 20
+
+    def __del__(self):
+        pass
 
     def _getRSSData(self):
         params = {'user': provider.username,
