@@ -18,6 +18,7 @@
 
 import re
 import time
+import threading
 import sickbeard
 
 from lib import adba
@@ -25,6 +26,8 @@ from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
+
+scene_lock = threading.Lock()
 
 def shouldRefresh(list):
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
@@ -59,6 +62,7 @@ def get_scene_exceptions(indexer_id, season=-1):
         if season == 1:  # if we where looking for season 1 we can add generic names
             exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
+    del exceptions
     return exceptionsList
 
 
@@ -74,6 +78,7 @@ def get_all_scene_exceptions(indexer_id):
                 exceptionsList[cur_exception["season"]] = []
             exceptionsList[cur_exception["season"]].append(cur_exception["show_name"])
 
+    del exceptions
     return exceptionsList
 
 
@@ -121,6 +126,10 @@ def get_scene_exception_by_name_multiple(show_name):
                 sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
             logger.log(u"Scene exception lookup got indexer id " + str(cur_indexer_id) + u", using that", logger.DEBUG)
             out.append((cur_indexer_id, cur_season))
+
+    # cleanup
+    del all_exception_results
+
     if out:
         return out
     else:
@@ -210,7 +219,6 @@ def retrieve_exceptions():
         logger.log(u"No scene exceptions update needed")
 
     # cleanup
-    del existing_exceptions
     del exception_dict
 
 def update_scene_exceptions(indexer_id, scene_exceptions):
@@ -222,7 +230,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
 
     logger.log(u"Updating scene exceptions", logger.MESSAGE)
-    for cur_season in [-1] + sickbeard.scene_exceptions.get_scene_seasons(indexer_id):
+    for cur_season in [-1] + get_scene_seasons(indexer_id):
         for cur_exception in scene_exceptions:
             myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
                         [indexer_id, cur_exception, cur_season, 1])

@@ -22,7 +22,8 @@ import webbrowser
 import time
 import datetime
 import socket
-import os, sys, subprocess, re
+import os
+import re
 
 from urllib2 import getproxies
 from threading import Lock
@@ -90,10 +91,10 @@ traktCheckerScheduler = None
 showList = None
 loadingShowList = None
 
-providerList = None
-newznabProviderList = None
-torrentRssProviderList = None
-metadata_provider_dict = None
+providerList = []
+newznabProviderList = []
+torrentRssProviderList = []
+metadata_provider_dict = {}
 
 NEWEST_VERSION = None
 NEWEST_VERSION_STRING = None
@@ -102,7 +103,6 @@ AUTO_UPDATE = None
 CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
-__INITIALIZED__ = False
 started = False
 restarted = False
 
@@ -161,7 +161,7 @@ INDEXER_DEFAULT = None
 INDEXER_TIMEOUT = None
 SCENE_DEFAULT = None
 ANIME_DEFAULT = None
-PROVIDER_ORDER = None
+PROVIDER_ORDER = []
 
 NAMING_MULTI_EP = None
 NAMING_PATTERN = None
@@ -413,17 +413,17 @@ TIME_PRESET_W_SECONDS = None
 TIMEZONE_DISPLAY = None
 
 USE_SUBTITLES = False
-SUBTITLES_LANGUAGES = None
+SUBTITLES_LANGUAGES = []
 SUBTITLES_DIR = ''
-SUBTITLES_SERVICES_LIST = None
-SUBTITLES_SERVICES_ENABLED = None
+SUBTITLES_SERVICES_LIST = []
+SUBTITLES_SERVICES_ENABLED = []
 SUBTITLES_HISTORY = False
 SUBTITLES_FINDER_FREQUENCY = 1
 
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
 
-EXTRA_SCRIPTS = None
+EXTRA_SCRIPTS = []
 
 GIT_PATH = None
 
@@ -433,8 +433,8 @@ CALENDAR_UNPROTECTED = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 
-__INITIALIZED__ = False
 
+__INITIALIZED__ = False
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
@@ -478,7 +478,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT, RES
+            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -1791,17 +1791,3 @@ def getEpList(epIDs, showid=None):
         epList.append(curEpObj)
 
     return epList
-
-
-def autoreload_shutdown():
-    logger.log('SickRage is now auto-reloading, please stand by ...')
-
-    # halt all tasks
-    halt()
-
-    # save  settings
-    saveAll()
-
-    if CREATEPID:
-        logger.log(u"Removing pidfile " + str(PIDFILE))
-        remove_pid_file(PIDFILE)

@@ -83,6 +83,7 @@ def loadShowsFromDB():
     myDB = db.DBConnection()
     sqlResults = myDB.select("SELECT * FROM tv_shows")
 
+    sickbeard.showList = []
     for sqlShow in sqlResults:
         try:
             curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))

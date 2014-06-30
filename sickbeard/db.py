@@ -63,7 +63,7 @@ class DBConnection(object):
     def reconnect(self):
         """Closes the existing database connection and re-opens it."""
         self.close()
-        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20)
+        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
         self.connection.isolation_level = None
 
         if self.row_type == "dict":
@@ -164,10 +164,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-            # cleanup
-            del querylist
-
-            return sqlResult
+        return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
 
@@ -202,7 +199,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-            return sqlResult
+        return sqlResult
 
     def select(self, query, args=None):
 
