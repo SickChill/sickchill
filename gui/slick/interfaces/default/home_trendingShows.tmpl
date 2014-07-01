@@ -1,0 +1,58 @@
+#import sickbeard
+#import datetime
+#import re
+#from sickbeard.common import *
+#from sickbeard import sbdatetime
+
+#set global $title="Trending Shows"
+#set global $header="Trending Shows"
+
+#set global $sbPath=".."
+
+#set global $topmenu="comingEpisodes"
+#import os.path
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+
+<script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
+<link rel="stylesheet" type="text/css" href="$sbRoot/css/trakt.css?$sbPID" />
+
+#if $varExists('header')
+	<h1 class="header">$header</h1>
+#else 
+	<h1 class="title">$title</h1>
+#end if
+
+<div class="traktShowDiv">
+<table width="100%" cellspacing="1" border="0" cellpadding="0">
+#for $i, $cur_show in $enumerate($trending_shows):
+<div id="listing_${cur_show["tvdb_id"]}">
+
+#if not $i%4
+<tr>
+#end if
+
+<th style="background-color: #efefef;" valign="top">
+<td class="trakt_show">
+    <a href="${cur_show["url"]}"><img alt="" class="traktPosterThumb" src="${cur_show["images"]["poster"]}" /></a>
+    <div class="clearfix">
+        <h2>$cur_show["ratings"]["percentage"]% <img src="$sbRoot/images/like.png"></h2>
+        <i>$cur_show["ratings"]["votes"] votes</i>
+
+        <div class="traktShowTitleIcons">
+            <a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show["tvdb_id"]}&amp;showName=${cur_show["title"]}"><img alt="[add show]" height="16" width="16" src="$sbRoot/images/plus.png"></a>
+        </div>
+    </div>
+</td>
+</th>
+</div>
+#end for
+</table>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+<!--
+window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
+//-->
+</script>
+
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")

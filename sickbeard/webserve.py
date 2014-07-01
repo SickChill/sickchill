@@ -48,7 +48,7 @@ from sickbeard import subtitles
 from sickbeard import network_timezones
 
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
+from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets, SKIPPED
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
@@ -81,6 +81,7 @@ from lib import adba
 
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError
+
 
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
@@ -125,6 +126,7 @@ def authenticated(handler_class):
     handler_class._execute = wrap_execute(handler_class._execute)
     return handler_class
 
+
 class HTTPRedirect(Exception):
     """Exception raised when the request should be redirected."""
 
@@ -138,8 +140,10 @@ class HTTPRedirect(Exception):
         """Use this exception as a request.handler (raise self)."""
         raise self
 
+
 def redirect(url, permanent=False, status=None):
     raise HTTPRedirect(url, permanent, status)
+
 
 @authenticated
 class MainHandler(RequestHandler):
@@ -216,7 +220,7 @@ class MainHandler(RequestHandler):
     def get(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
-        except HTTPRedirect,inst:
+        except HTTPRedirect, inst:
             self.redirect(inst.url, inst.permanent, inst.status)
 
     def post(self, *args, **kwargs):
@@ -462,6 +466,7 @@ class MainHandler(RequestHandler):
 
     browser = WebFileBrowser
 
+
 class PageTemplate(Template):
     def __init__(self, headers, *args, **KWs):
         KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
@@ -499,7 +504,7 @@ class PageTemplate(Template):
             {'title': 'Manage', 'key': 'manage'},
             {'title': 'Config', 'key': 'config'},
             {'title': logPageTitle, 'key': 'errorlogs'},
-            ]
+        ]
 
 
 class IndexerWebUI(MainHandler):
@@ -517,6 +522,7 @@ class IndexerWebUI(MainHandler):
 
 def _munge(string):
     return unicode(string).encode('utf-8', 'xmlcharrefreplace')
+
 
 def _getEpisode(show, season=None, episode=None, absolute=None):
     if show is None:
@@ -2643,7 +2649,7 @@ class NewHomeAddShows(MainHandler):
                     'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
                         os.path.basename,
                         cur_path),
-                }
+                    }
 
                 # see if the folder is in XBMC already
                 dirResults = myDB.select("SELECT * FROM tv_shows WHERE location = ?", [cur_path])
@@ -2745,10 +2751,10 @@ class NewHomeAddShows(MainHandler):
             logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
             return
 
-        map(final_results.append, ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
-                                    datetime.date.fromtimestamp(show['first_aired']).strftime('%Y%m%d')] for show in
-                                   recommendedlist if
-                                   not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
+        map(final_results.append,
+            ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
+              datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')] for show in
+             recommendedlist if not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
 
         return json.dumps({'results': final_results})
 
@@ -2764,10 +2770,22 @@ class NewHomeAddShows(MainHandler):
         show_name = whichSeries.split('|')[2]
 
         return self.addNewShow('|'.join([indexer_name, str(indexer), show_url, indexer_id, show_name, ""]),
-                        indexerLang, rootDir,
-                        defaultStatus,
-                        anyQualities, bestQualities, flatten_folders, subtitles, fullShowPath, other_shows,
-                        skipShow, providedIndexer, anime, scene)
+                               indexerLang, rootDir,
+                               defaultStatus,
+                               anyQualities, bestQualities, flatten_folders, subtitles, fullShowPath, other_shows,
+                               skipShow, providedIndexer, anime, scene)
+
+    def trendingShows(self, *args, **kwargs):
+        """
+        Display the new show page which collects a tvdb id, folder, and extra options and
+        posts them to addNewShow
+        """
+        t = PageTemplate(headers=self.request.headers, file="home_trendingShows.tmpl")
+        t.submenu = HomeMenu()
+
+        t.trending_shows = TraktCall("shows/trending.json/%API%/", sickbeard.TRAKT_API_KEY)
+
+        return _munge(t)
 
     def existingShows(self, *args, **kwargs):
         """
@@ -2778,6 +2796,33 @@ class NewHomeAddShows(MainHandler):
 
         return _munge(t)
 
+    def addTraktShow(self, indexer_id, showName):
+        if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
+            return
+
+        root_dirs = sickbeard.ROOT_DIRS.split('|')
+        location = root_dirs[int(root_dirs[0]) + 1]
+
+        show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
+        dir_exists = helpers.makeDir(show_dir)
+        if not dir_exists:
+            logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
+            return
+        else:
+            helpers.chmodAsParent(show_dir)
+
+        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir,
+                                                    default_status=sickbeard.STATUS_DEFAULT,
+                                                    quality=sickbeard.QUALITY_DEFAULT,
+                                                    flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                                                    subtitles=sickbeard.SUBTITLES_DEFAULT,
+                                                    anime=sickbeard.ANIME_DEFAULT,
+                                                    scene=sickbeard.SCENE_DEFAULT)
+
+        ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
+
+        # done adding show
+        redirect('/home/')
 
     def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
@@ -3394,7 +3439,7 @@ class Home(MainHandler):
             return _munge(t)
         else:
             return self._genericMessage("Update Failed",
-                                   "Update wasn't successful, not restarting. Check your log for more information.")
+                                        "Update wasn't successful, not restarting. Check your log for more information.")
 
 
     def displayShow(self, show=None):
@@ -3999,7 +4044,6 @@ class Home(MainHandler):
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
 
-
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             for season in segment:
@@ -4294,9 +4338,9 @@ class Home(MainHandler):
 
         return json.dumps({'result': 'failure'})
 
+
 class UI(MainHandler):
     def add_message(self):
-
         ui.notifications.message('Test 1', 'This is test number 1')
         ui.notifications.error('Test 2', 'This is test number 2')
 
@@ -4307,8 +4351,8 @@ class UI(MainHandler):
         cur_notification_num = 1
         for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
             messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                   'message': cur_notification.message,
-                                                                   'type': cur_notification.type}
+                                                                     'message': cur_notification.message,
+                                                                     'type': cur_notification.type}
             cur_notification_num += 1
 
         return json.dumps(messages)

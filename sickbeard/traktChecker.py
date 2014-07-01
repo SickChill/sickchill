@@ -147,9 +147,9 @@ class TraktChecker():
         """
         Adds a new show with the default settings
         """
-        showObj = helpers.findCertainShow(sickbeard.showList, int(indexerid))
-        if showObj != None:
+        if helpers.findCertainShow(sickbeard.showList, int(indexerid)):
             return
+
         logger.log(u"Adding show " + str(indexerid))
         root_dirs = sickbeard.ROOT_DIRS.split('|')
         location = root_dirs[int(root_dirs[0]) + 1]
@@ -161,6 +161,7 @@ class TraktChecker():
             return
         else:
             helpers.chmodAsParent(showPath)
+
         sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
                                                     int(sickbeard.QUALITY_DEFAULT),
                                                     int(sickbeard.FLATTEN_FOLDERS_DEFAULT))

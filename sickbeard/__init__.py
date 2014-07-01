@@ -432,7 +432,7 @@ IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 CALENDAR_UNPROTECTED = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
-
+TRAKT_API_KEY = 'abd806c54516240c76e4ebc9c5ccf394'
 
 __INITIALIZED__ = False
 def initialize(consoleLogging=True):
