@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import webbrowser
-import time
 import datetime
 import socket
 import os
@@ -104,7 +103,7 @@ CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
 started = False
-restarted = False
+shutdown = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -1284,9 +1283,12 @@ def remove_pid_file(PIDFILE):
 
 
 def sig_handler(signum=None, frame=None):
+    global shutdown
+
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        webserveInit.shutdown()
+        shutdown = True
+        IOLoop.current().stop()
 
 def saveAll():
     global showList
@@ -1300,9 +1302,23 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def saveAndShutdown():
+def saveAndShutdown(restart=False):
+    global shutdown
+
+    if not restart:
+        shutdown = True
+
+    # stop tornado web server
+    webserveInit.server.stop()
+
+    # stop all tasks
     halt()
+
+    # save all shows to db
     saveAll()
+
+    #stop tornado io loop
+    IOLoop.current().stop()
 
 def invoke_command(to_call, *args, **kwargs):
 
@@ -1319,21 +1335,18 @@ def invoke_restart(soft=True):
 
 
 def invoke_shutdown():
-    invoke_command(webserveInit.shutdown)
-
+    global shutdown
+    shutdown = True
+    invoke_command(IOLoop.current().stop)
 
 def restart(soft=True):
-    global restarted
-
     if soft:
         halt()
         saveAll()
         logger.log(u"Re-initializing all data")
         initialize()
     else:
-        restarted=True
-        time.sleep(5)
-        webserveInit.shutdown()
+        IOLoop.current().stop()
 
 
 def save_config():

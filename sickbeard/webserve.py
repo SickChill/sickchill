@@ -3099,9 +3099,9 @@ class Home(MainHandler):
 
         if sickbeard.started:
             return callback + '(' + json.dumps(
-                {"msg": str(sickbeard.PID), "restarted": str(sickbeard.restarted)}) + ');'
+                {"msg": str(sickbeard.PID)}) + ');'
         else:
-            return callback + '(' + json.dumps({"msg": "nope", "restarted": str(sickbeard.restarted)}) + ');'
+            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
 
 
     def index(self, *args, **kwargs):
@@ -3423,7 +3423,6 @@ class Home(MainHandler):
         threading.Timer(5, sickbeard.invoke_restart, [False]).start()
 
         return _munge(t)
-
 
     def update(self, pid=None):
 

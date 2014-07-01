@@ -105,16 +105,14 @@ def initWebServer(options={}):
     logger.log(u"Starting SickRage on " + protocol + "://" + str(options['host']) + ":" + str(
         options['port']) + "/")
 
-    if not sickbeard.restarted:
-        server.listen(options['port'], options['host'])
+    server.listen(options['port'], options['host'])
 
 def shutdown():
-    global server
 
-    logger.log('Shutting down tornado io loop')
+    logger.log('Shutting down tornado IO loop')
     try:
         IOLoop.current().stop()
     except RuntimeError:
         pass
     except:
-        logger.log('Failed shutting down tornado io loop: %s' % traceback.format_exc(), logger.ERROR)
+        logger.log('Failed shutting down tornado IO loop: %s' % traceback.format_exc(), logger.ERROR)
