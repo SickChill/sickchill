@@ -331,6 +331,8 @@ class TorrentDayCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
+            time.sleep(.2)
+
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)

@@ -1,26 +1,3 @@
-'''
-***
-Modified generic daemon class
-***
-
-Author:         http://www.jejik.com/articles/2007/02/
-                        a_simple_unix_linux_daemon_in_python/www.boxedice.com
-
-License:        http://creativecommons.org/licenses/by-sa/3.0/
-
-Changes:        23rd Jan 2009 (David Mytton <david@boxedice.com>)
-                - Replaced hard coded '/dev/null in __init__ with os.devnull
-                - Added OS check to conditionally remove code that doesn't
-                  work on OS X
-                - Added output to console on completion
-                - Tidied up formatting
-                11th Mar 2009 (David Mytton <david@boxedice.com>)
-                - Fixed problem with daemon exiting on Python 2.4
-                  (before SystemExit was part of the Exception base)
-                13th Aug 2010 (David Mytton <david@boxedice.com>
-                - Fixed unhandled exception if PID file is empty
-'''
-
 # Core modules
 import atexit
 import os
@@ -57,7 +34,7 @@ class Daemon(object):
             pid = os.fork()
             if pid > 0:
                 # Exit first parent
-                sys.exit(0)
+                os._exit(0)
         except OSError, e:
             sys.stderr.write(
                 "fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
@@ -73,7 +50,7 @@ class Daemon(object):
             pid = os.fork()
             if pid > 0:
                 # Exit from second parent
-                sys.exit(0)
+                os._exit(0)
         except OSError, e:
             sys.stderr.write(
                 "fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
@@ -93,11 +70,6 @@ class Daemon(object):
             os.dup2(so.fileno(), sys.stdout.fileno())
             os.dup2(se.fileno(), sys.stderr.fileno())
 
-        def sigtermhandler(signum, frame):
-            self.daemon_alive = False
-            signal.signal(signal.SIGTERM, sigtermhandler)
-            signal.signal(signal.SIGINT, sigtermhandler)
-
         if self.verbose >= 1:
             print "Started"
 
@@ -110,42 +82,37 @@ class Daemon(object):
     def delpid(self):
         os.remove(self.pidfile)
 
-    def start(self, daemonize=True, *args, **kwargs):
+    def start(self, *args, **kwargs):
         """
         Start the daemon
         """
 
-        if daemonize:
-            if self.verbose >= 1:
-                print "Starting..."
+        if self.verbose >= 1:
+            print "Starting..."
 
-            # Check for a pidfile to see if the daemon already runs
-            try:
-                pf = file(self.pidfile, 'r')
-                pid = int(pf.read().strip())
-                pf.close()
-            except IOError:
-                pid = None
-            except SystemExit:
-                pid = None
+        # Check for a pidfile to see if the daemon already runs
+        try:
+            pf = file(self.pidfile, 'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+        except SystemExit:
+            pid = None
 
-            if pid:
-                message = "pidfile %s already exists. Is it already running?\n"
-                sys.stderr.write(message % self.pidfile)
-                sys.exit(1)
+        if pid:
+            message = "pidfile %s already exists. Is it already running?\n"
+            sys.stderr.write(message % self.pidfile)
+            sys.exit(1)
 
-            # Start the daemon
-            self.daemonize()
-
+        # Start the daemon
+        self.daemonize()
         self.run(*args, **kwargs)
 
-    def stop(self, daemonize=True):
+    def stop(self):
         """
         Stop the daemon
         """
-
-        if not daemonize:
-            return
 
         if self.verbose >= 1:
             print "Stopping..."
@@ -185,12 +152,12 @@ class Daemon(object):
         if self.verbose >= 1:
             print "Stopped"
 
-    def restart(self, daemonize=True):
+    def restart(self):
         """
         Restart the daemon
         """
-        self.stop(daemonize=daemonize)
-        self.start(daemonize=daemonize)
+        self.stop()
+        self.start()
 
     def get_pid(self):
         try:

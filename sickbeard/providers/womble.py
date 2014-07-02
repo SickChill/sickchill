@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+import time
 
 import sickbeard
 import generic
@@ -72,6 +73,8 @@ class WombleCache(tvcache.TVCache):
                 ci = self._parseItem(item)
                 if ci is not None:
                     cl.append(ci)
+
+                time.sleep(.2)
 
         if cl:
             myDB = self._getDB()

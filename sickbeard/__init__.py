@@ -28,6 +28,7 @@ from urllib2 import getproxies
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
+import sys
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
@@ -1269,7 +1270,7 @@ def halt():
                     pass
 
             __INITIALIZED__ = False
-
+            started = False
 
 def remove_pid_file(PIDFILE):
     try:
@@ -1283,12 +1284,9 @@ def remove_pid_file(PIDFILE):
 
 
 def sig_handler(signum=None, frame=None):
-    global shutdown
-
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        shutdown = True
-        IOLoop.current().stop()
+        saveAndShutdown()
 
 def saveAll():
     global showList
@@ -1303,22 +1301,14 @@ def saveAll():
     save_config()
 
 def saveAndShutdown(restart=False):
-    global shutdown
+    global shutdown, started
 
+    # flag restart/shutdown
     if not restart:
         shutdown = True
 
-    # stop tornado web server
-    webserveInit.server.stop()
-
-    # stop all tasks
-    halt()
-
-    # save all shows to db
-    saveAll()
-
-    #stop tornado io loop
-    IOLoop.current().stop()
+    # proceed with shutdown
+    started = False
 
 def invoke_command(to_call, *args, **kwargs):
 
@@ -1333,11 +1323,8 @@ def invoke_command(to_call, *args, **kwargs):
 def invoke_restart(soft=True):
     invoke_command(restart, soft=soft)
 
-
 def invoke_shutdown():
-    global shutdown
-    shutdown = True
-    invoke_command(IOLoop.current().stop)
+    invoke_command(saveAndShutdown, False)
 
 def restart(soft=True):
     if soft:
@@ -1346,7 +1333,7 @@ def restart(soft=True):
         logger.log(u"Re-initializing all data")
         initialize()
     else:
-        IOLoop.current().stop()
+        saveAndShutdown(True)
 
 
 def save_config():
