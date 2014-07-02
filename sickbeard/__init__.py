@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import webbrowser
-import time
 import datetime
 import socket
 import os
@@ -29,6 +28,7 @@ from urllib2 import getproxies
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
+import sys
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
@@ -104,7 +104,7 @@ CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
 started = False
-restarted = False
+shutdown = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -432,7 +432,7 @@ IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 CALENDAR_UNPROTECTED = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
-
+TRAKT_API_KEY = 'abd806c54516240c76e4ebc9c5ccf394'
 
 __INITIALIZED__ = False
 def initialize(consoleLogging=True):
@@ -1270,7 +1270,7 @@ def halt():
                     pass
 
             __INITIALIZED__ = False
-
+            started = False
 
 def remove_pid_file(PIDFILE):
     try:
@@ -1286,7 +1286,7 @@ def remove_pid_file(PIDFILE):
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        webserveInit.shutdown()
+        saveAndShutdown()
 
 def saveAll():
     global showList
@@ -1300,9 +1300,15 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def saveAndShutdown():
-    halt()
-    saveAll()
+def saveAndShutdown(restart=False):
+    global shutdown, started
+
+    # flag restart/shutdown
+    if not restart:
+        shutdown = True
+
+    # proceed with shutdown
+    started = False
 
 def invoke_command(to_call, *args, **kwargs):
 
@@ -1317,23 +1323,17 @@ def invoke_command(to_call, *args, **kwargs):
 def invoke_restart(soft=True):
     invoke_command(restart, soft=soft)
 
-
 def invoke_shutdown():
-    invoke_command(webserveInit.shutdown)
-
+    invoke_command(saveAndShutdown, False)
 
 def restart(soft=True):
-    global restarted
-
     if soft:
         halt()
         saveAll()
         logger.log(u"Re-initializing all data")
         initialize()
     else:
-        restarted=True
-        time.sleep(5)
-        webserveInit.shutdown()
+        saveAndShutdown(True)
 
 
 def save_config():

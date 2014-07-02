@@ -7,7 +7,7 @@ try:
 except ImportError:
     from lib import simplejson as json
 
-def TraktCall(method, api, username, password, data = {}):
+def TraktCall(method, api, username=None, password=None, data={}):
     """
     A generic method for communicating with trakt. Uses the method and data provided along
     with the auth info to send the command.
@@ -26,19 +26,16 @@ def TraktCall(method, api, username, password, data = {}):
         return None
 
     # if the username isn't given then it failed
-    if not username:
-        return None
-
-    password = sha1(password).hexdigest()
+    if username and password:
+        password = sha1(password).hexdigest()
+        data["username"] = username
+        data["password"] = password
 
     # replace the API string with what we found
     method = method.replace("%API%", api)
 
-    data["username"] = username
-    data["password"] = password
-
     # take the URL params and make a json object out of them
-    encoded_data = json.dumps(data);
+    encoded_data = json.dumps(data)
 
     # request the URL from trakt and parse the result as json
     try:
