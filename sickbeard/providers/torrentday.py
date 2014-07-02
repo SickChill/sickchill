@@ -54,8 +54,8 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.supportsBacklog = True
 
         self.enabled = False
-        self.uid = None
-        self.hash = None
+        self._uid = None
+        self._hash = None
         self.username = None
         self.password = None
         self.ratio = None
@@ -91,7 +91,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        if self.uid and self.hash:
+        if self._uid and self._hash:
 
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
 
@@ -118,11 +118,11 @@ class TorrentDayProvider(generic.TorrentProvider):
                 return False
 
             if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                self.uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                self.hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+                self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                self.cookies = {'uid': self.uid,
-                                'pass': self.hash
+                self.cookies = {'uid': self._uid,
+                                'pass': self._hash
                 }
                 return True
 
