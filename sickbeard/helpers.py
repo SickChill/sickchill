@@ -298,8 +298,7 @@ def searchDBForShow(regShowName, log=False):
                                  [showName])
 
         if len(sqlResults) == 1:
-            return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
-
+            return int(sqlResults[0]["indexer_id"])
         else:
             # if we didn't get exactly one result then try again with the year stripped off if possible
             match = re.match(yearRegex, showName)
@@ -321,10 +320,7 @@ def searchDBForShow(regShowName, log=False):
                                logger.DEBUG)
                 continue
             else:
-                return (int(sqlResults[0]["indexer_id"]), sqlResults[0]["show_name"])
-
-    return
-
+                return int(sqlResults[0]["indexer_id"])
 
 def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
     showNames = [re.sub('[. -]', ' ', regShowName)]
@@ -1077,10 +1073,16 @@ def get_show_by_name(name, useIndexer=False):
         showObj = sickbeard.name_cache.retrieveShowFromCache(name)
         if showObj:
             return showObj
+
         if not showObj and sickbeard.showList:
-            scene_indexerid, scene_season = sickbeard.scene_exceptions.get_scene_exception_by_name(name)
-            if scene_indexerid:
-                showObj = findCertainShow(sickbeard.showList, scene_indexerid)
+            db_indexerid = searchDBForShow(name)
+            if db_indexerid:
+                showObj = findCertainShow(sickbeard.showList, db_indexerid)
+
+            if not showObj:
+                scene_indexerid, scene_season = sickbeard.scene_exceptions.get_scene_exception_by_name(name)
+                if scene_indexerid:
+                    showObj = findCertainShow(sickbeard.showList, scene_indexerid)
 
             if useIndexer and not showObj:
                 (sn, idx, id) = searchIndexerForShowID(name, ui=classes.ShowListUI)
