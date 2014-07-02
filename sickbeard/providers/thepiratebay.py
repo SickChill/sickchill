@@ -180,11 +180,9 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
                 search_string['Season'].append(ep_string)
             else:
-                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(
-                    ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
+                ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)
                 search_string['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(
-                    ep_obj.scene_season) + ' -Ep*' + ' category:tv'  # 2) showName Season X
+                ep_string = show_name + ' Season ' + str(ep_obj.scene_season) + ' -Ep*'
                 search_string['Season'].append(ep_string)
 
             search_string['Season'].append(ep_string)
