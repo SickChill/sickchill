@@ -32,9 +32,6 @@ class WombleProvider(generic.NZBProvider):
         self.cache = WombleCache(self)
         self.url = 'http://newshost.co.za/'
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -44,9 +41,6 @@ class WombleCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
         # only poll Womble's Index every 15 minutes max
         self.minTime = 15
-
-    def __del__(self):
-        pass
 
     def updateCache(self):
 
@@ -74,7 +68,7 @@ class WombleCache(tvcache.TVCache):
                 if ci is not None:
                     cl.append(ci)
 
-                time.sleep(.2)
+
 
         if cl:
             myDB = self._getDB()

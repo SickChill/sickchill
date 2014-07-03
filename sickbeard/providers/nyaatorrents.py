@@ -45,9 +45,6 @@ class NyaaProvider(generic.TorrentProvider):
 
         self.url = 'http://www.nyaa.se/'
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -129,9 +126,6 @@ class NyaaCache(tvcache.TVCache):
 
         # only poll NyaaTorrents every 15 minutes max
         self.minTime = 15
-
-    def __del__(self):
-        pass
 
     def _getRSSData(self):
         params = {

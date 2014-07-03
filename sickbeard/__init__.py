@@ -1274,17 +1274,6 @@ def halt():
             __INITIALIZED__ = False
             started = False
 
-def remove_pid_file(PIDFILE):
-    try:
-        if os.path.exists(PIDFILE):
-            os.remove(PIDFILE)
-
-    except (IOError, OSError):
-        return False
-
-    return True
-
-
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))

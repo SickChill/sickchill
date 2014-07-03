@@ -45,9 +45,6 @@ class Fanzub(generic.NZBProvider):
 
         self.url = 'http://fanzub.com/'
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -133,9 +130,6 @@ class FanzubCache(tvcache.TVCache):
         # only poll Fanzub every 20 minutes max
         # we get 100 post each call !
         self.minTime = 20
-
-    def __del__(self):
-        pass
 
     def _getRSSData(self):
 

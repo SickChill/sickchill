@@ -67,9 +67,6 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
         self.categories = "2,26,27,32"
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -298,9 +295,6 @@ class TorrentLeechCache(tvcache.TVCache):
         # only poll TorrentLeech every 20 minutes max
         self.minTime = 20
 
-    def __del__(self):
-        pass
-
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -326,7 +320,7 @@ class TorrentLeechCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-            time.sleep(.2)
+
 
         if cl:
             myDB = self._getDB()
