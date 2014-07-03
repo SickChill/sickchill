@@ -42,6 +42,10 @@ class NMJv2Notifier:
 
     def notify_subtitle_download(self, ep_name, lang):
         self._notifyNMJ()
+        
+    def notify_sickrage_update(self, new_version):
+        return False
+        # Not implemented, no reason to start scanner.
 
     def test_notify(self, host):
         return self._sendNMJ(host)

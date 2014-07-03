@@ -23,6 +23,12 @@ class NMA_Notifier:
         if sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendNMA(nma_api=None, nma_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                           message=ep_name + ": " + lang)
+                          
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_NMA:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._sendNMA(nma_api=None, nma_priority=None, event=title, message=update_text + new_version)
 
     def _sendNMA(self, nma_api=None, nma_priority=None, event=None, message=None, force=False):
 

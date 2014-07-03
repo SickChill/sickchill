@@ -512,6 +512,12 @@ class XBMCNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_xbmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+            
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_XBMC:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._notify_xbmc(update_text + new_version, title)
 
     def test_notify(self, host, username, password):
         return self._notify_xbmc("Testing XBMC notifications from SickRage", "Test Notification", host, username,
