@@ -47,9 +47,6 @@ class EZRSSProvider(generic.TorrentProvider):
 
         self.url = 'https://www.ezrss.it/'
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -180,9 +177,6 @@ class EZRSSCache(tvcache.TVCache):
 
         # only poll EZRSS every 15 minutes max
         self.minTime = 15
-
-    def __del__(self):
-        pass
 
     def _getRSSData(self):
 

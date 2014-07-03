@@ -40,9 +40,6 @@ class NewzbinDownloader(urllib.FancyURLopener):
     def __init__(self):
         urllib.FancyURLopener.__init__(self)
 
-    def __del__(self):
-        pass
-
     def http_error_default(self, url, fp, errcode, errmsg, headers):
 
         # if newzbin is throttling us, wait seconds and try again
@@ -75,9 +72,6 @@ class NewzbinProvider(generic.NZBProvider):
         self.url = 'https://www.newzbin2.es/'
 
         self.NEWZBIN_DATE_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
-
-    def __del__(self):
-        pass
 
     def isEnabled(self):
         return sickbeard.NEWZBIN
@@ -339,9 +333,6 @@ class NewzbinCache(tvcache.TVCache):
 
         # only poll Newzbin every 10 mins max
         self.minTime = 1
-
-    def __del__(self):
-        pass
 
     def _getRSSData(self):
 

@@ -100,6 +100,7 @@ NEWEST_VERSION = None
 NEWEST_VERSION_STRING = None
 VERSION_NOTIFY = None
 AUTO_UPDATE = None
+NOTIFY_ON_UPDATE = None
 CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
@@ -457,7 +458,7 @@ def initialize(consoleLogging=True):
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
-            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, CPU_PRESET, \
+            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, CPU_PRESET, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, TV_DOWNLOAD_DIR, MIN_DAILYSEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_STRIP_YEAR, \
@@ -589,6 +590,7 @@ def initialize(consoleLogging=True):
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         VERSION_NOTIFY = check_setting_int(CFG, 'General', 'version_notify', 1)
         AUTO_UPDATE = check_setting_int(CFG, 'General', 'auto_update', 0)
+        NOTIFY_ON_UPDATE = check_setting_int(CFG, 'General', 'notify_on_update', 1)
         FLATTEN_FOLDERS_DEFAULT = bool(check_setting_int(CFG, 'General', 'flatten_folders_default', 0))
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', 0)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 10)
@@ -1272,17 +1274,6 @@ def halt():
             __INITIALIZED__ = False
             started = False
 
-def remove_pid_file(PIDFILE):
-    try:
-        if os.path.exists(PIDFILE):
-            os.remove(PIDFILE)
-
-    except (IOError, OSError):
-        return False
-
-    return True
-
-
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
@@ -1388,6 +1379,7 @@ def save_config():
     new_config['General']['provider_order'] = ' '.join(PROVIDER_ORDER)
     new_config['General']['version_notify'] = int(VERSION_NOTIFY)
     new_config['General']['auto_update'] = int(AUTO_UPDATE)
+    new_config['General']['notify_on_update'] = int(NOTIFY_ON_UPDATE)
     new_config['General']['naming_strip_year'] = int(NAMING_STRIP_YEAR)
     new_config['General']['naming_pattern'] = NAMING_PATTERN
     new_config['General']['naming_custom_abd'] = int(NAMING_CUSTOM_ABD)

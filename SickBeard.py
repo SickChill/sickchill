@@ -67,7 +67,6 @@ from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
 
 from lib.configobj import ConfigObj
-from daemon import Daemon
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
@@ -76,43 +75,7 @@ throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 class SickRage(object):
 
-    def loadShowsFromDB(self):
-        """
-        Populates the showList with shows from the database
-        """
-
-        logger.log(u"Loading initial show list")
-
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_shows")
-
-        sickbeard.showList = []
-        for sqlShow in sqlResults:
-            try:
-                curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
-                sickbeard.showList.append(curShow)
-            except Exception, e:
-                logger.log(
-                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
-                    logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
-
-    def restore(self, srcDir, dstDir):
-        try:
-            for file in os.listdir(srcDir):
-                srcFile = os.path.join(srcDir, file)
-                dstFile = os.path.join(dstDir, file)
-                bakFile = os.path.join(dstDir, file + '.bak')
-                shutil.move(dstFile, bakFile)
-                shutil.move(srcFile, dstFile)
-
-            os.rmdir(srcDir)
-            return True
-        except:
-            return False
-
     def __init__(self):
-        self.daemon = None
         self.webserver = None
         self.runAsDaemon = False
         self.CREATEPID = False
@@ -288,8 +251,7 @@ class SickRage(object):
         sickbeard.initialize(consoleLogging=self.consoleLogging)
 
         if self.runAsDaemon:
-            self.daemon = Daemon(self.PIDFILE or os.path.join(sickbeard.DATA_DIR, 'sickbeard.pid'))
-            self.daemon.daemonize()
+            self.daemonize()
 
         # Get PID
         sickbeard.PID = os.getpid()
@@ -361,6 +323,104 @@ class SickRage(object):
         while(sickbeard.started):
             time.sleep(1)
 
+    def daemonize(self):
+        """
+        Fork off as a daemon
+        """
+
+        # pylint: disable=E1101
+        # Make a non-session-leader child process
+        try:
+            pid = os.fork()  # @UndefinedVariable - only available in UNIX
+            if pid != 0:
+                os._exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        os.setsid()  # @UndefinedVariable - only available in UNIX
+
+        # Make sure I can read my own files and shut out others
+        prev = os.umask(0)
+        os.umask(prev and int('077', 8))
+
+        # Make the child a session-leader by detaching from the terminal
+        try:
+            pid = os.fork()  # @UndefinedVariable - only available in UNIX
+            if pid != 0:
+                os._exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        # Write pid
+        if self.CREATEPID:
+            pid = str(os.getpid())
+            logger.log(u"Writing PID: " + pid + " to " + str(self.PIDFILE))
+            try:
+                file(self.PIDFILE, 'w').write("%s\n" % pid)
+            except IOError, e:
+                logger.log_error_and_exit(
+                    u"Unable to write PID file: " + self.PIDFILE + " Error: " + str(e.strerror) + " [" + str(
+                        e.errno) + "]")
+
+        # Redirect all output
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+        devnull = getattr(os, 'devnull', '/dev/null')
+        stdin = file(devnull, 'r')
+        stdout = file(devnull, 'a+')
+        stderr = file(devnull, 'a+')
+        os.dup2(stdin.fileno(), sys.stdin.fileno())
+        os.dup2(stdout.fileno(), sys.stdout.fileno())
+        os.dup2(stderr.fileno(), sys.stderr.fileno())
+
+    def remove_pid_file(self, PIDFILE):
+        try:
+            if os.path.exists(PIDFILE):
+                os.remove(PIDFILE)
+
+        except (IOError, OSError):
+            return False
+
+        return True
+
+    def loadShowsFromDB(self):
+        """
+        Populates the showList with shows from the database
+        """
+
+        logger.log(u"Loading initial show list")
+
+        myDB = db.DBConnection()
+        sqlResults = myDB.select("SELECT * FROM tv_shows")
+
+        sickbeard.showList = []
+        for sqlShow in sqlResults:
+            try:
+                curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
+                sickbeard.showList.append(curShow)
+            except Exception, e:
+                logger.log(
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
+                    logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
+
+    def restore(self, srcDir, dstDir):
+        try:
+            for file in os.listdir(srcDir):
+                srcFile = os.path.join(srcDir, file)
+                dstFile = os.path.join(dstDir, file)
+                bakFile = os.path.join(dstDir, file + '.bak')
+                shutil.move(dstFile, bakFile)
+                shutil.move(srcFile, dstFile)
+
+            os.rmdir(srcDir)
+            return True
+        except:
+            return False
+
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
@@ -379,8 +439,8 @@ if __name__ == "__main__":
         sr.webserver = None
 
         # if run as daemon delete the pidfile
-        if sr.runAsDaemon:
-            sr.daemon.delpid()
+        if sr.runAsDaemon and sr.CREATEPID:
+            sr.remove_pid_file(sr.PIDFILE)
 
         if not sickbeard.shutdown:
             install_type = sickbeard.versionCheckScheduler.action.install_type

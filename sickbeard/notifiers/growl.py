@@ -43,6 +43,12 @@ class GrowlNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
+            
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_GROWL:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._sendGrowl(title, update_text + new_version)
 
     def _send_growl(self, options, message=None):
 

@@ -48,6 +48,12 @@ class PushbulletNotifier:
         if sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendPushbullet(pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " : " + ep_name + " : " + lang,
                                  message=ep_name + ": " + lang, notificationType="note", method="POST")
+                                 
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_PUSHBULLET:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._sendPushbullet(pushbullet_api=None, event=title, message=update_text + new_version, method="POST")
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, event=None, message=None,
                         notificationType=None, method=None, force=False):

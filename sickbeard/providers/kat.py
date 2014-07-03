@@ -68,9 +68,6 @@ class KATProvider(generic.TorrentProvider):
 
         self.searchurl = self.url + 'usearch/%s/?field=seeders&sorder=desc'  #order by seed
 
-    def __del__(self):
-        pass
-
     def isEnabled(self):
         return self.enabled
 
@@ -433,9 +430,6 @@ class KATCache(tvcache.TVCache):
         # only poll ThePirateBay every 10 minutes max
         self.minTime = 20
 
-    def __del__(self):
-        pass
-
     def updateCache(self):
 
         # delete anything older then 7 days
@@ -460,7 +454,7 @@ class KATCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-            time.sleep(.2)
+
 
         if cl:
             myDB = self._getDB()

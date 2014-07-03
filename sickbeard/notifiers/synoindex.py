@@ -37,6 +37,9 @@ class synoIndexNotifier:
 
     def notify_subtitle_download(self, ep_name, lang):
         pass
+        
+    def notify_sickrage_update(self, new_version):
+        pass
 
     def moveFolder(self, old_path, new_path):
         self.moveObject(old_path, new_path)

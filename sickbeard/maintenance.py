@@ -23,7 +23,7 @@ import sickbeard
 from sickbeard import scene_exceptions
 from sickbeard import failed_history
 from sickbeard import network_timezones
-
+from sickbeard import name_cache
 
 class Maintenance():
     def __init__(self):
@@ -31,14 +31,17 @@ class Maintenance():
 
         self.amActive = False
 
-    def __del__(self):
-        pass
-
     def run(self, force=False):
         self.amActive = True
 
+        # clear internal name cache
+        name_cache.clearCache()
+
         # get and update scene exceptions lists
         scene_exceptions.retrieve_exceptions()
+
+        # build internal name cache for searches and parsing
+        name_cache.buildNameCache()
 
         # refresh network timezones
         network_timezones.update_network_dict()

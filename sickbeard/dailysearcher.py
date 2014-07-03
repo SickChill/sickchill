@@ -36,9 +36,6 @@ class DailySearcher():
 
         self.amActive = False
 
-    def __del__(self):
-        pass
-
     def run(self, force=False):
 
         self.amActive = True
@@ -109,9 +106,6 @@ class DailySearcher():
         if len(todaysEps):
             for show in todaysEps:
                 segment = todaysEps[show]
-
-                # remove show from name cache if marked invalid
-                sickbeard.name_cache.clearCache(show)
 
                 dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, segment)
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)

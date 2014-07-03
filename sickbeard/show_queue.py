@@ -279,9 +279,6 @@ class QueueItemAdd(ShowQueueItem):
             return
 
         try:
-            # clear the name cache
-            name_cache.clearCache()
-
             newShow = TVShow(self.indexer, self.indexer_id, self.lang)
             newShow.loadFromIndexer()
 
@@ -360,6 +357,9 @@ class QueueItemAdd(ShowQueueItem):
 
         # before we parse local files lets update exceptions
         sickbeard.scene_exceptions.retrieve_exceptions()
+
+        # update internal name cache
+        name_cache.buildNameCache()
 
         try:
             self.show.loadEpisodesFromDir()

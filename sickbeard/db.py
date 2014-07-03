@@ -164,6 +164,8 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
+            time.sleep(0.05)
+
             return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
@@ -198,6 +200,8 @@ class DBConnection(object):
                 except sqlite3.DatabaseError, e:
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
+
+            time.sleep(0.05)
 
             return sqlResult
 
