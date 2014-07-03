@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -78,7 +78,7 @@ notifiers = [
     prowl_notifier,
     pushover_notifier,
     boxcar_notifier,
-	boxcar2_notifier,
+    boxcar2_notifier,
     nma_notifier,
     pushalot_notifier,
     pushbullet_notifier,
@@ -101,7 +101,8 @@ def notify_subtitle_download(ep_name, lang):
 def notify_snatch(ep_name):
     for n in notifiers:
         n.notify_snatch(ep_name)
-        
-def notify_git_update(new_version = ""):
+
+
+def notify_git_update(new_version=""):
     for n in notifiers:
         n.notify_git_update(new_version)
