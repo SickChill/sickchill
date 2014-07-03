@@ -80,9 +80,9 @@ class SRWebServer(threading.Thread):
 
         # Main Handler
         self.app.add_handlers(".*$", [
-            (r"%s" % self.options['web_root'], RedirectHandler, {'url': '%s/home/' % self.options['web_root']}),
             (r'%s/api/(.*)(/?)' % self.options['web_root'], webapi.Api),
-            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler)
+            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler),
+            (r'(.*)', webserve.MainHandler)
         ])
 
         # Static Path Handler
