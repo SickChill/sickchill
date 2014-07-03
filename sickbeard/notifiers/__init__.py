@@ -103,5 +103,6 @@ def notify_snatch(ep_name):
         n.notify_snatch(ep_name)
         
 def notify_sickrage_update(new_version = ""):
-    for n in notifiers:
-        n.notify_sickrage_update(new_version)
+    if sickbeard.NOTIFY_ON_UPDATE:
+        for n in notifiers:
+            n.notify_sickrage_update(new_version)

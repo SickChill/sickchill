@@ -92,11 +92,18 @@
                             <input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="auto_update">
                                 <span class="component-title">Automatic Updates</span>
-                                <span class="component-desc">Automatically get and install updates for SickRage when available. These</span>
+                                <span class="component-desc">Automatically get and install updates for SickRage when available.</span>
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
                                 <span class="component-desc">updates run on startup and in the background on the interval specified above.</span>
+                            </label>
+                        </div>
+                        <div class="field-pair">
+                            <input type="checkbox" name="notify_on_update" id="notify_on_update" #if $sickbeard.NOTIFY_ON_UPDATE then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="notify_on_update">
+                                <span class="component-title">Notify on Update</span>
+                                <span class="component-desc">Sends the notification SickRage has been updated to all enabled notifiers.</span>
                             </label>
                         </div>
 
