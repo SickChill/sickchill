@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -35,10 +35,10 @@ from xml.dom import minidom
 
 class PLEXNotifier(XBMCNotifier):
     def _notify_pmc(self, message, title="SickRage", host=None, username=None, password=None, force=False):
-          # fill in omitted parameters
+        # fill in omitted parameters
         if not host:
             if sickbeard.PLEX_HOST:
-                host = sickbeard.PLEX_HOST # Use the default Plex host
+                host = sickbeard.PLEX_HOST  # Use the default Plex host
             else:
                 logger.log(u"No Plex host specified, check your settings", logger.DEBUG)
                 return False
@@ -52,7 +52,8 @@ class PLEXNotifier(XBMCNotifier):
             logger.log("Notification for Plex not enabled, skipping this notification", logger.DEBUG)
             return False
 
-        return self._notify_xbmc(message=message, title=title, host=host, username=username, password=password, force=True)
+        return self._notify_xbmc(message=message, title=title, host=host, username=username, password=password,
+                                 force=True)
 
     def notify_snatch(self, ep_name):
         if sickbeard.PLEX_NOTIFY_ONSNATCH:
@@ -65,11 +66,11 @@ class PLEXNotifier(XBMCNotifier):
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_pmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
-            
-    def notify_sickrage_update(self, new_version = "??"):
+
+    def notify_git_update(self, new_version="??"):
         if sickbeard.USE_PLEX:
-            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_pmc(update_text + new_version, title)
 
     def test_notify(self, host, username, password):
@@ -116,5 +117,6 @@ class PLEXNotifier(XBMCNotifier):
                         return False
 
             return True
+
 
 notifier = PLEXNotifier

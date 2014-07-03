@@ -93,9 +93,9 @@ class LibnotifyNotifier:
         if sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
             
-    def notify_sickrage_update(self, new_version = "??"):
+    def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_LIBNOTIFY:
-            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT], title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT], title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
     def test_notify(self):

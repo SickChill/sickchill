@@ -23,7 +23,7 @@ import time
 import sickbeard
 
 from sickbeard import logger
-from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_SICKRAGE_UPDATE, NOTIFY_SICKRAGE_UPDATE_TEXT
+from sickbeard.common import notifyStrings, NOTIFY_SNATCH, NOTIFY_DOWNLOAD, NOTIFY_SUBTITLE_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT
 from sickbeard.exceptions import ex
 
 API_URL = "https://boxcar.io/devices/providers/fWc4sgSmpcN6JujtBmR6/notifications"
@@ -123,10 +123,10 @@ class BoxcarNotifier:
         if sickbeard.BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar(title, ep_name + ": " + lang)
             
-    def notify_sickrage_update(self, new_version = "??"):
+    def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_BOXCAR:
-            update_text=notifyStrings[NOTIFY_SICKRAGE_UPDATE_TEXT]
-            title=notifyStrings[NOTIFY_SICKRAGE_UPDATE]
+            update_text=notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title=notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyBoxcar(title, update_text + new_version)
 
     def _notifyBoxcar(self, title, message, username=None, force=False):
