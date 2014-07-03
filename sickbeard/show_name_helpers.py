@@ -265,28 +265,29 @@ def allPossibleShowNames(show, season=-1):
     if season in [-1, 1]:
         showNames.append(show.name)
 
-    newShowNames = []
-
-    country_list = common.countryList
-    country_list.update(dict(zip(common.countryList.values(), common.countryList.keys())))
-
-    # if we have "Show Name Australia" or "Show Name (Australia)" this will add "Show Name (AU)" for
-    # any countries defined in common.countryList
-    # (and vice versa)
     if not show.is_anime:
+        newShowNames = []
+        country_list = common.countryList
+        country_list.update(dict(zip(common.countryList.values(), common.countryList.keys())))
         for curName in set(showNames):
             if not curName:
                 continue
+
+            # if we have "Show Name Australia" or "Show Name (Australia)" this will add "Show Name (AU)" for
+            # any countries defined in common.countryList
+            # (and vice versa)
             for curCountry in country_list:
                 if curName.endswith(' ' + curCountry):
                     newShowNames.append(curName.replace(' ' + curCountry, ' (' + country_list[curCountry] + ')'))
                 elif curName.endswith(' (' + curCountry + ')'):
                     newShowNames.append(curName.replace(' (' + curCountry + ')', ' (' + country_list[curCountry] + ')'))
 
+            # if we have "Show Name (2013)" this will strip the (2013) show year from the show name
+            #newShowNames.append(re.sub('\(\d{4}\)','',curName))
+
         showNames += newShowNames
 
     return showNames
-
 
 def determineReleaseName(dir_name=None, nzb_name=None):
     """Determine a release name from an nzb and/or folder name"""

@@ -152,9 +152,10 @@ class NameParser(object):
             if not match:
                 continue
 
+            regex_num = int(re.match('^\d{1,2}', cur_regex_name).group(0))
             result = ParseResult(name)
             result.which_regex = [cur_regex_name]
-            result.score = 0
+            result.score = 0 - regex_num
 
             named_groups = match.groupdict().keys()
 
