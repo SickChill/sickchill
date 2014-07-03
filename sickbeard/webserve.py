@@ -1401,7 +1401,7 @@ class ConfigGeneral(MainHandler):
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None,
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
-                    handle_reverse_proxy=None, sort_article=None, auto_update=None, proxy_setting=None,
+                    handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None, proxy_setting=None,
                     anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None):
@@ -1412,6 +1412,7 @@ class ConfigGeneral(MainHandler):
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
+        sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
 
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)

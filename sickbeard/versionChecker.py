@@ -30,7 +30,7 @@ import gh_api as github
 import threading
 
 import sickbeard
-from sickbeard import helpers
+from sickbeard import helpers, notifiers
 from sickbeard import version, ui
 from sickbeard import logger
 from sickbeard.exceptions import ex
@@ -260,6 +260,9 @@ class WindowsUpdateManager(UpdateManager):
             new_update_path = os.path.join(sickbeard.PROG_DIR, u'updater.exe')
             logger.log(u"Copying new update.exe file from " + old_update_path + " to " + new_update_path)
             shutil.move(old_update_path, new_update_path)
+            
+            # Notify update successful
+            notifiers.notify_sickrage_update(sickbeard.NEWEST_VERSION_STRING)
 
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)
@@ -412,7 +415,6 @@ class GitUpdateManager(UpdateManager):
         commit hash. If there is a newer version it sets _num_commits_behind.
         """
 
-        self._newest_commit_hash = None
         self._num_commits_behind = 0
         self._num_commits_ahead = 0
 
@@ -510,6 +512,8 @@ class GitUpdateManager(UpdateManager):
         output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
+            # Notify update successful
+            notifiers.notify_sickrage_update(self._newest_commit_hash[:10])
             return True
 
         return False
@@ -715,4 +719,7 @@ class SourceUpdateManager(UpdateManager):
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
             return False
 
+        # Notify update successful
+        notifiers.notify_sickrage_update(sickbeard.NEWEST_VERSION_STRING)
+        
         return True

@@ -40,6 +40,12 @@ class synologyNotifier:
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._send_synologyNotifier(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+            
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_SYNOLOGYNOTIFIER:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._send_synologyNotifier(update_text + new_version, title)
 
     def _send_synologyNotifier(self, message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]

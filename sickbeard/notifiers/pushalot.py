@@ -45,6 +45,14 @@ class PushalotNotifier:
             self._sendPushalot(pushalot_authorizationtoken=None,
                                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                                message=ep_name + ": " + lang)
+                               
+    def notify_sickrage_update(self, new_version = "??"):
+        if sickbeard.USE_PUSHALOT:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            self._sendPushalot(pushalot_authorizationtoken=None,
+                               event=title, 
+                               message=update_text + new_version)
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
 

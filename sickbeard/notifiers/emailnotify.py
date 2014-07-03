@@ -27,7 +27,7 @@ import re
 
 import sickbeard
 
-from sickbeard import logger
+from sickbeard import logger, common
 from sickbeard import db
 from sickbeard.exceptions import ex
 
@@ -132,6 +132,37 @@ class EmailNotifier:
                         'html'))
                 except:
                     msg = MIMEText(ep_name + ": " + lang)
+
+                msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
+                msg['From'] = sickbeard.EMAIL_FROM
+                msg['To'] = ','.join(to)
+                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
+                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
+                    logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
+                else:
+                    logger.log("Download notification ERROR: %s" % self.last_err, logger.ERROR)
+                    
+                    
+    def notify_sickrage_update(self, new_version = "??"):
+        """
+        Send a notification that an updated version of SickRage has been installed
+        
+        """
+        if sickbeard.USE_EMAIL:
+            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+                        
+            to = self._generate_recepients(show)
+            if len(to) == 0:
+                logger.log('Skipping email notify because there are no configured recepients', logger.WARNING)
+            else:
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - " + title + "</h3>\n<p>" + update_text + new_version + "</p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
+                        'html'))
+                except:
+                    logger.log("SickRage update notification ERROR: %s" % self.last_err, logger.ERROR)
 
                 msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
