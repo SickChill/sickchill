@@ -23,7 +23,7 @@ import threading
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions
+from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
@@ -521,8 +521,9 @@ class ParseResult(object):
         new_absolute_numbers = []
 
         if self.show.is_anime and len(self.ab_episode_numbers):
+            scene_season = scene_exceptions.get_scene_exception_by_name(self.series_name)[1]
             for epAbsNo in self.ab_episode_numbers:
-                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
+                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo, True, scene_season)
                 if ab:
                     try:
                         (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [ab])
