@@ -97,7 +97,7 @@ class NMJNotifier:
         if sickbeard.USE_NMJ:
             self._notifyNMJ()
             
-    def notify_sickrage_update(self, new_version):
+    def notify_git_update(self, new_version):
         return False
         # Not implemented, no reason to start scanner.
 

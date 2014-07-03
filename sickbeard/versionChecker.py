@@ -262,7 +262,7 @@ class WindowsUpdateManager(UpdateManager):
             shutil.move(old_update_path, new_update_path)
             
             # Notify update successful
-            notifiers.notify_sickrage_update(sickbeard.NEWEST_VERSION_STRING)
+            notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
 
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)
@@ -513,7 +513,8 @@ class GitUpdateManager(UpdateManager):
 
         if exit_status == 0:
             # Notify update successful
-            notifiers.notify_sickrage_update(self._newest_commit_hash[:10])
+            if sickbeard.NOTIFY_ON_UPDATE:
+                notifiers.notify_git_update(self._newest_commit_hash[:10])
             return True
 
         return False
@@ -720,6 +721,6 @@ class SourceUpdateManager(UpdateManager):
             return False
 
         # Notify update successful
-        notifiers.notify_sickrage_update(sickbeard.NEWEST_VERSION_STRING)
+        notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
         
         return True

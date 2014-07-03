@@ -46,10 +46,10 @@ class PushalotNotifier:
                                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
                                message=ep_name + ": " + lang)
                                
-    def notify_sickrage_update(self, new_version = "??"):
+    def notify_git_update(self, new_version = "??"):
         if sickbeard.USE_PUSHALOT:
-            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
+            update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._sendPushalot(pushalot_authorizationtoken=None,
                                event=title, 
                                message=update_text + new_version)

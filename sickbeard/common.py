@@ -50,15 +50,15 @@ SEASON_RESULT = -2
 NOTIFY_SNATCH = 1
 NOTIFY_DOWNLOAD = 2
 NOTIFY_SUBTITLE_DOWNLOAD = 3
-NOTIFY_SICKRAGE_UPDATE = 4
-NOTIFY_SICKRAGE_UPDATE_TEXT = 5
+NOTIFY_GIT_UPDATE = 4
+NOTIFY_GIT_UPDATE_TEXT = 5
 
 notifyStrings = {}
 notifyStrings[NOTIFY_SNATCH] = "Started Download"
 notifyStrings[NOTIFY_DOWNLOAD] = "Download Finished"
 notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD] = "Subtitle Download Finished"
-notifyStrings[NOTIFY_SICKRAGE_UPDATE] = "SickRage Updated"
-notifyStrings[NOTIFY_SICKRAGE_UPDATE_TEXT] = "SickRage updated to version: "
+notifyStrings[NOTIFY_GIT_UPDATE] = "SickRage Updated"
+notifyStrings[NOTIFY_GIT_UPDATE_TEXT] = "SickRage Updated To Commit#: "
 
 ### Episode statuses
 UNKNOWN = -1  # should never happen

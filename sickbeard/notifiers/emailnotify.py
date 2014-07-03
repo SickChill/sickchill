@@ -14,7 +14,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -141,37 +141,10 @@ class EmailNotifier:
                     logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
                 else:
                     logger.log("Download notification ERROR: %s" % self.last_err, logger.ERROR)
-                    
-                    
-    def notify_sickrage_update(self, new_version = "??"):
-        """
-        Send a notification that an updated version of SickRage has been installed
-        
-        """
-        if sickbeard.USE_EMAIL:
-            update_text=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE_TEXT]
-            title=common.notifyStrings[common.NOTIFY_SICKRAGE_UPDATE]
-                        
-            to = self._generate_recepients(show)
-            if len(to) == 0:
-                logger.log('Skipping email notify because there are no configured recepients', logger.WARNING)
-            else:
-                try:
-                    msg = MIMEMultipart('alternative')
-                    msg.attach(MIMEText(
-                        "<body style='font-family:Helvetica, Arial, sans-serif;'><h3>SickRage Notification - " + title + "</h3>\n<p>" + update_text + new_version + "</p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
-                        'html'))
-                except:
-                    logger.log("SickRage update notification ERROR: %s" % self.last_err, logger.ERROR)
 
-                msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
-                msg['From'] = sickbeard.EMAIL_FROM
-                msg['To'] = ','.join(to)
-                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
-                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
-                else:
-                    logger.log("Download notification ERROR: %s" % self.last_err, logger.ERROR)
+
+    def notify_git_update(self, new_version="??"):
+        pass
 
     def _generate_recepients(self, show):
         addrs = []
@@ -196,7 +169,7 @@ class EmailNotifier:
 
     def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
         logger.log('HOST: %s; PORT: %s; FROM: %s, TLS: %s, USER: %s, PWD: %s, TO: %s' % (
-        host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
+            host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         srv = smtplib.SMTP(host, int(port))
         if smtpDebug:
             srv.set_debuglevel(1)
