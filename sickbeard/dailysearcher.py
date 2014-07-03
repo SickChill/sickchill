@@ -107,9 +107,6 @@ class DailySearcher():
             for show in todaysEps:
                 segment = todaysEps[show]
 
-                # remove show from name cache if marked invalid
-                sickbeard.name_cache.clearCache(show)
-
                 dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, segment)
                 sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
         else:

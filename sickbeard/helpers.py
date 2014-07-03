@@ -730,7 +730,6 @@ def sanitizeSceneName(name, ezrss=False):
     """
 
     if name:
-
         if not ezrss:
             bad_chars = u",:()'!?\u2019"
         # ezrss leaves : and ! in their show names as far as I can tell
@@ -1066,37 +1065,24 @@ def _check_against_names(nameInQuestion, show, season=-1):
 
 
 def get_show_by_name(name, useIndexer=False):
-    name = full_sanitizeSceneName(name)
-
     try:
         # check cache for show
         showObj = sickbeard.name_cache.retrieveShowFromCache(name)
         if showObj:
             return showObj
 
-        if not showObj and sickbeard.showList:
-            db_indexerid = searchDBForShow(name)
-            if db_indexerid:
-                showObj = findCertainShow(sickbeard.showList, db_indexerid)
-
-            if not showObj:
-                scene_indexerid, scene_season = sickbeard.scene_exceptions.get_scene_exception_by_name(name)
-                if scene_indexerid:
-                    showObj = findCertainShow(sickbeard.showList, scene_indexerid)
-
-            if useIndexer and not showObj:
-                (sn, idx, id) = searchIndexerForShowID(name, ui=classes.ShowListUI)
-                if id:
-                    showObj = findCertainShow(sickbeard.showList, int(id))
+        if useIndexer and sickbeard.showList and not showObj:
+            (sn, idx, id) = searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)
+            if id:
+                showObj = findCertainShow(sickbeard.showList, int(id))
 
         # add show to cache
         if showObj:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
+
+        return showObj
     except:
-        showObj = None
-
-    return showObj
-
+        pass
 
 def is_hidden_folder(folder):
     """

@@ -27,7 +27,8 @@ from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
 
-scene_lock = threading.Lock()
+exceptionsCache = None
+exceptionsSeasonCache = None
 
 def shouldRefresh(list):
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
@@ -51,14 +52,21 @@ def get_scene_exceptions(indexer_id, season=-1):
     """
     Given a indexer_id, return a list of all the scene exceptions.
     """
-
+    global exceptionsCache
     exceptionsList = []
 
-    myDB = db.DBConnection('cache.db')
-    exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
-                             [indexer_id, season])
-    if exceptions:
-        exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
+    if indexer_id not in exceptionsCache or season not in exceptionsCache[indexer_id]:
+        myDB = db.DBConnection('cache.db')
+        exceptions = myDB.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?",
+                                 [indexer_id, season])
+        if exceptions:
+            exceptionsList = list(set([cur_exception["show_name"] for cur_exception in exceptions]))
+
+            if not indexer_id in exceptionsCache:
+                exceptionsCache[indexer_id] = {}
+            exceptionsCache[indexer_id][season] = exceptionsList
+    else:
+        exceptionsList = exceptionsCache[indexer_id][season]
 
     if season == 1:  # if we where looking for season 1 we can add generic names
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
@@ -84,14 +92,24 @@ def get_scene_seasons(indexer_id):
     """
     return a list of season numbers that have scene exceptions
     """
+    global exceptionsSeasonCache
+    exceptionsSeasonList = []
 
-    myDB = db.DBConnection('cache.db')
-    sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
-                             [indexer_id])
+    if indexer_id not in exceptionsSeasonCache:
+        myDB = db.DBConnection('cache.db')
+        sqlResults = myDB.select("SELECT DISTINCT(season) as season FROM scene_exceptions WHERE indexer_id = ?",
+                                 [indexer_id])
+        if sqlResults:
+            exceptionsSeasonList = list(set([int(x["season"]) for x in sqlResults]))
 
-    if sqlResults:
-        return [int(x["season"]) for x in sqlResults]
+            if not indexer_id in exceptionsSeasonCache:
+                exceptionsSeasonCache[indexer_id] = {}
 
+            exceptionsSeasonCache[indexer_id] = exceptionsSeasonList
+    else:
+        exceptionsSeasonList = exceptionsSeasonCache[indexer_id]
+
+    return exceptionsSeasonList
 
 def get_scene_exception_by_name(show_name):
     return get_scene_exception_by_name_multiple(show_name)[0]
@@ -136,7 +154,10 @@ def retrieve_exceptions():
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
+    global exceptionsCache, exceptionsSeasonCache
 
+    exceptionsCache = {}
+    exceptionsSeasonCache = {}
     exception_dict = {}
 
     # exceptions are stored on github pages
@@ -209,7 +230,6 @@ def retrieve_exceptions():
     # since this could invalidate the results of the cache we clear it out after updating
     if changed_exceptions:
         logger.log(u"Updated scene exceptions")
-        name_cache.clearCache()
     else:
         logger.log(u"No scene exceptions update needed")
 
@@ -229,8 +249,6 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
         for cur_exception in scene_exceptions:
             myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
                         [indexer_id, cur_exception, cur_season, 1])
-
-    name_cache.clearCache()
 
 def _retrieve_anidb_mainnames():
 

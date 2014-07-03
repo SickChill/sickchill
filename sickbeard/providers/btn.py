@@ -343,8 +343,6 @@ class BTNCache(tvcache.TVCache):
                     if ci is not None:
                         cl.append(ci)
 
-
-
                 if cl:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
