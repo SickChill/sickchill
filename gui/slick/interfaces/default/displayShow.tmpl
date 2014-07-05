@@ -11,8 +11,13 @@
 #set $exceptions_string = " | ".join($show.exceptions)
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-<link href="//vjs.zencdn.net/4.6/video-js.css" rel="stylesheet">
-<script src="//vjs.zencdn.net/4.6/video.js"></script>
+<link href="$sbRoot/js/video-js/video-js.css" rel="stylesheet">
+<script src="$sbRoot/js/video-js/video.js"></script>
+<script>
+    videojs.options.flash.swf = "$sbRoot/js/video-js/video-js.swf";
+</script>
+
+<style>.video-js.vjs-default-skin .vjs-big-play-button { display: none; }</style>
 
 <script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
 
@@ -30,10 +35,6 @@
 <script type="text/javascript" src="$sbRoot/js/ajaxEpRetry.js?$sbPID"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
-player1 = V('video-player');
-jQuery('.vjs-big-play-button').live('click', function(event) {
-player1.requestFullScreen(); });
-
 \$(document).ready(function(){
     #set $fuzzydate = 'airdate'
     #if $sickbeard.FUZZY_DATING:
@@ -331,12 +332,13 @@ player1.requestFullScreen(); });
     </td>
     <td>
     #if $epResult["location"] != "" and $epResult["location"] != None:
-    <div class="video-container">
-    <video id="$epResult["name"]" class="video-js vjs-default-skin video-small yjh5v_center" controls width="64" height="64"poster="http://video-js.zencoder.com/oceans-clip.jpg" autoplay="false "preload="auto">
-    <source src="file:///$epResult["location"]" type='video/mp4' />
-    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+    #set $root_dirs = $sickbeard.ROOT_DIRS.split('|')
+    #set $video_root = $root_dirs[int(root_dirs[0]) + 1]
+    <video id="$epResult["indexerid"]" class="video-js vjs-default-skin"
+    controls preload="none" width="64" height="64"
+    poster="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" data-setup="{}">
+    <source src="$sbRoot$epResult["location"].replace($video_root, '/videos')" type='video/mp4' />
     </video>
-    </div>
     #end if
     </td>
     <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
@@ -350,7 +352,8 @@ player1.requestFullScreen(); });
 #if $epLoc != "" and $epLoc != None:
     <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
 #else
-        $epResult["episode"]#end if#</td>
+    $epResult["episode"]
+#end if#</td>
     #if $show.is_anime:
         <td align="center">$epResult["absolute_number"]</td>
     #end if
