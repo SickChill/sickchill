@@ -1055,7 +1055,7 @@ class Manage(MainHandler):
 
             curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
                                                                        bestQualities, exceptions_list,
-                                                                       new_flatten_folders, new_paused,
+                                                                       flatten_folders=new_flatten_folders, paused=new_paused,
                                                                        subtitles=new_subtitles, anime=new_anime,
                                                                        scene=new_scene, directCall=True)
 
