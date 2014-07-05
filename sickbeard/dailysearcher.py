@@ -44,7 +44,7 @@ class DailySearcher():
         for curProviderCount, curProvider in enumerate(providers):
 
             try:
-                logger.log(u"Updating [" + curProvider.name + "} RSS cache ...")
+                logger.log(u"Updating [" + curProvider.name + "] RSS cache ...")
                 curProvider.cache.updateCache()
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
