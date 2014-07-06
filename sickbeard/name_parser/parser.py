@@ -120,8 +120,7 @@ class NameParser(object):
         if not name:
             return
 
-        self.showObj = None
-        if not self.naming_pattern:
+        if not self.showObj and not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
             show_pattern = '''(?:(?:\[.*?\])|(?:\d{3}[\.-]))*[ _\.]?(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
             show_pattern_alt = '''^(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
