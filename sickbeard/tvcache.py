@@ -32,7 +32,7 @@ from sickbeard.common import Quality
 from sickbeard import helpers, show_name_helpers
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
 
 cache_lock = threading.Lock()
@@ -246,12 +246,11 @@ class TVCache():
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
-
-        if not parse_result or not parse_result.series_name:
+        except InvalidShowException:
+            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
             return None
 
-        if not parse_result.show:
-            logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
+        if not parse_result or not parse_result.series_name:
             return None
 
         season = episodes = None
@@ -359,6 +358,7 @@ class TVCache():
                     logger.log(u"Found result " + title + " at " + url)
 
                     result = self.provider.getResult([epObj])
+                    result.show = showObj
                     result.url = url
                     result.name = title
                     result.quality = curQuality

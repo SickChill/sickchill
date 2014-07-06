@@ -40,7 +40,7 @@ from sickbeard import name_cache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from lib import adba
 
@@ -480,11 +480,11 @@ class PostProcessor(object):
             return to_return
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file, useIndexers=True, convert=True)
-        parse_result = np.parse(name)
-
-        # couldn't find this in our show list
-        if not parse_result.show:
+        try:
+            np = NameParser(file, useIndexers=True, convert=True)
+            parse_result = np.parse(name)
+        except InvalidShowException:
+            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
             return to_return
 
         if parse_result.air_by_date:

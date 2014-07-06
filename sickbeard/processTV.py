@@ -28,7 +28,7 @@ from sickbeard import db, helpers, exceptions
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard import logger
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import common
 
 from sickbeard import failedProcessor
@@ -269,14 +269,14 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
         try:
             NameParser().parse(video, cache_result=False)
             return True
-        except InvalidNameException:
+        except (InvalidNameException, InvalidShowException):
             pass
 
     for dir in allDirs:
         try:
             NameParser().parse(dir, cache_result=False)
             return True
-        except InvalidNameException:
+        except (InvalidNameException, InvalidShowException):
             pass
 
     if sickbeard.UNPACK:
@@ -287,7 +287,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
             try:
                 NameParser().parse(packed, cache_result=False)
                 return True
-            except InvalidNameException:
+            except (InvalidNameException, InvalidShowException):
                 pass
 
     return False

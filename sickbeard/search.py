@@ -328,9 +328,7 @@ def filterSearchResults(show, season, results):
     for curEp in results:
         # skip non-tv crap
         results[curEp] = filter(
-            lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name, show,
-                                                                                                     season=season),
-            results[curEp])
+            lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show,results[curEp])
 
         if curEp in foundResults:
             foundResults[curEp] += results[curEp]
@@ -455,10 +453,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 for curEp in searchResults:
                     # skip non-tv crap
                     searchResults[curEp] = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                                 show,
-                                                                                                                 season=season),
-                        searchResults[curEp])
+                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, searchResults[curEp])
 
                     if curEp in foundResults:
                         foundResults[provider.name][curEp] += searchResults[curEp]
@@ -547,10 +542,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     individualResults = nzbSplitter.splitResult(bestSeasonNZB)
 
                     individualResults = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.isGoodResult(x.name,
-                                                                                                                 show,
-                                                                                                                 season=season),
-                        individualResults)
+                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, individualResults)
 
                     for curResult in individualResults:
                         if len(curResult.episodes) == 1:

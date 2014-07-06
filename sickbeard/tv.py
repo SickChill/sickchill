@@ -29,7 +29,7 @@ import sickbeard
 
 import xml.etree.cElementTree as etree
 
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from lib import subliminal
 
@@ -436,7 +436,7 @@ class TVShow(object):
                 parse_result = None
                 np = NameParser(False)
                 parse_result = np.parse(ep_file_name)
-            except InvalidNameException:
+            except (InvalidNameException, InvalidShowException):
                 pass
 
             if not ' ' in ep_file_name and parse_result and parse_result.release_group:
@@ -2072,7 +2072,7 @@ class TVEpisode(object):
             try:
                 np = NameParser(name, naming_pattern=True)
                 parse_result = np.parse(name)
-            except InvalidNameException, e:
+            except (InvalidNameException, InvalidShowException), e:
                 logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)
                 return ''
 
