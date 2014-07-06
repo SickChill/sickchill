@@ -285,6 +285,7 @@ class GenericProvider:
                     continue
 
                 quality = parse_result.quality
+                release_group = parse_result.release_group
 
                 if not (self.show.air_by_date or self.show.sports):
                     if search_mode == 'sponly' and len(parse_result.episode_numbers):
@@ -362,6 +363,7 @@ class GenericProvider:
                 result.url = url
                 result.name = title
                 result.quality = quality
+                result.release_group = release_group
                 result.provider = self
                 result.content = None
 

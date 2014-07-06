@@ -80,6 +80,7 @@ except ImportError:
 from lib import adba
 
 from Cheetah.Template import Template
+
 from tornado.web import RequestHandler, HTTPError
 
 
@@ -538,7 +539,6 @@ class IndexerWebUI(MainHandler):
 
 def _munge(string):
     return unicode(string).encode('utf-8', 'xmlcharrefreplace')
-
 
 def _getEpisode(show, season=None, episode=None, absolute=None):
     if show is None:
