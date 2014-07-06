@@ -109,11 +109,11 @@ class NameParser(object):
             logger.log(u"WARNING: Invalid show series name pattern, %s: [%s]" % (errormsg, pattern))
         else:
             # attempt matching with main show name pattern
-            seriesname_match = show_regex.match(name)
-            if seriesname_match:
-                seriesname_groups = seriesname_match.groupdict().keys()
-                if 'series_name' in seriesname_groups:
-                    series_name = self.clean_series_name(seriesname_match.group('series_name'))
+            showname_match = show_regex.match(name)
+            if showname_match:
+                showname_groups = showname_match.groupdict().keys()
+                if 'show_name' in showname_groups:
+                    series_name = self.clean_series_name(showname_match.group('show_name'))
                     return helpers.get_show_by_name(series_name, useIndexer=self.useIndexers)
 
     def _parse_string(self, name):
@@ -122,15 +122,19 @@ class NameParser(object):
 
         if not self.showObj and not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
-            show_pattern = '''(?:(?:\[.*?\])|(?:\d{3}[\.-]))*[ _\.]?(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
-            show_pattern_alt = '''^(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
+            show_patterns = [
+                '''^(?P<show_name>.*?)\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))''',
+                '''^((\[.*?\])|(\d+[\.-]))*[ _\.]*(?P<show_name>.*?)(([ ._-]+\d+)|([ ._-]+s\d{2})).*'''
+            ]
 
-            self.showObj = self._matchShowName(name, show_pattern)
-            if not self.showObj:
-                self.showObj = self._matchShowName(name, show_pattern_alt)
-
-            if not self.showObj:
-                raise InvalidShowException("Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
+            # find show object
+            for pattern in show_patterns:
+                self.showObj = self._matchShowName(name, pattern)
+                if self.showObj:
+                    break
+            else:
+                raise InvalidShowException(
+                    "Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
         regexMode = self.ALL_REGEX
         if self.showObj and self.showObj.is_anime:
