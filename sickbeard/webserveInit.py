@@ -35,7 +35,7 @@ class MultiStaticFileHandler(StaticFileHandler):
         raise HTTPError(404)
 
 class SRWebServer(threading.Thread):
-    def __init__(self, options=[], io_loop=None):
+    def __init__(self, options={}, io_loop=None):
         threading.Thread.__init__(self)
         self.daemon = True
         self.alive = True
@@ -63,12 +63,12 @@ class SRWebServer(threading.Thread):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log(u"Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = False
-                    enable_https = False
+                    self.enable_https = False
 
             if not (os.path.exists(self.https_cert) and os.path.exists(self.https_key)):
                 logger.log(u"Disabled HTTPS because of missing CERT and KEY files", logger.WARNING)
                 sickbeard.ENABLE_HTTPS = False
-                enable_https = False
+                self.enable_https = False
 
         # Load the app
         self.app = Application([],
@@ -87,7 +87,7 @@ class SRWebServer(threading.Thread):
 
         # Static Path Handler
         self.app.add_handlers(".*$", [
-            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
+            (r'/(favicon\.ico)', MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
             (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images'),

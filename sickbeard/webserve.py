@@ -144,7 +144,6 @@ class HTTPRedirect(Exception):
 def redirect(url, permanent=False, status=None):
     raise HTTPRedirect(url, permanent, status)
 
-
 @authenticated
 class MainHandler(RequestHandler):
     def http_error_401_handler(self):
@@ -165,10 +164,27 @@ class MainHandler(RequestHandler):
         if status_code == 401:
             self.finish(self.http_error_401_handler())
         elif status_code == 404:
-            redirect('/home/')
-        else:
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            super(MainHandler, self).write_error(status_code, **kwargs)
+            self.redirect(urlparse.urljoin(sickbeard.WEB_ROOT, '/home/'))
+        elif self.settings.get("debug") and "exc_info" in kwargs:
+                exc_info = kwargs["exc_info"]
+                trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
+                request_info = ''.join(["<strong>%s</strong>: %s<br/>" % (k, self.request.__dict__[k] ) for k in
+                                        self.request.__dict__.keys()])
+                error = exc_info[1]
+
+                self.set_header('Content-Type', 'text/html')
+                self.finish("""<html>
+                                 <title>%s</title>
+                                 <body>
+                                    <h2>Error</h2>
+                                    <p>%s</p>
+                                    <h2>Traceback</h2>
+                                    <p>%s</p>
+                                    <h2>Request Info</h2>
+                                    <p>%s</p>
+                                 </body>
+                               </html>""" % (error, error,
+                                             trace_info, request_info))
 
     def _dispatch(self):
 
@@ -212,7 +228,7 @@ class MainHandler(RequestHandler):
                 elif not func:
                     func = getattr(klass, 'index', None)
 
-            if func:
+            if callable(func):
                 return func(**args)
 
         raise HTTPError(404)
@@ -220,14 +236,14 @@ class MainHandler(RequestHandler):
     def get(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
-        except HTTPRedirect, inst:
-            self.redirect(inst.url, inst.permanent, inst.status)
+        except HTTPRedirect, e:
+            self.redirect(e.url, e.permanent, e.status)
 
     def post(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
-        except HTTPRedirect, inst:
-            self.redirect(inst.url, inst.permanent, inst.status)
+        except HTTPRedirect, e:
+            self.redirect(e.url, e.permanent, e.status)
 
     def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
