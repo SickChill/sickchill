@@ -262,6 +262,9 @@ def download_file(url, filename):
 
 
 def findCertainShow(showList, indexerid=None):
+    if not showList:
+        return None
+
     if indexerid:
         results = filter(lambda x: int(x.indexerid) == int(indexerid), showList)
     else:
