@@ -189,8 +189,25 @@
 <i>Replace with:</i> <b><%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%></b>
 #end if
 #end if
-
 	<tr><td class="showLegend">Scene Name:</td><td>#if $show.exceptions then $exceptions_string else $show.name#</td></tr>
+#if $show.rls_require_words:
+    <tr><td class="showLegend">Required Words: </td><td>#echo $show.rls_require_words#</td></tr>
+#end if
+#if $show.rls_ignore_words:
+    <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
+#end if
+#if $bwl.get_white_keywords_for("release_group"):
+    <tr>
+        <td class="showLegend">Wanted Group#if len($bwl.get_white_keywords_for("release_group"))>1 then "s" else ""#:</td>
+        <td>#echo ', '.join($bwl.get_white_keywords_for("release_group"))#</td>
+    </tr>
+#end if
+#if $bwl.get_black_keywords_for("release_group"):
+    <tr>
+        <td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
+        <td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
+    </tr>
+#end if
     </td></tr>
     </table>
     <td style="float: right;">
@@ -208,25 +225,6 @@
     <tr><td class="showLegend">Scene Numbering: </td><td><img src="$sbRoot/images/#if int($show.scene) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 #if $anyQualities + $bestQualities
     <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-#end if
-
-#if $bwl.get_white_keywords_for("gloabl"):
-    <tr><td class="showLegend">Whitelist: </td><td>#echo ', '.join($bwl.get_white_keywords_for("gloabl"))#</td></tr>
-#end if
-#if $bwl.get_black_keywords_for("gloabl"):
-    <tr><td class="showLegend">Blacklist: </td><td>#echo  ', '.join($bwl.get_black_keywords_for("gloabl"))#</td></tr>
-#end if
-#if $bwl.get_white_keywords_for("release_group"):
-    <tr>
-        <td class="showLegend">Wanted Group#if len($bwl.get_white_keywords_for("release_group"))>1 then "s" else ""#:</td>
-        <td>#echo ', '.join($bwl.get_white_keywords_for("release_group"))#</td>
-    </tr>
-#end if
-#if $bwl.get_black_keywords_for("release_group"):
-    <tr>
-        <td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
-        <td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
-    </tr>
 #end if
 </table>
 </td>

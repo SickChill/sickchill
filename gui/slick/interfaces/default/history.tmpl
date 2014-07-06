@@ -119,16 +119,8 @@
       </td>
       <td align="center">
       #if $curStatus == DOWNLOADED:
-        #set $match = $re.search("\-(\w+)\.\w{3}\Z", $os.path.basename($hItem["resource"]))
-        #if $match
-            #if $match.group(1).upper() in ("X264", "720P"):
-              #set $match = $re.search("(\w+)\-.*\-"+$match.group(1)+"\.\w{3}\Z", $os.path.basename($hItem["resource"]), re.IGNORECASE)
-              #if $match
-                <i>$match.group(1).upper()</i>
-              #end if
-            #else:
-              <i>$match.group(1).upper()</i>
-            #end if
+        #if $hItem["provider"] != "-1": 
+           <i>$hItem["provider"]</i>
         #end if
       #else
         #if $hItem["provider"] > 0

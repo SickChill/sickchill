@@ -480,12 +480,11 @@ class PostProcessor(object):
             return to_return
 
         # parse the name to break it into show name, season, and episode
-        try:
-            np = NameParser(file, useIndexers=True, convert=True)
-            parse_result = np.parse(name)
-        except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
-            return to_return
+        np = NameParser(file, useIndexers=True, convert=True)
+        parse_result = np.parse(name)
+
+        # show object
+        show = parse_result.show
 
         if parse_result.air_by_date:
             season = -1
@@ -497,7 +496,7 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        to_return = (parse_result.show, season, episodes, parse_result.quality)
+        to_return = (show, season, episodes, parse_result.quality)
 
         self._finalize(parse_result)
         return to_return
@@ -603,7 +602,7 @@ class PostProcessor(object):
 
             try:
                 (cur_show, cur_season, cur_episodes, cur_quality) = cur_attempt()
-            except InvalidNameException, e:
+            except (InvalidNameException, InvalidShowException), e:
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
 
