@@ -22,7 +22,7 @@ import inspect
 import traceback
 import urlparse
 
-import os.path
+import os
 
 import time
 import urllib
@@ -145,6 +145,7 @@ class HTTPRedirect(Exception):
 def redirect(url, permanent=False, status=None):
     raise HTTPRedirect(url, permanent, status)
 
+
 @authenticated
 class MainHandler(RequestHandler):
     def http_error_401_handler(self):
@@ -167,14 +168,14 @@ class MainHandler(RequestHandler):
         elif status_code == 404:
             self.redirect(urlparse.urljoin(sickbeard.WEB_ROOT, '/home/'))
         elif self.settings.get("debug") and "exc_info" in kwargs:
-                exc_info = kwargs["exc_info"]
-                trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
-                request_info = ''.join(["<strong>%s</strong>: %s<br/>" % (k, self.request.__dict__[k] ) for k in
-                                        self.request.__dict__.keys()])
-                error = exc_info[1]
+            exc_info = kwargs["exc_info"]
+            trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
+            request_info = ''.join(["<strong>%s</strong>: %s<br/>" % (k, self.request.__dict__[k] ) for k in
+                                    self.request.__dict__.keys()])
+            error = exc_info[1]
 
-                self.set_header('Content-Type', 'text/html')
-                self.finish("""<html>
+            self.set_header('Content-Type', 'text/html')
+            self.finish("""<html>
                                  <title>%s</title>
                                  <body>
                                     <h2>Error</h2>
@@ -486,8 +487,7 @@ class MainHandler(RequestHandler):
 
 class PageTemplate(Template):
     def __init__(self, headers, *args, **KWs):
-        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
-                                   KWs['file'])
+        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",KWs['file'])
         super(PageTemplate, self).__init__(*args, **KWs)
 
         self.sbRoot = sickbeard.WEB_ROOT
@@ -523,6 +523,13 @@ class PageTemplate(Template):
             {'title': logPageTitle, 'key': 'errorlogs'},
         ]
 
+    def compile(self, *args, **kwargs):
+        if not os.path.exists(os.path.join(sickbeard.CACHE_DIR, 'cheetah')):
+            os.mkdir(os.path.join(sickbeard.CACHE_DIR, 'cheetah'))
+
+        kwargs['cacheModuleFilesForTracebacks'] = True
+        kwargs['cacheDirForModuleFiles'] = os.path.join(sickbeard.CACHE_DIR, 'cheetah')
+        return super(PageTemplate, self).compile(*args, **kwargs)
 
 class IndexerWebUI(MainHandler):
     def __init__(self, config, log=None):
@@ -539,6 +546,7 @@ class IndexerWebUI(MainHandler):
 
 def _munge(string):
     return unicode(string).encode('utf-8', 'xmlcharrefreplace')
+
 
 def _getEpisode(show, season=None, episode=None, absolute=None):
     if show is None:
@@ -1071,7 +1079,8 @@ class Manage(MainHandler):
 
             curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
                                                                        bestQualities, exceptions_list,
-                                                                       flatten_folders=new_flatten_folders, paused=new_paused,
+                                                                       flatten_folders=new_flatten_folders,
+                                                                       paused=new_paused,
                                                                        subtitles=new_subtitles, anime=new_anime,
                                                                        scene=new_scene, directCall=True)
 
@@ -1417,7 +1426,8 @@ class ConfigGeneral(MainHandler):
                     update_shows_on_start=None, update_frequency=None, launch_browser=None, web_username=None,
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
-                    handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None, proxy_setting=None,
+                    handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
+                    proxy_setting=None,
                     anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None):
@@ -2666,7 +2676,7 @@ class NewHomeAddShows(MainHandler):
                     'display_dir': '<b>' + ek.ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek.ek(
                         os.path.basename,
                         cur_path),
-                    }
+                }
 
                 # see if the folder is in XBMC already
                 dirResults = myDB.select("SELECT * FROM tv_shows WHERE location = ?", [cur_path])
@@ -3138,6 +3148,7 @@ class Home(MainHandler):
             t.showlists = [["Shows", sickbeard.showList]]
 
         t.submenu = HomeMenu()
+
         return _munge(t)
 
     addShows = NewHomeAddShows
