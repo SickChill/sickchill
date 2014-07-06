@@ -167,7 +167,7 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
         return (sceneSeason, sceneEpisode)
 
 
-def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to_xem=True):
+def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to_xem=True, scene_season=None):
     """
     Returns a tuple, (season, episode, absolute_number) with the TVDB and TVRAGE numbering for (sceneAbsoluteNumber)
     (this works like the reverse of get_absolute_numbering)
@@ -179,15 +179,20 @@ def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fal
     indexer = int(indexer)
 
     myDB = db.DBConnection()
-    rows = myDB.select(
-        "SELECT absolute_number FROM scene_numbering WHERE indexer = ? and indexer_id = ? and scene_absolute_number = ?",
-        [indexer, indexer_id, sceneAbsoluteNumber])
+    if scene_season is None:
+        rows = myDB.select(
+            "SELECT absolute_number FROM scene_numbering WHERE indexer = ? and indexer_id = ? and scene_absolute_number = ?",
+            [indexer, indexer_id, sceneAbsoluteNumber])
+    else:
+        rows = myDB.select(
+            "SELECT absolute_number FROM scene_numbering WHERE indexer = ? and indexer_id = ? and scene_absolute_number = ? and scene_season = ?",
+            [indexer, indexer_id, sceneAbsoluteNumber, scene_season])
 
     if rows:
         return int(rows[0]["absolute_number"])
     else:
         if fallback_to_xem:
-            return get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber)
+            return get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber, scene_season)
         return sceneAbsoluteNumber
 
 
@@ -303,7 +308,7 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
     return (sceneSeason, sceneEpisode)
 
 
-def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber):
+def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber, scene_season=None):
     """
     Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
 
@@ -320,9 +325,14 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
     xem_refresh(indexer_id, indexer)
 
     myDB = db.DBConnection()
-    rows = myDB.select(
-        "SELECT absolute_number FROM tv_episodes WHERE indexer = ? and showid = ? and scene_absolute_number = ?",
-        [indexer, indexer_id, sceneAbsoluteNumber])
+    if scene_season is None:
+        rows = myDB.select(
+            "SELECT absolute_number FROM tv_episodes WHERE indexer = ? and showid = ? and scene_absolute_number = ?",
+            [indexer, indexer_id, sceneAbsoluteNumber])
+    else:
+        rows = myDB.select(
+            "SELECT absolute_number FROM tv_episodes WHERE indexer = ? and showid = ? and scene_absolute_number = ? and scene_season = ?",
+            [indexer, indexer_id, sceneAbsoluteNumber, scene_season])    
 
     if rows:
         return int(rows[0]["absolute_number"])

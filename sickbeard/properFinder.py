@@ -33,7 +33,7 @@ from sickbeard import history
 
 from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality
 
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class ProperFinder():
@@ -110,11 +110,11 @@ class ProperFinder():
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
-
-            if not parse_result.series_name:
+            except InvalidShowException:
+                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid show", logger.WARNING)
                 continue
 
-            if not parse_result.show:
+            if not parse_result.series_name:
                 continue
 
             if not parse_result.episode_numbers:

@@ -24,7 +24,7 @@ import os.path
 from sickbeard import db, common, helpers, logger
 
 from sickbeard import encodingKludge as ek
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 38
@@ -270,7 +270,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 try:
                     np = NameParser(False)
                     parse_result = np.parse(cur_name)
-                except InvalidNameException:
+                except (InvalidNameException, InvalidShowException):
                     continue
 
                 if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
@@ -295,7 +295,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
             try:
                 np = NameParser(False)
                 parse_result = np.parse(ep_file_name)
-            except InvalidNameException:
+            except (InvalidNameException, InvalidShowException):
                 continue
 
             if not parse_result.release_group:

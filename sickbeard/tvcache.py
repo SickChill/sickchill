@@ -32,7 +32,7 @@ from sickbeard.common import Quality
 from sickbeard import helpers, show_name_helpers
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
 
 cache_lock = threading.Lock()
@@ -46,7 +46,7 @@ class CacheDBConnection(db.DBConnection):
         try:
             if not self.hasTable(providerName):
                 self.action(
-                    "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT)")
+                    "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
                 sqlResults = self.select(
                     "SELECT url, COUNT(url) as count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
@@ -56,6 +56,10 @@ class CacheDBConnection(db.DBConnection):
 
             # add unique index to prevent further dupes from happening if one does not exist
             self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
+
+            # add release_group column to table if missing
+            if not self.hasColumn(providerName, 'release_group'):
+                self.addColumn(providerName, 'release_group', "TEXT", "")
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -242,12 +246,11 @@ class TVCache():
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
-
-        if not parse_result or not parse_result.series_name:
+        except InvalidShowException:
+            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
             return None
 
-        if not parse_result.show:
-            logger.log(u"No match for show: [" + parse_result.series_name + "], not caching ...", logger.DEBUG)
+        if not parse_result or not parse_result.series_name:
             return None
 
         season = episodes = None
@@ -279,11 +282,14 @@ class TVCache():
             if not isinstance(name, unicode):
                 name = unicode(name, 'utf-8')
 
+            # get release group
+            release_group = parse_result.release_group
+
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             return [
-                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality) VALUES (?,?,?,?,?,?,?)",
-                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality]]
+                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group) VALUES (?,?,?,?,?,?,?,?)",
+                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group]]
 
 
     def searchCache(self, episodes, manualSearch=False):
@@ -334,6 +340,7 @@ class TVCache():
                     continue
                 curEp = int(curEp)
                 curQuality = int(curResult["quality"])
+                curReleaseGroup = curResult["release_group"]
 
                 # if the show says we want that episode then add it to the list
                 if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
@@ -351,9 +358,11 @@ class TVCache():
                     logger.log(u"Found result " + title + " at " + url)
 
                     result = self.provider.getResult([epObj])
+                    result.show = showObj
                     result.url = url
                     result.name = title
                     result.quality = curQuality
+                    result.release_group = curReleaseGroup
                     result.content = self.provider.getURL(url) \
                         if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
                            and not url.startswith('magnet') else None

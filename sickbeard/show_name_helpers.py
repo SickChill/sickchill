@@ -28,7 +28,7 @@ from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard import logger
 from sickbeard import db
 from sickbeard import encodingKludge as ek
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from lib.unidecode import unidecode
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 
@@ -51,6 +51,9 @@ def filterBadReleases(name):
         parse_result = fp.parse(name)
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.WARNING)
+        return False
+    except InvalidShowException:
+        logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
         return False
 
     # if any of the bad strings are in the name then say no

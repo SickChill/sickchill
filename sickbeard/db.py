@@ -258,6 +258,13 @@ class DBConnection(object):
     def hasTable(self, tableName):
         return len(self.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (tableName, ))) > 0
 
+    def hasColumn(self, tableName, column):
+        return column in self.tableInfo(tableName)
+
+    def addColumn(self, table, column, type="NUMERIC", default=0):
+        self.action("ALTER TABLE %s ADD %s %s" % (table, column, type))
+        self.action("UPDATE %s SET %s = ?" % (table, column), (default,))
+
     def close(self):
         """Close database connection"""
         if getattr(self, "connection", None) is not None:

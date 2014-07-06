@@ -11,8 +11,15 @@
 #set $exceptions_string = " | ".join($show.exceptions)
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
+<link href="$sbRoot/js/video-js/video-js.css" rel="stylesheet">
+<script src="$sbRoot/js/video-js/video.js"></script>
+<script>
+    videojs.options.flash.swf = "$sbRoot/js/video-js/video-js.swf";
+</script>
 
+<style>.video-js.vjs-default-skin .vjs-big-play-button { display: none; }</style>
+
+<script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
 
 #if $show_message:
     <div id="show_message" class="ui-corner-all">$show_message</div><br />
@@ -305,13 +312,13 @@
   #end if
 
   #if int($epResult["season"]) != $curSeason:
-  <tr><td colspan="11"  style="height: 0px; padding:0; margin:0;"><a name="season-$epResult["season"]"></a></td></tr>
+  <tr><td colspan="12"  style="height: 0px; padding:0; margin:0;"><a name="season-$epResult["season"]"></a></td></tr>
   <tr class="seasonheader" id="season-$epResult["season"]" >
-    <td colspan="11">
+    <td colspan="12">
         <h2>#if int($epResult["season"]) == 0 then "Specials" else "Season "+str($epResult["season"])#</h2>
     </td>
   </tr>
-  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th><th>NFO</th><th>TBN</th><th>Episode</th>#if $show.is_anime then "<th>Absolute</th>" else ""# #if $scene then "<th>Scene #</th>" else ""# #if $scene_anime then "<th>Scene Absolute</th>" else ""#<th>Name</th><th class="nowrap">Airdate</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
+  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th><th>Video</th><th>NFO</th><th>TBN</th><th>Episode</th>#if $show.is_anime then "<th>Absolute</th>" else ""# #if $scene then "<th>Scene #</th>" else ""# #if $scene_anime then "<th>Scene Absolute</th>" else ""#<th>Name</th><th class="nowrap">Airdate</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
         #set $curSeason = int($epResult["season"])
   #end if    
 
@@ -322,6 +329,17 @@
 #if int($epResult["status"]) != $UNAIRED
       <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
 #end if
+    </td>
+    <td>
+    #if $epResult["location"] != "" and $epResult["location"] != None:
+    #set $root_dirs = $sickbeard.ROOT_DIRS.split('|')
+    #set $video_root = $root_dirs[int(root_dirs[0]) + 1]
+    <video id="$epResult["indexerid"]" class="video-js vjs-default-skin"
+    controls preload="none" width="64" height="64"
+    poster="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" data-setup="{}">
+    <source src="$sbRoot$epResult["location"].replace($video_root, '/videos')" type='video/mp4' />
+    </video>
+    #end if
     </td>
     <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
     <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
@@ -334,7 +352,8 @@
 #if $epLoc != "" and $epLoc != None:
     <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
 #else
-        $epResult["episode"]#end if#</td>
+    $epResult["episode"]
+#end if#</td>
     #if $show.is_anime:
         <td align="center">$epResult["absolute_number"]</td>
     #end if
@@ -374,7 +393,7 @@
     <img style="padding-top: 3px;" src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>" />
 	#end if
     $epResult["name"]
-</td>
+    </td>
     <td align="center" class="nowrap"><span class="${fuzzydate}">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network))#</span></td>
 #if $sickbeard.USE_SUBTITLES and $show.subtitles:
     <td id="subtitles_column" class="subtitles_column" align="left">

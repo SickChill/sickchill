@@ -23,7 +23,7 @@ import xml.etree.cElementTree as etree
 import xml.etree
 import re
 
-from name_parser.parser import NameParser, InvalidNameException
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from sickbeard import logger, classes, helpers
 from sickbeard.common import Quality
@@ -118,6 +118,9 @@ def splitResult(result):
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + result.name + " into a valid episode", logger.WARNING)
         return False
+    except InvalidShowException:
+        logger.log(u"Unable to parse the filename " + result.name + " into a valid show", logger.WARNING)
+        return False
 
     # bust it up
     season = parse_result.season_number if parse_result.season_number != None else 1
@@ -136,6 +139,9 @@ def splitResult(result):
             parse_result = np.parse(newNZB)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + newNZB + " into a valid episode", logger.WARNING)
+            return False
+        except InvalidShowException:
+            logger.log(u"Unable to parse the filename " + newNZB + " into a valid show", logger.WARNING)
             return False
 
         # make sure the result is sane

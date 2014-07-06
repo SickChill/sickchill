@@ -31,7 +31,7 @@ import urlparse
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import helpers
@@ -156,7 +156,7 @@ class KATProvider(generic.TorrentProvider):
             try:
                 myParser = NameParser()
                 parse_result = myParser.parse(fileName)
-            except InvalidNameException:
+            except (InvalidNameException, InvalidShowException):
                 return None
 
             logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)

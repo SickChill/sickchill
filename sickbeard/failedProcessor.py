@@ -26,7 +26,7 @@ from sickbeard import search_queue
 from sickbeard import failed_history
 from sickbeard import scene_exceptions
 
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
 class FailedProcessor(object):
@@ -62,6 +62,9 @@ class FailedProcessor(object):
         except InvalidNameException:
             self._log(u"Error: release name is invalid: " + releaseName, logger.WARNING)
             raise exceptions.FailedProcessingFailed()
+        except InvalidShowException:
+            self._log(u"Error: unable to parse release name " + releaseName + " into a valid show", logger.WARNING)
+            raise exceptions.FailedProcessingFailed
 
         logger.log(u"name_parser info: ", logger.DEBUG)
         logger.log(u" - " + str(parsed.series_name), logger.DEBUG)

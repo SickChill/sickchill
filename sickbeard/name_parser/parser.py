@@ -23,10 +23,11 @@ import threading
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions
+from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions
 from dateutil import parser
 
 nameparser_lock = threading.Lock()
+
 
 class NameParser(object):
     ALL_REGEX = 0
@@ -34,14 +35,12 @@ class NameParser(object):
     SPORTS_REGEX = 2
     ANIME_REGEX = 3
 
-    def __init__(self, file_name=True, showObj=None, epObj=None, useIndexers=False, convert=False,
+    def __init__(self, file_name=True, showObj=None, useIndexers=False, convert=False,
                  naming_pattern=False):
 
         self.file_name = file_name
-        self.showList = sickbeard.showList or []
-        self.useIndexers = useIndexers
         self.showObj = showObj
-        self.epObj = epObj
+        self.useIndexers = useIndexers
         self.convert = convert
         self.naming_pattern = naming_pattern
 
@@ -121,7 +120,8 @@ class NameParser(object):
         if not name:
             return
 
-        if not self.showObj and not self.naming_pattern:
+        self.showObj = None
+        if not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
             show_pattern = '''(?:(?:\[.*?\])|(?:\d{3}[\.-]))*[ _\.]?(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
             show_pattern_alt = '''^(?P<series_name>.*?(?:[ ._-]((?!\d{4}\W\d\d\W\d\d\W)\d{4}))?)(?:(?:(?:[ ._-]+\d+)|(?:[ ._-]+s\d{2}))|(?:\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(?:\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))))'''
@@ -131,7 +131,7 @@ class NameParser(object):
                 self.showObj = self._matchShowName(name, show_pattern_alt)
 
             if not self.showObj:
-                return
+                raise InvalidShowException("Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
         regexMode = self.ALL_REGEX
         if self.showObj and self.showObj.is_anime:
@@ -521,8 +521,10 @@ class ParseResult(object):
         new_absolute_numbers = []
 
         if self.show.is_anime and len(self.ab_episode_numbers):
+            scene_season = scene_exceptions.get_scene_exception_by_name(self.series_name)[1]
             for epAbsNo in self.ab_episode_numbers:
-                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo)
+                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo,
+                                                                    True, scene_season)
                 if ab:
                     try:
                         (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [ab])
@@ -619,7 +621,13 @@ class NameParserCache(object):
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
             return self._previous_parsed[name]
 
+
 name_parser_cache = NameParserCache()
 
+
 class InvalidNameException(Exception):
+    "The given name is not valid"
+
+
+class InvalidShowException(Exception):
     "The given name is not valid"

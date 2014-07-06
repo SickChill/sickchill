@@ -36,7 +36,7 @@ from sickbeard import tvcache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from lib.hachoir_parser import createParser
-from sickbeard.name_parser.parser import NameParser, InvalidNameException
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 
 
@@ -278,13 +278,18 @@ class GenericProvider:
 
                 # parse the file name
                 try:
-                    myParser = NameParser(False, showObj=show, epObj=ep_obj, convert=True)
+                    myParser = NameParser(False, convert=True)
                     parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
                     continue
+                except InvalidShowException:
+                    logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.WARNING)
+                    continue
 
+                showObj = parse_result.show
                 quality = parse_result.quality
+                release_group = parse_result.release_group
 
                 if not (self.show.air_by_date or self.show.sports):
                     if search_mode == 'sponly' and len(parse_result.episode_numbers):
@@ -359,10 +364,11 @@ class GenericProvider:
                     epObj.append(show.getEpisode(actual_season, curEp))
 
                 result = self.getResult(epObj)
+                result.show = showObj
                 result.url = url
                 result.name = title
                 result.quality = quality
-                result.provider = self
+                result.release_group = release_group
                 result.content = None
 
                 if len(epObj) == 1:
