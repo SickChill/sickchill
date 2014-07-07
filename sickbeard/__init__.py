@@ -41,7 +41,6 @@ from sickbeard import helpers, db, exceptions, show_queue, search_queue, schedul
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
-from sickbeard import maintenance
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -76,7 +75,6 @@ PIDFILE = ''
 DAEMON = None
 NO_RESIZE = False
 
-maintenanceScheduler = None
 dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
@@ -479,7 +477,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
+            ANIME_SPLIT_HOME, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -957,10 +955,6 @@ def initialize(consoleLogging=True):
                                                     threadName="CHECKVERSION",
                                                     silent=False)
 
-        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
-                                                   cycleTime=datetime.timedelta(hours=1),
-                                                   threadName="MAINTENANCE")
-
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
                                                  threadName="SHOWQUEUE")
@@ -1123,7 +1117,7 @@ def initialize(consoleLogging=True):
 
 
 def start():
-    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktCheckerScheduler, \
@@ -1132,9 +1126,6 @@ def start():
     with INIT_LOCK:
 
         if __INITIALIZED__:
-
-            # start the maintenance scheduler
-            maintenanceScheduler.thread.start()
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
@@ -1171,7 +1162,7 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktCheckerScheduler, \
@@ -1184,13 +1175,6 @@ def halt():
             logger.log(u"Aborting all threads")
 
             # abort all the threads
-
-            maintenanceScheduler.abort = True
-            logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
-            try:
-                maintenanceScheduler.thread.join(10)
-            except:
-                pass
 
             dailySearchScheduler.abort = True
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")

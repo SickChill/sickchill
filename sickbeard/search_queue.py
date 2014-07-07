@@ -43,9 +43,6 @@ class SearchQueue(generic_queue.GenericQueue):
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "SEARCHQUEUE"
 
-    def __del__(self):
-        pass
-
     def is_in_queue(self, show, segment):
         for cur_item in self.queue:
             if isinstance(cur_item, BacklogQueueItem) and cur_item.show == show and cur_item.segment == segment:
@@ -77,16 +74,19 @@ class SearchQueue(generic_queue.GenericQueue):
     def add_item(self, item):
 
         if isinstance(item, DailySearchQueueItem) and not self.is_in_queue(item.show, item.segment):
+            sickbeard.name_cache.buildNameCache()
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+            sickbeard.name_cache.buildNameCache()
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_in_queue(item.show, item.segment):
+            sickbeard.name_cache.buildNameCache()
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
+            sickbeard.name_cache.buildNameCache()
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
-
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):

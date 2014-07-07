@@ -60,7 +60,7 @@ import sickbeard
 
 from sickbeard import db
 from sickbeard.tv import TVShow
-from sickbeard import logger
+from sickbeard import logger, network_timezones, failed_history, name_cache
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
@@ -312,6 +312,16 @@ class SickRage(object):
 
         # Fire up all our threads
         sickbeard.start()
+
+        # Build internal name cache
+        name_cache.buildNameCache()
+
+        # refresh network timezones
+        network_timezones.update_network_dict()
+
+        # sure, why not?
+        if sickbeard.USE_FAILED_DOWNLOADS:
+            failed_history.trimHistory()
 
         # Start an update if we're supposed to
         if self.forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:

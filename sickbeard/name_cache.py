@@ -96,7 +96,10 @@ def buildNameCache():
     # clear internal name cache
     clearCache()
 
-    logger.log(u"Updating internal name cache", logger.MESSAGE)
+    # update scene exception names
+    sickbeard.scene_exceptions.retrieve_exceptions()
+
+    logger.log(u"Building internal name cache", logger.MESSAGE)
 
     cacheDB = db.DBConnection('cache.db')
     cache_results = cacheDB.select("SELECT * FROM scene_names")
@@ -111,5 +114,4 @@ def buildNameCache():
             for name in sickbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=curSeason):
                 nameCache[sickbeard.helpers.full_sanitizeSceneName(name)] = show.indexerid
 
-    logger.log(u"Updated internal name cache", logger.MESSAGE)
     logger.log(u"Internal name cache set to: " + str(nameCache), logger.DEBUG)
