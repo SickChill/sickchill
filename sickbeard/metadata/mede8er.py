@@ -197,7 +197,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         cast = etree.SubElement(tv_node, "cast")
 
-        if myShow["_actors"] != None:
+        if getattr(myShow, '_actors', None) is not None:
             for actor in myShow['_actors']:
                 cur_actor_name_text = actor['name']
 
@@ -328,7 +328,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 cast = etree.SubElement(episode, "cast")
 
-                if myShow["_actors"] != None:
+                if getattr(myShow, '_actors', None) is not None:
                     for actor in myShow['_actors']:
                         cur_actor_name_text = actor['name']
 
