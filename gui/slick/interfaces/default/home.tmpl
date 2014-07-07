@@ -296,7 +296,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         //-->
         </script>
     </td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 0 and "Ended" not in $curShow.status then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status != "Ended" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
     <td align="center" style="color: #555555; font-weight: bold;">$curShow.status</td>
   </tr>
 
