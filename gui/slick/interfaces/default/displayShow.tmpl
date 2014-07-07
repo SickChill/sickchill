@@ -329,9 +329,8 @@
 #end if
     </td>
     <td>
-    #if $epResult["location"] != "" and $epResult["location"] != None:
-    #set $root_dirs = $sickbeard.ROOT_DIRS.split('|')
-    #set $video_root = $root_dirs[int(root_dirs[0]) + 1]
+    #if $epResult["location"]:
+    #set $video_root = $epResult["location"].strip($epResult["name"])
     <video id="$epResult["indexerid"]" class="video-js vjs-default-skin"
     controls preload="none" width="64" height="64"
     poster="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" data-setup="{}">
