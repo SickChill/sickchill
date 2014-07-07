@@ -330,7 +330,7 @@
     </td>
     <td>
     #if $epResult["location"]:
-    #set $video_root = $epResult["location"].strip($epResult["name"])
+    #set $video_root = $os.path.dirname($show._location)
     <video id="$epResult["indexerid"]" class="video-js vjs-default-skin"
     controls preload="none" width="64" height="64"
     poster="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" data-setup="{}">
