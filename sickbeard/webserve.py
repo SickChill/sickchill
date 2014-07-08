@@ -487,7 +487,8 @@ class MainHandler(RequestHandler):
 
 class PageTemplate(Template):
     def __init__(self, headers, *args, **KWs):
-        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",KWs['file'])
+        KWs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/",
+                                   KWs['file'])
         super(PageTemplate, self).__init__(*args, **KWs)
 
         self.sbRoot = sickbeard.WEB_ROOT
@@ -530,6 +531,7 @@ class PageTemplate(Template):
         kwargs['cacheModuleFilesForTracebacks'] = True
         kwargs['cacheDirForModuleFiles'] = os.path.join(sickbeard.CACHE_DIR, 'cheetah')
         return super(PageTemplate, self).compile(*args, **kwargs)
+
 
 class IndexerWebUI(MainHandler):
     def __init__(self, config, log=None):
@@ -3643,8 +3645,6 @@ class Home(MainHandler):
             else:
                 return self._genericMessage("Error", errString)
 
-        showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
-
         if not location and not anyQualities and not bestQualities and not flatten_folders:
             t = PageTemplate(headers=self.request.headers, file="editShow.tmpl")
             t.submenu = HomeMenu()
@@ -3727,54 +3727,56 @@ class Home(MainHandler):
             else:
                 do_update_exceptions = True
 
-        bwl = BlackAndWhiteList(showObj.indexerid)
-        if whitelist:
-            whitelist = whitelist.split(",")
-            shortWhiteList = []
-            if helpers.set_up_anidb_connection():
-                for groupName in whitelist:
-                    group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                    for line in group.datalines:
-                        if line["shortname"]:
-                            shortWhiteList.append(line["shortname"])
-                    else:
-                        if not groupName in shortWhiteList:
-                            shortWhiteList.append(groupName)
+        # If directCall from mass_edit_update no scene exceptions handling
+        if not directCall:
+            bwl = BlackAndWhiteList(showObj.indexerid)
+            if whitelist:
+                whitelist = whitelist.split(",")
+                shortWhiteList = []
+                if helpers.set_up_anidb_connection():
+                    for groupName in whitelist:
+                        group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                        for line in group.datalines:
+                            if line["shortname"]:
+                                shortWhiteList.append(line["shortname"])
+                        else:
+                            if not groupName in shortWhiteList:
+                                shortWhiteList.append(groupName)
+                else:
+                    shortWhiteList = whitelist
+                bwl.set_white_keywords_for("release_group", shortWhiteList)
             else:
-                shortWhiteList = whitelist
-            bwl.set_white_keywords_for("release_group", shortWhiteList)
-        else:
-            bwl.set_white_keywords_for("release_group", [])
+                bwl.set_white_keywords_for("release_group", [])
 
-        if blacklist:
-            blacklist = blacklist.split(",")
-            shortBlacklist = []
-            if helpers.set_up_anidb_connection():
-                for groupName in blacklist:
-                    group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                    for line in group.datalines:
-                        if line["shortname"]:
-                            shortBlacklist.append(line["shortname"])
-                    else:
-                        if not groupName in shortBlacklist:
-                            shortBlacklist.append(groupName)
+            if blacklist:
+                blacklist = blacklist.split(",")
+                shortBlacklist = []
+                if helpers.set_up_anidb_connection():
+                    for groupName in blacklist:
+                        group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                        for line in group.datalines:
+                            if line["shortname"]:
+                                shortBlacklist.append(line["shortname"])
+                        else:
+                            if not groupName in shortBlacklist:
+                                shortBlacklist.append(groupName)
+                else:
+                    shortBlacklist = blacklist
+                bwl.set_black_keywords_for("release_group", shortBlacklist)
             else:
-                shortBlacklist = blacklist
-            bwl.set_black_keywords_for("release_group", shortBlacklist)
-        else:
-            bwl.set_black_keywords_for("release_group", [])
+                bwl.set_black_keywords_for("release_group", [])
 
-        if whiteWords:
-            whiteWords = [x.strip() for x in whiteWords.split(",")]
-            bwl.set_white_keywords_for("global", whiteWords)
-        else:
-            bwl.set_white_keywords_for("global", [])
+            if whiteWords:
+                whiteWords = [x.strip() for x in whiteWords.split(",")]
+                bwl.set_white_keywords_for("global", whiteWords)
+            else:
+                bwl.set_white_keywords_for("global", [])
 
-        if blackWords:
-            blackWords = [x.strip() for x in blackWords.split(",")]
-            bwl.set_black_keywords_for("global", blackWords)
-        else:
-            bwl.set_black_keywords_for("global", [])
+            if blackWords:
+                blackWords = [x.strip() for x in blackWords.split(",")]
+                bwl.set_black_keywords_for("global", blackWords)
+            else:
+                bwl.set_black_keywords_for("global", [])
 
         errors = []
         with showObj.lock:
@@ -3825,14 +3827,14 @@ class Home(MainHandler):
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
                 logger.log(os.path.normpath(showObj._location) + " != " + os.path.normpath(location), logger.DEBUG)
-                if not ek.ek(os.path.isdir, location):
+                if not ek.ek(os.path.isdir, location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
                     errors.append("New location <tt>%s</tt> does not exist" % location)
 
                 # don't bother if we're going to update anyway
                 elif not do_update:
                     # change it
                     try:
-                        showObj.location = location
+                        showObj._location = location
                         try:
                             sickbeard.showQueueScheduler.action.refreshShow(showObj)  # @UndefinedVariable
                         except exceptions.CantRefreshException, e:
@@ -3858,6 +3860,7 @@ class Home(MainHandler):
         if do_update_exceptions:
             try:
                 scene_exceptions.update_scene_exceptions(showObj.indexerid, exceptions_list)  # @UndefinedVariable
+                showObj.exceptions = scene_exceptions.get_scene_exceptions(showObj.indexerid)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
