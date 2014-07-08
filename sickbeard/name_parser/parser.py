@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import re
 import datetime
 import os.path
@@ -133,6 +134,8 @@ class NameParser(object):
                 if self.showObj:
                     break
             else:
+                time.sleep(0.05)
+
                 raise InvalidShowException(
                     "Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
@@ -250,6 +253,8 @@ class NameParser(object):
 
             result.score += 1
             matches.append(result)
+
+            time.sleep(0.05)
 
         if len(matches):
             result = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)

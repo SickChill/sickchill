@@ -64,7 +64,7 @@ class CheckVersion():
                 if sickbeard.versionCheckScheduler.action.update():
                     logger.log(u"Update was successful!")
                     ui.notifications.message('Update was successful')
-                    threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+                    sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
     def find_install_type(self):
         """

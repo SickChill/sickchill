@@ -3434,7 +3434,7 @@ class Home(MainHandler):
         if str(pid) != str(sickbeard.PID):
             redirect("/home/")
 
-        threading.Timer(2, sickbeard.invoke_shutdown).start()
+        sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
 
         title = "Shutting down"
         message = "SickRage is shutting down..."
@@ -3450,7 +3450,7 @@ class Home(MainHandler):
         t.submenu = HomeMenu()
 
         # restart
-        threading.Timer(5, sickbeard.invoke_restart, [False]).start()
+        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
         return _munge(t)
 
@@ -3462,7 +3462,7 @@ class Home(MainHandler):
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
         if updated:
             # do a hard restart
-            threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
             t = PageTemplate(headers=self.request.headers, file="restart_bare.tmpl")
             return _munge(t)

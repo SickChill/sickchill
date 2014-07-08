@@ -49,7 +49,6 @@ from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
 
 from lib.configobj import ConfigObj
-from tornado.ioloop import IOLoop
 import xml.etree.ElementTree as ElementTree
 
 PID = None
@@ -74,6 +73,9 @@ PIDFILE = ''
 
 DAEMON = None
 NO_RESIZE = False
+
+# system events
+events = None
 
 dailySearchScheduler = None
 backlogSearchScheduler = None
@@ -103,7 +105,6 @@ CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
 started = False
-shutdown = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -1166,7 +1167,7 @@ def halt():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktCheckerScheduler, \
-        dailySearchScheduler, started
+        dailySearchScheduler, events, started
 
     with INIT_LOCK:
 
@@ -1174,7 +1175,12 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            # abort all the threads
+            events.alive = False
+            logger.log(u"Waiting for the EVENTS thread to exit")
+            try:
+                events.join(10)
+            except:
+                pass
 
             dailySearchScheduler.abort = True
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
@@ -1261,7 +1267,7 @@ def halt():
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        saveAndShutdown()
+        events.put(events.SystemEvent.SHUTDOWN)
 
 def saveAll():
     global showList
@@ -1275,32 +1281,6 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def saveAndShutdown(restart=False):
-    global shutdown, started
-
-    # flag restart/shutdown
-    if not restart:
-        shutdown = True
-
-    # proceed with shutdown
-    started = False
-
-def invoke_command(to_call, *args, **kwargs):
-
-    def delegate():
-        to_call(*args, **kwargs)
-
-    logger.log(u"Placed invoked command: " + repr(delegate) + " for " + repr(to_call) + " with " + repr(
-        args) + " and " + repr(kwargs), logger.DEBUG)
-
-    IOLoop.current().add_callback(delegate)
-
-def invoke_restart(soft=True):
-    invoke_command(restart, soft=soft)
-
-def invoke_shutdown():
-    invoke_command(saveAndShutdown, False)
-
 def restart(soft=True):
     if soft:
         halt()
@@ -1308,7 +1288,7 @@ def restart(soft=True):
         logger.log(u"Re-initializing all data")
         initialize()
     else:
-        saveAndShutdown(True)
+        events.put(events.SystemEvent.RESTART)
 
 
 def save_config():

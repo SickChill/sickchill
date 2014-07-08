@@ -1524,7 +1524,7 @@ class CMD_SickBeardRestart(ApiCall):
 
     def run(self):
         """ restart sickbeard """
-        threading.Timer(2, sickbeard.invoke_restart, [False]).start()
+        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
         return _responds(RESULT_SUCCESS, msg="SickRage is restarting...")
 
 
@@ -1701,7 +1701,7 @@ class CMD_SickBeardShutdown(ApiCall):
 
     def run(self):
         """ shutdown sickbeard """
-        threading.Timer(2, sickbeard.invoke_shutdown).start()
+        sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
 
 

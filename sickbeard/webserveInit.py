@@ -122,13 +122,6 @@ class SRWebServer(threading.Thread):
         try:
             self.io_loop.start()
             self.io_loop.close(True)
-
-            # stop all tasks
-            sickbeard.halt()
-
-            # save all shows to DB
-            sickbeard.saveAll()
-
         except ValueError:
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
