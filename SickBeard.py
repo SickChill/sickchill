@@ -21,6 +21,7 @@
 from __future__ import with_statement
 
 import time
+import signal
 import sys
 import shutil
 import subprocess
@@ -52,15 +53,15 @@ if sys.hexversion >= 0x020600F0:
 import locale
 import datetime
 import threading
-import signal
 import traceback
 import getopt
 
 import sickbeard
 
+from sickbeard.event_queue import Events
 from sickbeard import db
 from sickbeard.tv import TVShow
-from sickbeard import logger
+from sickbeard import logger, network_timezones, failed_history, name_cache
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
@@ -68,14 +69,16 @@ from sickbeard.databases.mainDB import MAX_DB_VERSION
 
 from lib.configobj import ConfigObj
 
+throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
+
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
-
-throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 class SickRage(object):
 
     def __init__(self):
+        sickbeard.events = Events(self.shutdown)
+
         self.webserver = None
         self.runAsDaemon = False
         self.CREATEPID = False
@@ -313,6 +316,16 @@ class SickRage(object):
         # Fire up all our threads
         sickbeard.start()
 
+        # Build internal name cache
+        name_cache.buildNameCache()
+
+        # refresh network timezones
+        network_timezones.update_network_dict()
+
+        # sure, why not?
+        if sickbeard.USE_FAILED_DOWNLOADS:
+            failed_history.trimHistory()
+
         # Start an update if we're supposed to
         if self.forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
@@ -320,7 +333,8 @@ class SickRage(object):
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):
             sickbeard.launchBrowser(self.startPort)
 
-        while(sickbeard.started):
+        # main loop
+        while(True):
             time.sleep(1)
 
     def daemonize(self):
@@ -421,56 +435,54 @@ class SickRage(object):
         except:
             return False
 
+    def shutdown(self, type):
+        if sickbeard.started:
+            # stop all tasks
+            sickbeard.halt()
+
+            # shutdown web server
+            if self.webserver:
+                self.webserver.shutDown()
+                self.webserver = None
+
+            # save all shows to DB
+            sickbeard.saveAll()
+
+            # if run as daemon delete the pidfile
+            if self.runAsDaemon and self.CREATEPID:
+                self.remove_pid_file(self.PIDFILE)
+
+            if type == sickbeard.events.SystemEvent.RESTART:
+                install_type = sickbeard.versionCheckScheduler.action.install_type
+
+                popen_list = []
+
+                if install_type in ('git', 'source'):
+                    popen_list = [sys.executable, sickbeard.MY_FULLNAME]
+                elif install_type == 'win':
+                    if hasattr(sys, 'frozen'):
+                        # c:\dir\to\updater.exe 12345 c:\dir\to\sickbeard.exe
+                        popen_list = [os.path.join(sickbeard.PROG_DIR, 'updater.exe'), str(sickbeard.PID), sys.executable]
+                    else:
+                        logger.log(u"Unknown SB launch method, please file a bug report about this", logger.ERROR)
+                        popen_list = [sys.executable, os.path.join(sickbeard.PROG_DIR, 'updater.py'), str(sickbeard.PID),
+                                      sys.executable,
+                                      sickbeard.MY_FULLNAME]
+
+                if popen_list:
+                    popen_list += sickbeard.MY_ARGS
+                    if '--nolaunch' not in popen_list:
+                        popen_list += ['--nolaunch']
+                    logger.log(u"Restarting SickRage with " + str(popen_list))
+                    logger.close()
+                    subprocess.Popen(popen_list, cwd=os.getcwd())
+
+        # system exit
+        os._exit(0)
+
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:
         freeze_support()
 
-    sr = None
-    try:
-        # init sickrage
-        sr = SickRage()
-
-        # start sickrage
-        sr.start()
-
-        # shutdown web server
-        sr.webserver.shutDown()
-        sr.webserver.join()
-        sr.webserver = None
-
-        # if run as daemon delete the pidfile
-        if sr.runAsDaemon and sr.CREATEPID:
-            sr.remove_pid_file(sr.PIDFILE)
-
-        if not sickbeard.shutdown:
-            install_type = sickbeard.versionCheckScheduler.action.install_type
-
-            popen_list = []
-
-            if install_type in ('git', 'source'):
-                popen_list = [sys.executable, sickbeard.MY_FULLNAME]
-            elif install_type == 'win':
-                if hasattr(sys, 'frozen'):
-                    # c:\dir\to\updater.exe 12345 c:\dir\to\sickbeard.exe
-                    popen_list = [os.path.join(sickbeard.PROG_DIR, 'updater.exe'), str(sickbeard.PID), sys.executable]
-                else:
-                    logger.log(u"Unknown SB launch method, please file a bug report about this", logger.ERROR)
-                    popen_list = [sys.executable, os.path.join(sickbeard.PROG_DIR, 'updater.py'), str(sickbeard.PID), sys.executable,
-                                  sickbeard.MY_FULLNAME]
-
-            if popen_list:
-                popen_list += sickbeard.MY_ARGS
-                if '--nolaunch' not in popen_list:
-                    popen_list += ['--nolaunch']
-                logger.log(u"Restarting SickRage with " + str(popen_list))
-                logger.close()
-                subprocess.Popen(popen_list, cwd=os.getcwd())
-
-        # exit process
-        os._exit(0)
-    except:
-        if sr:
-            logger.log(traceback.format_exc(), logger.ERROR)
-        else:
-            print(traceback.format_exc())
-        sys.exit(1)
+    # start sickrage
+    SickRage().start()

@@ -41,7 +41,6 @@ from sickbeard import helpers, db, exceptions, show_queue, search_queue, schedul
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import dailysearcher
-from sickbeard import maintenance
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
 from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
@@ -50,7 +49,6 @@ from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
 
 from lib.configobj import ConfigObj
-from tornado.ioloop import IOLoop
 import xml.etree.ElementTree as ElementTree
 
 PID = None
@@ -76,7 +74,9 @@ PIDFILE = ''
 DAEMON = None
 NO_RESIZE = False
 
-maintenanceScheduler = None
+# system events
+events = None
+
 dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
@@ -105,7 +105,6 @@ CUR_COMMIT_HASH = None
 
 INIT_LOCK = Lock()
 started = False
-shutdown = False
 
 ACTUAL_LOG_DIR = None
 LOG_DIR = None
@@ -479,7 +478,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, maintenanceScheduler, SCENE_DEFAULT
+            ANIME_SPLIT_HOME, SCENE_DEFAULT
 
         if __INITIALIZED__:
             return False
@@ -872,7 +871,7 @@ def initialize(consoleLogging=True):
         USE_ANIDB = check_setting_str(CFG, 'ANIDB', 'use_anidb', '')
         ANIDB_USERNAME = check_setting_str(CFG, 'ANIDB', 'anidb_username', '')
         ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '')
-        ANIDB_USE_MYLIST = check_setting_str(CFG, 'ANIDB', 'anidb_use_mylist', '')
+        ANIDB_USE_MYLIST = bool(check_setting_int(CFG, 'ANIDB', 'anidb_use_mylist', 0))
         ANIME_SPLIT_HOME = bool(check_setting_int(CFG, 'ANIME', 'anime_split_home', 0))
 
         METADATA_XBMC = check_setting_str(CFG, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
@@ -956,10 +955,6 @@ def initialize(consoleLogging=True):
                                                     cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
                                                     threadName="CHECKVERSION",
                                                     silent=False)
-
-        maintenanceScheduler = scheduler.Scheduler(maintenance.Maintenance(),
-                                                   cycleTime=datetime.timedelta(hours=1),
-                                                   threadName="MAINTENANCE")
 
         showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
                                                  cycleTime=datetime.timedelta(seconds=3),
@@ -1123,7 +1118,7 @@ def initialize(consoleLogging=True):
 
 
 def start():
-    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktCheckerScheduler, \
@@ -1132,9 +1127,6 @@ def start():
     with INIT_LOCK:
 
         if __INITIALIZED__:
-
-            # start the maintenance scheduler
-            maintenanceScheduler.thread.start()
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
@@ -1171,11 +1163,11 @@ def start():
 
 
 def halt():
-    global __INITIALIZED__, maintenanceScheduler, backlogSearchScheduler, \
+    global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, traktCheckerScheduler, \
-        dailySearchScheduler, started
+        dailySearchScheduler, events, started
 
     with INIT_LOCK:
 
@@ -1183,12 +1175,10 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            # abort all the threads
-
-            maintenanceScheduler.abort = True
-            logger.log(u"Waiting for the MAINTENANCE scheduler thread to exit")
+            events.alive = False
+            logger.log(u"Waiting for the EVENTS thread to exit")
             try:
-                maintenanceScheduler.thread.join(10)
+                events.join(10)
             except:
                 pass
 
@@ -1277,7 +1267,7 @@ def halt():
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
         logger.log(u"Signal %i caught, saving and exiting..." % int(signum))
-        saveAndShutdown()
+        events.put(events.SystemEvent.SHUTDOWN)
 
 def saveAll():
     global showList
@@ -1291,32 +1281,6 @@ def saveAll():
     logger.log(u"Saving config file to disk")
     save_config()
 
-def saveAndShutdown(restart=False):
-    global shutdown, started
-
-    # flag restart/shutdown
-    if not restart:
-        shutdown = True
-
-    # proceed with shutdown
-    started = False
-
-def invoke_command(to_call, *args, **kwargs):
-
-    def delegate():
-        to_call(*args, **kwargs)
-
-    logger.log(u"Placed invoked command: " + repr(delegate) + " for " + repr(to_call) + " with " + repr(
-        args) + " and " + repr(kwargs), logger.DEBUG)
-
-    IOLoop.current().add_callback(delegate)
-
-def invoke_restart(soft=True):
-    invoke_command(restart, soft=soft)
-
-def invoke_shutdown():
-    invoke_command(saveAndShutdown, False)
-
 def restart(soft=True):
     if soft:
         halt()
@@ -1324,7 +1288,7 @@ def restart(soft=True):
         logger.log(u"Re-initializing all data")
         initialize()
     else:
-        saveAndShutdown(True)
+        events.put(events.SystemEvent.RESTART)
 
 
 def save_config():

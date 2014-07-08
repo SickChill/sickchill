@@ -66,7 +66,6 @@ class TVShow(object):
         self._indexerid = int(indexerid)
         self._indexer = int(indexer)
         self._name = ""
-        self._location = ""
         self._imdbid = ""
         self._network = ""
         self._genre = ""
@@ -93,6 +92,7 @@ class TVShow(object):
 
         self.dirty = True
 
+        self._location = ""
         self.lock = threading.Lock()
         self.isDirGood = False
         self.episodes = {}
@@ -102,9 +102,6 @@ class TVShow(object):
             raise exceptions.MultipleShowObjectsException("Can't create a show if it already exists")
 
         self.loadFromDB()
-
-    def __del__(self):
-        pass
 
     name = property(lambda self: self._name, dirty_setter("_name"))
     indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
@@ -172,7 +169,7 @@ class TVShow(object):
         logger.log(u"Setter sets location to " + newLocation, logger.DEBUG)
         # Don't validate dir if user wants to add shows without creating a dir
         if sickbeard.ADD_SHOWS_WO_DIR or ek.ek(os.path.isdir, newLocation):
-            self._location = newLocation
+            dirty_setter("_location")(self, newLocation)
             self._isDirGood = True
         else:
             raise exceptions.NoNFOException("Invalid folder for the show!")
@@ -834,7 +831,7 @@ class TVShow(object):
             self.flatten_folders = int(sqlResults[0]["flatten_folders"])
             self.paused = int(sqlResults[0]["paused"])
 
-            self._location = sqlResults[0]["location"]
+            self.location = sqlResults[0]["location"]
 
             if not self.lang:
                 self.lang = sqlResults[0]["lang"]

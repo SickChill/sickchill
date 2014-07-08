@@ -39,7 +39,7 @@
             <input type="hidden" id="providedName" value="$provided_indexer_name" />
             <input type="hidden" id="providedIndexer" value="$provided_indexer" />
         #else:
-            <input type="text" id="nameToSearch" value="$default_show_name" style="margin-top: 1px;" />
+            <input type="text" id="nameToSearch" value="$default_show_name" style="height: 16px;margin-top: 2px;" />
             <select name="indexerLang" id="indexerLangSelect" style="height: 26px;margin-top: 1px;">
                 <option value="en" selected="selected">en</option>
             </select><b>*</b>
@@ -50,7 +50,7 @@
                     <option value="$indexer" #if $provided_indexer == $indexer then "selected=\"selected\"" else ""#>$indexers[$indexer]</option>
                 #end for
             </select>
-            <input class="btn" type="button" id="searchName" value="Search" style="height: 26px;position:relative;top:-1px;" /><br /><br />
+            <input class="btn" type="button" id="searchName" value="Search" style="height: 26px;margin-top: 1px;" /><br /><br />
     
             <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
             This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />

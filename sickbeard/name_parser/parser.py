@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import re
 import datetime
 import os.path
@@ -123,8 +124,8 @@ class NameParser(object):
         if not self.showObj and not self.naming_pattern:
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
             show_patterns = [
-                '''^(?P<show_name>.*?)\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))''',
-                '''^((\[.*?\])|(\d+[\.-]))*[ _\.]*(?P<show_name>.*?)(([ ._-]+\d+)|([ ._-]+s\d{2})).*'''
+                '''^(?P<show_name>.*)\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))''',
+                '''^((\[.*?\])|(\d+[\.-]))*[ _\.]*(?P<show_name>.*)(([ ._-]+\d+)|([ ._-]+s\d{2})).*'''
             ]
 
             # find show object
@@ -133,6 +134,8 @@ class NameParser(object):
                 if self.showObj:
                     break
             else:
+                time.sleep(0.05)
+
                 raise InvalidShowException(
                     "Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
@@ -250,6 +253,8 @@ class NameParser(object):
 
             result.score += 1
             matches.append(result)
+
+            time.sleep(0.05)
 
         if len(matches):
             result = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)

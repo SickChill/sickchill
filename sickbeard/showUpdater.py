@@ -37,6 +37,13 @@ class ShowUpdater():
         update_datetime = datetime.datetime.now()
         update_date = update_datetime.date()
 
+        # refresh network timezones
+        network_timezones.update_network_dict()
+
+        # sure, why not?
+        if sickbeard.USE_FAILED_DOWNLOADS:
+            failed_history.trimHistory()
+
         logger.log(u"Doing full update on all shows")
 
         # clean out cache directory, remove everything > 12 hours old

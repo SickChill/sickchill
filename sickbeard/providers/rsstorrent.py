@@ -41,6 +41,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.url = re.sub('\/$', '', url)
         self.url = url
         self.enabled = True
+        self.ratio = None
         self.supportsBacklog = False
 
         self.search_mode = search_mode
@@ -164,6 +165,8 @@ class TorrentRssProvider(generic.TorrentProvider):
         logger.log(u"Saved custom_torrent html dump " + dumpName + " ", logger.MESSAGE)
         return True
 
+    def seedRatio(self):
+        return self.ratio
 
 class TorrentRssCache(tvcache.TVCache):
     def __init__(self, provider):
