@@ -300,6 +300,13 @@ class MPEG4(core.AVContainer):
                                 trackinfo['length'] = mdhd[4] / mdhd[3]
                                 if mdhd[5] in QTLANGUAGES:
                                     trackinfo['language'] = QTLANGUAGES[mdhd[5]]
+                                elif mdhd[5] == 0x7FF:
+                                    trackinfo['language'] = 'und'
+                                elif mdhd[5] >= 0x400:
+                                    # language code detected as explained in:
+                                    # https://developer.apple.com/library/mac/documentation/QuickTime/qtff/QTFFChap4/qtff4.html#//apple_ref/doc/uid/TP40000939-CH206-35103
+                                    language = bytearray([ ((mdhd[5] & 0x7C00) >> 10) + 0x60, ((mdhd[5] & 0x3E0) >> 5) + 0x60, (mdhd[5] & 0x1F) + 0x60])
+                                    trackinfo['language'] = str(language)
                                 # mdhd[6] == quality
                                 self.length = max(self.length, mdhd[4] / mdhd[3])
                         elif mdia[1] == 'minf':
@@ -312,11 +319,13 @@ class MPEG4(core.AVContainer):
                             datasize += (mdia[0] - 8)
                         elif mdia[1] == 'hdlr':
                             hdlr = struct.unpack('>I4s4s', atomdata[pos + 8:pos + 8 + 12])
-                            if hdlr[1] == 'mhlr':
+                            if hdlr[1] == 'mhlr' or hdlr[1] == '\0\0\0\0':
                                 if hdlr[2] == 'vide':
                                     tracktype = 'video'
                                 if hdlr[2] == 'soun':
                                     tracktype = 'audio'
+                                if hdlr[2] == 'subt' or hdlr[2] == 'sbtl' or hdlr[2] == 'subp' or hdlr[2] == 'text':
+                                    tracktype = 'subtitle'
                         elif mdia[1] == 'stsd':
                             stsd = struct.unpack('>2I', atomdata[pos + 8:pos + 8 + 8])
                             if stsd[1] > 0:
@@ -369,6 +378,9 @@ class MPEG4(core.AVContainer):
             if tracktype == 'audio':
                 info = core.AudioStream()
                 self.audio.append(info)
+            if tracktype == 'subtitle':
+                info = core.Subtitle()
+                self.subtitles.append(info)
             if info:
                 for key, value in trackinfo.items():
                     setattr(info, key, value)

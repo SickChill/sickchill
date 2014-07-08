@@ -27,7 +27,7 @@ from exceptions import *
 PARSERS = [('asf', ['video/asf'], ['asf', 'wmv', 'wma']),
            ('flv', ['video/flv'], ['flv']),
            ('mkv', ['video/x-matroska', 'application/mkv'], ['mkv', 'mka', 'webm']),
-           ('mp4', ['video/quicktime', 'video/mp4'], ['mov', 'qt', 'mp4', 'mp4a', '3gp', '3gp2', '3g2', 'mk2']),
+           ('mp4', ['video/quicktime', 'video/mp4'], ['mov', 'qt', 'mp4', 'mp4a', 'm4v', '3gp', '3gp2', '3g2', 'mk2']),
            ('mpeg', ['video/mpeg'], ['mpeg', 'mpg', 'mp4', 'ts']),
            ('ogm', ['application/ogg'], ['ogm', 'ogg', 'ogv']),
            ('real', ['video/real'], ['rm', 'ra', 'ram']),
