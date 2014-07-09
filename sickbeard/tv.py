@@ -979,11 +979,8 @@ class TVShow(object):
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
         myDB = db.DBConnection()
-        innerQuery = "SELECT airdate FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1"
-        innerParams = [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED]
-        query = "SELECT * FROM tv_episodes WHERE showid = ? AND airdate >= ? AND airdate <= (" + innerQuery + ") and status in (?,?)"
-        params = [self.indexerid, datetime.date.today().toordinal()] + innerParams + [UNAIRED, WANTED]
-        sqlResults = myDB.select(query, params)
+        sqlResults = myDB.select("SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
+        [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
         if sqlResults == None or len(sqlResults) == 0:
             logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
@@ -992,11 +989,8 @@ class TVShow(object):
         else:
             logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
                 sqlResults[0]["episode"]), logger.DEBUG)
-            foundEps = []
-            for sqlEp in sqlResults:
-                curEp = self.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
-                foundEps.append(curEp)
-            return foundEps
+            curEp = self.getEpisode(int(sqlResults[0]["season"]), int(sqlResults[0]["episode"]))
+            return curEp
 
     def deleteShow(self):
 
