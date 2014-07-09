@@ -152,19 +152,23 @@ class TraktChecker():
 
         logger.log(u"Adding show " + str(indexerid))
         root_dirs = sickbeard.ROOT_DIRS.split('|')
-        location = root_dirs[int(root_dirs[0]) + 1]
+        if root_dirs:
+            location = root_dirs[int(root_dirs[0]) + 1]
 
-        showPath = ek.ek(os.path.join, location, helpers.sanitizeFileName(name))
-        dir_exists = helpers.makeDir(showPath)
-        if not dir_exists:
-            logger.log(u"Unable to create the folder " + showPath + ", can't add the show", logger.ERROR)
-            return
+            showPath = ek.ek(os.path.join, location, helpers.sanitizeFileName(name))
+            dir_exists = helpers.makeDir(showPath)
+            if not dir_exists:
+                logger.log(u"Unable to create the folder " + showPath + ", can't add the show", logger.ERROR)
+                return
+            else:
+                helpers.chmodAsParent(showPath)
+
+            sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
+                                                        int(sickbeard.QUALITY_DEFAULT),
+                                                                int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
         else:
-            helpers.chmodAsParent(showPath)
-
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
-                                                    int(sickbeard.QUALITY_DEFAULT),
-                                                    int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
+            logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
+            return
 
     def setEpisodeToWanted(self, show, s, e):
         """

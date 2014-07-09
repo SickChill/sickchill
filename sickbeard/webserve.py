@@ -2830,25 +2830,29 @@ class NewHomeAddShows(MainHandler):
             return
 
         root_dirs = sickbeard.ROOT_DIRS.split('|')
-        location = root_dirs[int(root_dirs[0]) + 1]
+        if root_dirs:
+            location = root_dirs[int(root_dirs[0]) + 1]
 
-        show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
-        dir_exists = helpers.makeDir(show_dir)
-        if not dir_exists:
-            logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
-            return
+            show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
+            dir_exists = helpers.makeDir(show_dir)
+            if not dir_exists:
+                logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
+                return
+            else:
+                helpers.chmodAsParent(show_dir)
+
+            sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir,
+                                                        default_status=sickbeard.STATUS_DEFAULT,
+                                                        quality=sickbeard.QUALITY_DEFAULT,
+                                                        flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
+                                                        subtitles=sickbeard.SUBTITLES_DEFAULT,
+                                                        anime=sickbeard.ANIME_DEFAULT,
+                                                        scene=sickbeard.SCENE_DEFAULT)
+
+            ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
         else:
-            helpers.chmodAsParent(show_dir)
-
-        sickbeard.showQueueScheduler.action.addShow(1, int(indexer_id), show_dir,
-                                                    default_status=sickbeard.STATUS_DEFAULT,
-                                                    quality=sickbeard.QUALITY_DEFAULT,
-                                                    flatten_folders=sickbeard.FLATTEN_FOLDERS_DEFAULT,
-                                                    subtitles=sickbeard.SUBTITLES_DEFAULT,
-                                                    anime=sickbeard.ANIME_DEFAULT,
-                                                    scene=sickbeard.SCENE_DEFAULT)
-
-        ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
+            logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
+            return
 
         # done adding show
         redirect('/home/')

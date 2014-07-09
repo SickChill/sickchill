@@ -13,6 +13,7 @@ from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPErr
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
+
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
         self.paths = paths
@@ -34,6 +35,7 @@ class MultiStaticFileHandler(StaticFileHandler):
         # Oops file not found anywhere!
         raise HTTPError(404)
 
+
 class SRWebServer(threading.Thread):
     def __init__(self, options={}, io_loop=None):
         threading.Thread.__init__(self)
@@ -48,9 +50,17 @@ class SRWebServer(threading.Thread):
         self.options.setdefault('log_dir', None)
         self.options.setdefault('username', '')
         self.options.setdefault('password', '')
-        self.options.setdefault('web_root', '/')
+        self.options.setdefault('web_root', None)
         assert isinstance(self.options['port'], int)
         assert 'data_root' in self.options
+
+        # video root
+        root_dirs = sickbeard.ROOT_DIRS.split('|')
+        self.video_root = root_dirs[int(root_dirs[0]) + 1] if root_dirs else None
+
+        # web root
+        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options[
+            'web_root'] else ''
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -59,7 +69,8 @@ class SRWebServer(threading.Thread):
 
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
-            if not (self.https_cert and os.path.exists(self.https_cert)) or not (self.https_key and os.path.exists(self.https_key)):
+            if not (self.https_cert and os.path.exists(self.https_cert)) or not (
+                self.https_key and os.path.exists(self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log(u"Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = False
@@ -72,39 +83,45 @@ class SRWebServer(threading.Thread):
 
         # Load the app
         self.app = Application([],
-                            debug=True,
-                            autoreload=False,
-                            gzip=True,
-                            xheaders=sickbeard.HANDLE_REVERSE_PROXY,
-                            cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
+                                 debug=True,
+                                 autoreload=False,
+                                 gzip=True,
+                                 xheaders=sickbeard.HANDLE_REVERSE_PROXY,
+                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
         )
 
         # Main Handler
         self.app.add_handlers(".*$", [
-            (r'%s/api/(.*)(/?)' % self.options['web_root'], webapi.Api),
-            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler),
+            (r'%s/api/(.*)' % self.options['web_root'], webapi.Api),
+            (r'%s/(.*)' % self.options['web_root'], webserve.MainHandler),
             (r'(.*)', webserve.MainHandler)
         ])
 
         # Static Path Handler
         self.app.add_handlers(".*$", [
-            (r'/(favicon\.ico)', MultiStaticFileHandler,
+            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'js')]})
-
+            (r'%s/%s/(.*)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
+             {'paths': [os.path.join(self.options['data_root'], 'js')]}),
         ])
+
+        # Static Videos Path
+        if self.video_root:
+            self.app.add_handlers(".*$", [
+                (r'%s/%s/(.*)' % (self.options['web_root'], self.video_root), MultiStaticFileHandler,
+                 {'paths': [self.video_root]}),
+            ])
 
     def run(self):
         if self.enable_https:
             protocol = "https"
             self.server = HTTPServer(self.app, no_keep_alive=True,
-                                ssl_options={"certfile": self.https_cert, "keyfile": self.https_key})
+                                     ssl_options={"certfile": self.https_cert, "keyfile": self.https_key})
         else:
             protocol = "http"
             self.server = HTTPServer(self.app, no_keep_alive=True)
@@ -116,7 +133,9 @@ class SRWebServer(threading.Thread):
             self.server.listen(self.options['port'], self.options['host'])
         except:
             etype, evalue, etb = sys.exc_info()
-            logger.log("Could not start webserver on %s. Excpeption: %s, Error: %s" % (self.options['port'], etype, evalue), logger.ERROR)
+            logger.log(
+                "Could not start webserver on %s. Excpeption: %s, Error: %s" % (self.options['port'], etype, evalue),
+                logger.ERROR)
             return
 
         try:
