@@ -233,7 +233,7 @@ class NameParser(object):
                 tmp_extra_info = match.group('extra_info')
 
                 # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                if not (tmp_extra_info and cur_regex_name == 'season_only' and re.search(
+                if not (tmp_extra_info and 'season_only' in cur_regex_name and re.search(
                         r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I)):
                     result.extra_info = tmp_extra_info
                     result.score += 1
