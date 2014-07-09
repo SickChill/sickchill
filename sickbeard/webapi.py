@@ -1759,9 +1759,9 @@ class CMD_Show(ApiCall):
         showDict["status"] = showObj.status
 
         nextAirdate = ''
-        nextEps = showObj.nextEpisode()
-        if (len(nextEps) != 0):
-            nextAirdate = _ordinal_to_dateForm(nextEps[0].airdate.toordinal())
+        nextEp = showObj.nextEpisode()
+        if nextEp:
+            nextAirdate = _ordinal_to_dateForm(nextEp.airdate.toordinal())
         showDict["next_ep_airdate"] = nextAirdate
 
         return _responds(RESULT_SUCCESS, showDict)
@@ -2501,9 +2501,9 @@ class CMD_Shows(ApiCall):
         shows = {}
         for curShow in sickbeard.showList:
             nextAirdate = ''
-            nextEps = curShow.nextEpisode()
-            if (len(nextEps) != 0):
-                nextAirdate = _ordinal_to_dateForm(nextEps[0].airdate.toordinal())
+            nextEp = curShow.nextEpisode()
+            if nextEp:
+                nextAirdate = _ordinal_to_dateForm(nextEp.airdate.toordinal())
 
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue

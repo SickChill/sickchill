@@ -985,7 +985,7 @@ class TVShow(object):
         if sqlResults == None or len(sqlResults) == 0:
             logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
                        logger.DEBUG)
-            return []
+            return None
         else:
             logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
                 sqlResults[0]["episode"]), logger.DEBUG)
