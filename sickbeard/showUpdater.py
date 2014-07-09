@@ -93,6 +93,9 @@ class ShowUpdater():
         for curShow in sickbeard.showList:
 
             try:
+                # get next episode airdate
+                curShow.nextEpisode()
+
                 # if should_update returns True (not 'Ended') or show is selected stale 'Ended' then update, otherwise just refresh
                 if curShow.should_update(update_date=update_date) or curShow.indexerid in stale_should_update:
                     curQueueItem = sickbeard.showQueueScheduler.action.updateShow(curShow, True)  # @UndefinedVariable

@@ -111,7 +111,7 @@
 #set $myShowList = $sickbeard.showList
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
-#set $curEp = $curShow.nextEpisode()
+#set $curEp = $curShow.nextaired
 #set $curUpdate_disabled = ""
 #set $curRefresh_disabled = ""
 #set $curRename_disabled = ""

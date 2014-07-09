@@ -414,6 +414,7 @@ class SickRage(object):
         for sqlShow in sqlResults:
             try:
                 curShow = TVShow(int(sqlShow["indexer"]), int(sqlShow["indexer_id"]))
+                curShow.nextEpisode()
                 sickbeard.showList.append(curShow)
             except Exception, e:
                 logger.log(

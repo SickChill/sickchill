@@ -1758,7 +1758,7 @@ class CMD_Show(ApiCall):
             showDict["network"] = ""
         showDict["status"] = showObj.status
 
-        nextAirdate = showObj.nextEpisode()
+        nextAirdate = showObj.nextaired
         if nextAirdate:
             nextAirdate = _ordinal_to_dateForm(nextAirdate)
         else:
@@ -2502,7 +2502,7 @@ class CMD_Shows(ApiCall):
         """ display_is_int_multi( self.indexerid )shows in sickbeard """
         shows = {}
         for curShow in sickbeard.showList:
-            nextAirdate = curShow.nextEpisode()
+            nextAirdate = curShow.nextaired
             if nextAirdate:
                 nextAirdate = _ordinal_to_dateForm(nextAirdate)
             else:
