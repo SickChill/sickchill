@@ -96,6 +96,7 @@ class TVShow(object):
         self.lock = threading.Lock()
         self.isDirGood = False
         self.episodes = {}
+        self.nextaired = None
 
         otherShow = helpers.findCertainShow(sickbeard.showList, self.indexerid)
         if otherShow != None:
@@ -978,19 +979,22 @@ class TVShow(object):
     def nextEpisode(self):
         logger.log(str(self.indexerid) + ": Finding the episode which airs next", logger.DEBUG)
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
-        [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
+        curDate = datetime.date.today().toordinal()
+        if not self.nextaired or self.nextaired and curDate > self.nextaired:
+            myDB = db.DBConnection()
+            sqlResults = myDB.select("SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
+            [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
-        if sqlResults == None or len(sqlResults) == 0:
-            logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
-                       logger.DEBUG)
-            return None
-        else:
-            logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
-                sqlResults[0]["episode"]), logger.DEBUG)
-            #curEp = self.getEpisode(int(sqlResults[0]["season"]), int(sqlResults[0]["episode"]))
-            return sqlResults[0]['airdate']
+            if sqlResults == None or len(sqlResults) == 0:
+                logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
+                           logger.DEBUG)
+                return None
+            else:
+                logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
+                    sqlResults[0]["episode"]), logger.DEBUG)
+                self.nextaired = sqlResults[0]['airdate']
+
+        return self.nextaired
 
     def deleteShow(self):
 
