@@ -636,7 +636,7 @@ class SourceUpdateManager(UpdateManager):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
-        base_url = 'https://github.com/' + self.github_repo_user + '/' + self.github_repo
+        base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
         tar_download_url = base_url + '/tarball/' + self.branch
         version_path = ek.ek(os.path.join, sickbeard.PROG_DIR, u'version.txt')
 
