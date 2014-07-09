@@ -96,7 +96,7 @@ class TVShow(object):
         self.lock = threading.Lock()
         self.isDirGood = False
         self.episodes = {}
-        self.nextaired = None
+        self.nextaired = ""
 
         otherShow = helpers.findCertainShow(sickbeard.showList, self.indexerid)
         if otherShow != None:
@@ -988,7 +988,7 @@ class TVShow(object):
             if sqlResults == None or len(sqlResults) == 0:
                 logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
                            logger.DEBUG)
-                self.nextaired = None
+                self.nextaired = ""
             else:
                 logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
                     sqlResults[0]["episode"]), logger.DEBUG)

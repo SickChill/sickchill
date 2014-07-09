@@ -66,6 +66,7 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION
 from sickbeard.databases.mainDB import MAX_DB_VERSION
+from sickbeard import exceptions
 
 from lib.configobj import ConfigObj
 
@@ -259,6 +260,9 @@ class SickRage(object):
         # Get PID
         sickbeard.PID = os.getpid()
 
+        # Build from the DB to start with
+        self.loadShowsFromDB()
+
         if self.forcedPort:
             logger.log(u"Forcing web server to port " + str(self.forcedPort))
             self.startPort = self.forcedPort
@@ -309,9 +313,6 @@ class SickRage(object):
 
         if self.consoleLogging:
             print "Starting up SickRage " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
-
-        # Build from the DB to start with
-        self.loadShowsFromDB()
 
         # Fire up all our threads
         sickbeard.start()
@@ -420,7 +421,6 @@ class SickRage(object):
                 logger.log(
                     u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
                     logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
 
     def restore(self, srcDir, dstDir):
         try:

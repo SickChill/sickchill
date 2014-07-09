@@ -64,7 +64,7 @@ class KATProvider(generic.TorrentProvider):
 
         self.cache = KATCache(self)
 
-        self.urls = ['http://kickass.to/', 'http://katproxy.com']
+        self.urls = ['http://kickass.to/', 'http://katproxy.com/']
 
     def isEnabled(self):
         return self.enabled
