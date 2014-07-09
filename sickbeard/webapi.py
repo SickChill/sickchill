@@ -1758,10 +1758,12 @@ class CMD_Show(ApiCall):
             showDict["network"] = ""
         showDict["status"] = showObj.status
 
-        nextAirdate = ''
-        nextEp = showObj.nextEpisode()
-        if nextEp:
-            nextAirdate = _ordinal_to_dateForm(nextEp.airdate.toordinal())
+        nextAirdate = showObj.nextEpisode()
+        if nextAirdate:
+            nextAirdate = _ordinal_to_dateForm(nextAirdate)
+        else:
+            nextAirdate = ''
+
         showDict["next_ep_airdate"] = nextAirdate
 
         return _responds(RESULT_SUCCESS, showDict)
@@ -2500,10 +2502,11 @@ class CMD_Shows(ApiCall):
         """ display_is_int_multi( self.indexerid )shows in sickbeard """
         shows = {}
         for curShow in sickbeard.showList:
-            nextAirdate = ''
-            nextEp = curShow.nextEpisode()
-            if nextEp:
-                nextAirdate = _ordinal_to_dateForm(nextEp.airdate.toordinal())
+            nextAirdate = curShow.nextEpisode()
+            if nextAirdate:
+                nextAirdate = _ordinal_to_dateForm(nextAirdate)
+            else:
+                nextAirdate = ''
 
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue

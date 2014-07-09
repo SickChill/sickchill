@@ -989,8 +989,8 @@ class TVShow(object):
         else:
             logger.log(str(self.indexerid) + u": Found episode " + str(sqlResults[0]["season"]) + "x" + str(
                 sqlResults[0]["episode"]), logger.DEBUG)
-            curEp = self.getEpisode(int(sqlResults[0]["season"]), int(sqlResults[0]["episode"]))
-            return curEp
+            #curEp = self.getEpisode(int(sqlResults[0]["season"]), int(sqlResults[0]["episode"]))
+            return sqlResults[0]['airdate']
 
     def deleteShow(self):
 

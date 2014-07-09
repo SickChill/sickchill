@@ -214,7 +214,7 @@
 
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
-#set $curEp = $curShow.nextEpisode()
+#set $nextAirdate = $curShow.nextEpisode()
 
 #set $curShowDownloads = [x[1] for x in $downloadedEps if int(x[0]) == $curShow.indexerid]
 #set $curShowAll = [x[1] for x in $allEps if int(x[0]) == $curShow.indexerid]
@@ -237,8 +237,8 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #set $which_thumb = $layout+"_thumb"
 
   <tr>
-    #if $curEp:
-    #set $ldatetime = $network_timezones.parse_date_time($curEp.airdate.toordinal(),$curShow.airs,$curShow.network)
+    #if $nextAirdate:
+    #set $ldatetime = $network_timezones.parse_date_time($nextAirdate,$curShow.airs,$curShow.network)
     	<td align="center" class="nowrap" style="color: #555555;font-weight:bold;"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$time.mktime($ldatetime.timetuple())</span> </td>
     #else:
     	<td align="center" class="nowrap" style="color: #555555;font-weight:bold;"></td>
