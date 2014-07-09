@@ -64,9 +64,7 @@ class KATProvider(generic.TorrentProvider):
 
         self.cache = KATCache(self)
 
-        self.url = 'http://kickass.to/'
-
-        self.searchurl = self.url + 'usearch/%s/?field=seeders&sorder=desc'  #order by seed
+        self.urls = ['http://kickass.to/', 'http://katproxy.com']
 
     def isEnabled(self):
         return self.enabled
@@ -232,14 +230,18 @@ class KATProvider(generic.TorrentProvider):
         for mode in search_params.keys():
             for search_string in search_params[mode]:
 
-                if mode != 'RSS':
-                    searchURL = self.searchurl % (urllib.quote(unidecode(search_string)))
-                    logger.log(u"Search string: " + searchURL, logger.DEBUG)
-                else:
-                    searchURL = self.url + 'tv/?field=time_add&sorder=desc'
-                    logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
+                for url in self.urls:
+                    if mode != 'RSS':
+                        searchURL = url + 'usearch/%s/?field=seeders&sorder=desc' % (urllib.quote(unidecode(search_string)))
+                        logger.log(u"Search string: " + searchURL, logger.DEBUG)
+                    else:
+                        searchURL = url + 'tv/?field=time_add&sorder=desc'
+                        logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
 
-                html = self.getURL(searchURL)
+                    html = self.getURL(searchURL)
+                    if html:
+                        break
+
                 if not html:
                     continue
 
