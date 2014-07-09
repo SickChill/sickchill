@@ -92,8 +92,8 @@ class SRWebServer(threading.Thread):
 
         # Main Handler
         self.app.add_handlers(".*$", [
-            (r'%s/api/(.*)' % self.options['web_root'], webapi.Api),
-            (r'%s/(.*)' % self.options['web_root'], webserve.MainHandler),
+            (r'%s/api/(.*)(/?)' % self.options['web_root'], webapi.Api),
+            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler),
             (r'(.*)', webserve.MainHandler)
         ])
 
@@ -101,12 +101,12 @@ class SRWebServer(threading.Thread):
         self.app.add_handlers(".*$", [
             (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s/%s/(.*)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s/%s/(.*)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s/%s/(.*)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'js')]}),
         ])
 
