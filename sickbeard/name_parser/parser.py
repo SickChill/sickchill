@@ -125,7 +125,7 @@ class NameParser(object):
             # Regex pattern to return the Show / Series Name regardless of the file pattern tossed at it, matched 53 show name examples from regexes.py
             show_patterns = [
                 '''^(?P<show_name>.*)\W+(?:(?:S\d[\dE._ -])|(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))''',
-                '''^((\[.*?\])|(\d+[\.-]))*[ _\.]*(?P<show_name>.*)(([ ._-]+\d+)|([ ._-]+s\d{2})).*'''
+                '''^((\[.*?\])|(\d+[\.-]))*[ _\.]*(?P<show_name>.*?)(([ ._-]+\d+)|([ ._-]+s\d{2})).*'''
             ]
 
             # find show object

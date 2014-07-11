@@ -460,7 +460,7 @@ class XBMCNotifier:
             pathResponse = self._send_to_xbmc_json(pathCommand, host)
 
             path = pathResponse["result"]["tvshowdetails"]["file"]
-            logger.log(u"Received Show: " + show["label"] + " with ID: " + str(tvshowid) + " Path: " + path,
+            logger.log(u"Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path,
                        logger.DEBUG)
 
             if (len(path) < 1):
