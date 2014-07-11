@@ -1873,7 +1873,9 @@ class CMD_ShowAddNew(ApiCall):
                                     "flatten_folders": {"desc": "flatten subfolders for the show"},
                                     "status": {"desc": "status of missing episodes"},
                                     "lang": {"desc": "the 2 letter lang abbreviation id"},
-                                    "subtitles": {"desc": "allow search episode subtitle"}
+                                    "subtitles": {"desc": "allow search episode subtitle"},
+                                    "anime": {"desc": "set show to anime"},
+                                    "scene": {"desc": "show searches episodes by scene numbering"}
              }
     }
 
