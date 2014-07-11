@@ -132,8 +132,7 @@ class HTTPRedirect(Exception):
     """Exception raised when the request should be redirected."""
 
     def __init__(self, url, permanent=False, status=None):
-        self.web_root = ('/' + sickbeard.WEB_ROOT.lstrip('/')) if sickbeard.WEB_ROOT else ''
-        self.url = urlparse.urljoin(self.web_root, url)
+        self.url = url
         self.permanent = permanent
         self.status = status
         Exception.__init__(self, self.url, self.permanent, self.status)
@@ -144,8 +143,8 @@ class HTTPRedirect(Exception):
 
 
 def redirect(url, permanent=False, status=None):
-    raise HTTPRedirect(url, permanent, status)
-
+    assert url[0] == '/'
+    raise HTTPRedirect(sickbeard.WEB_ROOT + url, permanent, status)
 
 @authenticated
 class MainHandler(RequestHandler):
@@ -167,7 +166,7 @@ class MainHandler(RequestHandler):
         if status_code == 401:
             self.finish(self.http_error_401_handler())
         elif status_code == 404:
-            self.redirect(urlparse.urljoin(sickbeard.WEB_ROOT, '/home/'))
+            self.redirect(sickbeard.WEB_ROOT + '/home/')
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
             trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
