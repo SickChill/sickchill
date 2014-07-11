@@ -50,10 +50,10 @@ def filterBadReleases(name):
         fp = NameParser()
         parse_result = fp.parse(name)
     except InvalidNameException:
-        logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.WARNING)
+        logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
         return False
     except InvalidShowException:
-        logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
+        logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
         return False
 
     # if any of the bad strings are in the name then say no

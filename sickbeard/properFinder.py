@@ -111,7 +111,7 @@ class ProperFinder():
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
                 continue
             except InvalidShowException:
-                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid show", logger.WARNING)
+                logger.log(u"Unable to parse the filename " + curProper.name + " into a valid show", logger.DEBUG)
                 continue
 
             if not parse_result.series_name:

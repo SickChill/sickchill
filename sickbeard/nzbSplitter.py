@@ -116,10 +116,10 @@ def splitResult(result):
         np = NameParser(False)
         parse_result = np.parse(result.name)
     except InvalidNameException:
-        logger.log(u"Unable to parse the filename " + result.name + " into a valid episode", logger.WARNING)
+        logger.log(u"Unable to parse the filename " + result.name + " into a valid episode", logger.DEBUG)
         return False
     except InvalidShowException:
-        logger.log(u"Unable to parse the filename " + result.name + " into a valid show", logger.WARNING)
+        logger.log(u"Unable to parse the filename " + result.name + " into a valid show", logger.DEBUG)
         return False
 
     # bust it up
@@ -138,10 +138,10 @@ def splitResult(result):
             np = NameParser(False)
             parse_result = np.parse(newNZB)
         except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + newNZB + " into a valid episode", logger.WARNING)
+            logger.log(u"Unable to parse the filename " + newNZB + " into a valid episode", logger.DEBUG)
             return False
         except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + newNZB + " into a valid show", logger.WARNING)
+            logger.log(u"Unable to parse the filename " + newNZB + " into a valid show", logger.DEBUG)
             return False
 
         # make sure the result is sane

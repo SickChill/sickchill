@@ -247,7 +247,7 @@ class TVCache():
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
             return None
         except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.WARNING)
+            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
             return None
 
         if not parse_result or not parse_result.series_name:

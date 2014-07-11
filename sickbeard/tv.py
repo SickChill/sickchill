@@ -619,10 +619,10 @@ class TVShow(object):
             myParser = NameParser(True, showObj=self, useIndexers=True)
             parse_result = myParser.parse(file)
         except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.ERROR)
+            logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.DEBUG)
             return None
         except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.WARNING)
+            logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.DEBUG)
             return None
 
         if not len(parse_result.episode_numbers) and not (parse_result.air_by_date or parse_result.sports):
