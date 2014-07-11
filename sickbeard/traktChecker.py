@@ -39,7 +39,7 @@ class TraktChecker():
     def run(self, force=False):
         # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_USE_WATCHLIST:
-            self.todoWanted = []  #its about to all get re-added
+            self.todoWanted = []  # its about to all get re-added
             if len(sickbeard.ROOT_DIRS.split('|')) < 2:
                 logger.log(u"No default root directory", logger.ERROR)
                 return
@@ -78,7 +78,8 @@ class TraktChecker():
 
         if data is not None:
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
-            TraktCall("show/unlibrary/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data)
+            TraktCall("show/unlibrary/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD,
+                      data)
 
     def addShowToTraktLibrary(self, show_obj):
         """
@@ -88,7 +89,7 @@ class TraktChecker():
         """
 
         if self.findShow(show_obj.indexerid):
-           return
+            return
 
         # URL parameters
         data = {
@@ -99,7 +100,8 @@ class TraktChecker():
 
         if data is not None:
             logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
-            TraktCall("show/library/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data)
+            TraktCall("show/library/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD,
+                      data)
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
@@ -121,7 +123,7 @@ class TraktChecker():
                     self.startBacklog(newShow)
                 else:
                     self.todoWanted.append((int(show["tvdb_id"]), 1, 1))
-            self.todoWanted.append((int(show["tvdb_id"]), -1, -1))  #used to pause new shows if the settings say to
+            self.todoWanted.append((int(show["tvdb_id"]), -1, -1))  # used to pause new shows if the settings say to
 
     def updateEpisodes(self):
         """
@@ -152,9 +154,13 @@ class TraktChecker():
 
         logger.log(u"Adding show " + str(indexerid))
         root_dirs = sickbeard.ROOT_DIRS.split('|')
-        if root_dirs:
-            location = root_dirs[int(root_dirs[0]) + 1]
 
+        try:
+            location = root_dirs[int(root_dirs[0]) + 1]
+        except:
+            location = None
+
+        if location:
             showPath = ek.ek(os.path.join, location, helpers.sanitizeFileName(name))
             dir_exists = helpers.makeDir(showPath)
             if not dir_exists:
@@ -165,7 +171,7 @@ class TraktChecker():
 
             sickbeard.showQueueScheduler.action.addShow(1, int(indexerid), showPath, status,
                                                         int(sickbeard.QUALITY_DEFAULT),
-                                                                int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
+                                                        int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
         else:
             logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
             return

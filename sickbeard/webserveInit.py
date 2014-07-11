@@ -55,8 +55,11 @@ class SRWebServer(threading.Thread):
         assert 'data_root' in self.options
 
         # video root
-        root_dirs = sickbeard.ROOT_DIRS.split('|')
-        self.video_root = root_dirs[int(root_dirs[0]) + 1] if root_dirs else None
+        if sickbeard.ROOT_DIRS:
+            root_dirs = sickbeard.ROOT_DIRS.split('|')
+            self.video_root = root_dirs[int(root_dirs[0]) + 1]
+        else:
+            self.video_root = None
 
         # web root
         self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options[

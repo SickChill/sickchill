@@ -2830,10 +2830,13 @@ class NewHomeAddShows(MainHandler):
         if helpers.findCertainShow(sickbeard.showList, int(indexer_id)):
             return
 
-        root_dirs = sickbeard.ROOT_DIRS.split('|')
-        if root_dirs:
+        if sickbeard.ROOT_DIRS:
+            root_dirs = sickbeard.ROOT_DIRS.split('|')
             location = root_dirs[int(root_dirs[0]) + 1]
+        else:
+            location = None
 
+        if location:
             show_dir = ek.ek(os.path.join, location, helpers.sanitizeFileName(showName))
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
