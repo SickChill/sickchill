@@ -159,6 +159,14 @@
                             </label>
                         </div>
 
+                        <div class="field-pair">
+                            <input type="checkbox" name="play_videos" id="play_videos" #if $sickbeard.PLAY_VIDEOS then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="play_videos">
+                                <span class="component-title">Play Videos</span>
+                                <span class="component-desc">Play video files from display show page?</span>
+                            </label>
+                        </div>
+
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
                 </div><!-- /component-group1 //-->

@@ -119,6 +119,8 @@ WEB_PASSWORD = None
 WEB_HOST = None
 WEB_IPV6 = None
 
+PLAY_VIDEOS = None
+
 HANDLE_REVERSE_PROXY = None
 PROXY_SETTING = None
 
@@ -478,7 +480,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT
+            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS
 
         if __INITIALIZED__:
             return False
@@ -533,6 +535,8 @@ def initialize(consoleLogging=True):
         WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '')
         WEB_PASSWORD = check_setting_str(CFG, 'General', 'web_password', '')
         LAUNCH_BROWSER = bool(check_setting_int(CFG, 'General', 'launch_browser', 1))
+
+        PLAY_VIDEOS = bool(check_setting_int(CFG, 'General', 'play_videos', 0))
 
         LOCALHOST_IP = check_setting_str(CFG, 'General', 'localhost_ip', '')
 
@@ -1308,6 +1312,7 @@ def save_config():
     new_config['General']['web_root'] = WEB_ROOT
     new_config['General']['web_username'] = WEB_USERNAME
     new_config['General']['web_password'] = helpers.encrypt(WEB_PASSWORD, ENCRYPTION_VERSION)
+    new_config['General']['play_videos'] = int(PLAY_VIDEOS)
     new_config['General']['localhost_ip'] = LOCALHOST_IP
     new_config['General']['cpu_preset'] = CPU_PRESET
     new_config['General']['anon_redirect'] = ANON_REDIRECT

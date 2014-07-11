@@ -116,7 +116,7 @@ class SRWebServer(threading.Thread):
         # Static Videos Path
         if self.video_root:
             self.app.add_handlers(".*$", [
-                (r'%s/%s/(.*)' % (self.options['web_root'], self.video_root), MultiStaticFileHandler,
+                (r'%s/%s/(.*)' % (self.options['web_root'], 'videos'), MultiStaticFileHandler,
                  {'paths': [self.video_root]}),
             ])
 

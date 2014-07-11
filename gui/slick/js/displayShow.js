@@ -266,19 +266,11 @@ $(document).ready(function () {
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
     });
 
-    $('.video-js').live('click', function (e) {
-        this.player = videojs(this);
-        if (!this.player.paused())
-            if (this.player.requestFullscreen) {
-                this.player.requestFullscreen();
-            } else if (this.player.mozRequestFullScreen) {
-                this.player.mozRequestFullScreen();
-            } else if (this.player.webkitRequestFullscreen) {
-                this.player.webkitRequestFullscreen();
-            } else if (this.player.msRequestFullscreen) {
-                this.player.msRequestFullscreen();
-            }
-        else
-            this.player.posterImage.show();
+    $('.jwvideo').each(function () {
+        jwplayer(this.id).setup({
+            file: $(this).attr("id"),
+            width:120,
+            height:120
+        });
     });
 });

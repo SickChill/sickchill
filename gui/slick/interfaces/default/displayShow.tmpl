@@ -11,15 +11,9 @@
 #set $exceptions_string = " | ".join($show.exceptions)
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-<link href="$sbRoot/js/video-js/video-js.css" rel="stylesheet">
-<script src="$sbRoot/js/video-js/video.js"></script>
-<script>
-    videojs.options.flash.swf = "$sbRoot/js/video-js/video-js.swf";
-</script>
-
-<style>.video-js.vjs-default-skin .vjs-big-play-button { display: none; }</style>
-
 <script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/jwplayer/jwplayer.js"></script>
+<script type="text/javascript">jwplayer.key="Zq3m618ITHrFxeKGi3Gf33ovC+XtdGQz19MMug==";</script>
 
 #if $show_message:
     <div id="show_message" class="ui-corner-all">$show_message</div><br />
@@ -310,13 +304,13 @@
   #end if
 
   #if int($epResult["season"]) != $curSeason:
-  <tr><td colspan="12"  style="height: 0px; padding:0; margin:0;"><a name="season-$epResult["season"]"></a></td></tr>
+  <tr><td colspan=#if $sickbeard.PLAY_VIDEOS then "12" else "11"#  style="height: 0px; padding:0; margin:0;"><a name="season-$epResult["season"]"></a></td></tr>
   <tr class="seasonheader" id="season-$epResult["season"]" >
-    <td colspan="12">
+    <td colspan=#if $sickbeard.PLAY_VIDEOS then "12" else "11"#>
         <h2>#if int($epResult["season"]) == 0 then "Specials" else "Season "+str($epResult["season"])#</h2>
     </td>
   </tr>
-  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th><th>Video</th><th>NFO</th><th>TBN</th><th>Episode</th>#if $show.is_anime then "<th>Absolute</th>" else ""# #if $scene then "<th>Scene #</th>" else ""# #if $scene_anime then "<th>Scene Absolute</th>" else ""#<th>Name</th><th class="nowrap">Airdate</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
+  <tr id="season-$epResult["season"]-cols"><th width="1%"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>#if $sickbeard.PLAY_VIDEOS then "<th>Video</th>" else ""#<th>NFO</th><th>TBN</th><th>Episode</th>#if $show.is_anime then "<th>Absolute</th>" else ""# #if $scene then "<th>Scene #</th>" else ""# #if $scene_anime then "<th>Scene Absolute</th>" else ""#<th>Name</th><th class="nowrap">Airdate</th>#if $sickbeard.USE_SUBTITLES and $show.subtitles then "<th>Subtitles</th>" else ""#<th>Status</th><th>Search</th></tr>
         #set $curSeason = int($epResult["season"])
   #end if    
 
@@ -328,16 +322,15 @@
       <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
 #end if
     </td>
+    #if $sickbeard.PLAY_VIDEOS:
     <td>
     #if $epResult["location"]:
     #set $video_root = $os.path.dirname($show._location)
-    <video id="$epResult["indexerid"]" class="video-js vjs-default-skin"
-    controls preload="none" width="64" height="64"
-    poster="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" data-setup="{}">
-    <source src="$sbRoot$epResult["location"].replace($video_root, '/videos')" type='video/mp4' />
-    </video>
+    #set $video_source = $sbRoot + $epResult["location"].replace($video_root, '/videos')
+    <div id="$video_source" class="jwvideo">Loading the player...</div>
     #end if
     </td>
+    #end if
     <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
     <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
     <td align="center">
