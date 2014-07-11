@@ -53,20 +53,16 @@ if sys.hexversion >= 0x020600F0:
 import locale
 import datetime
 import threading
-import traceback
 import getopt
 
 import sickbeard
-
-from sickbeard.event_queue import Events
 from sickbeard import db
 from sickbeard.tv import TVShow
 from sickbeard import logger, network_timezones, failed_history, name_cache
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.version import SICKBEARD_VERSION
-from sickbeard.databases.mainDB import MIN_DB_VERSION
-from sickbeard.databases.mainDB import MAX_DB_VERSION
-from sickbeard import exceptions
+from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
+from sickbeard.event_queue import Events
 
 from lib.configobj import ConfigObj
 
@@ -76,17 +72,52 @@ signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 class SickRage(object):
-
     def __init__(self):
+        # system event callback for shutdown/restart
         sickbeard.events = Events(self.shutdown)
 
-        self.webserver = None
+        # daemon constants
         self.runAsDaemon = False
         self.CREATEPID = False
-        self.PIDFILE = None
+        self.PIDFILE = ''
+
+        # webserver constants
+        self.webserver = None
         self.forceUpdate = False
         self.forcedPort = None
         self.noLaunch = False
+
+    def help_message(self):
+        """
+        print help message for commandline options
+        """
+        help_msg = "\n"
+        help_msg += "Usage: " + sickbeard.MY_FULLNAME + " <option> <another option>\n"
+        help_msg += "\n"
+        help_msg += "Options:\n"
+        help_msg += "\n"
+        help_msg += "    -h          --help              Prints this message\n"
+        help_msg += "    -f          --forceupdate       Force update all shows in the DB (from tvdb) on startup\n"
+        help_msg += "    -q          --quiet             Disables logging to console\n"
+        help_msg += "                --nolaunch          Suppress launching web browser on startup\n"
+
+        if sys.platform == 'win32':
+            help_msg += "    -d          --daemon            Running as real daemon is not supported on Windows\n"
+            help_msg += "                                    On Windows, --daemon is substituted with: --quiet --nolaunch\n"
+        else:
+            help_msg += "    -d          --daemon            Run as double forked daemon (includes options --quiet --nolaunch)\n"
+            help_msg += "                --pidfile=<path>    Combined with --daemon creates a pidfile (full path including filename)\n"
+
+        help_msg += "    -p <port>   --port=<port>       Override default/configured port to listen on\n"
+        help_msg += "                --datadir=<path>    Override folder (full path) as location for\n"
+        help_msg += "                                    storing database, configfile, cache, logfiles \n"
+        help_msg += "                                    Default: " + sickbeard.PROG_DIR + "\n"
+        help_msg += "                --config=<path>     Override config filename (full path including filename)\n"
+        help_msg += "                                    to load configuration from \n"
+        help_msg += "                                    Default: config.ini in " + sickbeard.PROG_DIR + " or --datadir location\n"
+        help_msg += "                --noresize          Prevent resizing of the banner/posters even if PIL is installed\n"
+
+        return help_msg
 
     def start(self):
         # do some preliminary stuff
@@ -126,14 +157,17 @@ class SickRage(object):
         threading.currentThread().name = "MAIN"
 
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "qfdp::",
-                                       ['quiet', 'forceupdate', 'daemon', 'port=', 'pidfile=', 'nolaunch', 'config=',
-                                        'datadir='])  # @UnusedVariable
+            opts, args = getopt.getopt(sys.argv[1:], "hfqdp::",
+                                       ['help', 'forceupdate', 'quiet', 'nolaunch', 'daemon', 'pidfile=', 'port=',
+                                        'datadir=', 'config=', 'noresize'])  # @UnusedVariable
         except getopt.GetoptError:
-            print "Available Options: --quiet, --forceupdate, --port, --daemon, --pidfile, --config, --datadir"
-            sys.exit()
+            sys.exit(self.help_message())
 
         for o, a in opts:
+            # Prints help message
+            if o in ('-h', '--help'):
+                sys.exit(self.help_message())
+
             # For now we'll just silence the logging
             if o in ('-q', '--quiet'):
                 self.consoleLogging = False
@@ -150,7 +184,10 @@ class SickRage(object):
 
             # Override default/configured port
             if o in ('-p', '--port'):
-                self.forcedPort = int(a)
+                try:
+                    self.forcedPort = int(a)
+                except ValueError:
+                    sys.exit("Port: " + str(a) + " is not a number. Exiting.")
 
             # Run as a double forked daemon
             if o in ('-d', '--daemon'):
@@ -161,6 +198,15 @@ class SickRage(object):
 
                 if sys.platform == 'win32':
                     self.runAsDaemon = False
+
+            # Write a pidfile if requested
+            if o in ('--pidfile',):
+                self.CREATEPID = True
+                self.PIDFILE = str(a)
+
+                # If the pidfile already exists, sickbeard may still be running, so exit
+                if os.path.exists(self.PIDFILE):
+                    sys.exit("PID file: " + self.PIDFILE + " already exists. Exiting.")
 
             # Specify folder to load the config file from
             if o in ('--config',):
@@ -173,15 +219,6 @@ class SickRage(object):
             # Prevent resizing of the banner/posters even if PIL is installed
             if o in ('--noresize',):
                 sickbeard.NO_RESIZE = True
-
-            # Write a pidfile if requested
-            if o in ('--pidfile',):
-                self.CREATEPID = True
-                self.PIDFILE = str(a)
-
-                # If the pidfile already exists, sickbeard may still be running, so exit
-                if os.path.exists(self.PIDFILE):
-                    sys.exit("PID file: " + self.PIDFILE + " already exists. Exiting.")
 
         # The pidfile is only useful in daemon mode, make sure we can write the file properly
         if self.CREATEPID:
@@ -335,14 +372,13 @@ class SickRage(object):
             sickbeard.launchBrowser(self.startPort)
 
         # main loop
-        while(True):
+        while (True):
             time.sleep(1)
 
     def daemonize(self):
         """
         Fork off as a daemon
         """
-
         # pylint: disable=E1101
         # Make a non-session-leader child process
         try:
@@ -463,10 +499,12 @@ class SickRage(object):
                 elif install_type == 'win':
                     if hasattr(sys, 'frozen'):
                         # c:\dir\to\updater.exe 12345 c:\dir\to\sickbeard.exe
-                        popen_list = [os.path.join(sickbeard.PROG_DIR, 'updater.exe'), str(sickbeard.PID), sys.executable]
+                        popen_list = [os.path.join(sickbeard.PROG_DIR, 'updater.exe'), str(sickbeard.PID),
+                                      sys.executable]
                     else:
                         logger.log(u"Unknown SB launch method, please file a bug report about this", logger.ERROR)
-                        popen_list = [sys.executable, os.path.join(sickbeard.PROG_DIR, 'updater.py'), str(sickbeard.PID),
+                        popen_list = [sys.executable, os.path.join(sickbeard.PROG_DIR, 'updater.py'),
+                                      str(sickbeard.PID),
                                       sys.executable,
                                       sickbeard.MY_FULLNAME]
 

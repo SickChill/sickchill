@@ -1,6 +1,5 @@
 from threading import Thread
 from Queue import Queue, Empty
-from tornado.ioloop import IOLoop
 
 class Event:
     def __init__(self, type):
@@ -19,11 +18,8 @@ class Events(Thread):
         self.callback = callback
         self.name = "EVENT-QUEUE"
 
-        # auto-start
-        self.start()
-
     def put(self, type):
-        self.queue.put_nowait(type)
+        self.queue.put(type)
 
     def run(self):
         while(self.alive):

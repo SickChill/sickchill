@@ -1126,11 +1126,13 @@ def start():
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
         subtitlesFinderScheduler, USE_SUBTITLES,traktCheckerScheduler, \
-        dailySearchScheduler, started
+        dailySearchScheduler, events, started
 
     with INIT_LOCK:
 
         if __INITIALIZED__:
+            # start sysetm events queue
+            events.start()
 
             # start the daily search scheduler
             dailySearchScheduler.thread.start()
