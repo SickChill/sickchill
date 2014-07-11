@@ -116,13 +116,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-desc">
                                     #set $provider_config_list = []
                                     #for $curProvider in $sickbeard.providers.sortedProviderList():
-                                        #set $cur_provider_obj = $sickbeard.providers.getProviderClass($curProvider.getID())
-                                        #if $cur_provider_obj.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
+                                        #if $curProvider.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
                                         	#continue
-                                        #elif $cur_provider_obj.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
+                                        #elif $curProvider.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
                                         	#continue	
                                         #end if	
-                                        $provider_config_list.append($cur_provider_obj)
+                                        $provider_config_list.append($curProvider)
                                     #end for
 
                                     #if $provider_config_list:                                        

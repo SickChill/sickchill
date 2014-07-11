@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -94,8 +94,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
             return False
 
         if re.search('Username or password incorrect', response.text):
-
-	    logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
 
         return True
@@ -185,11 +184,11 @@ class TorrentBytesProvider(generic.TorrentProvider):
                     for result in torrent_rows[1:]:
                         cells = result.find_all('td')
 
-                        link = cells[1].find('a', attrs = {'class': 'index'})
+                        link = cells[1].find('a', attrs={'class': 'index'})
 
                         full_id = link['href'].replace('details.php?id=', '')
                         torrent_id = full_id[:6]
-                        
+
                         try:
                             if link.has_key('title'):
                                 title = cells[1].find('a', {'class': 'index'})['title']
@@ -325,8 +324,6 @@ class TorrentBytesCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-
-
         if cl:
             myDB = self._getDB()
             myDB.mass_action(cl)
@@ -339,7 +336,7 @@ class TorrentBytesCache(tvcache.TVCache):
         if not title or not url:
             return None
 
-        logger.log(u"Attempting to cache item:[" + title +"]", logger.DEBUG)
+        logger.log(u"Attempting to cache item:[" + title + "]", logger.DEBUG)
 
         return self._addCacheEntry(title, url)
 
