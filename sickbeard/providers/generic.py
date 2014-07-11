@@ -281,10 +281,10 @@ class GenericProvider:
                     myParser = NameParser(False, convert=True)
                     parse_result = myParser.parse(title)
                 except InvalidNameException:
-                    logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.WARNING)
+                    logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
                     continue
                 except InvalidShowException:
-                    logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.WARNING)
+                    logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.DEBUG)
                     continue
 
                 showObj = parse_result.show

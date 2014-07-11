@@ -135,7 +135,6 @@ class NameParser(object):
                     break
             else:
                 time.sleep(0.05)
-
                 raise InvalidShowException(
                     "Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
