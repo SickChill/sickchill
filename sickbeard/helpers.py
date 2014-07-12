@@ -439,15 +439,15 @@ def hardlinkFile(srcFile, destFile):
         copyFile(srcFile, destFile)
 
 
-def symlink(src, dst):
+def symlink(srcFile, destFile):
     if os.name == 'nt':
         import ctypes
 
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if os.path.isdir(src) else 0) in [0,
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(destFile), unicode(srcFile), 1 if os.path.isdir(srcFile) else 0) in [0,
                                                                                                                       1280]:
             raise ctypes.WinError()
         else:
-            os.symlink(src, dst)
+            os.symlink(srcFile, destFile)
 
 
 def moveAndSymlinkFile(srcFile, destFile):
