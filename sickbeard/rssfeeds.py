@@ -3,7 +3,6 @@ import threading
 import urllib
 import urlparse
 import re
-import time
 import sickbeard
 
 from sickbeard import logger
