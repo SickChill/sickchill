@@ -180,7 +180,7 @@ class SpeedCDProvider(generic.TorrentProvider):
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
 
-                    if mode != 'RSS' and (seeders == 0 or seeders < self.minseed or leechers < self.minleech):
+                    if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
                         continue
 
                     if not title or not url:
