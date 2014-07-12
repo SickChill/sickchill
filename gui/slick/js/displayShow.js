@@ -25,7 +25,7 @@ $(document).ready(function () {
     });
 
     $('#changeStatus').click(function () {
-        var sbRoot = $('#sbRoot').val()
+        var sbRoot = $('#sbRoot').val();
         var epArr = new Array()
 
         $('.epCheck').each(function () {
@@ -37,9 +37,9 @@ $(document).ready(function () {
         });
 
         if (epArr.length == 0)
-            return false
+            return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').attr('value')
+        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').attr('value');
         window.location.href = url
 
     });
@@ -49,7 +49,7 @@ $(document).ready(function () {
         var seasNo = $(seasCheck).attr('id');
 
         $('.epCheck:visible').each(function () {
-            var epParts = $(this).attr('id').split('x')
+            var epParts = $(this).attr('id').split('x');
 
             if (epParts[0] == seasNo) {
                 this.checked = seasCheck.checked
@@ -105,18 +105,18 @@ $(document).ready(function () {
 
     // handle the show selection dropbox
     $('#pickShow').change(function () {
-        var sbRoot = $('#sbRoot').val()
-        var val = $(this).attr('value')
+        var sbRoot = $('#sbRoot').val();
+        var val = $(this).attr('value');
         if (val == 0)
-            return
-        url = sbRoot + '/home/displayShow?show=' + val
+            return;
+        url = sbRoot + '/home/displayShow?show=' + val;
         window.location.href = url
     });
 
     // show/hide different types of rows when the checkboxes are changed
     $("#checkboxControls input").change(function (e) {
-        var whichClass = $(this).attr('id')
-        $(this).showHideRows(whichClass)
+        var whichClass = $(this).attr('id');
+        $(this).showHideRows(whichClass);
 
         $('tr.' + whichClass).each(function (i) {
             $(this).toggle();
@@ -137,7 +137,7 @@ $(document).ready(function () {
 
     $.fn.showHideRows = function (whichClass) {
 
-        var status = $('#checkboxControls > input, #' + whichClass).prop('checked')
+        var status = $('#checkboxControls > input, #' + whichClass).prop('checked');
         $("tr." + whichClass).each(function (e) {
             if (status) {
                 $(this).show();
@@ -148,21 +148,21 @@ $(document).ready(function () {
 
         // hide season headers with no episodes under them
         $('tr.seasonheader').each(function () {
-            var numRows = 0
-            var seasonNo = $(this).attr('id')
+            var numRows = 0;
+            var seasonNo = $(this).attr('id');
             $('tr.' + seasonNo + ' :visible').each(function () {
                 numRows++
-            })
+            });
             if (numRows == 0) {
-                $(this).hide()
+                $(this).hide();
                 $('#' + seasonNo + '-cols').hide()
             } else {
-                $(this).show()
+                $(this).show();
                 $('#' + seasonNo + '-cols').show()
             }
 
         });
-    }
+    };
 
     function setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode) {
         var sbRoot = $('#sbRoot').val();
