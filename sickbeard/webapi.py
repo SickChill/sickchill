@@ -974,7 +974,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         sql_l = []
         for epObj in ep_list:
-            if ep_segment == None and self.status == WANTED:
+            if self.status == WANTED:
                 # figure out what episodes are wanted so we can backlog them
                 if epObj.season in ep_segment:
                     ep_segment[epObj.season].append(epObj)
