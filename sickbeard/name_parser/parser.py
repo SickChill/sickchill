@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 import time
 import re
 import datetime
@@ -25,8 +27,10 @@ import shelve
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek
-from sickbeard.exceptions import ex
+from contextlib import closing
 from dateutil import parser
+from sickbeard.exceptions import ex
+
 
 class NameParser(object):
     NORMAL_REGEX = 0
@@ -138,7 +142,7 @@ class NameParser(object):
                                 result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
                             if not result.show:
-                                return
+                                break
 
                         result.score += 1
 
@@ -581,27 +585,31 @@ class ParseResult(object):
 class NameParserCache:
     def __init__(self):
         self.npc_cache_size = 200
-
-        try:
-            self.npc = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache'))
-        except Exception as e:
-            logger.log(u"NameParser Cache error: " + ex(e), logger.ERROR)
-            raise
-
-    def __del__(self):
-        if getattr(self, "npc", None) is not None:
-            self.npc.close()
+        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache')
 
     def add(self, name, parse_result):
         name = name.encode('utf-8', 'ignore')
-        self.npc[str(name)] = parse_result
 
-        while len(self.npc.items()) > self.npc_cache_size:
-            del self.npc.keys()[0]
+        try :
+            with closing(shelve.open(self.db_name)) as npc:
+                npc[str(name)] = parse_result
+
+                while len(npc.items()) > self.npc_cache_size:
+                    del npc.keys()[0]
+        except Exception as e:
+            logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
+            logger.log(u"NameParser cache corrupted, please delete " + self.db_name, logger.ERROR)
 
     def get(self, name):
         name = name.encode('utf-8', 'ignore')
-        parse_result = self.npc.get(str(name), None)
+
+        try:
+            with closing(shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache'))) as npc:
+                parse_result = npc.get(str(name), None)
+        except Exception as e:
+            logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
+            logger.log(u"NameParser cache corrupted, please delete " + self.db_name, logger.ERROR)
+            parse_result = None
 
         if parse_result:
             logger.log("Using cached parse result for: " + name, logger.DEBUG)

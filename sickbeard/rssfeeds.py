@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import os
 import urllib
 import urlparse
@@ -7,24 +9,23 @@ import sickbeard
 
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
-from sickbeard.exceptions import ex
+from contextlib import closing
 from lib.feedcache import cache
+from sickbeard.exceptions import ex
+
 
 class RSSFeeds:
     def __init__(self, db_name):
-        try:
-            self.fs = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name))
-            self.fc = cache.Cache(self.fs)
-        except Exception, e:
-            logger.log(u"RSS error: " + ex(e), logger.ERROR)
-            raise
-
-    def __del__(self):
-        if getattr(self, "fs", None) is not None:
-            self.fs.close()
+        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name)
 
     def clearCache(self, age=None):
-        self.fc.purge(age)
+        try:
+            with closing(shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, self.db_name))) as fs:
+                fc = cache.Cache(fs)
+                fc.purge(age)
+        except Exception as e:
+            logger.log(u"RSS Error: " + ex(e), logger.ERROR)
+            logger.log(u"RSS cache file corrupted, please delete " + self.db_name, logger.ERROR)
 
     def getFeed(self, url, post_data=None, request_headers=None):
         parsed = list(urlparse.urlparse(url))
@@ -33,7 +34,14 @@ class RSSFeeds:
         if post_data:
             url += urllib.urlencode(post_data)
 
-        feed = self.fc.fetch(url, False, False, request_headers)
+        try:
+            with closing(shelve.open(self.db_name)) as fs:
+                fc = cache.Cache(fs)
+                feed = fc.fetch(url, False, False, request_headers)
+        except Exception as e:
+            logger.log(u"RSS Error: " + ex(e), logger.ERROR)
+            logger.log(u"RSS cache file corrupted, please delete " + self.db_name, logger.ERROR)
+            feed = None
 
         if not feed:
             logger.log(u"RSS Error loading URL: " + url, logger.ERROR)
