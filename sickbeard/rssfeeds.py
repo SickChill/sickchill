@@ -20,7 +20,7 @@ class RSSFeeds:
 
     def clearCache(self, age=None):
         try:
-            with closing(shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, self.db_name))) as fs:
+            with closing(shelve.open(self.db_name, writeback=True)) as fs:
                 fc = cache.Cache(fs)
                 fc.purge(age)
         except Exception as e:
@@ -35,7 +35,7 @@ class RSSFeeds:
             url += urllib.urlencode(post_data)
 
         try:
-            with closing(shelve.open(self.db_name)) as fs:
+            with closing(shelve.open(self.db_name, writeback=True)) as fs:
                 fc = cache.Cache(fs)
                 feed = fc.fetch(url, False, False, request_headers)
         except Exception as e:

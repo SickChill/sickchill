@@ -591,7 +591,7 @@ class NameParserCache:
         name = name.encode('utf-8', 'ignore')
 
         try :
-            with closing(shelve.open(self.db_name)) as npc:
+            with closing(shelve.open(self.db_name, writeback=True)) as npc:
                 npc[str(name)] = parse_result
 
                 while len(npc.items()) > self.npc_cache_size:
@@ -604,7 +604,7 @@ class NameParserCache:
         name = name.encode('utf-8', 'ignore')
 
         try:
-            with closing(shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache'))) as npc:
+            with closing(shelve.open(self.db_name, writeback=True)) as npc:
                 parse_result = npc.get(str(name), None)
         except Exception as e:
             logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
