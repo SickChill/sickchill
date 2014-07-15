@@ -26,12 +26,8 @@ import os.path
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek
-from sickbeard.exceptions import ex
-from contextlib import closing
+from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions
 from dateutil import parser
-from shove import Shove
-
 
 class NameParser(object):
     NORMAL_REGEX = 0
@@ -325,7 +321,7 @@ class NameParser(object):
         if self.naming_pattern:
             cache_result = False
 
-        cached = NameParserCache().get(name)
+        cached = name_parser_cache.get(name)
         if cached:
             return cached
 
@@ -392,7 +388,7 @@ class NameParser(object):
             raise InvalidNameException("Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
         if cache_result:
-            NameParserCache().add(name, final_result)
+            name_parser_cache.add(name, final_result)
 
         logger.log(u"Parsed " + name + " into " + str(final_result).decode('utf-8', 'xmlcharrefreplace'), logger.DEBUG)
         return final_result
@@ -604,53 +600,24 @@ class ParseResult(object):
             return True
         return False
 
-
-class NameParserCache:
-    def __init__(self):
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache.db')
-        self.npc_cache_size = 200
+class NameParserCache(object):
+    _previous_parsed = {}
+    _cache_size = 100
 
     def add(self, name, parse_result):
-        if not isinstance(name, unicode):
-            name = unicode(name, 'utf-8', 'replace')
-
-        try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
-                npc[str(name)] = parse_result
-
-                while len(npc.items()) > self.npc_cache_size:
-                    del npc.keys()[0]
-        except:
-            os.remove(self.db_name)
-            try:
-                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
-                    npc[str(name)] = parse_result
-
-                    while len(npc.items()) > self.npc_cache_size:
-                        del npc.keys()[0]
-            except Exception as e:
-                logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
+        self._previous_parsed[name] = parse_result
+        _current_cache_size = len(self._previous_parsed)
+        if _current_cache_size > self._cache_size:
+            for i in range(_current_cache_size - self._cache_size):
+                del self._previous_parsed[self._previous_parsed.keys()[0]]
 
     def get(self, name):
-        if not isinstance(name, unicode):
-            name = unicode(name, 'utf-8', 'replace')
-
-        try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
-                parse_result = npc.get(str(name), None)
-        except:
-            os.remove(self.db_name)
-            try:
-                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
-                    parse_result = npc.get(str(name), None)
-            except Exception as e:
-                logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
-                parse_result = None
-
-        if parse_result:
+        if name in self._previous_parsed:
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
+            return self._previous_parsed[name]
 
-        return parse_result
+
+name_parser_cache = NameParserCache()
 
 
 class InvalidNameException(Exception):
