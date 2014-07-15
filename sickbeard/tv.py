@@ -2156,7 +2156,10 @@ class TVEpisode(object):
             multi = sickbeard.NAMING_MULTI_EP
 
         if anime_type == None:
-            anime_type = sickbeard.NAMING_ANIME
+            if not self.show.is_anime:
+                anime_type = 3
+            else:
+                anime_type = sickbeard.NAMING_ANIME
 
         replace_map = self._replace_map()
 
