@@ -2557,12 +2557,12 @@ class HomePostProcess(MainHandler):
         else:
             failed = True
 
-        if force == "on":
+        if force in ["on", "1"]:
             force = True
         else:
             force = False
 
-        if is_priority == "on":
+        if is_priority in ["on", "1"]:
             is_priority = True
         else:
             is_priority = False
