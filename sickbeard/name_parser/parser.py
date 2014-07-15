@@ -236,6 +236,23 @@ class NameParser(object):
             # scene convert result
             bestResult = bestResult.convert() if self.convert and not self.naming_pattern else bestResult
 
+            if bestResult.show and bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
+                new_episode_numbers = []
+                new_season_numbers = []
+
+                for epAbsNo in bestResult.ab_episode_numbers:
+                    try:
+                        (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, None, [epAbsNo])
+                    except exceptions.EpisodeNotFoundByAbsoluteNumberException:
+                        pass
+                    else:
+                        new_episode_numbers.extend(e)
+                        new_season_numbers.append(s)
+
+                if len(new_season_numbers) and len(new_episode_numbers):
+                    bestResult.episode_numbers = new_episode_numbers
+                    bestResult.season_number = new_season_numbers[0]
+
         return bestResult
 
     def _combine_results(self, first, second, attr):
