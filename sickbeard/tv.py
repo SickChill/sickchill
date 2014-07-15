@@ -2073,12 +2073,12 @@ class TVEpisode(object):
                 name = name.rpartition('.')[0]
             return name
 
-        def release_group(name):
+        def release_group(show, name):
             if not name:
                 return ''
 
             try:
-                np = NameParser(name, naming_pattern=True)
+                np = NameParser(name, showObj=show, naming_pattern=True)
                 parse_result = np.parse(name)
             except (InvalidNameException, InvalidShowException), e:
                 logger.log(u"Unable to get parse release_group: " + ex(e), logger.DEBUG)
@@ -2116,7 +2116,7 @@ class TVEpisode(object):
             '%AB': '%(#)03d' % {'#': self.absolute_number},
             '%XAB': '%(#)03d' % {'#': self.scene_absolute_number},
             '%RN': release_name(self.release_name),
-            '%RG': release_group(self.release_name),
+            '%RG': release_group(self.show, self.release_name),
             '%AD': str(self.airdate).replace('-', ' '),
             '%A.D': str(self.airdate).replace('-', '.'),
             '%A_D': us(str(self.airdate)),
@@ -2156,10 +2156,7 @@ class TVEpisode(object):
             multi = sickbeard.NAMING_MULTI_EP
 
         if anime_type == None:
-            if not self.show.is_anime:
-                anime_type = 3
-            else:
-                anime_type = sickbeard.NAMING_ANIME
+            anime_type = sickbeard.NAMING_ANIME
 
         replace_map = self._replace_map()
 
@@ -2170,7 +2167,7 @@ class TVEpisode(object):
             if self.show.air_by_date or self.show.sports:
                 result_name = result_name.replace('%RN', '%S.N.%A.D.%E.N-SiCKRAGE')
                 result_name = result_name.replace('%rn', '%s.n.%A.D.%e.n-sickrage')
-            elif self.show.anime:
+            elif anime_type != 3:
                 result_name = result_name.replace('%RN', '%S.N.%AB.%E.N-SiCKRAGE')
                 result_name = result_name.replace('%rn', '%s.n.%ab.%e.n-sickrage')
             else:
@@ -2261,7 +2258,7 @@ class TVEpisode(object):
 
                 ep_string += other_ep._format_string(ep_format.upper(), other_ep._replace_map())
 
-            if self.show.anime and anime_type != 3:
+            if anime_type != 3:
                 if self.absolute_number == 0:
                     curAbsolute_number = self.episode
                 else:

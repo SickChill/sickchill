@@ -3,7 +3,6 @@
 #from sickbeard import common
 #from sickbeard import exceptions
 #from sickbeard import scene_exceptions
-#from sickbeard.blackandwhitelist import *
 #set global $title="Edit " + $show.name
 #set global $header=$show.name
 
@@ -146,8 +145,10 @@ Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
 
 #if $show.is_anime
+#from sickbeard.blackandwhitelist import *
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
 #end if
+
 <input type="hidden" name="whitelist" id="whitelist"/>
 <input type="hidden" name="blacklist" id="blacklist"/>
 

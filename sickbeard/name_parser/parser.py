@@ -47,7 +47,7 @@ class NameParser(object):
         self.naming_pattern = naming_pattern
 
         self.regexModes = [self.NORMAL_REGEX, self.SPORTS_REGEX, self.ANIME_REGEX]
-        if self.showObj and not (self.showObj.is_anime and self.showObj.is_sports):
+        if self.showObj and not (self.showObj.is_anime or self.showObj.is_sports):
             self.regexModes = [self.NORMAL_REGEX]
         elif self.showObj and self.showObj.is_anime:
             self.regexModes = [self.ANIME_REGEX]
@@ -82,7 +82,6 @@ class NameParser(object):
         if regexMode == self.SPORTS_REGEX:
             logger.log(u"Using SPORTS regexs", logger.DEBUG)
             uncompiled_regex = [regexes.sports_regexs]
-
         elif regexMode == self.ANIME_REGEX:
             logger.log(u"Using ANIME regexs", logger.DEBUG)
             uncompiled_regex = [regexes.anime_regexes]
@@ -135,14 +134,17 @@ class NameParser(object):
                     if result.series_name:
                         result.series_name = self.clean_series_name(result.series_name)
 
-                        if not self.naming_pattern:
-                            if self.showObj and self.showObj.name.lower() == result.series_name.lower():
-                                result.show = self.showObj
-                            else:
+                        if self.showObj and self.showObj.name.lower() == result.series_name.lower():
+                            result.show = self.showObj
+                        else:
+                            if not self.naming_pattern:
                                 result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
-                            if not result.show:
+                        if not result.show:
+                            if len(self.regexModes) > 1:
                                 break
+                            else:
+                                continue
 
                         result.score += 1
 
@@ -185,7 +187,7 @@ class NameParser(object):
 
                 if 'sports_air_date' in named_groups:
                     sports_air_date = match.group('sports_air_date')
-                    if sports_air_date:
+                    if result.show and result.show.is_sports:
                         try:
                             result.sports_air_date = parser.parse(sports_air_date, fuzzy=True).date()
                             result.score += 1
@@ -193,16 +195,17 @@ class NameParser(object):
                             pass
 
                 if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
-                    year = int(match.group('air_year'))
-                    month = int(match.group('air_month'))
-                    day = int(match.group('air_day'))
+                    if result.show and result.show.air_by_date:
+                        year = int(match.group('air_year'))
+                        month = int(match.group('air_month'))
+                        day = int(match.group('air_day'))
 
-                    try:
-                        dtStr = '%s-%s-%s' % (year, month, day)
-                        result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
-                        result.score += 1
-                    except:
-                        pass
+                        try:
+                            dtStr = '%s-%s-%s' % (year, month, day)
+                            result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                            result.score += 1
+                        except:
+                            pass
 
                 if 'extra_info' in named_groups:
                     tmp_extra_info = match.group('extra_info')

@@ -192,11 +192,8 @@ sports_regexs = [
      # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
      '''
      ^(?P<series_name>(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP))[. _-]+
-     ((?P<sports_event_id>\d{3})[. _-]+)?
-     ((?P<sports_event_name>\.+)[. _-]+)?
-     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
-     [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
-     -(?P<release_group>[^- ]+))?)?$
+     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))[. _-]+
+     ((?P<extra_info>.+?)((?<![. _-])(?<!WEB)-(?P<release_group>[^- ]+))?)?$
      '''
     ),
 
@@ -204,11 +201,9 @@ sports_regexs = [
      # Sports.Name.2010.11.23.Source.Quality.Etc-Group
      # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
      '''
-     ^(?P<series_name>.+?)[. _-]+
-     ((?P<sports_event_id>\d{3})[. _-]+)?
-     ((?P<sports_event_name>\.+)[. _-]+)?
-     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
-     [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
+     ^(?P<series_name>.+?)\W+
+     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))[. _-]+
+     ((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
      '''
     ),
