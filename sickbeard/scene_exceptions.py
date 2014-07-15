@@ -27,6 +27,10 @@ from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
 
+exception_dict = {}
+anidb_exception_dict = {}
+xem_exception_dict = {}
+
 exceptionsCache = {}
 exceptionsSeasonCache = {}
 
@@ -157,9 +161,7 @@ def retrieve_exceptions():
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
-    global exceptionsCache, exceptionsSeasonCache
-
-    exception_dict = {}
+    global exception_dict, anidb_exception_dict, xem_exception_dict
 
     # exceptions are stored on github pages
     for indexer in sickbeard.indexerApi().indexers:
@@ -192,22 +194,24 @@ def retrieve_exceptions():
                     # alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
                     alias_list = [{re.sub(r'\\(.)', r'\1', x): -1} for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
                     exception_dict[indexer_id] = alias_list
+                    del alias_list
+                del url_data
 
     # XEM scene exceptions
-    xem_exceptions = _xem_exceptions_fetcher()
-    for xem_ex in xem_exceptions:
+    _xem_exceptions_fetcher()
+    for xem_ex in xem_exception_dict:
         if xem_ex in exception_dict:
-            exception_dict[xem_ex] = exception_dict[xem_ex] + xem_exceptions[xem_ex]
+            exception_dict[xem_ex] = exception_dict[xem_ex] + xem_exception_dict[xem_ex]
         else:
-            exception_dict[xem_ex] = xem_exceptions[xem_ex]
+            exception_dict[xem_ex] = xem_exception_dict[xem_ex]
 
     # AniDB scene exceptions
-    anidb_exceptions = _anidb_exceptions_fetcher()
-    for anidb_ex in anidb_exceptions:
+    _anidb_exceptions_fetcher()
+    for anidb_ex in anidb_exception_dict:
         if anidb_ex in exception_dict:
-            exception_dict[anidb_ex] = exception_dict[anidb_ex] + anidb_exceptions[anidb_ex]
+            exception_dict[anidb_ex] = exception_dict[anidb_ex] + anidb_exception_dict[anidb_ex]
         else:
-            exception_dict[anidb_ex] = anidb_exceptions[anidb_ex]
+            exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
 
     changed_exceptions = False
 
@@ -224,6 +228,7 @@ def retrieve_exceptions():
 
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
+
                 if not isinstance(cur_exception, unicode):
                     cur_exception = unicode(cur_exception, 'utf-8', 'replace')
 
@@ -237,9 +242,11 @@ def retrieve_exceptions():
     else:
         logger.log(u"No scene exceptions update needed")
 
-    # cleanup
-    del exception_dict
 
+    # cleanup
+    exception_dict.clear()
+    anidb_exception_dict.clear()
+    xem_exception_dict.clear()
 
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
@@ -259,29 +266,27 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
             myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
                         [indexer_id, cur_exception, cur_season, 1])
 
-
 def _anidb_exceptions_fetcher():
-    exception_dict = {}
+    global anidb_exception_dict
 
     if shouldRefresh('anidb'):
         logger.log(u"Checking for scene exception updates for AniDB")
         for show in sickbeard.showList:
-            if show.indexer == 1:
+            if show.is_anime and show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
                 except:
                     continue
                 else:
                     if anime.name and anime.name != show.name:
-                        exception_dict[show.indexerid] = [{anime.name: -1}]
+                        anidb_exception_dict[show.indexerid] = [{anime.name: -1}]
 
         setLastRefresh('anidb')
-
-    return exception_dict
+    return anidb_exception_dict
 
 
 def _xem_exceptions_fetcher():
-    exception_dict = {}
+    global xem_exception_dict
 
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
@@ -300,11 +305,11 @@ def _xem_exceptions_fetcher():
                 continue
 
             for indexerid, names in url_data['data'].items():
-                exception_dict[int(indexerid)] = names
+                xem_exception_dict[int(indexerid)] = names
 
         setLastRefresh('xem')
 
-    return exception_dict
+    return xem_exception_dict
 
 
 def getSceneSeasons(indexer_id):

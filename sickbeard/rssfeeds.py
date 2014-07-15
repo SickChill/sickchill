@@ -13,18 +13,18 @@ from lib.feedcache import cache
 class RSSFeeds:
     def __init__(self, db_name):
         try:
-            self.fs = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name + '.db'))
+            self.fs = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name))
             self.fc = cache.Cache(self.fs)
         except Exception, e:
             logger.log(u"RSS error: " + ex(e), logger.ERROR)
             raise
 
     def __del__(self):
-        self.fs.close()
+        if getattr(self, "fs", None) is not None:
+            self.fs.close()
 
     def clearCache(self, age=None):
         self.fc.purge(age)
-        self.fs.close()
 
     def getFeed(self, url, post_data=None, request_headers=None):
         parsed = list(urlparse.urlparse(url))
@@ -34,7 +34,6 @@ class RSSFeeds:
             url += urllib.urlencode(post_data)
 
         feed = self.fc.fetch(url, False, False, request_headers)
-        self.fs.close()
 
         if not feed:
             logger.log(u"RSS Error loading URL: " + url, logger.ERROR)

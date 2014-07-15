@@ -583,23 +583,24 @@ class NameParserCache:
         self.npc_cache_size = 200
 
         try:
-            self.npc = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, 'npc.db'))
+            self.npc = shelve.open(ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache'))
         except Exception as e:
             logger.log(u"NameParser Cache error: " + ex(e), logger.ERROR)
             raise
 
     def __del__(self):
-        self.npc.close()
+        if getattr(self, "npc", None) is not None:
+            self.npc.close()
 
     def add(self, name, parse_result):
-        name = name.encode('utf-8', 'replace')
+        name = name.encode('utf-8', 'ignore')
         self.npc[str(name)] = parse_result
 
         while len(self.npc.items()) > self.npc_cache_size:
             del self.npc.keys()[0]
 
     def get(self, name):
-        name = name.encode('utf-8', 'replace')
+        name = name.encode('utf-8', 'ignore')
         parse_result = self.npc.get(str(name), None)
 
         if parse_result:

@@ -111,7 +111,7 @@ class QueueItem(threading.Thread):
         self.added = None
         self.alive = True
         self.stop = threading.Event()
-        
+
     def run(self):
         """Implementing classes should call this"""
 
