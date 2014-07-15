@@ -4,28 +4,33 @@ import os
 import urllib
 import urlparse
 import re
-import shelve
 import sickbeard
 
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
 from contextlib import closing
-from lib.feedcache import cache
 from sickbeard.exceptions import ex
+from lib.feedcache import cache
+from shove import Shove
 
 
 class RSSFeeds:
     def __init__(self, db_name):
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name)
+        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name + '.db')
 
     def clearCache(self, age=None):
         try:
-            with closing(shelve.open(self.db_name, writeback=True)) as fs:
+            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
                 fc = cache.Cache(fs)
                 fc.purge(age)
-        except Exception as e:
-            logger.log(u"RSS Error: " + ex(e), logger.ERROR)
-            logger.log(u"RSS cache file corrupted, please delete " + self.db_name, logger.ERROR)
+        except:
+            os.remove(self.db_name)
+            try:
+                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
+                    fc = cache.Cache(fs)
+                    fc.purge(age)
+            except Exception as e:
+                logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
 
     def getFeed(self, url, post_data=None, request_headers=None):
         parsed = list(urlparse.urlparse(url))
@@ -35,13 +40,18 @@ class RSSFeeds:
             url += urllib.urlencode(post_data)
 
         try:
-            with closing(shelve.open(self.db_name, writeback=True)) as fs:
+            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
                 fc = cache.Cache(fs)
                 feed = fc.fetch(url, False, False, request_headers)
-        except Exception as e:
-            logger.log(u"RSS Error: " + ex(e), logger.ERROR)
-            logger.log(u"RSS cache file corrupted, please delete " + self.db_name, logger.ERROR)
-            feed = None
+        except:
+            os.remove(self.db_name)
+            try:
+                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
+                    fc = cache.Cache(fs)
+                    feed = fc.fetch(url, False, False, request_headers)
+            except Exception as e:
+                logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
+                feed = None
 
         if not feed:
             logger.log(u"RSS Error loading URL: " + url, logger.ERROR)

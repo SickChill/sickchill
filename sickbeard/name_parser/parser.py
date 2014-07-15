@@ -18,18 +18,19 @@
 
 from __future__ import with_statement
 
+import os
 import time
 import re
 import datetime
 import os.path
 import regexes
-import shelve
 import sickbeard
 
 from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek
+from sickbeard.exceptions import ex
 from contextlib import closing
 from dateutil import parser
-from sickbeard.exceptions import ex
+from shove import Shove
 
 
 class NameParser(object):
@@ -231,7 +232,8 @@ class NameParser(object):
             bestResult = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)
 
             # get quality
-            bestResult.quality = common.Quality.nameQuality(name, bestResult.show.is_anime if bestResult.show else False)
+            bestResult.quality = common.Quality.nameQuality(name,
+                                                            bestResult.show.is_anime if bestResult.show else False)
 
             # scene convert result
             bestResult = bestResult.convert() if self.convert and not self.naming_pattern else bestResult
@@ -605,37 +607,49 @@ class ParseResult(object):
 
 class NameParserCache:
     def __init__(self):
+        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache.db')
         self.npc_cache_size = 200
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'name_parser_cache')
 
     def add(self, name, parse_result):
         name = name.encode('utf-8', 'ignore')
 
-        try :
-            with closing(shelve.open(self.db_name, writeback=True)) as npc:
+        try:
+            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
                 npc[str(name)] = parse_result
 
                 while len(npc.items()) > self.npc_cache_size:
                     del npc.keys()[0]
-        except Exception as e:
-            logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
-            logger.log(u"NameParser cache corrupted, please delete " + self.db_name, logger.ERROR)
+        except:
+            os.remove(self.db_name)
+            try:
+                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
+                    npc[str(name)] = parse_result
+
+                    while len(npc.items()) > self.npc_cache_size:
+                        del npc.keys()[0]
+            except Exception as e:
+                logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
 
     def get(self, name):
         name = name.encode('utf-8', 'ignore')
 
         try:
-            with closing(shelve.open(self.db_name, writeback=True)) as npc:
+            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
                 parse_result = npc.get(str(name), None)
-        except Exception as e:
-            logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
-            logger.log(u"NameParser cache corrupted, please delete " + self.db_name, logger.ERROR)
-            parse_result = None
+        except:
+            os.remove(self.db_name)
+            try:
+                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
+                    parse_result = npc.get(str(name), None)
+            except Exception as e:
+                logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
+                parse_result = None
 
         if parse_result:
             logger.log("Using cached parse result for: " + name, logger.DEBUG)
 
         return parse_result
+
 
 class InvalidNameException(Exception):
     "The given release name is not valid"
