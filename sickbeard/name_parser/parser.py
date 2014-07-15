@@ -611,7 +611,8 @@ class NameParserCache:
         self.npc_cache_size = 200
 
     def add(self, name, parse_result):
-        name = name.encode('utf-8', 'ignore')
+        if not isinstance(name, unicode):
+            name = unicode(name, 'utf-8', 'replace')
 
         try:
             with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
@@ -631,7 +632,8 @@ class NameParserCache:
                 logger.log(u"NameParser cache error: " + ex(e), logger.ERROR)
 
     def get(self, name):
-        name = name.encode('utf-8', 'ignore')
+        if not isinstance(name, unicode):
+            name = unicode(name, 'utf-8', 'replace')
 
         try:
             with closing(Shove('sqlite:///' + self.db_name, compress=True)) as npc:
