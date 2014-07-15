@@ -418,7 +418,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
 
         # update qualities (including templates)
         logger.log(u"[1/4] Updating pre-defined templates and the quality for each show...", logger.MESSAGE)
-        ql = []
+        cl = []
         shows = self.connection.select("SELECT * FROM tv_shows")
         for cur_show in shows:
             if cur_show["quality"] == old_hd:
@@ -427,37 +427,37 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
                 new_quality = new_any
             else:
                 new_quality = self._update_composite_qualities(cur_show["quality"])
-            ql.append(["UPDATE tv_shows SET quality = ? WHERE show_id = ?", [new_quality, cur_show["show_id"]]])
-        self.connection.mass_action(ql)
+            cl.append(["UPDATE tv_shows SET quality = ? WHERE show_id = ?", [new_quality, cur_show["show_id"]]])
+        self.connection.mass_action(cl)
 
         # update status that are are within the old hdwebdl (1<<3 which is 8) and better -- exclude unknown (1<<15 which is 32768)
         logger.log(u"[2/4] Updating the status for the episodes within each show...", logger.MESSAGE)
-        ql = []
+        cl = []
         episodes = self.connection.select("SELECT * FROM tv_episodes WHERE status < 3276800 AND status >= 800")
         for cur_episode in episodes:
-            ql.append(["UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
+            cl.append(["UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                        [self._update_status(cur_episode["status"]), cur_episode["episode_id"]]])
-        self.connection.mass_action(ql)
+        self.connection.mass_action(cl)
 
         # make two seperate passes through the history since snatched and downloaded (action & quality) may not always coordinate together
 
         # update previous history so it shows the correct action
         logger.log(u"[3/4] Updating history to reflect the correct action...", logger.MESSAGE)
-        ql = []
+        cl = []
         historyAction = self.connection.select("SELECT * FROM history WHERE action < 3276800 AND action >= 800")
         for cur_entry in historyAction:
-            ql.append(["UPDATE history SET action = ? WHERE showid = ? AND date = ?",
+            cl.append(["UPDATE history SET action = ? WHERE showid = ? AND date = ?",
                        [self._update_status(cur_entry["action"]), cur_entry["showid"], cur_entry["date"]]])
-        self.connection.mass_action(ql)
+        self.connection.mass_action(cl)
 
         # update previous history so it shows the correct quality
         logger.log(u"[4/4] Updating history to reflect the correct quality...", logger.MESSAGE)
-        ql = []
+        cl = []
         historyQuality = self.connection.select("SELECT * FROM history WHERE quality < 32768 AND quality >= 8")
         for cur_entry in historyQuality:
-            ql.append(["UPDATE history SET quality = ? WHERE showid = ? AND date = ?",
+            cl.append(["UPDATE history SET quality = ? WHERE showid = ? AND date = ?",
                        [self._update_quality(cur_entry["quality"]), cur_entry["showid"], cur_entry["date"]]])
-        self.connection.mass_action(ql)
+        self.connection.mass_action(cl)
 
         self.incDBVersion()
 
@@ -724,16 +724,16 @@ class ConvertIndexerToInteger(AddSceneNumbering):
     def execute(self):
         backupDatabase(28)
 
-        ql = []
+        cl = []
         logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
-        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
-        ql.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
-        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
-        ql.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
-        ql.append(["UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
-        ql.append(["UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        cl.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        cl.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        cl.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        cl.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
+        cl.append(["UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
+        cl.append(["UPDATE scene_numbering SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
 
-        self.connection.mass_action(ql)
+        self.connection.mass_action(cl)
 
         self.incDBVersion()
 
@@ -772,14 +772,14 @@ class AddSportsOption(AddRequireAndIgnoreWords):
         if self.hasColumn("tv_shows", "air_by_date") and self.hasColumn("tv_shows", "sports"):
             # update sports column
             logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.MESSAGE)
-            ql = []
+            cl = []
             historyQuality = self.connection.select(
                 "SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")
             for cur_entry in historyQuality:
-                ql.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?",
+                cl.append(["UPDATE tv_shows SET sports = ? WHERE show_id = ?",
                            [cur_entry["air_by_date"], cur_entry["show_id"]]])
-                ql.append(["UPDATE tv_shows SET air_by_date = 0 WHERE show_id = ?", [cur_entry["show_id"]]])
-            self.connection.mass_action(ql)
+                cl.append(["UPDATE tv_shows SET air_by_date = 0 WHERE show_id = ?", [cur_entry["show_id"]]])
+            self.connection.mass_action(cl)
 
         self.incDBVersion()
 
@@ -842,10 +842,10 @@ class AddAnimeBlacklistWhitelist(AddSceneAbsoluteNumbering):
     def execute(self):
         backupDatabase(35)
 
-        ql = []
-        ql.append(["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"])
-        ql.append(["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"])
-        self.connection.mass_action(ql)
+        cl = []
+        cl.append(["CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        cl.append(["CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT)"])
+        self.connection.mass_action(cl)
 
         self.incDBVersion()
 

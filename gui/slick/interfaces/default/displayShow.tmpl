@@ -190,13 +190,13 @@
 #if $show.rls_ignore_words:
     <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
 #end if
-#if $bwl.get_white_keywords_for("release_group"):
+#if $bwl and $bwl.get_white_keywords_for("release_group"):
     <tr>
         <td class="showLegend">Wanted Group#if len($bwl.get_white_keywords_for("release_group"))>1 then "s" else ""#:</td>
         <td>#echo ', '.join($bwl.get_white_keywords_for("release_group"))#</td>
     </tr>
 #end if
-#if $bwl.get_black_keywords_for("release_group"):
+#if $bwl and $bwl.get_black_keywords_for("release_group"):
     <tr>
         <td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
         <td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
@@ -265,6 +265,11 @@
 <table class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
 
 #for $epResult in $sqlResults:
+  #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
+  #if not $epStr in $epCats:
+    #continue
+  #end if
+
   #if not $sickbeard.DISPLAY_SHOW_SPECIALS and int($epResult["season"]) == 0:
   	#continue
   #end if	
@@ -314,7 +319,6 @@
         #set $curSeason = int($epResult["season"])
   #end if    
 
-  #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
   #set $epLoc = $epResult["location"]
   <tr class="$Overview.overviewStrings[$epCats[$epStr]] season-$curSeason">
     <td width="1%">

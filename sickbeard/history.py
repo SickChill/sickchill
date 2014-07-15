@@ -29,7 +29,7 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
     logDate = datetime.datetime.today().strftime(dateFormat)
 
     if not isinstance(resource, unicode):
-        resource = unicode(resource, 'utf-8')
+        resource = unicode(resource, 'utf-8', 'replace')
 
     myDB = db.DBConnection()
     myDB.action(

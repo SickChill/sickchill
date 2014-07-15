@@ -84,7 +84,7 @@ def createNZBString(fileElements, xmlns):
     for curFile in fileElements:
         rootElement.append(stripNS(curFile, xmlns))
 
-    return xml.etree.ElementTree.tostring(rootElement, 'utf-8')
+    return xml.etree.ElementTree.tostring(rootElement, 'utf-8', 'replace')
 
 
 def saveNZB(nzbName, nzbString):
@@ -113,7 +113,7 @@ def splitResult(result):
 
     # parse the season ep name
     try:
-        np = NameParser(False)
+        np = NameParser(False, showObj=result.show)
         parse_result = np.parse(result.name)
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + result.name + " into a valid episode", logger.DEBUG)
@@ -135,7 +135,7 @@ def splitResult(result):
 
         # parse the name
         try:
-            np = NameParser(False)
+            np = NameParser(False, showObj=result.show)
             parse_result = np.parse(newNZB)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + newNZB + " into a valid episode", logger.DEBUG)

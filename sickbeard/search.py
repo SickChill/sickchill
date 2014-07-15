@@ -172,7 +172,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if curEpObj.status not in Quality.DOWNLOADED:
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
-    if sql_l:
+    if len(sql_l) > 0:
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 
@@ -205,7 +205,8 @@ def pickBestResult(results, show, quality_list=None):
     # build the black And white list
     bwl = None
     if show:
-        bwl = BlackAndWhiteList(show.indexerid)
+        if show.is_anime:
+            bwl = BlackAndWhiteList(show.indexerid)
     else:
         logger.log("Could not create black and white list no show was given", logger.DEBUG)
 
@@ -271,7 +272,9 @@ def isFinalResult(result):
 
     show_obj = result.episodes[0].show
 
-    bwl = BlackAndWhiteList(show_obj.indexerid)
+    bwl = None
+    if show_obj.is_anime:
+        bwl = BlackAndWhiteList(show_obj.indexerid)
 
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
@@ -280,7 +283,7 @@ def isFinalResult(result):
         return False
 
     # if it does not match the shows black and white list its no good
-    elif not bwl.is_valid(result):
+    elif bwl and not bwl.is_valid(result):
         return False
 
     # if there's no redownload that's higher (above) and this is the highest initial download then we're good

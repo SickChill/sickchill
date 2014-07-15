@@ -91,6 +91,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         title = item['name']
         if title:
+            title = u'' + title
             title = title.replace(' ', '.')
 
         url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
@@ -144,7 +145,7 @@ class HDBitsProvider(generic.TorrentProvider):
                     if result_date:
                         if not search_date or result_date > search_date:
                             title, url = self._get_title_and_url(item)
-                            results.append(classes.Proper(title, url, result_date))
+                            results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 
@@ -217,7 +218,6 @@ class HDBitsCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         if not self.shouldUpdate():
@@ -247,18 +247,18 @@ class HDBitsCache(tvcache.TVCache):
                                logger.ERROR)
                     return []
 
-                ql = []
+                cl = []
                 for item in items:
 
                     ci = self._parseItem(item)
                     if ci is not None:
-                        ql.append(ci)
+                        cl.append(ci)
 
 
 
-                if ql:
+                if len(cl) > 0:
                     myDB = self._getDB()
-                    myDB.mass_action(ql)
+                    myDB.mass_action(cl)
 
 
             else:

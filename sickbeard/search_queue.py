@@ -74,16 +74,16 @@ class SearchQueue(generic_queue.GenericQueue):
     def add_item(self, item):
 
         if isinstance(item, DailySearchQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache()
+            sickbeard.name_cache.buildNameCache(item.show)
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache()
+            sickbeard.name_cache.buildNameCache(item.show)
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, ManualSearchQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache()
+            sickbeard.name_cache.buildNameCache(item.show)
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache()
+            sickbeard.name_cache.buildNameCache(item.show)
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
@@ -92,21 +92,18 @@ class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'DAILYSEARCH-' + str(show.indexerid)
+        self.name = 'DAILYSEARCH-' + str(show.indexerid)
         self.show = show
         self.segment = segment
 
-    def __del__(self):
-        pass
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
+    def run(self):
+        generic_queue.QueueItem.run(self)
 
         logger.log("Beginning daily search for [" + self.show.name + "]")
         foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
         # reset thread back to original name
-        threading.currentThread().name = self.thread_name
+        threading.currentThread().name = self.name
 
         if not len(foundResults):
             logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
@@ -126,23 +123,20 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'MANUAL-' + str(show.indexerid)
+        self.name = 'MANUAL-' + str(show.indexerid)
         self.success = None
         self.show = show
         self.segment = segment
 
-    def __del__(self):
-        pass
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
+    def run(self):
+        generic_queue.QueueItem.run(self)
 
         try:
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
             searchResult = search.searchProviders(self.show, self.segment.season, [self.segment], True)
 
             # reset thread back to original name
-            threading.currentThread().name = self.thread_name
+            threading.currentThread().name = self.name
 
             if searchResult:
                 # just use the first result for now
@@ -172,16 +166,13 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.thread_name = 'BACKLOG-' + str(show.indexerid)
+        self.name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
         self.show = show
         self.segment = segment
 
-    def __del__(self):
-        pass
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
+    def run(self):
+        generic_queue.QueueItem.run(self)
 
         for season in self.segment:
             sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {
@@ -194,7 +185,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 searchResult = search.searchProviders(self.show, season, wantedEps, False)
 
                 # reset thread back to original name
-                threading.currentThread().name = self.thread_name
+                threading.currentThread().name = self.name
 
                 if searchResult:
                     for result in searchResult:
@@ -218,16 +209,13 @@ class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.thread_name = 'RETRY-' + str(show.indexerid)
+        self.name = 'RETRY-' + str(show.indexerid)
         self.show = show
         self.segment = segment
         self.success = None
 
-    def __del__(self):
-        pass
-
-    def execute(self):
-        generic_queue.QueueItem.execute(self)
+    def run(self):
+        generic_queue.QueueItem.run(self)
 
         for season, episodes in self.segment.items():
             for epObj in episodes:
@@ -246,7 +234,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     searchResult = search.searchProviders(self.show, season, [epObj], True)
 
                     # reset thread back to original name
-                    threading.currentThread().name = self.thread_name
+                    threading.currentThread().name = self.name
 
                     if searchResult:
                         for result in searchResult:

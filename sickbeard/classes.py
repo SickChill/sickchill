@@ -78,6 +78,9 @@ class SearchResult:
     def __init__(self, episodes):
         self.provider = -1
 
+        # release show object
+        self.show = None
+
         # URL to the NZB/torrent file
         self.url = ""
 
@@ -96,6 +99,10 @@ class SearchResult:
         # size of the release (-1 = n/a)
         self.size = -1
 
+        # release group
+        self.release_group = ""
+
+
     def __str__(self):
 
         if self.provider == None:
@@ -110,6 +117,7 @@ class SearchResult:
         myString += "Quality: " + Quality.qualityStrings[self.quality] + "\n"
         myString += "Name: " + self.name + "\n"
         myString += "Size: " + str(self.size) + "\n"
+        myString += "Release Group: " + str(self.release_group) + "\n"
 
         return myString
 
@@ -205,13 +213,14 @@ class ShowListUI:
 
 
 class Proper:
-    def __init__(self, name, url, date):
+    def __init__(self, name, url, date, show):
         self.name = name
         self.url = url
         self.date = date
         self.provider = None
         self.quality = Quality.UNKNOWN
 
+        self.show = show
         self.indexer = None
         self.indexerid = -1
         self.season = -1

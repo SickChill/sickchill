@@ -61,6 +61,7 @@ def dirty_setter(attr_name):
 
     return wrapper
 
+
 class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
         self._indexerid = int(indexerid)
@@ -107,7 +108,7 @@ class TVShow(object):
     name = property(lambda self: self._name, dirty_setter("_name"))
     indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
     indexer = property(lambda self: self._indexer, dirty_setter("_indexer"))
-    #location = property(lambda self: self._location, dirty_setter("_location"))
+    # location = property(lambda self: self._location, dirty_setter("_location"))
     imdbid = property(lambda self: self._imdbid, dirty_setter("_imdbid"))
     network = property(lambda self: self._network, dirty_setter("_network"))
     genre = property(lambda self: self._genre, dirty_setter("_genre"))
@@ -131,30 +132,27 @@ class TVShow(object):
     scene = property(lambda self: self._scene, dirty_setter("_scene"))
     rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
     rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
-    
-    def _is_anime(self):
-        if (self.anime > 0):
+
+    @property
+    def is_anime(self):
+        if int(self.anime) > 0:
             return True
         else:
             return False
 
-    is_anime = property(_is_anime)
-
-    def _is_sports(self):
-        if (self.sports > 0):
+    @property
+    def is_sports(self):
+        if int(self.sports) > 0:
             return True
         else:
             return False
 
-    is_sports = property(_is_sports)
-
-    def _is_scene(self):
-        if (self.scene > 0):
+    @property
+    def is_scene(self):
+        if int(self.scene) > 0:
             return True
         else:
             return False
-
-    is_scene = property(_is_scene)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -174,6 +172,7 @@ class TVShow(object):
             self._isDirGood = True
         else:
             raise exceptions.NoNFOException("Invalid folder for the show!")
+
     location = property(_getLocation, _setLocation)
 
     # delete references to anything that's not in the internal lists
@@ -432,7 +431,7 @@ class TVShow(object):
 
             try:
                 parse_result = None
-                np = NameParser(False)
+                np = NameParser(False, showObj=self, useIndexers=True)
                 parse_result = np.parse(ep_file_name)
             except (InvalidNameException, InvalidShowException):
                 pass
@@ -454,7 +453,7 @@ class TVShow(object):
 
                 sql_l.append(curEpisode.get_sql())
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -576,7 +575,7 @@ class TVShow(object):
 
                 scannedEps[season][episode] = True
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -625,7 +624,7 @@ class TVShow(object):
             logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.DEBUG)
             return None
 
-        if not len(parse_result.episode_numbers) and not (parse_result.air_by_date or parse_result.sports):
+        if not len(parse_result.episode_numbers) and not (parse_result.is_air_by_date or parse_result.is_sports):
             logger.log("parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.ERROR)
             return None
@@ -636,11 +635,11 @@ class TVShow(object):
         rootEp = None
 
         # if we have an air-by-date show then get the real season/episode numbers
-        if parse_result.air_by_date or parse_result.sports:
+        if parse_result.is_air_by_date or parse_result.is_sports:
             logger.log(
                 u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                 logger.DEBUG)
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_event_date.toordinal()
+            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
             myDB = db.DBConnection()
             sql_result = myDB.select(
                 "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
@@ -750,7 +749,7 @@ class TVShow(object):
             with curEp.lock:
                 sql_l.append(curEp.get_sql())
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -982,8 +981,9 @@ class TVShow(object):
         curDate = datetime.date.today().toordinal()
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
             myDB = db.DBConnection()
-            sqlResults = myDB.select("SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
-            [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
+            sqlResults = myDB.select(
+                "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
+                [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
             if sqlResults == None or len(sqlResults) == 0:
                 logger.log(str(self.indexerid) + u": No episode found... need to implement a show status",
@@ -1078,7 +1078,7 @@ class TVShow(object):
                 if sickbeard.AIRDATE_EPISODES:
                     self.airdateModifyStamp(curEp)
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1308,6 +1308,15 @@ class TVShow(object):
             # if it's >= maxBestQuality then it's good
             else:
                 return Overview.GOOD
+
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        del d['lock']
+        return d
+
+    def __setstate__(self, d):
+        d['lock'] = threading.Lock()
+        self.__dict__.update(d)
 
 class TVEpisode(object):
     def __init__(self, show, season, episode, file=""):
@@ -1682,7 +1691,8 @@ class TVEpisode(object):
             return False
 
         # don't update show status if show dir is missing, unless it's missing on purpose
-        if not ek.ek(os.path.isdir, self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:
+        if not ek.ek(os.path.isdir,
+                     self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:
             logger.log(
                 u"The show dir is missing, not bothering to change the episode statuses since it'd probably be invalid")
             return
@@ -2421,7 +2431,15 @@ class TVEpisode(object):
             for relEp in [self] + self.relatedEps:
                 sql_l.append(relEp.get_sql())
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        del d['lock']
+        return d
+
+    def __setstate__(self, d):
+        d['lock'] = threading.Lock()
+        self.__dict__.update(d)

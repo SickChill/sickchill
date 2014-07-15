@@ -27,15 +27,15 @@ from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
 
-exceptionsCache = None
-exceptionsSeasonCache = None
+exceptionsCache = {}
+exceptionsSeasonCache = {}
+
 
 def shouldRefresh(list):
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
     myDB = db.DBConnection('cache.db')
-    rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?",
-                       [list])
+    rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [list])
     if rows:
         return time.time() > (int(rows[0]['last_refreshed']) + MAX_REFRESH_AGE_SECS)
     else:
@@ -72,6 +72,7 @@ def get_scene_exceptions(indexer_id, season=-1):
         exceptionsList += get_scene_exceptions(indexer_id, season=-1)
 
     return exceptionsList
+
 
 def get_all_scene_exceptions(indexer_id):
     exceptionsDict = {}
@@ -111,8 +112,10 @@ def get_scene_seasons(indexer_id):
 
     return exceptionsSeasonList
 
+
 def get_scene_exception_by_name(show_name):
     return get_scene_exception_by_name_multiple(show_name)[0]
+
 
 def get_scene_exception_by_name_multiple(show_name):
     """
@@ -156,13 +159,11 @@ def retrieve_exceptions():
     """
     global exceptionsCache, exceptionsSeasonCache
 
-    exceptionsCache = {}
-    exceptionsSeasonCache = {}
     exception_dict = {}
 
     # exceptions are stored on github pages
-    if setLastRefresh('normal'):
-        for indexer in sickbeard.indexerApi().indexers:
+    for indexer in sickbeard.indexerApi().indexers:
+        if shouldRefresh(sickbeard.indexerApi(indexer).name):
             logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
 
             url = sickbeard.indexerApi(indexer).config['scene_url']
@@ -175,7 +176,7 @@ def retrieve_exceptions():
                 continue
 
             else:
-                setLastRefresh('normal')
+                setLastRefresh(sickbeard.indexerApi(indexer).name)
 
                 # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
                 for cur_line in url_data.splitlines():
@@ -201,12 +202,12 @@ def retrieve_exceptions():
             exception_dict[xem_ex] = xem_exceptions[xem_ex]
 
     # AniDB scene exceptions
-    local_exceptions = _retrieve_anidb_mainnames()
-    for local_ex in local_exceptions:
-        if local_ex in exception_dict:
-            exception_dict[local_ex] = exception_dict[local_ex] + local_exceptions[local_ex]
+    anidb_exceptions = _anidb_exceptions_fetcher()
+    for anidb_ex in anidb_exceptions:
+        if anidb_ex in exception_dict:
+            exception_dict[anidb_ex] = exception_dict[anidb_ex] + anidb_exceptions[anidb_ex]
         else:
-            exception_dict[local_ex] = local_exceptions[local_ex]
+            exception_dict[anidb_ex] = anidb_exceptions[anidb_ex]
 
     changed_exceptions = False
 
@@ -223,6 +224,9 @@ def retrieve_exceptions():
 
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
+                if not isinstance(cur_exception, unicode):
+                    cur_exception = unicode(cur_exception, 'utf-8', 'replace')
+
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                             [cur_indexer_id, cur_exception, curSeason])
                 changed_exceptions = True
@@ -236,6 +240,7 @@ def retrieve_exceptions():
     # cleanup
     del exception_dict
 
+
 def update_scene_exceptions(indexer_id, scene_exceptions):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
@@ -247,41 +252,38 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     logger.log(u"Updating scene exceptions", logger.MESSAGE)
     for cur_season in [-1] + get_scene_seasons(indexer_id):
         for cur_exception in scene_exceptions:
+
+            if not isinstance(cur_exception, unicode):
+                cur_exception = unicode(cur_exception, 'utf-8', 'replace')
+
             myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
                         [indexer_id, cur_exception, cur_season, 1])
 
-def _retrieve_anidb_mainnames():
 
-    anidb_mainNames = {}
+def _anidb_exceptions_fetcher():
+    exception_dict = {}
 
     if shouldRefresh('anidb'):
-        success = False
-
         logger.log(u"Checking for scene exception updates for AniDB")
         for show in sickbeard.showList:
-            if show.is_anime and show.indexer == 1:
+            if show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
                 except:
                     continue
                 else:
-                    success = True
-
                     if anime.name and anime.name != show.name:
-                        anidb_mainNames[show.indexerid] = [{anime.name: -1}]
+                        exception_dict[show.indexerid] = [{anime.name: -1}]
 
-        if success:
-            setLastRefresh('anidb')
+        setLastRefresh('anidb')
 
-    return anidb_mainNames
+    return exception_dict
 
 
 def _xem_exceptions_fetcher():
-
     exception_dict = {}
 
     if shouldRefresh('xem'):
-        success = False
         for indexer in sickbeard.indexerApi().indexers:
             logger.log(u"Checking for XEM scene exception updates for " + sickbeard.indexerApi(indexer).name)
 
@@ -300,10 +302,7 @@ def _xem_exceptions_fetcher():
             for indexerid, names in url_data['data'].items():
                 exception_dict[int(indexerid)] = names
 
-            success = True
-
-        if success:
-            setLastRefresh('xem')
+        setLastRefresh('xem')
 
     return exception_dict
 

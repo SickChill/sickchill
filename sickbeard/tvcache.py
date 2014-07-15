@@ -22,7 +22,6 @@ import os
 
 import time
 import datetime
-import threading
 import sickbeard
 
 from sickbeard import db
@@ -34,9 +33,6 @@ from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
-
-cache_lock = threading.Lock()
-
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -60,6 +56,7 @@ class CacheDBConnection(db.DBConnection):
             # add release_group column to table if missing
             if not self.hasColumn(providerName, 'release_group'):
                 self.addColumn(providerName, 'release_group', "TEXT", "")
+
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -72,18 +69,12 @@ class CacheDBConnection(db.DBConnection):
             if str(e) != "table lastUpdate already exists":
                 raise
 
-    def __del__(self):
-        pass
-
 class TVCache():
     def __init__(self, provider):
 
         self.provider = provider
         self.providerID = self.provider.getID()
         self.minTime = 10
-
-    def __del__(self):
-        pass
 
     def _getDB(self):
         return CacheDBConnection(self.providerID)
@@ -129,7 +120,7 @@ class TVCache():
                     if ci is not None:
                         cl.append(ci)
 
-                if cl:
+                if len(cl) > 0:
                     myDB = self._getDB()
                     myDB.mass_action(cl)
             else:
@@ -142,6 +133,7 @@ class TVCache():
         return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers)
 
     def _translateTitle(self, title):
+        title = u'' + title
         return title.replace(' ', '.')
 
 
@@ -235,10 +227,15 @@ class TVCache():
 
         return True
 
-    def _addCacheEntry(self, name, url, quality=None):
+    def _addCacheEntry(self, name, url, indexer_id=0, quality=None):
+
+        # create showObj from indexer_id if available
+        showObj=None
+        if indexer_id:
+            showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
         try:
-            myParser = NameParser(convert=True)
+            myParser = NameParser(showObj=showObj, convert=True)
             parse_result = myParser.parse(name)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
@@ -251,8 +248,8 @@ class TVCache():
             return None
 
         season = episodes = None
-        if parse_result.air_by_date or parse_result.sports:
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_event_date.toordinal()
+        if parse_result.is_air_by_date or parse_result.is_sports:
+            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
 
             myDB = db.DBConnection()
             sql_results = myDB.select(
@@ -277,7 +274,7 @@ class TVCache():
                 quality = Quality.sceneQuality(name, parse_result.is_anime)
 
             if not isinstance(name, unicode):
-                name = unicode(name, 'utf-8')
+                name = unicode(name, 'utf-8', 'replace')
 
             # get release group
             release_group = parse_result.release_group

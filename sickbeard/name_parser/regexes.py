@@ -11,14 +11,14 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 # all regexes are case insensitive
 
-normal_regexes = {'normal':[
+normal_regexes = [
     ('standard_repeat',
      # Show.Name.S01E02.S01E03.Source.Quality.Etc-Group
      # Show Name - S01E02 - S01E03 - S01E04 - Ep Name
@@ -76,7 +76,7 @@ normal_regexes = {'normal':[
      (?P<ep_num>\d+)                             # 02 and separator
      (([. _-]*x|-)                               # linking x/- char
      (?P<extra_ep_num>
-     (?!(1080|720|480)[pi])(?!(?<=[hx])264)             # ignore obviously wrong multi-eps
+     (?!(1080|720|480)[pi])(?!(?<=x)264)             # ignore obviously wrong multi-eps
      \d+))*                                      # additional x03/etc
      [\]. _-]*((?P<extra_info>.+?)               # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
@@ -184,10 +184,9 @@ normal_regexes = {'normal':[
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
      (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
      '''),
-]}
+]
 
-sports_regexs = {'sports':[
-
+sports_regexs = [
     ('sports_standard',
      # Sports.Name.2010.11.23.Source.Quality.Etc-Group
      # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
@@ -195,7 +194,7 @@ sports_regexs = {'sports':[
      ^(?P<series_name>(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP))[. _-]+
      ((?P<sports_event_id>\d{3})[. _-]+)?
      ((?P<sports_event_name>\.+)[. _-]+)?
-     (?P<sports_event_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
+     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
      -(?P<release_group>[^- ]+))?)?$
      '''
@@ -208,16 +207,14 @@ sports_regexs = {'sports':[
      ^(?P<series_name>.+?)[. _-]+
      ((?P<sports_event_id>\d{3})[. _-]+)?
      ((?P<sports_event_name>\.+)[. _-]+)?
-     (?P<sports_event_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
+     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
      '''
     ),
+]
 
-]}
-
-anime_regexes = {'anime':[
-
+anime_regexes = [
     ('anime_ultimate',
      """
      ^(?:\[(?P<release_group>.+?)\][ ._-]*)
@@ -398,4 +395,4 @@ anime_regexes = {'anime':[
      (v(?P<version>[0-9]))?                                     # v2
      .*?                                                         # Separator and EOL
      ''')
-]}
+]

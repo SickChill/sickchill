@@ -507,6 +507,21 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
+        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'cache')
+        # fix bad configs due to buggy code
+        if ACTUAL_CACHE_DIR == 'None':
+            ACTUAL_CACHE_DIR = 'cache'
+
+        # unless they specify, put the cache dir inside the data dir
+        if not os.path.isabs(ACTUAL_CACHE_DIR):
+            CACHE_DIR = os.path.join(DATA_DIR, ACTUAL_CACHE_DIR)
+        else:
+            CACHE_DIR = ACTUAL_CACHE_DIR
+
+        if not helpers.makeDir(CACHE_DIR):
+            logger.log(u"!!! Creating local cache dir failed, using system default", logger.ERROR)
+            CACHE_DIR = None
+
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
@@ -562,21 +577,6 @@ def initialize(consoleLogging=True):
         HTTPS_KEY = check_setting_str(CFG, 'General', 'https_key', 'server.key')
 
         HANDLE_REVERSE_PROXY = bool(check_setting_int(CFG, 'General', 'handle_reverse_proxy', 0))
-
-        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'cache')
-        # fix bad configs due to buggy code
-        if ACTUAL_CACHE_DIR == 'None':
-            ACTUAL_CACHE_DIR = 'cache'
-
-        # unless they specify, put the cache dir inside the data dir
-        if not os.path.isabs(ACTUAL_CACHE_DIR):
-            CACHE_DIR = os.path.join(DATA_DIR, ACTUAL_CACHE_DIR)
-        else:
-            CACHE_DIR = ACTUAL_CACHE_DIR
-
-        if not helpers.makeDir(CACHE_DIR):
-            logger.log(u"!!! Creating local cache dir failed, using system default", logger.ERROR)
-            CACHE_DIR = None
 
         ROOT_DIRS = check_setting_str(CFG, 'General', 'root_dirs', '')
         if not re.match(r'\d+\|[^|]+(?:\|[^|]+)*', ROOT_DIRS):
@@ -1120,7 +1120,6 @@ def initialize(consoleLogging=True):
         __INITIALIZED__ = True
         return True
 
-
 def start():
     global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
@@ -1135,35 +1134,35 @@ def start():
             events.start()
 
             # start the daily search scheduler
-            dailySearchScheduler.thread.start()
+            dailySearchScheduler.start()
 
             # start the backlog scheduler
-            backlogSearchScheduler.thread.start()
+            backlogSearchScheduler.start()
 
             # start the show updater
-            showUpdateScheduler.thread.start()
+            showUpdateScheduler.start()
 
             # start the version checker
-            versionCheckScheduler.thread.start()
+            versionCheckScheduler.start()
 
             # start the queue checker
-            showQueueScheduler.thread.start()
+            showQueueScheduler.start()
 
             # start the search queue checker
-            searchQueueScheduler.thread.start()
+            searchQueueScheduler.start()
 
             # start the queue checker
-            properFinderScheduler.thread.start()
+            properFinderScheduler.start()
 
             # start the proper finder
-            autoPostProcesserScheduler.thread.start()
+            autoPostProcesserScheduler.start()
 
             # start the subtitles finder
             if USE_SUBTITLES:
-                subtitlesFinderScheduler.thread.start()
+                subtitlesFinderScheduler.start()
 
             # start the trakt checker
-            traktCheckerScheduler.thread.start()
+            traktCheckerScheduler.start()
 
             started = True
 
@@ -1181,80 +1180,80 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            events.alive = False
+            events.stop.set()
             logger.log(u"Waiting for the EVENTS thread to exit")
             try:
-                events.join(10)
+                events.join()
             except:
                 pass
 
-            dailySearchScheduler.abort = True
+            dailySearchScheduler.stop.set()
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
-                dailySearchScheduler.thread.join(10)
+                dailySearchScheduler.thread.join()
             except:
                 pass
 
-            backlogSearchScheduler.abort = True
+            backlogSearchScheduler.stop.set()
             logger.log(u"Waiting for the BACKLOG thread to exit")
             try:
-                backlogSearchScheduler.thread.join(10)
+                backlogSearchScheduler.thread.join()
             except:
                 pass
 
-            showUpdateScheduler.abort = True
+            showUpdateScheduler.stop.set()
             logger.log(u"Waiting for the SHOWUPDATER thread to exit")
             try:
-                showUpdateScheduler.thread.join(10)
+                showUpdateScheduler.thread.join()
             except:
                 pass
 
-            versionCheckScheduler.abort = True
+            versionCheckScheduler.stop.set()
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
-                versionCheckScheduler.thread.join(10)
+                versionCheckScheduler.thread.join()
             except:
                 pass
 
-            showQueueScheduler.abort = True
+            showQueueScheduler.stop.set()
             logger.log(u"Waiting for the SHOWQUEUE thread to exit")
             try:
-                showQueueScheduler.thread.join(10)
+                showQueueScheduler.thread.join()
             except:
                 pass
 
-            searchQueueScheduler.abort = True
+            searchQueueScheduler.stop.set()
             logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
             try:
-                searchQueueScheduler.thread.join(10)
+                searchQueueScheduler.thread.join()
             except:
                 pass
 
-            autoPostProcesserScheduler.abort = True
+            autoPostProcesserScheduler.stop.set()
             logger.log(u"Waiting for the POSTPROCESSER thread to exit")
             try:
-                autoPostProcesserScheduler.thread.join(10)
+                autoPostProcesserScheduler.thread.join()
             except:
                 pass
 
-            traktCheckerScheduler.abort = True
+            traktCheckerScheduler.stop.set()
             logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
             try:
-                traktCheckerScheduler.thread.join(10)
+                traktCheckerScheduler.thread.join()
             except:
                 pass
 
-            properFinderScheduler.abort = True
+            properFinderScheduler.stop.set()
             logger.log(u"Waiting for the PROPERFINDER thread to exit")
             try:
-                properFinderScheduler.thread.join(10)
+                properFinderScheduler.thread.join()
             except:
                 pass
 
-            subtitlesFinderScheduler.abort = True
+            subtitlesFinderScheduler.stop.set()
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
-                subtitlesFinderScheduler.thread.join(10)
+                subtitlesFinderScheduler.thread.join()
             except:
                 pass
 
@@ -1263,7 +1262,7 @@ def halt():
                 # ADBA_CONNECTION.stop()
                 logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
                 try:
-                    ADBA_CONNECTION.join(5)
+                    ADBA_CONNECTION.join()
                 except:
                     pass
 

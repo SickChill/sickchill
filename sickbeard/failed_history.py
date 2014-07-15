@@ -38,7 +38,7 @@ def prepareFailedName(release):
     fixed = re.sub("[\.\-\+\ ]", "_", fixed)
 
     if not isinstance(fixed, unicode):
-        fixed = unicode(fixed, 'utf-8')
+        fixed = unicode(fixed, 'utf-8', 'replace')
 
     return fixed
 

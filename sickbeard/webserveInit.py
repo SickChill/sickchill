@@ -144,7 +144,7 @@ class SRWebServer(threading.Thread):
         try:
             self.io_loop.start()
             self.io_loop.close(True)
-        except ValueError:
+        except (IOError, ValueError):
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 

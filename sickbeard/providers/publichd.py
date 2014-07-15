@@ -199,6 +199,10 @@ class PublicHDProvider(generic.TorrentProvider):
 
         title, url, id, seeders, leechers = item
 
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         if url:
             url = url.replace('&amp;', '&')
 
@@ -297,7 +301,7 @@ class PublicHDProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today()))
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
@@ -316,7 +320,6 @@ class PublicHDCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         if not self.shouldUpdate():
@@ -330,19 +333,19 @@ class PublicHDCache(tvcache.TVCache):
         else:
             return []
 
-        ql = []
+        cl = []
         for result in rss_results:
 
             item = (result[0], result[1])
             ci = self._parseItem(item)
             if ci is not None:
-                ql.append(ci)
+                cl.append(ci)
 
 
 
-        if ql:
+        if len(cl) > 0:
             myDB = self._getDB()
-            myDB.mass_action(ql)
+            myDB.mass_action(cl)
 
 
     def _parseItem(self, item):

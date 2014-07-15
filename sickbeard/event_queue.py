@@ -1,4 +1,4 @@
-from threading import Thread
+import threading
 from Queue import Queue, Empty
 
 class Event:
@@ -9,7 +9,7 @@ class Event:
     def type(self):
         return self._type
 
-class Events(Thread):
+class Events(threading.Thread):
     def __init__(self, callback):
         super(Events, self).__init__()
         self.queue = Queue()
@@ -17,12 +17,13 @@ class Events(Thread):
         self.alive = True
         self.callback = callback
         self.name = "EVENT-QUEUE"
+        self.stop = threading.Event()
 
     def put(self, type):
         self.queue.put(type)
 
     def run(self):
-        while(self.alive):
+        while (not self.stop.is_set()):
             try:
                 # get event type
                 type = self.queue.get(True, 1)
@@ -34,6 +35,9 @@ class Events(Thread):
                 self.queue.task_done()
             except Empty:
                 type = None
+
+        # exiting thread
+        self.stop.clear()
 
     # System Events
     class SystemEvent(Event):

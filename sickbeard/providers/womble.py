@@ -45,7 +45,6 @@ class WombleCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         data = None
@@ -70,7 +69,7 @@ class WombleCache(tvcache.TVCache):
 
 
 
-        if cl:
+        if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
 

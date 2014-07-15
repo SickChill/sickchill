@@ -21,11 +21,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import exceptions
 from sickbeard import show_name_helpers
-from sickbeard import helpers
 from sickbeard import search_queue
-from sickbeard import failed_history
-from sickbeard import scene_exceptions
-
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 
@@ -40,12 +36,7 @@ class FailedProcessor(object):
         self.dir_name = dirName
         self.nzb_name = nzbName
 
-        self._show_obj = None
-
         self.log = ""
-
-    def __del__(self):
-        pass
 
     def process(self):
         self._log(u"Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
@@ -55,16 +46,15 @@ class FailedProcessor(object):
             self._log(u"Warning: unable to find a valid release name.", logger.WARNING)
             raise exceptions.FailedProcessingFailed()
 
-
         try:
             parser = NameParser(False, convert=True)
             parsed = parser.parse(releaseName)
         except InvalidNameException:
-            self._log(u"Error: release name is invalid: " + releaseName, logger.WARNING)
+            self._log(u"Error: release name is invalid: " + releaseName, logger.DEBUG)
             raise exceptions.FailedProcessingFailed()
         except InvalidShowException:
-            self._log(u"Error: unable to parse release name " + releaseName + " into a valid show", logger.WARNING)
-            raise exceptions.FailedProcessingFailed
+            self._log(u"Error: unable to parse release name " + releaseName + " into a valid show", logger.DEBUG)
+            raise exceptions.FailedProcessingFailed()
 
         logger.log(u"name_parser info: ", logger.DEBUG)
         logger.log(u" - " + str(parsed.series_name), logger.DEBUG)
@@ -73,16 +63,9 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.extra_info), logger.DEBUG)
         logger.log(u" - " + str(parsed.release_group), logger.DEBUG)
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
-        logger.log(u" - " + str(parsed.sports_event_date), logger.DEBUG)
+        logger.log(u" - " + str(parsed.sports_air_date), logger.DEBUG)
 
-        if parsed.show is None:
-            self._log(
-                u"Could not create show object. Either the show hasn't been added to SickRage, or it's still loading (if SB was restarted recently)",
-                logger.WARNING)
-            raise exceptions.FailedProcessingFailed()
-
-        segment = {parsed.season_number:[]}
-
+        segment = {parsed.season_number: []}
         for episode in parsed.episode_numbers:
             epObj = parsed.show.getEpisode(parsed.season_number, episode)
             segment[parsed.season_number].append(epObj)

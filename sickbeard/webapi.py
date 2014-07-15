@@ -1005,7 +1005,7 @@ class CMD_EpisodeSetStatus(ApiCall):
                     start_backlog = True
                 ep_results.append(_epResult(RESULT_SUCCESS, epObj))
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1753,7 +1753,7 @@ class CMD_Show(ApiCall):
         showDict["anime"] = showObj.anime
         #clean up tvdb horrible airs field
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-        showDict["tvrage_id"] = showObj.indexerid
+        showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)['tvrage_id']
         showDict["tvrage_name"] = showObj.name
         showDict["network"] = showObj.network
         if not showDict["network"]:
@@ -2530,8 +2530,8 @@ class CMD_Shows(ApiCall):
                 "sports": curShow.sports,
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
-                "tvdbid": curShow.indexerid,
-                "tvrage_id": curShow.indexerid,
+                "tvdbid": helpers.mapIndexersToShow(curShow)['tvdb_id'],
+                "tvrage_id": helpers.mapIndexersToShow(curShow)['tvrage_id'],
                 "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,

@@ -47,8 +47,7 @@ def filterBadReleases(name):
     """
 
     try:
-        fp = NameParser()
-        parse_result = fp.parse(name)
+        NameParser().parse(name)
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
         return False

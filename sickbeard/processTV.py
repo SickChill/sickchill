@@ -267,14 +267,14 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
     #check if the dir have at least one tv video file
     for video in videoFiles:
         try:
-            NameParser().parse(video, cache_result=False)
+            NameParser().parse(video)
             return True
         except (InvalidNameException, InvalidShowException):
             pass
 
     for dir in allDirs:
         try:
-            NameParser().parse(dir, cache_result=False)
+            NameParser().parse(dir)
             return True
         except (InvalidNameException, InvalidShowException):
             pass
@@ -285,7 +285,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed):
 
         for packed in packedFiles:
             try:
-                NameParser().parse(packed, cache_result=False)
+                NameParser().parse(packed)
                 return True
             except (InvalidNameException, InvalidShowException):
                 pass

@@ -107,6 +107,10 @@ class DTTProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.title
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         url = item.enclosures[0].href
 
         return (title, url)

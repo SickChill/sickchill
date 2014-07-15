@@ -227,6 +227,10 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         title, url, id, seeders, leechers = item
 
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         if url:
             url = str(url).replace('&amp;', '&')
 
@@ -283,7 +287,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today()))
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
@@ -302,7 +306,6 @@ class TorrentBytesCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         if not self.shouldUpdate():
@@ -324,7 +327,7 @@ class TorrentBytesCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-        if cl:
+        if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
 

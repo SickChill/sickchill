@@ -221,6 +221,7 @@ class GenericProvider:
 
         title = item.title if item.title else None
         if title:
+            title = u'' + title
             title = title.replace(' ', '.')
 
         url = item.link if item.link else None
@@ -278,7 +279,7 @@ class GenericProvider:
 
                 # parse the file name
                 try:
-                    myParser = NameParser(False, convert=True)
+                    myParser = NameParser(False, showObj=self.show, convert=True)
                     parse_result = myParser.parse(title)
                 except InvalidNameException:
                     logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
@@ -314,19 +315,19 @@ class GenericProvider:
                     actual_season = ep_obj.season
                     actual_episodes = parse_result.episode_numbers
                 else:
-                    if not (parse_result.air_by_date or parse_result.sports):
+                    if not (parse_result.is_air_by_date or parse_result.is_sports):
                         logger.log(
                             u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
                             logger.DEBUG)
                         continue
 
-                    if (parse_result.air_by_date and parse_result.air_date != ep_obj.airdate) or (
-                                parse_result.sports and parse_result.sports_event_date != ep_obj.airdate):
+                    if (parse_result.is_air_by_date and parse_result.air_date != ep_obj.airdate) or (
+                                parse_result.is_sports and parse_result.is_sports_air_date != ep_obj.airdate):
                         logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
                                    logger.DEBUG)
                         continue
 
-                    airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_event_date.toordinal()
+                    airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
                     myDB = db.DBConnection()
                     sql_results = myDB.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
@@ -396,7 +397,8 @@ class GenericProvider:
 
         results = self.cache.listPropers(search_date)
 
-        return [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in results]
+        return [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time']), self.show) for x in
+                results]
 
     def seedRatio(self):
         '''
@@ -411,6 +413,7 @@ class NZBProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.NZB
+
 
 class TorrentProvider(GenericProvider):
     def __init__(self, name):

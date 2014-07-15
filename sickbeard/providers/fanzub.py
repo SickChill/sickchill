@@ -116,7 +116,7 @@ class Fanzub(generic.NZBProvider):
                     continue
 
                 if not date or result_date > date:
-                    search_result = classes.Proper(title, url, result_date)
+                    search_result = classes.Proper(title, url, result_date, self.show)
                     results.append(search_result)
 
         return results

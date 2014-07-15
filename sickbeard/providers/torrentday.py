@@ -231,6 +231,10 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         title, url = item[0], item[1]
 
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         if url:
             url = str(url).replace('&amp;', '&')
 
@@ -284,7 +288,7 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today()))
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
@@ -303,7 +307,6 @@ class TorrentDayCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         if not self.shouldUpdate():
@@ -327,7 +330,7 @@ class TorrentDayCache(tvcache.TVCache):
 
 
 
-        if cl:
+        if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
 

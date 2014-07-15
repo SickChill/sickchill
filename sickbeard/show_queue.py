@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import traceback
-import threading
 
 import sickbeard
 
@@ -232,9 +231,9 @@ class QueueItemAdd(ShowQueueItem):
 
     isLoading = property(_isLoading)
 
-    def execute(self):
+    def run(self):
 
-        ShowQueueItem.execute(self)
+        ShowQueueItem.run(self)
 
         logger.log(u"Starting to add show " + self.showDir)
         # make sure the Indexer IDs are valid
@@ -420,8 +419,8 @@ class QueueItemRefresh(ShowQueueItem):
         # force refresh certain items
         self.force = force
 
-    def execute(self):
-        ShowQueueItem.execute(self)
+    def run(self):
+        ShowQueueItem.run(self)
 
         logger.log(u"Performing refresh on " + self.show.name)
 
@@ -441,9 +440,9 @@ class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.RENAME, show)
 
-    def execute(self):
+    def run(self):
 
-        ShowQueueItem.execute(self)
+        ShowQueueItem.run(self)
 
         logger.log(u"Performing rename on " + self.show.name)
 
@@ -482,8 +481,8 @@ class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show=None):
         ShowQueueItem.__init__(self, ShowQueueActions.SUBTITLE, show)
 
-    def execute(self):
-        ShowQueueItem.execute(self)
+    def run(self):
+        ShowQueueItem.run(self)
 
         logger.log(u"Downloading subtitles for " + self.show.name)
 
@@ -497,9 +496,9 @@ class QueueItemUpdate(ShowQueueItem):
         ShowQueueItem.__init__(self, ShowQueueActions.UPDATE, show)
         self.force = False
 
-    def execute(self):
+    def run(self):
 
-        ShowQueueItem.execute(self)
+        ShowQueueItem.run(self)
 
         logger.log(u"Beginning update of " + self.show.name)
 

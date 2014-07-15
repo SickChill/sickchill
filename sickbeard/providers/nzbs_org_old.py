@@ -126,7 +126,7 @@ class NZBsProvider(generic.NZBProvider):
                 resultDate = datetime.datetime.strptime(match.group(1), "%a, %d %b %Y %H:%M:%S")
 
                 if date is None or resultDate > date:
-                    results.append(classes.Proper(title, url, resultDate))
+                    results.append(classes.Proper(title, url, resultDate, self.show))
 
         return results
 

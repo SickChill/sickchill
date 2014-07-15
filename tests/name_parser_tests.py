@@ -1,5 +1,6 @@
 import datetime
 import unittest
+import test_lib as test
 
 import sys, os.path
 sys.path.append(os.path.abspath('..'))
@@ -157,7 +158,7 @@ unicode_test_cases = [
 failure_cases = ['7sins-jfcs01e09-720p-bluray-x264']
 
 
-class UnicodeTests(unittest.TestCase):
+class UnicodeTests(test.SickbeardTestDBCase):
     
     def _test_unicode(self, name, result):
         np = parser.NameParser(True)
@@ -169,7 +170,7 @@ class UnicodeTests(unittest.TestCase):
         for (name, result) in unicode_test_cases:
             self._test_unicode(name, result)
 
-class FailureCaseTests(unittest.TestCase):
+class FailureCaseTests(test.SickbeardTestDBCase):
     
     def _test_name(self, name):
         np = parser.NameParser(True)
@@ -186,7 +187,7 @@ class FailureCaseTests(unittest.TestCase):
         for name in failure_cases:
             self.assertTrue(self._test_name(name))
 
-class ComboTests(unittest.TestCase):
+class ComboTests(test.SickbeardTestDBCase):
     
     def _test_combo(self, name, result, which_regexes):
         
@@ -214,7 +215,7 @@ class ComboTests(unittest.TestCase):
             # paths when test is run on Windows.
             self._test_combo(os.path.normpath(name), result, which_regexes)
 
-class BasicTests(unittest.TestCase):
+class BasicTests(test.SickbeardTestDBCase):
 
     def _test_names(self, np, section, transform=None, verbose=False):
 
@@ -237,8 +238,9 @@ class BasicTests(unittest.TestCase):
                 test_result = np.parse(cur_test)
             
             if DEBUG or verbose:
-                print 'air_by_date:', test_result.air_by_date, 'air_date:', test_result.air_date
-                print 'sports:', test_result.sports, 'air_date:', test_result.air_date
+                print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
+                print 'sports:', test_result.is_sports, 'sports_air_date:', test_result.sports_air_date
+                print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result
             self.assertEqual(test_result.which_regex, [section])

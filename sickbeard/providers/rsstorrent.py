@@ -70,6 +70,10 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         title = item.title
 
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         attempt_list = [lambda: item.torrent_magneturi,
 
                         lambda: item.enclosures[0].href,

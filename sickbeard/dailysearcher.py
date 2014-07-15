@@ -33,7 +33,6 @@ from sickbeard.exceptions import ex
 class DailySearcher():
     def __init__(self):
         self.lock = threading.Lock()
-
         self.amActive = False
 
     def run(self, force=False):
@@ -98,7 +97,7 @@ class DailySearcher():
 
                 sql_l.append(ep.get_sql())
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 

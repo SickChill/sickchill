@@ -455,7 +455,7 @@ class SickRage(object):
                 sickbeard.showList.append(curShow)
             except Exception, e:
                 logger.log(
-                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8', 'replace'),
                     logger.ERROR)
 
     def restore(self, srcDir, dstDir):
@@ -477,13 +477,13 @@ class SickRage(object):
             # stop all tasks
             sickbeard.halt()
 
+            # save all shows to DB
+            sickbeard.saveAll()
+
             # shutdown web server
             if self.webserver:
                 self.webserver.shutDown()
                 self.webserver = None
-
-            # save all shows to DB
-            sickbeard.saveAll()
 
             # if run as daemon delete the pidfile
             if self.runAsDaemon and self.CREATEPID:

@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import datetime
 import operator
 import threading
@@ -27,7 +26,6 @@ from sickbeard import db
 from sickbeard import exceptions
 from sickbeard.exceptions import ex
 from sickbeard import helpers, logger, show_name_helpers
-from sickbeard import providers
 from sickbeard import search
 from sickbeard import history
 
@@ -105,7 +103,7 @@ class ProperFinder():
         for curProper in sortedPropers:
 
             try:
-                myParser = NameParser(False)
+                myParser = NameParser(False, showObj=curProper.show)
                 parse_result = myParser.parse(curProper.name)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + curProper.name + " into a valid episode", logger.DEBUG)
@@ -123,21 +121,20 @@ class ProperFinder():
                     logger.DEBUG)
                 continue
 
-            showObj = parse_result.show
             logger.log(
-                u"Successful match! Result " + parse_result.original_name + " matched to show " + showObj.name,
+                u"Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name,
                 logger.DEBUG)
 
             # set the indexerid in the db to the show's indexerid
-            curProper.indexerid = showObj.indexerid
+            curProper.indexerid = parse_result.show.indexerid
 
             # set the indexer in the db to the show's indexer
-            curProper.indexer = showObj.indexer
+            curProper.indexer = parse_result.show.indexer
 
             # populate our Proper instance
-            if parse_result.air_by_date or parse_result.sports:
+            if parse_result.is_air_by_date or parse_result.is_sports:
                 curProper.season = -1
-                curProper.episode = parse_result.air_date or parse_result.sports_event_date
+                curProper.episode = parse_result.air_date or parse_result.is_sports_air_date
             else:
                 if parse_result.is_anime:
                     logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
@@ -153,18 +150,18 @@ class ProperFinder():
                            logger.DEBUG)
                 continue
 
-            if showObj.rls_ignore_words and search.filter_release_name(curProper.name, showObj.rls_ignore_words):
-                logger.log(u"Ignoring " + curProper.name + " based on ignored words filter: " + showObj.rls_ignore_words,
+            if parse_result.show.rls_ignore_words and search.filter_release_name(curProper.name, parse_result.show.rls_ignore_words):
+                logger.log(u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
                            logger.MESSAGE)
                 continue
 
-            if showObj.rls_require_words and not search.filter_release_name(curProper.name, showObj.rls_require_words):
-                logger.log(u"Ignoring " + curProper.name + " based on required words filter: " + showObj.rls_require_words,
+            if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name, parse_result.show.rls_require_words):
+                logger.log(u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
                            logger.MESSAGE)
                 continue
 
             # if we have an air-by-date show then get the real season/episode numbers
-            if (parse_result.air_by_date or parse_result.sports_event_date) and curProper.indexerid:
+            if (parse_result.is_air_by_date or parse_result.is_sports_air_date) and curProper.indexerid:
                 logger.log(
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)

@@ -147,7 +147,7 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
                         result_date = None
 
                     if result_date:
-                        results.append(classes.Proper(title, url, result_date))
+                        results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 

@@ -25,31 +25,21 @@ from sickbeard import logger
 from sickbeard.exceptions import ex
 
 
-class Scheduler:
+class Scheduler(threading.Thread):
     def __init__(self, action, cycleTime=datetime.timedelta(minutes=10), run_delay=datetime.timedelta(minutes=0),
                  start_time=None, threadName="ScheduledThread", silent=True):
+        super(Scheduler, self).__init__()
 
         self.lastRun = datetime.datetime.now() + run_delay - cycleTime
-
         self.action = action
         self.cycleTime = cycleTime
         self.start_time = start_time
 
-        self.thread = None
-        self.threadName = threadName
+        self.name = threadName
         self.silent = silent
-
-        self.initThread()
-
-        self.abort = False
+        self.stop = threading.Event()
         self.force = False
-
-    def __del__(self):
-        pass
-
-    def initThread(self):
-        if self.thread == None or not self.thread.isAlive():
-            self.thread = threading.Thread(None, self.runAction, self.threadName)
+        self.alive = True
 
     def timeLeft(self):
         return self.cycleTime - (datetime.datetime.now() - self.lastRun)
@@ -61,9 +51,9 @@ class Scheduler:
             return True
         return False
 
-    def runAction(self):
+    def run(self):
 
-        while True:
+        while(not self.stop.is_set()):
 
             current_time = datetime.datetime.now()
             should_run = False
@@ -86,19 +76,17 @@ class Scheduler:
 
                 try:
                     if not self.silent:
-                        logger.log(u"Starting new thread: " + self.threadName, logger.DEBUG)
+                        logger.log(u"Starting new thread: " + self.name, logger.DEBUG)
 
                     self.action.run(self.force)
                 except Exception, e:
-                    logger.log(u"Exception generated in thread " + self.threadName + ": " + ex(e), logger.ERROR)
+                    logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
                     logger.log(repr(traceback.format_exc()), logger.DEBUG)
-
-            if self.abort:
-                self.abort = False
-                self.thread = None
-                return
 
             if self.force:
                 self.force = False
 
             time.sleep(1)
+
+        # exiting thread
+        self.stop.clear()

@@ -170,27 +170,27 @@ def update_network_dict():
     old_d = dict(myDB.select("SELECT * FROM network_timezones"))
 
     # list of sql commands to update the network_timezones table
-    ql = []
+    cl = []
     for cur_d, cur_t in d.iteritems():
         h_k = old_d.has_key(cur_d)
         if h_k and cur_t != old_d[cur_d]:
             # update old record
-            ql.append(
+            cl.append(
                 ["UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?", [cur_d, cur_t, cur_d]])
         elif not h_k:
             # add new record
-            ql.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
+            cl.append(["INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)", [cur_d, cur_t]])
         if h_k:
             del old_d[cur_d]
 
     # remove deleted records
     if len(old_d) > 0:
         L = list(va for va in old_d)
-        ql.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
+        cl.append(["DELETE FROM network_timezones WHERE network_name IN (" + ','.join(['?'] * len(L)) + ")", L])
 
     # change all network timezone infos at once (much faster)
-    if ql:
-        myDB.mass_action(ql)
+    if len(cl) > 0:
+        myDB.mass_action(cl)
         load_network_dict()
 
 

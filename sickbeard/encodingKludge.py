@@ -60,8 +60,6 @@ def callPeopleStupid(x):
 
 
 def ek(func, *args, **kwargs):
-    result = None
-
     if os.name == 'nt':
         result = func(*args, **kwargs)
     else:

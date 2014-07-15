@@ -50,6 +50,8 @@ class EmailNotifier:
         ep_name: The name of the episode that was snatched
         title: The title of the notification (optional)
         """
+        ep_name = ep_name.encode('utf-8', 'replace')
+
         if sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recepients(show)
@@ -83,6 +85,8 @@ class EmailNotifier:
         ep_name: The name of the episode that was downloaded
         title: The title of the notification (optional)
         """
+        ep_name = ep_name.encode('utf-8', 'replace')
+
         if sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recepients(show)
@@ -116,6 +120,8 @@ class EmailNotifier:
         ep_name: The name of the episode that was downloaded
         lang: Subtitle language wanted
         """
+        ep_name = ep_name.encode('utf-8', 'replace')
+
         if sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recepients(show)
@@ -191,6 +197,8 @@ class EmailNotifier:
             return False
 
     def _parseEp(self, ep_name):
+        ep_name = ep_name.encode('utf-8', 'replace')
+
         sep = " - "
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)

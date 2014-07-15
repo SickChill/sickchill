@@ -70,7 +70,8 @@ class NewznabProvider(generic.NZBProvider):
         self.default = False
 
     def configStr(self):
-        return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback))
+        return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
+            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback))
 
     def imageName(self):
         if ek.ek(os.path.isfile,
@@ -84,73 +85,63 @@ class NewznabProvider(generic.NZBProvider):
     def _get_season_search_strings(self, ep_obj):
 
         to_return = []
+        cur_params = {}
 
-        # add new query strings for exceptions
-        name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid, ep_obj.season) + [self.show.name]
-        name_exceptions = set(name_exceptions)
-        for cur_exception in name_exceptions:
+        # season
+        if ep_obj.show.air_by_date or ep_obj.show.sports:
+            date_str = str(ep_obj.airdate).split('-')[0]
+            cur_params['season'] = date_str
+            cur_params['q'] = date_str.replace('-', '.')
+        elif ep_obj.show.is_anime:
+            cur_params['season'] = "%d" % ep_obj.scene_absolute_number
+        else:
+            cur_params['season'] = str(ep_obj.scene_season)
 
-            cur_params = {}
-
-            # search
-            if ep_obj.show.indexer == 2:
-                cur_params['rid'] = ep_obj.show.indexerid
-            else:
-                cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
-
-            # season
-            if ep_obj.show.air_by_date or ep_obj.show.sports:
-                date_str = str(ep_obj.airdate).split('-')[0]
-                cur_params['season'] = date_str
+        # search
+        indexers = helpers.mapIndexersToShow(ep_obj.show)
+        if indexers['tvrage_id']:
+            cur_params['rid'] = indexers['tvrage_id']
+            to_return.append(cur_params)
+        else:
+            # add new query strings for exceptions
+            name_exceptions = list(
+                set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
+            for cur_exception in name_exceptions:
                 if 'q' in cur_params:
-                    cur_params['q'] += '.' + date_str.replace('-', '.')
-                else:
-                    cur_params['q'] = date_str.replace('-', '.')
-            else:
-                cur_params['season'] = str(ep_obj.scene_season)
-
-            if not ('rid' in cur_params and to_return):
+                    cur_params['q'] = helpers.sanitizeSceneName(cur_exception) + '.' + cur_params['q']
                 to_return.append(cur_params)
 
         return to_return
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
 
+        to_return = []
         params = {}
 
         if not ep_obj:
             return [params]
 
-        # search
-        if ep_obj.show.indexer == 2:
-            params['rid'] = ep_obj.show.indexerid
-        else:
-            params['q'] = helpers.sanitizeSceneName(self.show.name)
-
-        if self.show.air_by_date or self.show.sports:
+        if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate)
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
+        elif ep_obj.show.anime:
+            params['ep'] = "%i" % int(ep_obj.scene_absolute_number)
         else:
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode
 
-        to_return = [params]
-
-        # only do exceptions if we are searching by name
-        if 'q' in params:
-
+        # search
+        indexers = helpers.mapIndexersToShow(ep_obj.show)
+        if indexers['tvrage_id']:
+            params['rid'] = indexers['tvrage_id']
+            to_return.append(params)
+        else:
             # add new query strings for exceptions
-            name_exceptions = scene_exceptions.get_scene_exceptions(self.show.indexerid)
+            name_exceptions = list(set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
             for cur_exception in name_exceptions:
-
-                # don't add duplicates
-                if cur_exception == self.show.name:
-                    continue
-
-                cur_return = params.copy()
-                cur_return['q'] = helpers.sanitizeSceneName(cur_exception)
-                to_return.append(cur_return)
+                params['q'] = helpers.sanitizeSceneName(cur_exception)
+                to_return.append(params)
 
         return to_return
 
@@ -172,8 +163,19 @@ class NewznabProvider(generic.NZBProvider):
             return self._checkAuth()
 
         if 'error' in data.feed:
-            logger.log(u"Newznab ERROR:[%s] CODE:[%s]" % (data.feed['error']['description'], data.feed['error']['code']), logger.DEBUG)
-            raise AuthException("%s" % data.feed['error']['description'])
+            code = data.feed['error']['code']
+
+            if code == '100':
+                raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
+            elif code == '101':
+                raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
+            elif code == '102':
+                raise AuthException(
+                    "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
+            else:
+                logger.log(u"Unknown error given from " + self.name + ": " + data.feed['error']['description'],
+                           logger.ERROR)
+                return False
 
         return True
 
@@ -184,15 +186,15 @@ class NewznabProvider(generic.NZBProvider):
         params = {"t": "tvsearch",
                   "maxage": sickbeard.USENET_RETENTION,
                   "limit": 100,
-                  "cat": self.catIDs}
+                  "attrs": "rageid"}
 
-        # sports and anime catIDs
+        # category ids
         if self.show and self.show.is_sports:
-            params['cat'] += ',5060'
+            params['cat'] = self.catIDs + ',5060'
         elif self.show and self.show.is_anime:
-            params['cat'] += ',5070,5090'
-        elif not self.show:
-            params['cat'] += ',5060,5070,5090'
+            params['cat'] = self.catIDs + ',5070'
+        else:
+            params['cat'] = self.catIDs
 
         # if max_age is set, use it, don't allow it to be missing
         if age or not params['maxage']:
@@ -236,7 +238,7 @@ class NewznabProvider(generic.NZBProvider):
         search_terms = ['.proper.', '.repack.']
 
         cache_results = self.cache.listPropers(search_date)
-        results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time'])) for x in
+        results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time']), self.show) for x in
                    cache_results]
 
         index = 0
@@ -276,7 +278,7 @@ class NewznabProvider(generic.NZBProvider):
                     continue
 
                 if not search_date or result_date > search_date:
-                    search_result = classes.Proper(title, url, result_date)
+                    search_result = classes.Proper(title, url, result_date, self.show)
                     results.append(search_result)
                     term_items_found = True
                     do_search_alt = False
@@ -295,13 +297,8 @@ class NewznabCache(tvcache.TVCache):
     def _getRSSData(self):
 
         params = {"t": "tvsearch",
-                  "cat": self.provider.catIDs}
-
-        # sports catIDs
-        params['cat'] += ',5060'
-
-        # anime catIDs
-        params['cat'] += ',5070,5090'
+                  "cat": self.provider.catIDs + ',5060,5070',
+                  "attrs": "rageid"}
 
         if self.provider.needs_auth and self.provider.key:
             params['apikey'] = self.provider.key
@@ -318,7 +315,6 @@ class NewznabCache(tvcache.TVCache):
     def updateCache(self):
 
         # delete anything older then 7 days
-        logger.log(u"Clearing " + self.provider.name + " cache")
         self._clearCache()
 
         if not self.shouldUpdate():
@@ -335,18 +331,15 @@ class NewznabCache(tvcache.TVCache):
 
             if self._checkAuth(data):
                 items = data.entries
-                ql = []
+                cl = []
                 for item in items:
                     ci = self._parseItem(item)
                     if ci is not None:
-                        ql.append(ci)
+                        cl.append(ci)
 
-
-
-                if ql:
+                if len(cl) > 0:
                     myDB = self._getDB()
-                    myDB.mass_action(ql)
-
+                    myDB.mass_action(cl)
 
             else:
                 raise AuthException(
@@ -360,6 +353,16 @@ class NewznabCache(tvcache.TVCache):
         title = item.title
         url = item.link
 
+        attrs = item.newznab_attr
+        if not isinstance(attrs, list):
+            attrs = [item.newznab_attr]
+
+        tvrageid = 0
+        for attr in attrs:
+            if attr['name'] == 'tvrageid':
+                tvrageid = int(attr['value'])
+                break
+
         self._checkItemAuth(title, url)
 
         if not title or not url:
@@ -371,5 +374,4 @@ class NewznabCache(tvcache.TVCache):
         url = self._translateLinkURL(url)
 
         logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
-
-        return self._addCacheEntry(title, url)
+        return self._addCacheEntry(title, url, indexer_id=tvrageid)

@@ -497,14 +497,14 @@ def xem_refresh(indexer_id, indexer, force=False):
 
             result = data
 
-            ql = []
+            cl = []
             if result:
-                ql.append(["INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
+                cl.append(["INSERT OR REPLACE INTO xem_refresh (indexer, indexer_id, last_refreshed) VALUES (?,?,?)",
                            [indexer, indexer_id, time.time()]])
                 if 'success' in result['result']:
                     for entry in result['data']:
                         if 'scene' in entry:
-                            ql.append([
+                            cl.append([
                                 "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                                 [entry['scene']['season'],
                                  entry['scene']['episode'],
@@ -514,7 +514,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                                  entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
                                 ]])
                         if 'scene_2' in entry:  # for doubles
-                            ql.append([
+                            cl.append([
                                 "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                                 [entry['scene_2']['season'],
                                  entry['scene_2']['episode'],
@@ -535,9 +535,9 @@ def xem_refresh(indexer_id, indexer, force=False):
             logger.log(traceback.format_exc(), logger.DEBUG)
             return None
 
-        if ql:
+        if len(cl) > 0:
             myDB = db.DBConnection()
-            myDB.mass_action(ql)
+            myDB.mass_action(cl)
 
 
 def fix_xem_numbering(indexer_id, indexer):
@@ -611,7 +611,7 @@ def fix_xem_numbering(indexer_id, indexer):
         u'Fixing any XEM scene mapping issues for show %s on %s' % (indexer_id, sickbeard.indexerApi(indexer).name,),
         logger.DEBUG)
 
-    ql = []
+    cl = []
     for row in rows:
         season = int(row['season'])
         episode = int(row['episode'])
@@ -660,7 +660,7 @@ def fix_xem_numbering(indexer_id, indexer):
         last_scene_absolute_number = scene_absolute_number
 
         if update_absolute_number:
-            ql.append([
+            cl.append([
                 "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                 [absolute_number,
                  indexer_id,
@@ -670,7 +670,7 @@ def fix_xem_numbering(indexer_id, indexer):
             update_absolute_number = False
 
         if update_scene_season:
-            ql.append([
+            cl.append([
                 "UPDATE tv_episodes SET scene_season = ? WHERE showid = ? AND season = ? AND episode = ?",
                 [scene_season,
                  indexer_id,
@@ -680,7 +680,7 @@ def fix_xem_numbering(indexer_id, indexer):
             update_scene_season = False
 
         if update_scene_episode:
-            ql.append([
+            cl.append([
                 "UPDATE tv_episodes SET scene_episode = ? WHERE showid = ? AND season = ? AND episode = ?",
                 [scene_episode,
                  indexer_id,
@@ -690,7 +690,7 @@ def fix_xem_numbering(indexer_id, indexer):
             update_scene_episode = False
 
         if update_scene_absolute_number:
-            ql.append([
+            cl.append([
                 "UPDATE tv_episodes SET scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                 [scene_absolute_number,
                  indexer_id,
@@ -699,6 +699,6 @@ def fix_xem_numbering(indexer_id, indexer):
                 ]])
             update_scene_absolute_number = False
 
-    if ql:
+    if len(cl) > 0:
         myDB = db.DBConnection()
-        myDB.mass_action(ql)
+        myDB.mass_action(cl)

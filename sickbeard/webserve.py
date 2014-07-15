@@ -3592,7 +3592,9 @@ class Home(MainHandler):
             t.sortedShowLists = [
                 ["Shows", sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
 
-        t.bwl = BlackAndWhiteList(showObj.indexerid)
+        t.bwl = None
+        if showObj.is_anime:
+            t.bwl = BlackAndWhiteList(showObj.indexerid)
 
         t.epCounts = epCounts
         t.epCats = epCats
@@ -3657,28 +3659,27 @@ class Home(MainHandler):
             t = PageTemplate(headers=self.request.headers, file="editShow.tmpl")
             t.submenu = HomeMenu()
 
-            bwl = BlackAndWhiteList(showObj.indexerid)
-            t.whiteWords = ""
-            if "global" in bwl.whiteDict:
-                t.whiteWords = ", ".join(bwl.whiteDict["global"])
-            t.blackWords = ""
-            if "global" in bwl.blackDict:
-                t.blackWords = ", ".join(bwl.blackDict["global"])
-
             if showObj.is_anime:
+                bwl = BlackAndWhiteList(showObj.indexerid)
+                t.whiteWords = ""
+                if "global" in bwl.whiteDict:
+                    t.whiteWords = ", ".join(bwl.whiteDict["global"])
+                t.blackWords = ""
+                if "global" in bwl.blackDict:
+                    t.blackWords = ", ".join(bwl.blackDict["global"])
 
-                t.whitelist = []
-                if bwl.whiteDict.has_key("release_group"):
-                    t.whitelist = bwl.whiteDict["release_group"]
+                    t.whitelist = []
+                    if bwl.whiteDict.has_key("release_group"):
+                        t.whitelist = bwl.whiteDict["release_group"]
 
-                t.blacklist = []
-                if bwl.blackDict.has_key("release_group"):
-                    t.blacklist = bwl.blackDict["release_group"]
+                    t.blacklist = []
+                    if bwl.blackDict.has_key("release_group"):
+                        t.blacklist = bwl.blackDict["release_group"]
 
-                t.groups = []
-                if helpers.set_up_anidb_connection():
-                    anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
-                    t.groups = anime.get_groups()
+                    t.groups = []
+                    if helpers.set_up_anidb_connection():
+                        anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
+                        t.groups = anime.get_groups()
 
             with showObj.lock:
                 t.show = showObj
@@ -3737,54 +3738,55 @@ class Home(MainHandler):
 
         # If directCall from mass_edit_update no scene exceptions handling
         if not directCall:
-            bwl = BlackAndWhiteList(showObj.indexerid)
-            if whitelist:
-                whitelist = whitelist.split(",")
-                shortWhiteList = []
-                if helpers.set_up_anidb_connection():
-                    for groupName in whitelist:
-                        group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                        for line in group.datalines:
-                            if line["shortname"]:
-                                shortWhiteList.append(line["shortname"])
-                        else:
-                            if not groupName in shortWhiteList:
-                                shortWhiteList.append(groupName)
+            if showObj.is_anime:
+                bwl = BlackAndWhiteList(showObj.indexerid)
+                if whitelist:
+                    whitelist = whitelist.split(",")
+                    shortWhiteList = []
+                    if helpers.set_up_anidb_connection():
+                        for groupName in whitelist:
+                            group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                            for line in group.datalines:
+                                if line["shortname"]:
+                                    shortWhiteList.append(line["shortname"])
+                            else:
+                                if not groupName in shortWhiteList:
+                                    shortWhiteList.append(groupName)
+                    else:
+                        shortWhiteList = whitelist
+                    bwl.set_white_keywords_for("release_group", shortWhiteList)
                 else:
-                    shortWhiteList = whitelist
-                bwl.set_white_keywords_for("release_group", shortWhiteList)
-            else:
-                bwl.set_white_keywords_for("release_group", [])
+                    bwl.set_white_keywords_for("release_group", [])
 
-            if blacklist:
-                blacklist = blacklist.split(",")
-                shortBlacklist = []
-                if helpers.set_up_anidb_connection():
-                    for groupName in blacklist:
-                        group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                        for line in group.datalines:
-                            if line["shortname"]:
-                                shortBlacklist.append(line["shortname"])
-                        else:
-                            if not groupName in shortBlacklist:
-                                shortBlacklist.append(groupName)
+                if blacklist:
+                    blacklist = blacklist.split(",")
+                    shortBlacklist = []
+                    if helpers.set_up_anidb_connection():
+                        for groupName in blacklist:
+                            group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                            for line in group.datalines:
+                                if line["shortname"]:
+                                    shortBlacklist.append(line["shortname"])
+                            else:
+                                if not groupName in shortBlacklist:
+                                    shortBlacklist.append(groupName)
+                    else:
+                        shortBlacklist = blacklist
+                    bwl.set_black_keywords_for("release_group", shortBlacklist)
                 else:
-                    shortBlacklist = blacklist
-                bwl.set_black_keywords_for("release_group", shortBlacklist)
-            else:
-                bwl.set_black_keywords_for("release_group", [])
+                    bwl.set_black_keywords_for("release_group", [])
 
-            if whiteWords:
-                whiteWords = [x.strip() for x in whiteWords.split(",")]
-                bwl.set_white_keywords_for("global", whiteWords)
-            else:
-                bwl.set_white_keywords_for("global", [])
+                if whiteWords:
+                    whiteWords = [x.strip() for x in whiteWords.split(",")]
+                    bwl.set_white_keywords_for("global", whiteWords)
+                else:
+                    bwl.set_white_keywords_for("global", [])
 
-            if blackWords:
-                blackWords = [x.strip() for x in blackWords.split(",")]
-                bwl.set_black_keywords_for("global", blackWords)
-            else:
-                bwl.set_black_keywords_for("global", [])
+                if blackWords:
+                    blackWords = [x.strip() for x in blackWords.split(",")]
+                    bwl.set_black_keywords_for("global", blackWords)
+                else:
+                    bwl.set_black_keywords_for("global", [])
 
         errors = []
         with showObj.lock:
@@ -4078,7 +4080,7 @@ class Home(MainHandler):
                     # mass add to database
                     sql_l.append(epObj.get_sql())
 
-            if sql_l:
+            if len(sql_l) > 0:
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
 

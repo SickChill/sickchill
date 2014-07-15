@@ -196,7 +196,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
             logger.log(u"Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
     elif sports:
-        if result.sports_event_date != ep.airdate:
+        if result.sports_air_date != ep.airdate:
             logger.log(u"Sports event date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
     elif anime_type != 3:

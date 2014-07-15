@@ -486,12 +486,12 @@ class PostProcessor(object):
         # show object
         show = parse_result.show
 
-        if parse_result.air_by_date:
+        if parse_result.is_air_by_date:
             season = -1
             episodes = [parse_result.air_date]
-        elif parse_result.sports:
+        elif parse_result.is_sports:
             season = -1
-            episodes = [parse_result.sports_event_date]
+            episodes = [parse_result.is_sports_air_date]
         else:
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
@@ -963,7 +963,7 @@ class PostProcessor(object):
                 else:
                     self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1041,7 +1041,7 @@ class PostProcessor(object):
         ep_obj.createMetaFiles()
         sql_l.append(ep_obj.get_sql())
 
-        if sql_l:
+        if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 

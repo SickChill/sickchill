@@ -64,6 +64,10 @@ def createTestLogFolder():
     if not os.path.isdir(sickbeard.LOG_DIR):
         os.mkdir(sickbeard.LOG_DIR)
 
+def createTestCacheFolder():
+    if not os.path.isdir(sickbeard.CACHE_DIR):
+        os.mkdir(sickbeard.CACHE_DIR)
+
 # call env functions at appropriate time during sickbeard var setup
 
 #=================
@@ -90,6 +94,8 @@ sickbeard.LOG_DIR = os.path.join(TESTDIR, 'Logs')
 createTestLogFolder()
 sickbeard.logger.sb_log_instance.initLogging(False)
 
+sickbeard.CACHE_DIR = os.path.join(TESTDIR, 'cache')
+createTestCacheFolder()
 
 #=================
 # dummy functions
