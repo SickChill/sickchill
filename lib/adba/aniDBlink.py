@@ -64,7 +64,7 @@ class AniDBLink(threading.Thread):
                 self.myport = port
                 return True
         else:
-            return False;
+            return False
 
     def disconnectSocket(self):
         self.sock.close()

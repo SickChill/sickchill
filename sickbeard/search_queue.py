@@ -123,6 +123,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             generic_queue.QueueItem.finish(self)
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            threading.currentThread().name = self.name
 
         self.finish()
 
@@ -162,6 +163,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            threading.currentThread().name = self.name
 
         self.finish()
 
@@ -211,6 +213,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                     logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            threading.currentThread().name = self.name
 
         self.finish()
 
@@ -259,5 +262,6 @@ class FailedQueueItem(generic_queue.QueueItem):
                         logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            threading.currentThread().name = self.name
 
         self.finish()
