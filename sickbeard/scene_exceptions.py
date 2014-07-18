@@ -34,6 +34,7 @@ xem_exception_dict = {}
 exceptionsCache = {}
 exceptionsSeasonCache = {}
 
+exceptionLock = threading.Lock()
 
 def shouldRefresh(list):
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
