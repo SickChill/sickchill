@@ -44,7 +44,7 @@ class NameParser(object):
         self.naming_pattern = naming_pattern
 
         self.regexModes = [self.NORMAL_REGEX, self.SPORTS_REGEX, self.ANIME_REGEX]
-        if self.showObj and not (self.showObj.is_anime or self.showObj.is_sports):
+        if self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
             self.regexModes = [self.NORMAL_REGEX]
         elif self.showObj and self.showObj.is_anime:
             self.regexModes = [self.ANIME_REGEX]
