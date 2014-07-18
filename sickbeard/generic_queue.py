@@ -86,7 +86,7 @@ class GenericQueue(object):
 
                 self.queue.sort(cmp=sorter)
 
-                queueItem = self.queue[0]
+                queueItem = self.queue.pop(0)
 
                 if queueItem.priority < self.min_priority:
                     return
@@ -97,9 +97,7 @@ class GenericQueue(object):
 
                 self.currentItem = queueItem
 
-                # take it out of the queue
-                del self.queue[0]
-
+                queueItem.join()
 
 class QueueItem(threading.Thread):
     def __init__(self, name, action_id=0):
@@ -116,10 +114,8 @@ class QueueItem(threading.Thread):
         """Implementing classes should call this"""
 
         self.inProgress = True
-        self.alive = True
 
     def finish(self):
         """Implementing Classes should call this"""
 
         self.inProgress = False
-        self.alive = False

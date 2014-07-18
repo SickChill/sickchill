@@ -423,8 +423,8 @@ class QueueItemRefresh(ShowQueueItem):
 
         self.show.refreshDir()
         self.show.writeMetadata()
-        if self.force:
-            self.show.updateMetadata()
+        #if self.force:
+        #    self.show.updateMetadata()
         self.show.populateCache()
 
         # Load XEM data to DB for show

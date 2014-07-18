@@ -88,6 +88,7 @@ class SearchQueue(generic_queue.GenericQueue):
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
+
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
@@ -122,6 +123,9 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             generic_queue.QueueItem.finish(self)
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+
+        self.finish()
+
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -159,11 +163,15 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 
+        self.finish()
+
     def finish(self):
         # don't let this linger if something goes wrong
-        if self.success == None:
+        if self.success is None:
             self.success = False
+
         generic_queue.QueueItem.finish(self)
+
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -177,13 +185,13 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def run(self):
         generic_queue.QueueItem.run(self)
 
-        for season in self.segment:
-            sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {
-            'title': self.show.name + " Season " + str(season)}
+        try:
+            for season in self.segment:
+                sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {
+                'title': self.show.name + " Season " + str(season)}
 
-            wantedEps = self.segment[season]
+                wantedEps = self.segment[season]
 
-            try:
                 logger.log("Beginning backlog search for [" + self.show.name + "]")
                 searchResult = search.searchProviders(self.show, season, wantedEps, False)
 
@@ -201,9 +209,8 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
                 else:
                     logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
-
-            except Exception:
-                logger.log(traceback.format_exc(), logger.DEBUG)
+        except Exception:
+            logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
 
