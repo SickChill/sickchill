@@ -62,7 +62,7 @@ class GenericQueue(object):
         if self.queueItem is None or not self.queueItem.isAlive():
 
             # if the thread is dead then the current item should be finished
-            if self.currentItem != None:
+            if self.currentItem:
                 self.currentItem.finish()
                 self.currentItem = None
 

@@ -97,27 +97,31 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         self.segment = segment
 
     def run(self):
+
         generic_queue.QueueItem.run(self)
 
-        logger.log("Beginning daily search for [" + self.show.name + "]")
-        foundResults = search.searchForNeededEpisodes(self.show, self.segment)
+        try:
 
-        # reset thread back to original name
-        threading.currentThread().name = self.name
+            logger.log("Beginning daily search for [" + self.show.name + "]")
+            foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
-        if not len(foundResults):
-            logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
-        else:
-            for result in foundResults:
-                # just use the first result for now
-                logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-                search.snatchEpisode(result)
+            # reset thread back to original name
+            threading.currentThread().name = self.name
 
-                # give the CPU a break
-                time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
+            if not len(foundResults):
+                logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
+            else:
+                for result in foundResults:
+                    # just use the first result for now
+                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                    search.snatchEpisode(result)
 
-        generic_queue.QueueItem.finish(self)
+                    # give the CPU a break
+                    time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
+            generic_queue.QueueItem.finish(self)
+        except Exception:
+            logger.log(traceback.format_exc(), logger.DEBUG)
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -160,7 +164,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         if self.success == None:
             self.success = False
         generic_queue.QueueItem.finish(self)
-
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -217,20 +220,20 @@ class FailedQueueItem(generic_queue.QueueItem):
     def run(self):
         generic_queue.QueueItem.run(self)
 
-        for season, episodes in self.segment.items():
-            for epObj in episodes:
-                logger.log(u"Marking episode as bad: [" + epObj.prettyName() + "]")
-                failed_history.markFailed(epObj)
+        try:
+            for season, episodes in self.segment.items():
+                for epObj in episodes:
+                    logger.log(u"Marking episode as bad: [" + epObj.prettyName() + "]")
+                    failed_history.markFailed(epObj)
 
-                (release, provider) = failed_history.findRelease(epObj)
-                if release:
-                    failed_history.logFailed(release)
-                    history.logFailed(epObj, release, provider)
+                    (release, provider) = failed_history.findRelease(epObj)
+                    if release:
+                        failed_history.logFailed(release)
+                        history.logFailed(epObj, release, provider)
 
-                failed_history.revertEpisode(epObj)
-                logger.log("Beginning failed download search for [" + epObj.prettyName() + "]")
+                    failed_history.revertEpisode(epObj)
+                    logger.log("Beginning failed download search for [" + epObj.prettyName() + "]")
 
-                try:
                     searchResult = search.searchProviders(self.show, season, [epObj], True)
 
                     # reset thread back to original name
@@ -247,7 +250,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
                     else:
                         logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")
-                except Exception, e:
-                    logger.log(traceback.format_exc(), logger.DEBUG)
+        except Exception:
+            logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()

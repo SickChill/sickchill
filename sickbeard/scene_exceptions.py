@@ -223,6 +223,9 @@ def retrieve_exceptions():
         existing_exceptions = [x["show_name"] for x in
                                myDB.select("SELECT * FROM scene_exceptions WHERE indexer_id = ?", [cur_indexer_id])]
 
+        if not cur_indexer_id in exception_dict:
+            continue
+
         for cur_exception_dict in exception_dict[cur_indexer_id]:
             cur_exception, curSeason = cur_exception_dict.items()[0]
 
