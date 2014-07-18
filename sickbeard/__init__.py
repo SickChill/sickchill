@@ -1258,10 +1258,10 @@ def halt():
                 pass
 
             if ADBA_CONNECTION:
-                ADBA_CONNECTION.logout(True)
+                ADBA_CONNECTION.logout()
                 logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
                 try:
-                    ADBA_CONNECTION.join()
+                    ADBA_CONNECTION.join(10)
                 except:
                     pass
 
