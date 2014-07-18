@@ -29,6 +29,7 @@ import sickbeard
 from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions
 from dateutil import parser
 
+
 class NameParser(object):
     NORMAL_REGEX = 0
     SPORTS_REGEX = 1
@@ -216,7 +217,13 @@ class NameParser(object):
                     result.release_group = match.group('release_group')
                     result.score += 1
 
-                doneSearch = True if result.show else False
+                if result.show:
+                    if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
+                        doneSearch = True
+                    elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
+                        doneSearch = True
+                    elif regexMode == self.ANIME_REGEX and result.show.is_anime:
+                        doneSearch = True
 
                 matches.append(result)
 
@@ -598,6 +605,7 @@ class ParseResult(object):
         if len(self.ab_episode_numbers):
             return True
         return False
+
 
 class NameParserCache(object):
     _previous_parsed = {}
