@@ -144,7 +144,7 @@ Results without one of these words in the title will be filtered out <br />
 Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
 
-#if $show.is_anime
+#if $show.is_anime:
 #from sickbeard.blackandwhitelist import *
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
 #end if
