@@ -224,8 +224,6 @@ class NameParser(object):
 
                 matches.append(result)
 
-                time.sleep(0.02)
-
         if len(matches):
             # pick best match with highest score based on placement
             bestResult = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)
