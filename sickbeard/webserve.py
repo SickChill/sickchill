@@ -2399,15 +2399,15 @@ class ConfigSubtitles(MainHandler):
             subtitles_finder_frequency = 1
 
         if use_subtitles == "on":
-            if sickbeard.subtitlesFinderScheduler.thread is None or not sickbeard.subtitlesFinderScheduler.thread.isAlive():
+            if not sickbeard.subtitlesFinderScheduler.isAlive():
                 sickbeard.subtitlesFinderScheduler.silent = False
-                sickbeard.subtitlesFinderScheduler.initThread()
+                sickbeard.subtitlesFinderScheduler.start()
         else:
-            sickbeard.subtitlesFinderScheduler.abort = True
+            sickbeard.subtitlesFinderScheduler.stop.set()
             sickbeard.subtitlesFinderScheduler.silent = True
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
-                sickbeard.subtitlesFinderScheduler.thread.join(5)
+                sickbeard.subtitlesFinderScheduler.join()
             except:
                 pass
 

@@ -1190,70 +1190,70 @@ def halt():
             dailySearchScheduler.stop.set()
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
-                dailySearchScheduler.thread.join()
+                dailySearchScheduler.join()
             except:
                 pass
 
             backlogSearchScheduler.stop.set()
             logger.log(u"Waiting for the BACKLOG thread to exit")
             try:
-                backlogSearchScheduler.thread.join()
+                backlogSearchScheduler.join()
             except:
                 pass
 
             showUpdateScheduler.stop.set()
             logger.log(u"Waiting for the SHOWUPDATER thread to exit")
             try:
-                showUpdateScheduler.thread.join()
+                showUpdateScheduler.join()
             except:
                 pass
 
             versionCheckScheduler.stop.set()
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
-                versionCheckScheduler.thread.join()
+                versionCheckScheduler.join()
             except:
                 pass
 
             showQueueScheduler.stop.set()
             logger.log(u"Waiting for the SHOWQUEUE thread to exit")
             try:
-                showQueueScheduler.thread.join()
+                showQueueScheduler.join()
             except:
                 pass
 
             searchQueueScheduler.stop.set()
             logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
             try:
-                searchQueueScheduler.thread.join()
+                searchQueueScheduler.join()
             except:
                 pass
 
             autoPostProcesserScheduler.stop.set()
             logger.log(u"Waiting for the POSTPROCESSER thread to exit")
             try:
-                autoPostProcesserScheduler.thread.join()
+                autoPostProcesserScheduler.join()
             except:
                 pass
 
             traktCheckerScheduler.stop.set()
             logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
             try:
-                traktCheckerScheduler.thread.join()
+                traktCheckerScheduler.join()
             except:
                 pass
 
             properFinderScheduler.stop.set()
             logger.log(u"Waiting for the PROPERFINDER thread to exit")
             try:
-                properFinderScheduler.thread.join()
+                properFinderScheduler.join()
             except:
                 pass
 
             subtitlesFinderScheduler.stop.set()
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
-                subtitlesFinderScheduler.thread.join()
+                subtitlesFinderScheduler.join()
             except:
                 pass
 
