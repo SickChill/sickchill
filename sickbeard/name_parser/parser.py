@@ -146,6 +146,8 @@ class NameParser(object):
                 else:
                     if not self.naming_pattern:
                         result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
+                        if not result.show:
+                            continue
 
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))
