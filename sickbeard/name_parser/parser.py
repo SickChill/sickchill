@@ -130,11 +130,17 @@ class NameParser(object):
                         result.series_name = self.clean_series_name(result.series_name)
                         result.score += 1
 
-                # confirm show object
-                if result.show:
-                    if self.showObj and self.showObj.name.lower() == result.show.name.lower():
-                        continue
+                # get show object
+                if not result.show and not self.naming_pattern:
+                    result.show = helpers.get_show(result.series_name, indexer_id=self.showObj.indexerid)
 
+                # confirm result show object variables
+                if result.show:
+                    # confirm passed in show object indexer id matches result show object indexer id
+                    if self.showObj and self.showObj.indexerid != result.show.indexerid:
+                        break
+
+                    # confirm we are using correct regex mode
                     if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
                         result.score += 1
                     elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
@@ -143,11 +149,6 @@ class NameParser(object):
                         result.score += 1
                     else:
                         break
-                else:
-                    if not self.naming_pattern:
-                        result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-                        if not result.show:
-                            continue
 
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))
