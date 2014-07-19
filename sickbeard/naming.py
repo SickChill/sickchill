@@ -49,6 +49,7 @@ class TVShow():
     def __init__(self):
         self.name = "Show Name"
         self.genre = "Comedy"
+        self.indexerid = 00001
         self.air_by_date = 0
         self.sports = 0
         self.anime = 0
