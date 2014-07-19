@@ -3830,10 +3830,10 @@ class Home(MainHandler):
             if showObj.archive_firstmatch != archive_firstmatch:
                 showObj.archive_firstmatch = archive_firstmatch
 
-            if rls_ignore_words and showObj.rls_ignore_words != rls_ignore_words.strip():
+            if rls_ignore_words is not None and showObj.rls_ignore_words != rls_ignore_words.strip():
                 showObj.rls_ignore_words = rls_ignore_words.strip()
 
-            if rls_require_words and showObj.rls_require_words != rls_require_words.strip():
+            if rls_require_words is not None and showObj.rls_require_words != rls_require_words.strip():
                 showObj.rls_require_words = rls_require_words.strip()
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
