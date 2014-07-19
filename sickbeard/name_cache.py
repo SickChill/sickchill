@@ -56,10 +56,12 @@ def retrieveNameFromCache(name):
         return int(nameCache[name])
 
 
-def retrieveShowFromCache(name):
+def retrieveShowFromCache(name, indexer_id=0):
     global nameCache
 
-    indexer_id = retrieveNameFromCache(name)
+    if not indexer_id:
+        indexer_id = retrieveNameFromCache(name)
+
     if indexer_id:
         return sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexer_id))
 

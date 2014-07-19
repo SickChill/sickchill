@@ -523,7 +523,7 @@ class PostProcessor(object):
 
             indexer_id = name_cache.retrieveNameFromCache(name)
             if not indexer_id:
-                show = helpers.get_show_by_name(name)
+                show = helpers.get_show(name)
                 if show:
                     indexer_id = show.indexerid
                 else:
