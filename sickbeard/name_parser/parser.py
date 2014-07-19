@@ -103,7 +103,6 @@ class NameParser(object):
             return
 
         matches = []
-        doneSearch = False
         bestResult = None
 
         for regexMode in self.regexModes:
@@ -129,28 +128,24 @@ class NameParser(object):
                     result.series_name = match.group('series_name')
                     if result.series_name:
                         result.series_name = self.clean_series_name(result.series_name)
-
-                    if not result.show:
-                        if self.showObj and self.showObj.name.lower() == result.series_name.lower():
-                            result.show = self.showObj
-                        else:
-                            if not self.naming_pattern:
-                                result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
-
-                        if not result.show:
-                            continue
-
                         result.score += 1
 
-                    elif result.show:
-                        if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
-                            result.score += 1
-                        elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
-                            result.score += 1
-                        elif regexMode == self.ANIME_REGEX and result.show.is_anime:
-                            result.score += 1
-                        else:
-                            break
+                # confirm show object
+                if result.show:
+                    if self.showObj and self.showObj.name.lower() == result.show.name.lower():
+                        continue
+
+                    if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
+                        result.score += 1
+                    elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
+                        result.score += 1
+                    elif regexMode == self.ANIME_REGEX and result.show.is_anime:
+                        result.score += 1
+                    else:
+                        break
+                else:
+                    if not self.naming_pattern:
+                        result.show = helpers.get_show_by_name(result.series_name, useIndexer=self.useIndexers)
 
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))
