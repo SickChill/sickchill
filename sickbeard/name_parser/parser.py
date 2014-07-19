@@ -142,6 +142,16 @@ class NameParser(object):
 
                         result.score += 1
 
+                    elif result.show:
+                        if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
+                            result.score += 1
+                        elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
+                            result.score += 1
+                        elif regexMode == self.ANIME_REGEX and result.show.is_anime:
+                            result.score += 1
+                        else:
+                            break
+
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))
                     if not (cur_regex_name == 'bare' and tmp_season in (19, 20)):
@@ -213,14 +223,6 @@ class NameParser(object):
                 if 'release_group' in named_groups:
                     result.release_group = match.group('release_group')
                     result.score += 1
-
-                if result.show:
-                    if regexMode == self.NORMAL_REGEX and not (result.show.is_anime or result.show.is_sports):
-                        result.score += 1
-                    elif regexMode == self.SPORTS_REGEX and result.show.is_sports:
-                        result.score += 1
-                    elif regexMode == self.ANIME_REGEX and result.show.is_anime:
-                        result.score += 1
 
                 matches.append(result)
 
