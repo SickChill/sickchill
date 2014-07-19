@@ -2303,7 +2303,11 @@ class TVEpisode(object):
         Figures out the path where this episode SHOULD live according to the renaming rules, relative from the show dir
         """
 
-        result = self.formatted_filename()
+        anime_type = sickbeard.NAMING_ANIME
+        if not self.show.is_anime:
+            anime_type = 3
+
+        result = self.formatted_filename(anime_type=anime_type)
 
         # if they want us to flatten it and we're allowed to flatten it then we will
         if self.show.flatten_folders and not sickbeard.NAMING_FORCE_FOLDERS:
