@@ -74,20 +74,19 @@ class PostProcessor(object):
         self.file_path = file_path
 
         # file name only
-        self.file_name = ek.ek(os.path.basename, file_path)
+        self.file_name = helpers.remove_extension(ek.ek(os.path.basename, file_path))
 
         # the name of the folder only
-        self.folder_name = ek.ek(os.path.basename, self.folder_path)
+        self.folder_name = helpers.remove_extension(ek.ek(os.path.basename, self.folder_path))
 
         # name of the NZB that resulted in this folder
-        self.nzb_name = nzb_name
+        self.nzb_name = helpers.remove_extension(nzb_name)
 
         self.process_method = process_method if process_method else sickbeard.PROCESS_METHOD
 
         self.in_history = False
         self.release_group = None
         self.is_proper = False
-
         self.is_priority = is_priority
 
         self.good_results = {self.NZB_NAME: False,
@@ -444,7 +443,8 @@ class PostProcessor(object):
 
         # if the result is complete then remember that for later
         if parse_result.series_name and parse_result.season_number != None and parse_result.episode_numbers and parse_result.release_group:
-            test_name = ek.ek(os.path.basename, parse_result.original_name)
+            test_name = helpers.remove_extension(ek.ek(os.path.basename, parse_result.original_name))
+
             if test_name == self.nzb_name:
                 self.good_results[self.NZB_NAME] = True
             elif test_name == self.folder_name:
@@ -478,6 +478,8 @@ class PostProcessor(object):
 
         if not name:
             return to_return
+
+        name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
         np = NameParser(file, useIndexers=True, convert=True)
@@ -925,15 +927,10 @@ class PostProcessor(object):
                 # use the best possible representation of the release name
                 if self.good_results[self.NZB_NAME]:
                     cur_release_name = self.nzb_name
-                    if cur_release_name.lower().endswith('.nzb'):
-                        cur_release_name = cur_release_name.rpartition('.')[0]
                 elif self.good_results[self.FOLDER_NAME]:
                     cur_release_name = self.folder_name
                 elif self.good_results[self.FILE_NAME]:
                     cur_release_name = self.file_name
-                    # take the extension off the filename, it's not needed
-                    if '.' in self.file_name:
-                        cur_release_name = self.file_name.rpartition('.')[0]
 
                 if cur_release_name:
                     self._log("Found release name " + cur_release_name, logger.DEBUG)

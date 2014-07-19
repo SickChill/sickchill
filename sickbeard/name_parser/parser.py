@@ -26,7 +26,7 @@ import os.path
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions
+from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek
 from dateutil import parser
 
 
@@ -329,10 +329,10 @@ class NameParser(object):
             return cached
 
         # break it into parts if there are any (dirname, file name, extension)
-        dir_name, file_name = os.path.split(name)
-        ext_match = re.match('(.*)\.\w{3,4}$', file_name)
-        if ext_match and self.file_name:
-            base_file_name = ext_match.group(1)
+        dir_name, file_name = ek.ek(os.path.split, name)
+
+        if self.file_name:
+            base_file_name = helpers.remove_extension(file_name)
         else:
             base_file_name = file_name
 

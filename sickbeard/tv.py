@@ -2069,13 +2069,15 @@ class TVEpisode(object):
             return re.sub('[ -]', '_', name)
 
         def release_name(name):
-            if name and name.lower().endswith('.nzb'):
-                name = name.rpartition('.')[0]
+            if name:
+                name = helpers.remove_non_release_groups(helpers.remove_extension(name))
             return name
 
         def release_group(show, name):
-            if not name:
-                return ''
+            if name:
+                name = helpers.remove_non_release_groups(helpers.remove_extension(name))
+            else:
+                return ""
 
             try:
                 np = NameParser(name, showObj=show, naming_pattern=True)
