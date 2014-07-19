@@ -74,10 +74,15 @@ class TVCache():
 
         self.provider = provider
         self.providerID = self.provider.getID()
+        self.providerDB = None
         self.minTime = 10
 
     def _getDB(self):
-        return CacheDBConnection(self.providerID)
+        # init provider database if not done already
+        if not self.providerDB:
+            self.providerDB = CacheDBConnection(self.providerID)
+
+        return self.providerDB
 
     def _clearCache(self):
         if self.shouldClearCache():
