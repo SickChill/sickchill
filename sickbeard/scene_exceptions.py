@@ -19,6 +19,7 @@
 import re
 import time
 import threading
+import datetime
 import sickbeard
 
 from lib import adba
@@ -42,16 +43,16 @@ def shouldRefresh(list):
     myDB = db.DBConnection('cache.db')
     rows = myDB.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [list])
     if rows:
-        return time.time() > (int(rows[0]['last_refreshed']) + MAX_REFRESH_AGE_SECS)
+        lastRefresh = int(rows[0]['last_refreshed'])
+        return int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         return True
 
-
 def setLastRefresh(list):
     myDB = db.DBConnection('cache.db')
-    myDB.action("INSERT OR REPLACE INTO scene_exceptions_refresh (list, last_refreshed) VALUES (?,?)",
-                [list, time.time()])
-
+    myDB.upsert("scene_exceptions_refresh",
+                {'last_refreshed': int(time.mktime(datetime.datetime.today().timetuple()))},
+                {'list': list})
 
 def get_scene_exceptions(indexer_id, season=-1):
     """

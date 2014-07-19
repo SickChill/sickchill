@@ -343,22 +343,24 @@ def filterSearchResults(show, season, results):
 
 def searchForNeededEpisodes(show, episodes):
     foundResults = {}
-
     didSearch = False
 
-    # ask all providers for any episodes it finds
-    origThreadName = threading.currentThread().name
     providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
+    if not len(providers):
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+                   logger.ERROR)
+        return
+
+    origThreadName = threading.currentThread().name
     for curProviderCount, curProvider in enumerate(providers):
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime skiping ...")
             continue
 
-        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-
         try:
-            logger.log(u"Searching RSS cache ...")
+            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
             curFoundResults = curProvider.searchRSS(episodes)
+            threading.currentThread().name = origThreadName
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             if curProviderCount != len(providers):
@@ -406,6 +408,12 @@ def searchProviders(show, season, episodes, manualSearch=False):
     foundResults = {}
     finalResults = []
 
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+    if not len(providers):
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+                   logger.ERROR)
+        return
+
     # check if we want to search for season packs instead of just season/episode
     seasonSearch = False
     if not manualSearch:
@@ -413,20 +421,12 @@ def searchProviders(show, season, episodes, manualSearch=False):
         if len(seasonEps) == len(episodes):
             seasonSearch = True
 
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
-
-    if not len(providers):
-        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
-                   logger.ERROR)
-        return
-
     origThreadName = threading.currentThread().name
     for providerNum, provider in enumerate(providers):
         if provider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime skiping ...")
             continue
 
-        threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
         foundResults.setdefault(provider.name, {})
         searchCount = 0
 
@@ -443,7 +443,9 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 logger.log(u"Searching for episodes we need from " + show.name + " Season " + str(season))
 
             try:
+                threading.currentThread().name = origThreadName + " :: [" + provider.name + "]"
                 searchResults = provider.findSearchResults(show, season, episodes, search_mode, manualSearch)
+                threading.currentThread().name = origThreadName
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break

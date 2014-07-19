@@ -119,3 +119,5 @@ class QueueItem(threading.Thread):
         """Implementing Classes should call this"""
 
         self.inProgress = False
+
+        threading.currentThread().name = self.name

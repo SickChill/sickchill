@@ -106,9 +106,6 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             logger.log("Beginning daily search for [" + self.show.name + "]")
             foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
-            # reset thread back to original name
-            threading.currentThread().name = self.name
-
             if not len(foundResults):
                 logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
             else:
@@ -123,10 +120,8 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             generic_queue.QueueItem.finish(self)
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            threading.currentThread().name = self.name
 
         self.finish()
-
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -144,9 +139,6 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             logger.log("Beginning manual search for [" + self.segment.prettyName() + "]")
             searchResult = search.searchProviders(self.show, self.segment.season, [self.segment], True)
 
-            # reset thread back to original name
-            threading.currentThread().name = self.name
-
             if searchResult:
                 # just use the first result for now
                 logger.log(u"Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
@@ -163,16 +155,11 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            threading.currentThread().name = self.name
 
-        self.finish()
-
-    def finish(self):
-        # don't let this linger if something goes wrong
         if self.success is None:
             self.success = False
 
-        generic_queue.QueueItem.finish(self)
+        self.finish()
 
 
 class BacklogQueueItem(generic_queue.QueueItem):
@@ -197,9 +184,6 @@ class BacklogQueueItem(generic_queue.QueueItem):
                 logger.log("Beginning backlog search for [" + self.show.name + "]")
                 searchResult = search.searchProviders(self.show, season, wantedEps, False)
 
-                # reset thread back to original name
-                threading.currentThread().name = self.name
-
                 if searchResult:
                     for result in searchResult:
                         # just use the first result for now
@@ -208,12 +192,10 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
                         # give the CPU a break
                         time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
-
                 else:
                     logger.log(u"No needed episodes found during backlog search for [" + self.show.name + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            threading.currentThread().name = self.name
 
         self.finish()
 
@@ -246,9 +228,6 @@ class FailedQueueItem(generic_queue.QueueItem):
 
                     searchResult = search.searchProviders(self.show, season, [epObj], True)
 
-                    # reset thread back to original name
-                    threading.currentThread().name = self.name
-
                     if searchResult:
                         for result in searchResult:
                             # just use the first result for now
@@ -262,6 +241,5 @@ class FailedQueueItem(generic_queue.QueueItem):
                         logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-            threading.currentThread().name = self.name
 
         self.finish()
