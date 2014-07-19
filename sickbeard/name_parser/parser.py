@@ -132,7 +132,7 @@ class NameParser(object):
 
                 # get show object
                 if not result.show and not self.naming_pattern:
-                    result.show = helpers.get_show(result.series_name, indexer_id=self.showObj.indexerid)
+                    result.show = helpers.get_show(result.series_name, useIndexer=self.useIndexers)
 
                 # confirm result show object variables
                 if result.show:
