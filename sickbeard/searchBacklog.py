@@ -68,14 +68,14 @@ class BacklogSearcher:
 
     def searchBacklog(self, which_shows=None):
 
+        if self.amActive:
+            logger.log(u"Backlog is still running, not starting it again", logger.DEBUG)
+            return
+
         if which_shows:
             show_list = which_shows
         else:
             show_list = sickbeard.showList
-
-        if self.amActive:
-            logger.log(u"Backlog is still running, not starting it again", logger.DEBUG)
-            return
 
         self._get_lastBacklog()
 
