@@ -410,15 +410,14 @@ class PostProcessor(object):
             if len(sql_results) == 0:
                 continue
 
-            show = helpers.findCertainShow(sickbeard.showList, int(sql_results[0]["showid"]))
-            if not show:
-                continue
-
+            indexer_id = int(sql_results[0]["showid"])
             season = int(sql_results[0]["season"])
             quality = int(sql_results[0]["quality"])
 
             if quality == common.Quality.UNKNOWN:
                 quality = None
+
+            show = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
             self.in_history = True
             to_return = (show, season, [], quality)
@@ -599,7 +598,9 @@ class PostProcessor(object):
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
 
-            if cur_show:
+            if not cur_show:
+                continue
+            else:
                 show = cur_show
 
             if cur_quality and not (self.in_history and quality):

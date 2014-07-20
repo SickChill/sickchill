@@ -259,17 +259,16 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     """
 
     myDB = db.DBConnection('cache.db')
-    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
+    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
 
     logger.log(u"Updating scene exceptions", logger.MESSAGE)
-    for cur_season in [-1] + get_scene_seasons(indexer_id):
-        for cur_exception in scene_exceptions:
+    for cur_exception in scene_exceptions:
 
-            if not isinstance(cur_exception, unicode):
-                cur_exception = unicode(cur_exception, 'utf-8', 'replace')
+        if not isinstance(cur_exception, unicode):
+            cur_exception = unicode(cur_exception, 'utf-8', 'replace')
 
-            myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
-                        [indexer_id, cur_exception, cur_season, 1])
+        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
+                    [indexer_id, cur_exception, -1])
 
 def _anidb_exceptions_fetcher():
     global anidb_exception_dict

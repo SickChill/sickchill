@@ -104,14 +104,14 @@ class NameParser(object):
 
         matches = []
         bestResult = None
+        doneSearch = False
 
         for regexMode in self.regexModes:
+            if doneSearch:
+                break
 
             self._compile_regexes(regexMode)
-
             for (cur_regexMode, cur_regex_name, cur_regex) in self.compiled_regexes:
-                time.sleep(0.02)
-
                 match = cur_regex.match(name)
 
                 if not match:
@@ -140,6 +140,7 @@ class NameParser(object):
                 if result.show:
                     # confirm passed in show object indexer id matches result show object indexer id
                     if self.showObj and self.showObj.indexerid != result.show.indexerid:
+                        doneSearch = True
                         break
 
                     # confirm we are using correct regex mode
@@ -254,6 +255,9 @@ class NameParser(object):
                     if len(new_season_numbers) and len(new_episode_numbers):
                         bestResult.episode_numbers = new_episode_numbers
                         bestResult.season_number = new_season_numbers[0]
+
+        # CPU sleep
+        time.sleep(0.02)
 
         return bestResult
 

@@ -31,7 +31,6 @@ class QueuePriorities:
 class GenericQueue(object):
     def __init__(self):
 
-        self.queueItem = None
         self.currentItem = None
 
         self.queue = []
@@ -59,7 +58,7 @@ class GenericQueue(object):
     def run(self, force=False):
 
         # only start a new task if one isn't already going
-        if self.queueItem is None or not self.queueItem.isAlive():
+        if self.currentItem is None or not self.currentItem.isAlive():
 
             # if the thread is dead then the current item should be finished
             if self.currentItem:
@@ -85,19 +84,13 @@ class GenericQueue(object):
                         return y.priority - x.priority
 
                 self.queue.sort(cmp=sorter)
-
-                queueItem = self.queue.pop(0)
-
-                if queueItem.priority < self.min_priority:
+                if self.queue[0].priority < self.min_priority:
                     return
 
                 # launch the queue item in a thread
-                queueItem.name = self.queue_name + '-' + queueItem.name
-                queueItem.start()
-
-                self.currentItem = queueItem
-
-                queueItem.join()
+                self.currentItem = self.queue.pop(0)
+                self.currentItem.name = self.queue_name + '-' + self.currentItem.name
+                self.currentItem.start()
 
 class QueueItem(threading.Thread):
     def __init__(self, name, action_id=0):
@@ -107,8 +100,8 @@ class QueueItem(threading.Thread):
         self.inProgress = False
         self.priority = QueuePriorities.NORMAL
         self.action_id = action_id
-        self.added = None
         self.stop = threading.Event()
+        self.added = None
 
     def run(self):
         """Implementing classes should call this"""

@@ -427,14 +427,14 @@ def searchProviders(show, season, episodes, manualSearch=False):
             logger.log(u"" + str(show.name) + " is not an anime skiping ...")
             continue
 
-        foundResults.setdefault(provider.name, {})
+        foundResults[provider.name] = {}
         searchCount = 0
 
         search_mode = 'eponly'
         if seasonSearch and provider.search_mode == 'sponly':
             search_mode = provider.search_mode
 
-        while (True):
+        while(True):
             searchCount += 1
 
             if search_mode == 'sponly':
