@@ -1158,8 +1158,7 @@ def start():
             autoPostProcesserScheduler.start()
 
             # start the subtitles finder
-            if USE_SUBTITLES:
-                subtitlesFinderScheduler.start()
+            subtitlesFinderScheduler.start()
 
             # start the trakt checker
             traktCheckerScheduler.start()

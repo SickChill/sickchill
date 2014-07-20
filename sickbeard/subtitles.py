@@ -87,10 +87,9 @@ class SubtitlesFinder():
     and download subtitles. Only if the defined rule is true
     """
     def run(self, force=False):
-        # TODO: Put that in the __init__ before starting the thread?
         if not sickbeard.USE_SUBTITLES:
-            logger.log(u'Subtitles support disabled', logger.DEBUG)
             return
+
         if len(sickbeard.subtitles.getEnabledServiceList()) < 1:
             logger.log(u'Not enough services selected. At least 1 service is required to search subtitles in the background', logger.ERROR)
             return
