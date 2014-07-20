@@ -164,7 +164,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-            time.sleep(0.02)
+            #time.sleep(0.02)
 
             return sqlResult
 
@@ -201,7 +201,7 @@ class DBConnection(object):
                     logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
                     raise
 
-            time.sleep(0.02)
+            #time.sleep(0.02)
 
             return sqlResult
 
