@@ -86,7 +86,7 @@ class TVCache():
 
     def _clearCache(self):
         if self.shouldClearCache():
-            logger.log(u"Clearing " + self.provider.name + " cache")
+            logger.log(u"Clearing items older than 1 week from " + self.provider.name + " cache")
 
             curDate = datetime.date.today() - datetime.timedelta(weeks=1)
 
