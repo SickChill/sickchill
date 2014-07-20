@@ -14,7 +14,6 @@ class Events(threading.Thread):
         super(Events, self).__init__()
         self.queue = Queue()
         self.daemon = True
-        self.alive = True
         self.callback = callback
         self.name = "EVENT-QUEUE"
         self.stop = threading.Event()

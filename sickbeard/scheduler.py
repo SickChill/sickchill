@@ -39,7 +39,6 @@ class Scheduler(threading.Thread):
         self.silent = silent
         self.stop = threading.Event()
         self.force = False
-        self.alive = True
 
     def timeLeft(self):
         return self.cycleTime - (datetime.datetime.now() - self.lastRun)

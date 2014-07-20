@@ -2398,22 +2398,21 @@ class ConfigSubtitles(MainHandler):
         if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
             subtitles_finder_frequency = 1
 
-        if use_subtitles == "on":
-            if not sickbeard.subtitlesFinderScheduler.isAlive():
-                sickbeard.subtitlesFinderScheduler.silent = False
-                sickbeard.subtitlesFinderScheduler.start()
+        if use_subtitles == "on" and not sickbeard.subtitlesFinderScheduler.isAlive():
+            sickbeard.subtitlesFinderScheduler.silent = False
+            sickbeard.subtitlesFinderScheduler.start()
         else:
             sickbeard.subtitlesFinderScheduler.stop.set()
             sickbeard.subtitlesFinderScheduler.silent = True
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
-                sickbeard.subtitlesFinderScheduler.join()
+                sickbeard.subtitlesFinderScheduler.join(5)
             except:
                 pass
 
         sickbeard.USE_SUBTITLES = config.checkbox_to_value(use_subtitles)
         sickbeard.SUBTITLES_LANGUAGES = [lang.alpha2 for lang in subtitles.isValidLanguage(
-            subtitles_languages.replace(' ', '').split(','))] if subtitles_languages != ''  else ''
+            subtitles_languages.replace(' ', '').split(','))] if subtitles_languages != '' else ''
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.SUBTITLES_FINDER_FREQUENCY = config.to_int(subtitles_finder_frequency, default=1)
