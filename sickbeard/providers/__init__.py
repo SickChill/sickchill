@@ -35,7 +35,8 @@ __all__ = ['ezrss',
            'fanzub',
            'torrentbytes',
            'animezb',
-		   'freshontv'
+           'freshontv',
+           'bitsoup'
 ]
 
 import sickbeard
