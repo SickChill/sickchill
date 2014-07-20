@@ -2548,8 +2548,7 @@ class HomePostProcess(MainHandler):
 
         redirect("/home/")
 
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, failed="0", type="auto"):
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", *args, **kwargs):
 
         if failed == "0":
             failed = False
