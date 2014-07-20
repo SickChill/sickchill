@@ -73,16 +73,8 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def add_item(self, item):
 
-        if isinstance(item, DailySearchQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache(item.show)
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache(item.show)
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, ManualSearchQueueItem) and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache(item.show)
-            generic_queue.GenericQueue.add_item(self, item)
-        elif isinstance(item, FailedQueueItem) and not self.is_in_queue(item.show, item.segment):
+        if isinstance(item, (DailySearchQueueItem, BacklogQueueItem, ManualSearchQueueItem, FailedQueueItem)) \
+                and not self.is_in_queue(item.show, item.segment):
             sickbeard.name_cache.buildNameCache(item.show)
             generic_queue.GenericQueue.add_item(self, item)
         else:
@@ -236,10 +228,12 @@ class FailedQueueItem(generic_queue.QueueItem):
 
                             # give the CPU a break
                             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
-
                     else:
                         logger.log(u"No valid episode found to retry for [" + epObj.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+
+        if self.success is None:
+            self.success = False
 
         self.finish()
