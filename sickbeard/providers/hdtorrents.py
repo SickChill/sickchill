@@ -17,12 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import re
 import traceback
 import datetime
 import urlparse
-import gc
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
@@ -32,7 +30,6 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
@@ -204,9 +201,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     #Get first entry in table
                     entries = html.find_all('td', attrs={'align': 'center'})
 
-                    # cleanup memory
-                    html.decompose()
-                    gc.collect()
+                    html.clear(True)
 
                     if not entries:
                         logger.log(u"The Data returned from " + self.name + " do not contains any torrent",

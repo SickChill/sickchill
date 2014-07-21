@@ -16,22 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import re
 import traceback
 import datetime
 import urlparse
-import gc
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
@@ -183,9 +180,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                     torrent_table = html.find('table', attrs={'class': 'torrents'})
                     torrents = torrent_table.find_all('tr') if torrent_table else []
 
-                    # cleanup memory
-                    html.decompose()
-                    gc.collect()
+                    html.clear(True)
 
                     #Continue only if one Release is found                    
                     if len(torrents) < 2:

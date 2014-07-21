@@ -22,7 +22,6 @@ from __future__ import with_statement
 import unittest
 import sys, os.path
 import urlparse
-import gc
 
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
@@ -41,14 +40,13 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         if not html:
             return
 
-        html = BeautifulSoup(html, features=["html5lib", "permissive"])
+        soup = BeautifulSoup(html, features=["html5lib", "permissive"])
 
-        torrent_table = html.find('table', attrs={'class': 'data'})
+        torrent_table = soup.find('table', attrs={'class': 'data'})
         torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
         # cleanup memory
-        html.decompose()
-        gc.collect()
+        soup.clear(True)
 
         #Continue only if one Release is found
         if len(torrent_rows) < 2:

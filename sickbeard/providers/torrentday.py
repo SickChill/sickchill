@@ -15,28 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import json
 import re
-import traceback
 import datetime
 import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
-from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 
 

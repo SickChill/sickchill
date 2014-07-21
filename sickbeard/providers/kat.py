@@ -19,7 +19,6 @@
 
 from __future__ import with_statement
 
-import gc
 import sys
 import os
 import traceback
@@ -30,7 +29,7 @@ import urlparse
 
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import logger
 from sickbeard import tvcache
@@ -120,12 +119,11 @@ class KATProvider(generic.TorrentProvider):
             return None
 
         try:
-            html = BeautifulSoup(data, features=["html5lib", "permissive"])
-            file_table = html.find('table', attrs={'class': 'torrentFileList'})
+            soup = BeautifulSoup(data, features=["html5lib", "permissive"])
+            file_table = soup.find('table', attrs={'class': 'torrentFileList'})
 
             # cleanup memory
-            html.decompose()
-            gc.collect()
+            soup.clear(True)
 
             if not file_table:
                 return None
@@ -252,14 +250,12 @@ class KATProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    html = BeautifulSoup(html, features=["html5lib", "permissive"])
+                    soup = BeautifulSoup(html, features=["html5lib", "permissive"])
 
-                    torrent_table = html.find('table', attrs={'class': 'data'})
+                    torrent_table = soup.find('table', attrs={'class': 'data'})
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    # cleanup memory
-                    html.decompose()
-                    gc.collect()
+                    soup.clear(True)
 
                     #Continue only if one Release is found
                     if len(torrent_rows) < 2:

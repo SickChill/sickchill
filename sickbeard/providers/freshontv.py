@@ -20,8 +20,6 @@ import re
 import traceback
 import datetime
 import urlparse
-import time
-import gc
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
@@ -31,7 +29,6 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
@@ -201,9 +198,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
                     torrent_table = html.find('table', attrs={'class': 'frame'})
                     torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
 
-                    # cleanup memory
-                    html.decompose()
-                    gc.collect()
+                    html.clear(True)
 
                     #Continue only if one Release is found                    
                     if len(torrent_rows) < 2:
