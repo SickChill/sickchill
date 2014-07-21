@@ -21,6 +21,7 @@ import traceback
 import datetime
 import urlparse
 import time
+import gc
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
@@ -174,7 +175,11 @@ class BitSoupProvider(generic.TorrentProvider):
                     
                     torrent_table = html.find('table', attrs={'class': 'koptekst'})
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-                    
+
+                    # cleanup memory
+                    html.decompose()
+                    gc.collect()
+
                     #Continue only if one Release is found
                     if len(torrent_rows) < 2:
                          logger.log(u"The Data returned from " + self.name + " do not contains any torrent",

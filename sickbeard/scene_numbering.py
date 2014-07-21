@@ -441,7 +441,6 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
 
     xem_refresh(indexer_id, indexer)
 
-
     result = {}
     myDB = db.DBConnection()
     rows = myDB.select(

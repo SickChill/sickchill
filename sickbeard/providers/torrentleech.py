@@ -21,6 +21,7 @@ import traceback
 import datetime
 import urlparse
 import time
+import gc
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
@@ -177,6 +178,10 @@ class TorrentLeechProvider(generic.TorrentProvider):
 
                     torrent_table = html.find('table', attrs={'id': 'torrenttable'})
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+
+                    # cleanup memory
+                    html.decompose()
+                    gc.collect()
 
                     #Continue only if one Release is found                    
                     if len(torrent_rows) < 2:

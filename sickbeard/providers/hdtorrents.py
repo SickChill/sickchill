@@ -22,6 +22,7 @@ import re
 import traceback
 import datetime
 import urlparse
+import gc
 import sickbeard
 import generic
 from sickbeard.common import Quality, cpu_presets
@@ -202,6 +203,10 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
                     #Get first entry in table
                     entries = html.find_all('td', attrs={'align': 'center'})
+
+                    # cleanup memory
+                    html.decompose()
+                    gc.collect()
 
                     if not entries:
                         logger.log(u"The Data returned from " + self.name + " do not contains any torrent",

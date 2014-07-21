@@ -25,6 +25,7 @@ import traceback
 import urllib, urlparse
 import re
 import datetime
+import gc
 
 import sickbeard
 import generic
@@ -152,10 +153,14 @@ class PublicHDProvider(generic.TorrentProvider):
                 html = os.linesep.join([s for s in html.splitlines() if not optreg.search(s)])
 
                 try:
-                    soup = BeautifulSoup(html, features=["html5lib", "permissive"])
+                    html = BeautifulSoup(html, features=["html5lib", "permissive"])
 
-                    torrent_table = soup.find('table', attrs={'id': 'torrbg'})
+                    torrent_table = html.find('table', attrs={'id': 'torrbg'})
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+
+                    # cleanup memory
+                    html.decompose()
+                    gc.collect()
 
                     #Continue only if one Release is found
                     if len(torrent_rows) < 2:

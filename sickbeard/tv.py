@@ -227,11 +227,6 @@ class TVShow(object):
 
     def getEpisode(self, season=None, episode=None, file=None, noCreate=False, absolute_number=None, forceUpdate=False):
 
-        # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer, force=forceUpdate)
-
-        ep = None
-
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
             myDB = db.DBConnection()
@@ -269,21 +264,23 @@ class TVShow(object):
             else:
                 ep = TVEpisode(self, season, episode)
 
-            # get scene absolute numbering
-            ep.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
-                                                                                              self.indexer,
-                                                                                              ep.absolute_number)
-
-            # get scene season and episode numbering
-            ep.scene_season, ep.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
-                                                                                              self.indexer,
-                                                                                              season, episode)
-
             if ep != None:
+                # Load XEM data to DB for show
+                sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer, force=forceUpdate)
+
+                # get scene absolute numbering
+                ep.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
+                                                                                                  self.indexer,
+                                                                                                  ep.absolute_number)
+
+                # get scene season and episode numbering
+                ep.scene_season, ep.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
+                                                                                                  self.indexer,
+                                                                                                  season, episode)
+
                 self.episodes[season][episode] = ep
 
-        epObj = self.episodes[season][episode]
-        return epObj
+        return self.episodes[season][episode]
 
     def should_update(self, update_date=datetime.date.today()):
 

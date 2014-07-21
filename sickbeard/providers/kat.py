@@ -19,7 +19,7 @@
 
 from __future__ import with_statement
 
-import time
+import gc
 import sys
 import os
 import traceback
@@ -120,8 +120,12 @@ class KATProvider(generic.TorrentProvider):
             return None
 
         try:
-            soup = BeautifulSoup(data, features=["html5lib", "permissive"])
-            file_table = soup.find('table', attrs={'class': 'torrentFileList'})
+            html = BeautifulSoup(data, features=["html5lib", "permissive"])
+            file_table = html.find('table', attrs={'class': 'torrentFileList'})
+
+            # cleanup memory
+            html.decompose()
+            gc.collect()
 
             if not file_table:
                 return None
@@ -248,10 +252,14 @@ class KATProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    soup = BeautifulSoup(html, features=["html5lib", "permissive"])
+                    html = BeautifulSoup(html, features=["html5lib", "permissive"])
 
-                    torrent_table = soup.find('table', attrs={'class': 'data'})
+                    torrent_table = html.find('table', attrs={'class': 'data'})
                     torrent_rows = torrent_table.find_all('tr') if torrent_table else []
+
+                    # cleanup memory
+                    html.decompose()
+                    gc.collect()
 
                     #Continue only if one Release is found
                     if len(torrent_rows) < 2:
@@ -284,7 +292,7 @@ class KATProvider(generic.TorrentProvider):
                                 logger.DEBUG)
                             continue
 
-                        #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent 
+                        #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent
                         if mode == 'Season' and search_mode == 'sponly':
                             ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
                             title = self._find_season_quality(title, link, ep_number)
