@@ -502,12 +502,9 @@ class ParseResult(object):
             to_return += str(self.sports_event_id)
             to_return += str(self.sports_air_date)
         if self.ab_episode_numbers:
-            to_return += ' absolute_numbers: ' + str(self.ab_episode_numbers)
-
-        if self.extra_info:
-            to_return += ' - ' + self.extra_info
+            to_return += ' [Absolute Nums: ' + str(self.ab_episode_numbers) + ']'
         if self.release_group:
-            to_return += ' (' + self.release_group + ')'
+            to_return += ' [GROUP: ' + self.release_group + ']'
 
         to_return += ' [ABD: ' + str(self.is_air_by_date) + ']'
         to_return += ' [SPORTS: ' + str(self.is_sports) + ']'
