@@ -943,17 +943,16 @@ class PostProcessor(object):
 
                 sql_l.append(cur_ep.get_sql())
 
-                # Just want to keep this consistent for failed handling right now
-                releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
-                if releaseName is not None:
-                    failed_history.logSuccess(releaseName)
-                else:
-                    self._log(u"Couldn't find release in snatch history", logger.WARNING)
-
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
+        # Just want to keep this consistent for failed handling right now
+        releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
+        if releaseName is not None:
+            failed_history.logSuccess(releaseName)
+        else:
+            self._log(u"Couldn't find release in snatch history", logger.WARNING)
 
         # find the destination folder
         try:
