@@ -266,6 +266,14 @@ class GenericProvider:
         if len(results) == len(episodes):
             return results
 
+        # sort list by quality
+        if len(itemList):
+            items = {}
+            for item in itemList:
+                quality = self.getQuality(item, anime=show.is_anime)
+                items[quality] = item
+            itemList = [items.pop(k) for k in sorted(items, reverse=True)]
+
         # filter results
         for item in itemList:
             (title, url) = self._get_title_and_url(item)
