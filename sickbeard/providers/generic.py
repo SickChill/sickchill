@@ -275,8 +275,11 @@ class GenericProvider:
                 if quality == Quality.UNKNOWN:
                     itemsUnknown += item
                 else:
-                    items[quality] = item
-            itemList = [items.pop(k) for k in sorted(items, reverse=True)] + itemsUnknown
+                    if quality not in items:
+                        items[quality] = [item]
+                    else:
+                        items[quality].append(item)
+            itemList = [x[0] for x in [items.pop(k) for k in sorted(items, reverse=True)] + itemsUnknown]
 
         # filter results
         for item in itemList:
@@ -297,6 +300,9 @@ class GenericProvider:
             quality = parse_result.quality
             release_group = parse_result.release_group
 
+            actual_season = None
+            actual_episodes = None
+
             if not (showObj.air_by_date or showObj.sports):
                 if search_mode == 'sponly' and len(parse_result.episode_numbers):
                     logger.log(
@@ -305,13 +311,13 @@ class GenericProvider:
                     continue
 
                 if not len(parse_result.episode_numbers) and (
-                                parse_result.season_number and parse_result.season_number != season) or (
-                                not parse_result.season_number and season != 1):
+                            parse_result.season_number and parse_result.season_number != season) or (
+                            not parse_result.season_number and season != 1):
                     logger.log(u"The result " + title + " doesn't seem to be a valid season that we want, ignoring",
                                logger.DEBUG)
                     continue
                 elif len(parse_result.episode_numbers) and (
-                                parse_result.season_number != season or not [item for ep in episodes if
+                                parse_result.season_number != season or not [ep for ep in episodes if
                                                                              ep.scene_episode in parse_result.episode_numbers]):
                     logger.log(u"The result " + title + " doesn't seem to be a valid episode that we want, ignoring",
                                logger.DEBUG)
