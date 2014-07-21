@@ -131,7 +131,7 @@ class ProperFinder():
             # populate our Proper instance
             if parse_result.is_air_by_date or parse_result.is_sports:
                 curProper.season = -1
-                curProper.episode = parse_result.air_date or parse_result.is_sports_air_date
+                curProper.episode = parse_result.air_date or parse_result.sports_air_date
             else:
                 if parse_result.is_anime:
                     logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
