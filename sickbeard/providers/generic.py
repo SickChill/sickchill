@@ -305,13 +305,16 @@ class GenericProvider:
                     continue
 
                 if not len(parse_result.episode_numbers) and (
-                                parse_result.season_number != None and parse_result.season_number != season) or (
-                                parse_result.season_number == None and season != 1):
-                    logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(season) + ", ignoring", logger.DEBUG)
+                                parse_result.season_number and parse_result.season_number != season) or (
+                                not parse_result.season_number and season != 1):
+                    logger.log(u"The result " + title + " doesn't seem to be a valid season that we want, ignoring",
+                               logger.DEBUG)
                     continue
                 elif len(parse_result.episode_numbers) and (
-                                parse_result.season_number != season or parse_result.episode_numbers[0] not in episodes):
-                    logger.log(u"Episode " + title + " isn't " + str(season) + "x" + str(parse_result.episode_numbers[0]) + ", skipping it", logger.DEBUG)
+                                parse_result.season_number != season or not [item for ep in episodes if
+                                                                             ep.scene_episode in parse_result.episode_numbers]):
+                    logger.log(u"The result " + title + " doesn't seem to be a valid episode that we want, ignoring",
+                               logger.DEBUG)
                     continue
 
                 # we just use the existing info for normal searches
