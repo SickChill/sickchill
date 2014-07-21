@@ -333,7 +333,7 @@ class GenericProvider:
                         logger.DEBUG)
                     continue
 
-                airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
+                airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
                 myDB = db.DBConnection()
                 sql_results = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",

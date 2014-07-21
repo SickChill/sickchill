@@ -158,7 +158,7 @@ class ProperFinder():
                 continue
 
             # if we have an air-by-date show then get the real season/episode numbers
-            if (parse_result.is_air_by_date or parse_result.is_sports_air_date) and curProper.indexerid:
+            if (parse_result.is_air_by_date or parse_result.is_sports) and curProper.indexerid:
                 logger.log(
                     u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                     logger.DEBUG)

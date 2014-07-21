@@ -639,7 +639,7 @@ class TVShow(object):
             logger.log(
                 u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
                 logger.DEBUG)
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
+            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
             myDB = db.DBConnection()
             sql_result = myDB.select(
                 "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",

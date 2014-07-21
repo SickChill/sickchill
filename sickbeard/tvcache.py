@@ -253,7 +253,7 @@ class TVCache():
 
         season = episodes = None
         if parse_result.is_air_by_date or parse_result.is_sports:
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
+            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
 
             myDB = db.DBConnection()
             sql_results = myDB.select(

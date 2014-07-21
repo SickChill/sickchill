@@ -483,7 +483,7 @@ class PostProcessor(object):
             episodes = [parse_result.air_date]
         elif parse_result.is_sports:
             season = -1
-            episodes = [parse_result.is_sports_air_date]
+            episodes = [parse_result.sports_air_date]
         else:
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
