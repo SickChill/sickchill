@@ -1076,51 +1076,11 @@ class TVShow(object):
             else:
                 # the file exists, set its modify file stamp
                 if sickbeard.AIRDATE_EPISODES:
-                    self.airdateModifyStamp(curEp)
+                    curEp.airdateModifyStamp()
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
-
-
-    def airdateModifyStamp(self, ep_obj):
-        """
-        Make the modify date and time of a file reflect the show air date and time.
-        Note: Also called from postProcessor
-
-        """
-        hr = min = 0
-        airs = re.search('.*?(\d{1,2})(?::\s*?(\d{2}))?\s*(pm)?', ep_obj.show.airs, re.I)
-        if airs:
-            hr = int(airs.group(1))
-            hr = (12 + hr, hr)[None is airs.group(3)]
-            min = int((airs.group(2), min)[None is airs.group(2)])
-        airtime = datetime.time(hr, min)
-
-        airdatetime = datetime.datetime.combine(ep_obj.airdate, airtime)
-
-        filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(ep_obj.location))
-
-        if filemtime != airdatetime:
-            import time
-
-            airdatetime = airdatetime.timetuple()
-            if self.touch(ep_obj.location, time.mktime(airdatetime)):
-                logger.log(str(self.indexerid) + u": Changed modify date of " + os.path.basename(ep_obj.location)
-                           + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
-
-    def touch(self, fname, atime=None):
-
-        if None != atime:
-            try:
-                with file(fname, 'a'):
-                    os.utime(fname, (atime, atime))
-                    return True
-            except:
-                logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
-                pass
-
-        return False
 
     def downloadSubtitles(self, force=False):
         # TODO: Add support for force option
@@ -2440,6 +2400,32 @@ class TVEpisode(object):
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+
+    def airdateModifyStamp(self):
+        """
+        Make the modify date and time of a file reflect the show air date and time.
+        Note: Also called from postProcessor
+
+        """
+        hr = min = 0
+        airs = re.search('.*?(\d{1,2})(?::\s*?(\d{2}))?\s*(pm)?', self.show.airs, re.I)
+        if airs:
+            hr = int(airs.group(1))
+            hr = (12 + hr, hr)[None is airs.group(3)]
+            min = int((airs.group(2), min)[None is airs.group(2)])
+        airtime = datetime.time(hr, min)
+
+        airdatetime = datetime.datetime.combine(self.airdate, airtime)
+
+        filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location))
+
+        if filemtime != airdatetime:
+            import time
+
+            airdatetime = airdatetime.timetuple()
+            if helpers.touchFile(self.location, time.mktime(airdatetime)):
+                logger.log(str(self.show.indexerid) + u": Changed modify date of " + os.path.basename(self.location)
+                           + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
 
     def __getstate__(self):
         d = dict(self.__dict__)

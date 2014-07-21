@@ -20,7 +20,7 @@ import sickbeard
 from sickbeard import db
 from sickbeard import logger
 
-nameCache = None
+nameCache = {}
 nameCacheLock = threading.Lock()
 
 def addNameToCache(name, indexer_id=0):
@@ -93,10 +93,6 @@ def saveNameCacheToDb():
 
 def buildNameCache(show=None):
     global nameCache
-
-    # init name cache
-    if not nameCache:
-        nameCache = {}
 
     with nameCacheLock:
         # clear internal name cache

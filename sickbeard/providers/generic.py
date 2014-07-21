@@ -383,10 +383,10 @@ class GenericProvider:
             if not result:
                 continue
 
-            if epNum in results:
-                results[epNum].append(result)
-            else:
+            if epNum not in results:
                 results[epNum] = [result]
+            else:
+                results[epNum].append(result)
 
         return results
 

@@ -162,11 +162,10 @@ class BacklogSearcher:
                               common.SNATCHED_BEST) and curQuality < highestBestQuality) or curStatus == common.WANTED:
 
                 epObj = show.getEpisode(int(result["season"]), int(result["episode"]))
-
-                if epObj.season in wanted:
-                    wanted[epObj.season].append(epObj)
-                else:
+                if epObj.season not in wanted:
                     wanted[epObj.season] = [epObj]
+                else:
+                    wanted[epObj.season].append(epObj)
 
         return wanted
 
