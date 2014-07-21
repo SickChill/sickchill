@@ -147,7 +147,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -281,7 +281,7 @@ class BitSoupProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today()))
+                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
@@ -322,7 +322,7 @@ class BitSoupCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-        if cl:
+        if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
 

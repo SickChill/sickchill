@@ -162,7 +162,7 @@ class SCCProvider(generic.TorrentProvider):
         else:
             return False
 
-    def _doSearch(self, search_params, epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

@@ -98,7 +98,7 @@ class HDBitsProvider(generic.TorrentProvider):
 
         return (title, url)
 
-    def _doSearch(self, search_params, epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
         results = []
 
         self._checkAuth()

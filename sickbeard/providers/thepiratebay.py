@@ -217,7 +217,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -260,7 +260,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                         continue
 
                     #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent 
-                    if mode == 'Season':
+                    if mode == 'Season' and search_mode == 'sponly':
                         ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
                         title = self._find_season_quality(title, id, ep_number)
 
