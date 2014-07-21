@@ -236,160 +236,160 @@ class GenericProvider:
         self.show = show
 
         results = {}
-        searchItems = {}
+        itemList = []
 
         searched_scene_season = None
         for epObj in episodes:
-            itemList = []
+            items = []
 
-            if search_mode == 'sponly' and searched_scene_season:
-                if searched_scene_season == epObj.scene_season:
-                    continue
+            # check cache for results
+            cacheResult = self.cache.searchCache([epObj], manualSearch)
+            if len(cacheResult):
+                results.update({epObj.episode: cacheResult[epObj]})
+                continue
+
+            # skip if season already searched
+            if len(episodes) > 1 and searched_scene_season == epObj.scene_season:
+                continue
 
             # mark season searched for season pack searches so we can skip later on
             searched_scene_season = epObj.scene_season
 
-            if search_mode == 'sponly':
+            if len(episodes) > 1:
+                # get season search results
                 for curString in self._get_season_search_strings(epObj):
-                    itemList += self._doSearch(curString, len(episodes))
+                    items += self._doSearch(curString, len(episodes))
             else:
-                cacheResult = self.cache.searchCache([epObj], manualSearch)
-                if len(cacheResult):
-                    results.update({epObj.episode: cacheResult[epObj]})
-                    continue
-
+                # get single episode search results
                 for curString in self._get_episode_search_strings(epObj):
-                    itemList += self._doSearch(curString, len(episodes))
+                    items += self._doSearch(curString, len(episodes))
 
-            # next episode if no search results
-            if not len(itemList):
-                continue
+            # add items to list
+            if len(items):
+                itemList += items
 
-            # remove duplicate items
-            searchItems[epObj] = itemList
-
-        # if we have cached results return them.
-        if len(results):
+        # if we found what we needed already from cache then return results and exit
+        if len(results) == len(episodes):
             return results
 
-        for ep_obj in searchItems:
-            for item in searchItems[ep_obj]:
+        # filter results
+        for item in itemList:
+            (title, url) = self._get_title_and_url(item)
 
-                (title, url) = self._get_title_and_url(item)
+            # parse the file name
+            try:
+                myParser = NameParser(False, showObj=self.show, convert=True)
+                parse_result = myParser.parse(title)
+            except InvalidNameException:
+                logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
+                continue
+            except InvalidShowException:
+                logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.DEBUG)
+                continue
 
-                # parse the file name
-                try:
-                    myParser = NameParser(False, showObj=self.show, convert=True)
-                    parse_result = myParser.parse(title)
-                except InvalidNameException:
-                    logger.log(u"Unable to parse the filename " + title + " into a valid episode", logger.DEBUG)
-                    continue
-                except InvalidShowException:
-                    logger.log(u"Unable to parse the filename " + title + " into a valid show", logger.DEBUG)
-                    continue
+            showObj = parse_result.show
+            quality = parse_result.quality
+            release_group = parse_result.release_group
+            ep_obj = showObj.getEpisode(season, parse_result.episode_numbers[0])
 
-                showObj = parse_result.show
-                quality = parse_result.quality
-                release_group = parse_result.release_group
-
-                if not (self.show.air_by_date or self.show.sports):
-                    if search_mode == 'sponly' and len(parse_result.episode_numbers):
-                        logger.log(
-                            u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
-                            logger.DEBUG)
-                        continue
-
-                    if not len(parse_result.episode_numbers) and (
-                                    parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
-                                    parse_result.season_number == None and ep_obj.season != 1):
-                        logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(
-                            ep_obj.season) + ", ignoring", logger.DEBUG)
-                        continue
-                    elif len(parse_result.episode_numbers) and (
-                                    parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
-                        logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
-                            ep_obj.episode) + ", skipping it", logger.DEBUG)
-                        continue
-
-                    # we just use the existing info for normal searches
-                    actual_season = ep_obj.season
-                    actual_episodes = parse_result.episode_numbers
-                else:
-                    if not (parse_result.is_air_by_date or parse_result.is_sports):
-                        logger.log(
-                            u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
-                            logger.DEBUG)
-                        continue
-
-                    if (parse_result.is_air_by_date and parse_result.air_date != ep_obj.airdate) or (
-                                parse_result.is_sports and parse_result.is_sports_air_date != ep_obj.airdate):
-                        logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
-                                   logger.DEBUG)
-                        continue
-
-                    airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
-                    myDB = db.DBConnection()
-                    sql_results = myDB.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
-                        [show.indexerid, airdate])
-
-                    if len(sql_results) != 1:
-                        logger.log(
-                            u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
-                            logger.WARNING)
-                        continue
-
-                    actual_season = int(sql_results[0]["season"])
-                    actual_episodes = [int(sql_results[0]["episode"])]
-
-                # make sure we want the episode
-                wantEp = True
-                for epNo in actual_episodes:
-                    if not show.wantEpisode(actual_season, epNo, quality, manualSearch):
-                        wantEp = False
-                        break
-
-                if not wantEp:
+            if not (showObj.air_by_date or showObj.sports):
+                if search_mode == 'sponly' and len(parse_result.episode_numbers):
                     logger.log(
-                        u"Ignoring result " + title + " because we don't want an episode that is " +
-                        Quality.qualityStrings[
-                            quality], logger.DEBUG)
-
+                        u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
+                        logger.DEBUG)
                     continue
 
-                logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
-
-                # make a result object
-                epObj = []
-                for curEp in actual_episodes:
-                    epObj.append(show.getEpisode(actual_season, curEp))
-
-                result = self.getResult(epObj)
-                result.show = showObj
-                result.url = url
-                result.name = title
-                result.quality = quality
-                result.release_group = release_group
-                result.content = None
-
-                if len(epObj) == 1:
-                    epNum = epObj[0].episode
-                    logger.log(u"Single episode result.", logger.DEBUG)
-                elif len(epObj) > 1:
-                    epNum = MULTI_EP_RESULT
-                    logger.log(u"Separating multi-episode result to check for later - result contains episodes: " + str(
-                        parse_result.episode_numbers), logger.DEBUG)
-                elif len(epObj) == 0:
-                    epNum = SEASON_RESULT
-                    logger.log(u"Separating full season result to check for later", logger.DEBUG)
-
-                if not result:
+                if not len(parse_result.episode_numbers) and (
+                                parse_result.season_number != None and parse_result.season_number != ep_obj.season) or (
+                                parse_result.season_number == None and ep_obj.season != 1):
+                    logger.log(u"The result " + title + " doesn't seem to be a valid season for season " + str(
+                        ep_obj.season) + ", ignoring", logger.DEBUG)
+                    continue
+                elif len(parse_result.episode_numbers) and (
+                                parse_result.season_number != ep_obj.season or ep_obj.episode not in parse_result.episode_numbers):
+                    logger.log(u"Episode " + title + " isn't " + str(ep_obj.season) + "x" + str(
+                        ep_obj.episode) + ", skipping it", logger.DEBUG)
                     continue
 
-                if epNum in results:
-                    results[epNum].append(result)
-                else:
-                    results[epNum] = [result]
+                # we just use the existing info for normal searches
+                actual_season = ep_obj.season
+                actual_episodes = parse_result.episode_numbers
+            else:
+                if not (parse_result.is_air_by_date or parse_result.is_sports):
+                    logger.log(
+                        u"This is supposed to be a date search but the result " + title + " didn't parse as one, skipping it",
+                        logger.DEBUG)
+                    continue
+
+                if (parse_result.is_air_by_date and parse_result.air_date != ep_obj.airdate) or (
+                            parse_result.is_sports and parse_result.is_sports_air_date != ep_obj.airdate):
+                    logger.log("Episode " + title + " didn't air on " + str(ep_obj.airdate) + ", skipping it",
+                               logger.DEBUG)
+                    continue
+
+                airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.is_sports_air_date.toordinal()
+                myDB = db.DBConnection()
+                sql_results = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?",
+                    [showObj.indexerid, airdate])
+
+                if len(sql_results) != 1:
+                    logger.log(
+                        u"Tried to look up the date for the episode " + title + " but the database didn't give proper results, skipping it",
+                        logger.WARNING)
+                    continue
+
+                actual_season = int(sql_results[0]["season"])
+                actual_episodes = [int(sql_results[0]["episode"])]
+
+            # make sure we want the episode
+            wantEp = True
+            for epNo in actual_episodes:
+                if not showObj.wantEpisode(actual_season, epNo, quality, manualSearch):
+                    wantEp = False
+                    break
+
+            if not wantEp:
+                logger.log(
+                    u"Ignoring result " + title + " because we don't want an episode that is " +
+                    Quality.qualityStrings[
+                        quality], logger.DEBUG)
+
+                continue
+
+            logger.log(u"Found result " + title + " at " + url, logger.DEBUG)
+
+            # make a result object
+            epObj = []
+            for curEp in actual_episodes:
+                epObj.append(showObj.getEpisode(actual_season, curEp))
+
+            result = self.getResult(epObj)
+            result.show = showObj
+            result.url = url
+            result.name = title
+            result.quality = quality
+            result.release_group = release_group
+            result.content = None
+
+            if len(epObj) == 1:
+                epNum = epObj[0].episode
+                logger.log(u"Single episode result.", logger.DEBUG)
+            elif len(epObj) > 1:
+                epNum = MULTI_EP_RESULT
+                logger.log(u"Separating multi-episode result to check for later - result contains episodes: " + str(
+                    parse_result.episode_numbers), logger.DEBUG)
+            elif len(epObj) == 0:
+                epNum = SEASON_RESULT
+                logger.log(u"Separating full season result to check for later", logger.DEBUG)
+
+            if not result:
+                continue
+
+            if epNum in results:
+                results[epNum].append(result)
+            else:
+                results[epNum] = [result]
 
         return results
 
