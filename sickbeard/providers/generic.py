@@ -269,10 +269,14 @@ class GenericProvider:
         # sort list by quality
         if len(itemList):
             items = {}
+            itemsUnknown = []
             for item in itemList:
                 quality = self.getQuality(item, anime=show.is_anime)
-                items[quality] = item
-            itemList = [items.pop(k) for k in sorted(items, reverse=True)]
+                if quality == Quality.UNKNOWN:
+                    itemsUnknown += item
+                else:
+                    items[quality] = item
+            itemList = [items.pop(k) for k in sorted(items, reverse=True)] + itemsUnknown
 
         # filter results
         for item in itemList:
