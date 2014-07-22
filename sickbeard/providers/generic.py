@@ -22,10 +22,7 @@ from __future__ import with_statement
 import datetime
 import os
 import re
-import urllib
-import urlparse
-import time
-
+import itertools
 import sickbeard
 
 from lib import requests
@@ -279,7 +276,9 @@ class GenericProvider:
                         items[quality] = [item]
                     else:
                         items[quality].append(item)
-            itemList = [x[0] for x in [items.pop(k) for k in sorted(items, reverse=True)] + itemsUnknown]
+
+            itemList = list(itertools.chain(*[v for (k, v) in sorted(items.items(), reverse=True)]))
+            itemList += itemsUnknown if itemsUnknown else []
 
         # filter results
         for item in itemList:

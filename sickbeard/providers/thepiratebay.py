@@ -283,8 +283,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         title, url, id, seeders, leechers = item
 
         if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
+            title = u'' + title.replace(' ', '.')
 
         if url:
             url = url.replace('&amp;', '&')
