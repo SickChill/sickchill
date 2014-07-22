@@ -22,7 +22,6 @@ import sys
 import time
 import urllib, urlparse
 
-from xml.dom.minidom import parseString
 from datetime import datetime, timedelta
 
 import sickbeard
@@ -352,13 +351,9 @@ class NewzbinCache(tvcache.TVCache):
                 logger.ERROR)
             return
 
-        quality = self.provider.getQuality(item)
-
-        logger.log("Found quality " + str(quality), logger.DEBUG)
-
         logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
 
-        self._addCacheEntry(title, url, quality=quality)
+        self._addCacheEntry(title, url)
 
 
 provider = NewzbinProvider()

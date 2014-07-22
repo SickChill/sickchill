@@ -140,10 +140,8 @@ class TVCache():
     def _translateTitle(self, title):
         return u'' + title.replace(' ', '.')
 
-
     def _translateLinkURL(self, url):
         return url.replace('&amp;', '&')
-
 
     def _parseItem(self, item):
         title = item.title
@@ -231,26 +229,30 @@ class TVCache():
 
         return True
 
-    def _addCacheEntry(self, name, url, indexer_id=0, quality=None):
+    def _addCacheEntry(self, name, url, parse_result=None, indexer_id=0):
 
-        # create showObj from indexer_id if available
-        showObj=None
-        if indexer_id:
-            showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
+        # check if we passed in a parsed result or should we try and create one
+        if not parse_result:
 
-        try:
-            myParser = NameParser(showObj=showObj, convert=True)
-            parse_result = myParser.parse(name)
-        except InvalidNameException:
-            logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
-            return None
-        except InvalidShowException:
-            logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
-            return None
+            # create showObj from indexer_id if available
+            showObj=None
+            if indexer_id:
+                showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
-        if not parse_result or not parse_result.series_name:
-            return None
+            try:
+                myParser = NameParser(showObj=showObj, convert=True)
+                parse_result = myParser.parse(name)
+            except InvalidNameException:
+                logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
+                return None
+            except InvalidShowException:
+                logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
+                return None
 
+            if not parse_result or not parse_result.series_name:
+                return None
+
+        # if we made it this far then lets add the parsed result to cache for usager later on
         season = episodes = None
         if parse_result.is_air_by_date or parse_result.is_sports:
             airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
@@ -263,7 +265,7 @@ class TVCache():
                 season = int(sql_results[0]["season"])
                 episodes = [int(sql_results[0]["episode"])]
         else:
-            season = parse_result.season_number if parse_result.season_number != None else 1
+            season = parse_result.season_number if parse_result.season_number else 1
             episodes = parse_result.episode_numbers
 
         if season and episodes:
@@ -274,8 +276,7 @@ class TVCache():
             curTimestamp = int(time.mktime(datetime.datetime.today().timetuple()))
 
             # get quality of release
-            if quality is None:
-                quality = Quality.sceneQuality(name, parse_result.is_anime)
+            quality = parse_result.quality
 
             if not isinstance(name, unicode):
                 name = unicode(name, 'utf-8', 'replace')
