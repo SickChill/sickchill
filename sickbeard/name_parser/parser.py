@@ -201,6 +201,16 @@ class NameParser(object):
                 result.release_group = match.group('release_group')
                 result.score += 1
 
+            if 'version' in named_groups:
+                # assigns version to anime file if detected using anime regex. Non-anime regex receives -1
+                version = match.group('version')
+                if version:
+                    result.version = version
+                else:
+                    result.version = 1
+            else:
+                result.version = -1
+
 
             matches.append(result)
 
@@ -438,6 +448,7 @@ class NameParser(object):
         final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
         final_result.extra_info = self._combine_results(dir_name_result, file_name_result, 'extra_info')
         final_result.release_group = self._combine_results(dir_name_result, file_name_result, 'release_group')
+        final_result.version = self._combine_results(dir_name_result, file_name_result, 'version')
 
         final_result.which_regex = []
         if final_result == file_name_result:
@@ -483,7 +494,8 @@ class ParseResult(object):
                  ab_episode_numbers=None,
                  show=None,
                  score=None,
-                 quality=None
+                 quality=None,
+                 version=None
     ):
 
         self.original_name = original_name
@@ -518,6 +530,8 @@ class ParseResult(object):
         self.show = show
         self.score = score
 
+        self.version = version
+
     def __eq__(self, other):
         if not other:
             return False
@@ -548,6 +562,8 @@ class ParseResult(object):
             return False
         if self.quality != other.quality:
             return False
+        if self.version != other.version:
+            return False
 
         return True
 
@@ -569,7 +585,10 @@ class ParseResult(object):
             to_return += str(self.sports_event_id)
             to_return += str(self.sports_air_date)
         if self.ab_episode_numbers:
-            to_return += ' [Absolute Nums: ' + str(self.ab_episode_numbers) + ']'
+            to_return += ' [ABS: ' + str(self.ab_episode_numbers) + ']'
+        if self.version:
+            to_return += ' [ANIME VER: ' + str(self.version) + ']'
+
         if self.release_group:
             to_return += ' [GROUP: ' + self.release_group + ']'
 

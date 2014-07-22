@@ -25,7 +25,7 @@ from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
 dateFormat = "%Y%m%d%H%M%S"
 
 
-def _logHistoryItem(action, showid, season, episode, quality, resource, provider):
+def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):
     logDate = datetime.datetime.today().strftime(dateFormat)
 
     if not isinstance(resource, unicode):
@@ -33,8 +33,8 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
 
     myDB = db.DBConnection()
     myDB.action(
-        "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider) VALUES (?,?,?,?,?,?,?,?)",
-        [action, logDate, showid, season, episode, quality, resource, provider])
+        "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?,?,?,?,?,?,?,?,?)",
+        [action, logDate, showid, season, episode, quality, resource, provider, version])
 
 
 def logSnatch(searchResult):
@@ -44,6 +44,7 @@ def logSnatch(searchResult):
         season = int(curEpObj.season)
         episode = int(curEpObj.episode)
         quality = searchResult.quality
+        version = searchResult.version
 
         providerClass = searchResult.provider
         if providerClass != None:
@@ -55,10 +56,10 @@ def logSnatch(searchResult):
 
         resource = searchResult.name
 
-        _logHistoryItem(action, showid, season, episode, quality, resource, provider)
+        _logHistoryItem(action, showid, season, episode, quality, resource, provider, version)
 
 
-def logDownload(episode, filename, new_ep_quality, release_group=None):
+def logDownload(episode, filename, new_ep_quality, release_group=None, version=-1):
     showid = int(episode.show.indexerid)
     season = int(episode.season)
     epNum = int(episode.episode)
@@ -73,7 +74,7 @@ def logDownload(episode, filename, new_ep_quality, release_group=None):
 
     action = episode.status
 
-    _logHistoryItem(action, showid, season, epNum, quality, filename, provider)
+    _logHistoryItem(action, showid, season, epNum, quality, filename, provider, version)
 
 
 def logSubtitle(showid, season, episode, status, subtitleResult):

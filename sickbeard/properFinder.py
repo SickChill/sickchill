@@ -141,6 +141,12 @@ class ProperFinder():
             else:
                 curProper.season = parse_result.season_number if parse_result.season_number != None else 1
                 curProper.episode = parse_result.episode_numbers[0]
+            if parse_result.is_anime:
+                if parse_result.release_group and parse_result.version:
+                    curProper.release_group = parse_result.release_group
+                    curProper.version = parse_result.version
+                else:
+                    continue
 
             curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
@@ -164,6 +170,25 @@ class ProperFinder():
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
             if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != curProper.quality:
                 continue
+
+            # check if we actually want this proper (if it's the right release group and a higher version)
+            if parse_result.is_anime:
+                myDB = db.DBConnection()
+                sqlResults = myDB.select(
+                    "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                    [curProper.indexerid, curProper.season, curProper.episode])
+
+                oldVersion = int(sqlResults[0]["version"])
+                oldRelease_group = (sqlResults[0]["release_group"])
+
+                if oldVersion > -1 and oldVersion < curProper.version:
+                    logger.log("Found new anime v" + str(curProper.version) + " to replace existing v" + str(oldVersion))
+                else:
+                    continue
+
+                if oldRelease_group != curProper.release_group:
+                    logger.log("Skipping proper from release group: " + curProper.release_group + ", does not match existing release group: " + oldRelease_group)
+                    continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
             if curProper.indexerid != -1 and (curProper.indexerid, curProper.season, curProper.episode) not in map(
@@ -221,6 +246,7 @@ class ProperFinder():
                 result.url = curProper.url
                 result.name = curProper.name
                 result.quality = curProper.quality
+                result.version = curProper.version
 
                 # snatch it
                 search.snatchEpisode(result, SNATCHED_PROPER)
