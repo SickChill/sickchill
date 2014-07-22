@@ -1252,7 +1252,7 @@ def halt():
             subtitlesFinderScheduler.stop.set()
             logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
-                subtitlesFinderScheduler.join()
+                subtitlesFinderScheduler.join(10)
             except:
                 pass
 
