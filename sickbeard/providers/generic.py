@@ -270,7 +270,7 @@ class GenericProvider:
             for item in itemList:
                 quality = self.getQuality(item, anime=show.is_anime)
                 if quality == Quality.UNKNOWN:
-                    itemsUnknown += item
+                    itemsUnknown += [item]
                 else:
                     if quality not in items:
                         items[quality] = [item]
