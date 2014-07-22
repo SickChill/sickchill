@@ -37,7 +37,7 @@ from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
+from sickbeard.bs4_parser import BS4Parser
 from sickbeard.helpers import sanitizeSceneName
 
 
@@ -118,16 +118,16 @@ class NextGenProvider(generic.TorrentProvider):
             self.session.headers.update(
                 {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'})
             data = self.session.get(self.urls['login_page'], verify=False)
-            bs = BeautifulSoup(data.content.decode('iso-8859-1'))
-            csrfraw = bs.find('form', attrs={'id': 'login'})['action']
-            output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
+            with BS4Parser(data.content.decode('iso-8859-1')) as bs:
+                csrfraw = bs.find('form', attrs={'id': 'login'})['action']
+                output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)
 
-            if self.loginSuccess(output):
-                self.last_login_check = now
-                self.login_opener = self.session
-                return True
+                if self.loginSuccess(output):
+                    self.last_login_check = now
+                    self.login_opener = self.session
+                    return True
 
-            error = 'unknown'
+                error = 'unknown'
         except:
             error = traceback.format_exc()
             self.login_opener = None
@@ -204,59 +204,58 @@ class NextGenProvider(generic.TorrentProvider):
                 if data:
 
                     try:
-                        html = BeautifulSoup(data.decode('iso-8859-1'), features=["html5lib", "permissive"])
-                        resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
+                        with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
+                            resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
 
-                        if not resultsTable:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
-                            continue
-
-                        # Collecting entries
-                        entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
-                        entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
-
-                        entries = entries_std + entries_sticky
-
-                        #Xirg STANDARD TORRENTS
-                        #Continue only if one Release is found
-                        if len(entries) > 0:
-
-                            for result in entries:
-
-                                try:
-                                    torrentName = \
-                                    ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
-                                    torrentId = (
-                                    ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
-                                        'download.php?id=', '')
-                                    torrent_name = str(torrentName)
-                                    torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                    torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                    #torrent_seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
-                                    ## Not used, perhaps in the future ##
-                                    #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                    #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
-                                except (AttributeError, TypeError):
-                                    continue
-
-                                # Filter unseeded torrent and torrents with no name/url
-                                #if mode != 'RSS' and torrent_seeders == 0:
-                                #    continue
-
-                                if not torrent_name or not torrent_download_url:
-                                    continue
-
-                                item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
+                            if not resultsTable:
+                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
                                            logger.DEBUG)
-                                items[mode].append(item)
+                                continue
 
-                        else:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.WARNING)
-                            continue
+                            # Collecting entries
+                            entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
+                            entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
 
+                            entries = entries_std + entries_sticky
+
+                            #Xirg STANDARD TORRENTS
+                            #Continue only if one Release is found
+                            if len(entries) > 0:
+
+                                for result in entries:
+
+                                    try:
+                                        torrentName = \
+                                        ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
+                                        torrentId = (
+                                        ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
+                                            'download.php?id=', '')
+                                        torrent_name = str(torrentName)
+                                        torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
+                                        torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
+                                        #torrent_seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
+                                        ## Not used, perhaps in the future ##
+                                        #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
+                                        #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                    except (AttributeError, TypeError):
+                                        continue
+
+                                    # Filter unseeded torrent and torrents with no name/url
+                                    #if mode != 'RSS' and torrent_seeders == 0:
+                                    #    continue
+
+                                    if not torrent_name or not torrent_download_url:
+                                        continue
+
+                                    item = torrent_name, torrent_download_url
+                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
+                                               logger.DEBUG)
+                                    items[mode].append(item)
+
+                            else:
+                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                           logger.WARNING)
+                                continue
 
                     except Exception, e:
                         logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),

@@ -33,7 +33,7 @@ from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
+from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 
@@ -175,7 +175,6 @@ class FreshOnTVProvider(generic.TorrentProvider):
         if not self._doLogin():
             return []
 
-
         for mode in search_params.keys():
             for search_string in search_params[mode]:
 
@@ -193,55 +192,52 @@ class FreshOnTVProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    html = BeautifulSoup(data, features=["html5lib", "permissive"])
+                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                        torrent_table = html.find('table', attrs={'class': 'frame'})
+                        torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
 
-                    torrent_table = html.find('table', attrs={'class': 'frame'})
-                    torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
-
-                    html.clear(True)
-
-                    #Continue only if one Release is found                    
-                    if len(torrent_rows) < 2:
-                        logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                   logger.DEBUG)
-                        continue
-
-                    # skip colheader
-                    for result in torrent_rows[1:]:
-                        cells = result.findChildren('td')
-
-                        link = cells[1].find('a', attrs = {'class': 'torrent_name_link'})
-                        #skip if torrent has been nuked due to poor quality
-                        if cells[1].find('img', alt='Nuked') != None:
+                        #Continue only if one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.DEBUG)
                             continue
 
-                        torrent_id = link['href'].replace('/details.php?id=', '')
-                       
-                        
-                        try:
-                            if link.has_key('title'):
-                                title = cells[1].find('a', {'class': 'torrent_name_link'})['title']
-                            else:
-                                title = link.contents[0]
-                            download_url = self.urls['download'] % (torrent_id)
-                            id = int(torrent_id)
+                        # skip colheader
+                        for result in torrent_rows[1:]:
+                            cells = result.findChildren('td')
 
-                            seeders = int(cells[8].find('a', {'class': 'link'}).span.contents[0].strip())
-                            leechers = int(cells[9].find('a', {'class': 'link'}).contents[0].strip())
-                        except (AttributeError, TypeError):
-                            continue
+                            link = cells[1].find('a', attrs = {'class': 'torrent_name_link'})
+                            #skip if torrent has been nuked due to poor quality
+                            if cells[1].find('img', alt='Nuked') != None:
+                                continue
 
-                        #Filter unseeded torrent
-                        if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                            continue
+                            torrent_id = link['href'].replace('/details.php?id=', '')
 
-                        if not title or not download_url:
-                            continue
 
-                        item = title, download_url, id, seeders, leechers
-                        logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                            try:
+                                if link.has_key('title'):
+                                    title = cells[1].find('a', {'class': 'torrent_name_link'})['title']
+                                else:
+                                    title = link.contents[0]
+                                download_url = self.urls['download'] % (torrent_id)
+                                id = int(torrent_id)
 
-                        items[mode].append(item)
+                                seeders = int(cells[8].find('a', {'class': 'link'}).span.contents[0].strip())
+                                leechers = int(cells[9].find('a', {'class': 'link'}).contents[0].strip())
+                            except (AttributeError, TypeError):
+                                continue
+
+                            #Filter unseeded torrent
+                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                continue
+
+                            if not title or not download_url:
+                                continue
+
+                            item = title, download_url, id, seeders, leechers
+                            logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+
+                            items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)

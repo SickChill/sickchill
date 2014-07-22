@@ -40,7 +40,7 @@ from sickbeard import clients
 
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
+from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 
 
@@ -150,39 +150,36 @@ class PublicHDProvider(generic.TorrentProvider):
                 html = os.linesep.join([s for s in html.splitlines() if not optreg.search(s)])
 
                 try:
-                    html = BeautifulSoup(html, features=["html5lib", "permissive"])
+                    with BS4Parser(html, features=["html5lib", "permissive"]) as html:
+                        torrent_table = html.find('table', attrs={'id': 'torrbg'})
+                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    torrent_table = html.find('table', attrs={'id': 'torrbg'})
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-
-                    html.clear(True)
-
-                    #Continue only if one Release is found
-                    if len(torrent_rows) < 2:
-                        logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                   logger.DEBUG)
-                        continue
-
-                    for tr in torrent_rows[1:]:
-
-                        try:
-                            link = self.url + tr.find(href=re.compile('page=torrent-details'))['href']
-                            title = tr.find(lambda x: x.has_attr('title')).text.replace('_', '.')
-                            url = tr.find(href=re.compile('magnet+'))['href']
-                            seeders = int(tr.find_all('td', {'class': 'header'})[4].text)
-                            leechers = int(tr.find_all('td', {'class': 'header'})[5].text)
-                        except (AttributeError, TypeError):
+                        #Continue only if one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.DEBUG)
                             continue
 
-                        if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                            continue
+                        for tr in torrent_rows[1:]:
 
-                        if not title or not url:
-                            continue
+                            try:
+                                link = self.url + tr.find(href=re.compile('page=torrent-details'))['href']
+                                title = tr.find(lambda x: x.has_attr('title')).text.replace('_', '.')
+                                url = tr.find(href=re.compile('magnet+'))['href']
+                                seeders = int(tr.find_all('td', {'class': 'header'})[4].text)
+                                leechers = int(tr.find_all('td', {'class': 'header'})[5].text)
+                            except (AttributeError, TypeError):
+                                continue
 
-                        item = title, url, link, seeders, leechers
+                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                continue
 
-                        items[mode].append(item)
+                            if not title or not url:
+                                continue
+
+                            item = title, url, link, seeders, leechers
+
+                            items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(),

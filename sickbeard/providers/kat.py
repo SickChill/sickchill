@@ -40,11 +40,9 @@ from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 from sickbeard import clients
-from sickbeard import tv
-
+from sickbeard.bs4_parser import BS4Parser
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
 from lib.unidecode import unidecode
 
 
@@ -119,54 +117,51 @@ class KATProvider(generic.TorrentProvider):
             return None
 
         try:
-            soup = BeautifulSoup(data, features=["html5lib", "permissive"])
-            file_table = soup.find('table', attrs={'class': 'torrentFileList'})
+            with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
+                file_table = soup.find('table', attrs={'class': 'torrentFileList'})
 
-            # cleanup memory
-            soup.clear(True)
+                if not file_table:
+                    return None
 
-            if not file_table:
-                return None
+                files = [x.text for x in file_table.find_all('td', attrs={'class': 'torFileName'})]
+                videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, files)
 
-            files = [x.text for x in file_table.find_all('td', attrs={'class': 'torFileName'})]
-            videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, files)
+                #Filtering SingleEpisode/MultiSeason Torrent
+                if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
+                    logger.log(u"Result " + title + " have " + str(
+                        ep_number) + " episode and episodes retrived in torrent are " + str(len(videoFiles)), logger.DEBUG)
+                    logger.log(
+                        u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
+                        logger.DEBUG)
+                    return None
 
-            #Filtering SingleEpisode/MultiSeason Torrent
-            if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
-                logger.log(u"Result " + title + " have " + str(
-                    ep_number) + " episode and episodes retrived in torrent are " + str(len(videoFiles)), logger.DEBUG)
-                logger.log(
-                    u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
-                    logger.DEBUG)
-                return None
+                if Quality.sceneQuality(title) != Quality.UNKNOWN:
+                    return title
 
-            if Quality.sceneQuality(title) != Quality.UNKNOWN:
+                for fileName in videoFiles:
+                    quality = Quality.sceneQuality(os.path.basename(fileName))
+                    if quality != Quality.UNKNOWN: break
+
+                if fileName is not None and quality == Quality.UNKNOWN:
+                    quality = Quality.assumeQuality(os.path.basename(fileName))
+
+                if quality == Quality.UNKNOWN:
+                    logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
+                    return None
+
+                try:
+                    myParser = NameParser(showObj=self.show)
+                    parse_result = myParser.parse(fileName)
+                except (InvalidNameException, InvalidShowException):
+                    return None
+
+                logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
+
+                if parse_result.series_name and parse_result.season_number:
+                    title = parse_result.series_name + ' S%02d' % int(
+                        parse_result.season_number) + ' ' + self._reverseQuality(quality)
+
                 return title
-
-            for fileName in videoFiles:
-                quality = Quality.sceneQuality(os.path.basename(fileName))
-                if quality != Quality.UNKNOWN: break
-
-            if fileName is not None and quality == Quality.UNKNOWN:
-                quality = Quality.assumeQuality(os.path.basename(fileName))
-
-            if quality == Quality.UNKNOWN:
-                logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
-                return None
-
-            try:
-                myParser = NameParser(showObj=self.show)
-                parse_result = myParser.parse(fileName)
-            except (InvalidNameException, InvalidShowException):
-                return None
-
-            logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
-
-            if parse_result.series_name and parse_result.season_number:
-                title = parse_result.series_name + ' S%02d' % int(
-                    parse_result.season_number) + ' ' + self._reverseQuality(quality)
-
-            return title
 
         except Exception, e:
             logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
@@ -230,6 +225,7 @@ class KATProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
+        soup = None
         for mode in search_params.keys():
             for search_string in search_params[mode]:
 
@@ -250,54 +246,51 @@ class KATProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    soup = BeautifulSoup(html, features=["html5lib", "permissive"])
+                    with BS4Parser(html, features=["html5lib", "permissive"]) as soup:
+                        torrent_table = soup.find('table', attrs={'class': 'data'})
+                        torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
-                    torrent_table = soup.find('table', attrs={'class': 'data'})
-                    torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-
-                    soup.clear(True)
-
-                    #Continue only if one Release is found
-                    if len(torrent_rows) < 2:
-                        logger.log(u"The data returned from " + self.name + " does not contain any torrents",
-                                   logger.WARNING)
-                        continue
-
-                    for tr in torrent_rows[1:]:
-                        try:
-                            link = urlparse.urljoin(self.url,
-                                                    (tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
-                            id = tr.get('id')[-7:]
-                            title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
-                                    or (tr.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
-                            url = tr.find('a', 'imagnet')['href']
-                            verified = True if tr.find('a', 'iverify') else False
-                            trusted = True if tr.find('img', {'alt': 'verified'}) else False
-                            seeders = int(tr.find_all('td')[-2].text)
-                            leechers = int(tr.find_all('td')[-1].text)
-                        except (AttributeError, TypeError):
+                        #Continue only if one Release is found
+                        if len(torrent_rows) < 2:
+                            logger.log(u"The data returned from " + self.name + " does not contain any torrents",
+                                       logger.WARNING)
                             continue
 
-                        if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                            continue
+                        for tr in torrent_rows[1:]:
+                            try:
+                                link = urlparse.urljoin(self.url,
+                                                        (tr.find('div', {'class': 'torrentname'}).find_all('a')[1])['href'])
+                                id = tr.get('id')[-7:]
+                                title = (tr.find('div', {'class': 'torrentname'}).find_all('a')[1]).text \
+                                        or (tr.find('div', {'class': 'torrentname'}).find_all('a')[2]).text
+                                url = tr.find('a', 'imagnet')['href']
+                                verified = True if tr.find('a', 'iverify') else False
+                                trusted = True if tr.find('img', {'alt': 'verified'}) else False
+                                seeders = int(tr.find_all('td')[-2].text)
+                                leechers = int(tr.find_all('td')[-1].text)
+                            except (AttributeError, TypeError):
+                                continue
 
-                        if self.confirmed and not verified:
-                            logger.log(
-                                u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it",
-                                logger.DEBUG)
-                            continue
+                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                continue
 
-                        #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent
-                        if mode == 'Season' and search_mode == 'sponly':
-                            ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
-                            title = self._find_season_quality(title, link, ep_number)
+                            if self.confirmed and not verified:
+                                logger.log(
+                                    u"KAT Provider found result " + title + " but that doesn't seem like a verified result so I'm ignoring it",
+                                    logger.DEBUG)
+                                continue
 
-                        if not title or not url:
-                            continue
+                            #Check number video files = episode in season and find the real Quality for full season torrent analyzing files in torrent
+                            if mode == 'Season' and search_mode == 'sponly':
+                                ep_number = int(epcount / len(set(allPossibleShowNames(self.show))))
+                                title = self._find_season_quality(title, link, ep_number)
 
-                        item = title, url, id, seeders, leechers
+                            if not title or not url:
+                                continue
 
-                        items[mode].append(item)
+                            item = title, url, id, seeders, leechers
+
+                            items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(),

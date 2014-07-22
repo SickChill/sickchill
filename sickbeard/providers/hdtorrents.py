@@ -34,7 +34,7 @@ from sickbeard.exceptions import ex
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
-from bs4 import BeautifulSoup
+from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 
@@ -196,64 +196,22 @@ class HDTorrentsProvider(generic.TorrentProvider):
                 data = split_data[2]
 
                 try:
-                    html = BeautifulSoup(data, features=["html5lib", "permissive"])
+                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                        #Get first entry in table
+                        entries = html.find_all('td', attrs={'align': 'center'})
 
-                    #Get first entry in table
-                    entries = html.find_all('td', attrs={'align': 'center'})
-
-                    html.clear(True)
-
-                    if not entries:
-                        logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                   logger.DEBUG)
-                        continue
-
-                    try:
-                        title = entries[22].find('a')['title'].strip('History - ').replace('Blu-ray', 'bd50')
-                        url = self.urls['home'] % entries[15].find('a')['href']
-                        download_url = self.urls['home'] % entries[15].find('a')['href']
-                        id = entries[23].find('div')['id']
-                        seeders = int(entries[20].get_text())
-                        leechers = int(entries[21].get_text())
-                    except (AttributeError, TypeError):
-                        continue
-
-                    if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                        continue
-
-                    if not title or not download_url:
-                        continue
-
-                    item = title, download_url, id, seeders, leechers
-                    logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
-
-                    items[mode].append(item)
-
-                    #Now attempt to get any others
-                    result_table = html.find('table', attrs={'class': 'mainblockcontenttt'})
-
-                    if not result_table:
-                        continue
-
-                    entries = result_table.find_all('td', attrs={'align': 'center', 'class': 'listas'})
-
-                    if not entries:
-                        continue
-
-                    for result in entries:
-                        block2 = result.find_parent('tr').find_next_sibling('tr')
-                        if not block2:
+                        if not entries:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.DEBUG)
                             continue
-                        cells = block2.find_all('td')
 
                         try:
-                            title = cells[1].find('b').get_text().strip('\t ').replace('Blu-ray', 'bd50')
-                            url = self.urls['home'] % cells[4].find('a')['href']
-                            download_url = self.urls['home'] % cells[4].find('a')['href']
-                            detail = cells[1].find('a')['href']
-                            id = detail.replace('details.php?id=', '')
-                            seeders = int(cells[9].get_text())
-                            leechers = int(cells[10].get_text())
+                            title = entries[22].find('a')['title'].strip('History - ').replace('Blu-ray', 'bd50')
+                            url = self.urls['home'] % entries[15].find('a')['href']
+                            download_url = self.urls['home'] % entries[15].find('a')['href']
+                            id = entries[23].find('div')['id']
+                            seeders = int(entries[20].get_text())
+                            leechers = int(entries[21].get_text())
                         except (AttributeError, TypeError):
                             continue
 
@@ -267,6 +225,45 @@ class HDTorrentsProvider(generic.TorrentProvider):
                         logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
 
                         items[mode].append(item)
+
+                        #Now attempt to get any others
+                        result_table = html.find('table', attrs={'class': 'mainblockcontenttt'})
+
+                        if not result_table:
+                            continue
+
+                        entries = result_table.find_all('td', attrs={'align': 'center', 'class': 'listas'})
+
+                        if not entries:
+                            continue
+
+                        for result in entries:
+                            block2 = result.find_parent('tr').find_next_sibling('tr')
+                            if not block2:
+                                continue
+                            cells = block2.find_all('td')
+
+                            try:
+                                title = cells[1].find('b').get_text().strip('\t ').replace('Blu-ray', 'bd50')
+                                url = self.urls['home'] % cells[4].find('a')['href']
+                                download_url = self.urls['home'] % cells[4].find('a')['href']
+                                detail = cells[1].find('a')['href']
+                                id = detail.replace('details.php?id=', '')
+                                seeders = int(cells[9].get_text())
+                                leechers = int(cells[10].get_text())
+                            except (AttributeError, TypeError):
+                                continue
+
+                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                continue
+
+                            if not title or not download_url:
+                                continue
+
+                            item = title, download_url, id, seeders, leechers
+                            logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+
+                            items[mode].append(item)
 
                 except Exception, e:
                     logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)

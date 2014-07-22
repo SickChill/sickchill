@@ -31,7 +31,6 @@ import httplib
 import urlparse
 import uuid
 import base64
-import string
 import zipfile
 
 from lib import requests
@@ -1241,7 +1240,7 @@ def mapIndexersToShow(showObj):
     return mapped
 
 
-def touchFile(self, fname, atime=None):
+def touchFile(fname, atime=None):
     if None != atime:
         try:
             with file(fname, 'a'):
