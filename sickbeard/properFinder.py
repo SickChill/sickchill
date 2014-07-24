@@ -135,16 +135,12 @@ class ProperFinder():
             curProper.indexer = parse_result.show.indexer
 
             # populate our Proper instance
-            if parse_result.is_air_by_date or parse_result.is_sports:
-                curProper.season = -1
-                curProper.episode = parse_result.air_date or parse_result.sports_air_date
+            if parse_result.is_anime:
+                logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
+                continue
             else:
-                if parse_result.is_anime:
-                    logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
-                    continue
-                else:
-                    curProper.season = parse_result.season_number if parse_result.season_number != None else 1
-                    curProper.episode = parse_result.episode_numbers[0]
+                curProper.season = parse_result.season_number if parse_result.season_number != None else 1
+                curProper.episode = parse_result.episode_numbers[0]
 
             curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
@@ -161,36 +157,6 @@ class ProperFinder():
             if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name, parse_result.show.rls_require_words):
                 logger.log(u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
                            logger.MESSAGE)
-                continue
-
-            # if we have an air-by-date show then get the real season/episode numbers
-            if (parse_result.is_air_by_date or parse_result.is_sports) and curProper.indexerid:
-                logger.log(
-                    u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
-                    logger.DEBUG)
-
-                airdate = curProper.episode.toordinal()
-
-                myDB = db.DBConnection()
-                sql_result = myDB.select(
-                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
-                    [curProper.indexerid, curProper.indexer, airdate])
-
-                if sql_result:
-                    curProper.season = int(sql_result[0][0])
-                    curProper.episodes = [int(sql_result[0][1])]
-                else:
-                    logger.log(u"Unable to find episode with date " + str(
-                        curProper.episode) + " for show " + parse_result.series_name + ", skipping", logger.WARNING)
-                    continue
-
-            # check if we actually want this proper (if it's the right quality)
-            myDB = db.DBConnection()
-            sqlResults = myDB.select(
-                "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                [curProper.indexerid, curProper.season, curProper.episode])
-
-            if not sqlResults:
                 continue
 
             oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))

@@ -163,11 +163,14 @@ class SpeedCDProvider(generic.TorrentProvider):
                 post_data = dict({'/browse.php?': None, 'cata': 'yes', 'jxt': 4, 'jxw': 'b', 'search': search_string},
                                  **self.categories[mode])
 
-                data = self.session.post(self.urls['search'], data=post_data).json()
+                data = self.session.post(self.urls['search'], data=post_data, verify=False)
                 if not data:
                     continue
 
                 try:
+                    # convert to json
+                    data = data.json()
+
                     torrents = data.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except:
                     continue

@@ -18,8 +18,6 @@
 
 from __future__ import with_statement
 
-import os
-
 import time
 import datetime
 import sickbeard
@@ -253,20 +251,8 @@ class TVCache():
                 return None
 
         # if we made it this far then lets add the parsed result to cache for usager later on
-        season = episodes = None
-        if parse_result.is_air_by_date or parse_result.is_sports:
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
-
-            myDB = db.DBConnection()
-            sql_results = myDB.select(
-                "SELECT season, episode FROM tv_episodes WHERE showid = ? AND indexer = ? AND airdate = ?",
-                [parse_result.show.indexerid, parse_result.show.indexer, airdate])
-            if sql_results > 0:
-                season = int(sql_results[0]["season"])
-                episodes = [int(sql_results[0]["episode"])]
-        else:
-            season = parse_result.season_number if parse_result.season_number else 1
-            episodes = parse_result.episode_numbers
+        season = parse_result.season_number if parse_result.season_number else 1
+        episodes = parse_result.episode_numbers
 
         if season and episodes:
             # store episodes as a seperated string

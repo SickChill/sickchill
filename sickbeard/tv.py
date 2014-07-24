@@ -612,7 +612,7 @@ class TVShow(object):
         logger.log(str(self.indexerid) + u": Creating episode object from " + file, logger.DEBUG)
 
         try:
-            myParser = NameParser(True, showObj=self, tryIndexers=True)
+            myParser = NameParser(showObj=self, tryIndexers=True)
             parse_result = myParser.parse(file)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.DEBUG)
@@ -621,7 +621,7 @@ class TVShow(object):
             logger.log(u"Unable to parse the filename " + file + " into a valid show", logger.DEBUG)
             return None
 
-        if not len(parse_result.episode_numbers) and not (parse_result.is_air_by_date or parse_result.is_sports):
+        if not len(parse_result.episode_numbers):
             logger.log("parse_result: " + str(parse_result))
             logger.log(u"No episode number found in " + file + ", ignoring it", logger.ERROR)
             return None
@@ -630,25 +630,6 @@ class TVShow(object):
         season = parse_result.season_number if parse_result.season_number != None else 1
         episodes = parse_result.episode_numbers
         rootEp = None
-
-        # if we have an air-by-date show then get the real season/episode numbers
-        if parse_result.is_air_by_date or parse_result.is_sports:
-            logger.log(
-                u"Looks like this is an air-by-date or sports show, attempting to convert the date to season/episode",
-                logger.DEBUG)
-            airdate = parse_result.air_date.toordinal() if parse_result.air_date else parse_result.sports_air_date.toordinal()
-            myDB = db.DBConnection()
-            sql_result = myDB.select(
-                "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
-                [self.indexerid, self.indexer, airdate])
-
-            if sql_result:
-                season = int(sql_result[0][0])
-                episodes = [int(sql_result[0][1])]
-            else:
-                logger.log(u"Unable to find episode with date " + str(
-                    parse_result.air_date) + " for show " + self.name + ", skipping", logger.WARNING)
-                return None
 
         sql_l = []
         for curEpNum in episodes:

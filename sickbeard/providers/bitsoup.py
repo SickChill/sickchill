@@ -86,7 +86,7 @@ class BitSoupProvider(generic.TorrentProvider):
         self.session = requests.Session()
 
         try:
-            response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+            response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
@@ -166,7 +166,7 @@ class BitSoupProvider(generic.TorrentProvider):
                 data = self.getURL(searchURL)
                 if not data:
                     continue
-                
+
                 try:
                     with BS4Parser(data, "html.parser") as html:
                         torrent_table = html.find('table', attrs={'class': 'koptekst'})

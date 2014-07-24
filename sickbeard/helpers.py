@@ -703,42 +703,38 @@ def update_anime_support():
 
 
 def get_absolute_number_from_season_and_episode(show, season, episode):
-    myDB = db.DBConnection()
-    sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
-    sqlResults = myDB.select(sql, [show.indexerid, season, episode])
+    absolute_number = None
 
-    if len(sqlResults) == 1:
-        absolute_number = int(sqlResults[0]["absolute_number"])
-        logger.log(
-            "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode), logger.DEBUG)
+    if season and episode:
+        myDB = db.DBConnection()
+        sql = "SELECT * FROM tv_episodes WHERE showid = ? and season = ? and episode = ?"
+        sqlResults = myDB.select(sql, [show.indexerid, season, episode])
 
-        return absolute_number
-    else:
-        logger.log(
-            "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(episode),
-            logger.DEBUG)
+        if len(sqlResults) == 1:
+            absolute_number = int(sqlResults[0]["absolute_number"])
+            logger.log(
+                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode), logger.DEBUG)
+        else:
+            logger.log(
+                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(episode),
+                logger.DEBUG)
 
-    return None
-
+    return absolute_number
 
 def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=None):
-    if len(absolute_numbers) == 0:
-        raise EpisodeNotFoundByAbsoluteNumberException
-
     episodes = []
     season = None
 
-    if not show and indexer_id:
-        show = findCertainShow(sickbeard.showList, indexer_id)
+    if len(absolute_numbers):
+        if not show and indexer_id:
+            show = findCertainShow(sickbeard.showList, indexer_id)
 
-    if show:
-        for absolute_number in absolute_numbers:
-            ep = show.getEpisode(None, None, absolute_number=absolute_number)
-            if ep:
-                episodes.append(ep.episode)
-            else:
-                raise EpisodeNotFoundByAbsoluteNumberException
-            season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
+        if show:
+            for absolute_number in absolute_numbers:
+                ep = show.getEpisode(None, None, absolute_number=absolute_number)
+                if ep:
+                    episodes.append(ep.episode)
+                    season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
 
     return (season, episodes)
 

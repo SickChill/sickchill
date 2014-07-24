@@ -26,7 +26,7 @@ import os.path
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek
+from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek, db
 from dateutil import parser
 
 
@@ -89,14 +89,13 @@ class NameParser(object):
 
         self.compiled_regexes = []
         for regexItem in uncompiled_regex:
-            for i, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
+            for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
                 except re.error, errormsg:
                     logger.log(u"WARNING: Invalid episode_pattern, %s. %s" % (errormsg, cur_pattern))
                 else:
-                    cur_pattern_name = str(i) + "_" + cur_pattern_name
-                    self.compiled_regexes.append((regexMode, cur_pattern_name, cur_regex))
+                    self.compiled_regexes.append((regexMode, cur_pattern_num, cur_pattern_name, cur_regex))
 
     def _parse_string(self, name):
         if not name:
@@ -111,16 +110,15 @@ class NameParser(object):
                 break
 
             self._compile_regexes(regexMode)
-            for (cur_regexMode, cur_regex_name, cur_regex) in self.compiled_regexes:
+            for (cur_regexMode, cur_regex_num, cur_regex_name, cur_regex) in self.compiled_regexes:
                 match = cur_regex.match(name)
 
                 if not match:
                     continue
 
-                regex_num = int(re.match('^\d{1,2}', cur_regex_name).group(0))
                 result = ParseResult(name)
                 result.which_regex = [cur_regex_name]
-                result.score = 0 - regex_num
+                result.score = 0 - cur_regex_num
 
                 named_groups = match.groupdict().keys()
 
@@ -133,8 +131,6 @@ class NameParser(object):
                 # get show object
                 if not result.show and not self.naming_pattern:
                     result.show = helpers.get_show(result.series_name, self.tryIndexers)
-                elif self.showObj and self.naming_pattern:
-                    result.show = self.showObj
 
                 # confirm result show object variables
                 if result.show:
@@ -155,9 +151,10 @@ class NameParser(object):
 
                 if 'season_num' in named_groups:
                     tmp_season = int(match.group('season_num'))
-                    if not (cur_regex_name == 'bare' and tmp_season in (19, 20)):
-                        result.season_number = tmp_season
-                        result.score += 1
+                    if cur_regex_name == 'bare' and tmp_season in (19, 20):
+                        continue
+                    result.season_number = tmp_season
+                    result.score += 1
 
                 if 'ep_num' in named_groups:
                     ep_num = self._convert_number(match.group('ep_num'))
@@ -166,7 +163,7 @@ class NameParser(object):
                         result.score += 1
                     else:
                         result.episode_numbers = [ep_num]
-                        result.score += 1
+                    result.score += 1
 
                 if 'ep_ab_num' in named_groups:
                     ep_ab_num = self._convert_number(match.group('ep_ab_num'))
@@ -176,7 +173,7 @@ class NameParser(object):
                         result.score += 1
                     else:
                         result.ab_episode_numbers = [ep_ab_num]
-                        result.score += 1
+                    result.score += 1
 
                 if 'sports_event_id' in named_groups:
                     sports_event_id = match.group('sports_event_id')
@@ -197,7 +194,7 @@ class NameParser(object):
                             result.sports_air_date = parser.parse(sports_air_date, fuzzy=True).date()
                             result.score += 1
                         except:
-                            pass
+                            continue
 
                 if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
                     if result.show and result.show.air_by_date:
@@ -210,16 +207,17 @@ class NameParser(object):
                             result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
                             result.score += 1
                         except:
-                            pass
+                            continue
 
                 if 'extra_info' in named_groups:
                     tmp_extra_info = match.group('extra_info')
 
                     # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                    if not (tmp_extra_info and 'season_only' in cur_regex_name and re.search(
-                            r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I)):
-                        result.extra_info = tmp_extra_info
-                        result.score += 1
+                    if tmp_extra_info and cur_regex_name == 'season_only' and re.search(
+                            r'([. _-]|^)(special|extra)s?\w*([. _-]|$)', tmp_extra_info, re.I):
+                        continue
+                    result.extra_info = tmp_extra_info
+                    result.score += 1
 
                 if 'release_group' in named_groups:
                     result.release_group = match.group('release_group')
@@ -231,19 +229,48 @@ class NameParser(object):
             # pick best match with highest score based on placement
             bestResult = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)
 
+            # if no show object was created check and see if we passed one in and use that instead
+            if not bestResult.show and self.showObj:
+                bestResult.show = self.showObj
+
             # get quality
             bestResult.quality = common.Quality.nameQuality(name,
                                                             bestResult.show.is_anime if bestResult.show else False)
 
             # if this is a naming pattern test or result doesn't have a show object then return best result
-            if not bestResult.show or bestResult.is_air_by_date or bestResult.is_sports or self.naming_pattern:
+            if not bestResult.show or self.naming_pattern:
                 return bestResult
 
             new_episode_numbers = []
             new_season_numbers = []
             new_absolute_numbers = []
 
-            if bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
+            # if we have an air-by-date show then get the real season/episode numbers
+            if bestResult.is_air_by_date or bestResult.is_sports:
+                airdate = bestResult.air_date.toordinal() if bestResult.air_date else bestResult.sports_air_date.toordinal()
+
+                myDB = db.DBConnection()
+                sql_result = myDB.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                    [bestResult.show.indexerid, bestResult.show.indexer, airdate])
+
+                if sql_result:
+                    season_number = int(sql_result[0][0])
+                    episode_numbers = [int(sql_result[0][1])]
+
+                    for epNo in episode_numbers:
+                        s = season_number
+                        e = epNo
+
+                        if self.convert:
+                            (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
+                                                                           bestResult.show.indexer,
+                                                                           season_number,
+                                                                           epNo)
+                        new_episode_numbers.append(e)
+                        new_season_numbers.append(s)
+
+            elif bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
                 scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]
                 for epAbsNo in bestResult.ab_episode_numbers:
                     a = epAbsNo
@@ -252,16 +279,12 @@ class NameParser(object):
                         a = scene_numbering.get_indexer_absolute_numbering(bestResult.show.indexerid,
                                                                            bestResult.show.indexer, epAbsNo,
                                                                            True, scene_season)
-                    try:
-                        (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [a])
-                    except exceptions.EpisodeNotFoundByAbsoluteNumberException:
-                        logger.log(str(bestResult.show.indexerid) + ": Indexer object absolute number " + str(
-                            epAbsNo) + " is incomplete, skipping this episode")
-                        return bestResult
-                    else:
-                        new_absolute_numbers.append(a)
-                        new_episode_numbers.extend(e)
-                        new_season_numbers.append(s)
+
+                    (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [a])
+
+                    new_absolute_numbers.append(a)
+                    new_episode_numbers.extend(e)
+                    new_season_numbers.append(s)
 
             elif bestResult.season_number and len(bestResult.episode_numbers):
                 for epNo in bestResult.episode_numbers:

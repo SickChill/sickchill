@@ -95,7 +95,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             }
 
             try:
-                response = self.session.post(self.urls['login'], data=login_params, timeout=30)
+                response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
             except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
                 logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
                 return False
@@ -194,9 +194,12 @@ class TorrentDayProvider(generic.TorrentProvider):
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                data = self.session.post(self.urls['search'], data=post_data).json()
+                data = self.session.post(self.urls['search'], data=post_data, verify=False)
+                if not data:
+                    continue
 
                 try:
+                    data = data.json()
                     torrents = data.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except:
                     continue

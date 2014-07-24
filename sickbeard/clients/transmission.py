@@ -37,7 +37,7 @@ class TransmissionAPI(GenericClient):
         post_data = json.dumps({'method': 'session-get', })
 
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'))
+            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
             self.auth = re.search('X-Transmission-Session-Id:\s*(\w+)', self.response.text).group(1)
         except:
             return None
