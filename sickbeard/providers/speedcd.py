@@ -164,6 +164,8 @@ class SpeedCDProvider(generic.TorrentProvider):
                                  **self.categories[mode])
 
                 data = self.session.post(self.urls['search'], data=post_data).json()
+                if not data:
+                    continue
 
                 try:
                     torrents = data.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
