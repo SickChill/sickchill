@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 38
+MAX_DB_VERSION = 39
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -168,7 +168,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)",
                 "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER,scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY(indexer_id, season, episode))",
                 "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer TEXT, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC);",
-                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC);",
+                "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid/ NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC);",
                 "CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id)",
                 "CREATE INDEX idx_showid ON tv_episodes (showid);",
                 "CREATE INDEX idx_sta_epi_air ON tv_episodes (status,episode, airdate);",
@@ -886,3 +886,18 @@ class AddSceneToTvShows(AddXemRefresh):
 
         self.incDBVersion()
 
+class AddIndexerMapping(AddSceneToTvShows):
+    def test(self):
+        return self.checkDBVersion() >= 39
+
+    def execute(self):
+        backupDatabase(39)
+
+        if self.hasTable("indexer_mapping"):
+            self.connection.action("DROP TABLE indexer_mapping")
+
+        logger.log(u"Adding table indexer_mapping")
+        self.connection.action(
+            "CREATE TABLE indexer_mapping (indexer_id INTEGER, indexer NUMERIC, mindexer_id INTEGER, mindexer NUMERIC, PRIMARY KEY (indexer_id, indexer))")
+
+        self.incDBVersion()

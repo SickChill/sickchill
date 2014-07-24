@@ -55,17 +55,6 @@ def retrieveNameFromCache(name):
     if name in nameCache:
         return int(nameCache[name])
 
-
-def retrieveShowFromCache(name, indexer_id=0):
-    global nameCache
-
-    if not indexer_id:
-        indexer_id = retrieveNameFromCache(name)
-
-    if indexer_id:
-        return sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexer_id))
-
-
 def clearCache():
     """
     Deletes all "unknown" entries from the cache (names with indexer_id of 0).

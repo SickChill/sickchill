@@ -35,12 +35,12 @@ class NameParser(object):
     SPORTS_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, useIndexers=False, convert=False,
+    def __init__(self, file_name=True, showObj=None, tryIndexers=False, convert=False,
                  naming_pattern=False):
 
         self.file_name = file_name
         self.showObj = showObj
-        self.useIndexers = useIndexers
+        self.tryIndexers = tryIndexers
         self.convert = convert
         self.naming_pattern = naming_pattern
 
@@ -132,7 +132,7 @@ class NameParser(object):
 
                 # get show object
                 if not result.show and not self.naming_pattern:
-                    result.show = helpers.get_show(result.series_name, useIndexer=self.useIndexers)
+                    result.show = helpers.get_show(result.series_name, self.tryIndexers)
                 elif self.showObj and self.naming_pattern:
                     result.show = self.showObj
 
@@ -245,7 +245,7 @@ class NameParser(object):
 
                     for epAbsNo in bestResult.ab_episode_numbers:
                         try:
-                            (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, None, [epAbsNo])
+                            (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [epAbsNo])
                         except exceptions.EpisodeNotFoundByAbsoluteNumberException:
                             pass
                         else:
@@ -531,7 +531,7 @@ class ParseResult(object):
                                                                     True, scene_season)
                 if ab:
                     try:
-                        (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, None, [ab])
+                        (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, [ab])
                     except exceptions.EpisodeNotFoundByAbsoluteNumberException:
                         logger.log(str(self.show.indexerid) + ": Indexer object absolute number " + str(
                             ab) + " is incomplete, skipping this episode")

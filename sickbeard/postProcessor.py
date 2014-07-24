@@ -472,7 +472,7 @@ class PostProcessor(object):
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file, useIndexers=True, convert=True)
+        np = NameParser(file, tryIndexers=True, convert=True)
         parse_result = np.parse(name)
 
         # show object
@@ -492,54 +492,6 @@ class PostProcessor(object):
 
         self._finalize(parse_result)
         return to_return
-
-    def _analyze_anidb(self, filePath):
-        # TODO: rewrite this
-        return (None, None, None, None)
-
-        if not helpers.set_up_anidb_connection():
-            return (None, None, None, None)
-
-        ep = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
-        try:
-            self._log(u"Trying to lookup " + str(filePath) + " on anidb", logger.MESSAGE)
-            ep.load_data()
-        except Exception, e:
-            self._log(u"exception msg: " + str(e))
-            raise InvalidNameException
-        else:
-            self.anidbEpisode = ep
-
-        # TODO: clean code. it looks like it's from hell
-        for name in ep.allNames:
-
-            indexer_id = name_cache.retrieveNameFromCache(name)
-            if not indexer_id:
-                show = helpers.get_show(name)
-                if show:
-                    indexer_id = show.indexerid
-                else:
-                    indexer_id = 0
-
-                if indexer_id:
-                    name_cache.addNameToCache(name, indexer_id)
-            if indexer_id:
-                try:
-                    show = helpers.findCertainShow(sickbeard.showList, indexer_id)
-                    (season, episodes) = helpers.get_all_episodes_from_absolute_number(show, None, [ep.epno])
-                except exceptions.EpisodeNotFoundByAbsoluteNumberException:
-                    self._log(str(indexer_id) + ": Indexer object absolute number " + str(
-                        ep.epno) + " is incomplete, skipping this episode")
-                else:
-                    if len(episodes):
-                        self._log(u"Lookup successful from anidb. ", logger.DEBUG)
-                        return (show, season, episodes, None)
-
-        if ep.anidb_file_name:
-            self._log(u"Lookup successful, using anidb filename " + str(ep.anidb_file_name), logger.DEBUG)
-            return self._analyze_name(ep.anidb_file_name)
-        raise InvalidNameException
-
 
     def _build_anidb_episode(self, connection, filePath):
         ep = adba.Episode(connection, filePath=filePath,
@@ -583,10 +535,7 @@ class PostProcessor(object):
                         lambda: self._analyze_name(self.file_path),
 
                         # try to analyze the dir + file name together as one name
-                        lambda: self._analyze_name(self.folder_name + u' ' + self.file_name),
-
-                        # try to analyze the file path with the help of aniDB
-                        lambda: self._analyze_anidb(self.file_path)
+                        lambda: self._analyze_name(self.folder_name + u' ' + self.file_name)
         ]
 
         # attempt every possible method to get our info

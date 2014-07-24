@@ -377,6 +377,8 @@ class TVRage:
         self.config['url_seriesInfo'] = u"%(base_url)s/myfeeds/showinfo.php" % self.config
         self.config['params_seriesInfo'] = {"key": self.config['apikey'], "sid": ""}
 
+        self.config['url_updtes_all'] = u"%(base_url)s/myfeeds/currentshows.php" % self.config
+
     def _getTempDir(self):
         """Returns the [system temp dir]/tvrage_api-u501 (or
         tvrage_api-myuser)

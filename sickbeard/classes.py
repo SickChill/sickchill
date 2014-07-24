@@ -145,7 +145,6 @@ class TorrentSearchResult(SearchResult):
     """
     resultType = "torrent"
 
-
 class AllShowsListUI:
     """
     This class is for indexer api. Instead of prompting with a UI to pick the

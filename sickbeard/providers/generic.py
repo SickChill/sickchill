@@ -23,25 +23,26 @@ import datetime
 import os
 import re
 import itertools
+import Queue
 import sickbeard
+import requests
 
-from lib import requests
-from lib.feedparser import feedparser
 from sickbeard import helpers, classes, logger, db
-from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, cpu_presets
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT
 from sickbeard import tvcache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
-from lib.hachoir_parser import createParser
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 
+from lib.hachoir_parser import createParser
 
 class GenericProvider:
     NZB = "nzb"
     TORRENT = "torrent"
 
     def __init__(self, name):
+        self.queue = Queue.Queue()
 
         # these need to be set in the subclass
         self.providerType = None

@@ -1185,6 +1185,20 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <label class="nocheck clearfix" for="trakt_default_indexer">
+                                    <span class="component-title">Default Indexer:</span>
+                                    <span class="component-desc">
+                                        <select id="trakt_default_indexer" name="trakt_default_indexer">
+                                            #for $indexer in $sickbeard.indexerApi().indexers
+                                            <option value="$indexer" #if $indexer == $sickbeard.TRAKT_DEFAULT_INDEXER then "selected=\"selected\"" else ""#>$sickbeard.indexerApi().indexers[$indexer]</option>
+                                            #end for
+                                        </select>
+                                    </span>
+                                </label>
+                            </div
+                        </div>
+
+                            <div class="field-pair">
                                 <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
                                 <label class="clearfix" for="trakt_sync">
                                     <span class="component-title">Sync Libraries:</span>

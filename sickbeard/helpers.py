@@ -62,7 +62,7 @@ from lib import trakt
 
 urllib._urlopener = classes.SickBeardURLopener()
 session = requests.Session()
-indexerMap = {}
+
 
 def indentXML(elem, level=0):
     '''
@@ -85,6 +85,7 @@ def indentXML(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
+
 def remove_extension(name):
     """
     Remove download or media extension from name (if any)
@@ -97,6 +98,7 @@ def remove_extension(name):
 
     return name
 
+
 def remove_non_release_groups(name):
     """
     Remove non release groups from name
@@ -108,6 +110,7 @@ def remove_non_release_groups(name):
             name = name_group[0]
 
     return name
+
 
 def replaceExtension(filename, newExt):
     '''
@@ -291,12 +294,10 @@ def findCertainShow(showList, indexerid):
     if indexerid:
         results = filter(lambda x: int(x.indexerid) == int(indexerid), showList)
 
-    if len(results) == 0:
-        return None
+    if len(results):
+        return results[0]
     elif len(results) > 1:
         raise MultipleShowObjectsException()
-    else:
-        return results[0]
 
 
 def makeDir(path):
@@ -379,9 +380,9 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
                 continue
 
             if str(name).lower() == str(seriesname).lower and not indexer_id:
-                return (seriesname, int(sickbeard.indexerApi(i).config['id']), int(series_id))
+                return (seriesname, i, int(series_id))
             elif int(indexer_id) == int(series_id):
-                return (seriesname, int(sickbeard.indexerApi(i).config['id']), int(indexer_id))
+                return (seriesname, i, int(indexer_id))
 
         if indexer:
             break
@@ -464,7 +465,9 @@ def hardlinkFile(srcFile, destFile):
 def symlink(src, dst):
     if os.name == 'nt':
         import ctypes
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if os.path.isdir(src) else 0) in [0,1280]: raise ctypes.WinError()
+
+        if ctypes.windll.kernel32.CreateSymbolicLinkW(unicode(dst), unicode(src), 1 if os.path.isdir(src) else 0) in [0,
+                                                                                                                      1280]: raise ctypes.WinError()
     else:
         os.symlink(src, dst)
 
@@ -718,26 +721,24 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
     return None
 
 
-def get_all_episodes_from_absolute_number(show, indexer_id, absolute_numbers):
+def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=None):
     if len(absolute_numbers) == 0:
         raise EpisodeNotFoundByAbsoluteNumberException
 
     episodes = []
     season = None
 
-    if not show and not indexer_id:
-        return (season, episodes)
-
     if not show and indexer_id:
         show = findCertainShow(sickbeard.showList, indexer_id)
 
-    for absolute_number in absolute_numbers:
-        ep = show.getEpisode(None, None, absolute_number=absolute_number)
-        if ep:
-            episodes.append(ep.episode)
-        else:
-            raise EpisodeNotFoundByAbsoluteNumberException
-        season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
+    if show:
+        for absolute_number in absolute_numbers:
+            ep = show.getEpisode(None, None, absolute_number=absolute_number)
+            if ep:
+                episodes.append(ep.episode)
+            else:
+                raise EpisodeNotFoundByAbsoluteNumberException
+            season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
 
     return (season, episodes)
 
@@ -1086,26 +1087,31 @@ def _check_against_names(nameInQuestion, show, season=-1):
     return False
 
 
-def get_show(name, indexer_id=0, useIndexer=False):
+def get_show(name, tryIndexers=False):
+    if not sickbeard.showList:
+        return
+
+    showObj = None
+    fromCache = False
+
     try:
         # check cache for show
-        showObj = sickbeard.name_cache.retrieveShowFromCache(name, indexer_id=indexer_id)
-        if showObj:
-            return showObj
+        cache = sickbeard.name_cache.retrieveNameFromCache(name)
+        if cache:
+            fromCache = True
+            showObj = findCertainShow(sickbeard.showList, int(cache))
 
-        if useIndexer and sickbeard.showList and not showObj:
-            (sn, idx, id) = searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)
-            if id:
-                showObj = findCertainShow(sickbeard.showList, int(id))
+        if not showObj and tryIndexers:
+            showObj = findCertainShow(sickbeard.showList,
+                                      searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
 
         # add show to cache
-        if showObj:
+        if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
+    except Exception as e:
+        logger.log(u"Error when attempting to find show: " + name + " in SickRage: " + str(e), logger.DEBUG)
 
-        return showObj
-    except:
-        pass
-
+    return showObj
 
 def is_hidden_folder(folder):
     """
@@ -1216,26 +1222,48 @@ def extractZip(archive, targetDir):
 
 
 def mapIndexersToShow(showObj):
-    global indexerMap
+    mapped = {showObj.indexer: showObj.indexerid}
 
-    mapped = {'tvdb_id': 0, 'tvrage_id': 0}
+    myDB = db.DBConnection()
 
-    if showObj.name in indexerMap:
-        logger.log(u"Found TVDB<->TVRAGE indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
-        return indexerMap[showObj.name]
+    sqlResults = myDB.select(
+        "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
+        [showObj.indexerid, showObj.indexer])
 
-    logger.log(u"Mapping indexers TVDB<->TVRAGE for show: " + showObj.name, logger.DEBUG)
-    results = trakt.TraktCall("search/shows.json/%API%?query=" + sanitizeSceneName(showObj.name),
-                              sickbeard.TRAKT_API_KEY)
+    # for each mapped entry
+    for curResult in sqlResults:
+        logger.log(u"Found " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
+            int(curResult['mindexer'])).name + " mapping in cache for show: " + showObj.name, logger.DEBUG)
 
-    if results:
-        result = filter(lambda x: int(showObj.indexerid) in [int(x['tvdb_id']), int(x['tvrage_id'])], results)
-        if len(result):
-            mapped['tvdb_id'] = int(result[0]['tvdb_id'])
-            mapped['tvrage_id'] = int(result[0]['tvrage_id'])
+        mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
+    else:
+        sql_l = []
+        for indexer in sickbeard.indexerApi().indexers:
+            if indexer == showObj.indexer:
+                mapped[indexer] = showObj.indexerid
+                continue
 
-            logger.log(u"Adding TVDB<->TVRAGE indexer mapping to cache for show: " + showObj.name, logger.DEBUG)
-            indexerMap[showObj.name] = mapped
+            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
+            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
+            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
+
+            mapped_show = t[showObj.name]
+            if len(mapped_show) and not len(mapped_show) > 1:
+                logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
+                    indexer).name + " for show " + showObj.name,
+                           logger.DEBUG)
+
+                mapped[indexer] = int(mapped_show[0]['id'])
+
+                logger.log(u"Adding " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
+                    indexer).name + " mapping to DB for show: " + showObj.name, logger.DEBUG)
+
+                sql_l.append([
+                    "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
+                    [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
+
+        if len(sql_l) > 0:
+            myDB.mass_action(sql_l)
 
     return mapped
 

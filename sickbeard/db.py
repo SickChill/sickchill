@@ -321,6 +321,10 @@ def _processUpgrade(connection, upgradeClass):
                 result = connection.select("SELECT db_version FROM db_version")
                 if result:
                     version = int(result[0]["db_version"])
+
+                    # close db before attempting restore
+                    connection.close()
+
                     if restoreDatabase(version):
                         # initialize the main SB database
                         upgradeDatabase(DBConnection(), sickbeard.mainDB.InitialSchema)

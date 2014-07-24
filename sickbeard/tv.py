@@ -428,7 +428,7 @@ class TVShow(object):
 
             try:
                 parse_result = None
-                np = NameParser(False, showObj=self, useIndexers=True)
+                np = NameParser(False, showObj=self, tryIndexers=True)
                 parse_result = np.parse(ep_file_name)
             except (InvalidNameException, InvalidShowException):
                 pass
@@ -612,7 +612,7 @@ class TVShow(object):
         logger.log(str(self.indexerid) + u": Creating episode object from " + file, logger.DEBUG)
 
         try:
-            myParser = NameParser(True, showObj=self, useIndexers=True)
+            myParser = NameParser(True, showObj=self, tryIndexers=True)
             parse_result = myParser.parse(file)
         except InvalidNameException:
             logger.log(u"Unable to parse the filename " + file + " into a valid episode", logger.DEBUG)

@@ -27,7 +27,7 @@ from sickbeard import classes
 from sickbeard import scene_exceptions
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard.helpers import sanitizeSceneName, mapIndexersToShow
+from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex, AuthException
 
 from lib import jsonrpclib

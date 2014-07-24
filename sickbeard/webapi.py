@@ -975,14 +975,14 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         sql_l = []
         for epObj in ep_list:
-            if self.status == WANTED:
-                # figure out what episodes are wanted so we can backlog them
-                if epObj.season in ep_segment:
-                    ep_segment[epObj.season].append(epObj)
-                else:
-                    ep_segment[epObj.season] = [epObj]
-
             with epObj.lock:
+                if self.status == WANTED:
+                    # figure out what episodes are wanted so we can backlog them
+                    if epObj.season in ep_segment:
+                        ep_segment[epObj.season].append(epObj)
+                    else:
+                        ep_segment[epObj.season] = [epObj]
+
                 # don't let them mess up UNAIRED episodes
                 if epObj.status == UNAIRED:
                     if self.e != None:  # setting the status of a unaired is only considert a failure if we directly wanted this episode, but is ignored on a season request
@@ -1723,6 +1723,8 @@ class CMD_Show(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
+        mindexers = helpers.mapIndexersToShow(showObj)
+
         showDict = {}
         showDict["season_list"] = CMD_ShowSeasonList(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
         showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
@@ -1753,7 +1755,7 @@ class CMD_Show(ApiCall):
         showDict["anime"] = showObj.anime
         #clean up tvdb horrible airs field
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-        showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)['tvrage_id']
+        showDict["tvrage_id"] = mindexers[2] if 2 in mindexers else 0
         showDict["tvrage_name"] = showObj.name
         showDict["network"] = showObj.network
         if not showDict["network"]:
@@ -2522,6 +2524,7 @@ class CMD_Shows(ApiCall):
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue
 
+            mindexers = helpers.mapIndexersToShow(curShow)
             showDict = {
                 "paused": curShow.paused,
                 "quality": _get_quality_string(curShow.quality),
@@ -2530,8 +2533,8 @@ class CMD_Shows(ApiCall):
                 "sports": curShow.sports,
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
-                "tvdbid": helpers.mapIndexersToShow(curShow)['tvdb_id'],
-                "tvrage_id": helpers.mapIndexersToShow(curShow)['tvrage_id'],
+                "tvdbid": mindexers[1] if 1 in mindexers else 0,
+                "tvrage_id": mindexers[2] if 2 in mindexers else 0,
                 "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,
