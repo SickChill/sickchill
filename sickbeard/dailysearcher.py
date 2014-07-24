@@ -40,6 +40,8 @@ class DailySearcher():
 
         self.amActive = True
 
+        didSearch = False
+
         providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
         for curProviderCount, curProvider in enumerate(providers):
 
@@ -55,42 +57,50 @@ class DailySearcher():
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 
-        logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
+            didSearch = True
 
-        fromDate = datetime.date.today() - datetime.timedelta(weeks=1)
-        curDate = datetime.date.today()
+        if didSearch:
+            logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
 
-        myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate >= ? AND airdate <= ?",
-                                 [common.UNAIRED, common.WANTED, fromDate.toordinal(), curDate.toordinal()])
+            fromDate = datetime.date.today() - datetime.timedelta(weeks=1)
+            curDate = datetime.date.today()
 
-        sql_l = []
-        for sqlEp in sqlResults:
-            try:
-                show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
-            except exceptions.MultipleShowObjectsException:
-                logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
-                continue
-
-            ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
-            with ep.lock:
-                if ep.show.paused:
-                    ep.status = common.SKIPPED
-
-                if ep.status == common.UNAIRED:
-                    logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
-                    ep.status = common.WANTED
-
-                sql_l.append(ep.get_sql())
-
-                if ep.status == common.WANTED:
-                    dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, [ep])
-                    sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
-        else:
-            logger.log(u"Could not find any wanted episodes for the last 7 days to search for")
-
-        if len(sql_l) > 0:
             myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
+            sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE status in (?,?) AND airdate >= ? AND airdate <= ?",
+                                     [common.UNAIRED, common.WANTED, fromDate.toordinal(), curDate.toordinal()])
+
+            sql_l = []
+            for sqlEp in sqlResults:
+                try:
+                    show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+                except exceptions.MultipleShowObjectsException:
+                    logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
+                    continue
+
+                ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
+                with ep.lock:
+                    if ep.show.paused:
+                        ep.status = common.SKIPPED
+
+                    if ep.status == common.UNAIRED:
+                        logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
+                        ep.status = common.WANTED
+
+                    sql_l.append(ep.get_sql())
+
+                    if ep.status == common.WANTED:
+                        dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem(show, [ep])
+                        sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
+            else:
+                logger.log(u"Could not find any wanted episodes for the last 7 days to search for")
+
+            if len(sql_l) > 0:
+                myDB = db.DBConnection()
+                myDB.mass_action(sql_l)
+
+        else:
+            logger.log(
+                u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+                logger.ERROR)
 
         self.amActive = False

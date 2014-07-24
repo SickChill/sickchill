@@ -340,6 +340,7 @@ def filterSearchResults(show, season, results):
 
 def searchForNeededEpisodes(show, episodes):
     foundResults = {}
+
     didSearch = False
 
     origThreadName = threading.currentThread().name
@@ -390,7 +391,7 @@ def searchForNeededEpisodes(show, episodes):
 
     if not didSearch:
         logger.log(
-            u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+            u"No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
             logger.ERROR)
 
     return foundResults.values() if len(foundResults) else {}
@@ -399,6 +400,8 @@ def searchForNeededEpisodes(show, episodes):
 def searchProviders(show, season, episodes, manualSearch=False):
     foundResults = {}
     finalResults = []
+
+    didSearch = False
 
     # check if we want to search for season packs instead of just season/episode
     seasonSearch = False
@@ -443,6 +446,8 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 break
             finally:
                 threading.currentThread().name = origThreadName
+
+            didSearch = True
 
             if len(searchResults):
                 # make a list of all the results for this provider
@@ -668,8 +673,8 @@ def searchProviders(show, season, episodes, manualSearch=False):
         if wantedEpCount == len(episodes):
             break
 
-    else:
-        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config. Please check your settings.",
+    if not didSearch:
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
                    logger.ERROR)
 
     return finalResults
