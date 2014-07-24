@@ -82,7 +82,7 @@ class NameParser(object):
             uncompiled_regex = [regexes.sports_regexs]
         elif regexMode == self.ANIME_REGEX:
             logger.log(u"Using ANIME regexs", logger.DEBUG)
-            uncompiled_regex = [regexes.anime_regexes]
+            uncompiled_regex = [regexes.anime_regexes, regexes.normal_regexes]
         else:
             logger.log(u"Using NORMAL reqgexs", logger.DEBUG)
             uncompiled_regex = [regexes.normal_regexes]
@@ -150,7 +150,7 @@ class NameParser(object):
                         result.score += 1
                     elif regexMode == self.ANIME_REGEX and result.show.is_anime:
                         result.score += 1
-                    else:
+                    elif not result.show.is_anime:
                         break
 
                 if 'season_num' in named_groups:
@@ -235,26 +235,83 @@ class NameParser(object):
             bestResult.quality = common.Quality.nameQuality(name,
                                                             bestResult.show.is_anime if bestResult.show else False)
 
-            # scene convert result
-            bestResult = bestResult.convert() if self.convert and not self.naming_pattern else bestResult
+            # if this is a naming pattern test or result doesn't have a show object then return best result
+            if not bestResult.show or bestResult.is_air_by_date or bestResult.is_sports or self.naming_pattern:
+                return bestResult
 
-            if not self.naming_pattern:
-                if bestResult.show and bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
-                    new_episode_numbers = []
-                    new_season_numbers = []
+            new_episode_numbers = []
+            new_season_numbers = []
+            new_absolute_numbers = []
 
-                    for epAbsNo in bestResult.ab_episode_numbers:
-                        try:
-                            (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [epAbsNo])
-                        except exceptions.EpisodeNotFoundByAbsoluteNumberException:
-                            pass
-                        else:
-                            new_episode_numbers.extend(e)
-                            new_season_numbers.append(s)
+            if bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
+                scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]
+                for epAbsNo in bestResult.ab_episode_numbers:
+                    a = epAbsNo
 
-                    if len(new_season_numbers) and len(new_episode_numbers):
-                        bestResult.episode_numbers = new_episode_numbers
-                        bestResult.season_number = new_season_numbers[0]
+                    if self.convert:
+                        a = scene_numbering.get_indexer_absolute_numbering(bestResult.show.indexerid,
+                                                                           bestResult.show.indexer, epAbsNo,
+                                                                           True, scene_season)
+                    try:
+                        (s, e) = helpers.get_all_episodes_from_absolute_number(bestResult.show, [a])
+                    except exceptions.EpisodeNotFoundByAbsoluteNumberException:
+                        logger.log(str(bestResult.show.indexerid) + ": Indexer object absolute number " + str(
+                            epAbsNo) + " is incomplete, skipping this episode")
+                        return bestResult
+                    else:
+                        new_absolute_numbers.append(a)
+                        new_episode_numbers.extend(e)
+                        new_season_numbers.append(s)
+
+            elif bestResult.season_number and len(bestResult.episode_numbers):
+                for epNo in bestResult.episode_numbers:
+                    s = bestResult.season_number
+                    e = epNo
+
+                    if self.convert:
+                        (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
+                                                                       bestResult.show.indexer,
+                                                                       bestResult.season_number,
+                                                                       epNo)
+                    if bestResult.show.is_anime:
+                        a = helpers.get_absolute_number_from_season_and_episode(bestResult.show, s, e)
+                        if a:
+                            new_absolute_numbers.append(a)
+
+                    new_episode_numbers.append(e)
+                    new_season_numbers.append(s)
+
+            # need to do a quick sanity check heregex.  It's possible that we now have episodes
+            # from more than one season (by tvdb numbering), and this is just too much
+            # for sickbeard, so we'd need to flag it.
+            new_season_numbers = list(set(new_season_numbers))  # remove duplicates
+            if len(new_season_numbers) > 1:
+                raise InvalidNameException("Scene numbering results episodes from "
+                                           "seasons %s, (i.e. more than one) and "
+                                           "sickrage does not support this.  "
+                                           "Sorry." % (str(new_season_numbers)))
+
+            # I guess it's possible that we'd have duplicate episodes too, so lets
+            # eliminate them
+            new_episode_numbers = list(set(new_episode_numbers))
+            new_episode_numbers.sort()
+
+            # maybe even duplicate absolute numbers so why not do them as well
+            new_absolute_numbers = list(set(new_absolute_numbers))
+            new_absolute_numbers.sort()
+
+            if len(new_absolute_numbers):
+                bestResult.ab_episode_numbers = new_absolute_numbers
+
+            if len(new_season_numbers) and len(new_episode_numbers):
+                bestResult.episode_numbers = new_episode_numbers
+                bestResult.season_number = new_season_numbers[0]
+
+            if self.convert:
+                logger.log(
+                    u"Converted parsed result " + bestResult.original_name + " into " + str(bestResult).decode('utf-8',
+                                                                                                               'xmlcharrefreplace'),
+                    logger.DEBUG)
 
         # CPU sleep
         time.sleep(0.02)
@@ -512,79 +569,6 @@ class ParseResult(object):
         to_return += ' [whichReg: ' + str(self.which_regex) + ']'
 
         return to_return.encode('utf-8')
-
-    def convert(self):
-        if not self.show:
-            return self  # can't convert with out a show object
-
-        if self.is_air_by_date or self.is_sports:  # scene numbering does not apply to air-by-date or sports shows
-            return self
-
-        new_episode_numbers = []
-        new_season_numbers = []
-        new_absolute_numbers = []
-
-        if self.show.is_anime and len(self.ab_episode_numbers):
-            scene_season = scene_exceptions.get_scene_exception_by_name(self.series_name)[1]
-            for epAbsNo in self.ab_episode_numbers:
-                ab = scene_numbering.get_indexer_absolute_numbering(self.show.indexerid, self.show.indexer, epAbsNo,
-                                                                    True, scene_season)
-                if ab:
-                    try:
-                        (s, e) = helpers.get_all_episodes_from_absolute_number(self.show, [ab])
-                    except exceptions.EpisodeNotFoundByAbsoluteNumberException:
-                        logger.log(str(self.show.indexerid) + ": Indexer object absolute number " + str(
-                            ab) + " is incomplete, skipping this episode")
-                        return self
-                    else:
-                        new_absolute_numbers.append(ab)
-                        new_episode_numbers.extend(e)
-                        new_season_numbers.append(s)
-
-        elif self.season_number and len(self.episode_numbers):
-            for epNo in self.episode_numbers:
-                (s, e) = scene_numbering.get_indexer_numbering(self.show.indexerid, self.show.indexer,
-                                                               self.season_number,
-                                                               epNo)
-                if self.show.is_anime:
-                    a = helpers.get_absolute_number_from_season_and_episode(self.show, s, e)
-                    if a:
-                        new_absolute_numbers.append(a)
-
-                new_episode_numbers.append(e)
-                new_season_numbers.append(s)
-
-        # need to do a quick sanity check heregex.  It's possible that we now have episodes
-        # from more than one season (by tvdb numbering), and this is just too much
-        # for sickbeard, so we'd need to flag it.
-        new_season_numbers = list(set(new_season_numbers))  # remove duplicates
-        if len(new_season_numbers) > 1:
-            raise InvalidNameException("Scene numbering results episodes from "
-                                       "seasons %s, (i.e. more than one) and "
-                                       "sickrage does not support this.  "
-                                       "Sorry." % (str(new_season_numbers)))
-
-        # I guess it's possible that we'd have duplicate episodes too, so lets
-        # eliminate them
-        new_episode_numbers = list(set(new_episode_numbers))
-        new_episode_numbers.sort()
-
-        # maybe even duplicate absolute numbers so why not do them as well
-        new_absolute_numbers = list(set(new_absolute_numbers))
-        new_absolute_numbers.sort()
-
-        if len(new_absolute_numbers):
-            self.ab_episode_numbers = new_absolute_numbers
-
-        if len(new_season_numbers) and len(new_episode_numbers):
-            self.episode_numbers = new_episode_numbers
-            self.season_number = new_season_numbers[0]
-
-        logger.log(u"Converted parsed result " + self.original_name + " into " + str(self).decode('utf-8',
-                                                                                                  'xmlcharrefreplace'),
-                   logger.DEBUG)
-
-        return self
 
     @property
     def is_air_by_date(self):
