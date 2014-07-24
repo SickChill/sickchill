@@ -807,12 +807,10 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     return True
 
-
 if __name__ == '__main__':
     import doctest
 
     doctest.testmod()
-
 
 def parse_json(data):
     """

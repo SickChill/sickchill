@@ -275,13 +275,14 @@ class GenericMetadata():
 
     def update_show_indexer_metadata(self, show_obj):
         if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
-            logger.log(u"Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name, logger.DEBUG)
+            logger.log(
+                u"Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name,
+                logger.DEBUG)
 
             nfo_file_path = self.get_show_file_path(show_obj)
             try:
                 with ek.ek(open, nfo_file_path, 'r') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
-
 
                 indexer = showXML.find('indexer')
                 indexerid = showXML.find('id')
@@ -976,7 +977,8 @@ class GenericMetadata():
         try:
             search = tmdb.Search()
             for show_name in set(allPossibleShowNames(show)):
-                for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})['results']:
+                for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})[
+                    'results']:
                     if backdrop and result['backdrop_path']:
                         return "{0}{1}{2}".format(base_url, max_size, result['backdrop_path'])
                     elif poster and result['poster_path']:
