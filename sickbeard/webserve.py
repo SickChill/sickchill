@@ -1509,6 +1509,7 @@ class ConfigGeneral(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/general/")
 
 class ConfigBackupRestore(MainHandler):
     def index(self, *args, **kwargs):
@@ -1636,6 +1637,7 @@ class ConfigSearch(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/search/")
 
 class ConfigPostProcessing(MainHandler):
     def index(self, *args, **kwargs):
@@ -1741,6 +1743,7 @@ class ConfigPostProcessing(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/postProcessing/")
 
     def testNaming(self, pattern=None, multi=None, abd=False, sports=False, anime_type=None):
 
@@ -2179,6 +2182,7 @@ class ConfigProviders(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/providers/")
 
 class ConfigNotifications(MainHandler):
     def index(self, *args, **kwargs):
@@ -2384,6 +2388,7 @@ class ConfigNotifications(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/notifications/")
 
 class ConfigSubtitles(MainHandler):
     def index(self, *args, **kwargs):
@@ -2440,6 +2445,7 @@ class ConfigSubtitles(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/subtitles/")
 
 class ConfigAnime(MainHandler):
     def index(self, *args, **kwargs):
@@ -2485,6 +2491,7 @@ class ConfigAnime(MainHandler):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
+        redirect("/config/anime/")
 
 class Config(MainHandler):
     def index(self, *args, **kwargs):
