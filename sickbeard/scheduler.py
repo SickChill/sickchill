@@ -52,7 +52,7 @@ class Scheduler(threading.Thread):
 
     def run(self):
 
-        while(not self.stop.is_set()):
+        while not self.stop.is_set():
 
             current_time = datetime.datetime.now()
             should_run = False
