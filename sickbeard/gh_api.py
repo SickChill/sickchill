@@ -90,11 +90,6 @@ class GitHub(object):
 
     def branches(self):
         access_API = self._access_API(
-            ['repos', self.github_repo_user, self.github_repo, 'branches'])
+            ['repos', self.github_repo_user, self.github_repo, 'branches'],
+            params={'per_page': 100})
         return access_API
-
-    def checkout(self, branch):
-        access_API = self._access_API(
-            ['repos', self.github_repo_user, self.github_repo, 'branches'])
-        return access_API
-

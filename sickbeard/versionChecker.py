@@ -528,9 +528,9 @@ class GitUpdateManager(UpdateManager):
         return False
 
     def list_remote_branches(self):
-        branches, err, exit_status = self._run_git(self._git_path, 'branch -r')  # @UnusedVariable
+        branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads origin')  # @UnusedVariable
         if exit_status == 0 and branches:
-            return branches.strip().replace('origin/', '').split()
+            return re.findall('\S+\Wrefs/heads/(.*)', branches)
         return []
 
 class SourceUpdateManager(UpdateManager):
