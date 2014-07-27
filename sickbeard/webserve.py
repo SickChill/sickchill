@@ -3468,6 +3468,8 @@ class Home(MainHandler):
             return self._genericMessage("Update Failed",
                                         "Update wasn't successful, not restarting. Check your log for more information.")
 
+    def branchCheckout(self, branch):
+        self.update(sickbeard.PID, branch)
 
     def displayShow(self, show=None):
 
