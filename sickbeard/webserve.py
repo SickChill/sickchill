@@ -1506,7 +1506,7 @@ class ConfigGeneral(MainHandler):
 
         sickbeard.save_config()
 
-        sickbeard.versionCheckScheduler.action.checkout_branch(git_branch)
+        sickbeard.versionCheckScheduler.action.update(git_branch)
 
         if len(results) > 0:
             for x in results:
