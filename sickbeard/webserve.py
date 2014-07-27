@@ -83,6 +83,7 @@ from lib import adba
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError, asynchronous
 
+
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
         def basicauth(handler, transforms, *args, **kwargs):
@@ -144,6 +145,7 @@ class HTTPRedirect(Exception):
 def redirect(url, permanent=False, status=None):
     assert url[0] == '/'
     raise HTTPRedirect(sickbeard.WEB_ROOT + url, permanent, status)
+
 
 @authenticated
 class MainHandler(RequestHandler):
@@ -1506,6 +1508,7 @@ class ConfigGeneral(MainHandler):
 
         redirect("/config/general/")
 
+
 class ConfigBackupRestore(MainHandler):
     def index(self, *args, **kwargs):
         t = PageTemplate(headers=self.request.headers, file="config_backuprestore.tmpl")
@@ -1632,6 +1635,7 @@ class ConfigSearch(MainHandler):
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
         redirect("/config/search/")
+
 
 class ConfigPostProcessing(MainHandler):
     def index(self, *args, **kwargs):
@@ -2178,6 +2182,7 @@ class ConfigProviders(MainHandler):
 
         redirect("/config/providers/")
 
+
 class ConfigNotifications(MainHandler):
     def index(self, *args, **kwargs):
         t = PageTemplate(headers=self.request.headers, file="config_notifications.tmpl")
@@ -2211,7 +2216,8 @@ class ConfigNotifications(MainHandler):
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
                           use_trakt=None, trakt_username=None, trakt_password=None, trakt_api=None,
                           trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
-                          trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_default_indexer=None,
+                          trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
+                          trakt_default_indexer=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -2384,6 +2390,7 @@ class ConfigNotifications(MainHandler):
 
         redirect("/config/notifications/")
 
+
 class ConfigSubtitles(MainHandler):
     def index(self, *args, **kwargs):
         t = PageTemplate(headers=self.request.headers, file="config_subtitles.tmpl")
@@ -2441,6 +2448,7 @@ class ConfigSubtitles(MainHandler):
 
         redirect("/config/subtitles/")
 
+
 class ConfigAnime(MainHandler):
     def index(self, *args, **kwargs):
 
@@ -2471,6 +2479,7 @@ class ConfigAnime(MainHandler):
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
         redirect("/config/anime/")
+
 
 class Config(MainHandler):
     def index(self, *args, **kwargs):
@@ -2535,7 +2544,8 @@ class HomePostProcess(MainHandler):
 
         redirect("/home/")
 
-    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None, is_priority=None, failed="0", type="auto", *args, **kwargs):
+    def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
+                       is_priority=None, failed="0", type="auto", *args, **kwargs):
 
         if failed == "0":
             failed = False
@@ -2758,9 +2768,7 @@ class NewHomeAddShows(MainHandler):
         final_results = []
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-        recommendedlist = TraktCall("recommendations/shows.json/%API%/" + sickbeard.TRAKT_USERNAME,
-                                    sickbeard.TRAKT_API,
-                                    sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        recommendedlist = TraktCall("recommendations/shows.json/%API%/", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
         if recommendedlist is None:
             logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
             return
