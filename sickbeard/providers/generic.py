@@ -303,6 +303,7 @@ class GenericProvider:
             showObj = parse_result.show
             quality = parse_result.quality
             release_group = parse_result.release_group
+            version = parse_result.version
 
             addCacheEntry = False
             if not (showObj.air_by_date or showObj.sports):
@@ -391,6 +392,7 @@ class GenericProvider:
             result.quality = quality
             result.release_group = release_group
             result.content = None
+            result.version = version
 
             if len(epObj) == 1:
                 epNum = epObj[0].episode

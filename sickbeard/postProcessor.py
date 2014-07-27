@@ -92,6 +92,8 @@ class PostProcessor(object):
         self.is_priority = is_priority
 
         self.log = ''
+        
+        self.version = None
 
     def _log(self, message, level=logger.MESSAGE):
         """
@@ -382,10 +384,10 @@ class PostProcessor(object):
         """
         Look up the NZB name in the history and see if it contains a record for self.nzb_name
 
-        Returns a (indexer_id, season, []) tuple. The first two may be None if none were found.
+        Returns a (indexer_id, season, [], quality, version) tuple. The first two may be None if none were found.
         """
 
-        to_return = (None, None, [], None)
+        to_return = (None, None, [], None, None)
 
         # if we don't have either of these then there's nothing to use to search the history for anyway
         if not self.nzb_name and not self.folder_name:
@@ -413,6 +415,7 @@ class PostProcessor(object):
             indexer_id = int(sql_results[0]["showid"])
             season = int(sql_results[0]["season"])
             quality = int(sql_results[0]["quality"])
+            version = int(sql_results[0]["version"])
 
             if quality == common.Quality.UNKNOWN:
                 quality = None
@@ -420,7 +423,8 @@ class PostProcessor(object):
             show = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
             self.in_history = True
-            to_return = (show, season, [], quality)
+            self.version = version
+            to_return = (show, season, [], quality, version)
             self._log("Found result in history: " + str(to_return), logger.DEBUG)
 
             return to_return
@@ -452,6 +456,7 @@ class PostProcessor(object):
             logger.log(u" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
             logger.log(u"Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
 
+
     def _analyze_name(self, name, file=True):
         """
         Takes a name and tries to figure out a show, season, and episode from it.
@@ -464,7 +469,7 @@ class PostProcessor(object):
 
         logger.log(u"Analyzing name " + repr(name))
 
-        to_return = (None, None, [], None)
+        to_return = (None, None, [], None, None)
 
         if not name:
             return to_return
@@ -488,7 +493,7 @@ class PostProcessor(object):
             season = parse_result.season_number
             episodes = parse_result.episode_numbers
 
-        to_return = (show, season, episodes, parse_result.quality)
+        to_return = (show, season, episodes, parse_result.quality, None)
 
         self._finalize(parse_result)
         return to_return
@@ -516,7 +521,7 @@ class PostProcessor(object):
         For a given file try to find the showid, season, and episode.
         """
 
-        show = season = quality = None
+        show = season = quality = version = None
         episodes = []
 
         # try to look up the nzb in history
@@ -542,7 +547,7 @@ class PostProcessor(object):
         for cur_attempt in attempt_list:
 
             try:
-                (cur_show, cur_season, cur_episodes, cur_quality) = cur_attempt()
+                (cur_show, cur_season, cur_episodes, cur_quality, cur_version) = cur_attempt()
             except (InvalidNameException, InvalidShowException), e:
                 logger.log(u"Unable to parse, skipping: " + ex(e), logger.DEBUG)
                 continue
@@ -554,6 +559,10 @@ class PostProcessor(object):
 
             if cur_quality and not (self.in_history and quality):
                 quality = cur_quality
+
+            # we only get current version for animes from history to prevent issues with old database entries
+            if cur_version is not None:
+                version = cur_version
 
             if cur_season != None:
                 season = cur_season
@@ -594,9 +603,9 @@ class PostProcessor(object):
                     season = 1
 
             if show and season and episodes:
-                return (show, season, episodes, quality)
+                return (show, season, episodes, quality, version)
 
-        return (show, season, episodes, quality)
+        return (show, season, episodes, quality, version)
 
     def _get_ep_obj(self, show, season, episodes):
         """
@@ -783,7 +792,7 @@ class PostProcessor(object):
         self.anidbEpisode = None
 
         # try to find the file info
-        (show, season, episodes, quality) = self._find_info()
+        (show, season, episodes, quality, version) = self._find_info()
         if not show:
             self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
                       logger.ERROR)
@@ -809,6 +818,14 @@ class PostProcessor(object):
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
         self._log(u"Is ep a priority download: " + str(priority_download), logger.DEBUG)
+
+        # get the version of the episode we're processing
+        if version:
+            self._log(u"Snatch history had a version in it, using that: v" + str(version),
+                      logger.DEBUG)
+            new_ep_version = version
+        else:
+            new_ep_version = -1
 
         # check for an existing file
         existing_file_status = self._checkForExistingFile(ep_obj.location)
@@ -889,6 +906,13 @@ class PostProcessor(object):
                 cur_ep.subtitles_lastsearch = '0001-01-01 00:00:00'
 
                 cur_ep.is_proper = self.is_proper
+
+                cur_ep.version = new_ep_version
+
+                if self.release_group:
+                    cur_ep.release_group = self.release_group
+                else:
+                    cur_ep.release_group = ""
 
                 sql_l.append(cur_ep.get_sql())
 
@@ -981,7 +1005,7 @@ class PostProcessor(object):
         ep_obj.createMetaFiles()
 
         # log it to history
-        history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group)
+        history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
 
         # send notifications
         notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
