@@ -81,9 +81,7 @@ except ImportError:
 from lib import adba
 
 from Cheetah.Template import Template
-
-from tornado.web import RequestHandler, HTTPError
-
+from tornado.web import RequestHandler, HTTPError, asynchronous
 
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
@@ -190,7 +188,6 @@ class MainHandler(RequestHandler):
                                              trace_info, request_info))
 
     def _dispatch(self):
-
         path = self.request.uri.replace(sickbeard.WEB_ROOT, '').split('?')[0]
 
         method = path.strip('/').split('/')[-1]
@@ -236,12 +233,14 @@ class MainHandler(RequestHandler):
 
         raise HTTPError(404)
 
+    @asynchronous
     def get(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
         except HTTPRedirect, e:
             self.redirect(e.url, e.permanent, e.status)
 
+    @asynchronous
     def post(self, *args, **kwargs):
         try:
             self.finish(self._dispatch())
