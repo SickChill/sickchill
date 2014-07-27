@@ -77,7 +77,6 @@ def _update_zoneinfo():
     url_zv = 'https://raw.githubusercontent.com/Prinz23/sb_network_timezones/master/zoneinfo.txt'
 
     url_data = helpers.getURL(url_zv)
-
     if url_data is None:
         # When urlData is None, trouble connecting to github
         logger.log(u"Loading zoneinfo.txt failed. Unable to get URL: " + url_zv, logger.ERROR)
@@ -148,7 +147,6 @@ def update_network_dict():
     url = 'https://raw.githubusercontent.com/Prinz23/sb_network_timezones/master/network_timezones.txt'
 
     url_data = helpers.getURL(url)
-
     if url_data is None:
         # When urlData is None, trouble connecting to github
         logger.log(u"Loading Network Timezones update failed. Unable to get URL: " + url, logger.ERROR)

@@ -23,26 +23,24 @@ import os
 import time
 import urllib
 import datetime
-import threading
 import re
 import traceback
 import sickbeard
 import webserve
 
 from sickbeard import db, logger, exceptions, history, ui, helpers
-from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
+from sickbeard import image_cache
+from sickbeard import classes
+from sickbeard.exceptions import ex
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
-from sickbeard import image_cache
 
 try:
     import json
 except ImportError:
     from lib import simplejson as json
-
-import xml.etree.cElementTree as etree
 
 from lib import subliminal
 
@@ -1530,7 +1528,7 @@ class CMD_SickBeardRestart(ApiCall):
 class CMD_SickBeardSearchIndexers(ApiCall):
     _help = {"desc": "search for show on the indexers with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
-                                    "indexerid": {"desc": "thetvdb.com unique id of a show"},
+                                    "indexerid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
     }
@@ -1555,31 +1553,30 @@ class CMD_SickBeardSearchIndexers(ApiCall):
     def run(self):
         """ search for show at tvdb with a given string and language """
         if self.name and not self.indexerid:  # only name was given
-            baseURL = "http://thetvdb.com/api/GetSeries.php?"
-            params = {"seriesname": str(self.name).encode('utf-8'), 'language': self.lang}
-            finalURL = baseURL + urllib.urlencode(params)
-            urlData = sickbeard.helpers.getURL(finalURL)
+            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+            lINDEXER_API_PARMS['language'] = self.lang
+            lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
+            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
-            if urlData is None:
+            apiData = None
+
+            try:
+                apiData = t[str(self.name).encode()]
+            except Exception, e:
+                pass
+
+            if not apiData:
                 return _responds(RESULT_FAILURE, msg="Did not get result from tvdb")
-            else:
-                try:
-                    seriesXML = etree.ElementTree(etree.XML(urlData))
-                except Exception, e:
-                    logger.log(u"API :: Unable to parse XML for some reason: " + ex(e) + " from XML: " + urlData,
-                               logger.ERROR)
-                    return _responds(RESULT_FAILURE, msg="Unable to read result from tvdb")
 
-                series = seriesXML.getiterator('Series')
-                results = []
-                for curSeries in series:
-                    results.append({"indexerid": int(curSeries.findtext('seriesid')),
-                                    "tvdbid": int(curSeries.findtext('seriesid')),
-                                    "name": curSeries.findtext('SeriesName'),
-                                    "first_aired": curSeries.findtext('FirstAired')})
+            results = []
+            for curSeries in apiData:
+                results.append({"indexerid": int(curSeries.findtext('seriesid')),
+                                "tvdbid": int(curSeries.findtext('seriesid')),
+                                "name": curSeries.findtext('SeriesName'),
+                                "first_aired": curSeries.findtext('FirstAired')})
 
-                lang_id = self.valid_languages[self.lang]
-                return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
+            lang_id = self.valid_languages[self.lang]
+            return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
             lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()

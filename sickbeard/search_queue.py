@@ -35,7 +35,7 @@ search_queue_lock = threading.Lock()
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20
 FAILED_SEARCH = 30
-MANUAL_SEARCH = 30
+MANUAL_SEARCH = 40
 
 
 class SearchQueue(generic_queue.GenericQueue):

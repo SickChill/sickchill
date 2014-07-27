@@ -23,7 +23,7 @@ indexerConfig[INDEXER_TVDB] = {
     'module': Tvdb,
     'api_params': {'apikey': 'F9C450E78D99172E',
                    'language': 'en',
-                   'useZip': True
+                   'useZip': True,
     },
 }
 
@@ -32,7 +32,7 @@ indexerConfig[INDEXER_TVRAGE] = {
     'name': 'TVRage',
     'module': TVRage,
     'api_params': {'apikey': 'Uhewg1Rr0o62fvZvUIZt',
-                   'language': 'en'
+                   'language': 'en',
     },
 }
 

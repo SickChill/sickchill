@@ -163,21 +163,18 @@ class WindowsUpdateManager(UpdateManager):
         regex = ".*SickRage\-win32\-alpha\-build(\d+)(?:\.\d+)?\.zip"
 
         version_url_data = helpers.getURL(self.version_url)
+        if not version_url_data:
+            return
 
-        if version_url_data is None:
-            return None
-        else:
-            for curLine in version_url_data.splitlines():
-                logger.log(u"checking line " + curLine, logger.DEBUG)
-                match = re.match(regex, curLine)
-                if match:
-                    logger.log(u"found a match", logger.DEBUG)
-                    if whole_link:
-                        return curLine.strip()
-                    else:
-                        return int(match.group(1))
-
-        return None
+        for curLine in version_url_data.splitlines():
+            logger.log(u"checking line " + curLine, logger.DEBUG)
+            match = re.match(regex, curLine)
+            if match:
+                logger.log(u"found a match", logger.DEBUG)
+                if whole_link:
+                    return curLine.strip()
+                else:
+                    return int(match.group(1))
 
     def need_update(self):
         self._cur_version = self._find_installed_version()

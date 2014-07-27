@@ -51,13 +51,11 @@ class GitHub(object):
         if params and type(params) is dict:
             url += '?' + '&'.join([str(x) + '=' + str(params[x]) for x in params.keys()])
 
-        data = helpers.getURL(url)
-
-        if data:
-            json_data = json.loads(data)
-            return json_data
-        else:
+        parsedJSON = helpers.getURL(url, json=True)
+        if not parsedJSON:
             return []
+
+        return parsedJSON
 
     def commits(self):
         """

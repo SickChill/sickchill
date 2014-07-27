@@ -141,7 +141,6 @@ class PublicHDProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 html = self.getURL(searchURL)
-
                 if not html:
                     continue
 
@@ -204,74 +203,6 @@ class PublicHDProvider(generic.TorrentProvider):
             url = url.replace('&amp;', '&')
 
         return (title, url)
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self.session = requests.Session()
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            r = self.session.get(url, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
-            return None
-
-        if r.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
-            return None
-
-        return r.content
-
-    def downloadResult(self, result):
-        """
-        Save the result to disk.
-        """
-
-        if not self.session:
-            self.session = requests.Session()
-
-        torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
-
-        if not torrent_hash:
-            logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
-            return False
-
-        try:
-            r = self.session.get('http://torcache.net/torrent/' + torrent_hash + '.torrent', verify=False)
-        except Exception, e:
-            logger.log("Unable to connect to TORCACHE: " + ex(e), logger.ERROR)
-            try:
-                logger.log("Trying TORRAGE cache instead")
-                r = self.session.get('http://torrage.com/torrent/' + torrent_hash + '.torrent', verify=False)
-            except Exception, e:
-                logger.log("Unable to connect to TORRAGE: " + ex(e), logger.ERROR)
-                return False
-
-        if not r.status_code == 200:
-            return False
-
-        magnetFileName = ek.ek(os.path.join, sickbeard.TORRENT_DIR,
-                               helpers.sanitizeFileName(result.name) + '.' + self.providerType)
-        magnetFileContent = r.content
-
-        try:
-            with open(magnetFileName, 'wb') as fileOut:
-                fileOut.write(magnetFileContent)
-
-            helpers.chmodAsParent(magnetFileName)
-
-        except EnvironmentError, e:
-            logger.log("Unable to save the file: " + ex(e), logger.ERROR)
-            return False
-
-        logger.log(u"Saved magnet link to " + magnetFileName + " ", logger.MESSAGE)
-        return True
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

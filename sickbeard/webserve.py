@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+
 import base64
 import inspect
 import traceback
@@ -1429,8 +1430,7 @@ class ConfigGeneral(MainHandler):
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-                    proxy_setting=None,
-                    anon_redirect=None, git_path=None, calendar_unprotected=None,
+                    proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, play_videos=None):
 
@@ -1538,7 +1538,6 @@ class ConfigBackupRestore(MainHandler):
 
 
     def restore(self, backupFile=None):
-
 
         finalResult = ''
 
@@ -2460,26 +2459,11 @@ class ConfigAnime(MainHandler):
 
         results = []
 
-        if use_anidb == "on":
-            use_anidb = 1
-        else:
-            use_anidb = 0
-
-        if anidb_use_mylist == "on":
-            anidb_use_mylist = 1
-        else:
-            anidb_use_mylist = 0
-
-        if split_home == "on":
-            split_home = 1
-        else:
-            split_home = 0
-
-        sickbeard.USE_ANIDB = use_anidb
+        sickbeard.USE_ANIDB = config.checkbox_to_value(use_anidb)
         sickbeard.ANIDB_USERNAME = anidb_username
         sickbeard.ANIDB_PASSWORD = anidb_password
-        sickbeard.ANIDB_USE_MYLIST = anidb_use_mylist
-        sickbeard.ANIME_SPLIT_HOME = split_home
+        sickbeard.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
+        sickbeard.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
 
         sickbeard.save_config()
 

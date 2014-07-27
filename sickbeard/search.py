@@ -59,7 +59,6 @@ def _downloadResult(result):
     # nzbs with an URL can just be downloaded from the provider
     if result.resultType == "nzb":
         newResult = resProvider.downloadResult(result)
-
     # if it's an nzb data result
     elif result.resultType == "nzbdata":
 
@@ -83,17 +82,11 @@ def _downloadResult(result):
 
     elif resProvider.providerType == "torrent":
         newResult = resProvider.downloadResult(result)
-
     else:
         logger.log(u"Invalid provider type - this is a coding error, report it please", logger.ERROR)
-        return False
-
-    if newResult and sickbeard.USE_FAILED_DOWNLOADS:
-        ui.notifications.message('Episode snatched',
-                                 '<b>%s</b> snatched from <b>%s</b>' % (result.name, resProvider.name))
+        newResult = False
 
     return newResult
-
 
 def snatchEpisode(result, endStatus=SNATCHED):
     """

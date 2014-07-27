@@ -10,6 +10,7 @@ Modified from http://github.com/dbr/tvrage_api
 Simple-to-use Python interface to The TVRage's API (tvrage.com)
 """
 from functools import wraps
+import traceback
 
 __author__ = "echel0n"
 __version__ = "1.0"
@@ -23,7 +24,7 @@ import warnings
 import logging
 import datetime as dt
 import requests
-import cachecontrol
+import requests.exceptions
 import xmltodict
 
 try:
@@ -32,7 +33,7 @@ except ImportError:
     import xml.etree.ElementTree as ElementTree
 
 from lib.dateutil.parser import parse
-from cachecontrol import caches
+from cachecontrol import CacheControl, caches
 
 from tvrage_ui import BaseUI
 from tvrage_exceptions import (tvrage_error, tvrage_userabort, tvrage_shownotfound,
@@ -283,7 +284,8 @@ class TVRage:
                  apikey=None,
                  forceConnect=False,
                  useZip=False,
-                 dvdorder=False):
+                 dvdorder=False,
+                 proxy=None):
 
         """
         cache (True/False/str/unicode/urllib2 opener):
@@ -316,16 +318,18 @@ class TVRage:
 
         self.config['custom_ui'] = custom_ui
 
+        self.config['proxy'] = proxy
+
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
-            self.sess = cachecontrol.CacheControl(cache=caches.FileCache(self.config['cache_location']))
+            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.config['cache_location'] = cache
-            self.sess = cachecontrol.CacheControl(cache=caches.FileCache(self.config['cache_location']))
+            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -401,18 +405,25 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
+                if self.config['proxy']:
+                    log().debug("Using proxy for URL: %s" % url)
+                    self.sess.proxies = {
+                        "http": self.config['proxy'],
+                        "https": self.config['proxy'],
+                    }
+
                 resp = self.sess.get(url.strip(), cache_auto=True, params=params)
             else:
                 resp = requests.get(url.strip(), params=params)
 
-        except requests.HTTPError, e:
+        except requests.exceptions.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
-
-        except requests.ConnectionError, e:
+        except requests.exceptions.ConnectionError, e:
             raise tvrage_error("Connection error " + str(e.message) + " while loading URL " + str(url))
-
-        except requests.Timeout, e:
+        except requests.exceptions.Timeout, e:
             raise tvrage_error("Connection timed out " + str(e.message) + " while loading URL " + str(url))
+        except Exception:
+            raise tvrage_error("Unknown exception while loading URL " + url + ": " + traceback.format_exc())
 
         def remap_keys(path, key, value):
             name_map = {
@@ -564,7 +575,8 @@ class TVRage:
 
         if self.config['custom_ui'] is not None:
             log().debug("Using custom UI %s" % (repr(self.config['custom_ui'])))
-            ui = self.config['custom_ui'](config=self.config)
+            CustomUI = self.config['custom_ui']
+            ui = CustomUI(config=self.config)
         else:
             log().debug('Auto-selecting first search result using BaseUI')
             ui = BaseUI(config=self.config)

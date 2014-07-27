@@ -69,8 +69,6 @@ class SCCProvider(generic.TorrentProvider):
 
         self.categories = "c27=27&c17=17&c11=11"
 
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
-
     def isEnabled(self):
         return self.enabled
 
@@ -178,14 +176,14 @@ class SCCProvider(generic.TorrentProvider):
                 foreignSearchURL = None
                 if mode == 'Season':
                     searchURL = self.urls['archive'] % (search_string)
-                    data = [self.getURL(searchURL, headers=self.headers)]
+                    data = [self.getURL(searchURL)]
                 else:
                     searchURL = self.urls['search'] % (search_string, self.categories)
                     nonsceneSearchURL = self.urls['nonscene'] % (search_string)
                     foreignSearchURL = self.urls['foreign'] % (search_string)
-                    data = [self.getURL(searchURL, headers=self.headers),
-                            self.getURL(nonsceneSearchURL, headers=self.headers),
-                            self.getURL(foreignSearchURL, headers=self.headers)]
+                    data = [self.getURL(searchURL),
+                            self.getURL(nonsceneSearchURL),
+                            self.getURL(foreignSearchURL)]
                     logger.log(u"Search string: " + nonsceneSearchURL, logger.DEBUG)
                     logger.log(u"Search string: " + foreignSearchURL, logger.DEBUG)
 
@@ -222,9 +220,10 @@ class SCCProvider(generic.TorrentProvider):
 
                                     title = link.string
                                     if re.search('\.\.\.', title):
-                                        with BS4Parser(self.getURL(self.url + "/" + link['href'])) as details_html:
-                                            title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
-
+                                        data = self.getURL(self.url + "/" + link['href'])
+                                        if data:
+                                            with BS4Parser(data) as details_html:
+                                                title = re.search('(?<=").+(?<!")', details_html.title.string).group(0)
                                     download_url = self.urls['download'] % url['href']
                                     id = int(link['href'].replace('details?id=', ''))
                                     seeders = int(result.find('td', attrs={'class': 'ttr_seeders'}).string)
@@ -271,32 +270,6 @@ class SCCProvider(generic.TorrentProvider):
             url = str(url).replace('&amp;', '&')
 
         return (title, url)
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self._doLogin()
-
-        if not headers:
-            headers = {}
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            response = self.session.get(url, headers=headers, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
-            return None
-
-        if response.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
-            return None
-
-        return response.content
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

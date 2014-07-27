@@ -33,9 +33,11 @@ import uuid
 import base64
 import zipfile
 
-from lib import requests
-from lib.requests import exceptions
-from itertools import izip, cycle
+import sickbeard
+import subliminal
+import adba
+import requests
+import requests.exceptions
 
 try:
     import json
@@ -49,20 +51,18 @@ except ImportError:
 
 from xml.dom.minidom import Node
 
-import sickbeard
-from sickbeard.exceptions import MultipleShowObjectsException, EpisodeNotFoundByAbsoluteNumberException, ex
+from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions, XML_NSMAP
+from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
-from lib import subliminal
-from lib import adba
-from lib import trakt
+from sickbeard import clients
+
+from cachecontrol import CacheControl, caches
+from itertools import izip, cycle
 
 urllib._urlopener = classes.SickBeardURLopener()
-session = requests.Session()
-
 
 def indentXML(elem, level=0):
     '''
@@ -191,100 +191,11 @@ def sanitizeFileName(name):
 
     return name
 
-
-def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False, use_proxy=False):
-    """
-    Returns a byte-string retrieved from the url provider.
-    """
-
-    global session
-    if not session:
-        session = requests.Session()
-
-    req_headers = ['User-Agent', USER_AGENT, 'Accept-Encoding', 'gzip,deflate']
-    if headers:
-        for cur_header in headers:
-            req_headers.append(cur_header)
-
-    try:
-        # Remove double-slashes from url
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-        url = urlparse.urlunparse(parsed)
-
-        it = iter(req_headers)
-
-        if use_proxy and sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies,
-                            timeout=timeout, verify=False)
-        else:
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), timeout=timeout,
-                            verify=False)
-    except requests.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    except requests.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    except requests.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    if r.ok:
-        if json:
-            return r.json()
-
-        return r.content
-
-
 def _remove_file_failed(file):
     try:
         ek.ek(os.remove, file)
     except:
         pass
-
-
-def download_file(url, filename):
-    global session
-    if not session:
-        session = requests.Session()
-
-    try:
-        r = session.get(url, stream=True, verify=False)
-        with open(filename, 'wb') as fp:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    fp.write(chunk)
-                    fp.flush()
-
-    except requests.HTTPError, e:
-        _remove_file_failed(filename)
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except requests.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except requests.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except Exception:
-        _remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
-        return False
-
-    return True
-
 
 def findCertainShow(showList, indexerid):
     if not showList:
@@ -610,6 +521,12 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         else:
             break
 
+def fileBitFilter(mode):
+    for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
+        if mode & bit:
+            mode -= bit
+
+    return mode
 
 def chmodAsParent(childPath):
     if os.name == 'nt' or os.name == 'ce':
@@ -648,15 +565,6 @@ def chmodAsParent(childPath):
                    logger.DEBUG)
     except OSError:
         logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.ERROR)
-
-
-def fileBitFilter(mode):
-    for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
-        if mode & bit:
-            mode -= bit
-
-    return mode
-
 
 def fixSetGroupID(childPath):
     if os.name == 'nt' or os.name == 'ce':
@@ -1273,3 +1181,129 @@ def touchFile(fname, atime=None):
             pass
 
     return False
+
+def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
+    """
+    Returns a byte-string retrieved from the url provider.
+    """
+
+    # request session
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(sickbeard.CACHE_DIR, 'sessions')))
+
+    # request session headers
+    req_headers = {'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'}
+    if headers:
+        req_headers.update(headers)
+    session.headers.update(req_headers)
+
+    # request session ssl verify
+    session.verify = False
+
+    # request session paramaters
+    session.params = params
+
+    try:
+        # Remove double-slashes from url
+        parsed = list(urlparse.urlparse(url))
+        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
+        url = urlparse.urlunparse(parsed)
+
+        # request session proxies
+        if sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
+            session.proxies = {
+                "http": sickbeard.PROXY_SETTING,
+                "https": sickbeard.PROXY_SETTING,
+            }
+
+        resp = session.get(url, data=post_data, timeout=timeout)
+    except requests.exceptions.HTTPError, e:
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        return
+    except requests.exceptions.ConnectionError, e:
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return
+    except requests.exceptions.Timeout, e:
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return
+    except Exception:
+        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        return
+
+    if not resp:
+        logger.log(u"No data returned from " + url, logger.DEBUG)
+        return
+    elif not resp.ok:
+        logger.log(u"Requested url " + url + " returned status code is " + str(
+            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+        return
+
+    if json:
+        return resp.json()
+
+    return resp.content
+
+def download_file(url, filename, session=None):
+
+    # create session
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(sickbeard.CACHE_DIR, 'sessions')))
+
+    # request session headers
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+
+    # request session ssl verify
+    session.verify = False
+
+    # request session streaming
+    session.stream = True
+
+    # request session proxies
+    if sickbeard.PROXY_SETTING:
+        logger.log("Using proxy for url: " + url, logger.DEBUG)
+        session.proxies = {
+            "http": sickbeard.PROXY_SETTING,
+            "https": sickbeard.PROXY_SETTING,
+        }
+
+    try:
+        resp = session.get(url)
+        if not resp.ok:
+            return False
+
+        with open(filename, 'wb') as fp:
+            for chunk in resp.iter_content(chunk_size=1024):
+                if chunk:
+                    fp.write(chunk)
+                    fp.flush()
+
+        chmodAsParent(filename)
+    except requests.exceptions.HTTPError, e:
+        _remove_file_failed(filename)
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        return False
+    except requests.exceptions.ConnectionError, e:
+        _remove_file_failed(filename)
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return False
+    except requests.exceptions.Timeout, e:
+        _remove_file_failed(filename)
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return False
+    except EnvironmentError, e:
+        _remove_file_failed(filename)
+        logger.log(u"Unable to save the file: " + ex(e), logger.ERROR)
+        return False
+    except Exception:
+        _remove_file_failed(filename)
+        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        return False
+
+    if not resp:
+        logger.log(u"No data returned from " + url, logger.DEBUG)
+        return False
+    elif not resp.ok:
+        logger.log(u"Requested url " + url + " returned status code is " + str(
+            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+        return False
+
+    return True

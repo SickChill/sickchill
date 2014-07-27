@@ -721,7 +721,7 @@ class TVShow(object):
                 if newStatus != None:
                     with curEp.lock:
                         logger.log(u"STATUS: we have an associated file, so setting the status from " + str(
-                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file)), logger.DEBUG)
+                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file, anime=self.is_anime)), logger.DEBUG)
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -1676,7 +1676,7 @@ class TVEpisode(object):
                 logger.log(
                     u"5 Status changes from " + str(self.status) + " to " + str(Quality.statusFromName(self.location)),
                     logger.DEBUG)
-                self.status = Quality.statusFromName(self.location)
+                self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
         # shouldn't get here probably
         else:
@@ -1701,8 +1701,8 @@ class TVEpisode(object):
             if self.status == UNKNOWN:
                 if sickbeard.helpers.isMediaFile(self.location):
                     logger.log(u"7 Status changes from " + str(self.status) + " to " + str(
-                        Quality.statusFromName(self.location)), logger.DEBUG)
-                    self.status = Quality.statusFromName(self.location)
+                        Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
+                    self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
             nfoFile = sickbeard.helpers.replaceExtension(self.location, "nfo")
             logger.log(str(self.show.indexerid) + u": Using NFO name " + nfoFile, logger.DEBUG)

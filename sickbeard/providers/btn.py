@@ -89,7 +89,6 @@ class BTNProvider(generic.TorrentProvider):
             params.update(search_params)
 
         parsedJSON = self._api_call(apikey, params)
-
         if not parsedJSON:
             logger.log(u"No data returned from " + self.name, logger.ERROR)
             return []

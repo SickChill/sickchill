@@ -23,14 +23,8 @@ class RSSFeeds:
             with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
                 fc = cache.Cache(fs)
                 fc.purge(age)
-        except:
-            os.remove(self.db_name)
-            try:
-                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
-                    fc = cache.Cache(fs)
-                    fc.purge(age)
-            except Exception as e:
-                logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
+        except Exception as e:
+            logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
 
     def getFeed(self, url, post_data=None, request_headers=None):
         parsed = list(urlparse.urlparse(url))
@@ -43,25 +37,18 @@ class RSSFeeds:
             with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
                 fc = cache.Cache(fs)
                 feed = fc.fetch(url, False, False, request_headers)
-        except:
-            os.remove(self.db_name)
-            try:
-                with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
-                    fc = cache.Cache(fs)
-                    feed = fc.fetch(url, False, False, request_headers)
-            except Exception as e:
-                logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
-                feed = None
 
-        if not feed:
-            logger.log(u"RSS Error loading URL: " + url, logger.ERROR)
-            return
-        elif 'error' in feed.feed:
-            logger.log(u"RSS ERROR:[%s] CODE:[%s]" % (feed.feed['error']['description'], feed.feed['error']['code']),
-                       logger.DEBUG)
-            return
-        elif not feed.entries:
-            logger.log(u"No RSS items found using URL: " + url, logger.WARNING)
-            return
+                if not feed or not feed.entries:
+                    logger.log(u"RSS cache error loading url: " + url, logger.ERROR)
+                    return
+                elif 'error' in feed.feed:
+                    err_code = feed.feed['error']['code']
+                    err_desc = feed.feed['error']['description']
 
-        return feed
+                    logger.log(
+                        u"RSS ERROR:[%s] CODE:[%s]" % (err_desc, err_code), logger.DEBUG)
+                    return
+
+                return feed
+        except Exception as e:
+            logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)

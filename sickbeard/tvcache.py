@@ -106,16 +106,18 @@ class TVCache():
     def updateCache(self):
 
         if self.shouldUpdate() and self._checkAuth(None):
-            self._clearCache()
-
-            data = self._getRSSData()
-
             # as long as the http request worked we count this as an update
-            if data:
-                self.setLastUpdate()
-            else:
+            data = self._getRSSData()
+            if not data:
                 return []
 
+            # clear cache
+            self._clearCache()
+
+            # set updated
+            self.setLastUpdate()
+
+            # parse data
             if self._checkAuth(data):
                 cl = []
                 for item in data.entries:

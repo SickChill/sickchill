@@ -200,66 +200,66 @@ class NextGenProvider(generic.TorrentProvider):
                 logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
+                if not data:
+                    continue
 
-                if data:
+                try:
+                    with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
+                        resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
 
-                    try:
-                        with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
-                            resultsTable = html.find('div', attrs={'id': 'torrent-table-wrapper'})
+                        if not resultsTable:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.DEBUG)
+                            continue
 
-                            if not resultsTable:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                        # Collecting entries
+                        entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
+                        entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
+
+                        entries = entries_std + entries_sticky
+
+                        #Xirg STANDARD TORRENTS
+                        #Continue only if one Release is found
+                        if len(entries) > 0:
+
+                            for result in entries:
+
+                                try:
+                                    torrentName = \
+                                    ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
+                                    torrentId = (
+                                    ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
+                                        'download.php?id=', '')
+                                    torrent_name = str(torrentName)
+                                    torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
+                                    torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
+                                    #torrent_seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
+                                    ## Not used, perhaps in the future ##
+                                    #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
+                                    #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
+                                except (AttributeError, TypeError):
+                                    continue
+
+                                # Filter unseeded torrent and torrents with no name/url
+                                #if mode != 'RSS' and torrent_seeders == 0:
+                                #    continue
+
+                                if not torrent_name or not torrent_download_url:
+                                    continue
+
+                                item = torrent_name, torrent_download_url
+                                logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
                                            logger.DEBUG)
-                                continue
+                                items[mode].append(item)
 
-                            # Collecting entries
-                            entries_std = html.find_all('div', attrs={'id': 'torrent-std'})
-                            entries_sticky = html.find_all('div', attrs={'id': 'torrent-sticky'})
+                        else:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.WARNING)
+                            continue
 
-                            entries = entries_std + entries_sticky
-
-                            #Xirg STANDARD TORRENTS
-                            #Continue only if one Release is found
-                            if len(entries) > 0:
-
-                                for result in entries:
-
-                                    try:
-                                        torrentName = \
-                                        ((result.find('div', attrs={'id': 'torrent-udgivelse2-users'})).find('a'))['title']
-                                        torrentId = (
-                                        ((result.find('div', attrs={'id': 'torrent-download'})).find('a'))['href']).replace(
-                                            'download.php?id=', '')
-                                        torrent_name = str(torrentName)
-                                        torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                        torrent_details_url = (self.urls['detail'] % torrentId).encode('utf8')
-                                        #torrent_seeders = int(result.find('div', attrs = {'id' : 'torrent-seeders'}).find('a')['class'][0])
-                                        ## Not used, perhaps in the future ##
-                                        #torrent_id = int(torrent['href'].replace('/details.php?id=', ''))
-                                        #torrent_leechers = int(result.find('td', attrs = {'class' : 'ac t_leechers'}).string)
-                                    except (AttributeError, TypeError):
-                                        continue
-
-                                    # Filter unseeded torrent and torrents with no name/url
-                                    #if mode != 'RSS' and torrent_seeders == 0:
-                                    #    continue
-
-                                    if not torrent_name or not torrent_download_url:
-                                        continue
-
-                                    item = torrent_name, torrent_download_url
-                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
-                                               logger.DEBUG)
-                                    items[mode].append(item)
-
-                            else:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                           logger.WARNING)
-                                continue
-
-                    except Exception, e:
-                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                                   logger.ERROR)
+                except Exception, e:
+                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                               logger.ERROR)
 
             results += items[mode]
 
@@ -277,32 +277,6 @@ class NextGenProvider(generic.TorrentProvider):
             url = str(url).replace('&amp;', '&')
 
         return title, url
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self._doLogin()
-
-        if not headers:
-            headers = []
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            response = self.session.get(url, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
-            return None
-
-        if response.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
-            return None
-
-        return response.content
 
     def findPropers(self, search_date=datetime.datetime.today()):
 
