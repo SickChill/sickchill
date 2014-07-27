@@ -55,7 +55,7 @@ class TraktChecker():
             logger.log(traceback.format_exc(), logger.DEBUG)
 
     def findShow(self, indexer, indexerid):
-        library = TraktCall("user/library/shows/all.json/%API%/", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         if not library:
             logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
@@ -119,7 +119,7 @@ class TraktChecker():
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/shows.json/%API%/", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
@@ -151,7 +151,7 @@ class TraktChecker():
         Sets episodes to wanted that are in trakt watchlist
         """
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/episodes.json/%API%/", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)

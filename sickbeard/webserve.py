@@ -2768,7 +2768,7 @@ class NewHomeAddShows(MainHandler):
         final_results = []
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-        recommendedlist = TraktCall("recommendations/shows.json/%API%/", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        recommendedlist = TraktCall("recommendations/shows.json/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
         if recommendedlist is None:
             logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
             return
@@ -2805,7 +2805,7 @@ class NewHomeAddShows(MainHandler):
         t = PageTemplate(headers=self.request.headers, file="home_trendingShows.tmpl")
         t.submenu = HomeMenu()
 
-        t.trending_shows = TraktCall("shows/trending.json/%API%/", sickbeard.TRAKT_API_KEY)
+        t.trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
 
         return _munge(t)
 

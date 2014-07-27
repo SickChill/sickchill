@@ -75,7 +75,7 @@ class TraktNotifier:
         Returns: True if the request succeeded, False otherwise
         """
 
-        data = TraktCall("account/test/%API%", api, username, password, {})
+        data = TraktCall("account/test/%API%", api, username, password)
         if data and data["status"] == "success":
             return True
 
