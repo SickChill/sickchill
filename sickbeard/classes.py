@@ -199,15 +199,15 @@ class ShowListUI:
         self.log = log
 
     def selectSeries(self, allSeries):
-        if sickbeard.showList:
-            idList = [x.indexerid for x in sickbeard.showList]
-
+        try:
             # try to pick a show that's in my show list
             for curShow in allSeries:
-                if int(curShow['id']) in idList:
+                if filter(lambda x: int(x.indexerid) == int(curShow['id']), sickbeard.showList):
                     return curShow
+        except:
+            pass
 
-        # if nothing matches then return everything
+        # if nothing matches then return first result
         return allSeries[0]
 
 

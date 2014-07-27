@@ -694,8 +694,7 @@ class Tvdb:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-
-        return [seriesEt[item] for item in seriesEt][0]
+        return [seriesEt[item] for item in seriesEt][0] if seriesEt else []
 
     def _getSeries(self, series):
         """This searches TheTVDB.com for the series name,
@@ -715,7 +714,6 @@ class Tvdb:
             log().debug("Using custom UI %s" % (repr(self.config['custom_ui'])))
             CustomUI = self.config['custom_ui']
             ui = CustomUI(config=self.config)
-
         else:
             if not self.config['interactive']:
                 log().debug('Auto-selecting first search result using BaseUI')

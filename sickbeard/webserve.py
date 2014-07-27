@@ -47,6 +47,7 @@ from sickbeard import naming
 from sickbeard import scene_exceptions
 from sickbeard import subtitles
 from sickbeard import network_timezones
+from sickbeard import version
 
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets, SKIPPED
@@ -604,6 +605,13 @@ class ManageSearches(MainHandler):
         return _munge(t)
 
 
+    def forceVersionCheck(self, *args, **kwargs):
+        # force a check to see if there is a new version
+        if sickbeard.versionCheckScheduler.action.check_for_new_version(force=True):
+            logger.log(u"Forcing version check")
+
+        redirect("/home/")
+
     def forceBacklog(self, *args, **kwargs):
         # force it to run the next time it looks
         result = sickbeard.backlogSearchScheduler.forceRun()
@@ -612,7 +620,6 @@ class ManageSearches(MainHandler):
             ui.notifications.message('Backlog search started')
 
         redirect("/manage/manageSearches/")
-
 
     def forceSearch(self, *args, **kwargs):
 
@@ -1429,7 +1436,7 @@ class ConfigGeneral(MainHandler):
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, play_videos=None):
+                    indexer_timeout=None, play_videos=None, git_branch=None):
 
         results = []
 
@@ -1496,7 +1503,10 @@ class ConfigGeneral(MainHandler):
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
+
         sickbeard.save_config()
+
+        sickbeard.versionCheckScheduler.action.checkout_branch(git_branch)
 
         if len(results) > 0:
             for x in results:
@@ -2534,15 +2544,6 @@ class HomePostProcess(MainHandler):
         t = PageTemplate(headers=self.request.headers, file="home_postprocess.tmpl")
         t.submenu = HomeMenu()
         return _munge(t)
-
-
-    def forceVersionCheck(self, *args, **kwargs):
-
-        # force a check to see if there is a new version
-        if sickbeard.versionCheckScheduler.action.check_for_new_version(force=True):
-            logger.log(u"Forcing version check")
-
-        redirect("/home/")
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
                        is_priority=None, failed="0", type="auto", *args, **kwargs):

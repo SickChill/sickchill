@@ -24,7 +24,6 @@ import socket
 import os
 import re
 
-from urllib2 import getproxies
 from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere

@@ -65,6 +65,7 @@ from itertools import izip, cycle
 
 urllib._urlopener = classes.SickBeardURLopener()
 
+
 def indentXML(elem, level=0):
     '''
     Does our pretty printing, makes Matt very happy
@@ -192,11 +193,13 @@ def sanitizeFileName(name):
 
     return name
 
+
 def _remove_file_failed(file):
     try:
         ek.ek(os.remove, file)
     except:
         pass
+
 
 def findCertainShow(showList, indexerid):
     if not showList:
@@ -522,12 +525,14 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         else:
             break
 
+
 def fileBitFilter(mode):
     for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
         if mode & bit:
             mode -= bit
 
     return mode
+
 
 def chmodAsParent(childPath):
     if os.name == 'nt' or os.name == 'ce':
@@ -566,6 +571,7 @@ def chmodAsParent(childPath):
                    logger.DEBUG)
     except OSError:
         logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.ERROR)
+
 
 def fixSetGroupID(childPath):
     if os.name == 'nt' or os.name == 'ce':
@@ -622,13 +628,16 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         if len(sqlResults) == 1:
             absolute_number = int(sqlResults[0]["absolute_number"])
             logger.log(
-                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode), logger.DEBUG)
+                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode),
+                logger.DEBUG)
         else:
             logger.log(
-                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(episode),
+                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(
+                    episode),
                 logger.DEBUG)
 
     return absolute_number
+
 
 def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=None):
     episodes = []
@@ -712,10 +721,12 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     return True
 
+
 if __name__ == '__main__':
     import doctest
 
     doctest.testmod()
+
 
 def parse_json(data):
     """
@@ -1016,6 +1027,7 @@ def get_show(name, tryIndexers=False):
 
     return showObj
 
+
 def is_hidden_folder(folder):
     """
     Returns True if folder is hidden.
@@ -1128,16 +1140,13 @@ def mapIndexersToShow(showObj):
     mapped = {showObj.indexer: showObj.indexerid}
 
     myDB = db.DBConnection()
-
     sqlResults = myDB.select(
         "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
         [showObj.indexerid, showObj.indexer])
 
     # for each mapped entry
     for curResult in sqlResults:
-        logger.log(u"Found " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-            int(curResult['mindexer'])).name + " mapping in cache for show: " + showObj.name, logger.DEBUG)
-
+        logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
         mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
     else:
         sql_l = []
@@ -1150,22 +1159,27 @@ def mapIndexersToShow(showObj):
             lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            mapped_show = t[showObj.name]
+            try:
+                mapped_show = t[showObj.name]
+            except sickbeard.indexer_shownotfound:
+                logger.log(u"Unable to map " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
+                    indexer).name + " for show: " + showObj.name + ", skipping it", logger.ERROR)
+                mapped_show = None
+
             if len(mapped_show) and not len(mapped_show) > 1:
-                logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-                    indexer).name + " for show " + showObj.name,
-                           logger.DEBUG)
+                logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
+                    indexer).name + " for show: " + showObj.name, logger.DEBUG)
 
                 mapped[indexer] = int(mapped_show[0]['id'])
 
-                logger.log(u"Adding " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-                    indexer).name + " mapping to DB for show: " + showObj.name, logger.DEBUG)
+                logger.log(u"Adding indexer mapping to DB for show: " + showObj.name, logger.DEBUG)
 
                 sql_l.append([
                     "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
                     [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
 
         if len(sql_l) > 0:
+            myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
     return mapped
@@ -1182,6 +1196,7 @@ def touchFile(fname, atime=None):
             pass
 
     return False
+
 
 def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
     """
@@ -1231,10 +1246,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return
 
-    if not resp:
-        logger.log(u"No data returned from " + url, logger.DEBUG)
-        return
-    elif not resp.ok:
+    if not resp.ok:
         logger.log(u"Requested url " + url + " returned status code is " + str(
             resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
         return
@@ -1244,8 +1256,8 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
 
     return resp.content
 
-def download_file(url, filename, session=None):
 
+def download_file(url, filename, session=None):
     # create session
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(sickbeard.CACHE_DIR, 'sessions')))
 
@@ -1308,6 +1320,7 @@ def download_file(url, filename, session=None):
         return False
 
     return True
+
 
 def clearCache(force=False):
     update_datetime = datetime.datetime.now()

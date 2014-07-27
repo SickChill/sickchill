@@ -27,6 +27,7 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
+from sickbeard import version
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
@@ -190,6 +191,10 @@ def change_VERSION_NOTIFY(version_notify):
     if oldSetting == False and version_notify == True:
         sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
 
+def change_VERSION(version):
+    if sickbeard.version.SICKBEARD_VERSION != version:
+
+        sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
 
 def CheckSection(CFG, sec):
     """ Check if INI section exists, if not create it """

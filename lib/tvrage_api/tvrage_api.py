@@ -556,8 +556,7 @@ class TVRage:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['show'] = series
         seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-
-        return [seriesEt[item] for item in seriesEt][0]
+        return [seriesEt[item] for item in seriesEt][0] if seriesEt else []
 
     def _getSeries(self, series):
         """This searches tvrage.com for the series name,

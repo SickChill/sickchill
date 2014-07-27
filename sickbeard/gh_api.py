@@ -87,3 +87,14 @@ class GitHub(object):
             ['repos', self.github_repo_user, self.github_repo, 'compare', base + '...' + head],
             params={'per_page': per_page})
         return access_API
+
+    def branches(self):
+        access_API = self._access_API(
+            ['repos', self.github_repo_user, self.github_repo, 'branches'])
+        return access_API
+
+    def checkout(self, branch):
+        access_API = self._access_API(
+            ['repos', self.github_repo_user, self.github_repo, 'branches'])
+        return access_API
+
