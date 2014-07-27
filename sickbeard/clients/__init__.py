@@ -83,4 +83,3 @@ def getClientIstance(name):
     className = module.api.__class__.__name__
 
     return getattr(module, className)
-    

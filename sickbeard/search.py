@@ -79,7 +79,6 @@ def _downloadResult(result):
         except EnvironmentError, e:
             logger.log(u"Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
-
     elif resProvider.providerType == "torrent":
         newResult = resProvider.downloadResult(result)
     else:
@@ -132,7 +131,11 @@ def snatchEpisode(result, endStatus=SNATCHED):
         else:
             # Sets per provider seed ratio
             result.ratio = result.provider.seedRatio()
+
+            # Gets torrent file contents if not magnet link
             result.content = result.provider.getURL(result.url) if not result.url.startswith('magnet') else None
+
+            # Snatches torrent with client
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
             dlResult = client.sendTORRENT(result)
     else:

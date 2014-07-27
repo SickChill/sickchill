@@ -23,7 +23,6 @@ import datetime
 import os
 import re
 import itertools
-import Queue
 import sickbeard
 import requests
 
@@ -34,18 +33,14 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
-from sickbeard import clients
 
-from lib.hachoir_parser import createParser
-
+from hachoir_parser import createParser
 
 class GenericProvider:
     NZB = "nzb"
     TORRENT = "torrent"
 
     def __init__(self, name):
-        self.queue = Queue.Queue()
-
         # these need to be set in the subclass
         self.providerType = None
         self.name = name
@@ -63,8 +58,8 @@ class GenericProvider:
 
         self.cache = tvcache.TVCache(self)
 
-        self.cookies = None
         self.session = requests.session()
+
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
 
@@ -134,19 +129,22 @@ class GenericProvider:
 
         # check for auth
         if not self._doLogin():
-            return
+            return False
 
         if self.providerType == GenericProvider.TORRENT:
-            torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
-            if not torrent_hash:
-                logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
-                return False
+            try:
+                torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
+                if not torrent_hash:
+                    logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
+                    return False
 
-            urls = [
-                'http://torcache.net/torrent/' + torrent_hash + '.torrent',
-                'http://torrage.com/torrent/' + torrent_hash + '.torrent',
-                'http://zoink.it/torrent/' + torrent_hash + '.torrent',
-            ]
+                urls = [
+                    'http://torcache.net/torrent/' + torrent_hash + '.torrent',
+                    'http://torrage.com/torrent/' + torrent_hash + '.torrent',
+                    'http://zoink.it/torrent/' + torrent_hash + '.torrent',
+                ]
+            except:
+                urls = [result.url]
 
             filename = ek.ek(os.path.join, sickbeard.TORRENT_DIR,
                              helpers.sanitizeFileName(result.name) + '.' + self.providerType)
@@ -155,7 +153,6 @@ class GenericProvider:
 
             filename = ek.ek(os.path.join, sickbeard.NZB_DIR,
                              helpers.sanitizeFileName(result.name) + '.' + self.providerType)
-
         else:
             return
 

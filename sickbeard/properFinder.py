@@ -60,7 +60,8 @@ class ProperFinder():
             run_in = sickbeard.properFinderScheduler.lastRun + sickbeard.properFinderScheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            run_at = u", next check in approx. " + ("%dh, %dm" % (hours, minutes) if 0 < hours else "%dm, %ds" % (minutes, seconds))
+            run_at = u", next check in approx. " + (
+                "%dh, %dm" % (hours, minutes) if 0 < hours else "%dm, %ds" % (minutes, seconds))
 
         logger.log(u"Completed the search for new propers%s" % run_at)
 
@@ -136,7 +137,8 @@ class ProperFinder():
 
             # populate our Proper instance
             if parse_result.is_anime:
-                logger.log(u"I am sorry '"+curProper.name+"' seams to be an anime proper seach is not yet suported", logger.DEBUG)
+                logger.log(u"I am sorry '" + curProper.name + "' seams to be an anime proper seach is not yet suported",
+                           logger.DEBUG)
                 continue
             else:
                 curProper.season = parse_result.season_number if parse_result.season_number != None else 1
@@ -149,19 +151,29 @@ class ProperFinder():
                            logger.DEBUG)
                 continue
 
-            if parse_result.show.rls_ignore_words and search.filter_release_name(curProper.name, parse_result.show.rls_ignore_words):
-                logger.log(u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
-                           logger.MESSAGE)
+            if parse_result.show.rls_ignore_words and search.filter_release_name(curProper.name,
+                                                                                 parse_result.show.rls_ignore_words):
+                logger.log(
+                    u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
+                    logger.MESSAGE)
                 continue
 
-            if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name, parse_result.show.rls_require_words):
-                logger.log(u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
-                           logger.MESSAGE)
+            if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name,
+                                                                                      parse_result.show.rls_require_words):
+                logger.log(
+                    u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
+                    logger.MESSAGE)
                 continue
 
-            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))
+            # check if we actually want this proper (if it's the right quality)
+            myDB = db.DBConnection()
+            sqlResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                                     [curProper.indexerid, curProper.season, curProper.episode])
+            if not sqlResults:
+                continue
 
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
+            oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))
             if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != curProper.quality:
                 continue
 
@@ -212,7 +224,7 @@ class ProperFinder():
                 showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
                 if showObj == None:
                     logger.log(u"Unable to find the show with indexerid " + str(
-                        curProper                                      .indexerid) + " so unable to download the proper", logger.ERROR)
+                        curProper.indexerid) + " so unable to download the proper", logger.ERROR)
                     continue
                 epObj = showObj.getEpisode(curProper.season, curProper.episode)
 
