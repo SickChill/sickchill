@@ -1326,8 +1326,8 @@ def clearCache(force=False):
             for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR):
                 path = os.path.basename(cache_root)
 
-                # skip rss provider caches
-                if path == 'rss':
+                # skip these cache folders
+                if path in ['rss', 'images']:
                     continue
 
                 for file in cache_files:
