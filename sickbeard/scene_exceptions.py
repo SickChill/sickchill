@@ -252,7 +252,7 @@ def retrieve_exceptions():
     anidb_exception_dict.clear()
     xem_exception_dict.clear()
 
-def update_scene_exceptions(indexer_id, scene_exceptions):
+def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
@@ -267,7 +267,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
             cur_exception = unicode(cur_exception, 'utf-8', 'replace')
 
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
-                    [indexer_id, cur_exception, -1])
+                    [indexer_id, cur_exception, season])
 
 def _anidb_exceptions_fetcher():
     global anidb_exception_dict
