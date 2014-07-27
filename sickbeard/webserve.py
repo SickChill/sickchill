@@ -417,10 +417,6 @@ class MainHandler(RequestHandler):
 
         logger.log(u"Receiving iCal request from %s" % self.request.remote_ip)
 
-        poster_url = self.request.url().replace('ical', '')
-
-        time_re = re.compile('([0-9]{1,2})\:([0-9]{2})(\ |)([AM|am|PM|pm]{2})')
-
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'
         ical += 'VERSION:2.0\r\n'
