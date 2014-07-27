@@ -72,11 +72,8 @@ $(document).ready(function () {
 
     $('#branchCheckout').click(function () {
         $("#branchCheckout").attr("disabled", true);
-        var branchVersion = $("#branchVersion").val();
-        $.get(sbRoot + "/home/update", {'pid': sbPID, 'branch': branchVersion})
-            .done(function () {
-                $("#branchCheckout").attr("disabled", false);
-            });
+        url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
+        window.location.href = url;
     });
 });
 
