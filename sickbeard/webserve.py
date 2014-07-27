@@ -1436,7 +1436,7 @@ class ConfigGeneral(MainHandler):
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, play_videos=None, git_branch=None):
+                    indexer_timeout=None, play_videos=None):
 
         results = []
 
@@ -1503,10 +1503,7 @@ class ConfigGeneral(MainHandler):
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
-
         sickbeard.save_config()
-
-        sickbeard.versionCheckScheduler.action.update(git_branch)
 
         if len(results) > 0:
             for x in results:
@@ -3455,12 +3452,12 @@ class Home(MainHandler):
 
         return _munge(t)
 
-    def update(self, pid=None):
+    def update(self, pid=None, branch=None):
 
         if str(pid) != str(sickbeard.PID):
             redirect("/home/")
 
-        updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
+        updated = sickbeard.versionCheckScheduler.action.update(branch)  # @UndefinedVariable
         if updated:
             # do a hard restart
             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)

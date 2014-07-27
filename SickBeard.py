@@ -71,6 +71,7 @@ throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
+
 class SickRage(object):
     def __init__(self):
         # system event callback for shutdown/restart
@@ -455,7 +456,8 @@ class SickRage(object):
                 sickbeard.showList.append(curShow)
             except Exception, e:
                 logger.log(
-                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8', 'replace'),
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8',
+                                                                                                             'replace'),
                     logger.ERROR)
 
     def restore(self, srcDir, dstDir):
@@ -518,6 +520,7 @@ class SickRage(object):
 
         # system exit
         os._exit(0)
+
 
 if __name__ == "__main__":
     if sys.hexversion >= 0x020600F0:

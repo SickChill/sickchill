@@ -278,13 +278,14 @@
 
                         <div class="field-pair">
                             <label class="nocheck clearfix">
-                                <span class="component-title">Git Branch:</span>
+                                <span class="component-title">Branch Version:</span>
                                 <span class="component-desc">
-                                    <select id="git_branch" name="git_branch">
+                                    <select id="branchVersion" name="branchVersion">
                                     #for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
                                         <option value="$cur_branch" #if $cur_branch == $sickbeard.version.SICKBEARD_VERSION then "selected=\"selected\"" else ""#>$cur_branch.capitalize()</option>
                                     #end for
                                     </select>
+                                    <input class="btn" class="btn" type="button" id="branchCheckout" value="Checkout Branch">
                                 </span>
                             </label>
                             <label class="nocheck clearfix">

@@ -1,27 +1,27 @@
-$(document).ready(function(){
-    $(".enabler").each(function(){
+$(document).ready(function () {
+    $(".enabler").each(function () {
         if (!$(this).prop('checked'))
-            $('#content_'+$(this).attr('id')).hide();
+            $('#content_' + $(this).attr('id')).hide();
     });
 
-    $(".enabler").click(function() {
+    $(".enabler").click(function () {
         if ($(this).prop('checked'))
-            $('#content_'+$(this).attr('id')).fadeIn("fast", "linear");
+            $('#content_' + $(this).attr('id')).fadeIn("fast", "linear");
         else
-            $('#content_'+$(this).attr('id')).fadeOut("fast", "linear");
+            $('#content_' + $(this).attr('id')).fadeOut("fast", "linear");
     });
 
-    $(".viewIf").click(function() {
+    $(".viewIf").click(function () {
         if ($(this).prop('checked')) {
-            $('.hide_if_'+$(this).attr('id')).css('display','none');
-            $('.show_if_'+$(this).attr('id')).fadeIn("fast", "linear");
+            $('.hide_if_' + $(this).attr('id')).css('display', 'none');
+            $('.show_if_' + $(this).attr('id')).fadeIn("fast", "linear");
         } else {
-            $('.show_if_'+$(this).attr('id')).css('display','none');
-            $('.hide_if_'+$(this).attr('id')).fadeIn("fast", "linear");
+            $('.show_if_' + $(this).attr('id')).css('display', 'none');
+            $('.hide_if_' + $(this).attr('id')).fadeIn("fast", "linear");
         }
     });
 
-    $(".datePresets").click(function() {
+    $(".datePresets").click(function () {
         var def = $('#date_presets').val()
         if ($(this).prop('checked') && '%x' == def) {
             def = '%a, %b %d, %Y'
@@ -44,34 +44,44 @@ $(document).ready(function(){
 
     // bind 'myForm' and provide a simple callback function 
     $('#configForm').ajaxForm({
-        beforeSubmit: function(){
-            $('.config_submitter').each(function(){
+        beforeSubmit: function () {
+            $('.config_submitter').each(function () {
                 $(this).attr("disabled", "disabled");
-                $(this).after('<span><img src="'+sbRoot+'/images/loading16.gif"> Saving...</span>');
+                $(this).after('<span><img src="' + sbRoot + '/images/loading16.gif"> Saving...</span>');
                 $(this).hide();
             });
         },
-        success: function(){
+        success: function () {
             setTimeout('config_success()', 2000)
         }
     });
 
-    $('#api_key').click(function(){ $('#api_key').select() });
-    $("#generate_new_apikey").click(function(){
-        $.get(sbRoot + '/config/general/generateKey', 
-            function(data){
+    $('#api_key').click(function () {
+        $('#api_key').select()
+    });
+    $("#generate_new_apikey").click(function () {
+        $.get(sbRoot + '/config/general/generateKey',
+            function (data) {
                 if (data.error != undefined) {
                     alert(data.error);
                     return;
                 }
                 $('#api_key').val(data);
-        });
+            });
     });
 
+    $('#branchCheckout').click(function () {
+        $("#branchCheckout").attr("disabled", true);
+        var branchVersion = $("#branchVersion").val();
+        $.get(sbRoot + "/home/update", {'pid': sbPID, 'branch': branchVersion})
+            .done(function () {
+                $("#branchCheckout").attr("disabled", false);
+            });
+    });
 });
 
-function config_success(){
-    $('.config_submitter').each(function(){
+function config_success() {
+    $('.config_submitter').each(function () {
         $(this).removeAttr("disabled");
         $(this).next().remove();
         $(this).show();
