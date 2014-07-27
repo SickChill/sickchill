@@ -16,7 +16,9 @@ from shove import Shove
 
 class RSSFeeds:
     def __init__(self, db_name):
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, db_name + '.db')
+        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name + '.db')
+        if not os.path.exists(os.path.dirname(self.db_name)):
+            sickbeard.helpers.makeDir(os.path.dirname(self.db_name))
 
     def clearCache(self, age=None):
         try:
@@ -24,7 +26,7 @@ class RSSFeeds:
                 fc = cache.Cache(fs)
                 fc.purge(age)
         except Exception as e:
-            logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
+            logger.log(u"RSS error clearing cache: " + ex(e), logger.DEBUG)
 
     def getFeed(self, url, post_data=None, request_headers=None):
         parsed = list(urlparse.urlparse(url))
@@ -39,7 +41,7 @@ class RSSFeeds:
                 feed = fc.fetch(url, False, False, request_headers)
 
                 if not feed or not feed.entries:
-                    logger.log(u"RSS cache error loading url: " + url, logger.ERROR)
+                    logger.log(u"RSS error loading url: " + url, logger.DEBUG)
                     return
                 elif 'error' in feed.feed:
                     err_code = feed.feed['error']['code']
@@ -48,7 +50,7 @@ class RSSFeeds:
                     logger.log(
                         u"RSS ERROR:[%s] CODE:[%s]" % (err_desc, err_code), logger.DEBUG)
                     return
-
-                return feed
+                else:
+                    return feed
         except Exception as e:
-            logger.log(u"RSS cache error: " + ex(e), logger.DEBUG)
+            logger.log(u"RSS error: " + ex(e), logger.DEBUG)

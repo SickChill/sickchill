@@ -525,6 +525,10 @@ def initialize(consoleLogging=True):
             logger.log(u"!!! Creating local cache dir failed, using system default", logger.ERROR)
             CACHE_DIR = None
 
+        # clean cache folders
+        if CACHE_DIR:
+            helpers.clearCache()
+
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')

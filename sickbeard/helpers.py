@@ -32,6 +32,7 @@ import urlparse
 import uuid
 import base64
 import zipfile
+import datetime
 
 import sickbeard
 import subliminal
@@ -1307,3 +1308,39 @@ def download_file(url, filename, session=None):
         return False
 
     return True
+
+def clearCache(force=False):
+    update_datetime = datetime.datetime.now()
+
+    # clean out cache directory, remove everything > 12 hours old
+    if sickbeard.CACHE_DIR:
+        logger.log(u"Trying to clean cache folder " + sickbeard.CACHE_DIR)
+
+        # Does our cache_dir exists
+        if not ek.ek(os.path.isdir, sickbeard.CACHE_DIR):
+            logger.log(u"Can't clean " + sickbeard.CACHE_DIR + " if it doesn't exist", logger.WARNING)
+        else:
+            max_age = datetime.timedelta(hours=12)
+
+            # Get all our cache files
+            for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR):
+                path = os.path.basename(cache_root)
+
+                # skip rss provider caches
+                if path == 'rss':
+                    continue
+
+                for file in cache_files:
+                    cache_file = ek.ek(os.path.join, cache_root, file)
+
+                    if ek.ek(os.path.isfile, cache_file):
+                        cache_file_modified = datetime.datetime.fromtimestamp(
+                            ek.ek(os.path.getmtime, cache_file))
+
+                        if force or (update_datetime - cache_file_modified > max_age):
+                            try:
+                                ek.ek(os.remove, cache_file)
+                            except OSError, e:
+                                logger.log(u"Unable to clean " + cache_root + ": " + repr(e) + " / " + str(e),
+                                           logger.WARNING)
+                                break

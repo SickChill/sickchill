@@ -224,7 +224,6 @@ class KATProvider(generic.TorrentProvider):
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
-        soup = None
         for mode in search_params.keys():
             for search_string in search_params[mode]:
 
@@ -379,12 +378,9 @@ class KATCache(tvcache.TVCache):
             if ci is not None:
                 cl.append(ci)
 
-
-
         if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
-
 
     def _parseItem(self, item):
 
