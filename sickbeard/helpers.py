@@ -1336,12 +1336,9 @@ def clearCache(force=False):
             max_age = datetime.timedelta(hours=12)
 
             # Get all our cache files
-            for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR):
-                path = os.path.basename(cache_root)
-
-                # skip these cache folders
-                if path in ['rss', 'images']:
-                    continue
+            exclude = ['rss', 'images']
+            for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR, topdown=True):
+                cache_dirs[:] = [d for d in cache_dirs if d not in exclude]
 
                 for file in cache_files:
                     cache_file = ek.ek(os.path.join, cache_root, file)
