@@ -191,11 +191,6 @@ def change_VERSION_NOTIFY(version_notify):
     if oldSetting == False and version_notify == True:
         sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
 
-def change_VERSION(version):
-    if sickbeard.version.SICKBEARD_VERSION != version:
-
-        sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
-
 def CheckSection(CFG, sec):
     """ Check if INI section exists, if not create it """
     try:
