@@ -268,10 +268,12 @@ $(document).ready(function(){
                 var devices = jQuery.parseJSON(data).devices;
                 $("#pushbullet_device_list").html('');
                 for (var i = 0; i < devices.length; i++) {
-                    if(current_pushbullet_device == devices[i].iden) {
-                        $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'" selected>' + devices[i].extras.nickname + '</option>')
-                    } else {
-                        $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'">' + devices[i].extras.nickname + '</option>')
+                    if(devices[i].active == true) {
+                        if(current_pushbullet_device == devices[i].iden) {
+                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'" selected>' + devices[i].nickname + '</option>')
+                        } else {
+                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'">' + devices[i].nickname + '</option>')
+                        }
                     }
                 }
                 if(msg) {

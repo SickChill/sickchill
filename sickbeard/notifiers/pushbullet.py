@@ -69,7 +69,7 @@ class PushbulletNotifier:
         if method == 'POST':
             uri = '/v2/pushes'
         else:
-            uri = '/api/devices'
+            uri = '/v2/devices'
 
         logger.log(u"Pushbullet event: " + str(event), logger.DEBUG)
         logger.log(u"Pushbullet message: " + str(message), logger.DEBUG)
@@ -106,6 +106,7 @@ class PushbulletNotifier:
         response = http_handler.getresponse()
         request_body = response.read()
         request_status = response.status
+        logger.log(u"Pushbullet response: %s" % request_body, logger.DEBUG)
 
         if request_status == 200:
             if testMessage:
