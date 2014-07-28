@@ -42,7 +42,7 @@ $(document).ready(function () {
             $('#date_presets').val(def)
     });
 
-    // bind 'myForm' and provide a simple callback function 
+    // bind 'myForm' and provide a simple callback function
     $('#configForm').ajaxForm({
         beforeSubmit: function () {
             $('.config_submitter').each(function () {
@@ -72,8 +72,8 @@ $(document).ready(function () {
 
     $('#branchCheckout').click(function () {
         $("#branchCheckout").attr("disabled", true);
-        url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
-        window.location.href = url;
+        $.get(sbRoot + "/home/branchCheckout", {'branch': $("#branchVersion").val()},
+        function (data){ $(this).html(data); });
     });
 });
 

@@ -3469,7 +3469,7 @@ class Home(MainHandler):
                                         "Update wasn't successful, not restarting. Check your log for more information.")
 
     def branchCheckout(self, branch):
-        self.update(sickbeard.PID, branch)
+        return self.update(sickbeard.PID, branch)
 
     def displayShow(self, show=None):
 
