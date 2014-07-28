@@ -407,7 +407,7 @@ class GenericProvider:
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)
 
             # validate torrent file if not magnet link to avoid invalid torrent links
-            if self.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
+            if self.providerType == self.TORRENT:
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
                 result = client._get_torrent_hash(result)
                 if not result.hash:

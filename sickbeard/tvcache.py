@@ -357,9 +357,7 @@ class TVCache():
                 result.quality = curQuality
                 result.release_group = curReleaseGroup
                 result.version = curVersion
-                result.content = self.provider.getURL(url) \
-                    if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                       and not url.startswith('magnet') else None
+                result.content = None
 
                 # validate torrent file if not magnet link to avoid invalid torrent links
                 if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
