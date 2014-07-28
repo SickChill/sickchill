@@ -165,6 +165,9 @@ class GenericClient(object):
         try:
 
             result.hash = self._get_torrent_hash(result)
+            if not result.hash:
+                logger.log(self.name + u': Unable to get hash for Torrent', logger.DEBUG)
+                return False
 
             if result.url.startswith('magnet'):
                 r_code = self._add_torrent_uri(result)

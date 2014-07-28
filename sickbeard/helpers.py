@@ -1233,6 +1233,11 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
             }
 
         resp = session.get(url, data=post_data, timeout=timeout)
+        if not resp.ok:
+            logger.log(u"Requested url " + url + " returned status code is " + str(
+                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+            return
+
     except requests.exceptions.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
         return
@@ -1246,16 +1251,10 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return
 
-    if not resp.ok:
-        logger.log(u"Requested url " + url + " returned status code is " + str(
-            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
-        return
-
     if json:
         return resp.json()
 
     return resp.content
-
 
 def download_file(url, filename, session=None):
     # create session
@@ -1281,6 +1280,8 @@ def download_file(url, filename, session=None):
     try:
         resp = session.get(url)
         if not resp.ok:
+            logger.log(u"Requested url " + url + " returned status code is " + str(
+                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
             return False
 
         with open(filename, 'wb') as fp:
@@ -1309,14 +1310,6 @@ def download_file(url, filename, session=None):
     except Exception:
         _remove_file_failed(filename)
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
-        return False
-
-    if not resp:
-        logger.log(u"No data returned from " + url, logger.DEBUG)
-        return False
-    elif not resp.ok:
-        logger.log(u"Requested url " + url + " returned status code is " + str(
-            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
         return False
 
     return True
