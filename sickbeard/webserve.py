@@ -21,14 +21,12 @@ from __future__ import with_statement
 import base64
 import inspect
 import traceback
-import urlparse
 
 import os
 
 import time
 import urllib
 import re
-import threading
 import datetime
 import random
 import sys
@@ -47,10 +45,9 @@ from sickbeard import naming
 from sickbeard import scene_exceptions
 from sickbeard import subtitles
 from sickbeard import network_timezones
-from sickbeard import version
 
 from sickbeard.providers import newznab, rsstorrent
-from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets, SKIPPED
+from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
@@ -3639,6 +3636,7 @@ class Home(MainHandler):
                 return self._genericMessage("Error", errString)
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
         if not showObj:
             errString = "Unable to find the specified show: " + str(show)
             if directCall:
@@ -3678,14 +3676,11 @@ class Home(MainHandler):
 
             with showObj.lock:
                 t.show = showObj
-
-            t.scene_exceptions = get_scene_exceptions(showObj.indexerid)
+                t.scene_exceptions = get_scene_exceptions(showObj.indexerid)
 
             return _munge(t)
 
         flatten_folders = config.checkbox_to_value(flatten_folders)
-        logger.log(u"flatten folders: " + str(flatten_folders))
-
         dvdorder = config.checkbox_to_value(dvdorder)
         archive_firstmatch = config.checkbox_to_value(archive_firstmatch)
         paused = config.checkbox_to_value(paused)
@@ -3703,15 +3698,10 @@ class Home(MainHandler):
         else:
             do_update = True
 
-        if scene == showObj.scene:
+        if scene == showObj.scene and anime == showObj.anime:
             do_update_scene_numbering = False
         else:
             do_update_scene_numbering = True
-
-        if anime == showObj.anime:
-            do_update_scene_absolute_numbering = False
-        else:
-            do_update_scene_absolute_numbering = True
 
         if type(anyQualities) != list:
             anyQualities = [anyQualities]
@@ -3722,7 +3712,7 @@ class Home(MainHandler):
         if type(exceptions_list) != list:
             exceptions_list = [exceptions_list]
 
-        # If directCall from mass_edit_update no scene exceptions handling
+        # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if directCall:
             do_update_exceptions = False
         else:
@@ -3731,8 +3721,6 @@ class Home(MainHandler):
             else:
                 do_update_exceptions = True
 
-        # If directCall from mass_edit_update no scene exceptions handling
-        if not directCall:
             if showObj.is_anime:
                 bwl = BlackAndWhiteList(showObj.indexerid)
                 if whitelist:
@@ -3796,37 +3784,18 @@ class Home(MainHandler):
                 except exceptions.CantRefreshException, e:
                     errors.append("Unable to refresh this show: " + ex(e))
 
-            if showObj.paused != paused:
-                showObj.paused = paused
+            showObj.paused = paused
 
-            if showObj.air_by_date != air_by_date:
+            if not directCall:
                 showObj.air_by_date = air_by_date
-
-            if showObj.scene != scene:
                 showObj.scene = scene
-
-            if showObj.sports != sports:
                 showObj.sports = sports
-
-            if showObj.anime != anime:
                 showObj.anime = anime
-
-            if showObj.subtitles != subtitles:
                 showObj.subtitles = subtitles
-
-            if showObj.lang != indexer_lang:
                 showObj.lang = indexer_lang
-
-            if showObj.dvdorder != dvdorder:
                 showObj.dvdorder = dvdorder
-
-            if showObj.archive_firstmatch != archive_firstmatch:
                 showObj.archive_firstmatch = archive_firstmatch
-
-            if rls_ignore_words is not None and showObj.rls_ignore_words != rls_ignore_words.strip():
                 showObj.rls_ignore_words = rls_ignore_words.strip()
-
-            if rls_require_words is not None and showObj.rls_require_words != rls_require_words.strip():
                 showObj.rls_require_words = rls_require_words.strip()
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
@@ -3839,7 +3808,7 @@ class Home(MainHandler):
                 elif not do_update:
                     # change it
                     try:
-                        showObj._location = location
+                        showObj.location = location
                         try:
                             sickbeard.showQueueScheduler.action.refreshShow(showObj)  # @UndefinedVariable
                         except exceptions.CantRefreshException, e:
@@ -3869,7 +3838,7 @@ class Home(MainHandler):
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
-        if do_update_scene_numbering or do_update_scene_absolute_numbering:
+        if do_update_scene_numbering:
             try:
                 sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)  # @UndefinedVariable
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
