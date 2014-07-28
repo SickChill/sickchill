@@ -71,9 +71,8 @@ $(document).ready(function () {
     });
 
     $('#branchCheckout').click(function () {
-        $("#branchCheckout").attr("disabled", true);
-        $.get(sbRoot + "/home/branchCheckout", {'branch': $("#branchVersion").val()},
-        function (data){ $(this).html(data); });
+        url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
+        window.location.href = url;
     });
 });
 
