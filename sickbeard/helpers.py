@@ -1235,7 +1235,7 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
         resp = session.get(url, data=post_data, timeout=timeout)
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
             return
 
     except requests.exceptions.HTTPError, e:
@@ -1281,7 +1281,7 @@ def download_file(url, filename, session=None):
         resp = session.get(url)
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
             return False
 
         with open(filename, 'wb') as fp:

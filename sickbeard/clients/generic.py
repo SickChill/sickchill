@@ -142,16 +142,17 @@ class GenericClient(object):
 
     def _get_torrent_hash(self, result):
 
-        torrent_hash = None
         if result.url.startswith('magnet'):
-            torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0]
-            if len(torrent_hash) == 32:
-                torrent_hash = b16encode(b32decode(torrent_hash)).lower()
-        elif result.content:
-            info = bdecode(result.content)["info"]
-            torrent_hash = sha1(bencode(info)).hexdigest()
+            result.hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0]
+            if len(result.hash) == 32:
+                result.hash = b16encode(b32decode(result.hash)).lower()
+        else:
+            result.content = result.provider.getURL(result.url)
+            if result.content:
+                info = bdecode(result.content)["info"]
+                result.hash = sha1(bencode(info)).hexdigest()
 
-        return torrent_hash
+        return result
 
     def sendTORRENT(self, result):
 
@@ -164,11 +165,8 @@ class GenericClient(object):
             return r_code
 
         try:
-
-            result.hash = self._get_torrent_hash(result)
-            if not result.hash:
-                logger.log(self.name + u': Unable to get hash for Torrent', logger.DEBUG)
-                return False
+            # Sets per provider seed ratio
+            result.ratio = result.provider.seedRatio()
 
             if result.url.startswith('magnet'):
                 r_code = self._add_torrent_uri(result)

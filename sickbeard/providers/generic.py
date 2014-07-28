@@ -33,6 +33,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
+from sickbeard import clients
 
 from hachoir_parser import createParser
 
@@ -405,8 +406,13 @@ class GenericProvider:
                 epNum = SEASON_RESULT
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)
 
-            if not result:
-                continue
+            # validate torrent file if not magnet link to avoid invalid torrent links
+            if self.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
+                client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                result = client._get_torrent_hash(result)
+                if not result.hash:
+                    logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
+                    continue
 
             if epNum not in results:
                 results[epNum] = [result]
