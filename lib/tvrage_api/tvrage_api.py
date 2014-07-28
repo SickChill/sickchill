@@ -305,7 +305,6 @@ class TVRage:
 
         self.shows = ShowContainer()  # Holds all Show classes
         self.corrections = {}  # Holds show-name to show_id mapping
-        self.sess = requests.session()  # HTTP Session
 
         self.config = {}
 
@@ -323,13 +322,11 @@ class TVRage:
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
-            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.config['cache_location'] = cache
-            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -396,6 +393,7 @@ class TVRage:
             except ImportError:
                 return os.path.join(tempfile.gettempdir(), "tvrage_api")
 
+
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
     #@retry(tvrage_error)
@@ -405,14 +403,15 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
+                session = CacheControl(cache=caches.FileCache(self.config['cache_location']))
                 if self.config['proxy']:
                     log().debug("Using proxy for URL: %s" % url)
-                    self.sess.proxies = {
+                    session.proxies = {
                         "http": self.config['proxy'],
                         "https": self.config['proxy'],
                     }
 
-                resp = self.sess.get(url.strip(), cache_auto=True, params=params)
+                resp = session.get(url.strip(), cache_auto=True, params=params)
             else:
                 resp = requests.get(url.strip(), params=params)
 
@@ -488,7 +487,7 @@ class TVRage:
 
         try:
             src = self._loadUrl(url, params)
-            src = [src[item] for item in src][0]
+            src = [src[item] for item in src][0] if src else []
         except:
             errormsg = "There was an error with the XML retrieved from tvrage.com"
 

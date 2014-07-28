@@ -200,10 +200,11 @@ class WindowsUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self, branch='windows_binaries'):
+    def update(self, branch=None):
 
         # set branch version
-        self.branch = branch
+        if branch:
+            self.branch = branch
 
         zip_download_url = self._find_newest_version(True)
         logger.log(u"new_link: " + repr(zip_download_url), logger.DEBUG)
@@ -505,14 +506,15 @@ class GitUpdateManager(UpdateManager):
 
         return False
 
-    def update(self, branch=sickbeard.version.SICKBEARD_VERSION):
+    def update(self, branch=None):
         """
         Calls git pull origin <branch> in order to update SickRage. Returns a bool depending
         on the call's success.
         """
 
         # set branch version
-        self.branch = branch
+        if branch:
+            self.branch = branch
 
         if self.branch == sickbeard.version.SICKBEARD_VERSION:
             output, err, exit_status = self._run_git(self._git_path, 'pull -f origin ' + self.branch)  # @UnusedVariable
@@ -645,13 +647,14 @@ class SourceUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self, branch=sickbeard.version.SICKBEARD_VERSION):
+    def update(self, branch=None):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
 
         # set branch version
-        self.branch = branch
+        if branch:
+            self.branch = branch
 
         base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
         tar_download_url = base_url + '/tarball/' + self.branch
