@@ -1177,63 +1177,63 @@ def halt():
             dailySearchScheduler.stop.set()
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
-                dailySearchScheduler.join()
+                dailySearchScheduler.join(10)
             except:
                 pass
 
             backlogSearchScheduler.stop.set()
             logger.log(u"Waiting for the BACKLOG thread to exit")
             try:
-                backlogSearchScheduler.join()
+                backlogSearchScheduler.join(10)
             except:
                 pass
 
             showUpdateScheduler.stop.set()
             logger.log(u"Waiting for the SHOWUPDATER thread to exit")
             try:
-                showUpdateScheduler.join()
+                showUpdateScheduler.join(10)
             except:
                 pass
 
             versionCheckScheduler.stop.set()
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
-                versionCheckScheduler.join()
+                versionCheckScheduler.join(10)
             except:
                 pass
 
             showQueueScheduler.stop.set()
             logger.log(u"Waiting for the SHOWQUEUE thread to exit")
             try:
-                showQueueScheduler.join()
+                showQueueScheduler.join(10)
             except:
                 pass
 
             searchQueueScheduler.stop.set()
             logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
             try:
-                searchQueueScheduler.join()
+                searchQueueScheduler.join(10)
             except:
                 pass
 
             autoPostProcesserScheduler.stop.set()
             logger.log(u"Waiting for the POSTPROCESSER thread to exit")
             try:
-                autoPostProcesserScheduler.join()
+                autoPostProcesserScheduler.join(10)
             except:
                 pass
 
             traktCheckerScheduler.stop.set()
             logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
             try:
-                traktCheckerScheduler.join()
+                traktCheckerScheduler.join(10)
             except:
                 pass
 
             properFinderScheduler.stop.set()
             logger.log(u"Waiting for the PROPERFINDER thread to exit")
             try:
-                properFinderScheduler.join()
+                properFinderScheduler.join(10)
             except:
                 pass
 
