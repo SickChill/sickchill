@@ -27,7 +27,6 @@ import tarfile
 import stat
 import traceback
 import gh_api as github
-import threading
 
 import sickbeard
 from sickbeard import helpers, notifiers
@@ -53,11 +52,8 @@ class CheckVersion():
         else:
             self.updater = None
 
-    def __del__(self):
-        pass
-
     def run(self, force=False):
-        if self.check_for_new_version():
+        if self.check_for_new_version(force):
             if sickbeard.AUTO_UPDATE:
                 logger.log(u"New update found for SickRage, starting auto-updater ...")
                 ui.notifications.message('New update found for SickRage, starting auto-updater')
@@ -113,9 +109,14 @@ class CheckVersion():
         self.updater.set_newest_text()
         return True
 
-    def update(self):
-        if self.updater.need_update():
+    def update(self, branch=None):
+        if branch and branch != self.updater.branch:
+            return self.updater.update(branch)
+        elif self.updater.need_update():
             return self.updater.update()
+
+    def list_remote_branches(self):
+        return self.updater.list_remote_branches()
 
 class UpdateManager():
     def get_github_repo_user(self):
@@ -126,7 +127,6 @@ class UpdateManager():
 
     def get_update_url(self):
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
-
 
 class WindowsUpdateManager(UpdateManager):
     def __init__(self):
@@ -163,21 +163,18 @@ class WindowsUpdateManager(UpdateManager):
         regex = ".*SickRage\-win32\-alpha\-build(\d+)(?:\.\d+)?\.zip"
 
         version_url_data = helpers.getURL(self.version_url)
+        if not version_url_data:
+            return
 
-        if version_url_data is None:
-            return None
-        else:
-            for curLine in version_url_data.splitlines():
-                logger.log(u"checking line " + curLine, logger.DEBUG)
-                match = re.match(regex, curLine)
-                if match:
-                    logger.log(u"found a match", logger.DEBUG)
-                    if whole_link:
-                        return curLine.strip()
-                    else:
-                        return int(match.group(1))
-
-        return None
+        for curLine in version_url_data.splitlines():
+            logger.log(u"checking line " + curLine, logger.DEBUG)
+            match = re.match(regex, curLine)
+            if match:
+                logger.log(u"found a match", logger.DEBUG)
+                if whole_link:
+                    return curLine.strip()
+                else:
+                    return int(match.group(1))
 
     def need_update(self):
         self._cur_version = self._find_installed_version()
@@ -203,7 +200,10 @@ class WindowsUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self):
+    def update(self, branch='windows_binaries'):
+
+        # set branch version
+        self.branch = branch
 
         zip_download_url = self._find_newest_version(True)
         logger.log(u"new_link: " + repr(zip_download_url), logger.DEBUG)
@@ -270,6 +270,8 @@ class WindowsUpdateManager(UpdateManager):
 
         return True
 
+    def list_remote_branches(self):
+        return ['windows_binaries']
 
 class GitUpdateManager(UpdateManager):
     def __init__(self):
@@ -503,13 +505,19 @@ class GitUpdateManager(UpdateManager):
 
         return False
 
-    def update(self):
+    def update(self, branch=sickbeard.version.SICKBEARD_VERSION):
         """
         Calls git pull origin <branch> in order to update SickRage. Returns a bool depending
         on the call's success.
         """
 
-        output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  # @UnusedVariable
+        # set branch version
+        self.branch = branch
+
+        if self.branch == sickbeard.version.SICKBEARD_VERSION:
+            output, err, exit_status = self._run_git(self._git_path, 'pull -f origin ' + self.branch)  # @UnusedVariable
+        else:
+            output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
             # Notify update successful
@@ -519,6 +527,11 @@ class GitUpdateManager(UpdateManager):
 
         return False
 
+    def list_remote_branches(self):
+        branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads origin')  # @UnusedVariable
+        if exit_status == 0 and branches:
+            return re.findall('\S+\Wrefs/heads/(.*)', branches)
+        return []
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
@@ -632,10 +645,14 @@ class SourceUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self):
+    def update(self, branch=sickbeard.version.SICKBEARD_VERSION):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
+
+        # set branch version
+        self.branch = branch
+
         base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
         tar_download_url = base_url + '/tarball/' + self.branch
         version_path = ek.ek(os.path.join, sickbeard.PROG_DIR, u'version.txt')
@@ -724,3 +741,7 @@ class SourceUpdateManager(UpdateManager):
         notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
         
         return True
+
+    def list_remote_branches(self):
+        gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
+        return gh.branches()

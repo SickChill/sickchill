@@ -32,10 +32,13 @@ import urlparse
 import uuid
 import base64
 import zipfile
+import datetime
 
-from lib import requests
-from lib.requests import exceptions
-from itertools import izip, cycle
+import sickbeard
+import subliminal
+import adba
+import requests
+import requests.exceptions
 
 try:
     import json
@@ -49,19 +52,18 @@ except ImportError:
 
 from xml.dom.minidom import Node
 
-import sickbeard
-from sickbeard.exceptions import MultipleShowObjectsException, EpisodeNotFoundByAbsoluteNumberException, ex
+from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions, XML_NSMAP
+from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
-from lib import subliminal
-from lib import adba
-from lib import trakt
+from sickbeard import clients
+
+from cachecontrol import CacheControl, caches
+from itertools import izip, cycle
 
 urllib._urlopener = classes.SickBeardURLopener()
-session = requests.Session()
 
 
 def indentXML(elem, level=0):
@@ -192,98 +194,11 @@ def sanitizeFileName(name):
     return name
 
 
-def getURL(url, post_data=None, headers=None, params=None, timeout=30, json=False, use_proxy=False):
-    """
-    Returns a byte-string retrieved from the url provider.
-    """
-
-    global session
-    if not session:
-        session = requests.Session()
-
-    req_headers = ['User-Agent', USER_AGENT, 'Accept-Encoding', 'gzip,deflate']
-    if headers:
-        for cur_header in headers:
-            req_headers.append(cur_header)
-
-    try:
-        # Remove double-slashes from url
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-        url = urlparse.urlunparse(parsed)
-
-        it = iter(req_headers)
-
-        if use_proxy and sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), proxies=proxies,
-                            timeout=timeout, verify=False)
-        else:
-            r = session.get(url, params=params, data=post_data, headers=dict(zip(it, it)), timeout=timeout,
-                            verify=False)
-    except requests.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    except requests.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    except requests.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return None
-
-    if r.ok:
-        if json:
-            return r.json()
-
-        return r.content
-
-
 def _remove_file_failed(file):
     try:
         ek.ek(os.remove, file)
     except:
         pass
-
-
-def download_file(url, filename):
-    global session
-    if not session:
-        session = requests.Session()
-
-    try:
-        r = session.get(url, stream=True, verify=False)
-        with open(filename, 'wb') as fp:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    fp.write(chunk)
-                    fp.flush()
-
-    except requests.HTTPError, e:
-        _remove_file_failed(filename)
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except requests.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except requests.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
-        return False
-
-    except Exception:
-        _remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
-        return False
-
-    return True
 
 
 def findCertainShow(showList, indexerid):
@@ -611,6 +526,14 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
             break
 
 
+def fileBitFilter(mode):
+    for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
+        if mode & bit:
+            mode -= bit
+
+    return mode
+
+
 def chmodAsParent(childPath):
     if os.name == 'nt' or os.name == 'ce':
         return
@@ -648,14 +571,6 @@ def chmodAsParent(childPath):
                    logger.DEBUG)
     except OSError:
         logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.ERROR)
-
-
-def fileBitFilter(mode):
-    for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
-        if mode & bit:
-            mode -= bit
-
-    return mode
 
 
 def fixSetGroupID(childPath):
@@ -713,13 +628,16 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         if len(sqlResults) == 1:
             absolute_number = int(sqlResults[0]["absolute_number"])
             logger.log(
-                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode), logger.DEBUG)
+                "Found absolute_number:" + str(absolute_number) + " by " + str(season) + "x" + str(episode),
+                logger.DEBUG)
         else:
             logger.log(
-                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(episode),
+                "No entries for absolute number in show: " + show.name + " found using " + str(season) + "x" + str(
+                    episode),
                 logger.DEBUG)
 
     return absolute_number
+
 
 def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=None):
     episodes = []
@@ -803,10 +721,12 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     return True
 
+
 if __name__ == '__main__':
     import doctest
 
     doctest.testmod()
+
 
 def parse_json(data):
     """
@@ -1107,6 +1027,7 @@ def get_show(name, tryIndexers=False):
 
     return showObj
 
+
 def is_hidden_folder(folder):
     """
     Returns True if folder is hidden.
@@ -1219,16 +1140,13 @@ def mapIndexersToShow(showObj):
     mapped = {showObj.indexer: showObj.indexerid}
 
     myDB = db.DBConnection()
-
     sqlResults = myDB.select(
         "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
         [showObj.indexerid, showObj.indexer])
 
     # for each mapped entry
     for curResult in sqlResults:
-        logger.log(u"Found " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-            int(curResult['mindexer'])).name + " mapping in cache for show: " + showObj.name, logger.DEBUG)
-
+        logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
         mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
     else:
         sql_l = []
@@ -1241,22 +1159,27 @@ def mapIndexersToShow(showObj):
             lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
-            mapped_show = t[showObj.name]
+            try:
+                mapped_show = t[showObj.name]
+            except sickbeard.indexer_shownotfound:
+                logger.log(u"Unable to map " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
+                    indexer).name + " for show: " + showObj.name + ", skipping it", logger.ERROR)
+                mapped_show = None
+
             if len(mapped_show) and not len(mapped_show) > 1:
-                logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-                    indexer).name + " for show " + showObj.name,
-                           logger.DEBUG)
+                logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
+                    indexer).name + " for show: " + showObj.name, logger.DEBUG)
 
                 mapped[indexer] = int(mapped_show[0]['id'])
 
-                logger.log(u"Adding " + sickbeard.indexerApi(showObj.indexer).name + "<->" + sickbeard.indexerApi(
-                    indexer).name + " mapping to DB for show: " + showObj.name, logger.DEBUG)
+                logger.log(u"Adding indexer mapping to DB for show: " + showObj.name, logger.DEBUG)
 
                 sql_l.append([
                     "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
                     [showObj.indexerid, showObj.indexer, int(mapped_show[0]['id']), indexer]])
 
         if len(sql_l) > 0:
+            myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
     return mapped
@@ -1273,3 +1196,164 @@ def touchFile(fname, atime=None):
             pass
 
     return False
+
+
+def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
+    """
+    Returns a byte-string retrieved from the url provider.
+    """
+
+    # request session
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(sickbeard.CACHE_DIR, 'sessions')))
+
+    # request session headers
+    req_headers = {'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'}
+    if headers:
+        req_headers.update(headers)
+    session.headers.update(req_headers)
+
+    # request session ssl verify
+    session.verify = False
+
+    # request session paramaters
+    session.params = params
+
+    try:
+        # Remove double-slashes from url
+        parsed = list(urlparse.urlparse(url))
+        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
+        url = urlparse.urlunparse(parsed)
+
+        # request session proxies
+        if sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
+            session.proxies = {
+                "http": sickbeard.PROXY_SETTING,
+                "https": sickbeard.PROXY_SETTING,
+            }
+
+        resp = session.get(url, data=post_data, timeout=timeout)
+    except requests.exceptions.HTTPError, e:
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        return
+    except requests.exceptions.ConnectionError, e:
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return
+    except requests.exceptions.Timeout, e:
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return
+    except Exception:
+        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        return
+
+    if not resp.ok:
+        logger.log(u"Requested url " + url + " returned status code is " + str(
+            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+        return
+
+    if json:
+        return resp.json()
+
+    return resp.content
+
+
+def download_file(url, filename, session=None):
+    # create session
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(sickbeard.CACHE_DIR, 'sessions')))
+
+    # request session headers
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+
+    # request session ssl verify
+    session.verify = False
+
+    # request session streaming
+    session.stream = True
+
+    # request session proxies
+    if sickbeard.PROXY_SETTING:
+        logger.log("Using proxy for url: " + url, logger.DEBUG)
+        session.proxies = {
+            "http": sickbeard.PROXY_SETTING,
+            "https": sickbeard.PROXY_SETTING,
+        }
+
+    try:
+        resp = session.get(url)
+        if not resp.ok:
+            return False
+
+        with open(filename, 'wb') as fp:
+            for chunk in resp.iter_content(chunk_size=1024):
+                if chunk:
+                    fp.write(chunk)
+                    fp.flush()
+
+        chmodAsParent(filename)
+    except requests.exceptions.HTTPError, e:
+        _remove_file_failed(filename)
+        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        return False
+    except requests.exceptions.ConnectionError, e:
+        _remove_file_failed(filename)
+        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return False
+    except requests.exceptions.Timeout, e:
+        _remove_file_failed(filename)
+        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        return False
+    except EnvironmentError, e:
+        _remove_file_failed(filename)
+        logger.log(u"Unable to save the file: " + ex(e), logger.ERROR)
+        return False
+    except Exception:
+        _remove_file_failed(filename)
+        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        return False
+
+    if not resp:
+        logger.log(u"No data returned from " + url, logger.DEBUG)
+        return False
+    elif not resp.ok:
+        logger.log(u"Requested url " + url + " returned status code is " + str(
+            resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.WARNING)
+        return False
+
+    return True
+
+
+def clearCache(force=False):
+    update_datetime = datetime.datetime.now()
+
+    # clean out cache directory, remove everything > 12 hours old
+    if sickbeard.CACHE_DIR:
+        logger.log(u"Trying to clean cache folder " + sickbeard.CACHE_DIR)
+
+        # Does our cache_dir exists
+        if not ek.ek(os.path.isdir, sickbeard.CACHE_DIR):
+            logger.log(u"Can't clean " + sickbeard.CACHE_DIR + " if it doesn't exist", logger.WARNING)
+        else:
+            max_age = datetime.timedelta(hours=12)
+
+            # Get all our cache files
+            for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR):
+                path = os.path.basename(cache_root)
+
+                # skip these cache folders
+                if path in ['rss', 'images']:
+                    continue
+
+                for file in cache_files:
+                    cache_file = ek.ek(os.path.join, cache_root, file)
+
+                    if ek.ek(os.path.isfile, cache_file):
+                        cache_file_modified = datetime.datetime.fromtimestamp(
+                            ek.ek(os.path.getmtime, cache_file))
+
+                        if force or (update_datetime - cache_file_modified > max_age):
+                            try:
+                                ek.ek(os.remove, cache_file)
+                            except OSError, e:
+                                logger.log(u"Unable to clean " + cache_root + ": " + repr(e) + " / " + str(e),
+                                           logger.WARNING)
+                                break

@@ -47,7 +47,10 @@ class indexerApi(object):
     def api_params(self):
         if self.indexerID:
             if sickbeard.CACHE_DIR:
-                indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, self.name)
+                indexerConfig[self.indexerID]['api_params']['cache'] = os.path.join(sickbeard.CACHE_DIR, 'indexers', self.name)
+            if sickbeard.PROXY_SETTING:
+                indexerConfig[self.indexerID]['api_params']['proxy'] = sickbeard.PROXY_SETTING
+
             return indexerConfig[self.indexerID]['api_params']
 
     @property

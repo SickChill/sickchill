@@ -721,7 +721,7 @@ class TVShow(object):
                 if newStatus != None:
                     with curEp.lock:
                         logger.log(u"STATUS: we have an associated file, so setting the status from " + str(
-                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file)), logger.DEBUG)
+                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file, anime=self.is_anime)), logger.DEBUG)
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -1274,6 +1274,8 @@ class TVEpisode(object):
         self._file_size = 0
         self._release_name = ''
         self._is_proper = False
+        self._version = 0
+        self._release_group = ''
 
         # setting any of the above sets the dirty flag
         self.dirty = True
@@ -1317,6 +1319,8 @@ class TVEpisode(object):
     file_size = property(lambda self: self._file_size, dirty_setter("_file_size"))
     release_name = property(lambda self: self._release_name, dirty_setter("_release_name"))
     is_proper = property(lambda self: self._is_proper, dirty_setter("_is_proper"))
+    version = property(lambda self: self._version, dirty_setter("_version"))
+    release_group = property(lambda self: self._release_group, dirty_setter("_release_group"))
 
     def _set_location(self, new_location):
         logger.log(u"Setter sets location to " + new_location, logger.DEBUG)
@@ -1523,6 +1527,12 @@ class TVEpisode(object):
             if sqlResults[0]["is_proper"]:
                 self.is_proper = int(sqlResults[0]["is_proper"])
 
+            if sqlResults[0]["version"]:
+                self.version = int(sqlResults[0]["version"])
+
+            if sqlResults[0]["release_group"] is not None:
+                self.release_group = sqlResults[0]["release_group"]
+
             self.dirty = False
             return True
 
@@ -1676,7 +1686,7 @@ class TVEpisode(object):
                 logger.log(
                     u"5 Status changes from " + str(self.status) + " to " + str(Quality.statusFromName(self.location)),
                     logger.DEBUG)
-                self.status = Quality.statusFromName(self.location)
+                self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
         # shouldn't get here probably
         else:
@@ -1701,8 +1711,8 @@ class TVEpisode(object):
             if self.status == UNKNOWN:
                 if sickbeard.helpers.isMediaFile(self.location):
                     logger.log(u"7 Status changes from " + str(self.status) + " to " + str(
-                        Quality.statusFromName(self.location)), logger.DEBUG)
-                    self.status = Quality.statusFromName(self.location)
+                        Quality.statusFromName(self.location, anime=self.show.is_anime)), logger.DEBUG)
+                    self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
             nfoFile = sickbeard.helpers.replaceExtension(self.location, "nfo")
             logger.log(str(self.show.indexerid) + u": Using NFO name " + nfoFile, logger.DEBUG)
@@ -1849,23 +1859,26 @@ class TVEpisode(object):
                 "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
                 "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                 "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                "absolute_number = ? WHERE episode_id = ?",
+                "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
                 [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
                  self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
                  self.hastbn,
                  self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                 self.season, self.episode, self.absolute_number, epID]]
+                 self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
         else:
             # use a custom insert method to get the data into the DB.
             return [
-                "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, release_name, is_proper, showid, season, episode, absolute_number) VALUES "
-                "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
+                "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
+                "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
+                ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
                 [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
                  self.description,
                  ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
                  self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
                  self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
-                 self.absolute_number]]
+                 self.absolute_number, self.version, self.release_group]]
 
     def saveToDB(self, forceSave=False):
         """
@@ -1898,7 +1911,9 @@ class TVEpisode(object):
                         "file_size": self.file_size,
                         "release_name": self.release_name,
                         "is_proper": self.is_proper,
-                        "absolute_number": self.absolute_number
+                        "absolute_number": self.absolute_number,
+                        "version": self.version,
+                        "release_group": self.release_group
         }
         controlValueDict = {"showid": self.show.indexerid,
                             "season": self.season,

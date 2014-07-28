@@ -194,13 +194,12 @@ class TorrentDayProvider(generic.TorrentProvider):
                 if self.freeleech:
                     post_data.update({'free': 'on'})
 
-                data = self.session.post(self.urls['search'], data=post_data, verify=False)
-                if not data:
+                parsedJSON = self.getURL(self.urls['search'], post_data=post_data, json=True)
+                if not parsedJSON:
                     continue
 
                 try:
-                    data = data.json()
-                    torrents = data.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
+                    torrents = parsedJSON.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except:
                     continue
 
@@ -236,29 +235,6 @@ class TorrentDayProvider(generic.TorrentProvider):
             url = str(url).replace('&amp;', '&')
 
         return (title, url)
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self._doLogin()
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            response = self.session.get(url, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
-            return None
-
-        if response.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
-            return None
-
-        return response.content
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

@@ -265,8 +265,8 @@ class Quality:
         return (status, Quality.NONE)
 
     @staticmethod
-    def statusFromName(name, assume=True):
-        quality = Quality.nameQuality(name)
+    def statusFromName(name, assume=True, anime=False):
+        quality = Quality.nameQuality(name, anime)
         if assume and quality == Quality.UNKNOWN:
             quality = Quality.assumeQuality(name)
         return Quality.compositeStatus(DOWNLOADED, quality)

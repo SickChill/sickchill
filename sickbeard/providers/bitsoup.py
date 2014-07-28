@@ -19,9 +19,11 @@
 import re
 import traceback
 import datetime
-import urlparse
 import sickbeard
 import generic
+import requests
+import requests.exceptions
+
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
@@ -30,12 +32,9 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
-from sickbeard import clients
-from lib import requests
-from lib.requests import exceptions
-from sickbeard.bs4_parser import BS4Parser
-from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
+from sickbeard.bs4_parser import BS4Parser
+from unidecode import unidecode
 
 
 class BitSoupProvider(generic.TorrentProvider):
@@ -83,7 +82,8 @@ class BitSoupProvider(generic.TorrentProvider):
                         'ssl': 'yes'
         }
 
-        self.session = requests.Session()
+        if not self.session:
+            self.session = requests.session()
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -226,32 +226,6 @@ class BitSoupProvider(generic.TorrentProvider):
             url = str(url).replace('&amp;', '&')
 
         return (title, url)
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self._doLogin()
-
-        if not headers:
-            headers = []
-
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            response = self.session.get(url, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
-            return None
-
-        if response.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                response.status_code) + ': ' + clients.http_error_code[response.status_code], logger.WARNING)
-            return None
-
-        return response.content
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

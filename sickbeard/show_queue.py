@@ -428,10 +428,9 @@ class QueueItemRefresh(ShowQueueItem):
         self.show.populateCache()
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=self.force)
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         self.inProgress = False
-
 
 class QueueItemRename(ShowQueueItem):
     def __init__(self, show=None):

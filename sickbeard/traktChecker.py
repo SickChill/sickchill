@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
-import time
+
 import os
 import traceback
 
@@ -24,8 +24,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
-from sickbeard import db
-from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
+from sickbeard.common import SKIPPED, WANTED
 from lib.trakt import *
 
 
@@ -55,18 +54,13 @@ class TraktChecker():
             logger.log(traceback.format_exc(), logger.DEBUG)
 
     def findShow(self, indexer, indexerid):
-        library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
-                            sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         if not library:
             logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
             return
 
-        for show in library:
-            if int(indexer) == 1 and int(show['tvdb_id']) == int(indexerid):
-                return show
-            elif int(indexer) == 2 and int(show['tvrage_id']) == int(indexerid):
-                return show
+        return filter(lambda x: int(indexerid) in [int(x.tvdb_id), int(x.tvrage_id)], library)
 
     def syncLibrary(self):
         logger.log(u"Syncing library to trakt.tv show library", logger.DEBUG)
@@ -113,15 +107,15 @@ class TraktChecker():
                 data['title'] = show_obj.name
                 data['year'] = show_obj.startyear
 
-            if data is not None:
+            if data:
                 logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
                 TraktCall("show/library/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD,
                           data)
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
-                              sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return
@@ -152,8 +146,8 @@ class TraktChecker():
         Sets episodes to wanted that are in trakt watchlist
         """
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API,
-                              sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return

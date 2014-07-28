@@ -278,6 +278,24 @@
 
                         <div class="field-pair">
                             <label class="nocheck clearfix">
+                                <span class="component-title">Branch Version:</span>
+                                <span class="component-desc">
+                                    <select id="branchVersion" name="branchVersion">
+                                    #for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
+                                        <option value="$cur_branch" #if $cur_branch == $sickbeard.version.SICKBEARD_VERSION then "selected=\"selected\"" else ""#>$cur_branch.capitalize()</option>
+                                    #end for
+                                    </select>
+                                    <input class="btn" class="btn" type="button" id="branchCheckout" value="Checkout Branch">
+                                </span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Select the branch you wish to use, changing this will require a restart.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label class="nocheck clearfix">
                                 <span class="component-title">CPU Throttling:</span>
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset">

@@ -47,33 +47,7 @@ class ShowUpdater():
         logger.log(u"Doing full update on all shows")
 
         # clean out cache directory, remove everything > 12 hours old
-        if sickbeard.CACHE_DIR:
-            for indexer in sickbeard.indexerApi().indexers:
-                cache_dir = sickbeard.indexerApi(indexer).cache
-                logger.log(u"Trying to clean cache folder " + cache_dir)
-
-                # Does our cache_dir exists
-                if not ek.ek(os.path.isdir, cache_dir):
-                    logger.log(u"Can't clean " + cache_dir + " if it doesn't exist", logger.WARNING)
-                else:
-                    max_age = datetime.timedelta(hours=12)
-                    # Get all our cache files
-                    cache_files = ek.ek(os.listdir, cache_dir)
-
-                    for cache_file in cache_files:
-                        cache_file_path = ek.ek(os.path.join, cache_dir, cache_file)
-
-                        if ek.ek(os.path.isfile, cache_file_path):
-                            cache_file_modified = datetime.datetime.fromtimestamp(
-                                ek.ek(os.path.getmtime, cache_file_path))
-
-                            if update_datetime - cache_file_modified > max_age:
-                                try:
-                                    ek.ek(os.remove, cache_file_path)
-                                except OSError, e:
-                                    logger.log(u"Unable to clean " + cache_dir + ": " + repr(e) + " / " + str(e),
-                                               logger.WARNING)
-                                    break
+        sickbeard.helpers.clearCache()
 
         # select 10 'Ended' tv_shows updated more than 90 days ago to include in this update
         stale_should_update = []

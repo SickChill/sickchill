@@ -35,7 +35,7 @@ from lib.requests import exceptions
 from lib.bencode import bdecode
 
 class TorrentRssProvider(generic.TorrentProvider):
-    def __init__(self, name, url, cookies, search_mode='eponly', search_fallback=False, backlog_only=False):
+    def __init__(self, name, url, cookies='', search_mode='eponly', search_fallback=False, backlog_only=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
         self.url = re.sub('\/$', '', url)
@@ -47,11 +47,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.search_mode = search_mode
         self.search_fallback = search_fallback
         self.backlog_only = backlog_only
-
-        if cookies:
-          self.cookies = cookies
-        else:
-          self.cookies = ''
+        self.cookies = cookies
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
@@ -118,6 +114,9 @@ class TorrentRssProvider(generic.TorrentProvider):
             if url.startswith('magnet:') and re.search('urn:btih:([\w]{32,40})', url):
                 return (True, 'RSS feed Parsed correctly')
             else:
+                if self.cookies:
+                    requests.utils.add_dict_to_cookiejar(self.session.cookies,
+                                                         dict(x.rsplit('=', 1) for x in (self.cookies.split(';'))))
                 torrent_file = self.getURL(url)
                 try:
                     bdecode(torrent_file)
@@ -129,30 +128,6 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         except Exception, e:
             return (False, 'Error when trying to load RSS: ' + ex(e))
-
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        if not self.session:
-            self.session = requests.Session()
-
-        if self.cookies:
-          requests.utils.add_dict_to_cookiejar(self.session.cookies,
-                                               dict(x.rsplit('=', 1) for x in (self.cookies.split(';'))))
-
-        try:
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            r = self.session.get(url, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
-            logger.log(u"Error loading " + self.name + " URL: " + ex(e), logger.ERROR)
-            return None
-
-        if r.status_code != 200:
-            logger.log(self.name + u" page requested with url " + url + " returned status code is " + str(
-                r.status_code) + ': ' + clients.http_error_code[r.status_code], logger.WARNING)
-            return None
-
-        return r.content
 
     def dumpHTML(self, data):
 
@@ -179,10 +154,11 @@ class TorrentRssCache(tvcache.TVCache):
 
     def _getRSSData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
+
+        request_headers = None
         if self.provider.cookies:
           request_headers = { 'Cookie': self.provider.cookies }
-        else:
-          request_headers = None
+
         return self.getRSSFeed(self.provider.url, request_headers=request_headers)
 
     def _parseItem(self, item):

@@ -59,7 +59,6 @@ def _downloadResult(result):
     # nzbs with an URL can just be downloaded from the provider
     if result.resultType == "nzb":
         newResult = resProvider.downloadResult(result)
-
     # if it's an nzb data result
     elif result.resultType == "nzbdata":
 
@@ -80,20 +79,13 @@ def _downloadResult(result):
         except EnvironmentError, e:
             logger.log(u"Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
             newResult = False
-
     elif resProvider.providerType == "torrent":
         newResult = resProvider.downloadResult(result)
-
     else:
         logger.log(u"Invalid provider type - this is a coding error, report it please", logger.ERROR)
-        return False
-
-    if newResult and sickbeard.USE_FAILED_DOWNLOADS:
-        ui.notifications.message('Episode snatched',
-                                 '<b>%s</b> snatched from <b>%s</b>' % (result.name, resProvider.name))
+        newResult = False
 
     return newResult
-
 
 def snatchEpisode(result, endStatus=SNATCHED):
     """
@@ -139,7 +131,11 @@ def snatchEpisode(result, endStatus=SNATCHED):
         else:
             # Sets per provider seed ratio
             result.ratio = result.provider.seedRatio()
+
+            # Gets torrent file contents if not magnet link
             result.content = result.provider.getURL(result.url) if not result.url.startswith('magnet') else None
+
+            # Snatches torrent with client
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
             dlResult = client.sendTORRENT(result)
     else:

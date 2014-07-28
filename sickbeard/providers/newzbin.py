@@ -227,25 +227,6 @@ class NewzbinProvider(generic.NZBProvider):
 
         return True
 
-    def getURL(self, url, post_data=None, headers=None, json=False):
-
-        myOpener = classes.AuthURLOpener(sickbeard.NEWZBIN_USERNAME, sickbeard.NEWZBIN_PASSWORD)
-        try:
-            # Remove double-slashes from url
-            parsed = list(urlparse.urlparse(url))
-            parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-            url = urlparse.urlunparse(parsed)
-
-            f = myOpener.openit(url)
-        except (urllib.ContentTooShortError, IOError), e:
-            logger.log("Error loading search results: " + str(sys.exc_info()) + " - " + ex(e), logger.ERROR)
-            return None
-
-        data = f.read()
-        f.close()
-
-        return data
-
     def _get_season_search_strings(self, ep_obj):
         return ['^' + x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 

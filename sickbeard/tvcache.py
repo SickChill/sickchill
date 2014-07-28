@@ -55,6 +55,10 @@ class CacheDBConnection(db.DBConnection):
             if not self.hasColumn(providerName, 'release_group'):
                 self.addColumn(providerName, 'release_group', "TEXT", "")
 
+            # add version column to table if missing
+            if not self.hasColumn(providerName, 'version'):
+                self.addColumn(providerName, 'version', "NUMERIC", "-1")
+
         except Exception, e:
             if str(e) != "table [" + providerName + "] already exists":
                 raise
@@ -106,16 +110,18 @@ class TVCache():
     def updateCache(self):
 
         if self.shouldUpdate() and self._checkAuth(None):
-            self._clearCache()
-
-            data = self._getRSSData()
-
             # as long as the http request worked we count this as an update
-            if data:
-                self.setLastUpdate()
-            else:
+            data = self._getRSSData()
+            if not data:
                 return []
 
+            # clear cache
+            self._clearCache()
+
+            # set updated
+            self.setLastUpdate()
+
+            # parse data
             if self._checkAuth(data):
                 cl = []
                 for item in data.entries:
@@ -270,11 +276,14 @@ class TVCache():
             # get release group
             release_group = parse_result.release_group
 
+            # get version
+            version = parse_result.version
+
             logger.log(u"Added RSS item: [" + name + "] to cache: [" + self.providerID + "]", logger.DEBUG)
 
             return [
-                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group) VALUES (?,?,?,?,?,?,?,?)",
-                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group]]
+                "INSERT OR IGNORE INTO [" + self.providerID + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
+                [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
 
 
     def searchCache(self, episodes, manualSearch=False):
@@ -326,6 +335,7 @@ class TVCache():
                 curEp = int(curEp)
                 curQuality = int(curResult["quality"])
                 curReleaseGroup = curResult["release_group"]
+                curVersion = curResult["version"]
 
                 # if the show says we want that episode then add it to the list
                 if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
@@ -345,6 +355,7 @@ class TVCache():
                 result.name = title
                 result.quality = curQuality
                 result.release_group = curReleaseGroup
+                result.version = curVersion
                 result.content = self.provider.getURL(url) \
                     if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
                        and not url.startswith('magnet') else None
