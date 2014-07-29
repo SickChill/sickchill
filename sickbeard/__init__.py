@@ -1171,13 +1171,6 @@ def halt():
 
             logger.log(u"Aborting all threads")
 
-            events.stop.set()
-            logger.log(u"Waiting for the EVENTS thread to exit")
-            try:
-                events.join()
-            except:
-                pass
-
             dailySearchScheduler.stop.set()
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
@@ -1256,9 +1249,15 @@ def halt():
                 except:
                     pass
 
+            events.stop.set()
+            logger.log(u"Waiting for the EVENTS thread to exit")
+            try:
+                events.join(10)
+            except:
+                pass
+
             __INITIALIZED__ = False
             started = False
-
 
 def sig_handler(signum=None, frame=None):
     if type(signum) != type(None):
