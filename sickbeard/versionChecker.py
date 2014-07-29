@@ -279,7 +279,10 @@ class GitUpdateManager(UpdateManager):
         self._git_path = self._find_working_git()
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
-        self.branch = sickbeard.BRANCH or self._find_installed_branch()
+
+        self.branch = sickbeard.BRANCH
+        if not (sickbeard.BRANCH or sickbeard.BRANCH == ''):
+            self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
@@ -534,7 +537,10 @@ class SourceUpdateManager(UpdateManager):
     def __init__(self):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
-        self.branch = sickbeard.BRANCH or self._find_installed_branch()
+
+        self.branch = sickbeard.BRANCH
+        if not (sickbeard.BRANCH or sickbeard.BRANCH == ''):
+            self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
