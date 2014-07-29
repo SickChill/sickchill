@@ -2769,7 +2769,7 @@ class NewHomeAddShows(MainHandler):
             return
 
         map(final_results.append,
-            ([int(show['tvdb_id']), show['url'], show['title'], show['overview'],
+            ([int(show['tvdb_id'] or 0) if sickbeard.TRAKT_DEFAULT_INDEXER == 1 else int(show['tvdb_id'] or 0), show['url'], show['title'], show['overview'],
               datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')] for show in
              recommendedlist if not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
 
