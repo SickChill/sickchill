@@ -53,6 +53,9 @@ class CheckVersion():
             self.updater = None
 
     def run(self, force=False):
+        # set current branch version
+        sickbeard.BRANCH = self.get_branch()
+
         if self.check_for_new_version(force):
             if sickbeard.AUTO_UPDATE:
                 logger.log(u"New update found for SickRage, starting auto-updater ...")
