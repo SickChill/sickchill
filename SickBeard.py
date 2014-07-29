@@ -56,14 +56,11 @@ import threading
 import getopt
 
 import sickbeard
-from sickbeard import db
+from sickbeard import db, logger, network_timezones, failed_history, name_cache, versionChecker
 from sickbeard.tv import TVShow
-from sickbeard import logger, network_timezones, failed_history, name_cache
 from sickbeard.webserveInit import SRWebServer
-from sickbeard.version import SICKBEARD_VERSION
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
-
 from lib.configobj import ConfigObj
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
@@ -350,7 +347,7 @@ class SickRage(object):
             os._exit(1)
 
         if self.consoleLogging:
-            print "Starting up SickRage " + SICKBEARD_VERSION + " from " + sickbeard.CONFIG_FILE
+            print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE
 
         # Fire up all our threads
         sickbeard.start()
@@ -369,6 +366,7 @@ class SickRage(object):
         if self.forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
             sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
 
+        # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):
             sickbeard.launchBrowser(self.startPort)
 

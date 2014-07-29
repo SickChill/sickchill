@@ -1284,7 +1284,7 @@ class CMD_SickBeard(ApiCall):
 
     def run(self):
         """ display misc sickbeard related information """
-        data = {"sb_version": sickbeard.version.SICKBEARD_VERSION, "api_version": Api.version,
+        data = {"sb_version": sickbeard.BRANCH, "api_version": Api.version,
                 "api_commands": sorted(_functionMaper.keys())}
         return _responds(RESULT_SUCCESS, data)
 

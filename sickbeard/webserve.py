@@ -3449,12 +3449,12 @@ class Home(MainHandler):
 
         return _munge(t)
 
-    def update(self, pid=None, branch=None):
+    def update(self, pid=None):
 
         if str(pid) != str(sickbeard.PID):
             redirect("/home/")
 
-        updated = sickbeard.versionCheckScheduler.action.update(branch)  # @UndefinedVariable
+        updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
         if updated:
             # do a hard restart
             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
@@ -3466,7 +3466,9 @@ class Home(MainHandler):
                                         "Update wasn't successful, not restarting. Check your log for more information.")
 
     def branchCheckout(self, branch):
-        return self.update(sickbeard.PID, branch)
+        sickbeard.BRANCH = branch
+        ui.notifications.message('Checking out branch: ', branch)
+        return self.update(sickbeard.PID)
 
     def displayShow(self, show=None):
 

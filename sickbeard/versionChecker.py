@@ -30,14 +30,14 @@ import gh_api as github
 
 import sickbeard
 from sickbeard import helpers, notifiers
-from sickbeard import version, ui
+from sickbeard import ui
 from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 
 class CheckVersion():
     """
-    Version check class meant to run as a thread object with the SB scheduler.
+    Version check class meant to run as a thread object with the sr scheduler.
     """
 
     def __init__(self):
@@ -64,7 +64,7 @@ class CheckVersion():
 
     def find_install_type(self):
         """
-        Determines how this copy of SB was installed.
+        Determines how this copy of sr was installed.
 
         returns: type of installation. Possible values are:
             'win': any compiled windows build
@@ -73,7 +73,7 @@ class CheckVersion():
         """
 
         # check if we're a windows build
-        if sickbeard.version.SICKBEARD_VERSION.startswith('build '):
+        if sickbeard.BRANCH.startswith('build '):
             install_type = 'win'
         elif os.path.isdir(ek.ek(os.path.join, sickbeard.PROG_DIR, u'.git')):
             install_type = 'git'
@@ -109,14 +109,15 @@ class CheckVersion():
         self.updater.set_newest_text()
         return True
 
-    def update(self, branch=None):
-        if branch and branch != self.updater.branch:
-            return self.updater.update(branch)
-        elif self.updater.need_update():
+    def update(self):
+        if self.updater.need_update() or self.updater.branch != sickbeard.BRANCH:
             return self.updater.update()
 
     def list_remote_branches(self):
         return self.updater.list_remote_branches()
+
+    def get_branch(self):
+        return self.updater.branch
 
 class UpdateManager():
     def get_github_repo_user(self):
@@ -145,7 +146,7 @@ class WindowsUpdateManager(UpdateManager):
         version = ''
 
         try:
-            version = sickbeard.version.SICKBEARD_VERSION
+            version = sickbeard.BRANCH
             return int(version[6:])
         except ValueError:
             logger.log(u"Unknown SickRage Windows binary release: " + version, logger.ERROR)
@@ -200,11 +201,7 @@ class WindowsUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self, branch=None):
-
-        # set branch version
-        if branch:
-            self.branch = branch
+    def update(self):
 
         zip_download_url = self._find_newest_version(True)
         logger.log(u"new_link: " + repr(zip_download_url), logger.DEBUG)
@@ -215,18 +212,18 @@ class WindowsUpdateManager(UpdateManager):
 
         try:
             # prepare the update dir
-            sb_update_dir = ek.ek(os.path.join, sickbeard.PROG_DIR, u'sb-update')
+            sr_update_dir = ek.ek(os.path.join, sickbeard.PROG_DIR, u'sr-update')
 
-            if os.path.isdir(sb_update_dir):
-                logger.log(u"Clearing out update folder " + sb_update_dir + " before extracting")
-                shutil.rmtree(sb_update_dir)
+            if os.path.isdir(sr_update_dir):
+                logger.log(u"Clearing out update folder " + sr_update_dir + " before extracting")
+                shutil.rmtree(sr_update_dir)
 
-            logger.log(u"Creating update folder " + sb_update_dir + " before extracting")
-            os.makedirs(sb_update_dir)
+            logger.log(u"Creating update folder " + sr_update_dir + " before extracting")
+            os.makedirs(sr_update_dir)
 
             # retrieve file
             logger.log(u"Downloading update from " + zip_download_url)
-            zip_download_path = os.path.join(sb_update_dir, u'sb-update.zip')
+            zip_download_path = os.path.join(sr_update_dir, u'sr-update.zip')
             urllib.urlretrieve(zip_download_url, zip_download_path)
 
             if not ek.ek(os.path.isfile, zip_download_path):
@@ -237,10 +234,10 @@ class WindowsUpdateManager(UpdateManager):
                 logger.log(u"Retrieved version from " + zip_download_url + " is corrupt, can't update", logger.ERROR)
                 return False
 
-            # extract to sb-update dir
-            logger.log(u"Unzipping from " + str(zip_download_path) + " to " + sb_update_dir)
+            # extract to sr-update dir
+            logger.log(u"Unzipping from " + str(zip_download_path) + " to " + sr_update_dir)
             update_zip = zipfile.ZipFile(zip_download_path, 'r')
-            update_zip.extractall(sb_update_dir)
+            update_zip.extractall(sr_update_dir)
             update_zip.close()
 
             # delete the zip
@@ -248,15 +245,15 @@ class WindowsUpdateManager(UpdateManager):
             os.remove(zip_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sb_update_dir) if
-                                   os.path.isdir(os.path.join(sb_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sr_update_dir) if
+                                   os.path.isdir(os.path.join(sr_update_dir, x))]
 
             if len(update_dir_contents) != 1:
-                logger.log(u"Invalid update data, update failed. Maybe try deleting your sb-update folder?",
+                logger.log(u"Invalid update data, update failed. Maybe try deleting your sr-update folder?",
                            logger.ERROR)
                 return False
 
-            content_dir = os.path.join(sb_update_dir, update_dir_contents[0])
+            content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
             old_update_path = os.path.join(content_dir, u'updater.exe')
             new_update_path = os.path.join(sickbeard.PROG_DIR, u'updater.exe')
             logger.log(u"Copying new update.exe file from " + old_update_path + " to " + new_update_path)
@@ -279,7 +276,7 @@ class GitUpdateManager(UpdateManager):
         self._git_path = self._find_working_git()
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
-        self.branch = self._find_git_branch()
+        self.branch = sickbeard.BRANCH or self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
@@ -311,7 +308,7 @@ class GitUpdateManager(UpdateManager):
 
         alternative_git = []
 
-        # osx people who start SB from launchd have a broken path, so try a hail-mary attempt for them
+        # osx people who start sr from launchd have a broken path, so try a hail-mary attempt for them
         if platform.system().lower() == 'darwin':
             alternative_git.append('/usr/local/git/bin/git')
 
@@ -404,13 +401,12 @@ class GitUpdateManager(UpdateManager):
         else:
             return False
 
-    def _find_git_branch(self):
+    def _find_installed_branch(self):
         branch_info, err, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
         if exit_status == 0 and branch_info:
             branch = branch_info.strip().replace('refs/heads/', '', 1)
             if branch:
-                sickbeard.version.SICKBEARD_VERSION = branch
-        return sickbeard.version.SICKBEARD_VERSION
+                return branch
 
     def _check_github_for_update(self):
         """
@@ -506,17 +502,13 @@ class GitUpdateManager(UpdateManager):
 
         return False
 
-    def update(self, branch=None):
+    def update(self):
         """
         Calls git pull origin <branch> in order to update SickRage. Returns a bool depending
         on the call's success.
         """
 
-        # set branch version
-        if branch:
-            self.branch = branch
-
-        if self.branch == sickbeard.version.SICKBEARD_VERSION:
+        if sickbeard.BRANCH == self._find_installed_branch():
             output, err, exit_status = self._run_git(self._git_path, 'pull -f origin ' + self.branch)  # @UnusedVariable
         else:
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
@@ -539,29 +531,25 @@ class SourceUpdateManager(UpdateManager):
     def __init__(self):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
-        self.branch = sickbeard.version.SICKBEARD_VERSION
+        self.branch = sickbeard.BRANCH or self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
         self._num_commits_behind = 0
 
     def _find_installed_version(self):
-
-        version_file = ek.ek(os.path.join, sickbeard.PROG_DIR, u'version.txt')
-
-        if not os.path.isfile(version_file):
-            self._cur_commit_hash = None
-            return
-
-        try:
-            with open(version_file, 'r') as fp:
-                self._cur_commit_hash = fp.read().strip(' \n\r')
-        except EnvironmentError, e:
-            logger.log(u"Unable to open 'version.txt': " + ex(e), logger.DEBUG)
+        gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
+        self._cur_commit_hash = gh.installed_branch()
 
         if not self._cur_commit_hash:
             self._cur_commit_hash = None
         sickbeard.CUR_COMMIT_HASH = str(self._cur_commit_hash)
+
+    def _find_installed_branch(self):
+        gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
+        for branch in gh.branches():
+            if branch.commit['sha'] == self._cur_commit_hash:
+                sickbeard.BRANCH = branch.name
 
     def need_update(self):
 
@@ -647,33 +635,28 @@ class SourceUpdateManager(UpdateManager):
 
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
-    def update(self, branch=None):
+    def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
 
-        # set branch version
-        if branch:
-            self.branch = branch
-
         base_url = 'http://github.com/' + self.github_repo_user + '/' + self.github_repo
         tar_download_url = base_url + '/tarball/' + self.branch
-        version_path = ek.ek(os.path.join, sickbeard.PROG_DIR, u'version.txt')
 
         try:
             # prepare the update dir
-            sb_update_dir = ek.ek(os.path.join, sickbeard.PROG_DIR, u'sb-update')
+            sr_update_dir = ek.ek(os.path.join, sickbeard.PROG_DIR, u'sr-update')
 
-            if os.path.isdir(sb_update_dir):
-                logger.log(u"Clearing out update folder " + sb_update_dir + " before extracting")
-                shutil.rmtree(sb_update_dir)
+            if os.path.isdir(sr_update_dir):
+                logger.log(u"Clearing out update folder " + sr_update_dir + " before extracting")
+                shutil.rmtree(sr_update_dir)
 
-            logger.log(u"Creating update folder " + sb_update_dir + " before extracting")
-            os.makedirs(sb_update_dir)
+            logger.log(u"Creating update folder " + sr_update_dir + " before extracting")
+            os.makedirs(sr_update_dir)
 
             # retrieve file
             logger.log(u"Downloading update from " + repr(tar_download_url))
-            tar_download_path = os.path.join(sb_update_dir, u'sb-update.tar')
+            tar_download_path = os.path.join(sr_update_dir, u'sr-update.tar')
             urllib.urlretrieve(tar_download_url, tar_download_path)
 
             if not ek.ek(os.path.isfile, tar_download_path):
@@ -684,10 +667,10 @@ class SourceUpdateManager(UpdateManager):
                 logger.log(u"Retrieved version from " + tar_download_url + " is corrupt, can't update", logger.ERROR)
                 return False
 
-            # extract to sb-update dir
+            # extract to sr-update dir
             logger.log(u"Extracting file " + tar_download_path)
             tar = tarfile.open(tar_download_path)
-            tar.extractall(sb_update_dir)
+            tar.extractall(sr_update_dir)
             tar.close()
 
             # delete .tar.gz
@@ -695,12 +678,12 @@ class SourceUpdateManager(UpdateManager):
             os.remove(tar_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sb_update_dir) if
-                                   os.path.isdir(os.path.join(sb_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sr_update_dir) if
+                                   os.path.isdir(os.path.join(sr_update_dir, x))]
             if len(update_dir_contents) != 1:
                 logger.log(u"Invalid update data, update failed: " + str(update_dir_contents), logger.ERROR)
                 return False
-            content_dir = os.path.join(sb_update_dir, update_dir_contents[0])
+            content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
 
             # walk temp folder and move files to main folder
             logger.log(u"Moving files from " + content_dir + " to " + sickbeard.PROG_DIR)
@@ -726,15 +709,6 @@ class SourceUpdateManager(UpdateManager):
                     if os.path.isfile(new_path):
                         os.remove(new_path)
                     os.renames(old_path, new_path)
-
-            # update version.txt with commit hash
-            try:
-                with open(version_path, 'w') as ver_file:
-                    ver_file.write(self._newest_commit_hash)
-            except EnvironmentError, e:
-                logger.log(u"Unable to write version file, update not complete: " + ex(e), logger.ERROR)
-                return False
-
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
@@ -747,4 +721,5 @@ class SourceUpdateManager(UpdateManager):
 
     def list_remote_branches(self):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
-        return gh.branches()
+        return [x.name for x in gh.branches()]
+
