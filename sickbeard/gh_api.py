@@ -15,6 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+import os
+from subprocess import check_output, PIPE, Popen
+from os.path import join, split
 
 try:
     import json
@@ -30,7 +33,7 @@ class GitHub(object):
     needs it for - list of commits.
     """
 
-    def __init__(self, github_repo_user, github_repo, branch='master'):
+    def __init__(self, github_repo_user, github_repo, branch):
 
         self.github_repo_user = github_repo_user
         self.github_repo = github_repo
@@ -93,3 +96,36 @@ class GitHub(object):
             ['repos', self.github_repo_user, self.github_repo, 'branches'],
             params={'per_page': 100})
         return access_API
+
+    def installed_branch(self):
+        installed_path = os.path.dirname(os.path.normpath(os.path.abspath(__file__)))
+        return self.hash_dir(installed_path)
+
+    def _lstree(self, files, dirs):
+        """Make git ls-tree like output."""
+        for f, sha1 in files:
+            yield "100644 blob {}\t{}\0".format(sha1, f)
+
+        for d, sha1 in dirs:
+            yield "040000 tree {}\t{}\0".format(sha1, d)
+
+
+    def _mktree(self, files, dirs):
+        mkt = Popen(["git", "mktree", "-z"], stdin=PIPE, stdout=PIPE)
+        return mkt.communicate("".join(self._lstree(files, dirs)))[0].strip()
+
+    def hash_file(self, path):
+        """Write file at path to Git index, return its SHA1 as a string."""
+        return check_output(["git", "hash-object", "-w", "--", path]).strip()
+
+    def hash_dir(self, path):
+        """Write directory at path to Git index, return its SHA1 as a string."""
+        dir_hash = {}
+
+        for root, dirs, files in os.walk(path, topdown=False):
+            f_hash = ((f, self.hash_file(join(root, f))) for f in files)
+            d_hash = ((d, dir_hash[join(root, d)]) for d in dirs)
+            # split+join normalizes paths on Windows (note the imports)
+            dir_hash[join(*split(root))] = self._mktree(f_hash, d_hash)
+
+        return dir_hash[path]

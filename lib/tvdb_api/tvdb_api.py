@@ -471,13 +471,11 @@ class Tvdb:
         if cache is True:
             self.config['cache_enabled'] = True
             self.config['cache_location'] = self._getTempDir()
-            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         elif cache is False:
             self.config['cache_enabled'] = False
         elif isinstance(cache, basestring):
             self.config['cache_enabled'] = True
             self.config['cache_location'] = cache
-            self.sess = CacheControl(cache=caches.FileCache(self.config['cache_location']))
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
@@ -565,14 +563,15 @@ class Tvdb:
 
             # get response from TVDB
             if self.config['cache_enabled']:
+                session = CacheControl(cache=caches.FileCache(self.config['cache_location']))
                 if self.config['proxy']:
                     log().debug("Using proxy for URL: %s" % url)
-                    self.sess.proxies = {
+                    session.proxies = {
                         "http": self.config['proxy'],
                         "https": self.config['proxy'],
                     }
 
-                resp = self.sess.get(url, cache_auto=True, params=params)
+                resp = session.get(url, cache_auto=True, params=params)
             else:
                 resp = requests.get(url, params=params)
         except requests.exceptions.HTTPError, e:
@@ -630,7 +629,7 @@ class Tvdb:
         """
         try:
             src = self._loadUrl(url, params=params, language=language)
-            src = [src[item] for item in src][0]
+            src = [src[item] for item in src][0] if src else []
         except:
             errormsg = "There was an error with the XML retrieved from thetvdb.com:"
 

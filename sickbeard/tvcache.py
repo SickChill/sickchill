@@ -31,6 +31,7 @@ from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
+from sickbeard import clients
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -356,9 +357,15 @@ class TVCache():
                 result.quality = curQuality
                 result.release_group = curReleaseGroup
                 result.version = curVersion
-                result.content = self.provider.getURL(url) \
-                    if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT \
-                       and not url.startswith('magnet') else None
+                result.content = None
+
+                # validate torrent file if not magnet link to avoid invalid torrent links
+                if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
+                    client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                    result = client._get_torrent_hash(result)
+                    if not result.hash:
+                        logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
+                        continue
 
                 # add it to the list
                 if epObj not in neededEps:

@@ -34,9 +34,6 @@ class TraktChecker():
         self.todoBacklog = []
 
     def run(self, force=False):
-        if not sickbeard.USE_TRAKT:
-            return
-
         try:
             # add shows from trakt.tv watchlist
             if sickbeard.TRAKT_USE_WATCHLIST:
@@ -60,10 +57,10 @@ class TraktChecker():
             logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
             return
 
-        return filter(lambda x: int(indexerid) in [int(x.tvdb_id), int(x.tvrage_id)], library)
+        return filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
 
     def syncLibrary(self):
-        logger.log(u"Syncing library to trakt.tv show library", logger.DEBUG)
+        logger.log(u"Syncing library to Trakt.tv show library", logger.DEBUG)
         if sickbeard.showList:
             for myShow in sickbeard.showList:
                 self.addShowToTraktLibrary(myShow)
