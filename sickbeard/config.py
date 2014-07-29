@@ -27,7 +27,6 @@ from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import naming
 from sickbeard import db
-from sickbeard import version
 
 naming_ep_type = ("%(seasonnumber)dx%(episodenumber)02d",
                   "s%(seasonnumber)02de%(episodenumber)02d",
@@ -190,6 +189,51 @@ def change_VERSION_NOTIFY(version_notify):
 
     if oldSetting == False and version_notify == True:
         sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
+
+def change_DOWNLOAD_PROPERS(download_propers):
+    if sickbeard.DOWNLOAD_PROPERS == download_propers:
+        return
+
+    sickbeard.DOWNLOAD_PROPERS = download_propers
+    if sickbeard.DOWNLOAD_PROPERS:
+        sickbeard.properFinderScheduler.start()
+    else:
+        sickbeard.properFinderScheduler.stop.set()
+        logger.log(u"Waiting for the PROPERFINDER thread to exit")
+        try:
+            sickbeard.properFinderScheduler.join(10)
+        except:
+            pass
+
+def change_USE_TRAKT(use_trakt):
+    if sickbeard.USE_TRAKT == use_trakt:
+        return
+
+    sickbeard.USE_TRAKT = use_trakt
+    if sickbeard.USE_TRAKT:
+        sickbeard.traktCheckerScheduler.start()
+    else:
+        sickbeard.traktCheckerScheduler.stop.set()
+        logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
+        try:
+            sickbeard.traktCheckerScheduler.join(10)
+        except:
+            pass
+
+def change_USE_SUBTITLES(use_subtitles):
+    if sickbeard.USE_SUBTITLES == use_subtitles:
+        return
+
+    sickbeard.USE_SUBTITLES = use_subtitles
+    if sickbeard.USE_SUBTITLES:
+        sickbeard.subtitlesFinderScheduler.start()
+    else:
+        sickbeard.subtitlesFinderScheduler.stop.set()
+        logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
+        try:
+            sickbeard.subtitlesFinderScheduler.join(10)
+        except:
+            pass
 
 def CheckSection(CFG, sec):
     """ Check if INI section exists, if not create it """
@@ -467,7 +511,7 @@ class ConfigMigrator():
             if old_season_format:
                 try:
                     new_season_format = old_season_format % 9
-                    new_season_format = new_season_format.replace('09', '%0S')
+                    new_season_format = str(new_season_format).replace('09', '%0S')
                     new_season_format = new_season_format.replace('9', '%S')
 
                     logger.log(

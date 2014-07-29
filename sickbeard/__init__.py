@@ -1144,16 +1144,20 @@ def start():
             searchQueueScheduler.start()
 
             # start the queue checker
-            properFinderScheduler.start()
+            if DOWNLOAD_PROPERS:
+                properFinderScheduler.start()
 
             # start the proper finder
-            autoPostProcesserScheduler.start()
+            if PROCESS_AUTOMATICALLY:
+                autoPostProcesserScheduler.start()
 
             # start the subtitles finder
-            subtitlesFinderScheduler.start()
+            if USE_SUBTITLES:
+                subtitlesFinderScheduler.start()
 
             # start the trakt checker
-            traktCheckerScheduler.start()
+            if USE_TRAKT:
+                traktCheckerScheduler.start()
 
             started = True
 
@@ -1220,33 +1224,37 @@ def halt():
             except:
                 pass
 
-            autoPostProcesserScheduler.stop.set()
-            logger.log(u"Waiting for the POSTPROCESSER thread to exit")
-            try:
-                autoPostProcesserScheduler.join(10)
-            except:
-                pass
+            if PROCESS_AUTOMATICALLY:
+                autoPostProcesserScheduler.stop.set()
+                logger.log(u"Waiting for the POSTPROCESSER thread to exit")
+                try:
+                    autoPostProcesserScheduler.join(10)
+                except:
+                    pass
 
-            traktCheckerScheduler.stop.set()
-            logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
-            try:
-                traktCheckerScheduler.join(10)
-            except:
-                pass
+            if USE_TRAKT:
+                traktCheckerScheduler.stop.set()
+                logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
+                try:
+                    traktCheckerScheduler.join(10)
+                except:
+                    pass
 
-            properFinderScheduler.stop.set()
-            logger.log(u"Waiting for the PROPERFINDER thread to exit")
-            try:
-                properFinderScheduler.join(10)
-            except:
-                pass
+            if DOWNLOAD_PROPERS:
+                properFinderScheduler.stop.set()
+                logger.log(u"Waiting for the PROPERFINDER thread to exit")
+                try:
+                    properFinderScheduler.join(10)
+                except:
+                    pass
 
-            subtitlesFinderScheduler.stop.set()
-            logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
-            try:
-                subtitlesFinderScheduler.join(10)
-            except:
-                pass
+            if USE_SUBTITLES:
+                subtitlesFinderScheduler.stop.set()
+                logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
+                try:
+                    subtitlesFinderScheduler.join(10)
+                except:
+                    pass
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()

@@ -27,9 +27,6 @@ from sickbeard import processTV
 
 class PostProcesser():
     def run(self, force=False):
-        if not sickbeard.PROCESS_AUTOMATICALLY:
-            return
-
         if not ek.ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR):
             logger.log(u"Automatic post-processing attempted but dir " + sickbeard.TV_DOWNLOAD_DIR + " doesn't exist",
                        logger.ERROR)
