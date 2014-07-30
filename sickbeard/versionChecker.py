@@ -35,6 +35,8 @@ from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 
+from subprocess import check_output, PIPE, Popen
+
 class CheckVersion():
     """
     Version check class meant to run as a thread object with the sr scheduler.
@@ -553,8 +555,8 @@ class SourceUpdateManager(UpdateManager):
         self._num_commits_behind = 0
 
     def _find_installed_version(self):
-        gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
-        self._cur_commit_hash = gh.installed_branch()
+        installed_path = os.path.dirname(os.path.normpath(os.path.abspath(__file__)))
+        self._cur_commit_hash = self.hash_dir(installed_path)
 
         if not self._cur_commit_hash:
             self._cur_commit_hash = None
@@ -563,7 +565,7 @@ class SourceUpdateManager(UpdateManager):
     def _find_installed_branch(self):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
         for branch in gh.branches():
-            if branch.commit['sha'] == self._cur_commit_hash:
+            if 'commit' in branch and self._cur_commit_hash and branch.commit['sha'] == self._cur_commit_hash:
                 return branch.name
 
     def need_update(self):
@@ -738,3 +740,30 @@ class SourceUpdateManager(UpdateManager):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
         return [x.name for x in gh.branches()]
 
+    def _lstree(self, files, dirs):
+        """Make git ls-tree like output."""
+        for f, sha1 in files:
+            yield "100644 blob {}\t{}\0".format(sha1, f)
+
+        for d, sha1 in dirs:
+            yield "040000 tree {}\t{}\0".format(sha1, d)
+
+    def _mktree(self, files, dirs):
+        mkt = Popen(["git", "mktree", "-z"], stdin=PIPE, stdout=PIPE)
+        return mkt.communicate("".join(self._lstree(files, dirs)))[0].strip()
+
+    def hash_file(self, path):
+        """Write file at path to Git index, return its SHA1 as a string."""
+        return check_output(["git", "hash-object", "-w", "--", path]).strip()
+
+    def hash_dir(self, path):
+        """Write directory at path to Git index, return its SHA1 as a string."""
+        dir_hash = {}
+
+        for root, dirs, files in os.walk(path, topdown=False):
+            f_hash = ((f, self.hash_file(os.path.join(root, f))) for f in files)
+            d_hash = ((d, dir_hash[os.path.join(root, d)]) for d in dirs)
+            # split+join normalizes paths on Windows (note the imports)
+            dir_hash[os.path.join(*os.path.split(root))] = self._mktree(f_hash, d_hash)
+
+        return dir_hash[path]
