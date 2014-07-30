@@ -1139,7 +1139,11 @@ def extractZip(archive, targetDir):
 
 
 def mapIndexersToShow(showObj):
-    mapped = {showObj.indexer: showObj.indexerid}
+    mapped = {}
+
+    # init mapped indexers object
+    for indexer in sickbeard.indexerApi().indexers:
+        mapped[indexer] = showObj.indexerid if int(indexer) == int(showObj.indexer) else 0
 
     myDB = db.DBConnection()
     sqlResults = myDB.select(

@@ -98,9 +98,9 @@ class NewznabProvider(generic.NZBProvider):
             cur_params['season'] = str(ep_obj.scene_season)
 
         # search
-        mindexers = helpers.mapIndexersToShow(ep_obj.show)
-        if 2 in mindexers:
-            cur_params['rid'] = mindexers[2]
+        rid = helpers.mapIndexersToShow(ep_obj.show)[2]
+        if rid:
+            cur_params['rid'] = rid
             to_return.append(cur_params)
         else:
             # add new query strings for exceptions
@@ -131,9 +131,9 @@ class NewznabProvider(generic.NZBProvider):
             params['ep'] = ep_obj.scene_episode
 
         # search
-        mindexers = helpers.mapIndexersToShow(ep_obj.show)
-        if 2 in mindexers:
-            params['rid'] = mindexers[2]
+        rid = helpers.mapIndexersToShow(ep_obj.show)[2]
+        if rid:
+            params['rid'] = rid
             to_return.append(params)
         else:
             # add new query strings for exceptions

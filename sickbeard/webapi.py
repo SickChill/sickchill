@@ -1720,8 +1720,6 @@ class CMD_Show(ApiCall):
         if not showObj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        mindexers = helpers.mapIndexersToShow(showObj)
-
         showDict = {}
         showDict["season_list"] = CMD_ShowSeasonList(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
         showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
@@ -1752,7 +1750,7 @@ class CMD_Show(ApiCall):
         showDict["anime"] = showObj.anime
         #clean up tvdb horrible airs field
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-        showDict["tvrage_id"] = mindexers[2] if 2 in mindexers else 0
+        showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)[2]
         showDict["tvrage_name"] = showObj.name
         showDict["network"] = showObj.network
         if not showDict["network"]:
@@ -2521,7 +2519,6 @@ class CMD_Shows(ApiCall):
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue
 
-            mindexers = helpers.mapIndexersToShow(curShow)
             showDict = {
                 "paused": curShow.paused,
                 "quality": _get_quality_string(curShow.quality),
@@ -2530,8 +2527,8 @@ class CMD_Shows(ApiCall):
                 "sports": curShow.sports,
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
-                "tvdbid": mindexers[1] if 1 in mindexers else 0,
-                "tvrage_id": mindexers[2] if 2 in mindexers else 0,
+                "tvdbid": helpers.mapIndexersToShow(curShow)[1],
+                "tvrage_id": helpers.mapIndexersToShow(curShow)[2],
                 "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,
