@@ -136,7 +136,10 @@ class WindowsUpdateManager(UpdateManager):
     def __init__(self):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
-        self.branch = 'windows_binaries'
+
+        self.branch = sickbeard.BRANCH
+        if sickbeard.BRANCH == '':
+            sickbeard.BRANCH = self.branch = self._find_installed_branch()
 
         self._cur_version = None
         self._cur_commit_hash = None
@@ -154,6 +157,9 @@ class WindowsUpdateManager(UpdateManager):
         except ValueError:
             logger.log(u"Unknown SickRage Windows binary release: " + version, logger.ERROR)
             return None
+
+    def _find_installed_branch(self):
+        return 'windows_binaries'
 
     def _find_newest_version(self, whole_link=False):
         """
@@ -281,8 +287,8 @@ class GitUpdateManager(UpdateManager):
         self.github_repo = self.get_github_repo()
 
         self.branch = sickbeard.BRANCH
-        if not sickbeard.BRANCH or sickbeard.BRANCH == '':
-            self.branch = self._find_installed_branch()
+        if sickbeard.BRANCH == '':
+            sickbeard.BRANCH = self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
@@ -539,8 +545,8 @@ class SourceUpdateManager(UpdateManager):
         self.github_repo = self.get_github_repo()
 
         self.branch = sickbeard.BRANCH
-        if not sickbeard.BRANCH or sickbeard.BRANCH == '':
-            self.branch = self._find_installed_branch()
+        if sickbeard.BRANCH == '':
+            sickbeard.BRANCH = self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
@@ -558,7 +564,7 @@ class SourceUpdateManager(UpdateManager):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
         for branch in gh.branches():
             if branch.commit['sha'] == self._cur_commit_hash:
-                sickbeard.BRANCH = branch.name
+                return branch.name
 
     def need_update(self):
 
