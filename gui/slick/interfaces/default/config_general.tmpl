@@ -280,9 +280,9 @@
                             <label class="nocheck clearfix">
                                 <span class="component-title">Branch Version:</span>
                                 <span class="component-desc">
-                                    <select id="branchVersion" name="branchVersion">
+                                    <select id="branchVersion">
                                     #for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
-                                        <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then "selected=\"selected\"" else ""#>$cur_branch.capitalize()</option>
+                                        <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then "selected=\"selected\"" else ""#>$cur_branch</option>
                                     #end for
                                     </select>
                                     <input class="btn" class="btn" type="button" id="branchCheckout" value="Checkout Branch">
@@ -300,7 +300,7 @@
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset">
                                     #for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset.capitalize()</option>
+                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset</option>
                                     #end for
                                     </select>
                                 </span>
