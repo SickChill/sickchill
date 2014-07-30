@@ -281,7 +281,7 @@ class GitUpdateManager(UpdateManager):
         self.github_repo = self.get_github_repo()
 
         self.branch = sickbeard.BRANCH
-        if not sickbeard.BRANCH or not sickbeard.BRANCH == '':
+        if not sickbeard.BRANCH or sickbeard.BRANCH == '':
             self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
@@ -539,7 +539,7 @@ class SourceUpdateManager(UpdateManager):
         self.github_repo = self.get_github_repo()
 
         self.branch = sickbeard.BRANCH
-        if not sickbeard.BRANCH or not sickbeard.BRANCH == '':
+        if not sickbeard.BRANCH or sickbeard.BRANCH == '':
             self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
