@@ -141,7 +141,7 @@ class WindowsUpdateManager(UpdateManager):
 
         self.branch = sickbeard.BRANCH
         if sickbeard.BRANCH == '':
-            sickbeard.BRANCH = self.branch = self._find_installed_branch()
+            self.branch = self._find_installed_branch()
 
         self._cur_version = None
         self._cur_commit_hash = None
@@ -290,7 +290,7 @@ class GitUpdateManager(UpdateManager):
 
         self.branch = sickbeard.BRANCH
         if sickbeard.BRANCH == '':
-            sickbeard.BRANCH = self.branch = self._find_installed_branch()
+            self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
@@ -548,7 +548,7 @@ class SourceUpdateManager(UpdateManager):
 
         self.branch = sickbeard.BRANCH
         if sickbeard.BRANCH == '':
-            sickbeard.BRANCH = self.branch = self._find_installed_branch()
+            self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
