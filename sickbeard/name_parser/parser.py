@@ -167,25 +167,23 @@ class NameParser(object):
 
             if 'sports_air_date' in named_groups:
                 sports_air_date = match.group('sports_air_date')
-                if result.show and result.show.is_sports:
-                    try:
-                        result.sports_air_date = parser.parse(sports_air_date, fuzzy=True).date()
-                        result.score += 1
-                    except:
-                        continue
+                try:
+                    result.sports_air_date = parser.parse(sports_air_date, fuzzy=True).date()
+                    result.score += 1
+                except:
+                    continue
 
             if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
-                if result.show and result.show.air_by_date:
-                    year = int(match.group('air_year'))
-                    month = int(match.group('air_month'))
-                    day = int(match.group('air_day'))
+                year = int(match.group('air_year'))
+                month = int(match.group('air_month'))
+                day = int(match.group('air_day'))
 
-                    try:
-                        dtStr = '%s-%s-%s' % (year, month, day)
-                        result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
-                        result.score += 1
-                    except:
-                        continue
+                try:
+                    dtStr = '%s-%s-%s' % (year, month, day)
+                    result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                    result.score += 1
+                except:
+                    continue
 
             if 'extra_info' in named_groups:
                 tmp_extra_info = match.group('extra_info')
