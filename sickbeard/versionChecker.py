@@ -117,7 +117,7 @@ class CheckVersion():
 
     def update(self):
         # update branch with current config branch value
-        self.updater.branch == sickbeard.BRANCH
+        self.updater.branch = sickbeard.BRANCH
 
         # check for updates
         if self.updater.need_update():
