@@ -948,6 +948,9 @@ class Manage(MainHandler):
         anime_all_same = True
         last_anime = None
 
+        sports_all_same = True
+        last_sports = None
+
         quality_all_same = True
         last_quality = None
 
@@ -956,6 +959,9 @@ class Manage(MainHandler):
 
         scene_all_same = True
         last_scene = None
+
+        air_by_date_all_same = True
+        last_air_by_date = None
 
         root_dir_list = []
 
@@ -968,17 +974,17 @@ class Manage(MainHandler):
             # if we know they're not all the same then no point even bothering
             if paused_all_same:
                 # if we had a value already and this value is different then they're not all the same
-                if last_paused not in (curShow.paused, None):
+                if last_paused not in (None, curShow.paused):
                     paused_all_same = False
                 else:
                     last_paused = curShow.paused
 
             if anime_all_same:
                 # if we had a value already and this value is different then they're not all the same
-                if last_anime not in (curShow.is_anime, None):
+                if last_anime not in (None, curShow.is_anime):
                     anime_all_same = False
                 else:
-                    last_anime = curShow.is_anime
+                    last_anime = curShow.anime
 
             if flatten_folders_all_same:
                 if last_flatten_folders not in (None, curShow.flatten_folders):
@@ -1004,6 +1010,18 @@ class Manage(MainHandler):
                 else:
                     last_scene = curShow.scene
 
+            if sports_all_same:
+                if last_sports not in (None, curShow.sports):
+                    sports_all_same = False
+                else:
+                    last_sports = curShow.sports
+
+            if air_by_date_all_same:
+                if last_air_by_date not in (None, curShow.air_by_date):
+                    air_by_date_all_same = False
+                else:
+                    last_air_by_date = curShow.air_by_date
+
         t.showList = toEdit
         t.paused_value = last_paused if paused_all_same else None
         t.anime_value = last_anime if anime_all_same else None
@@ -1011,14 +1029,15 @@ class Manage(MainHandler):
         t.quality_value = last_quality if quality_all_same else None
         t.subtitles_value = last_subtitles if subtitles_all_same else None
         t.scene_value = last_scene if scene_all_same else None
+        t.sports_value = last_sports if sports_all_same else None
+        t.air_by_date_value = last_air_by_date if air_by_date_all_same else None
         t.root_dir_list = root_dir_list
 
         return _munge(t)
 
 
-    def massEditSubmit(self, paused=None, anime=None, scene=None, flatten_folders=None, quality_preset=False,
-                       subtitles=None,
-                       anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
+    def massEditSubmit(self, paused=None, anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=False,
+                       subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
 
         dir_map = {}
         for cur_arg in kwargs:
@@ -1052,16 +1071,28 @@ class Manage(MainHandler):
             new_paused = 'on' if new_paused else 'off'
 
             if anime == 'keep':
-                new_anime = showObj.is_anime
+                new_anime = showObj.anime
             else:
                 new_anime = True if anime == 'enable' else False
             new_anime = 'on' if new_anime else 'off'
+
+            if sports == 'keep':
+                new_sports = showObj.sports
+            else:
+                new_sports = True if sports == 'enable' else False
+            new_sports = 'on' if new_sports else 'off'
 
             if scene == 'keep':
                 new_scene = showObj.is_scene
             else:
                 new_scene = True if scene == 'enable' else False
             new_scene = 'on' if new_scene else 'off'
+
+            if air_by_date == 'keep':
+                new_air_by_date = showObj.air_by_date
+            else:
+                new_air_by_date = True if air_by_date == 'enable' else False
+            new_air_by_date = 'on' if new_air_by_date else 'off'
 
             if flatten_folders == 'keep':
                 new_flatten_folders = showObj.flatten_folders
@@ -1081,12 +1112,12 @@ class Manage(MainHandler):
 
             exceptions_list = []
 
-            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
-                                                                       bestQualities, exceptions_list,
+            curErrors += Home.editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
                                                                        flatten_folders=new_flatten_folders,
-                                                                       paused=new_paused,
+                                                                       paused=new_paused, sports=new_sports,
                                                                        subtitles=new_subtitles, anime=new_anime,
-                                                                       scene=new_scene, directCall=True)
+                                                                       scene=new_scene, air_by_date=new_air_by_date,
+                                                                       directCall=True)
 
             if curErrors:
                 logger.log(u"Errors: " + str(curErrors), logger.ERROR)
@@ -3787,13 +3818,13 @@ class Home(MainHandler):
                     errors.append("Unable to refresh this show: " + ex(e))
 
             showObj.paused = paused
+            showObj.scene = scene
+            showObj.anime = anime
+            showObj.sports = sports
+            showObj.subtitles = subtitles
+            showObj.air_by_date = air_by_date
 
             if not directCall:
-                showObj.air_by_date = air_by_date
-                showObj.scene = scene
-                showObj.sports = sports
-                showObj.anime = anime
-                showObj.subtitles = subtitles
                 showObj.lang = indexer_lang
                 showObj.dvdorder = dvdorder
                 showObj.archive_firstmatch = archive_firstmatch

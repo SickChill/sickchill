@@ -116,6 +116,28 @@
 </div>
 
 <div class="optionWrapper">
+    <span class="selectTitle">Sports</span>
+    <div class="selectChoices">
+        <select id="edit_sports" name="sports">
+            <option value="keep">&lt; keep &gt;</option>
+            <option value="enable" #if $sports_value then "selected=\"selected\"" else ""#>enable</option>
+            <option value="disable" #if $sports_value == False then "selected=\"selected\"" else ""#>disable</option>
+        </select>
+    </div><br />
+</div>
+
+<div class="optionWrapper">
+    <span class="selectTitle">Air-By-Date</span>
+    <div class="selectChoices">
+        <select id="edit_air_by_date" name="air_by_date">
+            <option value="keep">&lt; keep &gt;</option>
+            <option value="enable" #if $air_by_date_value then "selected=\"selected\"" else ""#>enable</option>
+            <option value="disable" #if $air_by_date_value == False then "selected=\"selected\"" else ""#>disable</option>
+        </select>
+    </div><br />
+</div>
+
+<div class="optionWrapper">
 <span class="selectTitle">Subtitles<span class="separator"></span></span>
     <div class="selectChoices">
         <select id="edit_subtitles" name="subtitles">
