@@ -45,7 +45,7 @@ class TvTorrentsProvider(generic.TorrentProvider):
 
         self.cache = TvTorrentsCache(self)
 
-        self.url = 'http://www.tvtorrents.com/'
+        self.url = 'https://www.tvtorrents.com/'
 
     def isEnabled(self):
         return self.enabled

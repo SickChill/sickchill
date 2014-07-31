@@ -40,11 +40,11 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentLeechProvider(generic.TorrentProvider):
-    urls = {'base_url': 'http://torrentleech.org/',
-            'login': 'http://torrentleech.org/user/account/login/',
-            'detail': 'http://torrentleech.org/torrent/%s',
-            'search': 'http://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
-            'download': 'http://torrentleech.org%s',
+    urls = {'base_url': 'https://torrentleech.org/',
+            'login': 'https://torrentleech.org/user/account/login/',
+            'detail': 'https://torrentleech.org/torrent/%s',
+            'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
+            'download': 'https://torrentleech.org%s',
     }
 
     def __init__(self):

@@ -30,7 +30,7 @@ class WombleProvider(generic.NZBProvider):
         generic.NZBProvider.__init__(self, "Womble's Index")
         self.enabled = False
         self.cache = WombleCache(self)
-        self.url = 'http://newshost.co.za/'
+        self.url = 'https://newshost.co.za/'
 
     def isEnabled(self):
         return self.enabled
