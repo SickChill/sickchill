@@ -37,6 +37,7 @@ from sickbeard import encodingKludge as ek
 
 from subprocess import check_output, PIPE, Popen
 
+
 class CheckVersion():
     """
     Version check class meant to run as a thread object with the sr scheduler.
@@ -115,7 +116,11 @@ class CheckVersion():
         return True
 
     def update(self):
-        if self.updater.need_update() or self.updater.branch != sickbeard.BRANCH:
+        # update branch with current config branch value
+        self.updater.branch == sickbeard.BRANCH
+
+        # check for updates
+        if self.updater.need_update():
             return self.updater.update()
 
     def list_remote_branches(self):
@@ -123,6 +128,7 @@ class CheckVersion():
 
     def get_branch(self):
         return self.updater.branch
+
 
 class UpdateManager():
     def get_github_repo_user(self):
@@ -133,6 +139,7 @@ class UpdateManager():
 
     def get_update_url(self):
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
+
 
 class WindowsUpdateManager(UpdateManager):
     def __init__(self):
@@ -189,11 +196,14 @@ class WindowsUpdateManager(UpdateManager):
                     return int(match.group(1))
 
     def need_update(self):
+        if self.branch != self._find_installed_branch():
+            logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
+            return True
+
         self._cur_version = self._find_installed_version()
         self._newest_version = self._find_newest_version()
 
         logger.log(u"newest version: " + repr(self._newest_version), logger.DEBUG)
-
         if self._newest_version and self._newest_version > self._cur_version:
             return True
 
@@ -269,7 +279,7 @@ class WindowsUpdateManager(UpdateManager):
             new_update_path = os.path.join(sickbeard.PROG_DIR, u'updater.exe')
             logger.log(u"Copying new update.exe file from " + old_update_path + " to " + new_update_path)
             shutil.move(old_update_path, new_update_path)
-            
+
             # Notify update successful
             notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
 
@@ -281,6 +291,7 @@ class WindowsUpdateManager(UpdateManager):
 
     def list_remote_branches(self):
         return ['windows_binaries']
+
 
 class GitUpdateManager(UpdateManager):
     def __init__(self):
@@ -500,8 +511,12 @@ class GitUpdateManager(UpdateManager):
         sickbeard.NEWEST_VERSION_STRING = newest_text
 
     def need_update(self):
-        self._find_installed_version()
 
+        if self.branch != self._find_installed_branch():
+            logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
+            return True
+
+        self._find_installed_version()
         if not self._cur_commit_hash:
             return True
         else:
@@ -522,7 +537,7 @@ class GitUpdateManager(UpdateManager):
         on the call's success.
         """
 
-        if sickbeard.BRANCH == self._find_installed_branch():
+        if self.branch == self._find_installed_branch():
             output, err, exit_status = self._run_git(self._git_path, 'pull -f origin ' + self.branch)  # @UnusedVariable
         else:
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
@@ -540,6 +555,7 @@ class GitUpdateManager(UpdateManager):
         if exit_status == 0 and branches:
             return re.findall('\S+\Wrefs/heads/(.*)', branches)
         return []
+
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
@@ -569,6 +585,10 @@ class SourceUpdateManager(UpdateManager):
                 return branch.name
 
     def need_update(self):
+
+        if self.branch != self._find_installed_branch():
+            logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
+            return True
 
         self._find_installed_version()
 
@@ -710,8 +730,8 @@ class SourceUpdateManager(UpdateManager):
                     old_path = os.path.join(content_dir, dirname, curfile)
                     new_path = os.path.join(sickbeard.PROG_DIR, dirname, curfile)
 
-                    #Avoid DLL access problem on WIN32/64
-                    #These files needing to be updated manually
+                    # Avoid DLL access problem on WIN32/64
+                    # These files needing to be updated manually
                     #or find a way to kill the access from memory
                     if curfile in ('unrar.dll', 'unrar64.dll'):
                         try:
@@ -733,7 +753,7 @@ class SourceUpdateManager(UpdateManager):
 
         # Notify update successful
         notifiers.notify_git_update(sickbeard.NEWEST_VERSION_STRING)
-        
+
         return True
 
     def list_remote_branches(self):

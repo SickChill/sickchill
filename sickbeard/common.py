@@ -22,12 +22,8 @@ import platform
 import re
 import uuid
 
-from sickbeard import version
-
 INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = ('SickRage/' + version.SICKBEARD_VERSION.replace(' ', '-') +
-              ' (' + platform.system() + '; ' + platform.release() +
-              '; ' + INSTANCE_ID + ')')
+USER_AGENT = ('SickRage/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 
 mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
                    'ogm', 'mp4', 'iso', 'img', 'divx',

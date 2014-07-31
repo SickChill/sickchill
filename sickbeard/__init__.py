@@ -49,7 +49,6 @@ from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
 
 from lib.configobj import ConfigObj
-import xml.etree.ElementTree as ElementTree
 
 PID = None
 
@@ -102,7 +101,7 @@ VERSION_NOTIFY = False
 AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
 CUR_COMMIT_HASH = None
-BRANCH = None
+BRANCH = ''
 
 INIT_LOCK = Lock()
 started = False
