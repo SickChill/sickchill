@@ -35,8 +35,6 @@ from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 
-from subprocess import check_output, PIPE, Popen
-
 
 class CheckVersion():
     """
@@ -769,12 +767,12 @@ class SourceUpdateManager(UpdateManager):
             yield "040000 tree {}\t{}\0".format(sha1, d)
 
     def _mktree(self, files, dirs):
-        mkt = Popen(["git", "mktree", "-z"], stdin=PIPE, stdout=PIPE)
+        mkt = subprocess.Popen(["git", "mktree", "-z"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         return mkt.communicate("".join(self._lstree(files, dirs)))[0].strip()
 
     def hash_file(self, path):
         """Write file at path to Git index, return its SHA1 as a string."""
-        return check_output(["git", "hash-object", "-w", "--", path]).strip()
+        return subprocess.check_output(["git", "hash-object", "-w", "--", path]).strip()
 
     def hash_dir(self, path):
         """Write directory at path to Git index, return its SHA1 as a string."""
