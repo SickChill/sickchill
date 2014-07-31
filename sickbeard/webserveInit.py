@@ -150,7 +150,5 @@ class SRWebServer(threading.Thread):
     def shutDown(self):
         self.alive = False
         if self.server:
-            logger.log("Shutting down tornado")
             self.server.stop()
             self.io_loop.stop()
-            self.join()

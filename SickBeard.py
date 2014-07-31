@@ -482,8 +482,12 @@ class SickRage(object):
 
             # shutdown web server
             if self.webserver:
+                logger.log("Shutting down Tornado")
                 self.webserver.shutDown()
-                self.webserver = None
+                try:
+                    self.webserver.join(10)
+                except:
+                    pass
 
             # if run as daemon delete the pidfile
             if self.runAsDaemon and self.CREATEPID:
