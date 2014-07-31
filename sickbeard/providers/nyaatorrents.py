@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -28,7 +28,6 @@ from sickbeard.common import Quality
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
 
-REMOTE_DBG = False
 
 class NyaaProvider(generic.TorrentProvider):
     def __init__(self):
@@ -70,9 +69,10 @@ class NyaaProvider(generic.TorrentProvider):
             logger.log(u"" + str(self.show.name) + " is not an anime skiping " + str(self.name))
             return []
 
-        params = {"term": search_string.encode('utf-8'),
-                  "cats": '1_37',  #Limit to English-translated Anime (for now)
-                  "sort": '2',  #Sort Descending By Seeders
+        params = {
+            "term": search_string.encode('utf-8'),
+            "cats": '1_37',  # Limit to English-translated Anime (for now)
+            "sort": '2',     # Sort Descending By Seeders
         }
 
         searchURL = self.url + '?page=rss&' + urllib.urlencode(params)
@@ -118,6 +118,7 @@ class NyaaProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
+
 class NyaaCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
@@ -127,8 +128,9 @@ class NyaaCache(tvcache.TVCache):
 
     def _getRSSData(self):
         params = {
-            "page": 'rss',  # Use RSS page
-            "order": '1'  #Sort Descending By Date
+            "page": 'rss',   # Use RSS page
+            "order": '1',    # Sort Descending By Date
+            "cats": '1_37',  # Limit to English-translated Anime (for now)
         }
 
         url = self.provider.url + '?' + urllib.urlencode(params)
@@ -136,18 +138,6 @@ class NyaaCache(tvcache.TVCache):
         logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
 
         return self.getRSSFeed(url)
-
-    def _parseItem(self, item):
-        (title, url) = self.provider._get_title_and_url(item)
-
-        if not title or not url:
-            logger.log(u"The XML returned from the NyaaTorrents RSS feed is incomplete, this result is unusable",
-                       logger.ERROR)
-            return None
-
-        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
-
-        return self._addCacheEntry(title, url)
 
 
 provider = NyaaProvider()
