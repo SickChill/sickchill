@@ -24,14 +24,15 @@ import sickbeard
 
 from sickbeard import db
 from sickbeard import logger
-from sickbeard.common import Quality
-
+from sickbeard import clients
 from sickbeard import helpers, show_name_helpers
+from sickbeard.providers.generic import GenericProvider
+from sickbeard.common import Quality
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
-from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
-from sickbeard import clients
+
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -360,12 +361,13 @@ class TVCache():
                 result.content = None
 
                 # validate torrent file if not magnet link to avoid invalid torrent links
-                if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
-                    client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
-                    result = client._get_torrent_hash(result)
-                    if not result.hash:
-                        logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
-                        continue
+                if self.provider.providerType == GenericProvider.TORRENT:
+                    if sickbeard.TORRENT_METHOD != "blackhole":
+                        client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                        result = client._get_torrent_hash(result)
+                        if not result.hash:
+                            logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
+                            continue
 
                 # add it to the list
                 if epObj not in neededEps:
