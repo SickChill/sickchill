@@ -29,6 +29,7 @@ from sickbeard.common import *
 from sickbeard import tvcache
 from lib.dateutil.parser import parse as parseDate
 
+
 class Animezb(generic.NZBProvider):
 
     def __init__(self):
@@ -60,7 +61,8 @@ class Animezb(generic.NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         search_string = []
         for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
-            ep_string = '+'.join([helpers.sanitizeSceneName(show_name).replace('.', '+'), str(ep_obj.scene_absolute_number).zfill(2)])
+            ep_string = '+'.join(
+                [helpers.sanitizeSceneName(show_name).replace('.', '+'), str(ep_obj.scene_absolute_number).zfill(2)])
             search_string.append(ep_string)
         return search_string
 
@@ -106,24 +108,24 @@ class Animezb(generic.NZBProvider):
 
         results = []
 
-        for i in [2, 3, 4]: # we will look for a version 2, 3 and 4
-            for item in self._doSearch("v" + str(i)):
+        for item in self._doSearch("v2 OR v3 OR v4 OR v5"):
 
-                (title, url) = self._get_title_and_url(item)
+            (title, url) = self._get_title_and_url(item)
 
-                if item.has_key('published_parsed') and item['published_parsed']:
-                    result_date = item.published_parsed
-                    if result_date:
-                        result_date = datetime.datetime(*result_date[0:6])
-                else:
-                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                    continue
+            if item.has_key('published_parsed') and item['published_parsed']:
+                result_date = item.published_parsed
+                if result_date:
+                    result_date = datetime.datetime(*result_date[0:6])
+            else:
+                logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
+                continue
 
-                if not date or result_date > date:
-                    search_result = classes.Proper(title, url, result_date, self.show)
-                    results.append(search_result)
+            if not date or result_date > date:
+                search_result = classes.Proper(title, url, result_date, self.show)
+                results.append(search_result)
 
         return results
+
 
 class AnimezbCache(tvcache.TVCache):
 
@@ -132,13 +134,13 @@ class AnimezbCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
 
         # only poll Animezb every 20 minutes max
-        # we get 100 post each call !
         self.minTime = 20
 
     def _getRSSData(self):
 
-        params = {"cat": "anime".encode('utf-8'),
-                 "max": "100".encode('utf-8')
+        params = {
+            "cat": "anime".encode('utf-8'),
+            "max": "100".encode('utf-8')
         }
 
         rss_url = self.provider.url + 'rss?' + urllib.urlencode(params)
@@ -147,7 +149,5 @@ class AnimezbCache(tvcache.TVCache):
 
         return self.getRSSFeed(rss_url)
 
-    def _checkItemAuth(self, title, url):
-        return True
 
 provider = Animezb()
