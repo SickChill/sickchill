@@ -154,7 +154,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 20
 
-    def _getRSSData(self):
+    def _getDailyData(self):
         params = {'user': provider.username,
                   'api': provider.api_key,
                   'eng': 1,
@@ -164,7 +164,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url).entries
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
