@@ -136,6 +136,15 @@ def replaceExtension(filename, newExt):
         return sepFile[0] + "." + newExt
 
 
+def isBtsyncFile(filename):
+    sepFile = filename.rpartition(".")
+
+    if sepFile[2].lower() == '!sync':
+        return True
+    else:
+        return False
+
+
 def isMediaFile(filename):
     # ignore samples
     if re.search('(^|[\W_])(sample\d*)[\W_]', filename, re.I):
