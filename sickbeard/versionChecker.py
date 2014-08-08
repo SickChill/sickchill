@@ -559,10 +559,6 @@ class GitUpdateManager(UpdateManager):
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
-        self._cur_commit_hash = None
-        self._newest_commit_hash = None
-        self._num_commits_behind = 0
-        
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
 
@@ -570,6 +566,10 @@ class SourceUpdateManager(UpdateManager):
         if sickbeard.BRANCH == '':
             self.branch = self._find_installed_branch()
 
+        self._cur_commit_hash = None
+        self._newest_commit_hash = None
+        self._num_commits_behind = 0
+        
     def _find_installed_version(self):
         installed_path = os.path.dirname(os.path.normpath(os.path.abspath(__file__)))
         self._cur_commit_hash = self.hash_dir(installed_path)
