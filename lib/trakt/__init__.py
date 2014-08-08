@@ -1,7 +1,8 @@
-import urllib2
+from urllib2 import Request, urlopen, HTTPError, URLError
 
-from hashlib import sha1
- 
+import base64
+from sha import new as sha1
+
 try:
     import json
 except ImportError:
@@ -25,25 +26,35 @@ def TraktCall(method, api, username=None, password=None, data={}):
     if not api:
         return None
 
-    # if the username isn't given then it failed
-    if username and password:
-        password = sha1(password).hexdigest()
-        data["username"] = username
-        data["password"] = password
-
     # replace the API string with what we found
     method = method.replace("%API%", api)
 
+    # make the full url
+    url = 'https://api.trakt.tv/' + method
+    
     # take the URL params and make a json object out of them
-    encoded_data = json.dumps(data)
+    encoded_data = json.JSONEncoder().encode(data)
+    
+    request = Request(url, encoded_data)
+
+    # if the username isn't given then it failed
+    if username and password:
+        pwdsha1 = sha1(password).hexdigest()
+        base64string = base64.encodestring('%s:%s' % (username, pwdsha1)).replace('\n', '')
+        request.add_header("Accept", "*/*")
+        request.add_header("User-Agent", "CPython/2.7.5 Unknown/Unknown")
+        request.add_header("Authorization", "Basic %s" % base64string)
 
     # request the URL from trakt and parse the result as json
     try:
         #logger.log("trakt: Calling method http://api.trakt.tv/" + method + ", with data" + encoded_data, logger.DEBUG)
-        stream = urllib2.urlopen("http://api.trakt.tv/" + method, encoded_data)
-        resp = stream.read()
+        stream = urlopen(request).read()
 
-        resp = json.loads(resp)
+        # check if results are valid
+        if stream == '[]':
+            resp = 'NULL'
+        else:
+            resp = json.JSONDecoder().decode(stream)
 
         if ("error" in resp):
             raise Exception(resp["error"])

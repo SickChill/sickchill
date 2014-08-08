@@ -1237,8 +1237,13 @@
 	                            <div class="field-pair">
 	                                <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" #if $sickbeard.TRAKT_REMOVE_WATCHLIST then "checked=\"checked\"" else ""# />
 	                                <label class="clearfix" for="trakt_remove_watchlist">
-	                                    <span class="component-title">Remove from Watchlist:</span>
+	                                    <span class="component-title">Remove episode:</span>
 	                                    <span class="component-desc">Remove an episode from the watchlist after it is downloaded</span>
+	                                </label>
+									<input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" #if $sickbeard.TRAKT_REMOVE_SERIESLIST then "checked=\"checked\"" else ""# />
+	                                <label class="clearfix" for="trakt_remove_serieslist">
+	                                    <span class="component-title">Remove series:</span>
+	                                    <span class="component-desc">Remove the whole series from the watchlist after any download</span>
 	                                </label>
 	                            </div>
 	                            <div class="field-pair">
