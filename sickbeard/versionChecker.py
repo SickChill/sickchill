@@ -430,7 +430,9 @@ class GitUpdateManager(UpdateManager):
             branch = branch_info.strip().replace('refs/heads/', '', 1)
             if branch:
                 return branch
-
+                
+        return ""
+        
     def _check_github_for_update(self):
         """
         Uses git commands to check if there is a newer version that the provided
@@ -581,6 +583,8 @@ class SourceUpdateManager(UpdateManager):
         for branch in gh.branches():
             if 'commit' in branch and self._cur_commit_hash and branch.commit['sha'] == self._cur_commit_hash:
                 return branch.name
+                
+        return ""
 
     def need_update(self):
 
