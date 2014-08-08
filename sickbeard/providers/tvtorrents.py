@@ -86,7 +86,7 @@ class TvTorrentsCache(tvcache.TVCache):
         # only poll TvTorrents every 15 minutes max
         self.minTime = 15
 
-    def _getRSSData(self):
+    def _getDailyData(self):
         # These will be ignored on the serverside.
         ignore_regex = "all.month|month.of|season[\s\d]*complete"
 

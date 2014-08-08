@@ -177,17 +177,17 @@ class HDBitsProvider(generic.TorrentProvider):
             if show.air_by_date or show.sports:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'season': str(episode.airdate)[:7],
+                    'season': str(season.airdate)[:7],
                 }
             elif show.anime:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'season': "%d" % episode.scene_absolute_number,
+                    'season': "%d" % season.scene_absolute_number,
                 }
             else:
                 post_data['tvdb'] = {
                     'id': show.indexerid,
-                    'season': episode.scene_season,
+                    'season': season.scene_season,
                 }
 
         if search_term:
@@ -250,18 +250,6 @@ class HDBitsCache(tvcache.TVCache):
 
     def _getRSSData(self):
         return self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
-
-    def _parseItem(self, item):
-
-        (title, url) = self.provider._get_title_and_url(item)
-
-        if title and url:
-            logger.log(u"Adding item to results: " + title, logger.DEBUG)
-            return self._addCacheEntry(title, url)
-        else:
-            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable",
-                       logger.ERROR)
-            return None
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)

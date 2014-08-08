@@ -143,7 +143,7 @@ class XBMCNotifier:
                     command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
                         title.encode("utf-8"), message.encode("utf-8"), self.sb_logo_url)
                     notifyResult = self._send_to_xbmc_json(command, curHost, username, password)
-                    if getattr(notifyResult, 'result', None):
+                    if notifyResult.get('result'):
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.XBMC_ALWAYS_ON or force:

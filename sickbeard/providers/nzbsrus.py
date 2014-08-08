@@ -98,7 +98,7 @@ class NZBsRUSCache(tvcache.TVCache):
         # only poll NZBs'R'US every 15 minutes max
         self.minTime = 15
 
-    def _getRSSData(self):
+    def _getDailyData(self):
         url = self.provider.url + 'rssfeed.php?'
         urlArgs = {'cat': '91,75,104',  # HD,XviD,SD-x264
                    'i': sickbeard.NZBSRUS_UID,
@@ -107,7 +107,7 @@ class NZBsRUSCache(tvcache.TVCache):
         url += urllib.urlencode(urlArgs)
         logger.log(u"NZBs'R'US cache update URL: " + url, logger.DEBUG)
 
-        return self.getRSSFeed(url)
+        return self.getRSSFeed(url).entries
 
     def _checkAuth(self, data):
         return data != 'Invalid Link'

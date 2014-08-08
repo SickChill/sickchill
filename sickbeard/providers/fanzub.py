@@ -29,6 +29,7 @@ from sickbeard.common import *
 from sickbeard import tvcache
 from lib.dateutil.parser import parse as parseDate
 
+
 class Fanzub(generic.NZBProvider):
 
     def __init__(self):
@@ -50,9 +51,6 @@ class Fanzub(generic.NZBProvider):
 
     def imageName(self):
         return 'fanzub.gif'
-
-    def _checkAuth(self):
-        return True
 
     def _get_season_search_strings(self, ep_obj):
         return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
@@ -102,24 +100,24 @@ class Fanzub(generic.NZBProvider):
 
         results = []
 
-        for i in [2, 3, 4]: # we will look for a version 2, 3 and 4
-            for item in self._doSearch("v" + str(i)):
+        for item in self._doSearch("v2|v3|v4|v5"):
 
-                (title, url) = self._get_title_and_url(item)
+            (title, url) = self._get_title_and_url(item)
 
-                if item.has_key('published_parsed') and item['published_parsed']:
-                    result_date = item.published_parsed
-                    if result_date:
-                        result_date = datetime.datetime(*result_date[0:6])
-                else:
-                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                    continue
+            if item.has_key('published_parsed') and item['published_parsed']:
+                result_date = item.published_parsed
+                if result_date:
+                    result_date = datetime.datetime(*result_date[0:6])
+            else:
+                logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
+                continue
 
-                if not date or result_date > date:
-                    search_result = classes.Proper(title, url, result_date, self.show)
-                    results.append(search_result)
+            if not date or result_date > date:
+                search_result = classes.Proper(title, url, result_date, self.show)
+                results.append(search_result)
 
         return results
+
 
 class FanzubCache(tvcache.TVCache):
 
@@ -128,22 +126,20 @@ class FanzubCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
 
         # only poll Fanzub every 20 minutes max
-        # we get 100 post each call !
         self.minTime = 20
 
-    def _getRSSData(self):
+    def _getDailyData(self):
 
-        params = {"cat": "anime".encode('utf-8'),
-                 "max": "100".encode('utf-8')
+        params = {
+            "cat": "anime".encode('utf-8'),
+            "max": "100".encode('utf-8')
         }
 
         rss_url = self.provider.url + 'rss?' + urllib.urlencode(params)
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url).entries
 
-    def _checkItemAuth(self, title, url):
-        return True
 
 provider = Fanzub()

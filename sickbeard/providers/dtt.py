@@ -123,7 +123,7 @@ class DTTCache(tvcache.TVCache):
         # only poll DTT every 30 minutes max
         self.minTime = 30
 
-    def _getRSSData(self):
+    def _getDailyData(self):
 
         params = {"items": "all"}
 
@@ -135,12 +135,7 @@ class DTTCache(tvcache.TVCache):
 
         url = self.provider.url + 'rss/allshows?' + urllib.urlencode(params)
         logger.log(u"DTT cache update URL: " + url, logger.DEBUG)
-        return self.getRSSFeed(url)
-
-    def _parseItem(self, item):
-        title, url = self.provider._get_title_and_url(item)
-        logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
-        return self._addCacheEntry(title, url)
+        return self.getRSSFeed(url).entries
 
 
 provider = DTTProvider()

@@ -148,13 +148,16 @@ class TraktChecker():
             self.addDefaultShow(indexer, indexer_id, show["title"], SKIPPED)
             newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
-            if newShow and int(newShow['indexer']) == indexer:
-                for episode in show["episodes"]:
-                    if newShow is not None:
-                        self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
-                    else:
-                        self.todoWanted.append((indexer_id, episode["season"], episode["number"]))
-                self.startBacklog(newShow)
+            try:
+                if newShow and int(newShow['indexer']) == indexer:
+                    for episode in show["episodes"]:
+                        if newShow is not None:
+                            self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
+                        else:
+                            self.todoWanted.append((indexer_id, episode["season"], episode["number"]))
+                    self.startBacklog(newShow)
+            except TypeError:
+                logger.log(u"Could not parse the output from trakt for " + show["title"], logger.DEBUG)
 
     def addDefaultShow(self, indexer, indexer_id, name, status):
         """

@@ -53,7 +53,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
 
     def imageName(self):
-        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'data', 'images', 'providers', self.getID() + '.png')):
+        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.getID() + '.png')):
             return self.getID() + '.png'
         return 'torrentrss.png'
 
@@ -152,21 +152,11 @@ class TorrentRssCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 15
 
-    def _getRSSData(self):
+    def _getDailyData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
 
         request_headers = None
         if self.provider.cookies:
           request_headers = { 'Cookie': self.provider.cookies }
 
-        return self.getRSSFeed(self.provider.url, request_headers=request_headers)
-
-    def _parseItem(self, item):
-
-        (title, url) = self.provider._get_title_and_url(item)
-        if not title or not url:
-            logger.log(u"The XML returned from the RSS feed is incomplete, this result is unusable", logger.ERROR)
-            return None
-
-        logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
-        return self._addCacheEntry(title, url)
+        return self.getRSSFeed(self.provider.url, request_headers=request_headers).entries

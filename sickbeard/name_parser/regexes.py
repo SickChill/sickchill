@@ -166,12 +166,13 @@ normal_regexes = [
      # 01 - Ep Name
      # 01 - Ep Name
      '''
-     ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?             # Show_Name and separator
-     (?P<ep_num>\d{1,2})                           # 02
-     (?:-(?P<extra_ep_num>\d{1,2}))*               # 02
-     [. _-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
-     ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     ^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?    # Show_Name and separator
+     (?P<ep_num>\d{1,3})                             # 02
+     (?:-(?P<extra_ep_num>\d{1,3}))*                 # -03-04-05 etc
+     \s?of?\s?\d{1,3}?                               # of joiner (with or without spaces) and series total ep
+     [. _-]+((?P<extra_info>.+?)                     # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                            # Make sure this is really the release group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$  # Group
      '''
     ),
 

@@ -174,27 +174,12 @@ class EZRSSCache(tvcache.TVCache):
         # only poll EZRSS every 15 minutes max
         self.minTime = 15
 
-    def _getRSSData(self):
+    def _getDailyData(self):
 
         rss_url = self.provider.url + 'feed/'
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
-
-    def _parseItem(self, item):
-
-        (title, url) = self.provider._get_title_and_url(item)
-
-        if title and url:
-            logger.log(u"RSS Feed provider: [" + self.provider.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
-            url = self._translateLinkURL(url)
-            return self._addCacheEntry(title, url)
-
-        else:
-            logger.log(
-                u"The XML returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
-                logger.ERROR)
-            return None
+        return self.getRSSFeed(rss_url).entries
 
 
 provider = EZRSSProvider()
