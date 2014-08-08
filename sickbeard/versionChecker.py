@@ -579,13 +579,11 @@ class SourceUpdateManager(UpdateManager):
         sickbeard.CUR_COMMIT_HASH = str(self._cur_commit_hash)
 
     def _find_installed_branch(self):
-        gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
-        for branch in gh.branches():
-            if 'commit' in branch and self._cur_commit_hash and branch.commit['sha'] == self._cur_commit_hash:
-                return branch.name
-                
+        if sickbeard.BRANCH == "":
+            return "master"
+        
         return ""
-
+        
     def need_update(self):
 
         if self.branch != self._find_installed_branch():
@@ -761,31 +759,3 @@ class SourceUpdateManager(UpdateManager):
     def list_remote_branches(self):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
         return [x.name for x in gh.branches()]
-
-    def _lstree(self, files, dirs):
-        """Make git ls-tree like output."""
-        for f, sha1 in files:
-            yield "100644 blob {}\t{}\0".format(sha1, f)
-
-        for d, sha1 in dirs:
-            yield "040000 tree {}\t{}\0".format(sha1, d)
-
-    def _mktree(self, files, dirs):
-        mkt = subprocess.Popen(["git", "mktree", "-z"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        return mkt.communicate("".join(self._lstree(files, dirs)))[0].strip()
-
-    def hash_file(self, path):
-        """Write file at path to Git index, return its SHA1 as a string."""
-        return subprocess.check_output(["git", "hash-object", "-w", "--", path]).strip()
-
-    def hash_dir(self, path):
-        """Write directory at path to Git index, return its SHA1 as a string."""
-        dir_hash = {}
-
-        for root, dirs, files in os.walk(path, topdown=False):
-            f_hash = ((f, self.hash_file(os.path.join(root, f))) for f in files)
-            d_hash = ((d, dir_hash[os.path.join(root, d)]) for d in dirs)
-            # split+join normalizes paths on Windows (note the imports)
-            dir_hash[os.path.join(*os.path.split(root))] = self._mktree(f_hash, d_hash)
-
-        return dir_hash[path]
