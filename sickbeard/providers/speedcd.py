@@ -252,47 +252,10 @@ class SpeedCDCache(tvcache.TVCache):
         # only poll Speedcd every 20 minutes max
         self.minTime = 20
 
-    def updateCache(self):
-
-        # delete anything older then 7 days
-        self._clearCache()
-
-        if not self.shouldUpdate():
-            return
-
+    def _getDailyData(self):
         search_params = {'RSS': ['']}
-        rss_results = self.provider._doSearch(search_params)
+        return self.provider._doSearch(search_params)
 
-        if rss_results:
-            self.setLastUpdate()
-        else:
-            return []
-
-        cl = []
-        for result in rss_results:
-
-            item = (result[0], result[1])
-            ci = self._parseItem(item)
-            if ci is not None:
-                cl.append(ci)
-
-
-
-        if len(cl) > 0:
-            myDB = self._getDB()
-            myDB.mass_action(cl)
-
-
-    def _parseItem(self, item):
-
-        (title, url) = item
-
-        if not title or not url:
-            return None
-
-        logger.log(u"Attempting to cache item:[" + title + "]", logger.DEBUG)
-
-        return self._addCacheEntry(title, url)
 
 
 provider = SpeedCDProvider()

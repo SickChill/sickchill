@@ -136,7 +136,7 @@ class AnimezbCache(tvcache.TVCache):
         # only poll Animezb every 20 minutes max
         self.minTime = 20
 
-    def _getRSSData(self):
+    def _getDailyData(self):
 
         params = {
             "cat": "anime".encode('utf-8'),
@@ -147,7 +147,7 @@ class AnimezbCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url).entries
 
 
 provider = Animezb()

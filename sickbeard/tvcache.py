@@ -102,6 +102,9 @@ class TVCache():
 
         return data
 
+    def _getDailyData(self):
+        return None
+
     def _checkAuth(self, data):
         return True
 
@@ -112,7 +115,7 @@ class TVCache():
 
         if self.shouldUpdate() and self._checkAuth(None):
             # as long as the http request worked we count this as an update
-            data = self._getRSSData()
+            data = self._getDailyData()
             if not data:
                 return []
 
@@ -125,8 +128,9 @@ class TVCache():
             # parse data
             if self._checkAuth(data):
                 cl = []
-                for item in data.entries:
-                    ci = self._parseItem(item)
+                for item in data:
+                    title, url = self.provider._get_title_and_url(item)
+                    ci = self._parseItem(title, url)
                     if ci is not None:
                         cl.append(ci)
 
@@ -148,9 +152,7 @@ class TVCache():
     def _translateLinkURL(self, url):
         return url.replace('&amp;', '&')
 
-    def _parseItem(self, item):
-        title = item.title
-        url = item.link
+    def _parseItem(self, title, url):
 
         self._checkItemAuth(title, url)
 
@@ -158,7 +160,7 @@ class TVCache():
             title = self._translateTitle(title)
             url = self._translateLinkURL(url)
 
-            logger.log(u"Checking if item from RSS feed is in the cache: " + title, logger.DEBUG)
+            logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
             return self._addCacheEntry(title, url)
 
         else:

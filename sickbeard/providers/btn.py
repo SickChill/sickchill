@@ -297,44 +297,7 @@ class BTNCache(tvcache.TVCache):
         # At least 15 minutes between queries
         self.minTime = 15
 
-    def updateCache(self):
-
-        # delete anything older then 7 days
-        self._clearCache()
-
-        if not self.shouldUpdate():
-            return
-
-        if self._checkAuth(None):
-
-            data = self._getRSSData()
-
-            # As long as we got something from the provider we count it as an update
-            if data:
-                self.setLastUpdate()
-            else:
-                return []
-
-            if self._checkAuth(data):
-                # By now we know we've got data and no auth errors, all we need to do is put it in the database
-                cl = []
-                for item in data:
-
-                    ci = self._parseItem(item)
-                    if ci is not None:
-                        cl.append(ci)
-
-                if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
-
-            else:
-                raise AuthException(
-                    "Your authentication info for " + self.provider.name + " is incorrect, check your config")
-        else:
-            return []
-
-    def _getRSSData(self):
+    def _getDailyData(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))
 
@@ -351,17 +314,6 @@ class BTNCache(tvcache.TVCache):
             seconds_since_last_update = 86400
 
         return self.provider._doSearch(search_params=None, age=seconds_since_last_update)
-
-    def _parseItem(self, item):
-        (title, url) = self.provider._get_title_and_url(item)
-
-        if title and url:
-            logger.log(u"Adding item to results: " + title, logger.DEBUG)
-            return self._addCacheEntry(title, url)
-        else:
-            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable",
-                       logger.ERROR)
-            return None
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)

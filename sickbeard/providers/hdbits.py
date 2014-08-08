@@ -251,18 +251,6 @@ class HDBitsCache(tvcache.TVCache):
     def _getRSSData(self):
         return self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
 
-    def _parseItem(self, item):
-
-        (title, url) = self.provider._get_title_and_url(item)
-
-        if title and url:
-            logger.log(u"Adding item to results: " + title, logger.DEBUG)
-            return self._addCacheEntry(title, url)
-        else:
-            logger.log(u"The data returned from the " + self.provider.name + " is incomplete, this result is unusable",
-                       logger.ERROR)
-            return None
-
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
 

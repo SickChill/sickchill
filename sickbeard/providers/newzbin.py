@@ -314,9 +314,9 @@ class NewzbinCache(tvcache.TVCache):
         # only poll Newzbin every 10 mins max
         self.minTime = 1
 
-    def _getRSSData(self):
+    def _getDailyData(self):
 
-        return self.provider._getRSSData()
+        return self.provider._getRSSData().entries
 
     def _parseItem(self, item):
 
