@@ -1179,9 +1179,9 @@ def mapIndexersToShow(showObj):
             except sickbeard.indexer_shownotfound:
                 logger.log(u"Unable to map " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
                     indexer).name + " for show: " + showObj.name + ", skipping it", logger.DEBUG)
-                mapped_show = None
+                continue
 
-            if len(mapped_show) and not len(mapped_show) > 1:
+            if mapped_show and len(mapped_show) == 1:
                 logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
                     indexer).name + " for show: " + showObj.name, logger.DEBUG)
 
