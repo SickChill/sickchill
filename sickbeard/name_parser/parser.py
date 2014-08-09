@@ -242,7 +242,10 @@ class NameParser(object):
 
             # if we have an air-by-date show then get the real season/episode numbers
             if bestResult.is_air_by_date or bestResult.is_sports:
-                airdate = bestResult.air_date.toordinal() if bestResult.air_date else bestResult.sports_air_date.toordinal()
+                try:
+                    airdate = bestResult.air_date.toordinal()
+                except:
+                    airdate = bestResult.sports_air_date.toordinal()
 
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
