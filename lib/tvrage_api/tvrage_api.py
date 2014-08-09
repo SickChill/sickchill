@@ -454,8 +454,11 @@ class TVRage:
                         value = value['#text']
                     if key == 'genre':
                         value = value['genre']
+                        if not value:
+                            value=[]
                         if not isinstance(value, list):
                             value = [value]
+                        value = filter(None, value)
                         value = '|' + '|'.join(value) + '|'
                 try:
                     if key == 'firstaired' and value in "0000-00-00":
