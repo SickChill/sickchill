@@ -1263,7 +1263,12 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
                 "https": sickbeard.PROXY_SETTING,
             }
 
-        resp = session.get(url, data=post_data, timeout=timeout)
+        # decide if we get or post data to server
+        if post_data:
+            resp = session.post(url, data=post_data, timeout=timeout)
+        else:
+            resp = session.get(url, timeout=timeout)
+
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
