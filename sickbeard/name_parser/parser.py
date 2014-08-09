@@ -278,17 +278,17 @@ class NameParser(object):
                     except sickbeard.indexer_error, e:
                         logger.log(u"Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING
 
-                    for epNo in episode_numbers:
-                        s = season_number
-                        e = epNo
+                for epNo in episode_numbers:
+                    s = season_number
+                    e = epNo
 
-                        if self.convert:
-                            (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
-                                                                           bestResult.show.indexer,
-                                                                           season_number,
-                                                                           epNo)
-                        new_episode_numbers.append(e)
-                        new_season_numbers.append(s)
+                    if self.convert:
+                        (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
+                                                                       bestResult.show.indexer,
+                                                                       season_number,
+                                                                       epNo)
+                    new_episode_numbers.append(e)
+                    new_season_numbers.append(s)
 
             elif bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
                 scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]
