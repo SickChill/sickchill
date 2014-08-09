@@ -256,7 +256,7 @@ class NameParser(object):
                     season_number = int(sql_result[0][0])
                     episode_numbers = [int(sql_result[0][1])]
                 else:
-                     try:
+                    try:
                         lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
 
                         if bestResult.show.lang:
