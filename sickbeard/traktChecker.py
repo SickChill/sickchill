@@ -53,6 +53,10 @@ class TraktChecker():
     def findShow(self, indexer, indexerid):
         library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
+        if library == 'NULL':
+            logger.log(u"No shows found in your library, aborting library update", logger.DEBUG)
+            return
+
         if not library:
             logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
             return
@@ -102,6 +106,10 @@ class TraktChecker():
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
         watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
+        if watchlist == 'NULL':
+            logger.log(u"No shows found in your watchlist, aborting watchlist update", logger.DEBUG)
+            return
+
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
             return
@@ -133,6 +141,10 @@ class TraktChecker():
         """
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
         watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+        if watchlist == 'NULL':
+            logger.log(u"No episodes found in your watchlist, aborting watchlist update", logger.DEBUG)
+            return
 
         if not watchlist:
             logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
