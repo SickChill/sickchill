@@ -1179,9 +1179,9 @@ def mapIndexersToShow(showObj):
             except sickbeard.indexer_shownotfound:
                 logger.log(u"Unable to map " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
                     indexer).name + " for show: " + showObj.name + ", skipping it", logger.DEBUG)
-                mapped_show = None
+                continue
 
-            if len(mapped_show) and not len(mapped_show) > 1:
+            if mapped_show and len(mapped_show) == 1:
                 logger.log(u"Mapping " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
                     indexer).name + " for show: " + showObj.name, logger.DEBUG)
 
@@ -1263,7 +1263,12 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
                 "https": sickbeard.PROXY_SETTING,
             }
 
-        resp = session.get(url, data=post_data, timeout=timeout)
+        # decide if we get or post data to server
+        if post_data:
+            resp = session.post(url, data=post_data, timeout=timeout)
+        else:
+            resp = session.get(url, timeout=timeout)
+
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
