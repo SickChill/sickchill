@@ -236,6 +236,8 @@ class NameParser(object):
             # get quality
             bestResult.quality = common.Quality.nameQuality(name, bestResult.show.is_anime)
 
+            season_number = None
+            episode_numbers = []
             new_episode_numbers = []
             new_season_numbers = []
             new_absolute_numbers = []
