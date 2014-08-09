@@ -61,9 +61,11 @@ class TvSubtitles(ServiceBase):
             sid = int(match('tvshow-([0-9]+)\.html', elem.a['href']))
             show_name = match('(.*) \(', elem.a.text)
             results.append((show_name, sid))
-        #TODO: pick up the best one in a smart way
-        result = results[0]
-        return result[1]
+
+        if len(results):
+            #TODO: pick up the best one in a smart way
+            result = results[0]
+            return result[1]
 
     @cachedmethod
     def get_episode_id(self, series_id, season, number):
