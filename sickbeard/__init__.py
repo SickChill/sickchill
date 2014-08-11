@@ -240,6 +240,7 @@ NZBGET_PASSWORD = None
 NZBGET_CATEGORY = None
 NZBGET_HOST = None
 NZBGET_USE_HTTPS = False
+NZBGET_PRIORITY = 100
 
 TORRENT_USERNAME = None
 TORRENT_PASSWORD = None
@@ -446,7 +447,7 @@ def initialize(consoleLogging=True):
         global BRANCH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_HOST, \
-            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
+            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, BACKLOG_FREQUENCY, \
@@ -691,6 +692,7 @@ def initialize(consoleLogging=True):
         NZBGET_CATEGORY = check_setting_str(CFG, 'NZBget', 'nzbget_category', 'tv')
         NZBGET_HOST = check_setting_str(CFG, 'NZBget', 'nzbget_host', '')
         NZBGET_USE_HTTPS = bool(check_setting_int(CFG, 'NZBget', 'nzbget_use_https', 0))
+        NZBGET_PRIORITY = check_setting_int(CFG, 'NZBget', 'nzbget_priority', 100)
 
         TORRENT_USERNAME = check_setting_str(CFG, 'TORRENT', 'torrent_username', '')
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', '')
@@ -1498,6 +1500,7 @@ def save_config():
     new_config['NZBget']['nzbget_category'] = NZBGET_CATEGORY
     new_config['NZBget']['nzbget_host'] = NZBGET_HOST
     new_config['NZBget']['nzbget_use_https'] = int(NZBGET_USE_HTTPS)
+    new_config['NZBget']['nzbget_priority'] = NZBGET_PRIORITY
 
     new_config['TORRENT'] = {}
     new_config['TORRENT']['torrent_username'] = TORRENT_USERNAME
