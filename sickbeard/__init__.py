@@ -639,7 +639,7 @@ def initialize(consoleLogging=True):
 
         USENET_RETENTION = check_setting_int(CFG, 'General', 'usenet_retention', 500)
 
-        AUTOPOSTPROCESSER_FREQUENCY = check_setting_int(CFG, 'General', 'dailysearch_frequency',
+        AUTOPOSTPROCESSER_FREQUENCY = check_setting_int(CFG, 'General', 'autopostprocesser_frequency',
                                                         DEFAULT_AUTOPOSTPROCESSER_FREQUENCY)
         if AUTOPOSTPROCESSER_FREQUENCY < MIN_AUTOPOSTPROCESSER_FREQUENCY:
             AUTOPOSTPROCESSER_FREQUENCY = MIN_AUTOPOSTPROCESSER_FREQUENCY
