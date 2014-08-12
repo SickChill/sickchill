@@ -29,7 +29,7 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import show_name_helpers
-from sickbeard.exceptions import ex
+from sickbeard.exceptions import ex, AuthException
 from sickbeard import clients
 from lib import requests
 from lib.requests import exceptions
@@ -77,6 +77,13 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         quality = Quality.sceneQuality(item[0], anime)
         return quality
+
+    def _checkAuth(self):
+
+        if not self.username or not self.password:
+            raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
+
+        return True
 
     def _doLogin(self):
         if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
@@ -301,6 +308,6 @@ class FreshOnTVCache(tvcache.TVCache):
 
     def _getDailyData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params).entries
+        return self.provider._doSearch(search_params)
 
 provider = FreshOnTVProvider()

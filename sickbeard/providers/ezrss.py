@@ -179,7 +179,11 @@ class EZRSSCache(tvcache.TVCache):
         rss_url = self.provider.url + 'feed/'
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url).entries
+        data = self.getRSSFeed(rss_url)
 
+        if data and 'entries' in data:
+            return data.entries
+        else:
+            return []
 
 provider = EZRSSProvider()

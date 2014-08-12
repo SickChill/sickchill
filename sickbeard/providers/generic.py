@@ -75,7 +75,7 @@ class GenericProvider:
         return self.getID() + '.png'
 
     def _checkAuth(self):
-        return
+        return True
 
     def _doLogin(self):
         return True

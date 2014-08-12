@@ -105,15 +105,15 @@ class TVCache():
     def _getDailyData(self):
         return None
 
-    def _checkAuth(self, data):
-        return True
+    def _checkAuth(self):
+        return self.provider._checkAuth()
 
     def _checkItemAuth(self, title, url):
         return True
 
     def updateCache(self):
 
-        if self.shouldUpdate() and self._checkAuth(None):
+        if self.shouldUpdate() and self._checkAuth():
             # as long as the http request worked we count this as an update
             data = self._getDailyData()
             if not data:
@@ -126,20 +126,16 @@ class TVCache():
             self.setLastUpdate()
 
             # parse data
-            if self._checkAuth(data):
-                cl = []
-                for item in data:
-                    title, url = self.provider._get_title_and_url(item)
-                    ci = self._parseItem(title, url)
-                    if ci is not None:
-                        cl.append(ci)
+            cl = []
+            for item in data:
+                title, url = self.provider._get_title_and_url(item)
+                ci = self._parseItem(title, url)
+                if ci is not None:
+                    cl.append(ci)
 
-                if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
-            else:
-                raise AuthException(
-                    u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+            if len(cl) > 0:
+                myDB = self._getDB()
+                myDB.mass_action(cl)
 
         return []
 
