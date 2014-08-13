@@ -67,9 +67,6 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _checkAuthFromData(self, parsedJSON):
 
-        if parsedJSON is None:
-            return self._checkAuth()
-
         if 'status' in parsedJSON and 'message' in parsedJSON:
             if parsedJSON.get('status') == 5:
                 logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
@@ -209,13 +206,15 @@ class HDBitsCache(tvcache.TVCache):
 
     def _getDailyData(self):
         parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
+
+        if not self.provider._checkAuthFromData(parsedJSON):
+            return []
+
         if parsedJSON and 'data' in parsedJSON:
             return parsedJSON['data']
         else:
             return []
 
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
 
 
 provider = HDBitsProvider()                                                                                                              

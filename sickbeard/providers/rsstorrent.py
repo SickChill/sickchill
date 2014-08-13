@@ -157,6 +157,11 @@ class TorrentRssCache(tvcache.TVCache):
 
         request_headers = None
         if self.provider.cookies:
-          request_headers = { 'Cookie': self.provider.cookies }
+            request_headers = { 'Cookie': self.provider.cookies }
 
-        return self.getRSSFeed(self.provider.url, request_headers=request_headers).entries
+        data = self.getRSSFeed(self.provider.url, request_headers=request_headers)
+
+        if data and 'entries' in data:
+            return data.entries
+        else:
+            return []

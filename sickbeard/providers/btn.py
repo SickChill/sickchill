@@ -315,8 +315,5 @@ class BTNCache(tvcache.TVCache):
 
         return self.provider._doSearch(search_params=None, age=seconds_since_last_update)
 
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
-
 
 provider = BTNProvider()
