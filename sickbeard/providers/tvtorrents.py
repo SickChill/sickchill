@@ -95,8 +95,8 @@ class TvTorrentsCache(tvcache.TVCache):
         if not self.provider._checkAuthFromData(data):
             return []
 
-        if data and 'data' in data:
-            return data['data']
+        if data and 'entries' in data:
+            return data['entries']
         else:
             return []
 
