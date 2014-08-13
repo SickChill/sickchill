@@ -67,9 +67,6 @@ class HDBitsProvider(generic.TorrentProvider):
 
     def _checkAuthFromData(self, parsedJSON):
 
-        if parsedJSON is None:
-            return self._checkAuth()
-
         if 'status' in parsedJSON and 'message' in parsedJSON:
             if parsedJSON.get('status') == 5:
                 logger.log(u"Incorrect authentication credentials for " + self.name + " : " + parsedJSON['message'],
@@ -207,52 +204,17 @@ class HDBitsCache(tvcache.TVCache):
         # only poll HDBits every 15 minutes max                                                                                          
         self.minTime = 15
 
-    def updateCache(self):
+    def _getDailyData(self):
+        parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
 
-        # delete anything older then 7 days
-        self._clearCache()
+        if not self.provider._checkAuthFromData(parsedJSON):
+            return []
 
-        if not self.shouldUpdate():
-            return
-
-        if self._checkAuth(None):
-
-            parsedJSON = self._getRSSData()
-            if not parsedJSON:
-                logger.log(u"Error trying to load " + self.provider.name + " JSON feed", logger.ERROR)
-                return []
-
-            # mark updated
-            self.setLastUpdate()
-
-            if self._checkAuth(parsedJSON):
-                if parsedJSON and 'data' in parsedJSON:
-                    items = parsedJSON['data']
-                else:
-                    logger.log(u"Resulting JSON from " + self.provider.name + " isn't correct, not parsing it",
-                               logger.ERROR)
-                    return []
-
-                cl = []
-                for item in items:
-                    ci = self._parseItem(item)
-                    if ci is not None:
-                        cl.append(ci)
-
-                if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
-            else:
-                raise exceptions.AuthException(
-                    "Your authentication info for " + self.provider.name + " is incorrect, check your config")
+        if parsedJSON and 'data' in parsedJSON:
+            return parsedJSON['data']
         else:
             return []
 
-    def _getRSSData(self):
-        return self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
-
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
 
 
 provider = HDBitsProvider()                                                                                                              

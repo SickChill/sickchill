@@ -177,7 +177,7 @@ def filter_release_name(name, filter_words):
     Returns: False if the release name is OK, True if it contains one of the filter_words
     """
     if filter_words:
-        filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in filter_words.split(',')]
+        filters = [re.compile('.*%s.*' % filter.strip(), re.I) for filter in filter_words.split(',')]
         for regfilter in filters:
             if regfilter.search(name):
                 logger.log(u"" + name + " contains pattern: " + regfilter.pattern, logger.DEBUG)

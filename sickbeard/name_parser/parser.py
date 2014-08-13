@@ -242,7 +242,10 @@ class NameParser(object):
 
             # if we have an air-by-date show then get the real season/episode numbers
             if bestResult.is_air_by_date or bestResult.is_sports:
-                airdate = bestResult.air_date.toordinal() if bestResult.air_date else bestResult.sports_air_date.toordinal()
+                try:
+                    airdate = bestResult.air_date.toordinal()
+                except:
+                    airdate = bestResult.sports_air_date.toordinal()
 
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
@@ -252,18 +255,41 @@ class NameParser(object):
                 if sql_result:
                     season_number = int(sql_result[0][0])
                     episode_numbers = [int(sql_result[0][1])]
+                
+                if not season_number or not len(episode_numbers):
+                    try:
+                        lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
 
-                    for epNo in episode_numbers:
-                        s = season_number
-                        e = epNo
+                        if bestResult.show.lang:
+                            lINDEXER_API_PARMS['language'] = bestResult.show.lang
 
-                        if self.convert:
-                            (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
-                                                                           bestResult.show.indexer,
-                                                                           season_number,
-                                                                           epNo)
-                        new_episode_numbers.append(e)
-                        new_season_numbers.append(s)
+                        t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
+
+                        if bestResult.is_air_by_date:
+                            epObj = t[bestResult.show.indexerid].airedOn(parse_result.air_date)[0]
+                        else:
+                            epObj = t[bestResult.show.indexerid].airedOn(parse_result.sports_air_date)[0]
+
+                        season_number = int(epObj["seasonnumber"])
+                        episode_numbers = [int(epObj["episodenumber"])]
+                    except sickbeard.indexer_episodenotfound:
+                        logger.log(u"Unable to find episode with date " + str(parse_result.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
+                        episode_numbers = []
+                    except sickbeard.indexer_error, e:
+                        logger.log(u"Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
+                        episode_numbers = []
+
+                for epNo in episode_numbers:
+                    s = season_number
+                    e = epNo
+
+                    if self.convert:
+                        (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
+                                                                       bestResult.show.indexer,
+                                                                       season_number,
+                                                                       epNo)
+                    new_episode_numbers.append(e)
+                    new_season_numbers.append(s)
 
             elif bestResult.show.is_anime and len(bestResult.ab_episode_numbers):
                 scene_season = scene_exceptions.get_scene_exception_by_name(bestResult.series_name)[1]

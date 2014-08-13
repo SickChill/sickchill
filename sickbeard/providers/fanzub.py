@@ -139,7 +139,12 @@ class FanzubCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url).entries
+        data = self.getRSSFeed(rss_url)
+
+        if data and 'entries' in data:
+            return data.entries
+        else:
+            return []
 
 
 provider = Fanzub()

@@ -61,11 +61,8 @@ class TvTorrentsProvider(generic.TorrentProvider):
         return True
 
     def _checkAuthFromData(self, data):
-
-        if data is None or data.feed is None:
-            return self._checkAuth()
-
-        description_text = data.feed.title
+        if data.feed.title:
+            description_text = data.feed.title
 
         if "User can't be found" in description_text or "Invalid Hash" in description_text:
             logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text),
@@ -93,10 +90,16 @@ class TvTorrentsCache(tvcache.TVCache):
         rss_url = self.provider.url + 'RssServlet?digest=' + provider.digest + '&hash=' + provider.hash + '&fname=true&exclude=(' + ignore_regex + ')'
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        data = self.getRSSFeed(rss_url)
 
-    def _checkAuth(self, data):
-        return self.provider._checkAuthFromData(data)
+        if not self.provider._checkAuthFromData(data):
+            return []
+
+        if data and 'entries' in data:
+            return data['entries']
+        else:
+            return []
+
 
 
 provider = TvTorrentsProvider()

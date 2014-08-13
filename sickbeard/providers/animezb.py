@@ -52,9 +52,6 @@ class Animezb(generic.NZBProvider):
     def imageName(self):
         return 'animezb.png'
 
-    def _checkAuth(self):
-        return True
-
     def _get_season_search_strings(self, ep_obj):
         return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
 
@@ -147,7 +144,12 @@ class AnimezbCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url).entries
+        data = self.getRSSFeed(rss_url)
+
+        if data and 'entries' in data:
+            return data.entries
+        else:
+            return []
 
 
 provider = Animezb()

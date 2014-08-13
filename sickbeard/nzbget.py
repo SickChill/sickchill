@@ -82,7 +82,7 @@ def sendNZB(nzb, proper=False):
         dupekey += "-" + str(curEp.season) + "." + str(curEp.episode)
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True
-            nzbgetprio = 100
+            nzbgetprio = sickbeard.NZBGET_PRIORITY
 
     if nzb.quality != Quality.UNKNOWN:
         dupescore = nzb.quality * 100

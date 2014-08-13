@@ -45,6 +45,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
             'detail': 'https://torrentleech.org/torrent/%s',
             'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
             'download': 'https://torrentleech.org%s',
+            'index': 'https://torrentleech.org/torrents/browse/index/categories/%s',
     }
 
     def __init__(self):
@@ -163,7 +164,10 @@ class TorrentLeechProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                searchURL = self.urls['search'] % (search_string, self.categories)
+                if mode == 'RSS':
+                    searchURL = self.urls['index'] % self.categories
+                else:
+                    searchURL = self.urls['search'] % (search_string, self.categories)
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
@@ -203,7 +207,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title + "(" + download_url + ")", logger.DEBUG)
 
                             items[mode].append(item)
 
