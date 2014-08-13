@@ -1224,9 +1224,9 @@
 	                                <label class="nocheck clearfix">
 	                                    <span class="component-title">Watchlist Add Method:</span>
 	                                       <select id="trakt_method_add" name="trakt_method_add">
-	                                        <option value="0" #if $sickbeard.TRAKT_METHOD_ADD == "0" then 'selected="selected"' else ""#>Skip All</option>
-	                                        <option value="1" #if $sickbeard.TRAKT_METHOD_ADD == "1" then 'selected="selected"' else ""#>Download Pilot Only</option>
-	                                        <option value="2" #if $sickbeard.TRAKT_METHOD_ADD == "2" then 'selected="selected"' else ""#>Get whole show</option>
+	                                        <option value="0" #if $sickbeard.TRAKT_METHOD_ADD == 0 then "selected=\"selected\"" else ""#>Skip All</option>
+	                                        <option value="1" #if $sickbeard.TRAKT_METHOD_ADD == 1 then "selected=\"selected\"" else ""#>Download Pilot Only</option>
+	                                        <option value="2" #if $sickbeard.TRAKT_METHOD_ADD == 2 then "selected=\"selected\"" else ""#>Get whole show</option>
 	                                    </select>
 	                                </label>
 	                                <label class="nocheck clearfix">

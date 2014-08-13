@@ -2362,7 +2362,7 @@ class ConfigNotifications(MainHandler):
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
         sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
-        sickbeard.TRAKT_METHOD_ADD = trakt_method_add
+        sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
         sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
         sickbeard.TRAKT_SYNC = config.checkbox_to_value(trakt_sync)
