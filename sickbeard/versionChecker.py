@@ -758,4 +758,4 @@ class SourceUpdateManager(UpdateManager):
 
     def list_remote_branches(self):
         gh = github.GitHub(self.github_repo_user, self.github_repo, self.branch)
-        return [x.name for x in gh.branches() if x and 'name' in x]
+        return [x['name'] for x in gh.branches() if x and 'name' in x]
