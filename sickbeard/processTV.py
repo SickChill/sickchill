@@ -138,11 +138,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     path, dirs, files = get_path_dir_files(dirName, nzbName, type)
 
-    btsyncFiles = filter(helpers.isBtsyncFile, files)
+    SyncFiles = filter(helpers.isSyncFile, files)
 
-    # Don't post process if files are still being synced from btsync
-    if btsyncFiles:
-        returnStr += logHelper(u"Found .!sync files, skipping post processing", logger.ERROR)
+    # Don't post process if files are still being synced
+    if SyncFiles:
+        returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
         return returnStr
 
     returnStr += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
@@ -186,11 +186,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
         for processPath, processDir, fileList in ek.ek(os.walk, ek.ek(os.path.join, path, dir), topdown=False):
 
-            btsyncFiles = filter(helpers.isBtsyncFile, fileList)
+            SyncFiles = filter(helpers.isSyncFile, fileList)
 
-            # Don't post process if files are still being synced from btsync
-            if btsyncFiles:
-                returnStr += logHelper(u"Found .!sync files, skipping post processing", logger.ERROR)
+            # Don't post process if files are still being synced
+            if SyncFiles:
+                returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
                 return returnStr
 
             rarFiles = filter(helpers.isRarFile, fileList)
