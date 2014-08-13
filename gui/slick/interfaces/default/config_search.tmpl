@@ -313,6 +313,76 @@
                                     <span class="component-desc">Category for downloads to go into (eg. TV)</span>
                                 </label>
                             </div>
+
+                            <%
+                                    if config['nzbget_priority'] == -100:
+                                        prio_verylow = 'selected="selected"'
+                                        prio_low = ''
+                                        prio_normal = ''
+                                        prio_high = ''
+                                        prio_veryhigh = ''
+                                        prio_force = ''
+                                    elif config['nzbget_priority'] == -50:
+                                        prio_verylow = ''
+                                        prio_low = 'selected="selected"'
+                                        prio_normal = ''
+                                        prio_high = ''
+                                        prio_veryhigh = ''
+                                        prio_force = ''
+                                    elif config['nzbget_priority'] == 0:
+                                        prio_verylow = ''
+                                        prio_low = ''
+                                        prio_normal = 'selected="selected"'
+                                        prio_high = ''
+                                        prio_veryhigh = ''
+                                        prio_force = ''
+                                    elif config['nzbget_priority'] == 50:
+                                        prio_verylow = ''
+                                        prio_low = ''
+                                        prio_normal = ''
+                                        prio_high = 'selected="selected"'
+                                        prio_veryhigh = ''
+                                        prio_force = ''
+                                    elif config['nzbget_priority'] == 100:
+                                        prio_verylow = ''
+                                        prio_low = ''
+                                        prio_normal = ''
+                                        prio_high = ''
+                                        prio_veryhigh = 'selected="selected"'
+                                        prio_force = ''
+                                    elif config['nzbget_priority'] == 900:
+                                        prio_verylow = ''
+                                        prio_low = ''
+                                        prio_normal = ''
+                                        prio_high = ''
+                                        prio_veryhigh = ''
+                                        prio_force = 'selected="selected"'
+                                    else:
+                                        prio_verylow = ''
+                                        prio_low = ''
+                                        prio_normal = 'selected="selected"'
+                                        prio_high = ''
+                                        prio_veryhigh = ''
+                                        prio_force = ''
+                                %>
+
+                            <div class="field-pair">
+                                <label class="nocheck clearfix">
+                                    <span class="component-title">NZBget Priority</span>
+                                    <select name="nzbget_priority" id="nzbget_priority">
+                                        <option value="-100" ${prio_verylow}>Very Low</option>
+                                        <option value="-50" ${prio_low}>Low</option>
+                                        <option value="0" ${prio_normal}>Normal</option>
+                                        <option value="50" ${prio_high}>High</option>
+                                        <option value="100" ${prio_veryhigh}>Very High</option>
+                                        <option value="900" ${prio_force}>Force</option>
+                                    </select>
+                                </label>
+                                <label class="nocheck clearfix">
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Priority for daily snatches (no backlog)</span>
+                                </label>
+                            </div>
                         </div>
                         
                         <div class="clearfix"></div>
