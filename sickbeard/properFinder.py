@@ -138,16 +138,16 @@ class ProperFinder():
             # populate our Proper instance
             curProper.season = parse_result.season_number if parse_result.season_number != None else 1
             curProper.episode = parse_result.episode_numbers[0]
+            curProper.release_group = parse_result.release_group
+            curProper.version = parse_result.version
+            curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
             # only get anime proper if it has release group and version
             if parse_result.is_anime:
-                if parse_result.release_group and parse_result.version:
-                    curProper.release_group = parse_result.release_group
-                    curProper.version = parse_result.version
-                else:
+                if not curProper.release_group and curProper.version == -1:
+                    logger.log(u"Proper " + curProper.name + " doesn't have a release group and version, ignoring it",
+                               logger.DEBUG)
                     continue
-
-            curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
             if not show_name_helpers.filterBadReleases(curProper.name):
                 logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, ignoring it",
