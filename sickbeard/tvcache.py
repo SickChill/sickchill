@@ -96,6 +96,10 @@ class TVCache():
             myDB = self._getDB()
             myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
 
+    def _get_title_and_url(self, item):
+        # override this in the provider if daily search has a different data layout to backlog searches
+        return self.provider._get_title_and_url(item)
+
     def _getRSSData(self):
 
         data = None
@@ -128,7 +132,7 @@ class TVCache():
             # parse data
             cl = []
             for item in data:
-                title, url = self.provider._get_title_and_url(item)
+                title, url = self._get_title_and_url(item)
                 ci = self._parseItem(title, url)
                 if ci is not None:
                     cl.append(ci)
