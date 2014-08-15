@@ -154,6 +154,26 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 20
 
+    def _get_title_and_url(self, item):
+        """
+        Retrieves the title and URL data from the item XML node
+
+        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
+
+        Returns: A tuple containing two strings representing title and URL respectively
+        """
+
+        title = item.title if item.title else None
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
+        url = item.link if item.link else None
+        if url:
+            url = url.replace('&amp;', '&')
+
+        return (title, url)
+
     def _getDailyData(self):
         params = {'user': provider.username,
                   'api': provider.api_key,
