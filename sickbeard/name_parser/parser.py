@@ -266,14 +266,14 @@ class NameParser(object):
                         t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
 
                         if bestResult.is_air_by_date:
-                            epObj = t[bestResult.show.indexerid].airedOn(parse_result.air_date)[0]
+                            epObj = t[bestResult.show.indexerid].airedOn(bestResult.air_date)[0]
                         else:
-                            epObj = t[bestResult.show.indexerid].airedOn(parse_result.sports_air_date)[0]
+                            epObj = t[bestResult.show.indexerid].airedOn(bestResult.sports_air_date)[0]
 
                         season_number = int(epObj["seasonnumber"])
                         episode_numbers = [int(epObj["episodenumber"])]
                     except sickbeard.indexer_episodenotfound:
-                        logger.log(u"Unable to find episode with date " + str(parse_result.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
+                        logger.log(u"Unable to find episode with date " + str(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
                         episode_numbers = []
                     except sickbeard.indexer_error, e:
                         logger.log(u"Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
