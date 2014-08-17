@@ -556,7 +556,7 @@ def _getEpisode(show, season=None, episode=None, absolute=None):
         return "Invalid show paramaters"
 
     if absolute:
-        epObj = showObj.getEpisode(absolute=int(absolute))
+        epObj = showObj.getEpisode(absolute_number=int(absolute))
     elif season and episode:
         epObj = showObj.getEpisode(int(season), int(episode))
     else:
