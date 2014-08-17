@@ -615,7 +615,7 @@ def initialize(consoleLogging=True):
         NAMING_SPORTS_PATTERN = check_setting_str(CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
         NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
         NAMING_CUSTOM_SPORTS = bool(check_setting_int(CFG, 'General', 'naming_custom_sports', 0))
-        NAMING_MULTI_EP = bool(check_setting_int(CFG, 'General', 'naming_multi_ep', 1))
+        NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = bool(check_setting_int(CFG, 'General', 'naming_strip_year', 0))
 
