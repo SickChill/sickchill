@@ -197,8 +197,8 @@ class BitSoupProvider(generic.TorrentProvider):
                             try:
                                 title = link.getText()
                                 id = int(id)
-                                seeders = int(cells[9].getText())
-                                leechers = int(cells[10].getText())
+                                seeders = int(cells[10].getText())
+                                leechers = int(cells[11].getText())
                             except (AttributeError, TypeError):
                                 continue
 
