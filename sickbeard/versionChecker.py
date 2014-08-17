@@ -566,17 +566,9 @@ class SourceUpdateManager(UpdateManager):
         if sickbeard.BRANCH == '':
             self.branch = self._find_installed_branch()
 
-        self._cur_commit_hash = None
+        self._cur_commit_hash = sickbeard.CUR_COMMIT_HASH
         self._newest_commit_hash = None
         self._num_commits_behind = 0
-        
-    def _find_installed_version(self):
-        installed_path = os.path.dirname(os.path.normpath(os.path.abspath(__file__)))
-        self._cur_commit_hash = self.hash_dir(installed_path)
-
-        if not self._cur_commit_hash:
-            self._cur_commit_hash = None
-        sickbeard.CUR_COMMIT_HASH = str(self._cur_commit_hash)
 
     def _find_installed_branch(self):
         if sickbeard.BRANCH == "":
@@ -589,8 +581,6 @@ class SourceUpdateManager(UpdateManager):
         if self.branch != self._find_installed_branch():
             logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
             return True
-
-        self._find_installed_version()
 
         try:
             self._check_github_for_update()
@@ -746,6 +736,9 @@ class SourceUpdateManager(UpdateManager):
                     if os.path.isfile(new_path):
                         os.remove(new_path)
                     os.renames(old_path, new_path)
+
+            sickbeard.CUR_COMMIT_HASH = self._newest_commit_hash
+            
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)
             logger.log(u"Traceback: " + traceback.format_exc(), logger.DEBUG)
