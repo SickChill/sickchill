@@ -265,19 +265,6 @@ class TVShow(object):
                 ep = TVEpisode(self, season, episode)
 
             if ep != None:
-                # Load XEM data to DB for show
-                sickbeard.scene_numbering.xem_refresh(self.indexerid, self.indexer, force=forceUpdate)
-
-                # get scene absolute numbering
-                ep.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(self.indexerid,
-                                                                                                  self.indexer,
-                                                                                                  ep.absolute_number)
-
-                # get scene season and episode numbering
-                ep.scene_season, ep.scene_episode = sickbeard.scene_numbering.get_scene_numbering(self.indexerid,
-                                                                                                  self.indexer,
-                                                                                                  season, episode)
-
                 self.episodes[season][episode] = ep
 
         return self.episodes[season][episode]
@@ -721,7 +708,8 @@ class TVShow(object):
                 if newStatus != None:
                     with curEp.lock:
                         logger.log(u"STATUS: we have an associated file, so setting the status from " + str(
-                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file, anime=self.is_anime)), logger.DEBUG)
+                            curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file, anime=self.is_anime)),
+                                   logger.DEBUG)
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -1256,6 +1244,7 @@ class TVShow(object):
         d['lock'] = threading.Lock()
         self.__dict__.update(d)
 
+
 class TVEpisode(object):
     def __init__(self, show, season, episode, file=""):
         self._name = ""
@@ -1297,9 +1286,6 @@ class TVEpisode(object):
         self.relatedEps = []
 
         self.checkForMetaFiles()
-
-    def __del__(self):
-        pass
 
     name = property(lambda self: self._name, dirty_setter("_name"))
     season = property(lambda self: self._season, dirty_setter("_season"))
@@ -1505,21 +1491,27 @@ class TVEpisode(object):
             self.indexerid = int(sqlResults[0]["indexerid"])
             self.indexer = int(sqlResults[0]["indexer"])
 
-            # does one now a better way to test for NULL in the db field ?
-            try:
-                self.scene_season = int(sqlResults[0]["scene_season"])
-            except:
-                self.scene_season = 0
+            # Load XEM data to DB for show
+            sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
             try:
+                self.scene_season = int(sqlResults[0]["scene_season"])
                 self.scene_episode = int(sqlResults[0]["scene_episode"])
             except:
-                self.scene_episode = 0
+                self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(
+                    self.show.indexerid,
+                    self.show.indexer,
+                    self.season, self.episode
+                )
 
             try:
                 self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"])
             except:
-                self.scene_absolute_number = 0
+                self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
+                    self.show.indexerid,
+                    self.show.indexer,
+                    self.absolute_number
+                )
 
             if sqlResults[0]["release_name"] is not None:
                 self.release_name = sqlResults[0]["release_name"]
@@ -1611,6 +1603,20 @@ class TVEpisode(object):
         self.name = getattr(myEp, 'episodename', "")
         self.season = season
         self.episode = episode
+
+        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+
+        self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
+            self.show.indexerid,
+            self.show.indexer,
+            self.absolute_number
+        )
+
+        self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(
+            self.show.indexerid,
+            self.show.indexer,
+            self.season, self.episode
+        )
 
         self.description = getattr(myEp, 'overview', "")
 
@@ -1747,6 +1753,20 @@ class TVEpisode(object):
                     self.name = epDetails.findtext('title')
                     self.episode = int(epDetails.findtext('episode'))
                     self.season = int(epDetails.findtext('season'))
+
+                    sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+
+                    self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
+                        self.show.indexerid,
+                        self.show.indexer,
+                        self.absolute_number
+                    )
+
+                    self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(
+                        self.show.indexerid,
+                        self.show.indexer,
+                        self.season, self.episode
+                    )
 
                     self.description = epDetails.findtext('plot')
                     if self.description is None:
