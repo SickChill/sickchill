@@ -1491,26 +1491,35 @@ class TVEpisode(object):
             self.indexerid = int(sqlResults[0]["indexerid"])
             self.indexer = int(sqlResults[0]["indexer"])
 
-            # Load XEM data to DB for show
             sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
             try:
                 self.scene_season = int(sqlResults[0]["scene_season"])
+            except:
+                self.scene_season = 0
+
+            try:
                 self.scene_episode = int(sqlResults[0]["scene_episode"])
             except:
-                self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(
-                    self.show.indexerid,
-                    self.show.indexer,
-                    self.season, self.episode
-                )
+                self.scene_episode = 0
 
             try:
                 self.scene_absolute_number = int(sqlResults[0]["scene_absolute_number"])
             except:
+                self.scene_absolute_number = 0
+
+            if self.scene_absolute_number == 0:
                 self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
                     self.show.indexerid,
                     self.show.indexer,
                     self.absolute_number
+                )
+
+            if self.scene_season == 0 or self.scene_episode == 0:
+                self.scene_season, self.scene_episode = sickbeard.scene_numbering.get_scene_numbering(
+                    self.show.indexerid,
+                    self.show.indexer,
+                    self.season, self.episode
                 )
 
             if sqlResults[0]["release_name"] is not None:
