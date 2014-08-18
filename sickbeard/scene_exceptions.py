@@ -256,11 +256,17 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     Given a indexer_id, and a list of all show scene exceptions, update the db.
     """
-
+    global exceptionsCache
     myDB = db.DBConnection('cache.db')
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
 
     logger.log(u"Updating scene exceptions", logger.MESSAGE)
+    
+    # A change has been made to the scene exception list. Let's clear the cache, to make this visible
+    if indexer_id in exceptionsCache:
+        exceptionsCache[indexer_id] = {}
+        exceptionsCache[indexer_id][season] = scene_exceptions
+
     for cur_exception in scene_exceptions:
 
         if not isinstance(cur_exception, unicode):
@@ -316,7 +322,7 @@ def _xem_exceptions_fetcher():
 
 
 def getSceneSeasons(indexer_id):
-    """get a list of season numbers that have scene excpetions
+    """get a list of season numbers that have scene exceptions
     """
     myDB = db.DBConnection('cache.db')
     seasons = myDB.select("SELECT DISTINCT season FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])

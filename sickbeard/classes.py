@@ -102,7 +102,9 @@ class SearchResult:
         # release group
         self.release_group = ""
 
-
+        # version
+        self.version = -1
+        
     def __str__(self):
 
         if self.provider == None:
@@ -218,7 +220,9 @@ class Proper:
         self.date = date
         self.provider = None
         self.quality = Quality.UNKNOWN
-
+        self.release_group = None
+        self.version = -1
+        
         self.show = show
         self.indexer = None
         self.indexerid = -1

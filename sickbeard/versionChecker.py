@@ -571,22 +571,22 @@ class SourceUpdateManager(UpdateManager):
         self._num_commits_behind = 0
 
     def _find_installed_branch(self):
-        if sickbeard.BRANCH == "":
+        if sickbeard.CUR_COMMIT_BRANCH == "":
             return "master"
-        
-        return ""
+        else:
+            return sickbeard.CUR_COMMIT_BRANCH
         
     def need_update(self):
-
-        if self.branch != self._find_installed_branch():
-            logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
-            return True
-
+        # need this to run first to set self._newest_commit_hash
         try:
             self._check_github_for_update()
         except Exception, e:
             logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.ERROR)
             return False
+
+        if self.branch != self._find_installed_branch():
+            logger.log(u"Branch checkout: " + self._find_installed_branch() + "->" + self.branch, logger.DEBUG)
+            return True
 
         if not self._cur_commit_hash or self._num_commits_behind > 0:
             return True
@@ -738,6 +738,7 @@ class SourceUpdateManager(UpdateManager):
                     os.renames(old_path, new_path)
 
             sickbeard.CUR_COMMIT_HASH = self._newest_commit_hash
+            sickbeard.CUR_COMMIT_BRANCH = self.branch
             
         except Exception, e:
             logger.log(u"Error while trying to update: " + ex(e), logger.ERROR)

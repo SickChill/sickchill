@@ -102,6 +102,7 @@ AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
 CUR_COMMIT_HASH = None
 BRANCH = ''
+CUR_COMMIT_BRANCH = ''
 
 INIT_LOCK = Lock()
 started = False
@@ -444,7 +445,7 @@ __INITIALIZED__ = False
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
-        global BRANCH, CUR_COMMIT_HASH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
+        global BRANCH, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
@@ -511,13 +512,17 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
-        # branch
+        # wanted branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash', '')
 
+        # current commit branch
+        CUR_COMMIT_BRANCH = check_setting_str(CFG, 'General', 'cur_commit_branch', '')
+
         ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'cache')
+
         # fix bad configs due to buggy code
         if ACTUAL_CACHE_DIR == 'None':
             ACTUAL_CACHE_DIR = 'cache'
@@ -615,7 +620,7 @@ def initialize(consoleLogging=True):
         NAMING_SPORTS_PATTERN = check_setting_str(CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
         NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
         NAMING_CUSTOM_SPORTS = bool(check_setting_int(CFG, 'General', 'naming_custom_sports', 0))
-        NAMING_MULTI_EP = bool(check_setting_int(CFG, 'General', 'naming_multi_ep', 1))
+        NAMING_MULTI_EP = check_setting_int(CFG, 'General', 'naming_multi_ep', 1)
         NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         NAMING_STRIP_YEAR = bool(check_setting_int(CFG, 'General', 'naming_strip_year', 0))
 
@@ -1310,6 +1315,7 @@ def save_config():
     new_config['General'] = {}
     new_config['General']['branch'] = BRANCH
     new_config['General']['cur_commit_hash'] = CUR_COMMIT_HASH
+    new_config['General']['cur_commit_branch'] = CUR_COMMIT_BRANCH
     new_config['General']['config_version'] = CONFIG_VERSION
     new_config['General']['encryption_version'] = int(ENCRYPTION_VERSION)
     new_config['General']['log_dir'] = ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs'
