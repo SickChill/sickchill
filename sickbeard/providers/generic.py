@@ -406,15 +406,6 @@ class GenericProvider:
                 epNum = SEASON_RESULT
                 logger.log(u"Separating full season result to check for later", logger.DEBUG)
 
-            # validate torrent file if not magnet link to avoid invalid torrent links
-            if self.providerType == self.TORRENT:
-                if sickbeard.TORRENT_METHOD != "blackhole":
-                    client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
-                    result = client._get_torrent_hash(result)
-                    if not result.hash:
-                        logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
-                        continue
-
             if epNum not in results:
                 results[epNum] = [result]
             else:

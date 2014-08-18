@@ -200,6 +200,7 @@ def pickBestResult(results, show, quality_list=None):
     # find the best result for the current episode
     bestResult = None
     for cur_result in results:
+            
         logger.log("Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
 
         if bwl:
@@ -376,6 +377,14 @@ def searchForNeededEpisodes(show, episodes):
             if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
                 continue
 
+            # filter out possible bad torrents from providers such as ezrss
+            if bestResult.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+                bestResult.content = None
+                if not bestResult.url.startswith('magnet'):
+                    bestResult.content = bestResult.provider.getURL(bestResult.url)
+                    if not bestResult.content:
+                        continue
+            
             foundResults[curEp] = bestResult
 
     if not didSearch:
@@ -638,6 +647,14 @@ def searchProviders(show, season, episodes, manualSearch=False):
             if not bestResult:
                 continue
 
+            # filter out possible bad torrents from providers such as ezrss
+            if bestResult.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+                bestResult.content = None
+                if not bestResult.url.startswith('magnet'):
+                    bestResult.content = bestResult.provider.getURL(bestResult.url)
+                    if not bestResult.content:
+                        continue
+                    
             # add result if its not a duplicate and
             found = False
             for i, result in enumerate(finalResults):
