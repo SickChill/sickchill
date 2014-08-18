@@ -587,8 +587,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     logger.DEBUG)
 
                 if not neededEps:
-                    logger.log(u"All of these episodes were covered by single nzbs, ignoring this multi-ep result",
-                               logger.DEBUG)
+                    logger.log(u"All of these episodes were covered by single episode results, ignoring this multi-episode result", logger.DEBUG)
                     continue
 
                 # check if these eps are already covered by another multi-result
