@@ -143,15 +143,14 @@ class GenericClient(object):
     def _get_torrent_hash(self, result):
 
         if result.url.startswith('magnet'):
-            result.hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0]
-            if len(result.hash) == 32:
-                result.hash = b16encode(b32decode(result.hash)).lower()
+            torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0]
+            if len(torrent_hash) == 32:
+                torrent_hash = b16encode(b32decode(torrent_hash)).lower()
         else:
-            result.content = result.provider.getURL(result.url)
             info = bdecode(result.content)["info"]
-            result.hash = sha1(bencode(info)).hexdigest()
+            torrent_hash = sha1(bencode(info)).hexdigest()
 
-        return result
+        return torrent_hash
 
     def sendTORRENT(self, result):
 
