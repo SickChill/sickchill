@@ -361,15 +361,6 @@ class TVCache():
                 result.version = curVersion
                 result.content = None
 
-                # validate torrent file if not magnet link to avoid invalid torrent links
-                if self.provider.providerType == sickbeard.providers.generic.GenericProvider.TORRENT:
-                    if sickbeard.TORRENT_METHOD != "blackhole":
-                        client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
-                        result = client._get_torrent_hash(result)
-                        if not result.hash:
-                            logger.log(u'Unable to get torrent hash for ' + title + ', skipping it', logger.DEBUG)
-                            continue
-
                 # add it to the list
                 if epObj not in neededEps:
                     neededEps[epObj] = [result]
