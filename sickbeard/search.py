@@ -586,7 +586,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     u"Single-ep check result is neededEps: " + str(neededEps) + ", notNeededEps: " + str(notNeededEps),
                     logger.DEBUG)
 
-                if not neededEps:
+                if not notNeededEps:
                     logger.log(u"All of these episodes were covered by single episode results, ignoring this multi-episode result", logger.DEBUG)
                     continue
 
