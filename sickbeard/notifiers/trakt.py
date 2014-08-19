@@ -67,7 +67,8 @@ class TraktNotifier:
                     # URL parameters, should not need to recheck data (done above)
                     data = {
                         'tvdb_id': ep_obj.show.indexerid,
-                        'title': ep_obj.show.name,'year': ep_obj.show.startyear
+                        'title': ep_obj.show.name,
+                        'year': ep_obj.show.startyear
                     }
                     TraktCall("show/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
@@ -77,17 +78,19 @@ class TraktNotifier:
 
                     # Convert watchlist to only contain current show
                     for show in watchlist:
-                        if unicode(data['shows'][0]['tvdb_id']) == show['tvdb_id']:
-                            data_show = {
-                                'title': show['title'],
-                                'tvdb_id': show['tvdb_id'],
-                                'episodes': []
-                            }
+                        # Check if tvdb_id exists
+                        if 'tvdb_id' in show:
+                            if unicode(data['tvdb_id']) == show['tvdb_id']:
+                                data_show = {
+                                    'title': show['title'],
+                                    'tvdb_id': show['tvdb_id'],
+                                    'episodes': []
+                                }
                             
-                            # Add series and episode (number) to the arry
-                            for episodes in show['episodes']:
-                                ep = {'season': episodes['season'], 'episode': episodes['number']}
-                                data_show['episodes'].append(ep)
+                                # Add series and episode (number) to the arry
+                                for episodes in show['episodes']:
+                                    ep = {'season': episodes['season'], 'episode': episodes['number']}
+                                    data_show['episodes'].append(ep)
                     if data_show is not None:
                         TraktCall("show/episode/unwatchlist/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data_show)
 
