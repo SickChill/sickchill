@@ -63,6 +63,34 @@ class TraktNotifier:
                 if sickbeard.TRAKT_REMOVE_WATCHLIST:
                     TraktCall("show/episode/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
+                if sickbeard.TRAKT_REMOVE_SERIESLIST:
+                    # URL parameters, should not need to recheck data (done above)
+                    data = {
+                        'tvdb_id': ep_obj.show.indexerid,
+                        'title': ep_obj.show.name,'year': ep_obj.show.startyear
+                    }
+                    TraktCall("show/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
+
+                    # Remove all episodes from episode watchlist
+                    # Start by getting all episodes in the watchlist
+                    watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+                    # Convert watchlist to only contain current show
+                    for show in watchlist:
+                        if unicode(data['shows'][0]['tvdb_id']) == show['tvdb_id']:
+                            data_show = {
+                                'title': show['title'],
+                                'tvdb_id': show['tvdb_id'],
+                                'episodes': []
+                            }
+                            
+                            # Add series and episode (number) to the arry
+                            for episodes in show['episodes']:
+                                ep = {'season': episodes['season'], 'episode': episodes['number']}
+                                data_show['episodes'].append(ep)
+                    if data_show is not None:
+                        TraktCall("show/episode/unwatchlist/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data_show)
+
     def test_notify(self, api, username, password):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
