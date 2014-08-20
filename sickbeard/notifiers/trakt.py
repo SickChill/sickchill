@@ -64,6 +64,8 @@ class TraktNotifier:
                     TraktCall("show/episode/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
                 if sickbeard.TRAKT_REMOVE_SERIESLIST:
+                    data_show = None
+
                     # URL parameters, should not need to recheck data (done above)
                     data = {
                         'tvdb_id': ep_obj.show.indexerid,
