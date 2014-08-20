@@ -95,11 +95,8 @@ class TorrentRssProvider(generic.TorrentProvider):
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
-            data = self.cache._getRSSData()
-            if not data:
-                return (False, 'No data returned from url: ' + self.url)
-
-            items = data.entries
+            items = self.cache._getDailyData()
+ 
             if not len(items) > 0:
                 return (False, 'No items found in the RSS feed ' + self.url)
 
