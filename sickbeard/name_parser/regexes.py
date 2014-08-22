@@ -88,9 +88,7 @@ normal_regexes = [
      # Show Name - 2010-11-23 - Ep Name
      '''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (?P<air_year>\d{4})[. _-]+                  # 2010 and separator
-     (?P<air_month>\d{2})[. _-]+                 # 11 and separator
-     (?P<air_day>\d{2})                          # 23 and separator
+     (?P<air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
@@ -185,29 +183,6 @@ normal_regexes = [
      ([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+) # Source_Quality_Etc-
      (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
      '''),
-]
-
-sports_regexs = [
-    ('sports_standard',
-     # Sports.Name.2010.11.23.Source.Quality.Etc-Group
-     # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
-     '''
-     ^(?P<series_name>(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP))[. _-]+
-     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))[. _-]+
-     ((?P<extra_info>.+?)((?<![. _-])(?<!WEB)-(?P<release_group>[^- ]+))?)?$
-     '''
-    ),
-
-    ('sports_bare',
-     # Sports.Name.2010.11.23.Source.Quality.Etc-Group
-     # Sports.Name.23rd.Nov.2010.Source.Quality.Etc-Group
-     '''
-     ^(?P<series_name>.+?)\W+
-     (?P<sports_air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))[. _-]+
-     ((?P<extra_info>.+?)((?<![. _-])(?<!WEB)
-     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
-     '''
-    ),
 ]
 
 anime_regexes = [

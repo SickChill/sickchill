@@ -33,8 +33,7 @@ from dateutil import parser
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1
-    SPORTS_REGEX = 2
-    ANIME_REGEX = 3
+    ANIME_REGEX = 2
 
     def __init__(self, file_name=True, showObj=None, tryIndexers=False, convert=False,
                  naming_pattern=False):
@@ -45,12 +44,10 @@ class NameParser(object):
         self.convert = convert
         self.naming_pattern = naming_pattern
 
-        if self.showObj and not self.showObj.is_anime and not self.showObj.is_sports:
+        if self.showObj and not self.showObj.is_anime:
             self._compile_regexes(self.NORMAL_REGEX)
         elif self.showObj and self.showObj.is_anime:
             self._compile_regexes(self.ANIME_REGEX)
-        elif self.showObj and self.showObj.is_sports:
-            self._compile_regexes(self.SPORTS_REGEX)
         else:
             self._compile_regexes(self.ALL_REGEX)
 
@@ -79,10 +76,7 @@ class NameParser(object):
         return series_name.strip()
 
     def _compile_regexes(self, regexMode):
-        if regexMode == self.SPORTS_REGEX:
-            logger.log(u"Using SPORTS regexs", logger.DEBUG)
-            uncompiled_regex = [regexes.sports_regexs]
-        elif regexMode == self.ANIME_REGEX:
+        if regexMode == self.ANIME_REGEX:
             logger.log(u"Using ANIME regexs", logger.DEBUG)
             uncompiled_regex = [regexes.anime_regexes, regexes.normal_regexes]
         elif regexMode == self.NORMAL_REGEX:
@@ -90,7 +84,7 @@ class NameParser(object):
             uncompiled_regex = [regexes.normal_regexes]
         else:
             logger.log(u"Using ALL regexes", logger.DEBUG)
-            uncompiled_regex = [regexes.normal_regexes, regexes.sports_regexs, regexes.anime_regexes]
+            uncompiled_regex = [regexes.normal_regexes, regexes.anime_regexes]
 
         self.compiled_regexes = []
         for regexItem in uncompiled_regex:
@@ -153,34 +147,10 @@ class NameParser(object):
                     result.ab_episode_numbers = [ep_ab_num]
                 result.score += 1
 
-            if 'sports_event_id' in named_groups:
-                sports_event_id = match.group('sports_event_id')
-                if sports_event_id:
-                    result.sports_event_id = int(match.group('sports_event_id'))
-                    result.score += 1
-
-            if 'sports_event_name' in named_groups:
-                result.sports_event_name = match.group('sports_event_name')
-                if result.sports_event_name:
-                    result.sports_event_name = self.clean_series_name(result.sports_event_name)
-                    result.score += 1
-
-            if 'sports_air_date' in named_groups:
-                sports_air_date = match.group('sports_air_date')
+            if 'air_date' in named_groups:
+                air_date = match.group('air_date')
                 try:
-                    result.sports_air_date = parser.parse(sports_air_date, fuzzy=True).date()
-                    result.score += 1
-                except:
-                    continue
-
-            if 'air_year' in named_groups and 'air_month' in named_groups and 'air_day' in named_groups:
-                year = int(match.group('air_year'))
-                month = int(match.group('air_month'))
-                day = int(match.group('air_day'))
-
-                try:
-                    dtStr = '%s-%s-%s' % (year, month, day)
-                    result.air_date = datetime.datetime.strptime(dtStr, "%Y-%m-%d").date()
+                    result.air_date = parser.parse(air_date, fuzzy=True).date()
                     result.score += 1
                 except:
                     continue
@@ -241,12 +211,8 @@ class NameParser(object):
             new_absolute_numbers = []
 
             # if we have an air-by-date show then get the real season/episode numbers
-            if bestResult.is_air_by_date or bestResult.is_sports:
-                try:
-                    airdate = bestResult.air_date.toordinal()
-                except:
-                    airdate = bestResult.sports_air_date.toordinal()
-
+            if bestResult.is_air_by_date:
+                airdate = bestResult.air_date.toordinal()
                 myDB = db.DBConnection()
                 sql_result = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
@@ -265,10 +231,7 @@ class NameParser(object):
 
                         t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
 
-                        if bestResult.is_air_by_date:
-                            epObj = t[bestResult.show.indexerid].airedOn(bestResult.air_date)[0]
-                        else:
-                            epObj = t[bestResult.show.indexerid].airedOn(bestResult.sports_air_date)[0]
+                        epObj = t[bestResult.show.indexerid].airedOn(bestResult.air_date)[0]
 
                         season_number = int(epObj["seasonnumber"])
                         episode_numbers = [int(epObj["episodenumber"])]
@@ -459,12 +422,7 @@ class NameParser(object):
         # anime absolute numbers
         final_result.ab_episode_numbers = self._combine_results(file_name_result, dir_name_result, 'ab_episode_numbers')
 
-        # sports
-        final_result.sports_event_id = self._combine_results(file_name_result, dir_name_result, 'sports_event_id')
-        final_result.sports_event_name = self._combine_results(file_name_result, dir_name_result, 'sports_event_name')
-        final_result.sports_air_date = self._combine_results(file_name_result, dir_name_result, 'sports_air_date')
-
-        if not final_result.air_date and not final_result.sports_air_date:
+        if not final_result.air_date:
             final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
             final_result.episode_numbers = self._combine_results(file_name_result, dir_name_result, 'episode_numbers')
 
@@ -493,7 +451,7 @@ class NameParser(object):
                 "Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
         # if there's no useful info in it then raise an exception
-        if final_result.season_number == None and not final_result.episode_numbers and final_result.air_date == None and final_result.sports_air_date == None and not final_result.ab_episode_numbers and not final_result.series_name:
+        if final_result.season_number == None and not final_result.episode_numbers and final_result.air_date == None and not final_result.ab_episode_numbers and not final_result.series_name:
             raise InvalidNameException("Unable to parse " + name.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
 
         if cache_result:
@@ -507,9 +465,6 @@ class ParseResult(object):
     def __init__(self,
                  original_name,
                  series_name=None,
-                 sports_event_id=None,
-                 sports_event_name=None,
-                 sports_air_date=None,
                  season_number=None,
                  episode_numbers=None,
                  extra_info=None,
@@ -546,10 +501,6 @@ class ParseResult(object):
 
         self.air_date = air_date
 
-        self.sports_event_id = sports_event_id
-        self.sports_event_name = sports_event_name
-        self.sports_air_date = sports_air_date
-
         self.which_regex = []
         self.show = show
         self.score = score
@@ -571,12 +522,6 @@ class ParseResult(object):
         if self.release_group != other.release_group:
             return False
         if self.air_date != other.air_date:
-            return False
-        if self.sports_event_id != other.sports_event_id:
-            return False
-        if self.sports_event_name != other.sports_event_name:
-            return False
-        if self.sports_air_date != other.sports_air_date:
             return False
         if self.ab_episode_numbers != other.ab_episode_numbers:
             return False
@@ -604,10 +549,6 @@ class ParseResult(object):
 
         if self.is_air_by_date:
             to_return += str(self.air_date)
-        if self.is_sports:
-            to_return += str(self.sports_event_name)
-            to_return += str(self.sports_event_id)
-            to_return += str(self.sports_air_date)
         if self.ab_episode_numbers:
             to_return += ' [ABS: ' + str(self.ab_episode_numbers) + ']'
         if self.version:
@@ -617,7 +558,6 @@ class ParseResult(object):
             to_return += ' [GROUP: ' + self.release_group + ']'
 
         to_return += ' [ABD: ' + str(self.is_air_by_date) + ']'
-        to_return += ' [SPORTS: ' + str(self.is_sports) + ']'
         to_return += ' [ANIME: ' + str(self.is_anime) + ']'
         to_return += ' [whichReg: ' + str(self.which_regex) + ']'
 
@@ -626,12 +566,6 @@ class ParseResult(object):
     @property
     def is_air_by_date(self):
         if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
-            return True
-        return False
-
-    @property
-    def is_sports(self):
-        if self.season_number == None and len(self.episode_numbers) == 0 and self.sports_air_date:
             return True
         return False
 

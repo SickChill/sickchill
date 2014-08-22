@@ -239,7 +239,6 @@ class BasicTests(test.SickbeardTestDBCase):
             
             if DEBUG or verbose:
                 print 'air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date
-                print 'sports:', test_result.is_sports, 'sports_air_date:', test_result.sports_air_date
                 print 'anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers
                 print test_result
                 print result

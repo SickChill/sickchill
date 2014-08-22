@@ -63,7 +63,6 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.extra_info), logger.DEBUG)
         logger.log(u" - " + str(parsed.release_group), logger.DEBUG)
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
-        logger.log(u" - " + str(parsed.sports_air_date), logger.DEBUG)
 
         segment = {parsed.season_number: []}
         for episode in parsed.episode_numbers:

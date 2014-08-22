@@ -192,13 +192,9 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
 
     logger.log("The name " + new_name + " parsed into " + str(result), logger.DEBUG)
 
-    if abd:
+    if abd or sports:
         if result.air_date != ep.airdate:
             logger.log(u"Air date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
-            return False
-    elif sports:
-        if result.sports_air_date != ep.airdate:
-            logger.log(u"Sports event date incorrect in parsed episode, pattern isn't valid", logger.DEBUG)
             return False
     elif anime_type != 3:
         if len(result.ab_episode_numbers) and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]:
@@ -226,7 +222,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
         ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.100.Fighter.vs.Fighter.2011.03.09.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
         ep.show.sports = 1
     else:
         if anime_type != 3:
