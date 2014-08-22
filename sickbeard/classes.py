@@ -104,7 +104,7 @@ class SearchResult:
 
         # version
         self.version = -1
-        
+
     def __str__(self):
 
         if self.provider == None:
@@ -146,6 +146,9 @@ class TorrentSearchResult(SearchResult):
     Torrent result with an URL to the torrent
     """
     resultType = "torrent"
+
+    # torrent hash
+    hash = None
 
 class AllShowsListUI:
     """
