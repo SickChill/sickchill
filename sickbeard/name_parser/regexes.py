@@ -94,6 +94,20 @@ normal_regexes = [
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
      '''),
 
+    ('scene_sports_format',
+     # Show.Name.100.Event.2010.11.23.Source.Quality.Etc-Group
+     # Show.Name.2010.11.23.Source.Quality.Etc-Group
+     # Show Name - 2010-11-23 - Ep Name
+     '''
+     ^(?P<series_name>(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP))[. _-]+
+     ((?P<series_num>\d+)[. _-]+)?               # Show_Number and seperator
+     ((?P<series_event>.+?)[. _-]+)?             # Show_Event and seperator
+     (?P<air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))
+     [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
+     ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
+     -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
+     '''),
+
     ('stupid',
      # tpz-abc102
      '''
