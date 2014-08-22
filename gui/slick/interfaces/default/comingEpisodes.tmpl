@@ -286,15 +286,17 @@
                 <br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 12px;">[today]</span></h1>
                 #set $today_header = True
             #end if
-            #if $cur_ep_enddate < $today:
-                #set $show_div = "ep_listing listing_overdue"
-            #elif $cur_ep_airdate >= $next_week.date():
-                #set $show_div = "ep_listing listing_toofar"
-            #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                #if $cur_ep_airdate == $today.date():
-                    #set $show_div = "ep_listing listing_current"
-                #else:
-                    #set $show_div = "ep_listing listing_default"
+            #if $runtime:
+                #if $cur_ep_enddate < $today:
+                    #set $show_div = "ep_listing listing_overdue"
+                #elif $cur_ep_airdate >= $next_week.date():
+                    #set $show_div = "ep_listing listing_toofar"
+                #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+                    #if $cur_ep_airdate == $today.date():
+                        #set $show_div = "ep_listing listing_current"
+                    #else:
+                        #set $show_div = "ep_listing listing_default"
+                    #end if
                 #end if
             #end if
         #elif $sort == "show":
