@@ -179,7 +179,6 @@ class NameParser(object):
             else:
                 result.version = -1
 
-
             matches.append(result)
 
         if len(matches):
@@ -217,6 +216,9 @@ class NameParser(object):
                 sql_result = myDB.select(
                     "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                     [bestResult.show.indexerid, bestResult.show.indexer, airdate])
+
+                season_number = None
+                episode_numbers = []
 
                 if sql_result:
                     season_number = int(sql_result[0][0])
@@ -422,9 +424,9 @@ class NameParser(object):
         # anime absolute numbers
         final_result.ab_episode_numbers = self._combine_results(file_name_result, dir_name_result, 'ab_episode_numbers')
 
-        if not final_result.air_date:
-            final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
-            final_result.episode_numbers = self._combine_results(file_name_result, dir_name_result, 'episode_numbers')
+        # season and episode numbers
+        final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
+        final_result.episode_numbers = self._combine_results(file_name_result, dir_name_result, 'episode_numbers')
 
         # if the dirname has a release group/show name I believe it over the filename
         final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
