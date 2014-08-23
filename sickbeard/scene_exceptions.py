@@ -258,7 +258,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     """
     global exceptionsCache
     myDB = db.DBConnection('cache.db')
-    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
+    myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
     logger.log(u"Updating scene exceptions", logger.MESSAGE)
     
