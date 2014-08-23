@@ -124,9 +124,6 @@ class NameParser(object):
             if 'series_num' in named_groups and match.group('series_num'):
                 result.score += 1
 
-            if 'series_event' in named_groups and match.group('series_event'):
-                result.score += 1
-
             if 'season_num' in named_groups:
                 tmp_season = int(match.group('season_num'))
                 if cur_regex_name == 'bare' and tmp_season in (19, 20):
