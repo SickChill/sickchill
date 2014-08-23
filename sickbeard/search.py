@@ -129,6 +129,14 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
+            # make sure we have the torrent file content
+            if not result.content:
+                if not result.url.startswith('magnet'):
+                    result.content = result.provider.getURL(result.url)
+                    if not result.content:
+                        logger.log(
+                            u"Torrent content failed to download from " + result.url, logger.ERROR
+                        )
             # Snatches torrent with client
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
             dlResult = client.sendTORRENT(result)
