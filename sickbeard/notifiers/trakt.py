@@ -68,10 +68,15 @@ class TraktNotifier:
 
                     # URL parameters, should not need to recheck data (done above)
                     data = {
-                        'tvdb_id': ep_obj.show.indexerid,
-                        'title': ep_obj.show.name,
-                        'year': ep_obj.show.startyear
+                        'shows': [
+                            {
+                                'tvdb_id': ep_obj.show.indexerid,
+                                'title': ep_obj.show.name,
+                                'year': ep_obj.show.startyear
+                            }
+                        ]
                     }
+                    
                     TraktCall("show/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
                     # Remove all episodes from episode watchlist
@@ -82,7 +87,7 @@ class TraktNotifier:
                     for show in watchlist:
                         # Check if tvdb_id exists
                         if 'tvdb_id' in show:
-                            if unicode(data['tvdb_id']) == show['tvdb_id']:
+                            if unicode(data['shows'][0]['tvdb_id']) == show['tvdb_id']:
                                 data_show = {
                                     'title': show['title'],
                                     'tvdb_id': show['tvdb_id'],
