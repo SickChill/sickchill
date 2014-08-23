@@ -206,7 +206,6 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         results = []
-        keep_searching = 1
 
         while True:
             search_url = self.url + 'api?' + urllib.urlencode(params)
@@ -219,7 +218,7 @@ class NewznabProvider(generic.NZBProvider):
                     (title, url) = self._get_title_and_url(item)
 
                     if title and url:
-                        results.append(item)
+                        results.append(title,url)
                     else:
                         logger.log(
                             u"The data returned from the " + self.name + " is incomplete, this result is unusable",
@@ -246,8 +245,6 @@ class NewznabProvider(generic.NZBProvider):
                 break
 
         return results
-
-
 
     def findPropers(self, search_date=None):
 

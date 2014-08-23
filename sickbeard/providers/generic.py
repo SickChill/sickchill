@@ -221,16 +221,22 @@ class GenericProvider:
         Returns: A tuple containing two strings representing title and URL respectively
         """
 
-        title = item.title if item.title else None
+        title = None
+        url = None
+
+        if 'title' in item:
+            title = item.title
+
         if title:
-            title = u'' + title
             title = title.replace(' ', '.')
 
-        url = item.link if item.link else None
+        if 'link' in item:
+            url = item.link
+
         if url:
             url = url.replace('&amp;', '&')
 
-        return (title, url)
+        return title, url
 
     def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
 
