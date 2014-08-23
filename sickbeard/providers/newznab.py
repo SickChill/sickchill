@@ -184,7 +184,8 @@ class NewznabProvider(generic.NZBProvider):
         params = {"t": "tvsearch",
                   "maxage": sickbeard.USENET_RETENTION,
                   "limit": 100,
-                  "attrs": "rageid"}
+                  "attrs": "rageid",
+                  "offset": 0}
 
         # category ids
         if self.show and self.show.is_sports:
@@ -204,32 +205,53 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        search_url = self.url + 'api?' + urllib.urlencode(params)
+        results = []
+        keep_searching = 1
 
-        logger.log(u"Search url: " + search_url, logger.DEBUG)
+        while keep_searching:
+            search_url = self.url + 'api?' + urllib.urlencode(params)
+            logger.log(u"Search url: " + search_url, logger.DEBUG)
+            data = self.cache.getRSSFeed(search_url)
+            if not data:
+                keep_searching = 0
 
-        data = self.cache.getRSSFeed(search_url)
-        if not data:
-            return []
+            if self._checkAuthFromData(data):
 
-        if self._checkAuthFromData(data):
+                items = data.entries
 
-            items = data.entries
-            results = []
+                for curItem in items:
+                    (title, url) = self._get_title_and_url(curItem)
 
-            for curItem in items:
-                (title, url) = self._get_title_and_url(curItem)
+                    if title and url:
+                        results.append(curItem)
+                    else:
+                        logger.log(
+                            u"The data returned from the " + self.name + " is incomplete, this result is unusable",
+                            logger.DEBUG)
 
-                if title and url:
-                    results.append(curItem)
+                # attempt to grab the total and offset newznab responses
+                try:
+                    total = int(data.feed.newznab_response['total'])
+                    offset = int(data.feed.newznab_response['offset'])
+                except (AttributeError, TypeError):
+                    keep_searching = 0
+
+                # if there are more items available then the amount given in one call, grab some more
+                if (total - params['limit']) > offset == params['offset']:
+                    params['offset'] += params['limit']
+                    logger.log(str(total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(params['limit']) + " items.", logger.DEBUG)
                 else:
-                    logger.log(
-                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                        logger.DEBUG)
+                    keep_searching = 0
 
-            return results
+                # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
+                if params['limit'] > 1000:
+                    keep_searching = 0
+            else:
+                keep_searching = 0
 
-        return []
+        return results
+
+
 
     def findPropers(self, search_date=None):
 
