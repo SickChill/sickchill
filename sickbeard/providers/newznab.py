@@ -208,22 +208,18 @@ class NewznabProvider(generic.NZBProvider):
         results = []
         keep_searching = 1
 
-        while keep_searching:
+        while True:
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
-            if not data:
-                keep_searching = 0
 
-            if self._checkAuthFromData(data):
+            if data and self._checkAuthFromData(data):
+                for item in data:
 
-                items = data.entries
-
-                for curItem in items:
-                    (title, url) = self._get_title_and_url(curItem)
+                    (title, url) = self._get_title_and_url(item)
 
                     if title and url:
-                        results.append(curItem)
+                        results.append(item)
                     else:
                         logger.log(
                             u"The data returned from the " + self.name + " is incomplete, this result is unusable",
@@ -234,20 +230,20 @@ class NewznabProvider(generic.NZBProvider):
                     total = int(data.feed.newznab_response['total'])
                     offset = int(data.feed.newznab_response['offset'])
                 except (AttributeError, TypeError):
-                    keep_searching = 0
+                    break
 
                 # if there are more items available then the amount given in one call, grab some more
                 if (total - params['limit']) > offset == params['offset']:
                     params['offset'] += params['limit']
                     logger.log(str(total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(params['limit']) + " items.", logger.DEBUG)
                 else:
-                    keep_searching = 0
+                    break
 
                 # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
                 if params['limit'] > 1000:
-                    keep_searching = 0
+                    break
             else:
-                keep_searching = 0
+                break
 
         return results
 
