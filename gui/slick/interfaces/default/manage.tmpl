@@ -43,28 +43,31 @@
         textExtraction: {
             2: function(node) { return \$(node).find("span").text().toLowerCase(); },
             3: function(node) { return \$(node).find("img").attr("alt"); },
-            4: function(node) { return \$(node).find("img").attr("alt"); }
+            4: function(node) { return \$(node).find("img").attr("alt"); },
+            5: function(node) { return \$(node).find("img").attr("alt"); },
+            6: function(node) { return \$(node).find("img").attr("alt"); },
+            7: function(node) { return \$(node).find("img").attr("alt"); }
         },
         widgets: ['zebra'],
         headers: {
             0: { sorter: false},
             1: { sorter: 'showNames'},
             2: { sorter: 'quality'},
-            3: { sorter: 'flatfold'},
-            4: { sorter: 'paused'},
-            5: { sorter: 'status'},              
-            6: { sorter: false},
-            7: { sorter: false},
-            8: { sorter: false},
+            3: { sorter: true},
+            4: { sorter: true},
+            5: { sorter: true},
+            6: { sorter: true},
+            7: { sorter: true},
+            8: { sorter: true},
             9: { sorter: false},
            10: { sorter: false},
            11: { sorter: false},
            12: { sorter: false}
-#if $sickbeard.USE_SUBTITLES            
+#if $sickbeard.USE_SUBTITLES
          , 13: { sorter: false}
-#end if         	            
+#end if
         }
-    }); 
+    });
 });
 //-->
 </script>
