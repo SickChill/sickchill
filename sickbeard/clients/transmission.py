@@ -84,8 +84,6 @@ class TransmissionAPI(GenericClient):
         if result.ratio:
             ratio = result.ratio
 
-        torrent_id = self._get_torrent_hash(result)
-
         mode = 0
         if ratio:
             if float(ratio) == -1:
@@ -95,7 +93,7 @@ class TransmissionAPI(GenericClient):
                 ratio = float(ratio)
                 mode = 1  # Stop seeding at seedRatioLimit
 
-        arguments = {'ids': [torrent_id],
+        arguments = {'ids': [result.hash],
                      'seedRatioLimit': ratio,
                      'seedRatioMode': mode
         }
@@ -108,9 +106,7 @@ class TransmissionAPI(GenericClient):
 
     def _set_torrent_priority(self, result):
 
-        torrent_id = self._get_torrent_hash(result)
-
-        arguments = {'ids': [torrent_id]}
+        arguments = {'ids': [result.hash]}
 
         if result.priority == -1:
             arguments['priority-low'] = []
