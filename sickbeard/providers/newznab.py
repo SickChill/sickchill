@@ -206,15 +206,14 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         results = []
-        keep_searching = 1
 
         while True:
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
 
-            if data and self._checkAuthFromData(data):
-                for item in data:
+            if data and 'entries' in data and self._checkAuthFromData(data):
+                for item in data.entries:
 
                     (title, url) = self._get_title_and_url(item)
 
@@ -246,8 +245,6 @@ class NewznabProvider(generic.NZBProvider):
                 break
 
         return results
-
-
 
     def findPropers(self, search_date=None):
 
