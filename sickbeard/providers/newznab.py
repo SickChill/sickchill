@@ -212,13 +212,13 @@ class NewznabProvider(generic.NZBProvider):
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
 
-            if data and self._checkAuthFromData(data):
-                for item in data:
+            if data and 'entries' in data and self._checkAuthFromData(data):
+                for item in data.entries:
 
                     (title, url) = self._get_title_and_url(item)
 
                     if title and url:
-                        results.append(title,url)
+                        results.append(item)
                     else:
                         logger.log(
                             u"The data returned from the " + self.name + " is incomplete, this result is unusable",
