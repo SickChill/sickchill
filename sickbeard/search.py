@@ -129,6 +129,14 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
+            # make sure we have the torrent file content
+            if not result.content:
+                if not result.url.startswith('magnet'):
+                    result.content = result.provider.getURL(result.url)
+                    if not result.content:
+                        logger.log(
+                            u"Torrent content failed to download from " + result.url, logger.ERROR
+                        )
             # Snatches torrent with client
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
             dlResult = client.sendTORRENT(result)
@@ -477,9 +485,9 @@ def searchProviders(show, season, episodes, manualSearch=False):
         anyQualities, bestQualities = Quality.splitQuality(show.quality)
 
         # pick the best season NZB
-        bestSeasonNZB = None
+        bestSeasonResult = None
         if SEASON_RESULT in foundResults[curProvider.name]:
-            bestSeasonNZB = pickBestResult(foundResults[curProvider.name][SEASON_RESULT], show,
+            bestSeasonResult = pickBestResult(foundResults[curProvider.name][SEASON_RESULT], show,
                                            anyQualities + bestQualities)
 
         highest_quality_overall = 0
@@ -491,12 +499,12 @@ def searchProviders(show, season, episodes, manualSearch=False):
                    logger.DEBUG)
 
         # see if every episode is wanted
-        if bestSeasonNZB:
+        if bestSeasonResult:
 
             # get the quality of the season nzb
-            seasonQual = bestSeasonNZB.quality
+            seasonQual = bestSeasonResult.quality
             logger.log(
-                u"The quality of the season " + bestSeasonNZB.provider.providerType + " is " + Quality.qualityStrings[
+                u"The quality of the season " + bestSeasonResult.provider.providerType + " is " + Quality.qualityStrings[
                     seasonQual], logger.DEBUG)
 
             myDB = db.DBConnection()
@@ -514,28 +522,28 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     anyWanted = True
 
             # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
-            if allWanted and bestSeasonNZB.quality == highest_quality_overall:
+            if allWanted and bestSeasonResult.quality == highest_quality_overall:
                 logger.log(
-                    u"Every ep in this season is needed, downloading the whole " + bestSeasonNZB.provider.providerType + " " + bestSeasonNZB.name)
+                    u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.providerType + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
                     epObjs.append(show.getEpisode(season, curEpNum))
-                bestSeasonNZB.episodes = epObjs
+                bestSeasonResult.episodes = epObjs
 
-                return [bestSeasonNZB]
+                return [bestSeasonResult]
 
             elif not anyWanted:
                 logger.log(
-                    u"No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonNZB.name,
+                    u"No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonResult.name,
                     logger.DEBUG)
 
             else:
 
-                if bestSeasonNZB.provider.providerType == GenericProvider.NZB:
+                if bestSeasonResult.provider.providerType == GenericProvider.NZB:
                     logger.log(u"Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
 
                     # if not, break it apart and add them as the lowest priority results
-                    individualResults = nzbSplitter.splitResult(bestSeasonNZB)
+                    individualResults = nzbSplitter.splitResult(bestSeasonResult)
 
                     individualResults = filter(
                         lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, individualResults)
@@ -560,13 +568,13 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     epObjs = []
                     for curEpNum in allEps:
                         epObjs.append(show.getEpisode(season, curEpNum))
-                    bestSeasonNZB.episodes = epObjs
+                    bestSeasonResult.episodes = epObjs
 
                     epNum = MULTI_EP_RESULT
                     if epNum in foundResults[curProvider.name]:
-                        foundResults[curProvider.name][epNum].append(bestSeasonNZB)
+                        foundResults[curProvider.name][epNum].append(bestSeasonResult)
                     else:
-                        foundResults[curProvider.name][epNum] = [bestSeasonNZB]
+                        foundResults[curProvider.name][epNum] = [bestSeasonResult]
 
         # go through multi-ep results and see if we really want them or not, get rid of the rest
         multiResults = {}
