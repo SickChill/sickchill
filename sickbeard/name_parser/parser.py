@@ -570,7 +570,7 @@ class ParseResult(object):
 
     @property
     def is_air_by_date(self):
-        if self.season_number == None and len(self.episode_numbers) == 0 and self.air_date:
+        if self.air_date:
             return True
         return False
 
