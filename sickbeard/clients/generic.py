@@ -167,6 +167,9 @@ class GenericClient(object):
             # Sets per provider seed ratio
             result.ratio = result.provider.seedRatio()
 
+            # lazy fix for now, I'm sure we already do this somewhere else too
+            result = self._get_torrent_hash(result)
+
             if result.url.startswith('magnet'):
                 r_code = self._add_torrent_uri(result)
             else:
