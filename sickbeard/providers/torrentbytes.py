@@ -184,7 +184,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
                             link = cells[1].find('a', attrs={'class': 'index'})
 
                             full_id = link['href'].replace('details.php?id=', '')
-                            torrent_id = full_id[:6]
+                            torrent_id = full_id.split("&")[0]
 
                             try:
                                 if link.has_key('title'):
