@@ -145,7 +145,7 @@ class GenericClient(object):
         if result.url.startswith('magnet'):
             result.hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0]
             if len(result.hash) == 32:
-                result.hash = b16encode(b32decode(torrent_hash)).lower()
+                result.hash = b16encode(b32decode(result.hash)).lower()
         else:
             result.content = result.provider.getURL(result.url)
             info = bdecode(result.content)["info"]
