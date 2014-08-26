@@ -1750,6 +1750,7 @@ class CMD_Show(ApiCall):
         showDict["anime"] = showObj.anime
         #clean up tvdb horrible airs field
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+        showDict["indexerid"] = self.indexerid
         showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)[2]
         showDict["tvrage_name"] = showObj.name
         showDict["network"] = showObj.network
