@@ -188,7 +188,7 @@ class BitSoupProvider(generic.TorrentProvider):
                             cells = result.find_all('td')
 
                             link = cells[1].find('a')
-                            download_url = self.urls['download'] % cells[3].find('a')['href']
+                            download_url = self.urls['download'] % cells[2].find('a')['href']
 
                             id = link['href']
                             id = id.replace('details.php?id=','')
