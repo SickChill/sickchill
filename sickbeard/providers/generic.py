@@ -166,7 +166,11 @@ class GenericProvider:
                 else:
                     logger.log(u"Saved result to " + filename, logger.MESSAGE)
 
-                return self._verify_download(filename)
+                if self._verify_download(filename):
+                    return True
+
+        logger.log(u"Failed to download result", logger.ERROR)
+        return False
 
     def _verify_download(self, file_name=None):
         """
@@ -182,9 +186,11 @@ class GenericProvider:
                     parser.stream._input.close()
                 except:
                     pass
-                if mime_type != 'application/x-bittorrent':
-                    logger.log(u"Result is not a valid torrent file", logger.WARNING)
-                    return False
+                if mime_type == 'application/x-bittorrent':
+                    return True
+
+            logger.log(u"Result is not a valid torrent file", logger.WARNING)
+            return False
 
         return True
 
