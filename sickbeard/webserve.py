@@ -1134,7 +1134,7 @@ class Manage(MainHandler):
         redirect("/manage/")
 
 
-    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toMetadata=None, toSubtitle=None):
+    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
 
         if toUpdate is not None:
             toUpdate = toUpdate.split('|')
@@ -1161,6 +1161,11 @@ class Manage(MainHandler):
         else:
             toDelete = []
 
+        if toRemove is not None:
+            toRemove = toRemove.split('|')
+        else:
+            toRemove = []
+
         if toMetadata is not None:
             toMetadata = toMetadata.split('|')
         else:
@@ -1172,7 +1177,7 @@ class Manage(MainHandler):
         renames = []
         subtitles = []
 
-        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toMetadata):
+        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
 
             if curShowID == '':
                 continue
@@ -1183,8 +1188,13 @@ class Manage(MainHandler):
                 continue
 
             if curShowID in toDelete:
-                showObj.deleteShow()
+                showObj.deleteShow(True)
                 # don't do anything else if it's being deleted
+                continue
+
+            if curShowID in toRemove:
+                showObj.deleteShow()
+                # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
