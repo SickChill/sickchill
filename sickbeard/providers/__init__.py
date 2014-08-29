@@ -115,12 +115,16 @@ def makeNewznabProvider(configString):
     try:
         name, url, key, catIDs, enabled, search_mode, search_fallback, enable_daily, enable_backlog = configString.split(
             '|')
-    except ValueError, e:
+    except ValueError:
         try:
-            name, url, key, catIDs, enabled = configString.split('|')
+            name, url, key, catIDs, enabled, search_mode, search_fallback, enable_backlog = configString.split(
+                '|')
         except ValueError:
-            logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
-            return None
+            try:
+                name, url, key, catIDs, enabled = configString.split('|')
+            except ValueError:
+                logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
+                return None
 
     newznab = sys.modules['sickbeard.providers.newznab']
 
