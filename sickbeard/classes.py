@@ -148,7 +148,9 @@ class TorrentSearchResult(SearchResult):
     resultType = "torrent"
 
     # torrent hash
+    content = None
     hash = None
+
 
 class AllShowsListUI:
     """
@@ -178,7 +180,7 @@ class AllShowsListUI:
                         seriesnames.append(curShow['seriesname'])
                     if 'aliasnames' in curShow:
                         seriesnames.extend(curShow['aliasnames'].split('|'))
-                        
+
                     for name in seriesnames:
                         if searchterm.lower() in name.lower():
                             if 'firstaired' not in curShow:
@@ -191,6 +193,7 @@ class AllShowsListUI:
                                 searchResults += [curShow]
 
         return searchResults
+
 
 class ShowListUI:
     """
@@ -225,7 +228,7 @@ class Proper:
         self.quality = Quality.UNKNOWN
         self.release_group = None
         self.version = -1
-        
+
         self.show = show
         self.indexer = None
         self.indexerid = -1
