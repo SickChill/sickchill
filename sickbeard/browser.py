@@ -22,6 +22,7 @@ import string
 from tornado.httputil import HTTPHeaders
 from tornado.web import RequestHandler
 from sickbeard import encodingKludge as ek
+from sickbeard import logger
 
 # use the built-in if it's available (python 2.6), if not use the included library
 try:
@@ -80,7 +81,12 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
     if path == parentPath and os.name == 'nt':
         parentPath = ""
 
-    fileList = [{'name': filename, 'path': ek.ek(os.path.join, path, filename)} for filename in ek.ek(os.listdir, path)]
+    try:
+        fileList = [{'name': filename, 'path': ek.ek(os.path.join, path, filename)} for filename in ek.ek(os.listdir, path)]
+    except OSError, e:
+        logger.log(u"Unable to open " + path + ": " + repr(e) + " / " + str(e), logger.WARNING)
+        fileList = [{'name': filename, 'path': ek.ek(os.path.join, parentPath, filename)} for filename in ek.ek(os.listdir, parentPath)]
+
     if not includeFiles:
         fileList = filter(lambda entry: ek.ek(os.path.isdir, entry['path']), fileList)
 

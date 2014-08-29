@@ -193,19 +193,19 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         #end if
 
                         #if $hasattr($curNewznabProvider, 'search_mode'):
+                        <div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Season Search Mode</span>
                                 <span class="component-desc">
-                        <div class="field-pair">
                                 When searching for complete seasons<br>
                                 you can choose to have it look for season<br>
                                 packs ONLY or choose to have it build a<br>
-                                complete season from just single episodes.</span>
+                                complete season from just single episodes.<br></span>
 
-                                    <span class="component-title"></span>
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
-                                    <span class="component-title"></span>
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                <span class="component-title"></span>
+                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                <span class="component-title"></span>
+                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
                                 </span>
                             </label>
                         </div>

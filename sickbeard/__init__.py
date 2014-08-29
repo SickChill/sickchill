@@ -1017,8 +1017,8 @@ def initialize(consoleLogging=True):
 
             if hasattr(curNzbProvider, 'enable_backlog'):
                 curNzbProvider.enable_backlog = bool(check_setting_int(CFG, curNzbProvider.getID().upper(),
-                                                                     curNzbProvider.getID() + '_enable_backlog',
-                                                                     1))
+                                                                       curNzbProvider.getID() + '_enable_backlog',
+                                                                       1))
 
         if not os.path.isfile(CONFIG_FILE):
             logger.log(u"Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
