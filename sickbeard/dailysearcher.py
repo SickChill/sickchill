@@ -42,7 +42,7 @@ class DailySearcher():
 
         didSearch = False
 
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
+        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x.enable_daily]
         for curProviderCount, curProvider in enumerate(providers):
 
             logger.log(u"Updating [" + curProvider.name + "] RSS cache ...")

@@ -343,7 +343,7 @@ def searchForNeededEpisodes(show, episodes):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x.enable_daily]
     for curProviderCount, curProvider in enumerate(providers):
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
@@ -418,7 +418,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x.enable_backlog]
     for providerNum, curProvider in enumerate(providers):
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)

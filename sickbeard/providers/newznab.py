@@ -33,14 +33,14 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import scene_exceptions
 from sickbeard import encodingKludge as ek
-from sickbeard.common import cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex, AuthException
 
 
 class NewznabProvider(generic.NZBProvider):
-    def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False):
+    def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
+                 enable_daily=False, enable_backlog=False):
 
         generic.NZBProvider.__init__(self, name)
 
@@ -52,6 +52,8 @@ class NewznabProvider(generic.NZBProvider):
 
         self.search_mode = search_mode
         self.search_fallback = search_fallback
+        self.enable_daily = enable_daily
+        self.enable_backlog = enable_backlog
 
         # a 0 in the key spot indicates that no key is needed
         if self.key == '0':
@@ -71,10 +73,13 @@ class NewznabProvider(generic.NZBProvider):
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
-            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback))
+            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
+            int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     def imageName(self):
-        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.getID() + '.png')):
+        if ek.ek(os.path.isfile,
+                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+                       self.getID() + '.png')):
             return self.getID() + '.png'
         return 'newznab.png'
 
@@ -136,7 +141,8 @@ class NewznabProvider(generic.NZBProvider):
             to_return.append(params)
         else:
             # add new query strings for exceptions
-            name_exceptions = list(set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
+            name_exceptions = list(
+                set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
             for cur_exception in name_exceptions:
                 params['q'] = helpers.sanitizeSceneName(cur_exception)
                 to_return.append(params)
@@ -234,7 +240,9 @@ class NewznabProvider(generic.NZBProvider):
                 # if there are more items available then the amount given in one call, grab some more
                 if (total - params['limit']) > offset == params['offset']:
                     params['offset'] += params['limit']
-                    logger.log(str(total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(params['limit']) + " items.", logger.DEBUG)
+                    logger.log(str(
+                        total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(
+                        params['limit']) + " items.", logger.DEBUG)
                 else:
                     break
 
