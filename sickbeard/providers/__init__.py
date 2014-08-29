@@ -113,18 +113,18 @@ def makeNewznabProvider(configString):
     enable_backlog = 0
 
     try:
-        name, url, key, catIDs, enabled, search_mode, search_fallback, enable_daily, enable_backlog = configString.split(
-            '|')
+        values = configString.split('|')
+        if len(values) == 9:
+            name, url, key, catIDs, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+        else:
+            name = values[0]
+            url = values[1]
+            key = values[2]
+            catIDs = values[3]
+            enabled = values[4]
     except ValueError:
-        try:
-            name, url, key, catIDs, enabled, search_mode, search_fallback, enable_backlog = configString.split(
-                '|')
-        except ValueError:
-            try:
-                name, url, key, catIDs, enabled = configString.split('|')
-            except ValueError:
-                logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
-                return None
+        logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
+        return None
 
     newznab = sys.modules['sickbeard.providers.newznab']
 
@@ -161,18 +161,17 @@ def makeTorrentRssProvider(configString):
     enable_backlog = 0
 
     try:
-        name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = configString.split(
-            '|')
+        values = configString.split('|')
+        if len(values) == 8:
+            name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+        else:
+            name = values[0]
+            url = values[1]
+            enabled = values[3]
     except ValueError:
-        try:
-            name, url, enabled, search_mode, search_fallback, enable_daily, enable_backlog = configString.split('|')
-        except ValueError:
-            try:
-                name, url, enabled = configString.split('|')
-            except ValueError:
-                logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format",
-                           logger.ERROR)
-                return None
+        logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format",
+                   logger.ERROR)
+        return None
 
     try:
         torrentRss = sys.modules['sickbeard.providers.rsstorrent']
