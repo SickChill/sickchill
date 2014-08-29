@@ -104,16 +104,17 @@ class NewznabProvider(generic.NZBProvider):
         # search
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
-            cur_params['rid'] = rid
+            cur_return = cur_params.copy()
+            cur_return['rid'] = rid
+            to_return.append(cur_return)
+
+        # add new query strings for exceptions
+        name_exceptions = list(
+            set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
+        for cur_exception in name_exceptions:
+            if 'q' in cur_params:
+                cur_params['q'] = helpers.sanitizeSceneName(cur_exception) + '.' + cur_params['q']
             to_return.append(cur_params)
-        else:
-            # add new query strings for exceptions
-            name_exceptions = list(
-                set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
-            for cur_exception in name_exceptions:
-                if 'q' in cur_params:
-                    cur_params['q'] = helpers.sanitizeSceneName(cur_exception) + '.' + cur_params['q']
-                to_return.append(cur_params)
 
         return to_return
 
@@ -137,15 +138,16 @@ class NewznabProvider(generic.NZBProvider):
         # search
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
-            params['rid'] = rid
+            cur_return = params.copy()
+            cur_return['rid'] = rid
+            to_return.append(cur_return)
+
+        # add new query strings for exceptions
+        name_exceptions = list(
+            set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
+        for cur_exception in name_exceptions:
+            params['q'] = helpers.sanitizeSceneName(cur_exception)
             to_return.append(params)
-        else:
-            # add new query strings for exceptions
-            name_exceptions = list(
-                set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
-            for cur_exception in name_exceptions:
-                params['q'] = helpers.sanitizeSceneName(cur_exception)
-                to_return.append(params)
 
         return to_return
 
