@@ -987,12 +987,12 @@ class NotifygetNotifyResponse(Response):
         count	- count
         date	- date
         name	- anime name
-
+        fid     - comma separated list of fids
         """
         Response.__init__(self, cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYGET_NOTIFY'
         self.codehead = ()
-        self.codetail = ('aid', 'type', 'count', 'date', 'name')
+        self.codetail = ('aid', 'type', 'count', 'date', 'name', 'fid')
         self.coderep = ()
 
 
