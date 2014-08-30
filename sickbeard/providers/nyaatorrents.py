@@ -126,7 +126,7 @@ class NyaaCache(tvcache.TVCache):
         # only poll NyaaTorrents every 15 minutes max
         self.minTime = 15
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         params = {
             "page": 'rss',   # Use RSS page
             "order": '1',    # Sort Descending By Date

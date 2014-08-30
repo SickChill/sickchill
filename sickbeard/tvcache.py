@@ -89,25 +89,16 @@ class TVCache():
 
     def _clearCache(self):
         if self.shouldClearCache():
-            logger.log(u"Clearing items older than 1 week from " + self.provider.name + " cache")
-
-            curDate = datetime.date.today() - datetime.timedelta(weeks=1)
-
             myDB = self._getDB()
-            myDB.action("DELETE FROM [" + self.providerID + "] WHERE time < ?", [int(time.mktime(curDate.timetuple()))])
+            myDB.action("DELETE FROM [" + self.providerID + "] WHERE 1")
 
     def _get_title_and_url(self, item):
         # override this in the provider if daily search has a different data layout to backlog searches
         return self.provider._get_title_and_url(item)
 
     def _getRSSData(self):
-
         data = None
-
         return data
-
-    def _getDailyData(self):
-        return None
 
     def _checkAuth(self):
         return self.provider._checkAuth()
@@ -116,10 +107,9 @@ class TVCache():
         return True
 
     def updateCache(self):
-
         if self.shouldUpdate() and self._checkAuth():
             # as long as the http request worked we count this as an update
-            data = self._getDailyData()
+            data = self._getRSSData()
             if not data:
                 return []
 
@@ -289,9 +279,9 @@ class TVCache():
                 [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
 
 
-    def searchCache(self, episodes, manualSearch=False):
-        neededEps = self.findNeededEpisodes(episodes, manualSearch)
-        return neededEps
+    def searchCache(self, episode, manualSearch=False):
+        neededEps = self.findNeededEpisodes(episode, manualSearch)
+        return neededEps[episode]
 
     def listPropers(self, date=None, delimiter="."):
         myDB = self._getDB()
@@ -303,69 +293,84 @@ class TVCache():
         return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
 
 
-    def findNeededEpisodes(self, episodes, manualSearch=False):
+    def findNeededEpisodes(self, episode=None, manualSearch=False):
         neededEps = {}
 
-        for epObj in episodes:
-            myDB = self._getDB()
+        if episode:
+            neededEps[episode] = []
+
+        myDB = self._getDB()
+        if not episode:
+            sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
+        else:
             sqlResults = myDB.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"])
+                [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
 
-            # for each cache entry
-            for curResult in sqlResults:
+        # for each cache entry
+        for curResult in sqlResults:
 
-                # skip non-tv crap (but allow them for Newzbin cause we assume it's filtered well)
-                if self.providerID != 'newzbin' and not show_name_helpers.filterBadReleases(curResult["name"]):
-                    continue
+            # skip non-tv crap
+            if not show_name_helpers.filterBadReleases(curResult["name"]):
+                continue
 
-                # get the show object, or if it's not one of our shows then ignore it
-                try:
-                    showObj = helpers.findCertainShow(sickbeard.showList, int(curResult["indexerid"]))
-                except MultipleShowObjectsException:
-                    showObj = None
+            # get the show object, or if it's not one of our shows then ignore it
+            showObj = helpers.findCertainShow(sickbeard.showList, int(curResult["indexerid"]))
+            if not showObj:
+                continue
 
-                if not showObj:
-                    continue
+            # skip if provider is anime only and show is not anime
+            if self.provider.anime_only and not showObj.is_anime:
+                logger.log(u"" + str(showObj.name) + " is not an anime, skiping", logger.DEBUG)
+                continue
 
-                # get season and ep data (ignoring multi-eps for now)
-                curSeason = int(curResult["season"])
-                if curSeason == -1:
-                    continue
-                curEp = curResult["episodes"].split("|")[1]
-                if not curEp:
-                    continue
-                curEp = int(curEp)
-                curQuality = int(curResult["quality"])
-                curReleaseGroup = curResult["release_group"]
-                curVersion = curResult["version"]
+            # get season and ep data (ignoring multi-eps for now)
+            curSeason = int(curResult["season"])
+            if curSeason == -1:
+                continue
+            curEp = curResult["episodes"].split("|")[1]
+            if not curEp:
+                continue
+            curEp = int(curEp)
 
-                # if the show says we want that episode then add it to the list
-                if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
-                    logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
-                               Quality.qualityStrings[curQuality], logger.DEBUG)
-                    continue
+            curQuality = int(curResult["quality"])
+            curReleaseGroup = curResult["release_group"]
+            curVersion = curResult["version"]
 
-                # build a result object
-                title = curResult["name"]
-                url = curResult["url"]
+            # if the show says we want that episode then add it to the list
+            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
+                logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
+                           Quality.qualityStrings[curQuality], logger.DEBUG)
+                continue
 
-                logger.log(u"Found result " + title + " at " + url)
+            # build name cache for show
+            sickbeard.name_cache.buildNameCache(showObj)
 
-                result = self.provider.getResult([epObj])
-                result.show = showObj
-                result.url = url
-                result.name = title
-                result.quality = curQuality
-                result.release_group = curReleaseGroup
-                result.version = curVersion
-                result.content = None
+            if episode:
+                epObj = episode
+            else:
+                epObj = showObj.getEpisode(curSeason, curEp)
 
-                # add it to the list
-                if epObj not in neededEps:
-                    neededEps[epObj] = [result]
-                else:
-                    neededEps[epObj].append(result)
+            # build a result object
+            title = curResult["name"]
+            url = curResult["url"]
+
+            logger.log(u"Found result " + title + " at " + url)
+
+            result = self.provider.getResult([epObj])
+            result.show = showObj
+            result.url = url
+            result.name = title
+            result.quality = curQuality
+            result.release_group = curReleaseGroup
+            result.version = curVersion
+            result.content = None
+
+            # add it to the list
+            if epObj not in neededEps:
+                neededEps[epObj] = [result]
+            else:
+                neededEps[epObj].append(result)
 
         # datetime stamp this search so cache gets cleared
         self.setLastSearch()

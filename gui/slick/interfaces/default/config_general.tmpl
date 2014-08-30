@@ -26,6 +26,7 @@
 #end if
 
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 
 <div id="config">
 <div id="config-content">
@@ -164,6 +165,14 @@
                             <label class="clearfix" for="play_videos">
                                 <span class="component-title">Play Videos</span>
                                 <span class="component-desc">Play video files from display show page?</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
+                            <label class="clearfix">
+                                <span class="component-title">Show Root Directories</span>
+                                <span class="component-desc">Set root directories for where you want your shows to be.</span>
+                                #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
                             </label>
                         </div>
 

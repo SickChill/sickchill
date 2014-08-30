@@ -355,7 +355,7 @@ class KATCache(tvcache.TVCache):
         # only poll ThePirateBay every 10 minutes max
         self.minTime = 20
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         search_params = {'RSS': ['rss']}
         return self.provider._doSearch(search_params)
 

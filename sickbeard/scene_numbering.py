@@ -53,7 +53,7 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
         return (season, episode)
 
     showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(indexer_id))
-    if not showObj.is_scene:
+    if showObj and not showObj.is_scene:
         return (season, episode)
 
     result = find_scene_numbering(int(indexer_id), int(indexer), season, episode)
@@ -105,7 +105,7 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     indexer = int(indexer)
 
     showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, indexer_id)
-    if not showObj.is_scene:
+    if showObj and not showObj.is_scene:
         return absolute_number
 
     result = find_scene_absolute_numbering(indexer_id, indexer, absolute_number)

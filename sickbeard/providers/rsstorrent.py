@@ -102,7 +102,7 @@ class TorrentRssProvider(generic.TorrentProvider):
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
-            items = self.cache._getDailyData()
+            items = self.cache._getRSSData()
 
             if not len(items) > 0:
                 return (False, 'No items found in the RSS feed ' + self.url)
@@ -157,7 +157,7 @@ class TorrentRssCache(tvcache.TVCache):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 15
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
 
         request_headers = None

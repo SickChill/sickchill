@@ -174,7 +174,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         return (title, url)
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         params = {'user': provider.username,
                   'api': provider.api_key,
                   'eng': 1,

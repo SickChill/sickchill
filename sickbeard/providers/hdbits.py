@@ -204,7 +204,7 @@ class HDBitsCache(tvcache.TVCache):
         # only poll HDBits every 15 minutes max                                                                                          
         self.minTime = 15
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
 
         if not self.provider._checkAuthFromData(parsedJSON):

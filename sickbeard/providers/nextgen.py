@@ -318,7 +318,7 @@ class NextGenCache(tvcache.TVCache):
         # Only poll NextGen every 10 minutes max
         self.minTime = 10
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         search_params = {'RSS': ['']}
         return self.provider._doSearch(search_params)
 

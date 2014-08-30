@@ -337,20 +337,17 @@ class NewznabCache(tvcache.TVCache):
 
     def updateCache(self):
 
-        # delete anything older then 7 days
-        self._clearCache()
-
-        if not self.shouldUpdate():
-            return
-
-        if self._checkAuth(None):
+        if self.shouldUpdate() and self._checkAuth(None):
             data = self._getRSSData()
 
             # as long as the http request worked we count this as an update
-            if data:
-                self.setLastUpdate()
-            else:
+            if not data:
                 return []
+
+            self.setLastUpdate()
+
+            # clear cache
+            self._clearCache()
 
             if self._checkAuth(data):
                 items = data.entries
@@ -369,7 +366,6 @@ class NewznabCache(tvcache.TVCache):
                     u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
 
         return []
-
 
     # overwrite method with that parses the rageid from the newznab feed
     def _parseItem(self, item):
