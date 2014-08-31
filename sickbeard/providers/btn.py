@@ -297,7 +297,7 @@ class BTNCache(tvcache.TVCache):
         # At least 15 minutes between queries
         self.minTime = 15
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self._getLastUpdate().timetuple()))
 

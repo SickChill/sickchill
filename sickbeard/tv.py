@@ -23,6 +23,7 @@ import datetime
 import threading
 import re
 import glob
+import stat
 import traceback
 
 import sickbeard
@@ -962,7 +963,7 @@ class TVShow(object):
 
         return self.nextaired
 
-    def deleteShow(self):
+    def deleteShow(self, full=False):
 
         sql_l = [["DELETE FROM tv_episodes WHERE showid = ?", [self.indexerid]],
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
@@ -973,7 +974,6 @@ class TVShow(object):
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 
-
         # remove self from show list
         sickbeard.showList = [x for x in sickbeard.showList if int(x.indexerid) != self.indexerid]
 
@@ -982,6 +982,24 @@ class TVShow(object):
         for cache_file in ek.ek(glob.glob, ek.ek(os.path.join, image_cache_dir, str(self.indexerid) + '.*')):
             logger.log(u"Deleting cache file " + cache_file)
             os.remove(cache_file)
+
+        # remove entire show folder
+        if full:
+            try:
+                logger.log(u"Deleting show folder " + self.location)
+                # check first the read-only attribute
+                file_attribute = ek.ek(os.stat, self.location)[0]
+                if (not file_attribute & stat.S_IWRITE):
+                    # File is read-only, so make it writeable
+                    logger.log('Read only mode on folder ' + self.location + ' Will try to make it writeable', logger.DEBUG)
+                    try:
+                        ek.ek(os.chmod, self.location, stat.S_IWRITE)
+                    except:
+                        logger.log(u'Cannot change permissions of ' + self.location, logger.WARNING)
+
+                ek.ek(os.rmdir, self.location)
+            except OSError, e:
+                logger.log(u"Unable to delete " + self.location + ": " + repr(e) + " / " + str(e), logger.WARNING)
 
     def populateCache(self):
         cache_inst = image_cache.ImageCache()

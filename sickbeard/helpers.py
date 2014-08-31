@@ -210,20 +210,16 @@ def _remove_file_failed(file):
     except:
         pass
 
-
 def findCertainShow(showList, indexerid):
-    if not showList:
-        return None
 
     results = []
-    if indexerid:
+    if showList and indexerid:
         results = filter(lambda x: int(x.indexerid) == int(indexerid), showList)
 
-    if len(results):
+    if len(results) == 1:
         return results[0]
     elif len(results) > 1:
         raise MultipleShowObjectsException()
-
 
 def makeDir(path):
     if not ek.ek(os.path.isdir, path):

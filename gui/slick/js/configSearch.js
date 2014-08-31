@@ -63,7 +63,7 @@ $(document).ready(function(){
             $('#Torrent_username').show();
             $('#Torrent_Path').show();
             $('#Torrent_Ratio').show();
-            $('#Torrent_Seed_Time').hide();
+            $('#Torrent_Seed_Time').show();
             $('#Torrent_High_Bandwidth').show();
             $('#Torrent_Label').hide();
             $('#host_desc').html('Transmission Host');

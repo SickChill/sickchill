@@ -628,21 +628,10 @@ class Tvdb:
         """Loads a URL using caching, returns an ElementTree of the source
         """
         try:
-            src = self._loadUrl(url, params=params, language=language)
-            src = [src[item] for item in src][0] if src else []
+            src = self._loadUrl(url, params=params, language=language).values()[0]
+            return src
         except:
-            errormsg = "There was an error with the XML retrieved from thetvdb.com:"
-
-            if self.config['cache_enabled']:
-                errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
-                    self.config['cache_location']
-                )
-
-            errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on"
-            errormsg += "\nhttp://dbr.lighthouseapp.com/projects/13342-tvdb_api/overview\n"
-            raise tvdb_error(errormsg)
-
-        return src
+            return []
 
     def _setItem(self, sid, seas, ep, attrib, value):
         """Creates a new episode, creating Show(), Season() and
@@ -692,8 +681,12 @@ class Tvdb:
         series = series.encode("utf-8")
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
-        seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        return [seriesEt[item] for item in seriesEt][0] if seriesEt else []
+
+        try:
+            seriesFound = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries']).values()[0]
+            return seriesFound
+        except:
+            return []
 
     def _getSeries(self, series):
         """This searches TheTVDB.com for the series name,

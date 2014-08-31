@@ -72,34 +72,27 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def add_item(self, item):
-
-        if isinstance(item, (DailySearchQueueItem, BacklogQueueItem, ManualSearchQueueItem, FailedQueueItem)) \
-                and not self.is_in_queue(item.show, item.segment):
-            sickbeard.name_cache.buildNameCache(item.show)
+        if isinstance(item, DailySearchQueueItem) or (
+            isinstance(item, (BacklogQueueItem, ManualSearchQueueItem, FailedQueueItem)) and not self.is_in_queue(
+                item.show, item.segment)):
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
 
 class DailySearchQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
-        self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = 'DAILYSEARCH-' + str(show.indexerid)
-        self.show = show
-        self.segment = segment
 
     def run(self):
-
         generic_queue.QueueItem.run(self)
 
         try:
-
-            logger.log("Beginning daily search for [" + self.show.name + "]")
-            foundResults = search.searchForNeededEpisodes(self.show, self.segment)
+            logger.log("Beginning daily search for new episodes")
+            foundResults = search.searchForNeededEpisodes()
 
             if not len(foundResults):
-                logger.log(u"No needed episodes found during daily search for [" + self.show.name + "]")
+                logger.log(u"No needed episodes found")
             else:
                 for result in foundResults:
                     # just use the first result for now
@@ -114,6 +107,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
+
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
@@ -169,7 +163,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         try:
             for season in self.segment:
                 sickbeard.searchBacklog.BacklogSearcher.currentSearchInfo = {
-                'title': self.show.name + " Season " + str(season)}
+                    'title': self.show.name + " Season " + str(season)}
 
                 wantedEps = self.segment[season]
 

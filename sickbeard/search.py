@@ -336,23 +336,21 @@ def filterSearchResults(show, season, results):
 
     return foundResults
 
-def searchForNeededEpisodes(show, episodes):
+def searchForNeededEpisodes():
     foundResults = {}
 
     didSearch = False
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and not x.backlog_only]
-    for curProviderCount, curProvider in enumerate(providers):
-        if curProvider.anime_only and not show.is_anime:
-            logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
-            continue
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x.enable_daily]
+    for curProvider in providers:
 
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         try:
-            curFoundResults = curProvider.searchRSS(episodes)
+            curProvider.cache.updateCache()
+            curFoundResults = curProvider.searchRSS()
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue
@@ -373,6 +371,12 @@ def searchForNeededEpisodes(show, episodes):
                     u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
                     logger.DEBUG)
                 continue
+
+            # find the best result for the current episode
+            bestResult = None
+            for curResult in curFoundResults[curEp]:
+                if not bestResult or bestResult.quality < curResult.quality:
+                    bestResult = curResult
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
@@ -400,7 +404,7 @@ def searchForNeededEpisodes(show, episodes):
             u"No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
             logger.ERROR)
 
-    return foundResults.values() if len(foundResults) else {}
+    return foundResults.values()
 
 
 def searchProviders(show, season, episodes, manualSearch=False):
@@ -408,6 +412,9 @@ def searchProviders(show, season, episodes, manualSearch=False):
     finalResults = []
 
     didSearch = False
+
+    # build name cache for show
+    sickbeard.name_cache.buildNameCache(show)
 
     # check if we want to search for season packs instead of just season/episode
     seasonSearch = False
@@ -418,7 +425,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+    providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive() and x.enable_backlog]
     for providerNum, curProvider in enumerate(providers):
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
@@ -442,6 +449,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 logger.log(u"Searching for episodes we need from " + show.name + " Season " + str(season))
 
             try:
+                curProvider.cache.updateCache()
                 searchResults = curProvider.findSearchResults(show, season, episodes, search_mode, manualSearch)
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)

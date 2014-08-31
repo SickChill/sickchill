@@ -24,6 +24,7 @@ $(document).ready(function(){
     var renameArr = new Array()
     var subtitleArr = new Array()
     var deleteArr = new Array()
+    var removeArr = new Array()
     var metadataArr = new Array()
 
     $('.updateCheck').each(function() {
@@ -56,6 +57,12 @@ $(document).ready(function(){
       }
     });
 
+    $('.removeCheck').each(function() {
+      if (this.checked == true) {
+        removeArr.push($(this).attr('id').split('-')[1])
+      }
+    });
+
 /*
     $('.metadataCheck').each(function() {
       if (this.checked == true) {
@@ -63,10 +70,10 @@ $(document).ready(function(){
       }
     });
 */
-    if (updateArr.length+refreshArr.length+renameArr.length+subtitleArr.length+deleteArr.length+metadataArr.length == 0)
+    if (updateArr.length+refreshArr.length+renameArr.length+subtitleArr.length+deleteArr.length+removeArr.length+metadataArr.length == 0)
       return false
 
-    url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toMetadata='+metadataArr.join('|')
+    url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|')
 
     window.location.href = url
 
@@ -83,7 +90,7 @@ $(document).ready(function(){
     });
   });
 
-  ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck'].forEach(function(name) {
+  ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(function(name) {
     var lastCheck = null;
 
     $(name).click(function(event) {

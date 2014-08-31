@@ -99,8 +99,17 @@ class aniDBabstractObject(object):
         priority - low = 0, medium = 1, high = 2 (unconfirmed)
         
         """
-        if (self.aid):
+        if self.aid:
             self.aniDB.notifyadd(aid=self.aid, type=1, priority=1)
+
+    def del_notification(self):
+        """
+        type - Type of notification: type=>  0=all, 1=new, 2=group, 3=complete
+        priority - low = 0, medium = 1, high = 2 (unconfirmed)
+
+        """
+        if self.aid:
+            self.aniDB.notifydel(aid=self.aid, type=1, priority=1)
 
 
 class Anime(aniDBabstractObject):

@@ -336,7 +336,7 @@ class HDTorrentsCache(tvcache.TVCache):
         # only poll HDTorrents every 10 minutes max
         self.minTime = 20
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         search_params = {'RSS': []}
         return self.provider._doSearch(search_params)
 

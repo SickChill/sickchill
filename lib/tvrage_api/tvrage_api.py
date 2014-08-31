@@ -1,5 +1,5 @@
 # !/usr/bin/env python2
-#encoding:utf-8
+# encoding:utf-8
 #author:echel0n
 #project:tvrage_api
 #repository:http://github.com/echel0n/tvrage_api
@@ -393,7 +393,6 @@ class TVRage:
             except ImportError:
                 return os.path.join(tempfile.gettempdir(), "tvrage_api")
 
-
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
     #@retry(tvrage_error)
@@ -455,7 +454,7 @@ class TVRage:
                     if key == 'genre':
                         value = value['genre']
                         if not value:
-                            value=[]
+                            value = []
                         if not isinstance(value, list):
                             value = [value]
                         value = filter(None, value)
@@ -470,9 +469,9 @@ class TVRage:
                         value = parse(value, fuzzy=True).date()
                         value = value.strftime("%Y-%m-%d")
 
-                    #if key == 'airs_time':
-                    #    value = parse(value).time()
-                    #    value = value.strftime("%I:%M %p")
+                        #if key == 'airs_time':
+                        #    value = parse(value).time()
+                        #    value = value.strftime("%I:%M %p")
                 except:
                     pass
 
@@ -489,20 +488,10 @@ class TVRage:
         """
 
         try:
-            src = self._loadUrl(url, params)
-            src = [src[item] for item in src][0] if src else []
+            src = self._loadUrl(url, params).values()[0]
+            return src
         except:
-            errormsg = "There was an error with the XML retrieved from tvrage.com"
-
-            if self.config['cache_enabled']:
-                errormsg += "\nFirst try emptying the cache folder at..\n%s" % (
-                    self.config['cache_location']
-                )
-
-            errormsg += "\nIf this does not resolve the issue, please try again later. If the error persists, report a bug on\n"
-            raise tvrage_error(errormsg)
-
-        return src
+            return []
 
     def _setItem(self, sid, seas, ep, attrib, value):
         """Creates a new episode, creating Show(), Season() and
@@ -557,8 +546,12 @@ class TVRage:
         series = series.encode("utf-8")
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['show'] = series
-        seriesEt = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
-        return [seriesEt[item] for item in seriesEt][0] if seriesEt else []
+
+        try:
+            seriesFound = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries']).values()[0]
+            return seriesFound
+        except:
+            return []
 
     def _getSeries(self, series):
         """This searches tvrage.com for the series name,
@@ -632,7 +625,7 @@ class TVRage:
                 ep_no = int(episode['episodenumber'])
                 self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
 
-                for k,v in episode.items():
+                for k, v in episode.items():
                     try:
                         k = k.lower()
                         if v is not None:

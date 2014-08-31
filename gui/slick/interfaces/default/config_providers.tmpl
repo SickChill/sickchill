@@ -156,14 +156,24 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curNewznabProvider, 'backlog_only'):
+                        #if $hasattr($curNewznabProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <input type="checkbox" name="${curNewznabProvider.getID()}_backlog_only" id="${curNewznabProvider.getID()}_backlog_only" #if $curNewznabProvider.backlog_only then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curNewznabProvider.getID()}_backlog_only">
-                                <span class="component-title">Backlog Only</span>
+                            <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" #if $curNewznabProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNewznabProvider.getID()}_enable_daily">
+                                <span class="component-title">Enable Daily Searches</span>
                                 <span class="component-desc">
-                                Sets the provider to only be used for<br>
-                                backlog searches.</span>
+                                Enables daily searches</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curNewznabProvider, 'enable_backlog'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" #if $curNewznabProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNewznabProvider.getID()}_enable_backlog">
+                                <span class="component-title">Enable Backlog Searches</span>
+                                <span class="component-desc">
+                                Enables backlog searches</span>
                             </label>
                         </div>
                         #end if
@@ -190,12 +200,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 When searching for complete seasons<br>
                                 you can choose to have it look for season<br>
                                 packs ONLY or choose to have it build a<br>
-                                complete season from just single episodes.</span>
+                                complete season from just single episodes.<br></span>
 
-                                    <span class="component-title"></span>
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
-                                    <span class="component-title"></span>
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                <span class="component-title"></span>
+                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                <span class="component-title"></span>
+                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
                                 </span>
                             </label>
                         </div>
@@ -224,14 +234,24 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curNzbProvider, 'backlog_only'):
+                        #if $hasattr($curNzbProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <input type="checkbox" name="${curNzbProvider.getID()}_backlog_only" id="${curNzbProvider.getID()}_backlog_only" #if $curNzbProvider.backlog_only then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curNzbProvider.getID()}_backlog_only">
-                                <span class="component-title">Backlog Only</span>
+                            <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" #if $curNzbProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNzbProvider.getID()}_enable_daily">
+                                <span class="component-title">Enable Daily Searches</span>
                                 <span class="component-desc">
-                                Sets the provider to only be used for<br>
-                                backlog searches.</span>
+                                Enables daily searches</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curNzbProvider, 'enable_backlog'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" #if $curNzbProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curNzbProvider.getID()}_enable_backlog">
+                                <span class="component-title">Enable Backlog Searches</span>
+                                <span class="component-desc">
+                                Enables backlog searches</span>
                             </label>
                         </div>
                         #end if
@@ -440,14 +460,24 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'backlog_only'):
+                        #if $hasattr($curTorrentProvider, 'enable_daily'):
                         <div class="field-pair">
-                            <input type="checkbox" name="${curTorrentProvider.getID()}_backlog_only" id="${curTorrentProvider.getID()}_backlog_only" #if $curTorrentProvider.backlog_only then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curTorrentProvider.getID()}_backlog_only">
-                                <span class="component-title">Backlog Only</span>
+                            <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" #if $curTorrentProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curTorrentProvider.getID()}_enable_daily">
+                                <span class="component-title">Enable Daily Searches</span>
                                 <span class="component-desc">
-                                Sets the provider to only be used for<br>
-                                backlog searches.</span>
+                                Enables daily searches</span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'enable_backlog'):
+                        <div class="field-pair">
+                            <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" #if $curTorrentProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                            <label class="clearfix" for="${curTorrentProvider.getID()}_enable_backlog">
+                                <span class="component-title">Enable Backlog Searches</span>
+                                <span class="component-desc">
+                                Enables backlog searches</span>
                             </label>
                         </div>
                         #end if

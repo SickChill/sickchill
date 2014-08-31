@@ -34,8 +34,10 @@ from lib import requests
 from lib.requests import exceptions
 from lib.bencode import bdecode
 
+
 class TorrentRssProvider(generic.TorrentProvider):
-    def __init__(self, name, url, cookies='', search_mode='eponly', search_fallback=False, backlog_only=False):
+    def __init__(self, name, url, cookies='', search_mode='eponly', search_fallback=False, enable_daily=False,
+                 enable_backlog=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
         self.url = re.sub('\/$', '', url)
@@ -46,14 +48,19 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         self.search_mode = search_mode
         self.search_fallback = search_fallback
-        self.backlog_only = backlog_only
+        self.enable_daily = enable_daily
+        self.enable_backlog = enable_backlog
         self.cookies = cookies
 
     def configStr(self):
-        return self.name + '|' + self.url + '|' + self.cookies + '|' + str(int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(int(self.backlog_only))
+        return self.name + '|' + self.url + '|' + self.cookies + '|' + str(
+            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
+            int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
 
     def imageName(self):
-        if ek.ek(os.path.isfile, ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.getID() + '.png')):
+        if ek.ek(os.path.isfile,
+                 ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+                       self.getID() + '.png')):
             return self.getID() + '.png'
         return 'torrentrss.png'
 
@@ -91,12 +98,12 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         try:
             if self.cookies:
-                cookie_validator=re.compile("^(\w+=\w+)(;\w+=\w+)*$")
+                cookie_validator = re.compile("^(\w+=\w+)(;\w+=\w+)*$")
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
-            items = self.cache._getDailyData()
- 
+            items = self.cache._getRSSData()
+
             if not len(items) > 0:
                 return (False, 'No items found in the RSS feed ' + self.url)
 
@@ -144,17 +151,18 @@ class TorrentRssProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
+
 class TorrentRssCache(tvcache.TVCache):
     def __init__(self, provider):
         tvcache.TVCache.__init__(self, provider)
         self.minTime = 15
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
 
         request_headers = None
         if self.provider.cookies:
-            request_headers = { 'Cookie': self.provider.cookies }
+            request_headers = {'Cookie': self.provider.cookies}
 
         data = self.getRSSFeed(self.provider.url, request_headers=request_headers)
 

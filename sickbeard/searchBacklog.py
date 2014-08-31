@@ -29,6 +29,7 @@ from sickbeard import logger
 from sickbeard import ui
 from sickbeard import common
 
+
 class BacklogSearchScheduler(scheduler.Scheduler):
     def forceSearch(self):
         self.action._set_lastBacklog(1)
@@ -40,11 +41,12 @@ class BacklogSearchScheduler(scheduler.Scheduler):
         else:
             return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
+
 class BacklogSearcher:
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
-        self.cycleTime = sickbeard.BACKLOG_FREQUENCY/60/24
+        self.cycleTime = sickbeard.BACKLOG_FREQUENCY / 60 / 24
         self.lock = threading.Lock()
         self.amActive = False
         self.amPaused = False
@@ -99,7 +101,7 @@ class BacklogSearcher:
 
             if len(segments):
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segments)
-                sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  #@UndefinedVariable
+                sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
             else:
                 logger.log(u"Nothing needs to be downloaded for " + str(curShow.name) + ", skipping this season",
                            logger.DEBUG)
@@ -132,14 +134,14 @@ class BacklogSearcher:
         return self._lastBacklog
 
     def _get_segments(self, show, fromDate):
-        anyQualities, bestQualities = common.Quality.splitQuality(show.quality)  #@UnusedVariable
+        anyQualities, bestQualities = common.Quality.splitQuality(show.quality)  # @UnusedVariable
 
         logger.log(u"Seeing if we need anything from " + show.name)
 
         myDB = db.DBConnection()
         if show.air_by_date:
             sqlResults = myDB.select(
-                "SELECT ep.status, ep.season, ep.episode FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 ANd ep.airdate > ? AND ep.showid = ? AND show.air_by_date = 1",
+                "SELECT ep.status, ep.season, ep.episode FROM tv_episodes ep, tv_shows show WHERE season != 0 AND ep.showid = show.indexer_id AND show.paused = 0 AND ep.airdate > ? AND ep.showid = ? AND show.air_by_date = 1",
                 [fromDate.toordinal(), show.indexerid])
         else:
             sqlResults = myDB.select(

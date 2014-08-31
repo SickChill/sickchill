@@ -55,7 +55,8 @@ class GenericProvider:
 
         self.search_mode = None
         self.search_fallback = False
-        self.backlog_only = False
+        self.enable_daily = False
+        self.enable_backlog = False
 
         self.cache = tvcache.TVCache(self)
 
@@ -194,8 +195,8 @@ class GenericProvider:
 
         return True
 
-    def searchRSS(self, episodes):
-        return self.cache.findNeededEpisodes(episodes)
+    def searchRSS(self):
+        return self.cache.findNeededEpisodes()
 
     def getQuality(self, item, anime=False):
         """
@@ -254,10 +255,15 @@ class GenericProvider:
 
         searched_scene_season = None
         for epObj in episodes:
-            # check cache for results
-            cacheResult = self.cache.searchCache([epObj], manualSearch)
-            if len(cacheResult):
-                results.update({epObj.episode: cacheResult[epObj]})
+            # search cache for episode result
+            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            if cacheResult:
+                if epObj not in results:
+                    results = [cacheResult]
+                else:
+                    results.append(cacheResult)
+
+                # found result, search next episode
                 continue
 
             # skip if season already searched

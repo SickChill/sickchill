@@ -11,7 +11,7 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
@@ -63,6 +63,7 @@ def sortedProviderList():
 
     return newList
 
+
 def makeProviderList():
     return [x.provider for x in [getProviderModule(y) for y in __all__] if x]
 
@@ -96,6 +97,8 @@ def getNewznabProviderList(data):
             providerDict[curDefault.name].needs_auth = curDefault.needs_auth
             providerDict[curDefault.name].search_mode = curDefault.search_mode
             providerDict[curDefault.name].search_fallback = curDefault.search_fallback
+            providerDict[curDefault.name].enable_daily = curDefault.enable_daily
+            providerDict[curDefault.name].enable_backlog = curDefault.enable_backlog
 
     return filter(lambda x: x, providerList)
 
@@ -106,20 +109,28 @@ def makeNewznabProvider(configString):
 
     search_mode = 'eponly'
     search_fallback = 0
+    enable_daily = 0
+    enable_backlog = 0
 
     try:
-        name, url, key, catIDs, enabled, search_mode, search_fallback = configString.split('|')
+        values = configString.split('|')
+        if len(values) == 9:
+            name, url, key, catIDs, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+        else:
+            name = values[0]
+            url = values[1]
+            key = values[2]
+            catIDs = values[3]
+            enabled = values[4]
     except ValueError:
-        try:
-            name, url, key, catIDs, enabled = configString.split('|')
-        except ValueError:
-            logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
-            return None
+        logger.log(u"Skipping Newznab provider string: '" + configString + "', incorrect format", logger.ERROR)
+        return None
 
     newznab = sys.modules['sickbeard.providers.newznab']
 
     newProvider = newznab.NewznabProvider(name, url, key=key, catIDs=catIDs, search_mode=search_mode,
-                                          search_fallback=search_fallback)
+                                          search_fallback=search_fallback, enable_daily=enable_daily,
+                                          enable_backlog=enable_backlog)
     newProvider.enabled = enabled == '1'
 
     return newProvider
@@ -146,33 +157,36 @@ def makeTorrentRssProvider(configString):
     cookies = None
     search_mode = 'eponly'
     search_fallback = 0
-    backlog_only = 0
+    enable_daily = 0
+    enable_backlog = 0
 
     try:
-        name, url, cookies, enabled, search_mode, search_fallback, backlog_only = configString.split('|')
+        values = configString.split('|')
+        if len(values) == 8:
+            name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
+        else:
+            name = values[0]
+            url = values[1]
+            enabled = values[3]
     except ValueError:
-        try:
-            name, url, enabled, search_mode, search_fallback, backlog_only = configString.split('|')
-        except ValueError:
-            try:
-                name, url, enabled = configString.split('|')
-            except ValueError:
-                logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format", logger.ERROR)
-                return None
+        logger.log(u"Skipping RSS Torrent provider string: '" + configString + "', incorrect format",
+                   logger.ERROR)
+        return None
 
     try:
         torrentRss = sys.modules['sickbeard.providers.rsstorrent']
     except:
         return
 
-    newProvider = torrentRss.TorrentRssProvider(name, url, cookies, search_mode, search_fallback, backlog_only)
+    newProvider = torrentRss.TorrentRssProvider(name, url, cookies, search_mode, search_fallback, enable_daily,
+                                                enable_backlog)
     newProvider.enabled = enabled == '1'
 
     return newProvider
 
 
 def getDefaultNewznabProviders():
-    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0!!!NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0'
+    return 'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/|0|5030,5040|0|eponly|0|0|0'
 
 
 def getProviderModule(name):

@@ -1036,8 +1036,10 @@ class Manage(MainHandler):
         return _munge(t)
 
 
-    def massEditSubmit(self, paused=None, anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=False,
-                       subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args, **kwargs):
+    def massEditSubmit(self, paused=None, anime=None, sports=None, scene=None, flatten_folders=None,
+                       quality_preset=False,
+                       subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
+                       **kwargs):
 
         dir_map = {}
         for cur_arg in kwargs:
@@ -1112,7 +1114,8 @@ class Manage(MainHandler):
 
             exceptions_list = []
 
-            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities, bestQualities, exceptions_list,
+            curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
+                                                                       bestQualities, exceptions_list,
                                                                        flatten_folders=new_flatten_folders,
                                                                        paused=new_paused, sports=new_sports,
                                                                        subtitles=new_subtitles, anime=new_anime,
@@ -1131,7 +1134,7 @@ class Manage(MainHandler):
         redirect("/manage/")
 
 
-    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toMetadata=None, toSubtitle=None):
+    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
 
         if toUpdate is not None:
             toUpdate = toUpdate.split('|')
@@ -1158,6 +1161,11 @@ class Manage(MainHandler):
         else:
             toDelete = []
 
+        if toRemove is not None:
+            toRemove = toRemove.split('|')
+        else:
+            toRemove = []
+
         if toMetadata is not None:
             toMetadata = toMetadata.split('|')
         else:
@@ -1169,7 +1177,7 @@ class Manage(MainHandler):
         renames = []
         subtitles = []
 
-        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toMetadata):
+        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
 
             if curShowID == '':
                 continue
@@ -1180,8 +1188,13 @@ class Manage(MainHandler):
                 continue
 
             if curShowID in toDelete:
-                showObj.deleteShow()
+                showObj.deleteShow(True)
                 # don't do anything else if it's being deleted
+                continue
+
+            if curShowID in toRemove:
+                showObj.deleteShow()
+                # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
@@ -1601,7 +1614,8 @@ class ConfigSearch(MainHandler):
 
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
-                   nzbget_category=None, nzbget_priority=100, nzbget_host=None, nzbget_use_https=None, dailysearch_frequency=None,
+                   nzbget_category=None, nzbget_priority=100, nzbget_host=None, nzbget_use_https=None,
+                   dailysearch_frequency=None,
                    nzb_method=None, torrent_method=None, usenet_retention=None, backlog_frequency=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None,
                    backlog_startup=None, dailysearch_startup=None,
@@ -1992,19 +2006,42 @@ class ConfigProviders(MainHandler):
                 cur_url = config.clean_url(cur_url)
 
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
-
                 cur_id = newProvider.getID()
 
                 # if it already exists then update it
                 if cur_id in newznabProviderDict:
                     newznabProviderDict[cur_id].name = cur_name
                     newznabProviderDict[cur_id].url = cur_url
+
                     newznabProviderDict[cur_id].key = cur_key
                     # a 0 in the key spot indicates that no key is needed
                     if cur_key == '0':
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
+
+                    try:
+                        newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
+                            kwargs[cur_id + '_search_fallback'])
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(
+                            kwargs[cur_id + '_enable_daily'])
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(
+                            kwargs[cur_id + '_enable_backlog'])
+                    except:
+                        pass
                 else:
                     sickbeard.newznabProviderList.append(newProvider)
 
@@ -2161,12 +2198,19 @@ class ConfigProviders(MainHandler):
                 except:
                     curTorrentProvider.search_fallback = 0
 
-            if hasattr(curTorrentProvider, 'backlog_only'):
+            if hasattr(curTorrentProvider, 'enable_daily'):
                 try:
-                    curTorrentProvider.backlog_only = config.checkbox_to_value(
-                        kwargs[curTorrentProvider.getID() + '_backlog_only'])
+                    curTorrentProvider.enable_daily = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_enable_daily'])
                 except:
-                    curTorrentProvider.backlog_only = 0
+                    curTorrentProvider.enable_daily = 1
+
+            if hasattr(curTorrentProvider, 'enable_backlog'):
+                try:
+                    curTorrentProvider.enable_backlog = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_enable_backlog'])
+                except:
+                    curTorrentProvider.enable_backlog = 1
 
         for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                curProvider.providerType == sickbeard.GenericProvider.NZB]:
@@ -2196,12 +2240,19 @@ class ConfigProviders(MainHandler):
                 except:
                     curNzbProvider.search_fallback = 0
 
-            if hasattr(curNzbProvider, 'backlog_only'):
+            if hasattr(curNzbProvider, 'enable_daily'):
                 try:
-                    curNzbProvider.backlog_only = config.checkbox_to_value(
-                        kwargs[curNzbProvider.getID() + '_backlog_only'])
+                    curNzbProvider.enable_daily = config.checkbox_to_value(
+                        kwargs[curNzbProvider.getID() + '_enable_daily'])
                 except:
-                    curNzbProvider.backlog_only = 0
+                    curNzbProvider.enable_daily = 1
+
+            if hasattr(curNzbProvider, 'enable_backlog'):
+                try:
+                    curNzbProvider.enable_backlog = config.checkbox_to_value(
+                        kwargs[curNzbProvider.getID() + '_enable_backlog'])
+                except:
+                    curNzbProvider.enable_backlog = 1
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list
@@ -2796,8 +2847,9 @@ class NewHomeAddShows(MainHandler):
         final_results = []
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-        recommendedlist = TraktCall("recommendations/shows.json/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
-        
+        recommendedlist = TraktCall("recommendations/shows.json/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME,
+                                    sickbeard.TRAKT_PASSWORD)
+
         if recommendedlist == 'NULL':
             logger.log(u"No shows found in your recommendedlist, aborting recommendedlist update", logger.DEBUG)
             return
@@ -2807,7 +2859,8 @@ class NewHomeAddShows(MainHandler):
             return
 
         map(final_results.append,
-            ([int(show['tvdb_id'] or 0) if sickbeard.TRAKT_DEFAULT_INDEXER == 1 else int(show['tvdb_id'] or 0), show['url'], show['title'], show['overview'],
+            ([int(show['tvdb_id'] or 0) if sickbeard.TRAKT_DEFAULT_INDEXER == 1 else int(show['tvdb_id'] or 0),
+              show['url'], show['title'], show['overview'],
               datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')] for show in
              recommendedlist if not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
 
@@ -3563,7 +3616,10 @@ class Home(MainHandler):
         if not sickbeard.showQueueScheduler.action.isBeingAdded(showObj):  # @UndefinedVariable
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
                 t.submenu.append(
-                    {'title': 'Delete', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True})
+                    {'title': 'Delete', 'path': 'home/deleteShow?show=%d&amp;full=1' % showObj.indexerid,
+                     'confirm': True})
+                t.submenu.append(
+                    {'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True})
                 t.submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid})
                 t.submenu.append(
                     {'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid})
@@ -3895,7 +3951,7 @@ class Home(MainHandler):
         redirect("/home/displayShow?show=" + show)
 
 
-    def deleteShow(self, show=None):
+    def deleteShow(self, show=None, full=0):
 
         if show is None:
             return self._genericMessage("Error", "Invalid show ID")
@@ -3913,7 +3969,7 @@ class Home(MainHandler):
             # remove show from trakt.tv library
             sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
 
-        showObj.deleteShow()
+        showObj.deleteShow(bool(full))
 
         ui.notifications.message('<b>%s</b> has been deleted' % showObj.name)
         redirect("/home/")
