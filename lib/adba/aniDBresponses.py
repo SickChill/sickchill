@@ -436,6 +436,27 @@ class MylistStatsResponse(Response):
         self.coderep = ()
 
 
+class NotificationResponse(Response):
+    def __init__(self, cmd, restag, rescode, resstr, datalines):
+        """
+        attributes:
+
+        data:
+        nid         - notification id
+        unknown     - unsure what this parameter is
+        type        - Type of notification: type=>  0=all, 1=new, 2=group, 3=complete
+        aid         - anime id
+        priority    - low = 0, medium = 1, high = 2 (unconfirmed)
+        date        - date notification subscribed to
+
+        """
+        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        self.codestr = 'NOTIFICATION'
+        self.codehead = ()
+        self.codetail = ('nid', 'unknown', 'type', 'aid', 'priority', 'date')
+        self.coderep = ()
+
+
 class AnimeResponse(Response):
     def __init__(self, cmd, restag, rescode, resstr, datalines):
         Response.__init__(self, cmd, restag, rescode, resstr, datalines)
@@ -759,6 +780,21 @@ class NotificationAddedResponse(Response):
         self.codetail = ('nid')
         self.coderep = ()
 
+class NotificationDeletedResponse(Response):
+    def __init__(self, cmd, restag, rescode, resstr, datalines):
+        """
+        attributes:
+
+        data:
+        nid - notofication id
+
+        """
+        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        self.codestr = 'NOTIFICATION_ITEM_DELETED'
+        self.codehead = ()
+        self.codetail = ()
+        self.coderep = ()
+
 
 class NotificationUpdatedResponse(Response):
     def __init__(self, cmd, restag, rescode, resstr, datalines):
@@ -774,6 +810,25 @@ class NotificationUpdatedResponse(Response):
         self.codehead = ()
         self.codetail = ('nid')
         self.coderep = ()
+
+
+class MultipleNotificationResponse(Response):
+    def __init__(self, cmd, restag, rescode, resstr, datalines):
+        """
+        attributes:
+
+        data:
+        nid         - notification id
+        type        -
+        priority    -
+
+
+        """
+        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        self.codestr = 'MULTIPLE NOTIFICATION ITEMS'
+        self.codehead = ()
+        self.codetail = ()
+        self.coderep = ('nid', 'type', 'priority',)
 
 
 class NotificationEnabledResponse(Response):
@@ -913,7 +968,7 @@ class NotifyackSuccessfulNResponse(Response):
         self.coderep = ()
 
 
-class NotificationResponse(Response):
+class NotificationStateResponse(Response):
     def __init__(self, cmd, restag, rescode, resstr, datalines):
         """
         attributes:
@@ -1231,6 +1286,21 @@ class MultipleFilesFoundResponse(Response):
         self.codehead = ()
         self.codetail = ()
         self.coderep = ('fid',)
+
+
+class NoSuchNotificationResponse(Response):
+    def __init__(self, cmd, restag, rescode, resstr, datalines):
+        """
+        attributes:
+
+        data:
+
+        """
+        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        self.codestr = 'NO_SUCH_NOTIFICATION'
+        self.codehead = ()
+        self.codetail = ()
+        self.coderep = ()
 
 
 class NoGroupsFoundResponse(Response):
@@ -1868,6 +1938,7 @@ responses = {
     '220': FileResponse,
     '221': MylistResponse,
     '222': MylistStatsResponse,
+    '224': NotificationResponse,
     '225': GroupstatusResponse,
     '230': AnimeResponse,
     '231': AnimeBestMatchResponse,
@@ -1875,7 +1946,9 @@ responses = {
     '240': EpisodeResponse,
     '245': ProducerResponse,
     '246': NotificationAddedResponse,
+    '247': NotificationDeletedResponse,
     '248': NotificationUpdatedResponse,
+    '249': MultipleNotificationResponse,
     '250': GroupResponse,
     '253': BuddyListResponse,
     '254': BuddyStateResponse,
@@ -1895,7 +1968,7 @@ responses = {
     '280': PushackConfirmedResponse,
     '281': NotifyackSuccessfulMResponse,
     '282': NotifyackSuccessfulNResponse,
-    '290': NotificationResponse,
+    '290': NotificationStateResponse,
     '291': NotifylistResponse,
     '292': NotifygetMessageResponse,
     '293': NotifygetNotifyResponse,
@@ -1914,6 +1987,7 @@ responses = {
     '320': NoSuchFileResponse,
     '321': NoSuchEntryResponse,
     '322': MultipleFilesFoundResponse,
+    '324': NoSuchNotificationResponse,
     '325': NoGroupsFoundResponse,
     '330': NoSuchAnimeResponse,
     '340': NoSuchEpisodeResponse,
