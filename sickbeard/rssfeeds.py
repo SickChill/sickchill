@@ -40,17 +40,17 @@ class RSSFeeds:
                 fc = cache.Cache(fs)
                 feed = fc.fetch(url, False, False, request_headers)
 
-                if not feed or not feed.entries:
-                    logger.log(u"RSS error loading url: " + url, logger.DEBUG)
-                    return
-                elif 'error' in feed.feed:
-                    err_code = feed.feed['error']['code']
-                    err_desc = feed.feed['error']['description']
+                if feed:
+                    if 'entries' in feed:
+                        return feed
+                    elif 'error' in feed.feed:
+                        err_code = feed.feed['error']['code']
+                        err_desc = feed.feed['error']['description']
 
-                    logger.log(
-                        u"RSS ERROR:[%s] CODE:[%s]" % (err_desc, err_code), logger.DEBUG)
-                    return
+                        logger.log(
+                            u"RSS ERROR:[%s] CODE:[%s]" % (err_desc, err_code), logger.DEBUG)
                 else:
-                    return feed
+                    logger.log(u"RSS error loading url: " + url, logger.DEBUG)
+
         except Exception as e:
             logger.log(u"RSS error: " + ex(e), logger.DEBUG)

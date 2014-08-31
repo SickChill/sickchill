@@ -220,8 +220,6 @@ class TVCache():
     def shouldClearCache(self):
         # if daily search hasn't used our previous results yet then don't clear the cache
         if self.lastUpdate > self.lastSearch:
-            logger.log(
-                u"Daily search has not yet used our last cache results, not clearing cache ...", logger.DEBUG)
             return False
 
         return True
