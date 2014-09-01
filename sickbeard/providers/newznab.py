@@ -55,6 +55,8 @@ class NewznabProvider(generic.NZBProvider):
 
         self.search_mode = search_mode
         self.search_fallback = search_fallback
+        self.enable_daily = enable_daily
+        self.enable_backlog = enable_backlog
 
         # a 0 in the key spot indicates that no key is needed
         if self.key == '0':

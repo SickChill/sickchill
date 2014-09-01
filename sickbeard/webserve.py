@@ -2048,6 +2048,29 @@ class ConfigProviders(MainHandler):
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
+                    
+                    try:
+                        newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
+                            kwargs[cur_id + '_search_fallback'])
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(
+                            kwargs[cur_id + '_enable_daily'])
+                    except:
+                        pass
+
+                    try:
+                        newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(
+                            kwargs[cur_id + '_enable_backlog'])
+                    except:
+                        pass
                 else:
                     sickbeard.newznabProviderList.append(newProvider)
 
