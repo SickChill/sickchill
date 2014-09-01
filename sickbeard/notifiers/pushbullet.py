@@ -20,7 +20,7 @@
 
 import base64
 from httplib import HTTPSConnection, HTTPException
-from urllib import urlencode
+import json
 from ssl import SSLError
 import sickbeard
 from sickbeard import logger, common
@@ -97,8 +97,9 @@ class PushbulletNotifier:
                     'body': message.encode('utf-8'),
                     'device_iden': pushbullet_device,
                     'type': notificationType}
-                http_handler.request(method, uri, body=urlencode(data),
-                                     headers={'Authorization': 'Basic %s' % authString})
+                data = json.dumps(data)
+                http_handler.request(method, uri, body=data,
+                                     headers={'Content-Type': 'application/json', 'Authorization': 'Basic %s' % authString})
                 pass
             except (SSLError, HTTPException):
                 return False
