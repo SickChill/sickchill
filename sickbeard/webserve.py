@@ -2029,19 +2029,19 @@ class ConfigProviders(MainHandler):
                         newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
                             kwargs[cur_id + '_search_fallback'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].search_fallback = 0
 
                     try:
                         newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(
                             kwargs[cur_id + '_enable_daily'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].enable_daily = 0
 
                     try:
                         newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(
                             kwargs[cur_id + '_enable_backlog'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].enable_backlog = 0
                 else:
                     sickbeard.newznabProviderList.append(newProvider)
 
