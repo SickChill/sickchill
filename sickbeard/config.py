@@ -250,6 +250,10 @@ def checkbox_to_value(option, value_on=1, value_off=0):
     Turns checkbox option 'on' or 'true' to value_on (1)
     any other value returns value_off (0)
     """
+
+    if type(option) is list:
+        option = option[-1]
+
     if option == 'on' or option == 'true':
         return value_on
 
