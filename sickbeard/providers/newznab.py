@@ -239,6 +239,18 @@ class NewznabProvider(generic.NZBProvider):
                 except (AttributeError, TypeError):
                     break
 
+                # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
+                if params['limit'] > 1000:
+                    logger.log("Excessive results for search, ending search", logger.WARNING)
+                    break
+
+                # sanity check - total should remain constant
+                if offset != 0 and total != initial_total:
+                    logger.log("Total number of items on newznab response changed, ending search", logger.DEBUG)
+                    break
+                else:
+                    initial_total = total
+
                 # if there are more items available then the amount given in one call, grab some more
                 if (total - params['limit']) > offset == params['offset']:
                     params['offset'] += params['limit']
@@ -248,9 +260,7 @@ class NewznabProvider(generic.NZBProvider):
                 else:
                     break
 
-                # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
-                if params['limit'] > 1000:
-                    break
+
             else:
                 break
 
