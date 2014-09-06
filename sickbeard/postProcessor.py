@@ -793,7 +793,7 @@ class PostProcessor(object):
         (show, season, episodes, quality, version) = self._find_info()
         if not show:
             self._log(u"This show isn't in your list, you need to add it to SB before post-processing an episode",
-                      logger.ERROR)
+                      logger.WARNING)
             raise exceptions.PostProcessingFailed()
         elif season == None or not episodes:
             self._log(u"Not enough information to determine what episode this is", logger.DEBUG)
