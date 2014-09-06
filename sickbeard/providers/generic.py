@@ -261,10 +261,10 @@ class GenericProvider:
             # search cache for episode result
             cacheResult = self.cache.searchCache(epObj, manualSearch)
             if cacheResult:
-                if epObj not in results:
-                    results = [cacheResult]
+                if epObj.episode not in results:
+                    results[epObj.episode] = [result]
                 else:
-                    results.append(cacheResult)
+                    results[epObj.episode].append(result)
 
                 # found result, search next episode
                 continue
