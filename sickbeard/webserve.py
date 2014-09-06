@@ -1477,7 +1477,7 @@ class ConfigGeneral(MainHandler):
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, play_videos=None):
+                    indexer_timeout=None, play_videos=None, rootDir=None):
 
         results = []
 
@@ -1488,6 +1488,7 @@ class ConfigGeneral(MainHandler):
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
+        sickbeard.ROOT_DIRS = rootDir
 
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
         config.change_UPDATE_FREQUENCY(update_frequency)
