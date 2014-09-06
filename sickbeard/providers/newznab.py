@@ -37,6 +37,9 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex, AuthException
 
+from lib import requests
+from lib.requests import exceptions
+from lib.bencode import bdecode
 
 class NewznabProvider(generic.NZBProvider):
     def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
@@ -85,6 +88,52 @@ class NewznabProvider(generic.NZBProvider):
 
     def isEnabled(self):
         return self.enabled
+
+    def _getURL(self, url, post_data=None, params=None, timeout=30, json=False):
+        """
+        By default this is just a simple urlopen call but this method should be overridden
+        for providers with special URL requirements (like cookies)
+        Not really changed much from the superclass, can be used in future.
+        """
+
+        # check for auth
+        if not self._doLogin():
+            return
+
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+                              session=self.session, json=json)
+    
+    def get_newznab_categories(self):
+        """
+        Uses the newznab provider url and apikey to get the capabilities.
+        Makes use of the default newznab caps param. e.a. http://yournewznab/api?t=caps&apikey=skdfiw7823sdkdsfjsfk
+        Returns a tuple with (succes or not, array with dicts [{"id": "5070", "name": "Anime"}, 
+        {"id": "5080", "name": "Documentary"}, {"id": "5020", "name": "Foreign"}...etc}], error message)
+        """
+        return_categories = []
+        
+        self._checkAuth()
+        
+        params = {"t": "caps"}
+        if self.needs_auth and self.key:
+            params['apikey'] = self.key
+
+        categories = self.getURL("%s/api" % (self.url), params=params)
+        
+        xml_categories = helpers.parse_xml(categories)
+        
+        if not xml_categories:
+            return (False, return_categories, "Error parsing xml for [%s]" % (self.name))        
+            
+        try:
+            for category in xml_categories.iter('category'):
+                if category.get('name') == 'TV':
+                        for subcat in category.findall('subcat'):
+                            return_categories.append(subcat.attrib)
+        except:
+            return (False, return_categories, "Error parsing result for [%s]" % (self.name))                                         
+          
+        return (True, return_categories, "")
 
     def _get_season_search_strings(self, ep_obj):
 

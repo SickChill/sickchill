@@ -1909,6 +1909,34 @@ class ConfigProviders(MainHandler):
             sickbeard.newznabProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
+    def getNewznabCategories(self, name, url, key):
+        '''
+        Retrieves a list of possible categories with category id's
+        Using the default url/api?cat
+        http://yournewznaburl.com/api?t=caps&apikey=yourapikey
+        '''
+        error = ""
+        success = False
+        
+        if not name:
+            error += "\nNo Provider Name specified" 
+        if not url:
+            error += "\nNo Provider Url specified"
+        if not key:
+            error += "\nNo Provider Api key specified"
+            
+        if error <> "":
+            return json.dumps({'success' : False, 'error': error})
+        
+        #Get list with Newznabproviders        
+        #providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        
+        #Get newznabprovider obj with provided name
+        tempProvider= newznab.NewznabProvider(name, url, key)
+        
+        success, tv_categories, error = tempProvider.get_newznab_categories()
+        
+        return json.dumps({'success' : success,'tv_categories' : tv_categories, 'error' : error})
 
     def deleteNewznabProvider(self, nnid):
 
@@ -2002,24 +2030,25 @@ class ConfigProviders(MainHandler):
                 if not curNewznabProviderStr:
                     continue
 
-                cur_name, cur_url, cur_key = curNewznabProviderStr.split('|')
+                cur_name, cur_url, cur_key, cur_cat = curNewznabProviderStr.split('|')
                 cur_url = config.clean_url(cur_url)
 
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
+
                 cur_id = newProvider.getID()
 
                 # if it already exists then update it
                 if cur_id in newznabProviderDict:
                     newznabProviderDict[cur_id].name = cur_name
                     newznabProviderDict[cur_id].url = cur_url
-
                     newznabProviderDict[cur_id].key = cur_key
+                    newznabProviderDict[cur_id].catIDs = cur_cat 
                     # a 0 in the key spot indicates that no key is needed
                     if cur_key == '0':
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
-
+                    
                     try:
                         newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
                     except:
