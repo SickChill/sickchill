@@ -27,7 +27,7 @@ import sickbeard
 import requests
 
 from sickbeard import helpers, classes, logger, db
-from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
 from sickbeard import tvcache
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
@@ -63,7 +63,10 @@ class GenericProvider:
         self.session = requests.session()
 
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
+            #Using USER_AGENT instead of Mozilla to keep same user agent along authentication and download phases,
+            #otherwise session might be broken and download fail, asking again for authentication
+            #'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
+            'User-Agent': USER_AGENT}
 
     def getID(self):
         return GenericProvider.makeID(self.name)

@@ -13,7 +13,41 @@ $(document).ready(function(){
         });
     }
 
-    $.fn.addProvider = function (id, name, url, key, isDefault, showProvider) {
+    
+    $.fn.getCategories = function (isDefault, name, url, key) {
+    	
+    	if (!name)
+    		return;
+    		
+    	if (!url)
+    		return;
+    	
+    	if (!key)
+    		return;
+    	
+    	var params = {url: url, name: name, key: key};
+    	var returnData;
+    	
+    	$.ajaxSetup( { "async": false } );
+    	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
+                function(data){
+                    if (data.error != "") {
+                        alert(data.error);
+                        return false;
+                    }
+                    
+                    if (data.success == false) {
+                    	return false;
+                    }
+                    
+                    console.debug(data.tv_categories);
+                    returnData = data;
+            });
+    	$.ajaxSetup( { "async": true } );
+    	return returnData;
+    }
+    
+    $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
 
 		url = $.trim(url);
 		if (!url)
@@ -25,7 +59,7 @@ $(document).ready(function(){
         if (url.match('/$') == null)
             url = url + '/';
 
-        var newData = [isDefault, [name, url, key]];
+        var newData = [isDefault, [name, url, key, cat]];
         newznabProviders[id] = newData;
 
         if (!isDefault){
@@ -63,10 +97,11 @@ $(document).ready(function(){
 
     }
 
-    $.fn.updateProvider = function (id, url, key) {
+    $.fn.updateProvider = function (id, url, key, cat) {
 
         newznabProviders[id][1][1] = url;
         newznabProviders[id][1][2] = key;
+        newznabProviders[id][1][3] = cat;
 
         $(this).populateNewznabSection();
 
@@ -108,17 +143,49 @@ $(document).ready(function(){
             var isDefault = 0;
             $('#newznab_add_div').show();
             $('#newznab_update_div').hide();
+            $('#newznab_cat').attr('disabled','disabled');
+            $('#newznab_cap').attr('disabled','disabled');
+            
+            $("#newznab_cat option").each(function() {
+            	$(this).remove();
+            	return;
+            });
+            
+            $("#newznab_cap option").each(function() {
+            	$(this).remove();
+            	return;
+            });
+            
         } else {
             var data = newznabProviders[selectedProvider][1];
             var isDefault = newznabProviders[selectedProvider][0];
             $('#newznab_add_div').hide();
             $('#newznab_update_div').show();
+            $('#newznab_cat').removeAttr("disabled");
+            $('#newznab_cap').removeAttr("disabled");
         }
 
         $('#newznab_name').val(data[0]);
         $('#newznab_url').val(data[1]);
         $('#newznab_key').val(data[2]);
-
+        
+        //Check if not already array
+        if (typeof data[3] === 'string') {
+        	rrcat = data[3].split(",")
+        } 
+        else {
+        	rrcat = data[3];
+        }
+        
+        // Update the category select box (on the right)
+        var newCatOptions = [];
+        if (rrcat) {
+        	rrcat.forEach(function (cat) {
+        		newCatOptions.push({text : cat, value : cat});
+            });
+        	$("#newznab_cat").replaceOptions(newCatOptions);
+        };
+        
         if (selectedProvider == 'addNewznab') {
             $('#newznab_name').removeAttr("disabled");
             $('#newznab_url').removeAttr("disabled");
@@ -132,11 +199,51 @@ $(document).ready(function(){
             } else {
                 $('#newznab_url').removeAttr("disabled");
                 $('#newznab_delete').removeAttr("disabled");
+                
+                //Get Categories Capabilities
+                if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
+                	var categoryresult = $(this).getCategories(isDefault, data[0], data[1], data[2]);
+                    if (categoryresult && categoryresult.success && categoryresult.tv_categories) {
+                    	$.fn.newznabProvidersCapabilities.push({'name' : data[0], 'categories' : categoryresult.tv_categories});
+                    }
+
+                }
+                
+                //Loop through the array and if currently selected newznab provider name matches one in the array, use it to
+                //update the capabilities select box (on the left).
+                if (data[0]) {
+                	$.fn.newznabProvidersCapabilities.forEach(function(newzNabCap) {
+                    	                    	
+                    	if (newzNabCap.name && newzNabCap.name == data[0] && newzNabCap.categories instanceof Array) {
+                    			var newCapOptions = [];
+                				newzNabCap.categories.forEach(function(category_set) {
+                					if (category_set.id && category_set.name) { 
+                						newCapOptions.push({value : category_set.id, text : category_set.name + "(" + category_set.id + ")"});
+                					};
+                				});
+                				$("#newznab_cap").replaceOptions(newCapOptions);
+                    	}
+                    	
+                    });
+                };
+                
             }
         }
 
     }
 
+    ifExists = function(loopThroughArray, searchFor) {
+    	var found = false;
+    	
+    	loopThroughArray.forEach(function(rootObject) { 
+    		if (rootObject.name == searchFor) {
+    			found = true;
+    		}
+    		console.log(rootObject.name + " while searching for: "+  searchFor);
+    	});
+    	return found;
+    };
+    
     $.fn.makeNewznabProviderString = function() {
 
         var provStrings = new Array();
@@ -294,9 +401,10 @@ $(document).ready(function(){
         provider_id = provider_id.substring(0, provider_id.length-'_hash'.length);
 
         var url = $('#'+provider_id+'_url').val();
+        var cat = $('#'+provider_id+'_cat').val();
         var key = $(this).val();
 
-        $(this).updateProvider(provider_id, url, key);
+        $(this).updateProvider(provider_id, url, key, cat);
 
     });
 
@@ -310,7 +418,11 @@ $(document).ready(function(){
         var url = $('#newznab_url').val();
         var key = $('#newznab_key').val();
 
-        $(this).updateProvider(selectedProvider, url, key);
+        var cat = $('#newznab_cat option').map(function(i, opt) {
+        	  return $(opt).text();
+        	}).toArray().join(',');
+        
+        $(this).updateProvider(selectedProvider, url, key, cat);
 
     });
 
@@ -344,6 +456,48 @@ $(document).ready(function(){
         $(this).refreshProviderList();
     });
 
+    $(this).on('click', '#newznab_cat_update', function(){
+        console.debug('Clicked Button');
+        
+        //Maybe check if there is anything selected?
+        $("#newznab_cat option").each(function() {
+        	$(this).remove();
+        	return;
+        });
+        
+        var newOptions = [];
+        
+        // When the update botton is clicked, loop through the capabilities list 
+        // and copy the selected category id's to the category list on the right.
+        $("#newznab_cap option").each(function(){
+            if($(this).attr('selected') == 'selected')
+            {
+            	var selected_cat = $(this).val();
+            	console.debug(selected_cat);
+            	newOptions.push({text: selected_cat, value: selected_cat})
+             };
+        });
+        
+        $("#newznab_cat").replaceOptions(newOptions);
+        
+        var selectedProvider = $('#editANewznabProvider :selected').val();
+        if (selectedProvider == "addNewznab")
+            return;
+          
+	    var url = $('#newznab_url').val();
+	    var key = $('#newznab_key').val();
+
+	    var cat = $('#newznab_cat option').map(function(i, opt) {
+      	  return $(opt).text();
+      	}).toArray().join(',');
+	    
+	    $("#newznab_cat option:not([value])").remove();
+	    
+        $(this).updateProvider(selectedProvider, url, key, cat);
+
+    });
+    
+    
     $('#newznab_add').click(function(){
 
         var selectedProvider = $('#editANewznabProvider :selected').val();
@@ -351,6 +505,11 @@ $(document).ready(function(){
         var name = $.trim($('#newznab_name').val());
         var url = $.trim($('#newznab_url').val());
         var key = $.trim($('#newznab_key').val());
+        //var cat = $.trim($('#newznab_cat').val());
+        
+        var cat = $.trim($('#newznab_cat option').map(function(i, opt) {
+        	  return $(opt).text();}).toArray().join(','));
+        
         
         if (!name)
         	return;
@@ -371,7 +530,7 @@ $(document).ready(function(){
                     return;
                 }
 
-                $(this).addProvider(data.success, name, url, key, 0);
+                $(this).addProvider(data.success, name, url, key, cat, 0);
         });
 
     });
@@ -465,9 +624,27 @@ $(document).ready(function(){
 		$(this).makeTorrentOptionString(provider_id);
 
     });
+    
+    
+    $.fn.replaceOptions = function(options) {
+        var self, $option;
+
+        this.empty();
+        self = this;
+
+        $.each(options, function(index, option) {
+          $option = $("<option></option>")
+            .attr("value", option.value)
+            .text(option.text);
+          self.append($option);
+        });
+      };
 
     // initialization stuff
 
+    
+    $.fn.newznabProvidersCapabilities = [];
+    
     $(this).hideConfigTab();
 
     $(this).showHideProviders();

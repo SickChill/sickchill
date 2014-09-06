@@ -1909,6 +1909,34 @@ class ConfigProviders(MainHandler):
             sickbeard.newznabProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
+    def getNewznabCategories(self, name, url, key):
+        '''
+        Retrieves a list of possible categories with category id's
+        Using the default url/api?cat
+        http://yournewznaburl.com/api?t=caps&apikey=yourapikey
+        '''
+        error = ""
+        success = False
+        
+        if not name:
+            error += "\nNo Provider Name specified" 
+        if not url:
+            error += "\nNo Provider Url specified"
+        if not key:
+            error += "\nNo Provider Api key specified"
+            
+        if error <> "":
+            return json.dumps({'success' : False, 'error': error})
+        
+        #Get list with Newznabproviders        
+        #providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        
+        #Get newznabprovider obj with provided name
+        tempProvider= newznab.NewznabProvider(name, url, key)
+        
+        success, tv_categories, error = tempProvider.get_newznab_categories()
+        
+        return json.dumps({'success' : success,'tv_categories' : tv_categories, 'error' : error})
 
     def deleteNewznabProvider(self, nnid):
 
@@ -2002,24 +2030,25 @@ class ConfigProviders(MainHandler):
                 if not curNewznabProviderStr:
                     continue
 
-                cur_name, cur_url, cur_key = curNewznabProviderStr.split('|')
+                cur_name, cur_url, cur_key, cur_cat = curNewznabProviderStr.split('|')
                 cur_url = config.clean_url(cur_url)
 
                 newProvider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key)
+
                 cur_id = newProvider.getID()
 
                 # if it already exists then update it
                 if cur_id in newznabProviderDict:
                     newznabProviderDict[cur_id].name = cur_name
                     newznabProviderDict[cur_id].url = cur_url
-
                     newznabProviderDict[cur_id].key = cur_key
+                    newznabProviderDict[cur_id].catIDs = cur_cat 
                     # a 0 in the key spot indicates that no key is needed
                     if cur_key == '0':
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
-
+                    
                     try:
                         newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
                     except:
@@ -2029,19 +2058,19 @@ class ConfigProviders(MainHandler):
                         newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(
                             kwargs[cur_id + '_search_fallback'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].search_fallback = 0
 
                     try:
                         newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(
                             kwargs[cur_id + '_enable_daily'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].enable_daily = 0
 
                     try:
                         newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(
                             kwargs[cur_id + '_enable_backlog'])
                     except:
-                        pass
+                        newznabProviderDict[cur_id].enable_backlog = 0
                 else:
                     sickbeard.newznabProviderList.append(newProvider)
 
@@ -2196,21 +2225,21 @@ class ConfigProviders(MainHandler):
                     curTorrentProvider.search_fallback = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_search_fallback'])
                 except:
-                    curTorrentProvider.search_fallback = 0
+                    curTorrentProvider.search_fallback = 0  # these exceptions are catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'enable_daily'):
                 try:
                     curTorrentProvider.enable_daily = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_enable_daily'])
                 except:
-                    curTorrentProvider.enable_daily = 1
+                    curTorrentProvider.enable_daily = 0 # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'enable_backlog'):
                 try:
                     curTorrentProvider.enable_backlog = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_enable_backlog'])
                 except:
-                    curTorrentProvider.enable_backlog = 1
+                    curTorrentProvider.enable_backlog = 0 # these exceptions are actually catching unselected checkboxes
 
         for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                curProvider.providerType == sickbeard.GenericProvider.NZB]:
@@ -2238,21 +2267,21 @@ class ConfigProviders(MainHandler):
                     curNzbProvider.search_fallback = config.checkbox_to_value(
                         kwargs[curNzbProvider.getID() + '_search_fallback'])
                 except:
-                    curNzbProvider.search_fallback = 0
+                    curNzbProvider.search_fallback = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curNzbProvider, 'enable_daily'):
                 try:
                     curNzbProvider.enable_daily = config.checkbox_to_value(
                         kwargs[curNzbProvider.getID() + '_enable_daily'])
                 except:
-                    curNzbProvider.enable_daily = 1
+                    curNzbProvider.enable_daily = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curNzbProvider, 'enable_backlog'):
                 try:
                     curNzbProvider.enable_backlog = config.checkbox_to_value(
                         kwargs[curNzbProvider.getID() + '_enable_backlog'])
                 except:
-                    curNzbProvider.enable_backlog = 1
+                    curNzbProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 
         sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = provider_list

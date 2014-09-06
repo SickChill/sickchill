@@ -88,7 +88,7 @@ normal_regexes = [
      # Show Name - 2010-11-23 - Ep Name
      '''
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (?P<air_date>(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))
+     (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
@@ -100,8 +100,8 @@ normal_regexes = [
      # Show Name - 2010-11-23 - Ep Name
      '''
      ^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+
-     ((?P<series_num>\d{1,3}).*?)?
-     (?P<air_date>(\d{2}[. _-]+\d{2}[. _-]+\d{2})|(\d{4}[. _-]+\d{1,2}[. _-]+\d{1,2})|(\d{1,2}\w{2}[. _-]+\w+[. _-]+\d{4})|(\w+[. _-]+\d{1,2}\w{2}[. _-]+\d{4}))[. _-]*
+     ((?P<series_num>\d{1,3})[. _-]+)?
+     (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+
      ((?P<extra_info>.+?)((?<![. _-])
      (?<!WEB)-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$
      '''),

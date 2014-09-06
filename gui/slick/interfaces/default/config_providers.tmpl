@@ -22,7 +22,7 @@
 \$(document).ready(function(){
 var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 #for $curNewznabProvider in $sickbeard.newznabProviderList:
-\$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', $int($curNewznabProvider.default), show_nzb_providers);
+\$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
 #end for
 });
 //-->
@@ -572,6 +572,24 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-desc">(if not required, type 0)</span>
                             </label>
                         </div>
+                        
+                        <div class="field-pair">
+	                        <label class="nocheck clearfix">
+	                        <span class="component-title">NewzNab search categories</span>
+	                        <select id="newznab_cap" multiple="multiple" style="min-width:10em;" >
+	                        </select>
+							<select id="newznab_cat" multiple="multiple" style="min-width:10em;" >
+							</select>
+	                        </label>
+	                        <label class="clearfix">
+								<span class="component-title">&nbsp;</span>
+	                            <span class="component-desc">(Select your Newznab categories on the left, and click the "update categories" button to use them for searching.)
+	                            Don't forget to to save the form!</span>
+	                            
+							</label>
+							<input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories" />
+                        </div>
+                        
             <div id="newznab_add_div">
                 <input class="btn" type="button" class="newznab_save" id="newznab_add" value="Add" />
             </div>
