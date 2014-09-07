@@ -64,13 +64,11 @@ class FailedProcessor(object):
         logger.log(u" - " + str(parsed.release_group), logger.DEBUG)
         logger.log(u" - " + str(parsed.air_date), logger.DEBUG)
 
-        segment = {parsed.season_number: []}
         for episode in parsed.episode_numbers:
-            epObj = parsed.show.getEpisode(parsed.season_number, episode)
-            segment[parsed.season_number].append(epObj)
+            segment = parsed.show.getEpisode(parsed.season_number, episode)
 
-        cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, segment)
-        sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+            cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, segment)
+            sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True
 

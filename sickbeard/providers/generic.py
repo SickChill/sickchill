@@ -248,7 +248,7 @@ class GenericProvider:
 
         return title, url
 
-    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
 
         self._checkAuth()
         self.show = show

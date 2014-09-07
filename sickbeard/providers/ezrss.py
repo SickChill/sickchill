@@ -60,7 +60,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return quality
 
-    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
 
         self.show = show
 
@@ -71,7 +71,7 @@ class EZRSSProvider(generic.TorrentProvider):
                        logger.WARNING)
             return results
 
-        results = generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
+        results = generic.TorrentProvider.findSearchResults(self, show, episodes, search_mode, manualSearch)
 
         return results
 

@@ -341,9 +341,6 @@ class TVCache():
                            Quality.qualityStrings[curQuality], logger.DEBUG)
                 continue
 
-            # build name cache for show
-            sickbeard.name_cache.buildNameCache(showObj)
-
             if episode:
                 epObj = episode
             else:

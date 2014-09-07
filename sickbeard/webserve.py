@@ -4121,7 +4121,7 @@ class Home(MainHandler):
             else:
                 return self._genericMessage("Error", errMsg)
 
-        segment = {}
+        segments = {}
         if eps is not None:
 
             sql_l = []
@@ -4138,10 +4138,10 @@ class Home(MainHandler):
 
                 if int(status) in [WANTED, FAILED]:
                     # figure out what episodes are wanted so we can backlog them
-                    if epObj.season in segment:
-                        segment[epObj.season].append(epObj)
+                    if epObj.season in segments:
+                        segments[epObj.season].append(epObj)
                     else:
-                        segment[epObj.season] = [epObj]
+                        segments[epObj.season] = [epObj]
 
                 with epObj.lock:
                     # don't let them mess up UNAIRED episodes
@@ -4175,30 +4175,34 @@ class Home(MainHandler):
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
-            for season in segment:
+
+            for season, segment in segments.items():
+                cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
+                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
+
                 msg += "<li>Season " + str(season) + "</li>"
                 logger.log(u"Sending backlog for " + showObj.name + " season " + str(
                     season) + " because some eps were set to wanted")
+
             msg += "</ul>"
 
-            cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
-            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
-
-            if segment:
+            if segments:
                 ui.notifications.message("Backlog started", msg)
 
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
-            for season in segment:
+
+            for season, segment in segments.items():
+                cur_failed_queue_item = search_queue.FailedQueueItem(showObj, segment)
+                sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)  # @UndefinedVariable
+
                 msg += "<li>Season " + str(season) + "</li>"
                 logger.log(u"Retrying Search for " + showObj.name + " season " + str(
                     season) + " because some eps were set to failed")
+
             msg += "</ul>"
 
-            cur_failed_queue_item = search_queue.FailedQueueItem(showObj, segment)
-            sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)  # @UndefinedVariable
-
-            if segment:
+            if segments:
                 ui.notifications.message("Retry Search started", msg)
 
         if direct:
@@ -4440,11 +4444,8 @@ class Home(MainHandler):
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
-        # create failed segment
-        segment = {season: [ep_obj]}
-
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, segment)
+        ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, ep_obj)
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not

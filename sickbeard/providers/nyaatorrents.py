@@ -55,8 +55,8 @@ class NyaaProvider(generic.TorrentProvider):
         quality = Quality.sceneQuality(title)
         return quality
 
-    def findSearchResults(self, show, season, episodes, search_mode, manualSearch=False):
-        return generic.TorrentProvider.findSearchResults(self, show, season, episodes, search_mode, manualSearch)
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
+        return generic.TorrentProvider.findSearchResults(self, show, episodes, search_mode, manualSearch)
 
     def _get_season_search_strings(self, ep_obj):
         return show_name_helpers.makeSceneShowSearchStrings(self.show)

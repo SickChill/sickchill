@@ -969,7 +969,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         ep_results = []
         failure = False
         start_backlog = False
-        ep_segment = {}
+        segments = {}
 
         sql_l = []
         for epObj in ep_list:
@@ -977,9 +977,9 @@ class CMD_EpisodeSetStatus(ApiCall):
                 if self.status == WANTED:
                     # figure out what episodes are wanted so we can backlog them
                     if epObj.season in ep_segment:
-                        ep_segment[epObj.season].append(epObj)
+                        segments[epObj.season].append(epObj)
                     else:
-                        ep_segment[epObj.season] = [epObj]
+                        segments[epObj.season] = [epObj]
 
                 # don't let them mess up UNAIRED episodes
                 if epObj.status == UNAIRED:
@@ -1009,11 +1009,13 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         extra_msg = ""
         if start_backlog:
-            cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, ep_segment)
-            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  #@UndefinedVariable
-            for season in ep_segment:
+            for season, segment in segments.items():
+                cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
+                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  #@UndefinedVariable
+
                 logger.log(u"API :: Starting backlog for " + showObj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
+
             extra_msg = " Backlog started"
 
         if failure:

@@ -31,7 +31,6 @@ from lib.trakt import *
 class TraktChecker():
     def __init__(self):
         self.todoWanted = []
-        self.todoBacklog = []
 
     def run(self, force=False):
         try:
@@ -207,7 +206,7 @@ class TraktChecker():
         epObj = show.getEpisode(int(s), int(e))
         if epObj:
 
-            ep_segment = {}
+            segments = {}
 
             with epObj.lock:
                 if epObj.status != SKIPPED:
@@ -217,35 +216,27 @@ class TraktChecker():
                 # figure out what segment the episode is in and remember it so we can backlog it
 
                 if epObj.season in ep_segment:
-                    ep_segment[epObj.season].append(epObj)
+                    segments[epObj.season].append(epObj)
                 else:
-                    ep_segment[epObj.season] = [epObj]
+                    segments[epObj.season] = [epObj]
 
                 epObj.status = WANTED
                 epObj.saveToDB()
 
-                backlog = (show, ep_segment)
-                if self.todoBacklog.count(backlog) == 0:
-                    self.todoBacklog.append(backlog)
+            for season, segment in segments.items():
+                cur_backlog_queue_item = search_queue.BacklogQueueItem(show, segment[1])
+                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
+                logger.log(u"Starting backlog for " + show.name + " season " + str(
+                    season) + " because some eps were set to wanted")
 
     def manageNewShow(self, show):
         episodes = [i for i in self.todoWanted if i[0] == show.indexerid]
         for episode in episodes:
             self.todoWanted.remove(episode)
+
             if episode[1] == -1 and sickbeard.TRAKT_START_PAUSED:
                 show.paused = 1
                 continue
+
             self.setEpisodeToWanted(show, episode[1], episode[2])
-        self.startBacklog(show)
-
-    def startBacklog(self, show):
-        segments = [i for i in self.todoBacklog if i[0] == show]
-        for segment in segments:
-            cur_backlog_queue_item = search_queue.BacklogQueueItem(show, segment[1])
-            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
-
-            for season in segment[1]:
-                logger.log(u"Starting backlog for " + show.name + " season " + str(
-                    season) + " because some eps were set to wanted")
-                self.todoBacklog.remove(segment)
