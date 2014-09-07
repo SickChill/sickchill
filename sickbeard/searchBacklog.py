@@ -100,7 +100,7 @@ class BacklogSearcher:
             segments = self._get_segments(curShow, fromDate)
 
             for season, segment in segments.items():
-                self.currentSearchInfo = {'title': self.show.name + " Season " + str(season)}
+                self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
                 sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
