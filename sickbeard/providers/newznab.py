@@ -263,55 +263,38 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         results = []
+        offset = total = 0
 
-        while True:
+        while total >= (offset or 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
 
-            if data and 'entries' in data and self._checkAuthFromData(data):
-                for item in data.entries:
-
-                    (title, url) = self._get_title_and_url(item)
-
-                    if title and url:
-                        results.append(item)
-                    else:
-                        logger.log(
-                            u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                            logger.DEBUG)
-
-                # attempt to grab the total and offset newznab responses
-                try:
-                    total = int(data.feed.newznab_response['total'])
-                    offset = int(data.feed.newznab_response['offset'])
-                except (AttributeError, TypeError):
-                    break
-
-                # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
-                if params['limit'] > 1000:
-                    logger.log("Excessive results for search, ending search", logger.WARNING)
-                    break
-
-                # sanity check - total should remain constant
-                if offset != 0 and total != initial_total:
-                    logger.log("Total number of items on newznab response changed, ending search", logger.DEBUG)
-                    break
-                else:
-                    initial_total = total
-
-                # if there are more items available then the amount given in one call, grab some more
-                if (total - params['limit']) > offset == params['offset']:
-                    params['offset'] += params['limit']
-                    logger.log(str(
-                        total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(
-                        params['limit']) + " items.", logger.DEBUG)
-                else:
-                    break
-
-
-            else:
+            if not data or not self._checkAuthFromData(data):
                 break
+
+            for item in data.entries:
+
+                (title, url) = self._get_title_and_url(item)
+
+                if title and url:
+                    results.append(item)
+                else:
+                    logger.log(
+                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
+                        logger.DEBUG)
+
+            # get total and offset attribs
+            if total == 0:
+                total = int(data.feed.newznab_response['total'] or 0)
+            offset = int(data.feed.newznab_response['offset'] or 0)
+
+            # if there are more items available then the amount given in one call, grab some more
+            params['offset'] += params['limit']
+
+            logger.log(str(
+                total - offset) + " more items to be fetched from provider. Fetching another " + str(
+                params['limit']) + " items.", logger.DEBUG)
 
         return results
 

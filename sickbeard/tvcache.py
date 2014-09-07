@@ -309,7 +309,7 @@ class TVCache():
         for curResult in sqlResults:
 
             # skip non-tv crap
-            if not show_name_helpers.filterBadReleases(curResult["name"]):
+            if not show_name_helpers.filterBadReleases(curResult["name"], parse=False):
                 continue
 
             # get the show object, or if it's not one of our shows then ignore it
@@ -340,9 +340,6 @@ class TVCache():
                 logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
                            Quality.qualityStrings[curQuality], logger.DEBUG)
                 continue
-
-            # build name cache for show
-            sickbeard.name_cache.buildNameCache(showObj)
 
             if episode:
                 epObj = episode

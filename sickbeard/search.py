@@ -319,23 +319,6 @@ def isFirstBestMatch(result):
 
     return False
 
-
-def filterSearchResults(show, season, results):
-    foundResults = {}
-
-    # make a list of all the results for this provider
-    for curEp in results:
-        # skip non-tv crap
-        results[curEp] = filter(
-            lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show,results[curEp])
-
-        if curEp in foundResults:
-            foundResults[curEp] += results[curEp]
-        else:
-            foundResults[curEp] = results[curEp]
-
-    return foundResults
-
 def searchForNeededEpisodes():
     foundResults = {}
 
@@ -407,21 +390,11 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, season, episodes, manualSearch=False):
+def searchProviders(show, episodes, manualSearch=False):
     foundResults = {}
     finalResults = []
 
     didSearch = False
-
-    # build name cache for show
-    sickbeard.name_cache.buildNameCache(show)
-
-    # check if we want to search for season packs instead of just season/episode
-    seasonSearch = False
-    if not manualSearch:
-        seasonEps = show.getAllEpisodes(season)
-        if len(seasonEps) == len(episodes):
-            seasonSearch = True
 
     origThreadName = threading.currentThread().name
 
@@ -434,23 +407,21 @@ def searchProviders(show, season, episodes, manualSearch=False):
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
         foundResults[curProvider.name] = {}
-        searchCount = 0
 
-        search_mode = 'eponly'
-        if seasonSearch and curProvider.search_mode == 'sponly':
-            search_mode = curProvider.search_mode
+        searchCount = 0
+        search_mode = curProvider.search_mode
 
         while(True):
             searchCount += 1
 
-            if search_mode == 'sponly':
-                logger.log(u"Searching for " + show.name + " Season " + str(season) + " pack")
+            if search_mode == 'eponly':
+                logger.log(u"Performing episode search for " + show.name)
             else:
-                logger.log(u"Searching for episodes we need from " + show.name + " Season " + str(season))
+                logger.log(u"Performing season pack search for " + show.name)
 
             try:
                 curProvider.cache.updateCache()
-                searchResults = curProvider.findSearchResults(show, season, episodes, search_mode, manualSearch)
+                searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch)
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
@@ -468,7 +439,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 for curEp in searchResults:
                     # skip non-tv crap
                     searchResults[curEp] = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, searchResults[curEp])
+                        lambda x: show_name_helpers.filterBadReleases(x.name, parse=False) and x.show == show, searchResults[curEp])
 
                     if curEp in foundResults:
                         foundResults[curProvider.name][curEp] += searchResults[curEp]
@@ -554,7 +525,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     individualResults = nzbSplitter.splitResult(bestSeasonResult)
 
                     individualResults = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, individualResults)
+                        lambda x: show_name_helpers.filterBadReleases(x.name, parse=False) and x.show == show, individualResults)
 
                     for curResult in individualResults:
                         if len(curResult.episodes) == 1:
