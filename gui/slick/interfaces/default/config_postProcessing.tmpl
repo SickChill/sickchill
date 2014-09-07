@@ -113,6 +113,14 @@
                         </div>
 
                         <div class="field-pair">
+                            <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" #if $sickbeard.POSTPONE_IF_SYNC_FILES == True then "checked=\"checked\"" else ""# />
+                            <label class="clearfix" for="postpone_if_sync_files">
+                                <span class="component-title">Postpone post processing</span>
+                                <span class="component-desc">if !sync files are present in the TV download dir</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <input type="checkbox" name="nfo_rename" id="nfo_rename" #if $sickbeard.NFO_RENAME == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="nfo_rename">
                                 <span class="component-title">Rename .nfo file</span>
