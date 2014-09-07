@@ -265,7 +265,7 @@ class NewznabProvider(generic.NZBProvider):
         results = []
         offset = total = 0
 
-        while total >= offset:
+        while total >= (offset or 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
