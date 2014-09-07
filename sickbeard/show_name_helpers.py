@@ -36,7 +36,7 @@ resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(be
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
 
-def filterBadReleases(name):
+def filterBadReleases(name, parse=True):
     """
     Filters out non-english and just all-around stupid releases by comparing them
     to the resultFilters contents.
@@ -47,7 +47,8 @@ def filterBadReleases(name):
     """
 
     try:
-        NameParser().parse(name)
+        if parse:
+            NameParser().parse(name)
     except InvalidNameException:
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
         return False

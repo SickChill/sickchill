@@ -319,23 +319,6 @@ def isFirstBestMatch(result):
 
     return False
 
-
-def filterSearchResults(show, season, results):
-    foundResults = {}
-
-    # make a list of all the results for this provider
-    for curEp in results:
-        # skip non-tv crap
-        results[curEp] = filter(
-            lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show,results[curEp])
-
-        if curEp in foundResults:
-            foundResults[curEp] += results[curEp]
-        else:
-            foundResults[curEp] = results[curEp]
-
-    return foundResults
-
 def searchForNeededEpisodes():
     foundResults = {}
 
@@ -468,7 +451,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                 for curEp in searchResults:
                     # skip non-tv crap
                     searchResults[curEp] = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, searchResults[curEp])
+                        lambda x: show_name_helpers.filterBadReleases(x.name, parse=False) and x.show == show, searchResults[curEp])
 
                     if curEp in foundResults:
                         foundResults[curProvider.name][curEp] += searchResults[curEp]
@@ -554,7 +537,7 @@ def searchProviders(show, season, episodes, manualSearch=False):
                     individualResults = nzbSplitter.splitResult(bestSeasonResult)
 
                     individualResults = filter(
-                        lambda x: show_name_helpers.filterBadReleases(x.name) and x.show == show, individualResults)
+                        lambda x: show_name_helpers.filterBadReleases(x.name, parse=False) and x.show == show, individualResults)
 
                     for curResult in individualResults:
                         if len(curResult.episodes) == 1:
