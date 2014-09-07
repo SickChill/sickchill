@@ -264,7 +264,10 @@ class NewznabProvider(generic.NZBProvider):
 
         results = []
 
-        while True:
+        # get and set total items available
+
+        offset = total = 0
+        while total >= offset:
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
@@ -281,37 +284,17 @@ class NewznabProvider(generic.NZBProvider):
                             u"The data returned from the " + self.name + " is incomplete, this result is unusable",
                             logger.DEBUG)
 
-                # attempt to grab the total and offset newznab responses
-                try:
-                    total = int(data.feed.newznab_response['total'])
-                    offset = int(data.feed.newznab_response['offset'])
-                except (AttributeError, TypeError):
-                    break
-
-                # sanity check - limiting at 10 at getting 1000 results in-case incorrect total parameter is reported
-                if params['limit'] > 1000:
-                    logger.log("Excessive results for search, ending search", logger.WARNING)
-                    break
-
-                # sanity check - total should remain constant
-                if offset != 0 and total != initial_total:
-                    logger.log("Total number of items on newznab response changed, ending search", logger.DEBUG)
-                    break
-                else:
-                    initial_total = total
+                # get total and offset attribs
+                if total == 0:
+                    total = int(data.feed.newznab_response['total'] or 0)
+                offset = int(data.feed.newznab_response['offset'] or 0)
 
                 # if there are more items available then the amount given in one call, grab some more
-                if (total - params['limit']) > offset == params['offset']:
-                    params['offset'] += params['limit']
-                    logger.log(str(
-                        total - params['offset']) + " more items to be fetched from provider. Fetching another " + str(
-                        params['limit']) + " items.", logger.DEBUG)
-                else:
-                    break
+                params['offset'] += params['limit']
 
-
-            else:
-                break
+                logger.log(str(
+                    total - offset) + " more items to be fetched from provider. Fetching another " + str(
+                    params['limit']) + " items.", logger.DEBUG)
 
         return results
 
