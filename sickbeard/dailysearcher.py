@@ -49,9 +49,17 @@ class DailySearcher():
                                  [common.UNAIRED, curDate])
 
         sql_l = []
+        show = None
+
         for sqlEp in sqlResults:
+
             try:
-                show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+                if not show or (show and int(sqlEp["showid"]) != show.indexerid):
+                    show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
+
+                    # build name cache for show
+                    sickbeard.name_cache.buildNameCache(show)
+
             except exceptions.MultipleShowObjectsException:
                 logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
                 continue

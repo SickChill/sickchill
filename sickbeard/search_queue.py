@@ -82,17 +82,19 @@ class SearchQueue(generic_queue.GenericQueue):
             # daily searches
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+            # build name cache for show
+            sickbeard.name_cache.buildNameCache(item.show)
+
             # backlog searches
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)) and not self.is_ep_in_queue(item.segment):
+            # build name cache for show
+            sickbeard.name_cache.buildNameCache(item.show)
+
             # manual and failed searches
             generic_queue.GenericQueue.add_item(self, item)
         else:
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
-            return
-
-        # build name cache for show
-        sickbeard.name_cache.buildNameCache(item.show)
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
