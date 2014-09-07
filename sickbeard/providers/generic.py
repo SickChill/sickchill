@@ -37,6 +37,7 @@ from sickbeard import clients
 
 from hachoir_parser import createParser
 
+
 class GenericProvider:
     NZB = "nzb"
     TORRENT = "torrent"
@@ -63,7 +64,7 @@ class GenericProvider:
         self.session = requests.session()
 
         self.headers = {
-            #Using USER_AGENT instead of Mozilla to keep same user agent along authentication and download phases,
+            # Using USER_AGENT instead of Mozilla to keep same user agent along authentication and download phases,
             #otherwise session might be broken and download fail, asking again for authentication
             #'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
             'User-Agent': USER_AGENT}
@@ -335,16 +336,15 @@ class GenericProvider:
                         logger.DEBUG)
                     addCacheEntry = True
                 else:
-                    if not len(parse_result.episode_numbers) and (
-                                parse_result.season_number and parse_result.season_number != season) or (
-                                not parse_result.season_number and season != 1):
+                    if not len(parse_result.episode_numbers) and parse_result.season_number and not [ep for ep in
+                                                                                                     episodes if
+                                                                                                     ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
                             u"The result " + title + " doesn't seem to be a valid season that we are trying to snatch, ignoring",
                             logger.DEBUG)
                         addCacheEntry = True
-                    elif len(parse_result.episode_numbers) and (
-                                    parse_result.season_number != season or not [ep for ep in episodes if
-                                                                                 ep.scene_episode in parse_result.episode_numbers]):
+                    elif len(parse_result.episode_numbers) and not [ep for ep in episodes if
+                                                                    ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers]:
                         logger.log(
                             u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
                             logger.DEBUG)
@@ -352,7 +352,7 @@ class GenericProvider:
 
                 if not addCacheEntry:
                     # we just use the existing info for normal searches
-                    actual_season = season
+                    actual_season = parse_result.season_number
                     actual_episodes = parse_result.episode_numbers
             else:
                 if not (parse_result.is_air_by_date):
