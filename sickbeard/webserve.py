@@ -596,6 +596,7 @@ class ManageSearches(MainHandler):
         t.backlogRunning = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
         t.dailySearchStatus = sickbeard.dailySearchScheduler.action.amActive  # @UndefinedVariable
         t.findPropersStatus = sickbeard.properFinderScheduler.action.amActive  # @UndefinedVariable
+        t.queueLength = sickbeard.searchQueueScheduler.action.queue_length()
 
         t.submenu = ManageMenu()
 
