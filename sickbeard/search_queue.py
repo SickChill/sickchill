@@ -81,9 +81,9 @@ class SearchQueue(generic_queue.GenericQueue):
         length = {'backlog': 0, 'daily': 0, 'manual': 0, 'failed': 0}
         for cur_item in self.queue:
             if isinstance(cur_item, DailySearchQueueItem):
-                length['backlog'] += 1
-            elif isinstance(cur_item, BacklogQueueItem):
                 length['daily'] += 1
+            elif isinstance(cur_item, BacklogQueueItem):
+                length['backlog'] += 1
             elif isinstance(cur_item, ManualSearchQueueItem):
                 length['manual'] += 1
             elif isinstance(cur_item, FailedQueueItem):
