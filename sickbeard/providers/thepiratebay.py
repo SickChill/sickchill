@@ -177,7 +177,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 ep_string = show_name + ' Season ' + str(ep_obj.airdate).split('-')[0]
                 search_string['Season'].append(ep_string)
             elif ep_obj.show.anime:
-                ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
+                ep_string = show_name + ' ' + "%02d" % ep_obj.scene_absolute_number
                 search_string['Season'].append(ep_string)
             else:
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)
@@ -207,7 +207,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         elif self.show.anime:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            "%i" % int(ep_obj.scene_absolute_number)
+                            "%02i" % int(ep_obj.scene_absolute_number)
                 search_string['Episode'].append(ep_string)
         else:
             for show_name in set(allPossibleShowNames(self.show)):
