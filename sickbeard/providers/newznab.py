@@ -303,6 +303,10 @@ class NewznabProvider(generic.NZBProvider):
                 total = int(data.feed.newznab_response['total'] or 0)
             offset = int(data.feed.newznab_response['offset'] or 0)
 
+            if offset != params['offset']:
+                logger.log("Tell your newznab provider to fix their bloody newznab responses")
+                break
+
             # if there are more items available then the amount given in one call, grab some more
             params['offset'] += params['limit']
 
