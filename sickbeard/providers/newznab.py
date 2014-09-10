@@ -269,13 +269,17 @@ class NewznabProvider(generic.NZBProvider):
         if search_params:
             params.update(search_params)
 
+        if 'rid' not in search_params and 'q' not in search_params:
+            logger.log("Error no rid or search term given. Report to forums with a full debug log")
+            return []
+
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
         results = []
         offset = total = 0
 
-        while total >= (offset or 1000):
+        while (total >= offset) and (offset < 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
