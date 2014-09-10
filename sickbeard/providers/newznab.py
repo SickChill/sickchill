@@ -118,11 +118,19 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        categories = self.getURL("%s/api" % (self.url), params=params)
+        try:
+            categories = self.getURL("%s/api" % (self.url), params=params, timeout=10)
+        except:
+            logger.log(u"Error getting html for [%s]" % 
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
+            return (False, return_categories, "Error getting html for [%s]" % 
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
         
         xml_categories = helpers.parse_xml(categories)
         
         if not xml_categories:
+            logger.log(u"Error parsing xml for [%s]" % (self.name),
+                       logger.DEBUG)
             return (False, return_categories, "Error parsing xml for [%s]" % (self.name))        
             
         try:
@@ -131,6 +139,8 @@ class NewznabProvider(generic.NZBProvider):
                         for subcat in category.findall('subcat'):
                             return_categories.append(subcat.attrib)
         except:
+            logger.log(u"Error parsing result for [%s]" % (self.name),
+                       logger.DEBUG)
             return (False, return_categories, "Error parsing result for [%s]" % (self.name))                                         
           
         return (True, return_categories, "")

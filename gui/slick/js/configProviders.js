@@ -32,7 +32,6 @@ $(document).ready(function(){
     	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
                 function(data){
                     if (data.error != "") {
-                        alert(data.error);
                         return false;
                     }
                     
@@ -661,4 +660,5 @@ $(document).ready(function(){
 
     $("#provider_order_list").disableSelection();
 
+});
 });
