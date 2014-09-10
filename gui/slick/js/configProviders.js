@@ -661,4 +661,3 @@ $(document).ready(function(){
     $("#provider_order_list").disableSelection();
 
 });
-});
