@@ -50,7 +50,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
         return self.enabled
 
     def imageName(self):
-        return 'nyaatorrents.png'
+        return 'tokyotoshokan.png'
 
     def _get_title_and_url(self, item):
 
