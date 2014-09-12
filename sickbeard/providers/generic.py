@@ -36,7 +36,7 @@ from sickbeard.common import Quality
 from sickbeard import clients
 
 from hachoir_parser import createParser
-
+from base64 import b16encode, b32decode
 
 class GenericProvider:
     NZB = "nzb"
@@ -140,6 +140,10 @@ class GenericProvider:
         if self.providerType == GenericProvider.TORRENT:
             try:
                 torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
+
+                if len(torrent_hash) == 32:
+                    torrent_hash = b16encode(b32decode(torrent_hash)).lower()
+
                 if not torrent_hash:
                     logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
                     return False
