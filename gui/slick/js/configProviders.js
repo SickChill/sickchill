@@ -13,8 +13,18 @@ $(document).ready(function(){
         });
     }
 
-    
-    $.fn.getCategories = function (isDefault, name, url, key) {
+    /**
+     * Gets categories for the provided newznab provider.
+     * @param {String} isDefault
+     * @param {Array} selectedProvider
+     * @return no return data. Function updateNewznabCaps() is run at callback
+     */
+    $.fn.getCategories = function (isDefault, selectedProvider) {
+    	
+    	var name = selectedProvider[0];
+    	var url = selectedProvider[1];
+    	var key = selectedProvider[2];
+    	
     	
     	if (!name)
     		return;
@@ -28,23 +38,11 @@ $(document).ready(function(){
     	var params = {url: url, name: name, key: key};
     	var returnData;
     	
-    	$.ajaxSetup( { "async": false } );
     	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
                 function(data){
-                    if (data.error != "") {
-                        alert(data.error);
-                        return false;
-                    }
-                    
-                    if (data.success == false) {
-                    	return false;
-                    }
-                    
+                    updateNewznabCaps( data, selectedProvider );
                     console.debug(data.tv_categories);
-                    returnData = data;
             });
-    	$.ajaxSetup( { "async": true } );
-    	return returnData;
     }
     
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
@@ -202,30 +200,13 @@ $(document).ready(function(){
                 
                 //Get Categories Capabilities
                 if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
-                	var categoryresult = $(this).getCategories(isDefault, data[0], data[1], data[2]);
-                    if (categoryresult && categoryresult.success && categoryresult.tv_categories) {
-                    	$.fn.newznabProvidersCapabilities.push({'name' : data[0], 'categories' : categoryresult.tv_categories});
-                    }
-
+                	$(this).getCategories(isDefault, data);
+                }
+                else {
+                	updateNewznabCaps( null, data );
                 }
                 
-                //Loop through the array and if currently selected newznab provider name matches one in the array, use it to
-                //update the capabilities select box (on the left).
-                if (data[0]) {
-                	$.fn.newznabProvidersCapabilities.forEach(function(newzNabCap) {
-                    	                    	
-                    	if (newzNabCap.name && newzNabCap.name == data[0] && newzNabCap.categories instanceof Array) {
-                    			var newCapOptions = [];
-                				newzNabCap.categories.forEach(function(category_set) {
-                					if (category_set.id && category_set.name) { 
-                						newCapOptions.push({value : category_set.id, text : category_set.name + "(" + category_set.id + ")"});
-                					};
-                				});
-                				$("#newznab_cap").replaceOptions(newCapOptions);
-                    	}
-                    	
-                    });
-                };
+                
                 
             }
         }
@@ -243,6 +224,41 @@ $(document).ready(function(){
     	});
     	return found;
     };
+    
+    /**
+     * Updates the Global array $.fn.newznabProvidersCapabilities with a combination of newznab prov name 
+     * and category capabilities. Return
+     * @param {Array} newzNabCaps, is the returned object with newzNabprod Name and Capabilities.
+     * @param {Array} selectedProvider
+     * @return no return data. The multiselect input $("#newznab_cap") is updated, as a result.
+     */
+    updateNewznabCaps = function( newzNabCaps, selectedProvider ) {
+    	
+    	if (newzNabCaps && !ifExists($.fn.newznabProvidersCapabilities, selectedProvider[0])) {
+    		$.fn.newznabProvidersCapabilities.push({'name' : selectedProvider[0], 'categories' : newzNabCaps.tv_categories});
+    	}
+    	
+    	//Loop through the array and if currently selected newznab provider name matches one in the array, use it to
+        //update the capabilities select box (on the left).
+        if (selectedProvider[0]) {
+        	$.fn.newznabProvidersCapabilities.forEach(function(newzNabCap) {
+            	                    	
+            	if (newzNabCap.name && newzNabCap.name == selectedProvider[0] && newzNabCap.categories instanceof Array) {
+            			var newCapOptions = [];
+            			newzNabCap.categories.forEach(function(category_set) {
+        					if (category_set.id && category_set.name) { 
+        						newCapOptions.push({value : category_set.id, text : category_set.name + "(" + category_set.id + ")"});
+        					};
+        				});
+        				$("#newznab_cap").replaceOptions(newCapOptions);
+            	}
+            	
+            });
+        };
+        
+        
+        
+    }
     
     $.fn.makeNewznabProviderString = function() {
 

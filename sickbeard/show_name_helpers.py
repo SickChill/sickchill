@@ -143,7 +143,7 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
                     common.SNATCHED) and curQuality < highestBestQuality) or curStatus == common.WANTED:
                 ab_number = episode.scene_absolute_number
                 if ab_number > 0:
-                    seasonStrings.append("%d" % ab_number)
+                    seasonStrings.append("%02d" % ab_number)
 
     else:
         myDB = db.DBConnection()
@@ -190,7 +190,7 @@ def makeSceneSearchString(show, ep_obj):
     if (show.air_by_date or show.sports) and ep_obj.airdate != datetime.date.fromordinal(1):
         epStrings = [str(ep_obj.airdate)]
     elif show.is_anime:
-        epStrings = ["%i" % int(ep_obj.scene_absolute_number)]
+        epStrings = ["%02i" % int(ep_obj.scene_absolute_number)]
     else:
         epStrings = ["S%02iE%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode)),
                      "%ix%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode))]

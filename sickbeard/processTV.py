@@ -140,8 +140,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     SyncFiles = filter(helpers.isSyncFile, files)
 
-    # Don't post process if files are still being synced
-    if SyncFiles:
+    # Don't post process if files are still being synced and option is activated
+    if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
         returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
         return returnStr
 
@@ -188,8 +188,8 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
             SyncFiles = filter(helpers.isSyncFile, fileList)
 
-            # Don't post process if files are still being synced
-            if SyncFiles:
+            # Don't post process if files are still being synced and option is activated
+            if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
                 returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
                 return returnStr
 

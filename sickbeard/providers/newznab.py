@@ -118,11 +118,19 @@ class NewznabProvider(generic.NZBProvider):
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
-        categories = self.getURL("%s/api" % (self.url), params=params)
+        try:
+            categories = self.getURL("%s/api" % (self.url), params=params, timeout=10)
+        except:
+            logger.log(u"Error getting html for [%s]" % 
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
+            return (False, return_categories, "Error getting html for [%s]" % 
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
         
         xml_categories = helpers.parse_xml(categories)
         
         if not xml_categories:
+            logger.log(u"Error parsing xml for [%s]" % (self.name),
+                       logger.DEBUG)
             return (False, return_categories, "Error parsing xml for [%s]" % (self.name))        
             
         try:
@@ -131,6 +139,8 @@ class NewznabProvider(generic.NZBProvider):
                         for subcat in category.findall('subcat'):
                             return_categories.append(subcat.attrib)
         except:
+            logger.log(u"Error parsing result for [%s]" % (self.name),
+                       logger.DEBUG)
             return (False, return_categories, "Error parsing result for [%s]" % (self.name))                                         
           
         return (True, return_categories, "")
@@ -259,13 +269,17 @@ class NewznabProvider(generic.NZBProvider):
         if search_params:
             params.update(search_params)
 
+        if 'rid' not in search_params and 'q' not in search_params:
+            logger.log("Error no rid or search term given. Report to forums with a full debug log")
+            return []
+
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
         results = []
         offset = total = 0
 
-        while total >= (offset or 1000):
+        while (total >= offset) and (offset < 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
             data = self.cache.getRSSFeed(search_url)
@@ -288,6 +302,10 @@ class NewznabProvider(generic.NZBProvider):
             if total == 0:
                 total = int(data.feed.newznab_response['total'] or 0)
             offset = int(data.feed.newznab_response['offset'] or 0)
+
+            if offset != params['offset']:
+                logger.log("Tell your newznab provider to fix their bloody newznab responses")
+                break
 
             # if there are more items available then the amount given in one call, grab some more
             params['offset'] += params['limit']
