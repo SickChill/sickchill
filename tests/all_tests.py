@@ -21,12 +21,12 @@
 if __name__ == "__main__":
     import glob
     import unittest
+    import sys
 
     test_file_strings = [ x for x in glob.glob('*_tests.py') if not x in __file__]
     module_strings = [file_string[0:len(file_string) - 3] for file_string in test_file_strings]
     suites = [unittest.defaultTestLoader.loadTestsFromName(file_string) for file_string in module_strings]
     testSuite = unittest.TestSuite(suites)
-
 
     print "=================="
     print "STARTING - ALL TESTS"
@@ -35,5 +35,6 @@ if __name__ == "__main__":
     for includedfiles in test_file_strings:
         print "- " + includedfiles
 
-
     text_runner = unittest.TextTestRunner().run(testSuite)
+    if not text_runner.wasSuccessful():
+        sys.exit(-1)

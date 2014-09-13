@@ -4,11 +4,8 @@ python:
   - 2.6
   - 2.7
 
-# whitelist
-branches:
-  only:
-    - ThePirateBay
-    - Pistachitos
-
+install:
+  - pip install cheetah
+ 
 before_script: cd ./tests
-script: ./all_tests.py
+script: python all_tests.py

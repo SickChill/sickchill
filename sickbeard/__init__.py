@@ -28,6 +28,8 @@ from threading import Lock
 
 # apparently py2exe won't build these unless they're imported somewhere
 import sys
+import os.path
+sys.path.append(os.path.abspath('../lib'))
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
