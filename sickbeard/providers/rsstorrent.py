@@ -53,9 +53,14 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.cookies = cookies
 
     def configStr(self):
-        return self.name + '|' + self.url + '|' + self.cookies + '|' + str(
-            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
-            int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
+        return "%s|%s|%s|%d|%s|%d|%d|%d" % (self.name or '',
+                                            self.url or '',
+                                            self.cookies or '',
+                                            self.enabled,
+                                            self.search_mode or '',
+                                            self.search_fallback,
+                                            self.enable_daily,
+                                            self.enable_backlog)
 
     def imageName(self):
         if ek.ek(os.path.isfile,
