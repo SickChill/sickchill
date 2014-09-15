@@ -368,6 +368,8 @@ class NewznabProvider(generic.NZBProvider):
                     term_items_found = True
                     do_search_alt = False
 
+            time.sleep(0.2)
+
         return results
 
 
