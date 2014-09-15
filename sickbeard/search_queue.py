@@ -49,9 +49,9 @@ class SearchQueue(generic_queue.GenericQueue):
                 return True
         return False
 
-    def is_ep_in_queue(self, ep_obj):
+    def is_ep_in_queue(self, segment):
         for cur_item in self.queue:
-            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.ep_obj == ep_obj:
+            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.segment == segment:
                 return True
         return False
 
