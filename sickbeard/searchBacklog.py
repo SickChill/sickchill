@@ -85,8 +85,8 @@ class BacklogSearcher:
         fromDate = datetime.date.fromordinal(1)
 
         if not which_shows and not curDate - self._lastBacklog >= self.cycleTime:
-            logger.log(u"Running limited backlog on recently missed episodes only")
-            fromDate = datetime.date.today() - datetime.timedelta(days=7)
+            logger.log(u"Running limited backlog on missed episodes " + sickbeard.BACKLOG_DAYS + " day(s) and older only")
+            fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
 
         self.amActive = True
         self.amPaused = False

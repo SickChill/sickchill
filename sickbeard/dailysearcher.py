@@ -40,7 +40,7 @@ class DailySearcher():
 
         self.amActive = True
 
-        logger.log(u"Searching for coming episodes and 1 weeks worth of previously WANTED episodes ...")
+        logger.log(u"Searching for new released episodes ...")
 
         curDate = datetime.date.today().toordinal()
 
@@ -71,6 +71,8 @@ class DailySearcher():
                     wantedEp[show].append(ep)
 
                 sql_l.append(ep.get_sql())
+        else:
+            logger.log(u"No new released episodes found ...")
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
