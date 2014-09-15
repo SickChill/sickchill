@@ -4510,26 +4510,15 @@ class Home(MainHandler):
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, ep_obj)
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
-        # wait until the queue item tells us whether it worked or not
-        while ep_queue_item.success is None:  # @UndefinedVariable
-            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-
-        # return the correct json value
         if ep_queue_item.success:
-            # Find the quality class for the episode
-            quality_class = Quality.qualityStrings[Quality.UNKNOWN]
-            ep_status, ep_quality = Quality.splitCompositeStatus(ep_obj.status)
-            for x in (SD, HD720p, HD1080p):
-                if ep_quality in Quality.splitQuality(x)[0]:
-                    quality_class = qualityPresetStrings[x]
-                    break
-
-            return json.dumps({'result': statusStrings[ep_obj.status],
-                               'quality': quality_class
-            })
-
-        return json.dumps({'result': 'failure'})
-
+            return returnManualSearchResult(ep_queue_item)
+        if not ep_queue_item.started and ep_queue_item.success is None:
+            return json.dumps({'result': 'success'}) #I Actually want to call it queued, because the search hasnt been started yet!
+        if ep_queue_item.started and ep_queue_item.success is None:
+            return json.dumps({'result': 'success'})
+        else:
+            return json.dumps({'result': 'failure'})
+        
 
 class UI(MainHandler):
     def add_message(self):

@@ -241,12 +241,14 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.success = None
+        self.started = None
 
     def run(self):
         generic_queue.QueueItem.run(self)
 
         try:
             logger.log(u"Marking episode as bad: [" + self.segment.prettyName() + "]")
+            self.started = True
             failed_history.markFailed(self.segment)
 
             (release, provider) = failed_history.findRelease(self.segment)
@@ -271,6 +273,9 @@ class FailedQueueItem(generic_queue.QueueItem):
                 logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            
+        ### Keep a list with the 100 last executed searches
+        fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
 
         if self.success is None:
             self.success = False
