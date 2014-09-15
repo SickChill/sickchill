@@ -39,7 +39,7 @@
 			#set $ep_total = 0
 		#end if
 		
-		<b>$shows_total</b> Shows (<b>$shows_active</b> Active) <b>|</b> <b><%=ep_downloaded%>#if $ep_snatched > 0 then " (+" + str($ep_snatched) + " snatched)" else ""# / $ep_total</b> Episodes Downloaded <b>|</b> Daily Search: <b><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></b> <b>|</b> Backlog Search: <b>$sbdatetime.sbdatetime.sbfdate($sickbeard.backlogSearchScheduler.nextRun())</b>
+		<b>$shows_total</b> Shows (<b>$shows_active</b> Active) <b>|</b> <b><%=ep_downloaded%>#if $ep_snatched > 0 then " (+" + str($ep_snatched) + " snatched)" else ""# / $ep_total</b> Episodes Downloaded <b>|</b> Daily Search: <b><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></b> <b>|</b> Backlog Search: <b>$sbdatetime.sbdatetime.sbfdatetime($sickbeard.backlogSearchScheduler.nextRun())</b>
         <p>
         <a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" />Force Version Check</a>
         <a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" />Restart</a>
