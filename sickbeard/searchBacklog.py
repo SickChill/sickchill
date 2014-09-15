@@ -37,9 +37,9 @@ class BacklogSearchScheduler(scheduler.Scheduler):
 
     def nextRun(self):
         if self.action._lastBacklog <= 1:
-            return datetime.datetime.today()
+            return datetime.date.today()
         else:
-            return datetime.datetime.fromordinal(self.action._lastBacklog + self.action.cycleTime)
+            return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
 
 
 class BacklogSearcher:
@@ -86,7 +86,7 @@ class BacklogSearcher:
 
         if not which_shows and not curDate - self._lastBacklog >= self.cycleTime:
             logger.log(u"Running limited backlog on missed episodes " + sickbeard.BACKLOG_DAYS + " day(s) and older only")
-            fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
+            fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard)
 
         self.amActive = True
         self.amPaused = False
