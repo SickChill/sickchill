@@ -319,7 +319,7 @@ def isFirstBestMatch(result):
 
     return False
 
-def searchForNeededEpisodes():
+def searchForNeededEpisodes(episode):
     foundResults = {}
 
     didSearch = False
@@ -333,7 +333,7 @@ def searchForNeededEpisodes():
 
         try:
             curProvider.cache.updateCache()
-            curFoundResults = curProvider.searchRSS()
+            curFoundResults = curProvider.searchRSS(episode)
         except exceptions.AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
             continue

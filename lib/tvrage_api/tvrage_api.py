@@ -577,7 +577,7 @@ class TVRage:
 
         return ui.selectSeries(allSeries)
 
-    def _getShowData(self, sid, seriesSearch=False):
+    def _getShowData(self, sid, getEpInfo=False):
         """Takes a series ID, gets the epInfo URL and parses the TVRAGE
         XML file into the shows dict in layout:
         shows[series_id][season_number][episode_number]
@@ -602,41 +602,39 @@ class TVRage:
             self._setShowData(sid, k, v)
 
         # series search ends here
-        if seriesSearch:
-            return True
+        if getEpInfo:
+            # Parse episode data
+            log().debug('Getting all episodes of %s' % (sid))
 
-        # Parse episode data
-        log().debug('Getting all episodes of %s' % (sid))
+            self.config['params_epInfo']['sid'] = sid
+            epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
 
-        self.config['params_epInfo']['sid'] = sid
-        epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
+            seasons = epsEt['episodelist']['season']
+            if not isinstance(seasons, list):
+                seasons = [seasons]
 
-        seasons = epsEt['episodelist']['season']
-        if not isinstance(seasons, list):
-            seasons = [seasons]
+            for season in seasons:
+                seas_no = int(season['@no'])
+                episodes = season['episode']
+                if not isinstance(episodes, list):
+                    episodes = [episodes]
 
-        for season in seasons:
-            seas_no = int(season['@no'])
-            episodes = season['episode']
-            if not isinstance(episodes, list):
-                episodes = [episodes]
+                for episode in episodes:
+                    ep_no = int(episode['episodenumber'])
+                    self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
 
-            for episode in episodes:
-                ep_no = int(episode['episodenumber'])
-                self._setItem(sid, seas_no, ep_no, 'seasonnumber', seas_no)
+                    for k, v in episode.items():
+                        try:
+                            k = k.lower()
+                            if v is not None:
+                                if k == 'link':
+                                    v = v.rsplit('/', 1)[1]
+                                    k = 'id'
+                                v = self._cleanData(v)
 
-                for k, v in episode.items():
-                    try:
-                        k = k.lower()
-                        if v is not None:
-                            if k == 'link':
-                                v = v.rsplit('/', 1)[1]
-                                k = 'id'
-                            v = self._cleanData(v)
-
-                        self._setItem(sid, seas_no, ep_no, k, v)
-                    except:
-                        continue
+                            self._setItem(sid, seas_no, ep_no, k, v)
+                        except:
+                            continue
         return True
 
     def _nameToSid(self, name):
@@ -652,7 +650,7 @@ class TVRage:
             selected_series = self._getSeries(name)
             if isinstance(selected_series, dict):
                 selected_series = [selected_series]
-            sids = list(int(x['id']) for x in selected_series if self._getShowData(int(x['id']), seriesSearch=True))
+            sids = list(int(x['id']) for x in selected_series if self._getShowData(int(x['id'])))
             self.corrections.update(dict((x['seriesname'], int(x['id'])) for x in selected_series))
             return sids
 
@@ -663,7 +661,7 @@ class TVRage:
         if isinstance(key, (int, long)):
             # Item is integer, treat as show id
             if key not in self.shows:
-                self._getShowData(key)
+                self._getShowData(key, True)
             return self.shows[key]
 
         key = str(key).lower()

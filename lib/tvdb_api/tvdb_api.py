@@ -815,7 +815,7 @@ class Tvdb:
 
         self._setShowData(sid, '_actors', cur_actors)
 
-    def _getShowData(self, sid, language, seriesSearch=False):
+    def _getShowData(self, sid, language, getEpInfo=False):
         """Takes a series ID, gets the epInfo URL and parses the TVDB
         XML file into the shows dict in layout:
         shows[series_id][season_number][episode_number]
@@ -854,62 +854,60 @@ class Tvdb:
 
             self._setShowData(sid, k, v)
 
-        if seriesSearch:
-            return True
+        if getEpInfo:
+            # Parse banners
+            if self.config['banners_enabled']:
+                self._parseBanners(sid)
 
-        # Parse banners
-        if self.config['banners_enabled']:
-            self._parseBanners(sid)
+            # Parse actors
+            if self.config['actors_enabled']:
+                self._parseActors(sid)
 
-        # Parse actors
-        if self.config['actors_enabled']:
-            self._parseActors(sid)
+            # Parse episode data
+            log().debug('Getting all episodes of %s' % (sid))
 
-        # Parse episode data
-        log().debug('Getting all episodes of %s' % (sid))
-
-        if self.config['useZip']:
-            url = self.config['url_epInfo_zip'] % (sid, language)
-        else:
-            url = self.config['url_epInfo'] % (sid, language)
-
-        epsEt = self._getetsrc(url, language=language)
-
-        episodes =  epsEt["episode"]
-        if not isinstance(episodes, list):
-            episodes = [episodes]
-
-        for cur_ep in episodes:
-            if self.config['dvdorder']:
-                log().debug('Using DVD ordering.')
-                use_dvd = cur_ep['dvd_season'] != None and cur_ep['dvd_episodenumber'] != None
+            if self.config['useZip']:
+                url = self.config['url_epInfo_zip'] % (sid, language)
             else:
-                use_dvd = False
+                url = self.config['url_epInfo'] % (sid, language)
 
-            if use_dvd:
-                seasnum, epno = cur_ep['dvd_season'], cur_ep['dvd_episodenumber']
-            else:
-                seasnum, epno = cur_ep['seasonnumber'], cur_ep['episodenumber']
+            epsEt = self._getetsrc(url, language=language)
 
-            if seasnum is None or epno is None:
-                log().warning("An episode has incomplete season/episode number (season: %r, episode: %r)" % (
-                    seasnum, epno))
-                continue  # Skip to next episode
+            episodes =  epsEt["episode"]
+            if not isinstance(episodes, list):
+                episodes = [episodes]
 
-            # float() is because https://github.com/dbr/tvnamer/issues/95 - should probably be fixed in TVDB data
-            seas_no = int(float(seasnum))
-            ep_no = int(float(epno))
+            for cur_ep in episodes:
+                if self.config['dvdorder']:
+                    log().debug('Using DVD ordering.')
+                    use_dvd = cur_ep['dvd_season'] != None and cur_ep['dvd_episodenumber'] != None
+                else:
+                    use_dvd = False
 
-            for k, v in cur_ep.items():
-                k = k.lower()
+                if use_dvd:
+                    seasnum, epno = cur_ep['dvd_season'], cur_ep['dvd_episodenumber']
+                else:
+                    seasnum, epno = cur_ep['seasonnumber'], cur_ep['episodenumber']
 
-                if v is not None:
-                    if k == 'filename':
-                        v = self.config['url_artworkPrefix'] % (v)
-                    else:
-                        v = self._cleanData(v)
+                if seasnum is None or epno is None:
+                    log().warning("An episode has incomplete season/episode number (season: %r, episode: %r)" % (
+                        seasnum, epno))
+                    continue  # Skip to next episode
 
-                self._setItem(sid, seas_no, ep_no, k, v)
+                # float() is because https://github.com/dbr/tvnamer/issues/95 - should probably be fixed in TVDB data
+                seas_no = int(float(seasnum))
+                ep_no = int(float(epno))
+
+                for k, v in cur_ep.items():
+                    k = k.lower()
+
+                    if v is not None:
+                        if k == 'filename':
+                            v = self.config['url_artworkPrefix'] % (v)
+                        else:
+                            v = self._cleanData(v)
+
+                    self._setItem(sid, seas_no, ep_no, k, v)
 
         return True
 
@@ -927,7 +925,7 @@ class Tvdb:
             if isinstance(selected_series, dict):
                 selected_series = [selected_series]
             sids = list(int(x['id']) for x in selected_series if
-                        self._getShowData(int(x['id']), self.config['language'], seriesSearch=True))
+                        self._getShowData(int(x['id']), self.config['language']))
             self.corrections.update(dict((x['seriesname'], int(x['id'])) for x in selected_series))
             return sids
 
@@ -938,7 +936,7 @@ class Tvdb:
         if isinstance(key, (int, long)):
             # Item is integer, treat as show id
             if key not in self.shows:
-                self._getShowData(key, self.config['language'])
+                self._getShowData(key, self.config['language'], True)
             return self.shows[key]
 
         key = str(key).lower()
