@@ -37,6 +37,8 @@ DAILY_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 40
 
+MANUAL_SEARCH_HISTORY = []
+MANUAL_SEARCH_HISTORY_SIZE = 100
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
@@ -54,7 +56,23 @@ class SearchQueue(generic_queue.GenericQueue):
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.segment == segment:
                 return True
         return False
-
+    
+    def is_show_in_queue(self, show):
+        for cur_item in self.queue:
+            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.show.indexerid == show:
+                return True
+        return False
+    
+    def get_all_ep_from_queue(self, show):
+        ep_obj_list = []
+        for cur_item in self.queue:
+            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and str(cur_item.show.indexerid) == show:
+                ep_obj_list.append(cur_item)
+        
+        if ep_obj_list:
+            return ep_obj_list
+        return False
+    
     def pause_backlog(self):
         self.min_priority = generic_queue.QueuePriorities.HIGH
 
@@ -65,6 +83,12 @@ class SearchQueue(generic_queue.GenericQueue):
         # backlog priorities are NORMAL, this should be done properly somewhere
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
+    def is_manualsearch_in_progress(self):
+        for cur_item in self.queue + [self.currentItem]:
+            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)):
+                return True
+        return False
+    
     def is_backlog_in_progress(self):
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, BacklogQueueItem):
@@ -140,12 +164,15 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.success = None
         self.show = show
         self.segment = segment
+        self.started = None
 
     def run(self):
         generic_queue.QueueItem.run(self)
 
         try:
             logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
+            self.started = True
+            
             searchResult = search.searchProviders(self.show, [self.segment], True)
 
             if searchResult:
@@ -164,7 +191,10 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
-
+        
+        ### Keep a list with the 100 last executed searches
+        fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
+        
         if self.success is None:
             self.success = False
 
@@ -246,3 +276,8 @@ class FailedQueueItem(generic_queue.QueueItem):
             self.success = False
 
         self.finish()
+        
+def fifo(myList, item, maxSize = 100):
+    if len(myList) >= maxSize:
+        myList.pop(0)
+    myList.append(item)
