@@ -1633,10 +1633,10 @@ class ConfigSearch(MainHandler):
         if not config.change_TORRENT_DIR(torrent_dir):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
-        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
-
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
+
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
+        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
