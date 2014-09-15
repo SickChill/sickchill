@@ -93,15 +93,9 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def add_item(self, item):
         if isinstance(item, (DailySearchQueueItem, BacklogQueueItem)) and not self.is_in_queue(item.show, item.segment):
-            # build name cache for show
-            sickbeard.name_cache.buildNameCache(item.show)
-
             # daily and backlog searches
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)) and not self.is_ep_in_queue(item.segment):
-            # build name cache for show
-            sickbeard.name_cache.buildNameCache(item.show)
-
             # manual and failed searches
             generic_queue.GenericQueue.add_item(self, item)
         else:
@@ -118,7 +112,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
         try:
             logger.log("Beginning daily search for: [" + self.show.name + "]")
-            foundResults = search.searchForNeededEpisodes(segment)
+            foundResults = search.searchForNeededEpisodes(self.show, self.segment)
 
             if not len(foundResults):
                 logger.log(u"No needed episodes found during daily search for: [" + self.show.name + "]")

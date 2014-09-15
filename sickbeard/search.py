@@ -319,10 +319,13 @@ def isFirstBestMatch(result):
 
     return False
 
-def searchForNeededEpisodes(episode):
+def searchForNeededEpisodes(show, episode):
     foundResults = {}
 
     didSearch = False
+
+    # build name cache for show
+    sickbeard.name_cache.buildNameCache(show)
 
     origThreadName = threading.currentThread().name
 
@@ -395,6 +398,9 @@ def searchProviders(show, episodes, manualSearch=False):
     finalResults = []
 
     didSearch = False
+
+    # build name cache for show
+    sickbeard.name_cache.buildNameCache(show)
 
     origThreadName = threading.currentThread().name
 
