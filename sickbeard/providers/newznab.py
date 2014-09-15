@@ -314,6 +314,8 @@ class NewznabProvider(generic.NZBProvider):
                 total - offset) + " more items to be fetched from provider. Fetching another " + str(
                 params['limit']) + " items.", logger.DEBUG)
 
+            time.sleep(0.2)
+
         return results
 
     def findPropers(self, search_date=None):
