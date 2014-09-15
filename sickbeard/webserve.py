@@ -305,8 +305,11 @@ class MainHandler(RequestHandler):
         redirect("/home/displayShow?show=" + show)
 
     def setComingEpsLayout(self, layout):
-        if layout not in ('poster', 'banner', 'list'):
+        if layout not in ('poster', 'banner', 'list', 'calendar'):
             layout = 'banner'
+
+        if layout == 'calendar':
+            sickbeard.COMING_EPS_SORT = 'date'
 
         sickbeard.COMING_EPS_LAYOUT = layout
 
@@ -320,6 +323,9 @@ class MainHandler(RequestHandler):
 
     def setComingEpsSort(self, sort):
         if sort not in ('date', 'network', 'show'):
+            sort = 'date'
+        
+        if sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
 
         sickbeard.COMING_EPS_SORT = sort
@@ -390,6 +396,7 @@ class MainHandler(RequestHandler):
             {'title': 'Layout:', 'path': {'Banner': 'setComingEpsLayout/?layout=banner',
                                           'Poster': 'setComingEpsLayout/?layout=poster',
                                           'List': 'setComingEpsLayout/?layout=list',
+                                          'Calendar': 'setComingEpsLayout/?layout=calendar',
             }},
             paused_item,
         ]
@@ -399,7 +406,7 @@ class MainHandler(RequestHandler):
         t.sql_results = sql_results
 
         # Allow local overriding of layout parameter
-        if layout and layout in ('poster', 'banner', 'list'):
+        if layout and layout in ('poster', 'banner', 'list','calendar'):
             t.layout = layout
         else:
             t.layout = sickbeard.COMING_EPS_LAYOUT
