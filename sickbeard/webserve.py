@@ -3628,7 +3628,7 @@ class Home(MainHandler):
             show_message = 'This show is in the process of being downloaded - the info below is incomplete.'
 
         elif sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
-            show_message = 'The information below is in the process of being updated.'
+            show_message = 'The information on this page is in the process of being updated.'
 
         elif sickbeard.showQueueScheduler.action.isBeingRefreshed(showObj):  # @UndefinedVariable
             show_message = 'The episodes below are currently being refreshed from disk'
