@@ -205,7 +205,8 @@ class Quality:
             else:
                 return Quality.UNKNOWN
 
-        if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x264|h.?264)"], all) and not checkName(["(720|1080)[pi]"], all):
+        if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x264|h.?264)"], all) and not checkName(["(720|1080)[pi]"], all) and\
+                not checkName(["hr.ws.pdtv.x264"], any):
             return Quality.SDTV
         elif checkName(["web.dl|webrip", "xvid|x264|h.?264"], all) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDTV
