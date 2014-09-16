@@ -189,7 +189,7 @@ class NewznabProvider(generic.NZBProvider):
             params['season'] = date_str.partition('-')[0]
             params['ep'] = date_str.partition('-')[2].replace('-', '/')
         elif ep_obj.show.anime:
-            params['ep'] = "%i" % int(ep_obj.scene_absolute_number)
+            params['ep'] = "%i" % int(ep_obj.scene_absolute_number if int(ep_obj.scene_absolute_number) > 0 else ep_obj.scene_episode)
         else:
             params['season'] = ep_obj.scene_season
             params['ep'] = ep_obj.scene_episode
@@ -207,7 +207,20 @@ class NewznabProvider(generic.NZBProvider):
         for cur_exception in name_exceptions:
             params['q'] = helpers.sanitizeSceneName(cur_exception)
             to_return.append(params)
-
+        
+            if ep_obj.show.anime:
+                # Experimental, add a searchstring without search explicitly for the episode!
+                # Remove the ?ep=e46 paramater and use add the episode number to the query paramater.
+                # Can be usefull for newznab indexers that do not have the episodes 100% parsed.
+                # Start with only applying the searchstring to anime shows
+                params['q'] = helpers.sanitizeSceneName(cur_exception)
+                paramsNoEp = params.copy()
+                
+                paramsNoEp['q'] = paramsNoEp['q'] + " " + str(paramsNoEp['ep'])
+                if "ep" in paramsNoEp:
+                    paramsNoEp.pop("ep")
+                to_return.append(paramsNoEp)
+        
         return to_return
 
     def _doGeneralSearch(self, search_string):
