@@ -100,12 +100,12 @@ class SceneExceptionTestCase(test.SickbeardTestDBCase):
         self.assertEqual(sorted(scene_exceptions.get_scene_exceptions(70726)), ['Babylon 5', 'Babylon5'])
 
     def test_sceneExceptionByName(self):
-        self.assertEqual(scene_exceptions.get_scene_exception_by_name('Babylon5'), 70726)
-        self.assertEqual(scene_exceptions.get_scene_exception_by_name('babylon 5'), 70726)
-        self.assertEqual(scene_exceptions.get_scene_exception_by_name('Carlos 2010'), 164451)
+        self.assertEqual(scene_exceptions.get_scene_exception_by_name('Babylon5'), (70726, -1))
+        self.assertEqual(scene_exceptions.get_scene_exception_by_name('babylon 5'), (70726, -1))
+        self.assertEqual(scene_exceptions.get_scene_exception_by_name('Carlos 2010'), (164451, -1))
 
     def test_sceneExceptionByNameEmpty(self):
-        self.assertEqual(scene_exceptions.get_scene_exception_by_name('nothing useful'), None)
+        self.assertEqual(scene_exceptions.get_scene_exception_by_name('nothing useful'), (None, None))
 
     def test_sceneExceptionsResetNameCache(self):
         # clear the exceptions
