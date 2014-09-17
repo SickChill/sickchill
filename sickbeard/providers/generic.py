@@ -207,7 +207,7 @@ class GenericProvider:
         results = {}
 
         for ep in episode:
-            results += self.cache.findNeededEpisodes(ep)
+            results.copy(self.cache.findNeededEpisodes(ep))
 
         return results
 
