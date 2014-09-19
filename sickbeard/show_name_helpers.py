@@ -190,7 +190,7 @@ def makeSceneSearchString(show, ep_obj):
     if (show.air_by_date or show.sports) and ep_obj.airdate != datetime.date.fromordinal(1):
         epStrings = [str(ep_obj.airdate)]
     elif show.is_anime:
-        epStrings = ["%02i" % int(ep_obj.scene_absolute_number)]
+        epStrings = ["%02i" % int(ep_obj.scene_absolute_number if ep_obj.scene_absolute_number > 0 else ep_obj.scene_episode)]
     else:
         epStrings = ["S%02iE%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode)),
                      "%ix%02i" % (int(ep_obj.scene_season), int(ep_obj.scene_episode))]
