@@ -4379,13 +4379,15 @@ class Home(MainHandler):
             searchstatus = 'searching'
             if searchThread.success:
                 searchstatus = 'finished'
-                episodes.append({'episode': searchThread.segment.episode,
+            else:
+                searchstatus = 'searching'
+            episodes.append({'episode': searchThread.segment.episode,
                              'episodeindexid': searchThread.segment.indexerid,
-                         'season' : searchThread.segment.season, 
-                         'searchstatus' : searchstatus, 
-                         'status' : statusStrings[searchThread.segment.status], 
-                         'quality': self.getQualityClass(searchThread.segment)})
-        
+                             'season' : searchThread.segment.season, 
+                             'searchstatus' : searchstatus, 
+                             'status' : statusStrings[searchThread.segment.status], 
+                             'quality': self.getQualityClass(searchThread.segment)})
+            
         if finishedManualSearchThreadItems:
             for searchThread in finishedManualSearchThreadItems:
                 if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
