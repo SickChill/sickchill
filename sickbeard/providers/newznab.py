@@ -315,17 +315,27 @@ class NewznabProvider(generic.NZBProvider):
             if total == 0:
                 total = int(data.feed.newznab_response['total'] or 0)
             offset = int(data.feed.newznab_response['offset'] or 0)
-
+            
+            # No items found, prevent from doing another search
+            if total == 0:
+                break
+                
             if offset != params['offset']:
                 logger.log("Tell your newznab provider to fix their bloody newznab responses")
                 break
-
-            # if there are more items available then the amount given in one call, grab some more
+            
             params['offset'] += params['limit']
-
-            logger.log(str(
-                total - offset) + " more items to be fetched from provider. Fetching another " + str(
-                params['limit']) + " items.", logger.DEBUG)
+            if (total > int(params['offset'])):
+                offset = int(params['offset'])
+                # if there are more items available then the amount given in one call, grab some more
+                logger.log(str(
+                    total - int(params['offset'])) + " more items to be fetched from provider. Fetching another " + str(
+                    params['limit']) + " items.", logger.DEBUG)
+            else:
+                logger.log(str(
+                    total - int(params['offset'])) + " No more searches needed, could find anything I was looking for! " + str(
+                    params['limit']) + " items.", logger.DEBUG)
+                break
 
             time.sleep(0.2)
 
