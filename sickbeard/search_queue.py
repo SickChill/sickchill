@@ -116,8 +116,11 @@ class SearchQueue(generic_queue.GenericQueue):
 
 
     def add_item(self, item):
-        if isinstance(item, (DailySearchQueueItem, BacklogQueueItem)) and not self.is_in_queue(item.show, item.segment):
-            # daily and backlog searches
+        if isinstance(item, DailySearchQueueItem):
+            # daily searches
+            generic_queue.GenericQueue.add_item(self, item)
+        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+            # backlog searches
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)) and not self.is_ep_in_queue(item.segment):
             # manual and failed searches
@@ -126,20 +129,18 @@ class SearchQueue(generic_queue.GenericQueue):
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
 class DailySearchQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
-        self.show = show
-        self.segment = segment
 
     def run(self):
         generic_queue.QueueItem.run(self)
 
         try:
-            logger.log("Beginning daily search for: [" + self.show.name + "]")
-            foundResults = search.searchForNeededEpisodes(self.show, self.segment)
+            logger.log("Beginning daily search for new episodes")
+            foundResults = search.searchForNeededEpisodes()
 
             if not len(foundResults):
-                logger.log(u"No needed episodes found during daily search for: [" + self.show.name + "]")
+                logger.log(u"No needed episodes found")
             else:
                 for result in foundResults:
                     # just use the first result for now

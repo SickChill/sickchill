@@ -203,13 +203,8 @@ class GenericProvider:
 
         return True
 
-    def searchRSS(self, episode):
-        results = {}
-
-        for ep in episode:
-            results.update(self.cache.findNeededEpisodes(ep))
-
-        return results
+    def searchRSS(self, episodes):
+        return self.cache.findNeededEpisodes(episodes)
 
     def getQuality(self, item, anime=False):
         """
