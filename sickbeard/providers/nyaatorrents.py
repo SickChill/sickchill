@@ -52,7 +52,7 @@ class NyaaProvider(generic.TorrentProvider):
 
     def getQuality(self, item, anime=False):
         title = item.title
-        quality = Quality.sceneQuality(title)
+        quality = Quality.sceneQuality(title, anime)
         return quality
 
     def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
