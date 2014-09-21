@@ -267,6 +267,7 @@ $(document).ready(function(){
             function (data) {
                 var devices = jQuery.parseJSON(data).devices;
                 $("#pushbullet_device_list").html('');
+                $("#pushbullet_device_list").append('<option value="" selected>-- All Devices --</option>')
                 for (var i = 0; i < devices.length; i++) {
                     if(devices[i].active == true) {
                         if(current_pushbullet_device == devices[i].iden) {

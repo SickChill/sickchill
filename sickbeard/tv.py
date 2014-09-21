@@ -1305,6 +1305,8 @@ class TVEpisode(object):
 
         self.checkForMetaFiles()
 
+        self.wantedQuality = []
+
     name = property(lambda self: self._name, dirty_setter("_name"))
     season = property(lambda self: self._season, dirty_setter("_season"))
     episode = property(lambda self: self._episode, dirty_setter("_episode"))

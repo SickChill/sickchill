@@ -105,20 +105,21 @@ class TokyoToshokanProvider(generic.TorrentProvider):
             with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
                 torrent_table = soup.find('table', attrs={'class': 'listing'})
                 torrent_rows = torrent_table.find_all('tr') if torrent_table else []
-                if torrent_rows[0].find('td', attrs={'class': 'centertext'}):
-                    a = 1
-                else:
-                    a = 0
-
-                for top, bottom in zip(torrent_rows[a::2], torrent_rows[a::2]):
-                    title = top.find('td', attrs={'class': 'desc-top'}).text
-                    url = top.find('td', attrs={'class': 'desc-top'}).find('a')['href']
-
-                    if not title or not url:
-                        continue
-
-                    item = title.lstrip(), url
-                    results.append(item)
+                if torrent_rows: 
+                    if torrent_rows[0].find('td', attrs={'class': 'centertext'}):
+                        a = 1
+                    else:
+                        a = 0
+    
+                    for top, bottom in zip(torrent_rows[a::2], torrent_rows[a::2]):
+                        title = top.find('td', attrs={'class': 'desc-top'}).text
+                        url = top.find('td', attrs={'class': 'desc-top'}).find('a')['href']
+    
+                        if not title or not url:
+                            continue
+    
+                        item = title.lstrip(), url
+                        results.append(item)
 
         except Exception, e:
             logger.log(u"Failed to parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)

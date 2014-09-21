@@ -32,6 +32,7 @@ from sickbeard.exceptions import AuthException
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
 from sickbeard import clients
+import itertools
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -279,7 +280,10 @@ class TVCache():
 
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)
-        return neededEps[episode]
+        if len(neededEps) > 0:
+            return neededEps[episode]
+        else:
+            return []
 
     def listPropers(self, date=None, delimiter="."):
         myDB = self._getDB()
@@ -291,19 +295,24 @@ class TVCache():
         return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
 
 
-    def findNeededEpisodes(self, episode=None, manualSearch=False):
+    def findNeededEpisodes(self, episode, manualSearch=False):
         neededEps = {}
-
-        if episode:
-            neededEps[episode] = []
+        cl = []
 
         myDB = self._getDB()
-        if not episode:
-            sqlResults = myDB.select("SELECT * FROM [" + self.providerID + "]")
-        else:
+        if type(episode) != list:
             sqlResults = myDB.select(
                 "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
                 [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
+        else:
+            for epObj in episode:
+                cl.append([
+                    "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ? "
+                    "AND quality IN (" + ",".join([str(x) for x in epObj.wantedQuality]) + ")",
+                    [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"]])
+
+            sqlResults = myDB.mass_action(cl, fetchall=True)
+            sqlResults = list(itertools.chain(*sqlResults))
 
         # for each cache entry
         for curResult in sqlResults:
@@ -341,10 +350,7 @@ class TVCache():
                            Quality.qualityStrings[curQuality], logger.DEBUG)
                 continue
 
-            if episode:
-                epObj = episode
-            else:
-                epObj = showObj.getEpisode(curSeason, curEp)
+            epObj = showObj.getEpisode(curSeason, curEp)
 
             # build a result object
             title = curResult["name"]

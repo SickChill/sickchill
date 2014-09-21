@@ -199,7 +199,7 @@
     </tbody>
     </table>
 <!-- end list view //-->
-#else:
+#else if $layout in ['banner', 'poster']:
 <!-- start non list view //-->
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -287,6 +287,7 @@
                 #set $today_header = True
             #end if
             #if $runtime:
+                #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
                 #if $cur_ep_enddate < $today:
                     #set $show_div = "ep_listing listing_overdue"
                 #elif $cur_ep_airdate >= $next_week.date():
@@ -385,6 +386,43 @@
 
 
 <!-- end non list view //-->
+#end if
+
+#if $layout == 'calendar':
+
+#set $today = datetime.date.today()
+#set $dates = [$today + datetime.timedelta(days=$i) for $i in range(7)]
+
+<input type="hidden" id="sbRoot" value="$sbRoot" />
+    #for $day in $dates
+        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:125px;white-space: nowrap; table-layout: fixed;">
+        <thead><tr><th>$day.strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
+        <tbody>
+
+        #for $cur_result in $sql_results:
+            #set $cur_indexer = int($cur_result["indexer"])
+            #set $runtime = $cur_result["runtime"]
+            #set $airday = $cur_result["localtime"].date()
+
+            #if $airday == $day:
+                
+                <tr>
+                <td style="overflow: hidden; text-overflow: ellipsis;  font-size: 11px;  LINE-HEIGHT:12px";>
+                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="125"  /></a>
+                        <br> $cur_result["localtime"].strftime("%H:%M") on $cur_result["network"]
+                        #set $episodestring = "%sx%s %s" % ($cur_result["season"], $cur_result["episode"], $cur_result["name"])
+                        <br> $episodestring
+                    </td>
+                </tr>
+            #end if
+        
+        <!-- end $cur_result["show_name"] //-->
+        #end for
+        </tbody>
+        </table>
+    #end for
+
+<!-- end calender view //-->
 #end if
 
 <script type="text/javascript" charset="utf-8">

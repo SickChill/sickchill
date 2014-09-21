@@ -118,7 +118,7 @@ class DBConnection(object):
         else:
             return 0
 
-    def mass_action(self, querylist, logTransaction=False):
+    def mass_action(self, querylist, logTransaction=False, fetchall=False):
 
         with db_lock:
             # remove None types
@@ -136,11 +136,11 @@ class DBConnection(object):
                         if len(qu) == 1:
                             if logTransaction:
                                 logger.log(qu[0], logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0]))
+                            sqlResult.append(self.execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             if logTransaction:
                                 logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], qu[1]))
+                            sqlResult.append(self.execute(qu[0], qu[1], fetchall=fetchall))
 
                     logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
 

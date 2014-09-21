@@ -84,9 +84,8 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_manualsearch_in_progress(self):
-        for cur_item in self.queue + [self.currentItem]:
-            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)):
-                return True
+        if isinstance(self.currentItem, (ManualSearchQueueItem, FailedQueueItem)):
+            return True
         return False
     
     def is_backlog_in_progress(self):
@@ -116,8 +115,11 @@ class SearchQueue(generic_queue.GenericQueue):
 
 
     def add_item(self, item):
-        if isinstance(item, (DailySearchQueueItem, BacklogQueueItem)) and not self.is_in_queue(item.show, item.segment):
-            # daily and backlog searches
+        if isinstance(item, DailySearchQueueItem):
+            # daily searches
+            generic_queue.GenericQueue.add_item(self, item)
+        elif isinstance(item, BacklogQueueItem) and not self.is_in_queue(item.show, item.segment):
+            # backlog searches
             generic_queue.GenericQueue.add_item(self, item)
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)) and not self.is_ep_in_queue(item.segment):
             # manual and failed searches
@@ -126,20 +128,18 @@ class SearchQueue(generic_queue.GenericQueue):
             logger.log(u"Not adding item, it's already in the queue", logger.DEBUG)
 
 class DailySearchQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self):
         generic_queue.QueueItem.__init__(self, 'Daily Search', DAILY_SEARCH)
-        self.show = show
-        self.segment = segment
 
     def run(self):
         generic_queue.QueueItem.run(self)
 
         try:
-            logger.log("Beginning daily search for: [" + self.show.name + "]")
-            foundResults = search.searchForNeededEpisodes(self.show, self.segment)
+            logger.log("Beginning daily search for new episodes")
+            foundResults = search.searchForNeededEpisodes()
 
             if not len(foundResults):
-                logger.log(u"No needed episodes found during daily search for: [" + self.show.name + "]")
+                logger.log(u"No needed episodes found")
             else:
                 for result in foundResults:
                     # just use the first result for now
@@ -241,23 +241,28 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.success = None
+        self.started = None
 
     def run(self):
         generic_queue.QueueItem.run(self)
-
+        self.started = True
+        
         try:
-            logger.log(u"Marking episode as bad: [" + self.segment.prettyName() + "]")
-            failed_history.markFailed(self.segment)
+            for epObj in self.segment:
+            
+                logger.log(u"Marking episode as bad: [" + epObj.prettyName() + "]")
+                
+                failed_history.markFailed(epObj)
+    
+                (release, provider) = failed_history.findRelease(epObj)
+                if release:
+                    failed_history.logFailed(release)
+                    history.logFailed(epObj, release, provider)
+    
+                failed_history.revertEpisode(epObj)
+                logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
 
-            (release, provider) = failed_history.findRelease(self.segment)
-            if release:
-                failed_history.logFailed(release)
-                history.logFailed(self.segment, release, provider)
-
-            failed_history.revertEpisode(self.segment)
-            logger.log("Beginning failed download search for: [" + self.segment.prettyName() + "]")
-
-            searchResult = search.searchProviders(self.show, [self.segment], True)
+            searchResult = search.searchProviders(self.show, self.segment, True)
 
             if searchResult:
                 for result in searchResult:
@@ -268,9 +273,13 @@ class FailedQueueItem(generic_queue.QueueItem):
                     # give the CPU a break
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
-                logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
+                pass
+                #logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
+            
+        ### Keep a list with the 100 last executed searches
+        fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
 
         if self.success is None:
             self.success = False

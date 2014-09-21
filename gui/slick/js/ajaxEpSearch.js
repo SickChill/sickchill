@@ -123,7 +123,7 @@ function disableLink(el) {
 	$.fn.ajaxEpSearch = function(options){
 		options = $.extend({}, $.ajaxEpSearch.defaults, options);
 		
-	    $('.epSearch').click(function(event){
+	    $('.epSearch, .epRetry').click(function(event){
 	    	event.preventDefault();
 	        
 	    	// Check if we have disabled the click
