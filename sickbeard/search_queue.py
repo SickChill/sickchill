@@ -84,9 +84,8 @@ class SearchQueue(generic_queue.GenericQueue):
         return self.min_priority >= generic_queue.QueuePriorities.NORMAL
 
     def is_manualsearch_in_progress(self):
-        for cur_item in self.queue + [self.currentItem]:
-            if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)):
-                return True
+        if isinstance(self.currentItem, (ManualSearchQueueItem, FailedQueueItem)):
+            return True
         return False
     
     def is_backlog_in_progress(self):
