@@ -312,10 +312,13 @@ class NewznabProvider(generic.NZBProvider):
                         logger.DEBUG)
 
             # get total and offset attribs
-            if total == 0:
-                total = int(data.feed.newznab_response['total'] or 0)
-            offset = int(data.feed.newznab_response['offset'] or 0)
-            
+            try:
+                if total == 0:
+                    total = int(data.feed.newznab_response['total'] or 0)
+                offset = int(data.feed.newznab_response['offset'] or 0)
+            except AttributeError:
+                break
+
             # No items found, prevent from doing another search
             if total == 0:
                 break
