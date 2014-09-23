@@ -1496,7 +1496,6 @@ class ConfigGeneral(MainHandler):
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
-        sickbeard.ROOT_DIRS = rootDir
 
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
         config.change_UPDATE_FREQUENCY(update_frequency)
