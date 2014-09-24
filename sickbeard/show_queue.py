@@ -132,9 +132,9 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang="en", subtitles=None, anime=None, scene=None):
+                lang="en", subtitles=None, anime=None, scene=None, paused=None):
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene)
+                                    subtitles, anime, scene, paused)
 
         self.add_item(queueItemObj)
 
@@ -191,7 +191,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 class QueueItemAdd(ShowQueueItem):
     def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
-                 scene):
+                 scene, paused):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -203,6 +203,7 @@ class QueueItemAdd(ShowQueueItem):
         self.subtitles = subtitles
         self.anime = anime
         self.scene = scene
+        self.paused = paused
 
         self.show = None
 
@@ -290,7 +291,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.flatten_folders = self.flatten_folders if self.flatten_folders != None else sickbeard.FLATTEN_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime != None else sickbeard.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene != None else sickbeard.SCENE_DEFAULT
-            self.show.paused = False
+            self.show.paused = self.paused if self.paused != None else False
 
             # be smartish about this
             if self.show.genre and "talk show" in self.show.genre.lower():
