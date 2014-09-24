@@ -533,7 +533,8 @@ def searchProviders(show, episodes, manualSearch=False):
 
         # see if every episode is wanted
         if bestSeasonResult:
-
+            searchedSeasons = []
+            searchedSeasons = [str(x.season) for x in episodes]
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
             logger.log(
@@ -541,18 +542,21 @@ def searchProviders(show, episodes, manualSearch=False):
                     seasonQual], logger.DEBUG)
 
             myDB = db.DBConnection()
-            allEps = [int(x["episode"]) for x in
-                      myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND season = ?",
-                                  [show.indexerid, season])]
+            allEps = [int(x["episode"]) 
+                      for x in myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )", 
+                                           [show.indexerid])]
+            
+            logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
             allWanted = True
             anyWanted = False
             for curEpNum in allEps:
-                if not show.wantEpisode(season, curEpNum, seasonQual):
-                    allWanted = False
-                else:
-                    anyWanted = True
+                for season in set([x.season for x in episodes]):
+                    if not show.wantEpisode(season, curEpNum, seasonQual):
+                        allWanted = False
+                    else:
+                        anyWanted = True
 
             # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
             if allWanted and bestSeasonResult.quality == highest_quality_overall:

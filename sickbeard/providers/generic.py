@@ -334,11 +334,19 @@ class GenericProvider:
 
             addCacheEntry = False
             if not (showObj.air_by_date or showObj.sports):
-                if search_mode == 'sponly' and len(parse_result.episode_numbers):
-                    logger.log(
-                        u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
-                        logger.DEBUG)
-                    addCacheEntry = True
+                if search_mode == 'sponly': 
+                    if len(parse_result.episode_numbers):
+                        logger.log(
+                            u"This is supposed to be a season pack search but the result " + title + " is not a valid season pack, skipping it",
+                            logger.DEBUG)
+                        addCacheEntry = True
+                    if len(parse_result.episode_numbers) and (
+                                    parse_result.season_number not in set([ep.season for ep in episodes]) or not [ep for ep in episodes if
+                                                                                 ep.scene_episode in parse_result.episode_numbers]):
+                        logger.log(
+                            u"The result " + title + " doesn't seem to be a valid episode that we are trying to snatch, ignoring",
+                            logger.DEBUG)
+                        addCacheEntry = True
                 else:
                     if not len(parse_result.episode_numbers) and parse_result.season_number and not [ep for ep in
                                                                                                      episodes if
