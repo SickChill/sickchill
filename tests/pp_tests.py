@@ -27,6 +27,7 @@ import sys, os.path
 from sickbeard.postProcessor import PostProcessor
 import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
+from sickbeard.name_cache import addNameToCache
 
 
 class PPInitTests(unittest.TestCase):
@@ -92,6 +93,9 @@ class PPBasicTests(test.SickbeardTestDBCase):
         ep = TVEpisode(show, test.SEASON, test.EPISODE)
         ep.name = "some ep name"
         ep.saveToDB()
+
+        addNameToCache('show name', 3)
+        sickbeard.PROCESS_METHOD = 'move'
 
         pp = PostProcessor(test.FILEPATH)
         self.assertTrue(pp.process())
