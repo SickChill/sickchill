@@ -56,6 +56,10 @@ class DailySearcher():
                 if not show or int(sqlEp["showid"]) != show.indexerid:
                     show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
 
+                # for when there is orphaned series in the database but not loaded into our showlist
+                if not show:
+                    continue
+
             except exceptions.MultipleShowObjectsException:
                 logger.log(u"ERROR: expected to find a single show matching " + sqlEp["showid"])
                 continue
