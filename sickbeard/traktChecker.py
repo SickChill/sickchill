@@ -18,6 +18,7 @@
 
 import os
 import traceback
+import datetime
 
 import sickbeard
 from sickbeard import encodingKludge as ek
@@ -129,10 +130,8 @@ class TraktChecker():
                 newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
                 if newShow is not None:
                     self.setEpisodeToWanted(newShow, 1, 1)
-                    self.startBacklog(newShow)
                 else:
                     self.todoWanted.append((indexer_id, 1, 1))
-            self.todoWanted.append((indexer_id, -1, -1))  # used to pause new shows if the settings say to
 
     def updateEpisodes(self):
         """
@@ -160,13 +159,12 @@ class TraktChecker():
             newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
             try:
-                if newShow and int(newShow['indexer']) == indexer:
+                if newShow and newShow.indexer == indexer:
                     for episode in show["episodes"]:
                         if newShow is not None:
                             self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
                         else:
                             self.todoWanted.append((indexer_id, episode["season"], episode["number"]))
-                    self.startBacklog(newShow)
             except TypeError:
                 logger.log(u"Could not parse the output from trakt for " + show["title"], logger.DEBUG)
 
@@ -194,7 +192,8 @@ class TraktChecker():
 
                 sickbeard.showQueueScheduler.action.addShow(int(indexer), int(indexer_id), showPath, status,
                                                             int(sickbeard.QUALITY_DEFAULT),
-                                                            int(sickbeard.FLATTEN_FOLDERS_DEFAULT))
+                                                            int(sickbeard.FLATTEN_FOLDERS_DEFAULT),
+                                                            paused=sickbeard.TRAKT_START_PAUSED)
             else:
                 logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
                 return
@@ -206,37 +205,25 @@ class TraktChecker():
         epObj = show.getEpisode(int(s), int(e))
         if epObj:
 
-            segments = {}
-
             with epObj.lock:
-                if epObj.status != SKIPPED:
+                if epObj.status != SKIPPED or epObj.airdate == datetime.date.fromordinal(1):
                     return
 
                 logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
                 # figure out what segment the episode is in and remember it so we can backlog it
 
-                if epObj.season in ep_segment:
-                    segments[epObj.season].append(epObj)
-                else:
-                    segments[epObj.season] = [epObj]
-
                 epObj.status = WANTED
                 epObj.saveToDB()
 
-            for season, segment in segments.items():
-                cur_backlog_queue_item = search_queue.BacklogQueueItem(show, segment[1])
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+            cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [epObj])
+            sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
-                logger.log(u"Starting backlog for " + show.name + " season " + str(
-                    season) + " because some eps were set to wanted")
+            logger.log(u"Starting backlog for " + show.name + " season " + str(
+                    s) + " episode " + str(e) + " because some eps were set to wanted")
 
     def manageNewShow(self, show):
+        logger.log(u"Checking if trakt watch list wants to search for episodes from new show " + show.name, logger.DEBUG)
         episodes = [i for i in self.todoWanted if i[0] == show.indexerid]
         for episode in episodes:
             self.todoWanted.remove(episode)
-
-            if episode[1] == -1 and sickbeard.TRAKT_START_PAUSED:
-                show.paused = 1
-                continue
-
             self.setEpisodeToWanted(show, episode[1], episode[2])
