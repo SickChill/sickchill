@@ -592,7 +592,7 @@ class TVRage:
         )
 
         # check and make sure we have data to process and that it contains a series name
-        if not len(seriesInfoEt) or (isinstance(seriesInfoEt, dict) and 'seriesname' not in seriesInfoEt['series']):
+        if not len(seriesInfoEt) or (isinstance(seriesInfoEt, dict) and 'seriesname' not in seriesInfoEt):
             return False
 
         for k, v in seriesInfoEt.items():
