@@ -1714,7 +1714,9 @@ class ConfigPostProcessing(MainHandler):
                            naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
-                           naming_custom_sports=None, naming_sports_pattern=None, autopostprocesser_frequency=None):
+                           naming_custom_sports=None, naming_sports_pattern=None,
+                           naming_custom_anime=None, naming_anime_pattern=None, naming_anime_multi_ep=None,
+                           autopostprocesser_frequency=None):
 
         results = []
 
@@ -1747,6 +1749,7 @@ class ConfigPostProcessing(MainHandler):
         sickbeard.POSTPONE_IF_SYNC_FILES = config.checkbox_to_value(postpone_if_sync_files)
         sickbeard.NAMING_CUSTOM_ABD = config.checkbox_to_value(naming_custom_abd)
         sickbeard.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
+        sickbeard.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
@@ -1772,6 +1775,17 @@ class ConfigPostProcessing(MainHandler):
         if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
             sickbeard.NAMING_MULTI_EP = int(naming_multi_ep)
+            sickbeard.NAMING_ANIME = int(naming_anime)
+            sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
+        else:
+            if int(naming_anime) in [1, 2]:
+                results.append("You tried saving an invalid anime naming config, not saving your naming settings")
+            else:
+                results.append("You tried saving an invalid naming config, not saving your naming settings")
+
+        if self.isNamingValid(naming_anime_pattern, naming_anime_multi_ep, anime_type=naming_anime) != "invalid":
+            sickbeard.NAMING_ANIME_PATTERN = naming_anime_pattern
+            sickbeard.NAMING_ANIME_MULTI_EP = int(naming_anime_multi_ep)
             sickbeard.NAMING_ANIME = int(naming_anime)
             sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         else:

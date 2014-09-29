@@ -35,6 +35,8 @@ name_presets = ('%SN - %Sx%0E - %EN',
                 'Season %0S/%S.N.S%0SE%0E.%Q.N-%RG'
 )
 
+name_anime_presets = name_presets
+
 name_abd_presets = ('%SN - %A-D - %EN',
                     '%S.N.%A.D.%E.N.%Q.N',
                     '%Y/%0M/%S.N.%A.D.%E.N-%RG'

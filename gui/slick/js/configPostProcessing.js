@@ -51,26 +51,6 @@ $(document).ready(function () {
                 }
             });
 
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type},
-            function (data) {
-                if (data) {
-                    $('#naming_example_anime').text(data + '.ext');
-                    $('#naming_example_anime_div').show();
-                } else {
-                    $('#naming_example_anime_div').hide();
-                }
-            });
-
-        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type},
-            function (data) {
-                if (data) {
-                    $('#naming_example_multi_anime').text(data + '.ext');
-                    $('#naming_example_multi_anime_div').show();
-                } else {
-                    $('#naming_example_multi_anime_div').hide();
-                }
-            });
-
         $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type},
             function (data) {
                 if (data == "invalid") {
@@ -181,6 +161,99 @@ $(document).ready(function () {
 
     }
 
+    function fill_sports_examples() {
+        var pattern = $('#naming_sports_pattern').val();
+
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, sports: 'True'},
+            function (data) {
+                if (data) {
+                    $('#naming_sports_example').text(data + '.ext');
+                    $('#naming_sports_example_div').show();
+                } else {
+                    $('#naming_sports_example_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, sports: 'True'},
+            function (data) {
+                if (data == "invalid") {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern is invalid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', true);
+                    $('#naming_sports_pattern').css('background-color', '#FFDDDD');
+                } else if (data == "seasonfolders") {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', true);
+                    $('#naming_sports_pattern').css('background-color', '#FFFFDD');
+                } else {
+                    $('#naming_sports_pattern').qtip('option', {
+                        'content.text': 'This pattern is valid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                    });
+                    $('#naming_sports_pattern').qtip('toggle', false);
+                    $('#naming_sports_pattern').css('background-color', '#FFFFFF');
+                }
+            });
+
+    }
+
+    function fill_anime_examples() {
+        var pattern = $('#naming_anime_pattern').val();
+        var multi = $('#naming_anime_multi_ep :selected').val();
+        var anime_type = $('input[name="naming_anime"]:checked').val();
+
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, anime_type: anime_type},
+            function (data) {
+                if (data) {
+                    $('#naming_example_anime').text(data + '.ext');
+                    $('#naming_example_anime_div').show();
+                } else {
+                    $('#naming_example_anime_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/testNaming', {pattern: pattern, multi: multi, anime_type: anime_type},
+            function (data) {
+                if (data) {
+                    $('#naming_example_multi_anime').text(data + '.ext');
+                    $('#naming_example_multi_anime_div').show();
+                } else {
+                    $('#naming_example_multi_anime_div').hide();
+                }
+            });
+
+        $.get(sbRoot + '/config/postProcessing/isNamingValid', {pattern: pattern, multi: multi, anime_type: anime_type},
+            function (data) {
+                if (data == "invalid") {
+                    $('#naming_pattern').qtip('option', {
+                        'content.text': 'This pattern is invalid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_pattern').qtip('toggle', true);
+                    $('#naming_pattern').css('background-color', '#FFDDDD');
+                } else if (data == "seasonfolders") {
+                    $('#naming_pattern').qtip('option', {
+                        'content.text': 'This pattern would be invalid without the folders, using it will force "Flatten" off for all shows.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                    });
+                    $('#naming_pattern').qtip('toggle', true);
+                    $('#naming_pattern').css('background-color', '#FFFFDD');
+                } else {
+                    $('#naming_pattern').qtip('option', {
+                        'content.text': 'This pattern is valid.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                    });
+                    $('#naming_pattern').qtip('toggle', false);
+                    $('#naming_pattern').css('background-color', '#FFFFFF');
+                }
+            });
+    }
+
     function setup_naming() {
         // if it is a custom selection then show the text box
         if ($('#name_presets :selected').val() == "Custom...") {
@@ -214,6 +287,17 @@ $(document).ready(function () {
         fill_sports_examples();
     }
 
+    function setup_anime_naming() {
+        // if it is a custom selection then show the text box
+        if ($('#name_anime_presets :selected').val() == "Custom...") {
+            $('#naming_anime_custom').show();
+        } else {
+            $('#naming_anime_custom').hide();
+            $('#naming_anime_pattern').val($('#name_anime_presets :selected').attr('id'));
+        }
+        fill_anime_examples();
+    }
+
     $('#unpack').change(function () {
     	if(this.checked) {
         	israr_supported();
@@ -242,8 +326,16 @@ $(document).ready(function () {
         setup_sports_naming();
     });
 
+    $('#name_anime_presets').change(function () {
+        setup_anime_naming();
+    });
+
+    $('#naming_custom_anime').change(function () {
+        setup_anime_naming();
+    });
+
     $('input[name="naming_anime"]').click(function(){
-        setup_naming();
+        setup_anime_naming();
     });
 
     $('#naming_multi_ep').change(fill_examples);
@@ -251,6 +343,14 @@ $(document).ready(function () {
     $('#naming_pattern').keyup(function () {
         typewatch(function () {
             fill_examples();
+        }, 500);
+    });
+
+    $('#naming_anime_multi_ep').change(fill_anime_examples);
+    $('#naming_anime_pattern').focusout(fill_anime_examples);
+    $('#naming_anime_pattern').keyup(function () {
+        typewatch(function () {
+            fill_anime_examples();
         }, 500);
     });
 
@@ -265,6 +365,13 @@ $(document).ready(function () {
     $('#naming_sports_pattern').keyup(function () {
         typewatch(function () {
             fill_sports_examples();
+        }, 500);
+    });
+
+    $('#naming_anime_pattern').focusout(fill_examples);
+    $('#naming_anime_pattern').keyup(function () {
+        typewatch(function () {
+            fill_anime_examples();
         }, 500);
     });
 
@@ -285,6 +392,8 @@ $(document).ready(function () {
     setup_naming();
     setup_abd_naming();
     setup_sports_naming();
+    setup_anime_naming();
+
 
     // -- start of metadata options div toggle code --
     $('#metadataType').on('change keyup', function () {

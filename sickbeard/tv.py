@@ -2341,6 +2341,8 @@ class TVEpisode(object):
                 pattern = sickbeard.NAMING_ABD_PATTERN
             elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
                 pattern = sickbeard.NAMING_SPORTS_PATTERN
+            elif self.show.anime and sickbeard.NAMING_CUSTOM_ANIME:
+                pattern = sickbeard.NAMING_ANIME_PATTERN
             else:
                 pattern = sickbeard.NAMING_PATTERN
 
@@ -2363,6 +2365,8 @@ class TVEpisode(object):
                 pattern = sickbeard.NAMING_ABD_PATTERN
             elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
                 pattern = sickbeard.NAMING_SPORTS_PATTERN
+            elif self.show.anime and sickbeard.NAMING_CUSTOM_ANIME:
+                pattern = sickbeard.NAMING_ANIME_PATTERN
             else:
                 pattern = sickbeard.NAMING_PATTERN
 
