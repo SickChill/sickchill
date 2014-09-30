@@ -3,11 +3,11 @@
 #from sickbeard import db, sbdatetime
 #from sickbeard.common import *
 
-    </div>
-</div>
+    </div> <!-- /content -->
+</div> <!-- /contentWrapper -->
 
 <div class="footer clearfix">
-	<div class="meta" style="float:center;font-size: 12px;">
+	<div class="meta" style="display: table; margin: 0 auto; font-size: 12px;">
 		#set $myDB = $db.DBConnection()
 		#set $today = str($datetime.date.today().toordinal())
 		#set status_quality = '(' + ','.join([str(quality) for quality in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
@@ -39,14 +39,17 @@
 			#set $ep_total = 0
 		#end if
 		
-		<b>$shows_total</b> Shows (<b>$shows_active</b> Active) <b>|</b> <b><%=ep_downloaded%>#if $ep_snatched > 0 then " (+" + str($ep_snatched) + " snatched)" else ""# / $ep_total</b> Episodes Downloaded <b>|</b> Daily Search: <b><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></b> <b>|</b> Backlog Search: <b>$sbdatetime.sbdatetime.sbfdate($sickbeard.backlogSearchScheduler.nextRun())</b>
-        <p>
-        <a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" />Force Version Check</a>
-        <a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" />Restart</a>
-        <a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/shutdown16.png" alt="" width="16" height="16" />Shutdown</a>
+		<font color="#09A2FF">$shows_total</font> Shows (<font color="#09A2FF">$shows_active</font> Active) | <font color="#09A2FF"><%=ep_downloaded%></font>#if $ep_snatched > 0 then " (" + "<font color=\"#09A2FF\">+" + str($ep_snatched) + "</font> snatched)" else ""# / <font color="#09A2FF">$ep_total</font> Episodes Downloaded | Daily Search: <font color="#09A2FF"><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></font> | Backlog Search: <font color="#09A2FF">$sbdatetime.sbdatetime.sbfdate($sickbeard.backlogSearchScheduler.nextRun())</font>	
 
-    </div>
+		</div>
+	<!-- 
+	<ul style="display: table; margin: 0 auto; font-size: 12px; list-style-type: none; padding: 0; padding-top: 10px;">
+        <li><a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Force Version Check</a></li>
+        <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Restart</a></li>
+        <li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/shutdown16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Shutdown</a></li>
+	</ul>
+	-->
 </div>
-
+	
 </body>
 </html>

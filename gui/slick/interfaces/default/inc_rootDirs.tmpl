@@ -11,14 +11,14 @@
 #end if
 
 <input type="hidden" id="whichDefaultRootDir" value="$backend_default" />
-<div style="padding: 10px 0 5px;">
-    <select name="rootDir" id="rootDirs" size="6" style="min-width: 500px;">
+<div style="padding: 10px 0 5px; width: 670px; margin-left: auto; margin-right: auto;">
+    <select name="rootDir" id="rootDirs" size="6" style="width: 670px;">
     #for $cur_dir in $backend_dirs:
         <option value="$cur_dir">$cur_dir</option>
     #end for
     </select>
 </div>
-<div id="rootDirsControls" style="text-align: center; width: 500px;">
+<div id="rootDirsControls" style="text-align: center; width: 670px; margin-left: auto; margin-right: auto;">
     <input class="btn" type="button" id="addRootDir" value="New" />
     <input class="btn" type="button" id="editRootDir" value="Edit" />
     <input class="btn" type="button" id="deleteRootDir" value="Delete" />

@@ -9,6 +9,7 @@
 #set global $topmenu="config"#
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -89,11 +90,11 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             #set $curName = $curProvider.getID()
                           <li class="ui-state-default" id="$curName">
                             <input type="checkbox" id="enable_$curName" class="provider_enabler" #if $curProvider.isEnabled() then "checked=\"checked\"" else ""#/>
-                            <a href="$curProvider.url" class="imgLink" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/$curProvider.imageName()" alt="$curProvider.name" title="$curProvider.name" width="16" height="16" /></a>
-                            $curProvider.name
+                            <a href="$curProvider.url" class="imgLink" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/$curProvider.imageName()" alt="$curProvider.name" title="$curProvider.name" width="16" height="16" style="vertical-align:middle;"/></a>
+                            <span style="vertical-align:middle;">$curProvider.name</span>
                             #if not $curProvider.supportsBacklog then "*" else ""#
                             #if $curProvider.name == "EZRSS" then "**" else ""#
-                            <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right"></span>
+                            <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         #end for
                         </ul>
@@ -117,10 +118,10 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                     #set $provider_config_list = []
                                     #for $curProvider in $sickbeard.providers.sortedProviderList():
                                         #if $curProvider.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
-                                        	#continue
+                                         #continue
                                         #elif $curProvider.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
-                                        	#continue	
-                                        #end if	
+                                         #continue
+                                        #end if
                                         $provider_config_list.append($curProvider)
                                     #end for
 
@@ -156,24 +157,26 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curNewznabProvider, 'enable_daily'):
+						#if $hasattr($curNewznabProvider, 'enable_daily'):
                         <div class="field-pair">
                             <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" #if $curNewznabProvider.enable_daily then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="${curNewznabProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable Daily Searches</span>
                                 <span class="component-desc">
-                                Enables daily searches</span>
+									Enables daily searches
+								</span>
                             </label>
                         </div>
                         #end if
-
+						
                         #if $hasattr($curNewznabProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" #if $curNewznabProvider.enable_backlog then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="${curNewznabProvider.getID()}_enable_backlog">
-                                <span class="component-title">Enable Backlog Searches</span>
+                                <span class="component-title">Backlog Only</span>
                                 <span class="component-desc">
-                                Enables backlog searches</span>
+									Enables backlog searches
+								</span>
                             </label>
                         </div>
                         #end if
@@ -184,10 +187,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix" for="${curNewznabProvider.getID()}_search_fallback">
                                 <span class="component-title">Season Search Fallback</span>
                                 <span class="component-desc">
-                                When searching for a complete season<br>
-                                depending on search mode you may return<br>
-                                no results, this helps by restarting the<br>
-                                search using the opposite search mode.</span>
+									When searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.
+								</span>
                             </label>
                         </div>
                         #end if
@@ -196,17 +197,15 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Season Search Mode</span>
-                                <span class="component-desc">
-                                When searching for complete seasons<br>
-                                you can choose to have it look for season<br>
-                                packs ONLY or choose to have it build a<br>
-                                complete season from just single episodes.<br></span>
-
+                                <span class="component-desc2">
+									When searching for complete seasons you can choose to have it look for season packs ONLY or choose to have it build a complete season from just single episodes.
+								</span>
+								
                                 <span class="component-title"></span>
-                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
-                                <span class="component-title"></span>
-                                <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
-                                </span>
+									<input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+								<span class="component-title"></span>
+									<input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+								</span>
                             </label>
                         </div>
                         #end if
@@ -234,27 +233,30 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curNzbProvider, 'enable_daily'):
-                        <div class="field-pair">
-                            <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" #if $curNzbProvider.enable_daily then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curNzbProvider.getID()}_enable_daily">
-                                <span class="component-title">Enable Daily Searches</span>
-                                <span class="component-desc">
-                                Enables daily searches</span>
-                            </label>
-                        </div>
-                        #end if
 
-                        #if $hasattr($curNzbProvider, 'enable_backlog'):
-                        <div class="field-pair">
-                            <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" #if $curNzbProvider.enable_backlog then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curNzbProvider.getID()}_enable_backlog">
-                                <span class="component-title">Enable Backlog Searches</span>
-                                <span class="component-desc">
-                                Enables backlog searches</span>
-                            </label>
-                        </div>
-                        #end if
+						#if $hasattr($curNzbProvider, 'enable_daily'):
+						<div class="field-pair">
+							<input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" #if $curNzbProvider.enable_daily then "checked=\"checked\"" else ""#/>
+							<label class="clearfix" for="${curNzbProvider.getID()}_enable_daily">
+								<span class="component-title">Enable Daily Searches</span>
+								<span class="component-desc">
+									Enables daily searches
+								</span>
+							</label>
+						</div>
+						#end if
+						
+						#if $hasattr($curNzbProvider, 'enable_backlog'):
+						<div class="field-pair">
+							<input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" #if $curNzbProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+							<label class="clearfix" for="${curNzbProvider.getID()}_enable_backlog">
+								<span class="component-title">Enable Backlog Searches</span>
+								<span class="component-desc">
+									Enables backlog searches
+								</span>
+							</label>
+						</div>
+						#end if
 
                         #if $hasattr($curNzbProvider, 'search_fallback'):
                         <div class="field-pair">
@@ -262,10 +264,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix" for="${curNzbProvider.getID()}_search_fallback">
                                 <span class="component-title">Season Search Fallback</span>
                                 <span class="component-desc">
-                                When searching for a complete season<br>
-                                depending on search mode you may return<br>
-                                no results, this helps by restarting the<br>
-                                search using the opposite search mode.</span>
+									When searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.
+								</span>
                             </label>
                         </div>
                         #end if
@@ -274,16 +274,14 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Season Search Mode</span>
-                                <span class="component-desc">
-                                When searching for complete seasons<br>
-                                you can choose to have it look for season<br>
-                                packs ONLY or choose to have it build a<br>
-                                complete season from just single episodes.</span>
-
+                                <span class="component-desc2">
+									When searching for complete seasons you can choose to have it look for season packs ONLY or choose to have it build a complete season from just single episodes.
+								</span>
+								
                                     <span class="component-title"></span>
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                    <input type="radio" style="margin-top: 2px !important;" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
                                     <span class="component-title"></span>
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                    <input type="radio" style="margin-top: 2px !important;" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
                                 </span>
                             </label>
                         </div>
@@ -383,9 +381,9 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                         #if $hasattr($curTorrentProvider, 'ratio'):
                         <div class="field-pair">
-                            <label class="clearfix">
+                            <label class="nocheck clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed Ratio:</span>
-                                <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" size="2" />
+                                <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" size="2" style="margin-left: 3px !important;" />
                             </label>
                             <label class="clearfix">
                                 <span class="component-title">&nbsp;</span>
@@ -399,18 +397,18 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                         #if $hasattr($curTorrentProvider, 'minseed'):
                         <div class="field-pair">
-                            <label class="clearfix">
+                            <label class="nocheck clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Min Seeders:</span>
-                                <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" size="40" />
+                                <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" size="40" style="margin-left: 3px !important;" />
                             </label>
                         </div>
                         #end if
 
                         #if $hasattr($curTorrentProvider, 'minleech'):
                         <div class="field-pair">
-                            <label class="clearfix">
+                            <label class="nocheck clearfix">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Min Leechers:</span>
-                                <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" size="40" />
+                                <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" size="40" style="margin-left: 3px !important;" />
                             </label>
                         </div>
                         #end if
@@ -460,27 +458,29 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'enable_daily'):
-                        <div class="field-pair">
-                            <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" #if $curTorrentProvider.enable_daily then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curTorrentProvider.getID()}_enable_daily">
-                                <span class="component-title">Enable Daily Searches</span>
-                                <span class="component-desc">
-                                Enables daily searches</span>
-                            </label>
-                        </div>
-                        #end if
-
-                        #if $hasattr($curTorrentProvider, 'enable_backlog'):
-                        <div class="field-pair">
-                            <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" #if $curTorrentProvider.enable_backlog then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="${curTorrentProvider.getID()}_enable_backlog">
-                                <span class="component-title">Enable Backlog Searches</span>
-                                <span class="component-desc">
-                                Enables backlog searches</span>
-                            </label>
-                        </div>
-                        #end if
+						#if $hasattr($curTorrentProvider, 'enable_daily'):
+						<div class="field-pair">
+							<input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" #if $curTorrentProvider.enable_daily then "checked=\"checked\"" else ""#/>
+							<label class="clearfix" for="${curTorrentProvider.getID()}_enable_daily">
+								<span class="component-title">Enable Daily Searches</span>
+								<span class="component-desc">
+									Enables daily searches
+								</span>
+							</label>
+						</div>
+						#end if
+						
+						#if $hasattr($curTorrentProvider, 'enable_backlog'):
+						<div class="field-pair">
+							<input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" #if $curTorrentProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+							<label class="clearfix" for="${curTorrentProvider.getID()}_enable_backlog">
+								<span class="component-title">Enable Backlog Searches</span>
+								<span class="component-desc">
+									Enables backlog searches
+								</span>
+							</label>
+						</div>
+						#end if
 
                         #if $hasattr($curTorrentProvider, 'search_fallback'):
                         <div class="field-pair">
@@ -488,10 +488,8 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label class="clearfix" for="${curTorrentProvider.getID()}_search_fallback">
                                 <span class="component-title">Season Search Fallback</span>
                                 <span class="component-desc">
-                                When searching for a complete season<br>
-                                depending on search mode you may return<br>
-                                no results, this helps by restarting the<br>
-                                search using the opposite search mode.</span>
+									When searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.
+								</span>
                             </label>
                         </div>
                         #end if
@@ -500,16 +498,14 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Season Search Mode</span>
-                                <span class="component-desc">
-                                When searching for complete seasons<br>
-                                you can choose to have it look for season<br>
-                                packs ONLY or choose to have it build a<br>
-                                complete season from just single episodes.</span>
-
+                                <span class="component-desc2">
+									When searching for complete seasons you can choose to have it look for season packs ONLY or choose to have it build a complete season from just single episodes.
+								</span>
+								
                                     <span class="component-title"></span>
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
+                                    <input type="radio" style="margin-top: 2px !important;" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" class="radio" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />Season Packs ONLY!<br />
                                     <span class="component-title"></span>
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
+                                    <input type="radio" style="margin-top: 2px !important;" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" class="radio" #if $curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />Episodes ONLY!<br />
                                 </span>
                             </label>
                         </div>
@@ -572,24 +568,21 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-desc">(if not required, type 0)</span>
                             </label>
                         </div>
-                        
-                        <div class="field-pair">
+						
+						<div class="field-pair">
 	                        <label class="nocheck clearfix">
 	                        <span class="component-title">NewzNab search categories</span>
-	                        <select id="newznab_cap" multiple="multiple" style="min-width:10em;" >
-	                        </select>
-							<select id="newznab_cat" multiple="multiple" style="min-width:10em;" >
-							</select>
+								<select id="newznab_cap" multiple="multiple" style="min-width:10em;" ></select>
+								<select id="newznab_cat" multiple="multiple" style="min-width:10em;" ></select>
 	                        </label>
 	                        <label class="clearfix">
 								<span class="component-title">&nbsp;</span>
 	                            <span class="component-desc">(Select your Newznab categories on the left, and click the "update categories" button to use them for searching.)
-	                            Don't forget to to save the form!</span>
-	                            
+	                            Don't forget to to save the form!</span>	                            
 							</label>
 							<input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories" />
                         </div>
-                        
+						
             <div id="newznab_add_div">
                 <input class="btn" type="button" class="newznab_save" id="newznab_add" value="Add" />
             </div>
@@ -665,7 +658,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
             </div><!-- /config-components //-->
 
 </form>
-</div></div>
+</div></div></div>
 <div class="clearfix"></div>
 <script type="text/javascript" charset="utf-8">
 <!--

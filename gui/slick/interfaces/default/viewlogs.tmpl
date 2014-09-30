@@ -18,6 +18,25 @@
         url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$(this).val()
         window.location.href = url
     });
+	
+	var lines = \$('.logcolor').text().split('\n');
+	\$('.logcolor').empty();
+
+	\$.each(lines, function() {
+    var \$this = \$('<div>'+this+'</div>');
+
+    \$('.logcolor').append(\$this);
+    if( \$this.text().match('WARNING') ) {
+        \$this.css('color', '#ffcc00');
+    }
+	else if( \$this.text().match('ERROR') ) {
+        \$this.css('color', '#ff3333');
+    }
+    else if( \$this.text().match('AA') ) {
+        \$this.css('color', '#ff6600');
+    }
+	});
+	
 });
 //-->
 </script>
@@ -26,7 +45,7 @@
 #else 
 	<h1 class="title">$title</h1>
 #end if
-<div class="h2footer align-right"><b>Minimum logging level to display:</b> <select name="minLevel" id="minLevel">
+<div class="h2footer align-right">Minimum logging level to display: <select name="minLevel" id="minLevel">
 #set $levels = $reverseNames.keys()
 $levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
 #for $level in $levels:
@@ -35,7 +54,7 @@ $levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
 </select>
 </div>
 
-<div class="align-left"><pre>
+<div class="align-left"><pre class="logcolor">
 $logLines
 </pre>
 </div>

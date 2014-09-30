@@ -27,7 +27,7 @@
         #set $cur_index = $root_dir_list.index($cur_dir)
         <div style="padding: 6px 0 3px 25px;">
             <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_$cur_index" value="Edit" />
-            <input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_$cur_index" value="Delete" />
+			<input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_$cur_index" value="Delete" />
             $cur_dir => <span id="display_new_root_dir_$cur_index">$cur_dir</span>
         </div>
         <input type="hidden" name="orig_root_dir_$cur_index" value="$cur_dir" />

@@ -11,6 +11,7 @@
 #import os.path
 
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -26,26 +27,28 @@
             <p>For shows that you haven't downloaded yet, this option finds a show on theTVDB.com and TVRage.com, creates a directory for its episodes, and adds it to SickRage.</p>
         </div>
     </a>
-    <br/><br/>
 
+	<br/><br/>
     <a href="$sbRoot/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
-        <div class="button"><img src="$sbRoot/images/add-new32.png" height="32" width="32" alt="Add Trending Shows"/></div>
+        <div class="button"><img src="$sbRoot/images/add-trending32.png" height="32" width="32" alt="Add Trending Shows"/></div>
         <div class="buttontext">
             <h2>Add Trending Show</h2>
             <p>For shows that you haven't downloaded yet, this option lets you choose from a list of current trending shows with ratings to add, creates a directory for its episodes, and adds it to SickRage.</p>
         </div>
     </a>
-    <br/><br/>
 
-    <a href="$sbRoot/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
-        <div class="button"><img src="$sbRoot/images/add-new32.png" height="32" width="32" alt="Add Recommended Shows"/></div>
+    <br/><br/>
+    #if $sickbeard.USE_TRAKT == True:
+	<a href="$sbRoot/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
+        <div class="button"><img src="$sbRoot/images/add-trakt32.png" height="32" width="32" alt="Add Recommended Shows"/></div>
         <div class="buttontext">
-            <h2>Add Recommended Show</h2>
+            <h2>Add Recommended Shows</h2>
             <p>For shows that you haven't downloaded yet, this option recommends shows to add based on your Trakt.tv show library, creates a directory for its episodes, and adds it to SickRage. *** Trakt.tv must be enabled ***</p>
         </div>
     </a>
-    <br/><br/>
 
+    <br/><br/>
+	#end if
     <a href="$sbRoot/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><img src="$sbRoot/images/add-existing32.png" height="32" width="32" alt="Add Existing Shows"/></div>
         <div class="buttontext">
@@ -54,6 +57,7 @@
         </div>
     </a>
 
+</div>
 </div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

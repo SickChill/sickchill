@@ -14,6 +14,7 @@
 
 #set global $topmenu="config"#
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -39,7 +40,7 @@
 					<li><a href="#core-component-group1">Misc</a></li>
 					<li><a href="#core-component-group2">Web Interface</a></li>
 					<li><a href="#core-component-group3">Date and Time</a></li>
-					<li><a href="#core-component-group4">Advanced Setting</a></li>
+					<li><a href="#core-component-group4">Advanced Settings</a></li>
 				</ul>
 				
                 <div id="core-component-group1" class="component-group clearfix">
@@ -108,7 +109,7 @@
                                 <span class="component-desc">Sends the notification SickRage has been updated to all enabled notifiers.</span>
                             </label>
                         </div>
-
+						
                         <div class="field-pair">
                             <input type="checkbox" name="sort_article" id="sort_article" #if $sickbeard.SORT_ARTICLE then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="sort_article"> 
@@ -168,16 +169,15 @@
                                 <span class="component-desc">Play video files from display show page?</span>
                             </label>
                         </div>
-
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <span class="component-title">Show Root Directories</span>
-                                <span class="component-desc">Set root directories for where you want your shows to be.</span>
-                                #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
-                            </label>
-                        </div>
-
-                        <fieldset class="component-group-list">
+						
+						<div class="field-pair">
+							<label class="clearfix">
+								<span class="component-title">Show Root Directories</span>
+								<span class="component-desc">Set root directories for where you want your shows to be.</span>
+								#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+							</label>
+						</div>
+						
                         <div class="field-pair">
                             <input type="checkbox" name="use_imdbwl" class="enabler" id="use_imdbwl" #if $sickbeard.USE_IMDBWATCHLIST then "checked=\"checked\"" else ""#/>
                             <label class="clearfix" for="use_imdbwl">
@@ -189,15 +189,15 @@
 	                        <!--  Multiselect for managing IMDB watchlist csv url's -->
 	                        <div class="field-pair">
 	                            <label class="clearfix">
-	                                <span class="">Manage your IMDB watchlist url's. Each url should contain your list id and user id. They look like: ls014134 and us0918234.</span>
+	                                <span class="">Manage your IMDB watchlist url's. Each url should contain your list id and user id. <br>They look like: ls014134 and us0918234.</span>
 	                                #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_imdbWatchlists.tmpl")
 	                            </label>
 	                        </div>
 	                    </div>
+
 	                    <input type="submit" class="btn config_submitter" value="Save Changes" />
 	                    </fieldset>
 
-                    </fieldset>
                 </div><!-- /component-group1 //-->
 
 
@@ -299,7 +299,7 @@
                 <div id="core-component-group4" class="component-group clearfix">
 
                     <div class="component-group-desc">
-                        <h3>Advanced setting</h3>
+                        <h3>Advanced Settings</h3>
                         <p>You need to know what you are doing here!!!</p>
                     </div>
 
@@ -322,14 +322,14 @@
                                 <span class="component-desc">Select the branch you wish to use, changing this will require a restart.</span>
                             </label>
                         </div>
-
-                        <div class="field-pair">
+						
+						<div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">CPU Throttling:</span>
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset">
                                     #for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset</option>
+                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset.capitalize()</option>
                                     #end for
                                     </select>
                                 </span>
@@ -392,7 +392,7 @@
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>Warning</b>: Passwords must only contain <a style="color: blue;" href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">ASCII characters</a></span>
+                                <span class="component-desc"><b>Warning</b>: Passwords must only contain <a style="color: #09A2FF;" href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">ASCII characters</a></span>
                             </label>
                         </div> 
                         
@@ -502,6 +502,7 @@
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
+								<span class="component-desc">
                                     <input type="radio" name="timezone_display" id="network" value="network" class="radio" #if $sickbeard.TIMEZONE_DISPLAY=="network" then "checked=\"checked\"" else ""# />Network Timezone<br />
                                 </span>
                             </label>
@@ -518,7 +519,7 @@
             </div><!-- /config-components -->
 		
 </form>
-</div></div>
+</div></div></div>
 
 <div class="clearfix"></div>
 

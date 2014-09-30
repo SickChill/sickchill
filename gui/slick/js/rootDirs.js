@@ -40,8 +40,8 @@ $(document).ready(function() {
         if (is_default)
             setDefault($('#rootDirs option').attr('id'));
 
-        refreshRootDirs();
         $.get(sbRoot+'/config/general/saveRootDirs', { rootDirString: $('#rootDirText').val() });
+        refreshRootDirs();
     }
 
     function editRootDir(path) {
@@ -141,7 +141,7 @@ $(document).ready(function() {
     function refreshRootDirs() {
 
         if (!$("#rootDirs").length)
-            return;
+            return
 
         var do_disable = 'true';
 
@@ -150,7 +150,7 @@ $(document).ready(function() {
 
         // if nothing's selected then select the default
         if (!$("#rootDirs option:selected").length && $('#whichDefaultRootDir').val().length)
-            $('#'+$('#whichDefaultRootDir').val()).prop("selected", true);
+            $('#'+$('#whichDefaultRootDir').val()).prop("selected", true)
 
         // if something's selected then we have some behavior to figure out
         if ($("#rootDirs option:selected").length) {
@@ -183,7 +183,7 @@ $(document).ready(function() {
 
     // set up buttons on page load
     syncOptionIDs();
-    setDefault($('#whichDefaultRootDir').val(), true);
+    setDefault($('#whichDefaultRootDir').val(), true)
     refreshRootDirs();
 
 });

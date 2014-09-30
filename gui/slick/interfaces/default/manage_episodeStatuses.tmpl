@@ -9,6 +9,8 @@
 #set global $topmenu="manage"#
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -66,8 +68,8 @@ $statusList.append($common.FAILED)
 <input class="btn" type="submit" value="Go" />
 
 <div>
-	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a>Select all</a></button> 
-	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a>Clear all</a></button>
+	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a style="color: #fff">Select all</a></button> 
+	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a style="color: #fff">Clear all</a></button>
 </div>
 <br />
 
@@ -75,12 +77,13 @@ $statusList.append($common.FAILED)
 #for $cur_indexer_id in $sorted_show_ids:
  <tr id="$cur_indexer_id">
   <th><input type="checkbox" class="allCheck" id="allCheck-$cur_indexer_id" name="$cur_indexer_id-all" checked="checked" /></th>
-  <th colspan="2" style="width: 100%; text-align: left;"><a class="whitelink" href="$sbRoot/home/displayShow?show=$cur_indexer_id">$show_names[$cur_indexer_id]</a> ($ep_counts[$cur_indexer_id]) <input type="button" class="get_more_eps btn" id="$cur_indexer_id" value="Expand" /></th>
+  <th colspan="2" style="width: 100%; text-align: left;"><a class="whitelink" href="$sbRoot/home/displayShow?show=$cur_indexer_id">$show_names[$cur_indexer_id]</a> ($ep_counts[$cur_indexer_id]) <input type="button" class="float-right get_more_eps btn" id="$cur_indexer_id" value="Expand" /></th>
  </tr>
 #end for
 </table>
 </form>
 
 #end if
+</div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

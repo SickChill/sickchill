@@ -10,6 +10,7 @@
 #set global $topmenu="manage"#
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<div id="content960">
 #if $varExists('header') 
     <h1 class="header">$header</h1>
 #else 
@@ -46,8 +47,8 @@ subtitles
 <br />
 Download missed subtitles for selected episodes <input class="btn" type="submit" value="Go" />
 <div>
-	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a>Select all</a></button> 
-	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a>Clear all</a></button>
+	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a style="color: #fff">Select all</a></button> 
+	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a style="color: #fff">Clear all</a></button>
 </div>
 <br />
 <table class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
@@ -61,5 +62,5 @@ Download missed subtitles for selected episodes <input class="btn" type="submit"
 </form>
 
 #end if
-
+</div>
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

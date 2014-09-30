@@ -20,10 +20,10 @@ $(function () {
             },
             position: {
                 viewport: $(window),
-                my: 'top center',
-                at: 'bottom center',
+                my: 'bottom center',
+                at: 'top center',
                 adjust: {
-                    y: 3,
+                    y: 10,
                     x: 0
                 }
             },

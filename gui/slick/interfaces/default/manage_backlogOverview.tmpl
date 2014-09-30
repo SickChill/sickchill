@@ -37,6 +37,8 @@
 //-->
 </script>
 
+<div id="content960">
+
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -66,7 +68,7 @@ Jump to Show
 </select>
 </div>
 
-<table class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+<table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
 
 #for $curShow in sorted($sickbeard.showList, key=operator.attrgetter('name')):
 
@@ -80,12 +82,12 @@ Jump to Show
         <div class="float-right">
             <span class="wanted nowrap">Wanted: <b>$showCounts[$curShow.indexerid][$Overview.WANTED]</b></span>
             <span class="qual nowrap">Low Quality: <b>$showCounts[$curShow.indexerid][$Overview.QUAL]</b></span>
-            <a class="btn btn-mini btn-inverse forceBacklog" href="$sbRoot/manage/backlogShow?indexer_id=$curShow.indexerid"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
+            <a class="btn forceBacklog" style="font-size:13px;" href="$sbRoot/manage/backlogShow?indexer_id=$curShow.indexerid"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
         </div>
     </td>
   </tr>
 
-  <tr><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
+  <tr class="seasoncols"><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
 
 #for $curResult in $showSQLResults[$curShow.indexerid]:
 #set $whichStr = $str($curResult["season"]) + "x" + $str($curResult["episode"])
@@ -93,17 +95,17 @@ Jump to Show
 #if $overview not in ($Overview.QUAL, $Overview.WANTED):
 #continue
 #end if
-  <tr class="$Overview.overviewStrings[$showCats[$curShow.indexerid][$whichStr]]">
-    <td align="center">$whichStr</td>
+  <tr class="seasonstyle $Overview.overviewStrings[$showCats[$curShow.indexerid][$whichStr]]">
+    <td class="tableleft" align="center">$whichStr</td>
     <td>$curResult["name"]</td>
-    <td align="center" class="nowrap"><div class="${fuzzydate}">#if int($curResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($curResult["airdate"],$curShow.airs,$curShow.network))#</div></td>
+    <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">#if int($curResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($curResult["airdate"],$curShow.airs,$curShow.network))#</div></td>
   </tr>
 
 #end for
 
 #end for  
 
-
 </table>
+</div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

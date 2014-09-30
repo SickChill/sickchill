@@ -39,35 +39,32 @@
 \$(document).ready(function() 
 { 
     \$("#massUpdateTable:has(tbody tr)").tablesorter({
-        sortList: [[3,0]],
+        sortList: [[1,0]],
         textExtraction: {
             2: function(node) { return \$(node).find("span").text().toLowerCase(); },
             3: function(node) { return \$(node).find("img").attr("alt"); },
-            4: function(node) { return \$(node).find("img").attr("alt"); },
-            5: function(node) { return \$(node).find("img").attr("alt"); },
-            6: function(node) { return \$(node).find("img").attr("alt"); },
-            7: function(node) { return \$(node).find("img").attr("alt"); }
+            4: function(node) { return \$(node).find("img").attr("alt"); }
         },
         widgets: ['zebra'],
         headers: {
             0: { sorter: false},
             1: { sorter: 'showNames'},
             2: { sorter: 'quality'},
-            3: { sorter: true},
-            4: { sorter: true},
-            5: { sorter: true},
-            6: { sorter: true},
-            7: { sorter: true},
-            8: { sorter: true},
+            3: { sorter: 'sports'},
+            4: { sorter: 'scene'},
+            5: { sorter: 'anime'},              
+            6: { sorter: 'flatfold'},
+            7: { sorter: 'paused'},
+            8: { sorter: 'status'},
             9: { sorter: false},
            10: { sorter: false},
            11: { sorter: false},
            12: { sorter: false}
-#if $sickbeard.USE_SUBTITLES
+	#if $sickbeard.USE_SUBTITLES            
          , 13: { sorter: false}
-#end if
+	#end if         	            
         }
-    });
+    }); 
 });
 //-->
 </script>
@@ -80,99 +77,113 @@
 <form name="massUpdateForm" method="post" action="massUpdate">
 
 <table id="massUpdateTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-  <thead>
-    <tr>
-      <th width="1%">Edit<br/>
-      	<input type="checkbox" class="bulkCheck" id="editCheck" />
-      </th>
+	<thead>
+		<tr>
+			<th class="col-checkbox">Edit<br/><input type="checkbox" class="bulkCheck" id="editCheck" /></th>
+			<th class="nowrap" style="text-align: left;">Show Name</th>
+			<th class="col-legend">Quality</th>
+			<th class="col-legend">Sports</th>
+			<th class="col-legend">Scene</th>
+			<th class="col-legend">Anime</th>
+			<th class="col-legend">Flat Folders</th>
+			<th class="col-legend">Paused</th>
+			<th class="col-legend">Status</th>
+			<th width="1%">Update<br/><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
+			<th width="1%">Rescan<br/><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
+			<th width="1%">Rename<br/><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
+		#if $sickbeard.USE_SUBTITLES:
+			<th width="1%">Subtitle<br/><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
+		#end if
+			<!-- <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
+			<th width="1%">Delete<br/><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
+			<th width="1%">Remove<br/><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+		</tr>
+	</thead>
 
-      <th class="nowrap" style="text-align: left;">Show Name</th>
-      <th>Quality</th>
-      <th>Sports</th>
-      <th>Scene</th>
-      <th>Anime</th>
-      <th>Flat Folders</th>
-      <th>Paused</th>
-      <th>Status</th>
-      <th width="1%">Update<br/><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
-      <th width="1%">Rescan<br/><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
-      <th width="1%">Rename<br/><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
-#if $sickbeard.USE_SUBTITLES:
-      <th width="1%">Subtitle<br/><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
-#end if
-<!--      <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
-      <th width="1%">Delete<br/><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
-      <th width="1%">Remove<br/><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
-    </tr>
-  </thead>
-<tfoot>
-  <tr>
-    <td rowspan="1" colspan="1" class="align-center alt"><input class="btn" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-    <td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 13 else 12#" class="align-right alt"><input class="btn btn-primary" type="button" value="Submit" id="submitMassUpdate" /></td>
-  </tr>
-</tfoot>
-  <tbody>
-#set $myShowList = $sickbeard.showList
-$myShowList.sort(lambda x, y: cmp(x.name, y.name))
-#for $curShow in $myShowList:
-#set $curEp = $curShow.nextaired
-#set $curUpdate_disabled = ""
-#set $curRefresh_disabled = ""
-#set $curRename_disabled = ""
-#set $curSubtitle_disabled = ""
-#set $curDelete_disabled = ""
-#set $curRemove_disabled = ""
+	<tfoot>
+		<tr>
+			<td rowspan="1" colspan="2" class="align-center alt"><input class="btn" type="button" value="Edit Selected" id="submitMassEdit" /></td>
+			<td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 13 else 12#" class="align-right alt"><input class="btn btn-primary" type="button" value="Submit" id="submitMassUpdate" /></td>
+		</tr>
+	</tfoot>
+	
+	<tbody>
+		#set $myShowList = $sickbeard.showList
+		$myShowList.sort(lambda x, y: cmp(x.name, y.name))
+		
+		#for $curShow in $myShowList:
+			#set $curEp = $curShow.nextaired
+			#set $curUpdate_disabled = ""
+			#set $curRefresh_disabled = ""
+			#set $curRename_disabled = ""
+			#set $curSubtitle_disabled = ""
+			#set $curDelete_disabled = ""
+			#set $curRemove_disabled = ""
 
-#if $sickbeard.showQueueScheduler.action.isBeingUpdated($curShow) or $sickbeard.showQueueScheduler.action.isInUpdateQueue($curShow):
-  #set $curUpdate_disabled = "disabled=\"disabled\" "
-#end if
-#set $curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str($curShow.indexerid)+"\" "+$curUpdate_disabled+"/>"
-#if $sickbeard.showQueueScheduler.action.isBeingRefreshed($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
-  #set $curRefresh_disabled = "disabled=\"disabled\" "
-#end if
-#set $curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str($curShow.indexerid)+"\" "+$curRefresh_disabled+"/>"
-#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow):
-  #set $curRename = "disabled=\"disabled\" "
-#end if
-#set $curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str($curShow.indexerid)+"\" "+$curRename_disabled+"/>"
-#if not $curShow.subtitles or $sickbeard.showQueueScheduler.action.isBeingSubtitled($curShow) or $sickbeard.showQueueScheduler.action.isInSubtitleQueue($curShow):
-  #set $curSubtitle_disabled = "disabled=\"disabled\" "
-#end if
-#set $curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str($curShow.indexerid)+"\" "+$curSubtitle_disabled+"/>"
-#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
-  #set $curDelete = "disabled=\"disabled\" "
-#end if
-#set $curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str($curShow.indexerid)+"\" "+$curDelete_disabled+"/>"
-#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
-  #set $curRemove = "disabled=\"disabled\" "
-#end if
-#set $curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str($curShow.indexerid)+"\" "+$curRemove_disabled+"/>"
+		#if $sickbeard.showQueueScheduler.action.isBeingUpdated($curShow) or $sickbeard.showQueueScheduler.action.isInUpdateQueue($curShow):
+			#set $curUpdate_disabled = "disabled=\"disabled\" "
+		#end if
+		
+		#set $curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-"+str($curShow.indexerid)+"\" "+$curUpdate_disabled+"/>"
+		
+		#if $sickbeard.showQueueScheduler.action.isBeingRefreshed($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
+			#set $curRefresh_disabled = "disabled=\"disabled\" "
+		#end if
+		
+		#set $curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-"+str($curShow.indexerid)+"\" "+$curRefresh_disabled+"/>"
+		
+		#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow):
+			#set $curRename = "disabled=\"disabled\" "
+		#end if
+		
+		#set $curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-"+str($curShow.indexerid)+"\" "+$curRename_disabled+"/>"
+		
+		#if not $curShow.subtitles or $sickbeard.showQueueScheduler.action.isBeingSubtitled($curShow) or $sickbeard.showQueueScheduler.action.isInSubtitleQueue($curShow):
+			#set $curSubtitle_disabled = "disabled=\"disabled\" "
+		#end if
+		
+		#set $curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-"+str($curShow.indexerid)+"\" "+$curSubtitle_disabled+"/>"
+		
+		#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
+			#set $curDelete = "disabled=\"disabled\" "
+		#end if
+		
+		#set $curDelete = "<input type=\"checkbox\" class=\"deleteCheck\" id=\"delete-"+str($curShow.indexerid)+"\" "+$curDelete_disabled+"/>"
 
-  <tr>
-    <td align="center"><input type="checkbox" class="editCheck" id="edit-$curShow.indexerid" /></td>
-    <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
-#if $curShow.quality in $qualityPresets:
-    <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
-#else:
-    <td align="center"><span class="quality Custom">Custom</span></td>
-#end if
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center">$curShow.status</td>
-    <td align="center">$curUpdate</td>
-    <td align="center">$curRefresh</td>
-    <td align="center">$curRename</td>
-#if $sickbeard.USE_SUBTITLES:
-    <td align="center">$curSubtitle</td>
-#end if
-    <td align="center">$curDelete</td>
-    <td align="center">$curRemove</td>
-  </tr>
-#end for
-</tbody>
+		#if $sickbeard.showQueueScheduler.action.isBeingRenamed($curShow) or $sickbeard.showQueueScheduler.action.isInRenameQueue($curShow) or $sickbeard.showQueueScheduler.action.isInRefreshQueue($curShow):
+			#set $curRemove = "disabled=\"disabled\" "
+		#end if
+
+		#set $curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+str($curShow.indexerid)+"\" "+$curRemove_disabled+"/>"
+		
+		<tr>
+			<td align="center"><input type="checkbox" class="editCheck" id="edit-$curShow.indexerid" /></td>
+			<td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
+		#if $curShow.quality in $qualityPresets:
+			<td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
+		#else:
+			<td align="center"><span class="quality Custom">Custom</span></td>
+		#end if
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.is_sports) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.is_scene) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center">$curShow.status</td>
+			<td align="center">$curUpdate</td>
+			<td align="center">$curRefresh</td>
+			<td align="center">$curRename</td>
+		#if $sickbeard.USE_SUBTITLES:
+			<td align="center">$curSubtitle</td>
+		#end if
+			<td align="center">$curDelete</td>
+			<td align="center">$curRemove</td>
+		</tr>
+	
+		#end for
+	
+	</tbody>
+	
 </table>
 
 </form>

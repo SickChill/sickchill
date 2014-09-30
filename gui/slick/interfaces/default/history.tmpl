@@ -96,125 +96,149 @@
 </div>
 
 <div id="HistoryLayout" style="float: right; margin-top: 2px;">
-  <span><b>Layout:</b>
-    <a class="inner" href="$sbRoot/setHistoryLayout/?layout=compact" style="font-size: 12px;">Compact</a> &middot;
-    <a class="inner" href="$sbRoot/setHistoryLayout/?layout=detailed" style="font-size: 12px;">Detailed</a>
-  </span>
+	<span><b>Layout:</b>
+		<a class="inner" href="$sbRoot/setHistoryLayout/?layout=compact">Compact</a> &middot;
+		<a class="inner" href="$sbRoot/setHistoryLayout/?layout=detailed">Detailed</a>
+	</span>
 </div>
 
 #if $layout == "detailed"
-  <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-    <thead><tr><th class="nowrap">Time</th><th>Episode</th><th>Action</th><th>Provider</th><th>Quality</th></tr></thead>
-    <tbody>
-  #for $hItem in $historyResults:
-  #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($hItem["action"]))
-    <tr>
-      #set $curdatetime = $datetime.datetime.strptime(str($hItem["date"]), $history.dateFormat)
-      <td class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
-      <td width="35%"><a style="color: #000000; text-align: center;" href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%=str(hItem["season"]) +"x"+ "%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
-      <td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#><span style="cursor: help;" title="$os.path.basename($hItem["resource"])">$statusStrings[$curStatus]</span>
-        #if $curStatus == SUBTITLED:
-          <img width="16" height="11" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>">
-      #end if    
-      </td>
-      <td align="center">
-      #if $curStatus == DOWNLOADED:
-        #if $hItem["provider"] != "-1": 
-           <i>$hItem["provider"]</i>
-        #end if
-      #else
-        #if $hItem["provider"] > 0
-          #if $curStatus in [SNATCHED, FAILED]:
-            #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
-            #if $provider != None: 
-              <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" alt="$provider.name" title="$provider.name"/>
-            #else:
-              <img src="$sbRoot/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
-            #end if
-      #else:
-          <img src="$sbRoot/images/subtitles/<%=hItem["provider"]+'.png' %>" width="16" height="16" alt="$hItem["provider"]" title="<%=hItem["provider"].capitalize()%>"/>
-          #end if
-      #end if
-      #end if
-      </td>
-    <span style="display: none;">$curQuality</span>
-      <td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
-    </tr>
-  #end for
-    </tbody>
-  </table>
+	<table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+		<thead>
+			<tr>
+				<th class="nowrap">Time</th>
+				<th>Episode</th>
+				<th>Action</th>
+				<th>Provider</th>
+				<th>Quality</th>
+			</tr>
+		</thead>
+		
+		<tfoot>
+			<tr>
+				<th class="nowrap" colspan="5">&nbsp;</th>
+			</tr>
+		</tfoot>
+    
+		<tbody>
+		#for $hItem in $historyResults:
+			#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($hItem["action"]))
+			<tr>
+				#set $curdatetime = $datetime.datetime.strptime(str($hItem["date"]), $history.dateFormat)
+				<td class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
+				<td width="35%"><a style="color: #fff; text-align: center;" href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
+				<td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
+				#if $curStatus == SUBTITLED:
+					<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>">
+				#end if    
+					<span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem["resource"])">$statusStrings[$curStatus]</span>
+				</td>
+				<td align="center">
+				#if $curStatus == DOWNLOADED:
+					#if $hItem["provider"] != "-1": 
+						<span style="vertical-align:middle;"><i>$hItem["provider"]</i></span>
+					#end if
+				#else
+					#if $hItem["provider"] > 0
+						#if $curStatus in [SNATCHED, FAILED]:
+							#set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
+							#if $provider != None: 
+								<img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">$provider.name</span>
+							#else:
+								<img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
+							#end if
+							#else:
+								<img src="$sbRoot/images/subtitles/<%=hItem["provider"]+'.png' %>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;"><%=hItem["provider"].capitalize()%></span>
+							#end if
+						#end if
+					#end if
+				</td>
+				<span style="display: none;">$curQuality</span>
+				<td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
+			</tr>
+		#end for
+		</tbody>
+	</table>
 
 #else:
 
-  <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-    <thead><tr><th class="nowrap">Time</th><th>Episode</th><th>Snatched</th><th>Downloaded</th>#if sickbeard.USE_SUBTITLES then "<th>Subtitled</th>" else ""#<th>Quality</th></tr></thead>
-    <tbody>
-    #for $hItem in $compactResults:
-    <tr>
-      #set $curdatetime = $datetime.datetime.strptime(str($hItem["actions"][0]["time"]), $history.dateFormat)
-      <td class="nowrap">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)<span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
-      <td width="25%">
-        <span style="display: none;">$hItem["show_name"]</span>
-      <a href="$sbRoot/home/displayShow?show=$hItem["show_id"]#season-$hItem["season"]">
-          <div style="display:inline-block; overflow:hidden;">
-          <img style="width: 200px; height: 37.1px; border-radius: 4px 0px 0px 4px; border-width: 3px 0 3px 3px ; border-style: solid; border-color: #B7B7B7;" src="$sbRoot/showPoster/?show=$hItem["show_id"]&amp;which=banner" class="banner" alt="$hItem["show_id"]" title="$hItem["show_name"] - <%=str(hItem["season"]) +"x"+ "%02i" % int(hItem["episode"]) %>"/>
-        </div>
-        <div class="vertical"><span><%=str(hItem["season"])%></br></span><span>x</span></br><span><%= "%02i" % int(hItem["episode"])%></span> </div>
-      </a>
-    </td>
-    <td align="center" provider="<%=str(sorted(hItem["actions"])[0]["provider"])%>">
-      #for $action in sorted($hItem["actions"]):
-        #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
-          #if $curStatus in [SNATCHED, FAILED]:
-          #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($action["provider"]))
-            #if $provider != None: 
-              <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" alt="$provider.name" style="cursor: help;" title="$provider.name: $os.path.basename($action["resource"])"/>
-            #else:
-              <img src="$sbRoot/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
-            #end if
-        #end if    
-      #end for
-    </td> 
-    <td align="center">
-      #for $action in sorted($hItem["actions"]):
-        #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
-          #if $curStatus == DOWNLOADED:
-            #set $match = $re.search("\-(\w+)\.\w{3}\Z", $os.path.basename($action["resource"]))
-            #if $match
-              #if $match.group(1).upper() in ("X264", "720P"):
-                  #set $match = $re.search("(\w+)\-.*\-"+$match.group(1)+"\.\w{3}\Z", $os.path.basename($hItem["resource"]), re.IGNORECASE)
-                  #if $match
-                      <span style="cursor: help;" title="$os.path.basename($action["resource"])">
-                        <i>$match.group(1).upper()</i>
-                      </span>
-                  #end if
-            #else:
-                <span style="cursor: help;" title="$os.path.basename($action["resource"])">
-                    <i>$match.group(1).upper()</i>
-                  </span>
-              #end if
-            #end if
-          #end if
-      #end for
-    </td>
-	#if sickbeard.USE_SUBTITLES:
-    <td align="center">
-      #for $action in sorted($hItem["actions"]):
-        #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
-          #if $curStatus == SUBTITLED:
-            <img src="$sbRoot/images/subtitles/<%=action["provider"]+'.png' %>" width="16" height="16" alt="$action["provider"]" title="<%=action["provider"].capitalize()%>: $os.path.basename($action["resource"])"/>
-            / 
-            <img width="16" height="11" src="$sbRoot/images/flags/<%= action["resource"][len(action["resource"])-6:len(action["resource"])-4]+'.png'%>" style="vertical-align: middle !important;">
-          &nbsp;
-        #end if    
-      #end for
-    </td>
-    #end if
-      <td align="center" width="14%" quality="$curQuality"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
-    </tr>
-    #end for
-    </tbody>
-  </table>
+	<table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+		<thead>
+			<tr>
+				<th class="nowrap">Time</th>
+				<th>Episode</th>
+				<th>Snatched</th>
+				<th>Downloaded</th>
+			#if sickbeard.USE_SUBTITLES 
+				<th>Subtitled</th>
+			#end if
+				<th>Quality</th>
+			</tr>
+		</thead>
+		
+		<tfoot>
+			<tr>
+				<th class="nowrap" colspan="6">&nbsp;</th>
+			</tr>
+		</tfoot>
+		
+		<tbody>
+		#for $hItem in $compactResults:
+			<tr>
+				#set $curdatetime = $datetime.datetime.strptime(str($hItem["actions"][0]["time"]), $history.dateFormat)
+				<td class="nowrap">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)<span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
+				<td width="25%">
+					<span><a style="color: #fff; text-align: center;" href="$sbRoot/home/displayShow?show=$hItem["show_id"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></span>
+				</td>
+				<td align="center" provider="<%=str(sorted(hItem["actions"])[0]["provider"])%>">
+					#for $action in sorted($hItem["actions"]):
+						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
+						#if $curStatus in [SNATCHED, FAILED]:
+							#set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($action["provider"]))
+							#if $provider != None: 
+								<img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" alt="$provider.name" style="cursor: help;" title="$provider.name: $os.path.basename($action["resource"])"/> 
+							#else:
+								<img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
+							#end if
+						#end if    
+					#end for
+				</td> 
+				<td align="center">
+					#for $action in sorted($hItem["actions"]):
+						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
+						#if $curStatus == DOWNLOADED:
+							#set $match = $re.search("\-(\w+)\.\w{3}\Z", $os.path.basename($action["resource"]))
+							#if $match
+								#if $match.group(1).upper() in ("X264", "720P"):
+									#set $match = $re.search("(\w+)\-.*\-"+$match.group(1)+"\.\w{3}\Z", $os.path.basename($hItem["resource"]), re.IGNORECASE)
+								#if $match
+									<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$match.group(1).upper()</i></span>
+								#end if
+								#else:
+									<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$match.group(1).upper()</i></span>
+								#end if
+							#end if
+						#end if
+					#end for
+				</td>
+				#if sickbeard.USE_SUBTITLES:
+				<td align="center">
+					#for $action in sorted($hItem["actions"]):
+						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
+						#if $curStatus == SUBTITLED:
+							<img src="$sbRoot/images/subtitles/<%=action["provider"]+'.png' %>" width="16" height="16" style="vertical-align:middle;" alt="$action["provider"]" title="<%=action["provider"].capitalize()%>: $os.path.basename($action["resource"])"/>
+							<span style="vertical-align:middle;"> / </span> 
+							<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= action["resource"][len(action["resource"])-6:len(action["resource"])-4]+'.png'%>" style="vertical-align: middle !important;">
+							&nbsp;
+						#end if    
+					#end for
+				</td>
+				#end if
+				<td align="center" width="14%" quality="$curQuality"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
+			</tr>
+		#end for
+		</tbody>
+	</table>
 
 #end if
 

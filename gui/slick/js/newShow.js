@@ -39,7 +39,7 @@ $(document).ready(function () {
         if (searchRequestXhr) searchRequestXhr.abort();
 
         var searchingFor = $('#nameToSearch').val() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
-        $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32.gif" height="32" width="32" /> searching ' + searchingFor + '...');
+        $('#searchResults').empty().html('<div id="wrap"><div class="spinner"></div><div class="item"> searching for ' + searchingFor + '...</div></div>');
 
         searchRequestXhr = $.ajax({
             url: sbRoot + '/home/addShows/searchIndexersForShowName',
