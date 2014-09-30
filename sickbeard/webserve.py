@@ -1425,7 +1425,9 @@ class ConfigGeneral(MainHandler):
 
     def saveRootDirs(self, rootDirString=None):
         sickbeard.ROOT_DIRS = rootDirString
-
+        
+    def saveImdbWatchlists(self, imdbWatchlistString=None):
+        sickbeard.IMDB_WATCHLISTCSV = imdbWatchlistString
 
     def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
                             anime=False, scene=False):
@@ -1485,7 +1487,7 @@ class ConfigGeneral(MainHandler):
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, play_videos=None, rootDir=None):
+                    indexer_timeout=None, play_videos=None, rootDir=None, use_imdbwl=None, imdbWatchlistCsv=None):
 
         results = []
 
@@ -1495,6 +1497,7 @@ class ConfigGeneral(MainHandler):
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
+        sickbeard.USE_IMDBWATCHLIST = config.checkbox_to_value(use_imdbwl)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
 
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
