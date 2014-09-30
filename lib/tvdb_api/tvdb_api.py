@@ -522,10 +522,14 @@ class Tvdb:
 
         if self.config['search_all_languages']:
             self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php" % self.config
+            self.config['url_getSeriesImdb'] = u"%(base_url)s/api/GetSeriesByRemoteID.php" % self.config
             self.config['params_getSeries'] = {"seriesname": "", "language": "all"}
+            self.config['params_getSeriesByImdb'] = {"imdbid": "", "language": "all"}
         else:
             self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php" % self.config
+            self.config['url_getSeriesImdb'] = u"%(base_url)s/api/GetSeriesByRemoteID.php" % self.config
             self.config['params_getSeries'] = {"seriesname": "", "language": self.config['language']}
+            self.config['params_getSeriesByImdb'] = {"imdbid": "", "language": self.config['language']}
 
         self.config['url_epInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.xml" % self.config
         self.config['url_epInfo_zip'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.zip" % self.config
@@ -674,16 +678,20 @@ class Tvdb:
         data = data.strip()
         return data
 
-    def search(self, series):
+    def search(self, series, imdbid=None):
         """This searches TheTVDB.com for the series name
         and returns the result list
         """
         series = series.encode("utf-8")
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
+        self.config['params_getSeriesByImdb']['imdbid'] = imdbid
 
         try:
-            seriesFound = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries']).values()[0]
+            if imdbid:
+                seriesFound = self._getetsrc(self.config['url_getSeriesImdb'], self.config['params_getSeriesByImdb']).values()[0]
+            else:
+                seriesFound = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries']).values()[0]
             return seriesFound
         except:
             return []

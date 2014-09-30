@@ -8,18 +8,27 @@
 """Unittests for tvdb_api
 """
 
-import os
+import os,os.path
 import sys
+print sys.path
 import datetime
 import unittest
 
 # Force parent directory onto path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import tvdb_api
+sys.path.append(os.path.abspath('../../tests'))
+
+
+import sickbeard
+
+
+from tvdb_api import Tvdb
 import tvdb_ui
 from tvdb_api import (tvdb_shownotfound, tvdb_seasonnotfound,
 tvdb_episodenotfound, tvdb_attributenotfound)
+from lib import xmltodict
+import lib
 
 class test_tvdb_basic(unittest.TestCase):
     # Used to store the cached instance of Tvdb()

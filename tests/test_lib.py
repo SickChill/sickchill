@@ -206,7 +206,8 @@ def setUp_test_episode_file():
 
 
 def tearDown_test_episode_file():
-    shutil.rmtree(FILEDIR)
+    if os.path.exists(FILEDIR):
+        shutil.rmtree(FILEDIR)
 
 
 def setUp_test_show_dir():
@@ -215,7 +216,8 @@ def setUp_test_show_dir():
 
 
 def tearDown_test_show_dir():
-    shutil.rmtree(SHOWDIR)
+    if os.path.exists(SHOWDIR):
+        shutil.rmtree(SHOWDIR)
 
 tearDown_test_db()
 
