@@ -1,0 +1,6 @@
+2014-10-02
+-Fix fuzzy dates on new skin
+-Move the sql from the *.tmpl files
+-Add anidb indexer
+-Add supplemental data from anidb during postprocessing
+-Fix grabbing non-propers as propers for certain air-by-date shows
