@@ -83,18 +83,6 @@
 	border-radius: 0px;
 }
 
-.show-details {
-    width: 180px;
-	padding-left: 4px;
-	padding-top: 4px;
-	cursor: default;
-}
-
-.show-airby {
-	float: left;
-	width: 33%;
-}
-
 .show-add {
 	text-shadow: 1px 1px #000;
 	font-size: 11px;
@@ -118,23 +106,9 @@
 	line-height: 34px;
 }
 
-.show-network {
-	float: left; 
-	width: 33%;
-	text-shadow: 1px 1px #000;
-	font-size: 11px;
-	text-align: center;
-}
-
 .show-network-image {
-	margin-top: 5px;
 	width: 50px;
 	height: auto;
-}
-
-.show-quality {
-	float: left; 
-	width: 33%;
 }
 
 .show-dlstats {
