@@ -9,6 +9,7 @@
 
 <script type="text/javascript" src="$sbRoot/js/configAnime.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<div id="content960">
 #if $varExists('header')
 	<h1 class="header">$header</h1>
 #else
@@ -21,6 +22,11 @@
 
             <div id="config-components">
 
+			    <ul>
+                	<li><a href="#core-component-group1">AnimeDB Settings</a></li>
+					<li><a href="#core-component-group2">Look & Feel</a></li>
+                </ul>
+			
                 <div id="core-component-group1" class="component-group clearfix">
                     <div class="component-group-desc">
                         <h3><a href="http://anidb.info" onclick="window.open(this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/anidb.gif" alt="AniDB" title="AniDB" width="16" height="16" /> AniDB</a></h3>
@@ -59,17 +65,14 @@
 	                            </label>
 	                        </div>
 	                        <div class="field-pair">
+								<input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" #if $sickbeard.ANIDB_USE_MYLIST then "checked=\"checked\"" else ""# />
 	                            <label class="nocheck clearfix">
 	                                <span class="component-title">AniDB MyList</span>
-	                                <input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" #if $sickbeard.ANIDB_USE_MYLIST then "checked=\"checked\"" else ""# />
-	                            </label>
-	                            <label class="nocheck clearfix">
-	                                <span class="component-title">&nbsp;</span>
 	                                <span class="component-desc">Do you want to add the PostProcessed Episodes to the MyList ?</span>
 	                            </label>
 	                        </div>
 						</div>
-                        <input type="submit" class="config_submitter" value="Save Changes" />
+                        <input type="submit" class="btn" value="Save Changes" />
                     </fieldset>
 
                 </div><!-- /component-group //-->
@@ -86,17 +89,17 @@
                                 <span class="component-desc">Separate anime and normal shows in groups</span>
                             </label>
                         </div>
-                        <input type="submit" class="config_submitter" value="Save Changes" />
+                        <input type="submit" class="btn" value="Save Changes" />
                    </fieldset>
                 </div><!-- /component-group //-->
-            <br/><input type="submit" class="config_submitter" value="Save Changes" /><br/>
+            <br/><input type="submit" class="btn" value="Save Changes" /><br/>
 
             </div><!-- /config-components //-->
 
 </form>
 
 
-</div></div>
+</div></div></div>
 <div class="clearfix"></div>
 
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")

@@ -42,7 +42,7 @@ $(document).ready(function() {
             }
         });
 
-        $('#tableDiv').html('<img id="searchingAnim" src="'+sbRoot+'/images/loading32.gif" height="32" width="32" /> loading folders...');
+        $('#tableDiv').html('<div id="wrap"><div class="spinner"></div><div class="item"> loading folders...</div></div>');
         $.get(sbRoot+'/home/addShows/massAddTable', url, function(data) {
             $('#tableDiv').html(data);
             $("#addRootDirTable").tablesorter({
@@ -64,7 +64,7 @@ $(document).ready(function() {
             last_txt = $('#rootDirText').val();
         $('#rootDirStaticList').html('');           
         $('#rootDirs option').each(function(i, w) {
-            $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="dir_check" id="'+$(w).val()+'" checked=checked> <label for="'+$(w).val()+'" style="color:black;"><b>'+$(w).val()+'</b></label></li>')
+            $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="dir_check" id="'+$(w).val()+'" checked=checked> <label for="'+$(w).val()+'" style="color:#09A2FF;"><b>'+$(w).val()+'</b></label></li>')
         });
         loadContent();
     });

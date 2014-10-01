@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var loading = '<img src="'+sbRoot+'/images/loading16.gif" height="16" width="16" />';
+    var loading = '<div class="spinner2"></div>';
     
 	function toggle_torrent_title(){
 		if ($('#use_torrents').prop('checked'))

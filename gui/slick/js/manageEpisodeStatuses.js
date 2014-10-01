@@ -10,9 +10,9 @@ $(document).ready(function() {
         
         var row = '';
         row += ' <tr class="'+row_class+'">';
-        row += '  <td><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
+        row += '  <td class="tableleft" align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td>'+season+'x'+episode+'</td>';
-        row += '  <td style="width: 100%">'+name+'</td>';
+        row += '  <td class="tableright" style="width: 100%">'+name+'</td>';
         row += ' </tr>'
         
         return row;

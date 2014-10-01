@@ -24,7 +24,7 @@ $(document).ready(function(){
     var renameArr = new Array()
     var subtitleArr = new Array()
     var deleteArr = new Array()
-    var removeArr = new Array()
+	var removeArr = new Array()
     var metadataArr = new Array()
 
     $('.updateCheck').each(function() {
@@ -56,12 +56,12 @@ $(document).ready(function(){
         deleteArr.push($(this).attr('id').split('-')[1])
       }
     });
-
-    $('.removeCheck').each(function() {
-      if (this.checked == true) {
-        removeArr.push($(this).attr('id').split('-')[1])
-      }
-    });
+	
+	$('.removeCheck').each(function() {
+	  if (this.checked == true) {
+		removeArr.push($(this).attr('id').split('-')[1])
+	  }
+	});
 
 /*
     $('.metadataCheck').each(function() {

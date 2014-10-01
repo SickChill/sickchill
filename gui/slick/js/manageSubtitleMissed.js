@@ -8,7 +8,7 @@ $(document).ready(function() {
         
         var row = '';
         row += ' <tr class="good">';
-        row += '  <td><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
+        row += '  <td align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td style="width: 1%;">'+season+'x'+episode+'</td>';
         row += '  <td>'+name+'</td>';
         row += '  <td style="float: right;">'; 

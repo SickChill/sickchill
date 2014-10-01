@@ -11,6 +11,7 @@
 
 <script type="text/javascript" src="$sbRoot/js/configSearch.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -76,7 +77,7 @@
                                 <span class="component-desc">Day(s) to search from (eg. 7)</span>
                             </label>
                         </div>
-
+						
                         <div class="field-pair">
                             <label class="nocheck clearfix">
                                 <span class="component-title">Backlog Search Frequency</span>
@@ -84,7 +85,7 @@
                             </label>
                             <label class="nocheck clearfix">
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in minutes between searches (min. $sickbeard.MIN_BACKLOG_FREQUENCY)</span>
+								<span class="component-desc">Time in minutes between searches (min. $sickbeard.MIN_BACKLOG_FREQUENCY)</span>
                             </label>
                         </div>
 
@@ -135,14 +136,14 @@
                         <div class="field-pair">
                             <input type="checkbox" name="dailysearch_startup" id="dailysearch_startup" #if $sickbeard.DAILYSEARCH_STARTUP == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="dailysearch_startup">
-                                <span class="component title">Daily Search on startup</span>
+                                <span class="component-title">Daily Search on startup</span>
                                 <span class="component-desc">Start daily search upon startup of SickRage?</span>
                             </label>
                         </div>
                         <div class="field-pair">
                             <input type="checkbox" name="backlog_startup" id="backlog_startup" #if $sickbeard.BACKLOG_STARTUP == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="backlog_startup">
-                                <span class="component title">Process backlog on startup</span>
+                                <span class="component-title">Process backlog on startup</span>
                                 <span class="component-desc">Start processing backlogged episodes upon startup of SickRage?</span>
                             </label>
                         </div>
@@ -324,76 +325,76 @@
                                     <span class="component-desc">Category for downloads to go into (eg. TV)</span>
                                 </label>
                             </div>
-
-                            	#if $sickbeard.NZBGET_PRIORITY == -100:
-                                    #set $prio_verylow = 'selected="selected"'
-                                    #set $prio_low = ''
-                                    #set $prio_normal = ''
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = ''
-                                #elif $sickbeard.NZBGET_PRIORITY == -50:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = 'selected="selected"'
-                                    #set $prio_normal = ''
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = ''
-                                #elif $sickbeard.NZBGET_PRIORITY == 0:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = ''
-                                    #set $prio_normal = 'selected="selected"'
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = ''
-                                #elif $sickbeard.NZBGET_PRIORITY == 50:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = ''
-                                    #set $prio_normal = ''
-                                    #set $prio_high = 'selected="selected"'
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = ''
-                                #elif $sickbeard.NZBGET_PRIORITY == 100:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = ''
-                                    #set $prio_normal = ''
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = 'selected="selected"'
-                                    #set $prio_force = ''
-                                #elif $sickbeard.NZBGET_PRIORITY == 900:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = ''
-                                    #set $prio_normal = ''
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = 'selected="selected"'
-                                #else:
-                                    #set $prio_verylow = ''
-                                    #set $prio_low = ''
-                                    #set $prio_normal = 'selected="selected"'
-                                    #set $prio_high = ''
-                                    #set $prio_veryhigh = ''
-                                    #set $prio_force = ''
-                                #end if
-
-                            <div class="field-pair">
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">NZBget Priority</span>
-                                    <select name="nzbget_priority" id="nzbget_priority">
-                                        <option value="-100" ${prio_verylow}>Very Low</option>
-                                        <option value="-50" ${prio_low}>Low</option>
-                                        <option value="0" ${prio_normal}>Normal</option>
-                                        <option value="50" ${prio_high}>High</option>
-                                        <option value="100" ${prio_veryhigh}>Very High</option>
-                                        <option value="900" ${prio_force}>Force</option>
-                                    </select>
-                                </label>
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Priority for daily snatches (no backlog)</span>
-                                </label>
-                            </div>
-                        </div>
+							
+							#if $sickbeard.NZBGET_PRIORITY == -100:
+								#set $prio_verylow = 'selected="selected"'
+								#set $prio_low = ''
+								#set $prio_normal = ''
+								#set $prio_high = ''
+								#set $prio_veryhigh = ''
+								#set $prio_force = ''
+							#elif $sickbeard.NZBGET_PRIORITY == -50:
+								#set $prio_verylow = ''
+								#set $prio_low = 'selected="selected"'
+								#set $prio_normal = ''
+								#set $prio_high = ''
+								#set $prio_veryhigh = ''
+								#set $prio_force = ''
+							#elif $sickbeard.NZBGET_PRIORITY == 0:
+								#set $prio_verylow = ''
+								#set $prio_low = ''
+								#set $prio_normal = 'selected="selected"'
+								#set $prio_high = ''
+								#set $prio_veryhigh = ''
+								#set $prio_force = ''
+							#elif $sickbeard.NZBGET_PRIORITY == 50:
+								#set $prio_verylow = ''
+								#set $prio_low = ''
+								#set $prio_normal = ''
+								#set $prio_high = 'selected="selected"'
+								#set $prio_veryhigh = ''
+								#set $prio_force = ''
+							#elif $sickbeard.NZBGET_PRIORITY == 100:
+								#set $prio_verylow = ''
+								#set $prio_low = ''
+								#set $prio_normal = ''
+								#set $prio_high = ''
+								#set $prio_veryhigh = 'selected="selected"'
+								#set $prio_force = ''
+							#elif $sickbeard.NZBGET_PRIORITY == 900:
+								#set $prio_verylow = ''
+								#set $prio_low = ''
+								#set $prio_normal = ''
+								#set $prio_high = ''
+								#set $prio_veryhigh = ''
+								#set $prio_force = 'selected="selected"'
+							#else:
+								#set $prio_verylow = ''
+								#set $prio_low = ''
+								#set $prio_normal = 'selected="selected"'
+								#set $prio_high = ''
+								#set $prio_veryhigh = ''
+								#set $prio_force = ''
+							#end if
+							
+							<div class="field-pair">
+								<label class="nocheck clearfix">
+									<span class="component-title">NZBget Priority</span>
+									<select name="nzbget_priority" id="nzbget_priority">
+										<option value="-100" ${prio_verylow}>Very Low</option>
+										<option value="-50" ${prio_low}>Low</option>
+										<option value="0" ${prio_normal}>Normal</option>
+										<option value="50" ${prio_high}>High</option>
+										<option value="100" ${prio_veryhigh}>Very High</option>
+										<option value="900" ${prio_force}>Force</option>
+									</select>
+								</label>
+								<label class="nocheck clearfix">
+									<span class="component-title">&nbsp;</span>
+									<span class="component-desc">Priority for daily snatches (no backlog)</span>
+								</label>
+							</div>
+						</div>
                         
                         <div class="clearfix"></div>
                         
@@ -589,7 +590,7 @@
 
 </form>
 
-</div></div>
+</div></div></div>
 <div class="clearfix"></div>
 
 <script type="text/javascript" charset="utf-8">

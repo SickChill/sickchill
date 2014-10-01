@@ -52,7 +52,7 @@
 }
 
 .ui-front {
-	z-index: 100;
+	z-index: 999;
 }
 
 
@@ -190,6 +190,7 @@
 /* button elements seem to need a little more width */
 button.ui-button-icon-only {
 	width: 2.4em;
+	background: #707070 !important;
 }
 .ui-button-icons-only {
 	width: 3.4em;
@@ -461,7 +462,7 @@ button.ui-button::-moz-focus-inner {
 /* Component containers
 ----------------------------------*/
 .ui-widget {
-	font-family: Verdana,Arial,sans-serif;
+	font-family: "Open Sans",Verdana,Arial,sans-serif;
 	font-size: 1.1em;
 }
 .ui-widget .ui-widget {
@@ -471,25 +472,23 @@ button.ui-button::-moz-focus-inner {
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-	font-family: Verdana,Arial,sans-serif;
+	font-family: "Open Sans",Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
 .ui-widget-content {
-	border: 1px solid #aaaaaa;
-	/* background: #dcdcdc url(images/ui-bg_highlight-soft_75_dcdcdc_1x100.png) 50% top repeat-x; */
-	color: #222222;
+	border:1px solid #111;
 }
 .ui-widget-content a {
-	color: #222222;
+	color: #FFFFFF;
 }
 .ui-widget-header {
-	border: 1px solid #aaaaaa;
+	border: 1px solid #111;
 	/* background: #ffffff url(images/ui-bg_flat_0_ffffff_40x100.png) 50% 50% repeat-x; */
-	color: #222222;
+	color: #FFFFFF;
 	font-weight: bold;
 }
 .ui-widget-header a {
-	color: #222222;
+	color: #FFFFFF;
 }
 
 /* Interaction states
@@ -497,15 +496,16 @@ button.ui-button::-moz-focus-inner {
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-	border: 1px solid #aaaaaa;
-	/* background: #efefef url(images/ui-bg_highlight-soft_75_efefef_1x100.png) 50% 50% repeat-x; */
+	border: 1px solid #111;
+	background: #333;
 	font-weight: bold;
-	color: #222222;
+	color: #FFFFFF;
+	
 }
 .ui-state-default a,
 .ui-state-default a:link,
 .ui-state-default a:visited {
-	color: #222222;
+	color: #FFFFFF;
 	text-decoration: none;
 }
 .ui-state-hover,
@@ -514,10 +514,10 @@ button.ui-button::-moz-focus-inner {
 .ui-state-focus,
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
-	border: 1px solid #999999;
+	border: 1px solid #111;
 	/* background: #dddddd url(images/ui-bg_highlight-soft_75_dddddd_1x100.png) 50% 50% repeat-x; */
 	font-weight: bold;
-	color: #222222;
+	color: #FFFFFF;
 }
 .ui-state-hover a,
 .ui-state-hover a:hover,
@@ -527,21 +527,21 @@ button.ui-button::-moz-focus-inner {
 .ui-state-focus a:hover,
 .ui-state-focus a:link,
 .ui-state-focus a:visited {
-	color: #222222;
+	color: #FFFFFF;
 	text-decoration: none;
 }
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
-	border: 1px solid #aaaaaa;
+	border: 1px solid #111;
 	background: #dfdfdf url(images/ui-bg_inset-soft_75_dfdfdf_1x100.png) 50% 50% repeat-x;
 	font-weight: bold;
-	color: #140f06;
+	color: #FFFFFF;
 }
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-	color: #140f06;
+	color: #FFFFFF;
 	text-decoration: none;
 }
 
@@ -550,7 +550,7 @@ button.ui-button::-moz-focus-inner {
 .ui-state-highlight,
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
-	border: 1px solid #aaaaaa;
+	border: 1px solid #111;
 	/* background: #fbf9ee url(images/ui-bg_glass_55_fbf9ee_1x400.png) 50% 50% repeat-x; */
 	color: #363636;
 }
@@ -562,7 +562,7 @@ button.ui-button::-moz-focus-inner {
 .ui-state-error,
 .ui-widget-content .ui-state-error,
 .ui-widget-header .ui-state-error {
-	border: 1px solid #aaaaaa;
+	border: 1px solid #111;
 	/* background: #fef1ec url(images/ui-bg_glass_95_fef1ec_1x400.png) 50% 50% repeat-x; */
 	color: #8c291d;
 }
@@ -845,8 +845,8 @@ button.ui-button::-moz-focus-inner {
 /* Overlays */
 .ui-widget-overlay {
 	/* background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; */
-	opacity: .35;
-	filter: Alpha(Opacity=35);
+	opacity: .75;
+	filter: Alpha(Opacity=75);
 }
 .ui-widget-shadow {
 	margin: -8px 0 0 -8px;

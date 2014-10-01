@@ -29,7 +29,7 @@
     <span class="listing_current">Current</span>
     <span class="listing_default">Future</span>
     <span class="listing_toofar">Distant</span>
-	<a class="btn btn-mini btn-inverse forceBacklog" href="webcal://$sbHost:$sbHttpPort/calendar">
+	<a class="btn forceBacklog" href="webcal://$sbHost:$sbHttpPort/calendar">
 	<i class="icon-calendar icon-white"></i>Subscribe</a>    
     <!-- <span class="listing_unknown">Unknown</span> //-->
 </div>
@@ -122,13 +122,26 @@
 //-->
 </script>
 
-    #set $show_div = "listing_default"
+#set $show_div = "listing_default"
 
 <input type="hidden" id="sbRoot" value="$sbRoot" />
 
-    <table id="showListTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-    <thead><tr><th>Airdate</th><th>Show</th><th class="nowrap">Next Ep</th><th>Next Ep Name</th><th>Network</th><th>Quality</th><th>IMDb</th><th>Indexer</th><th>Search</th></tr></thead>
-    <tbody>
+<table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
+
+    <thead>
+		<tr>
+			<th>Airdate</th>
+			<th>Show</th>
+			<th class="nowrap">Next Ep</th>
+			<th>Next Ep Name</th>
+			<th>Network</th>
+			<th>Quality</th>
+			<th>Indexers</th>
+			<th>Search</th>
+		</tr>
+	</thead>
+	
+    <tbody style="text-shadow:none;">
 
     #for $cur_result in $sql_results:
         #set $cur_indexer = int($cur_result["indexer"])
@@ -156,234 +169,260 @@
         #end if
 
     <!-- start $cur_result["show_name"] //-->
-      <tr class="$show_div">
-        ## forced to use a div to wrap airdate, the column sort went crazy with a span
-        <td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result["localtime"]).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span></td>
-        <td class="tvShow"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]</a>
-            #if int($cur_result["paused"]):
-            <span class="pause">[paused]</span>
-            #end if
-        </td>
-        <td class="nowrap" align="center" style="color: #555555; font-size: 16px;"><b><%="%02ix%02i" % (int(cur_result["season"]), int(cur_result["episode"])) %></b></td>
-        <td>
-        #if $cur_result["description"] != "" and $cur_result["description"] != None:
-            <img alt="" src="$sbRoot/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_<%=str(cur_result["showid"])+"_"+str(cur_result["season"])+"_"+str(cur_result["episode"])%>" style="padding-top: 6px;"/>
-        #end if
-            $cur_result["name"]
-        </td>
-        <td align="center">$cur_result["network"]</td>
-        <td align="center">
-#if int($cur_result["quality"]) in $qualityPresets:
-    <span class="quality $qualityPresetStrings[int($cur_result["quality"])]">$qualityPresetStrings[int($cur_result["quality"])]</span>
-#else:
-    <span class="quality Custom">Custom</span>
-#end if
-        </td>
-        <td align="center">
-        #if $cur_result["imdb_id"]: 
-        	<a href="http://www.imdb.com/title/${cur_result["imdb_id"]}" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${cur_result["imdb_id"]}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" /> 
-        #end if
-        </td>
-        <td align="center"><a href="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}"
-        rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href,
-        '_blank'); return false;" title="$sickbeard.indexerApi($cur_indexer)
-        .config["show_url"]${cur_result["showid"]}"><img alt="$sickbeard.indexerApi($cur_indexer)
-        .name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config["icon"]"
-        /></a></td>
-        <td align="center">
-        <a href="$sbRoot/home/searchEpisode?show=${cur_result["showid"]}&amp;season=$cur_result["season"]&amp;episode=$cur_result["episode"]" title="Manual Search" id="forceUpdate-${cur_result["showid"]}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search32.png" id="forceUpdateImage-${cur_result["showid"]}" /></a>
-        </td>
-      </tr>
-    <!-- end $cur_result["show_name"] //-->
+		<tr class="$show_div">
+			## forced to use a div to wrap airdate, the column sort went crazy with a span
+			<td align="center" class="nowrap">
+				<div class="${fuzzydate}">$sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbfdate().decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span>
+			</td>
+			
+			<td class="comingtvShow"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]</a>
+				#if int($cur_result["paused"]):
+					<span class="pause">[paused]</span>
+				#end if
+			</td>
+			
+			<td class="nowrap" align="center">
+				<%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %>
+			</td>
+			
+			<td>
+				#if $cur_result["description"] != "" and $cur_result["description"] != None:
+					<img alt="" src="$sbRoot/images/info32.png" height="16" width="16" class="plotInfo" id="plot_info_<%=str(cur_result["showid"])+"_"+str(cur_result["season"])+"_"+str(cur_result["episode"])%>" style="padding-top: 7px;" />
+				#else:
+					<img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" style="padding-top: 7px;" />
+				#end if
+				$cur_result["name"]
+			</td>
+			
+			<td align="center">
+				$cur_result["network"]
+			</td>
+			
+			<td align="center">
+				#if int($cur_result["quality"]) in $qualityPresets:
+					<span class="quality $qualityPresetStrings[int($cur_result["quality"])]">$qualityPresetStrings[int($cur_result["quality"])]</span>
+				#else:
+					<span class="quality Custom">Custom</span>
+				#end if
+			</td>
+			
+			<td align="center" style="vertical-align: middle;">
+				#if $cur_result["imdb_id"]:          	  	
+					<a href="http://www.imdb.com/title/${cur_result["imdb_id"]}" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/${cur_result["imdb_id"]}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" /> 
+          	    #end if
+                    <a href="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config["icon"]" /></a>
+			</td>
+			
+			<td align="center">
+				<a href="$sbRoot/home/searchEpisode?show=${cur_result["showid"]}&amp;season=$cur_result["season"]&amp;episode=$cur_result["episode"]" title="Manual Search" id="forceUpdate-${cur_result["showid"]}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result["showid"]}" /></a>
+			</td>
+		</tr>
+		<!-- end $cur_result["show_name"] //-->
     #end for
     </tbody>
-    </table>
+	
+	<tfoot>
+		<tr>
+			<th rowspan="1" colspan="10" align="center">&nbsp</th>
+		</tr>
+	</tfoot>
+	
+</table>
 <!-- end list view //-->
+
 #else if $layout in ['banner', 'poster']:
+
 <!-- start non list view //-->
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){ 
-  \$('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16.gif'});
-  \$(".ep_summary").hide();
-  \$(".ep_summaryTrigger").click(function() {
-    \$(this).next(".ep_summary").slideToggle('normal', function() {
-        \$(this).prev(".ep_summaryTrigger").attr('src', function(i, src) {
-            return \$(this).next(".ep_summary").is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus');
-        });
-    });
-  });
+	\$('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16.gif'});
+	\$(".ep_summary").hide();
+	\$(".ep_summaryTrigger").click(function() {
+		\$(this).next(".ep_summary").slideToggle('normal', function() {
+			\$(this).prev(".ep_summaryTrigger").attr('src', function(i, src) {
+				return \$(this).next(".ep_summary").is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus');
+			});
+		});
+	});
 });
 //-->
 </script>
 
-    #set $cur_segment = None
-    #set $too_late_header = False
-    #set $missed_header = False
-    #set $today_header = False
-    #set $show_div = "ep_listing listing_default"
+#set $cur_segment = None
+#set $too_late_header = False
+#set $missed_header = False
+#set $today_header = False
+#set $show_div = "ep_listing listing_default"
 
-    #if $sort == "show": 
-       <br /><br />
-    #end if
+#if $sort == "show": 
+    <br /><br />
+#end if
     
-    #for $cur_result in $sql_results:
-        #set $cur_indexer = int($cur_result["indexer"])
+#for $cur_result in $sql_results:
+    #set $cur_indexer = int($cur_result["indexer"])
 
-    <!-- start $cur_result["show_name"] //-->
+<!-- start $cur_result["show_name"] //-->
         
-        #if int($cur_result["paused"]) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
-            #continue
-        #end if
+    #if int($cur_result["paused"]) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
+        #continue
+    #end if
 
-        #set $runtime = $cur_result["runtime"]
+    #set $runtime = $cur_result["runtime"]
 
-        #if $sort == "network":
-            #if $cur_result["network"] and $cur_segment != $cur_result["network"]:
-                <h1 class="network">$cur_result["network"]</h1>
+    #if $sort == "network":
+        #if $cur_result["network"] and $cur_segment != $cur_result["network"]:
+			<div class="comingepheader">
+				<h1 class="network">$cur_result["network"]</h1>
                 #set $cur_segment = $cur_result["network"]
-            #end if
-            #set $cur_ep_airdate = $cur_result["localtime"].date()
+        #end if
+        #set $cur_ep_airdate = $cur_result["localtime"].date()
 
-            #if $runtime:
-                #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
-                #if $cur_ep_enddate < $today:
-                    #set $show_div = "ep_listing listing_overdue"
-                #elif $cur_ep_airdate >= $next_week.date():
-                    #set $show_div = "ep_listing listing_toofar"
-                #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                    #if $cur_ep_airdate == $today.date():
-                        #set $show_div = "ep_listing listing_current"
+        #if $runtime:
+            #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
+            #if $cur_ep_enddate < $today:
+                #set $show_div = "ep_listing listing_overdue"
+            #elif $cur_ep_airdate >= $next_week.date():
+                #set $show_div = "ep_listing listing_toofar"
+            #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+                #if $cur_ep_airdate == $today.date():
+                #set $show_div = "ep_listing listing_current"
                     #else:
                         #set $show_div = "ep_listing listing_default"
                     #end if
                 #end if
             #end if
-        #elif $sort == "date":
-            #set $cur_ep_airdate = $cur_result["localtime"].date()
+			
+	#elif $sort == "date":
+        #set $cur_ep_airdate = $cur_result["localtime"].date()
 
-            #if $cur_segment != $cur_ep_airdate:
-                #if $runtime:
-                    #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
-                    #if $cur_ep_enddate < $today and $cur_ep_airdate != $today.date() and not $missed_header:
-                        <br /><h1 class="day">Missed</h1>
-                        #set $missed_header = True
-                    #elif $cur_ep_airdate >= $next_week.date() and not $too_late_header:
-                        <br /><h1 class="day">Later</h1>
-                        #set $too_late_header = True
-                    #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                        #if $cur_ep_airdate == $today.date():
-                            <br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 12px;">[today]</span></h1>
-                        #set $today_header = True
-                        #else:
-                            <br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</h1>
-                        #end if
+        #if $cur_segment != $cur_ep_airdate:
+            #if $runtime:
+                #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
+                #if $cur_ep_enddate < $today and $cur_ep_airdate != $today.date() and not $missed_header:
+                    <div class="comingepheader">
+						<br /><h1 class="day">Missed</h1>
+                #set $missed_header = True
+                #elif $cur_ep_airdate >= $next_week.date() and not $too_late_header:
+                    <div class="comingepheader">
+						<br /><h1 class="day">Later</h1>
+                #set $too_late_header = True
+                #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+                    #if $cur_ep_airdate == $today.date():
+                        <div class="comingepheader">
+						<br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 12px;">[today]</span></h1>
+					#set $today_header = True
+                    #else:
+                        <div class="comingepheader">
+						<br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</h1>
                     #end if
                 #end if
+            #end if
                 #set $cur_segment = $cur_ep_airdate
-            #end if
-            #if $cur_ep_airdate == $today.date() and not $today_header:
-                <br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 12px;">[today]</span></h1>
-                #set $today_header = True
-            #end if
-            #if $runtime:
-                #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
-                #if $cur_ep_enddate < $today:
-                    #set $show_div = "ep_listing listing_overdue"
-                #elif $cur_ep_airdate >= $next_week.date():
-                    #set $show_div = "ep_listing listing_toofar"
-                #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                    #if $cur_ep_airdate == $today.date():
-                        #set $show_div = "ep_listing listing_current"
-                    #else:
-                        #set $show_div = "ep_listing listing_default"
-                    #end if
-                #end if
-            #end if
+        #end if
+    
+		#if $cur_ep_airdate == $today.date() and not $today_header:
+            <div class="comingepheader">
+			<br /><h1 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 12px;">[today]</span></h1>
+            #set $today_header = True
+        #end if
+		#if $runtime:
+			#if $cur_ep_enddate < $today:
+				#set $show_div = "ep_listing listing_overdue"
+			#elif $cur_ep_airdate >= $next_week.date():
+				#set $show_div = "ep_listing listing_toofar"
+			#elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+				#if $cur_ep_airdate == $today.date():
+					#set $show_div = "ep_listing listing_current"
+				#else:
+					#set $show_div = "ep_listing listing_default"
+				#end if
+			#end if
+		#end if
+			
         #elif $sort == "show":
             #set $cur_ep_airdate = $cur_result["localtime"].date()
 
             #if $runtime:
                 #set $cur_ep_enddate = $cur_result["localtime"] + datetime.timedelta(minutes=$runtime)
                 #if $cur_ep_enddate < $today:
-                    #set $show_div = "ep_listing listing_overdue"
+                    #set $show_div = "ep_listing listing_overdue listingradius"
                 #elif $cur_ep_airdate >= $next_week.date():
-                    #set $show_div = "ep_listing listing_toofar"
+                    #set $show_div = "ep_listing listing_toofar listingradius"
                 #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
                     #if $cur_ep_airdate == $today.date():
-                        #set $show_div = "ep_listing listing_current"
+                        #set $show_div = "ep_listing listing_current listingradius"
                     #else:
-                        #set $show_div = "ep_listing listing_default"
+                        #set $show_div = "ep_listing listing_default listingradius"
                     #end if
                 #end if
             #end if
         #end if
 
-    <div class="$show_div" id="listing_${cur_result["showid"]}">
-      <div class="tvshowDiv">
-      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <th #if $layout == 'banner' then "class=\"nobg\"" else "rowspan=\"2\""# style="background-color: #efefef;" valign="top">
-            <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" class="#if $layout == 'banner' then "bannerThumb" else "posterThumb"#" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=#if $layout == 'poster' then "poster_thumb" else $layout#" /></a>
-          </th>
-#if $layout == 'banner':
+<div class="$show_div" id="listing_${cur_result["showid"]}">
+	<div class="tvshowDiv">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<th #if $layout == 'banner' then "class=\"nobg\"" else "rowspan=\"2\""# valign="top">
+				<a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" class="#if $layout == 'banner' then "bannerThumb" else "posterThumb"#" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=#if $layout == 'poster' then "poster_thumb" else $layout#" /></a>
+			</th>
+		#if $layout == 'banner':
+		</tr>
+		<tr>
+		#end if
+        
+			<td class="next_episode">
+				<div class="clearfix">
+					<h2 class="tvshowTitle"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]
+					#if int($cur_result["paused"]):
+						<span class="pause">[paused]</span>
+					#end if            
+					</a></h2>
+				
+					<span class="tvshowTitleIcons">
+					#if $cur_result["imdb_id"]:          	  	
+						<a href="http://www.imdb.com/title/${cur_result["imdb_id"]}" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/${cur_result["imdb_id"]}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" /> 
+					#end if
+						<a href="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config["icon"]" /></a>
+						<span><a href="$sbRoot/home/searchEpisode?show=${cur_result["showid"]}&amp;season=$cur_result["season"]&amp;episode=$cur_result["episode"]" title="Manual Search" id="forceUpdate-${cur_result["showid"]}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result["showid"]}" /></a></span>
+					</span>
+				</div>
+			
+				<span class="title">Next Episode:</span> <span><%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"] ($sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbfdate().decode($sickbeard.SYS_ENCODING))</span>
+            
+				<div class="clearfix">
+					<span class="title">Airs:</span> <span>$sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING) on $cur_result["network"]</span>
+				</div>
+			
+				<div class="clearfix">
+					<span class="title">Quality:</span>
+					#if int($cur_result["quality"]) in $qualityPresets:
+						<span class="quality $qualityPresetStrings[int($cur_result["quality"])]">$qualityPresetStrings[int($cur_result["quality"])]</span>
+					#else:
+						<span class="quality Custom">Custom</span>
+					#end if
+				</div>
+			</td>
         </tr>
         <tr>
-#end if
-          <td class="next_episode">
-          	<div class="clearfix">
-          	  <h2 class="tvshowTitle"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]
-          	  #if int($cur_result["paused"]):
-          	  <span class="pause">[paused]</span>
-          	  #end if            
-          	  </a></h2>
-          	  <span class="tvshowTitleIcons">
-				#if $cur_result["imdb_id"]:          	  	
-          	      <a href="http://www.imdb.com/title/${cur_result["imdb_id"]}" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/${cur_result["imdb_id"]}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" /> 
-          	    #end if
-                    <a href="$sickbeard.indexerApi($cur_indexer).config["show_url"]${cur_result["showid"]}"
-                    rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href,
-                    '_blank'); return false;" title="$sickbeard.indexerApi($cur_indexer)
-                    .config["show_url"]${cur_result["showid"]}"><img alt="$sickbeard.indexerApi($cur_indexer).name"
-                    height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config["icon"]"
-                    /></a>
-          	      <span><a href="$sbRoot/home/searchEpisode?show=${cur_result["showid"]}&amp;season=$cur_result["season"]&amp;episode=$cur_result["episode"]" title="Manual Search" id="forceUpdate-${cur_result["showid"]}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search32.png" id="forceUpdateImage-${cur_result["showid"]}" /></a></span>
-          	  </span>
-          	</div>
-            <span class="title">Next Episode:</span> <span><%=str(cur_result["season"])+"x"+"%02i" % int(cur_result["episode"]) %> - $cur_result["name"] ($sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbfdate().decode($sickbeard.SYS_ENCODING))</span>
-            <div class="clearfix">
-            	<span class="title">Airs:</span> <span>$sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING) on $cur_result["network"]</span>
-	        </div>
-            <div class="clearfix">
-	            <span class="title">Quality:</span>
-	            #if int($cur_result["quality"]) in $qualityPresets:
-	             <span class="quality $qualityPresetStrings[int($cur_result["quality"])]">$qualityPresetStrings[int($cur_result["quality"])]</span>
-	            #else:
-    			 <span class="quality Custom">Custom</span>
-	            #end if
-	        </div>
-          </td>
+			<td style="vertical-align: top;">
+				<div>        	        
+					#if $cur_result["description"] != "" and $cur_result["description"] != None:
+						<span class="title" style="vertical-align:middle;">Plot:</span>
+						<img class="ep_summaryTrigger" src="$sbRoot/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">$cur_result["description"]</div>
+					#else:
+						<span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
+						<img class="ep_summaryTriggerNone" src="$sbRoot/images/plus.png" height="16" width="16" alt="" />
+					#end if
+				</div>
+			</td>
         </tr>
-        <tr>
-          <td style="vertical-align: top;">
-          <div>        	        
-            #if $cur_result["description"] == '':
-            	<span class="title">Plot:</span>
-                <img class="ep_summaryTrigger" src="$sbRoot/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">[There is no summary added for this episode]</div>
-            #else:
-            	<span class="title">Plot:</span>
-                <img class="ep_summaryTrigger" src="$sbRoot/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">$cur_result["description"]</div>
-            #end if
-          </div>
-          </td>
-        </tr>
-      </table>
-      </div>
+		</table>
     </div>
+</div>
     
-    <!-- end $cur_result["show_name"] //-->
-    #end for
-
+<!-- end $cur_result["show_name"] //-->
+#end for
 
 <!-- end non list view //-->
 #end if
@@ -395,7 +434,7 @@
 
 <input type="hidden" id="sbRoot" value="$sbRoot" />
     #for $day in $dates
-        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:125px;white-space: nowrap; table-layout: fixed;">
+        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:178px;white-space: nowrap; table-layout: fixed;">
         <thead><tr><th>$day.strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
         <tbody>
 
@@ -407,11 +446,11 @@
             #if $airday == $day:
                 
                 <tr>
-                <td style="overflow: hidden; text-overflow: ellipsis;  font-size: 11px;  LINE-HEIGHT:12px";>
-                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="125"  /></a>
+                <td style="overflow: hidden; text-overflow: ellipsis;  font-size: 12px;  LINE-HEIGHT:14px;">
+                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="155" style="padding-bottom: 5px;" /></a>
                         <br> $cur_result["localtime"].strftime("%H:%M") on $cur_result["network"]
                         #set $episodestring = "%sx%s %s" % ($cur_result["season"], $cur_result["episode"], $cur_result["name"])
-                        <br> $episodestring
+                        <br> <%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"]
                     </td>
                 </tr>
             #end if

@@ -3,8 +3,9 @@
 #from sickbeard import common
 #from sickbeard import exceptions
 #from sickbeard import scene_exceptions
+#from sickbeard.blackandwhitelist import *
 #set global $title="Edit " + $show.name
-#set global $header=$show.name
+#set global $header="Edit " + $show.name
 
 #set global $sbPath=".."
 
@@ -12,12 +13,14 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
 	<h1 class="title">$title</h1>
 #end if
 
+<div id="summary2" class="align-left">
 <script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -88,7 +91,7 @@
 		</p>
 	</div>		
 	
-	<div class="float-left" style="padding-bottom: 40px; text-align:center;">
+	<div class="float-left" style="text-align:center;">
 		<h4>Exceptions List</h4>
 		<select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
 				#for $cur_exception in $show.exceptions:
@@ -101,7 +104,6 @@
 <br />
 </div>	
 </div>
-<br />
 <br />
 
 <b>Info Language:</b> <select name="indexerLang" id="indexerLangSelect"></select><br />
@@ -266,5 +268,5 @@ Separate words with a comma, e.g. "word1,word2,word3"
 
 //-->
 </script>
-
+</div></div>
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

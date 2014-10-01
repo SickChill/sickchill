@@ -28,12 +28,16 @@
 });
 //-->
 </script>
+
+<div id="content960">
+
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
 	<h1 class="title">$title</h1>
 #end if
 
+<div id="summary2" class="align-left">
 <div id="tabs">
     <ul>
         <li><a href="#tabs-1">Manage Directories</a></li>
@@ -63,5 +67,6 @@ If you would rather have SickRage prompt you to customize each show, then use th
 <div id="tableDiv"></div>
 <br />
 <input class="btn btn-primary" type="button" value="Submit" id="submitShowDirs" />
+</div></div>
 </form>
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

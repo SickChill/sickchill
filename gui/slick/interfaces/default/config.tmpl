@@ -8,6 +8,7 @@
 
 #set global $topmenu="config"#
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<div id="content960">
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -26,8 +27,8 @@
 ##set disk_free = $disk.free / 2**30
 ##set disk_percent_used = $disk.percent
 
-<div id="summary" class="align-left">
-<table class="infoTable" cellspacing="1" border="0" cellpadding="0">
+<div id="summary2" class="align-left">
+<table class="infoTable" cellspacing="1" border="0" cellpadding="0" width="100%">
     <tr><td class="infoTableHeader">SR Version: </td><td class="infoTableCell">
 #if $sickbeard.VERSION_NOTIFY
         BRANCH: ($sickbeard.BRANCH) / COMMIT: ($sickbeard.CUR_COMMIT_HASH) <!-- &ndash; build.date //--><br />
@@ -47,6 +48,6 @@
     <tr><td class="infoTableHeader"><i class="icon16-github"></i> Source </td><td><a href="https://github.com/echel0n/SickRage/" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;">https://github.com/echel0n/SickRage/</a></td></tr>
     <tr><td class="infoTableHeader"><i class="icon16-mirc"></i> Internet Relay Chat </td><td><a href="irc://irc.freenode.net/#sickrage" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;"><i>#sickrage</i> on <i>irc.freenode.net</i></a></td></tr>
 </table>
-</div>
+</div></div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

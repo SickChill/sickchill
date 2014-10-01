@@ -16,7 +16,7 @@
   padding: 4px 0;
 }
 #fileBrowserDialog ul li a:hover {
-  color: blue;
+  color: #09A2FF;
   background: none;
 }
 #fileBrowserDialog ul li a span.ui-icon {

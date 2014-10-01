@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>SickRage - BRANCH:[$sickbeard.BRANCH] - $title</title>
     <!--[if lt IE 9]>
-         <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
 	<link rel="shortcut icon" href="$sbRoot/images/ico/favicon.ico">
@@ -42,6 +42,7 @@
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/superfish.css?$sbPID" />
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/tablesorter.css?$sbPID"/>
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery.qtip-2.0.1.min.css?$sbPID"/>
+	<link rel="stylesheet" type="text/css" href="$sbRoot/css/jquery.confirm.css?$sbPID"/>
     <link rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" href="$sbRoot/css/iphone.css?$sbPID" />
 
 
@@ -60,29 +61,28 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
 .ui-autocomplete-loading { background: white url("$sbRoot/images/loading16.gif") right center no-repeat; }
 .browserDialog.busy .ui-dialog-buttonpane { background: url("$sbRoot/images/loading.gif") 10px 50% no-repeat !important; }
 .ui-progressbar .ui-progressbar-overlay { background: url("$sbRoot/css/lib/images/animated-overlay.gif"); }
-.ui-dialog, .ui-dialog-buttonpane { background: #ffffff  50% 50% repeat !important; }
-.ui-dialog-titlebar { background-image: url("$sbRoot/css/lib/images/ui-bg_highlight-soft_75_cccccc_1x100.png");}
-.ui-accordion-content, .ui-tabs-panel { background: #ededed !important; background-image: none !important; }
+.ui-dialog, .ui-dialog-buttonpane { background: #2a2a2a  50% 50% repeat !important; }
+.ui-dialog-titlebar { background: #3d3d3d !important;}
+.ui-accordion-content, .ui-tabs-panel { background: #484848 !important; background-image: none !important; }
 
-.ui-widget-content { background: #dcdcdc url("$sbRoot/css/lib/images/ui-bg_flat_0_ffffff_40x100.png") 50% top repeat-x; }
-.ui-widget-header { background: #ffffff url("$sbRoot/css/lib/images/ui-bg_flat_0_ffffff_40x100.png") 50% 50% repeat-x; }
+.ui-widget-content { background: #606060 url("$sbRoot/css/lib/images/ui-bg_flat_0_606060_40x100.png") 50% top repeat-x; }
+.ui-widget-header { background: #606060 url("$sbRoot/css/lib/images/ui-bg_flat_0_606060_40x100.png") 50% 50% repeat-x; }
 
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { background: #E6E6E6 url("$sbRoot/css/lib/images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x; border-color: #D3D3D3; color: #555555; }
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { background: #dddddd url("$sbRoot/css/lib/images/ui-bg_highlight-soft_75_dddddd_1x100.png") 50% 50% repeat-x; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { background: #F7F7F7;  color: #222222 !important; }
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { background: #3d3d3d;  color: #FFFFFF !important; }
 
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight { background: #fbf9ee url("$sbRoot/css/lib/images/ui-bg_glass_55_fbf9ee_1x400.png") 50% 50% repeat-x; }
 .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error { background: #fef1ec url("$sbRoot/css/lib/images/ui-bg_glass_95_fef1ec_1x400.png") 50% 50% repeat-x; }
 
-.ui-icon, .ui-widget-content .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_222222_256x240.png"); }
-.ui-widget-header .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_222222_256x240.png"); }
-.ui-state-default .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_888888_256x240.png"); }
-.ui-state-hover .ui-icon, .ui-state-focus .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_222222_256x240.png"); }
+.ui-icon, .ui-widget-content .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
+.ui-widget-header .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
+.ui-state-default .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_09a2ff_256x240.png"); }
+.ui-state-hover .ui-icon, .ui-state-focus .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
 .ui-state-active .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_8c291d_256x240.png"); }
 .ui-state-highlight .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_2e83ff_256x240.png"); }
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_cd0a0a_256x240.png"); }
 
-.ui-widget-overlay { background: #aaaaaa url("$sbRoot/css/lib/images/ui-bg_flat_0_aaaaaa_40x100.png") 50% 50% repeat-x; }
+.ui-widget-overlay { background: #000000 url("$sbRoot/css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x; }
 .ui-widget-shadow { background: #000000 url("$sbRoot/css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x; }
 
 .ui-tabs {
@@ -99,13 +99,14 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
     border-radius: 0px;
 
 }
-.ui-tabs .ui-tabs-panel { background-color: #F7F7F7 !important; border-left-color-value: #CCCCCC; border-width: 1px 1px 1px 1px; border-color: #CCCCCC;}
+.ui-tabs .ui-tabs-panel { background-color: #3d3d3d !important; border-width: 1px 1px 1px 1px; border-color: #111111;}
 
-.ui-tabs-nav > :not(.ui-tabs-active){ background: #FFFFFF !important;  color: #222222 !important; }
+.ui-tabs-nav > :not(.ui-tabs-active){ background: #333333 !important;  color: #FFFFFF !important; }
 
 #if $sickbeard.NEWEST_VERSION_STRING:
 .ui-pnotify { top: 30px !important; }
 #end if
+
 //-->
 </style>
 
@@ -117,13 +118,18 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.cookiejar.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.json-2.2.min.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.selectboxes.min.js?$sbPID"></script>
-    <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter-2.1.19.min.js?$sbPID"></script>
-    <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter.widgets.min.js?$sbPID"></script>
+    <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter-2.17.7.min.js?$sbPID"></script>
+    <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.qtip-2.0.1.min.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.pnotify-1.0.2.min.js"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.form-3.35.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/lib/jquery.ui.touch-punch-0.2.2.min.js?$sbPID"></script>
+	<script type="text/javascript" src="$sbRoot/js/lib/jquery.isotope.min.js?$sbPID"></script>
+	<script type="text/javascript" src="$sbRoot/js/lib/jquery.confirm.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/script.js?$sbPID"></script>
+	<script type="text/javascript" src="$sbRoot/js/submenu.js?$sbPID"></script>
+	<script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
+	
     #if $sickbeard.FUZZY_DATING:
     <script type="text/javascript" src="$sbRoot/js/moment/moment.min.js?$sbPID"></script>
     <script type="text/javascript" src="$sbRoot/js/fuzzyMoment.js?$sbPID"></script>
@@ -141,85 +147,27 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
 
 <script type="text/javascript">
 <!--
-  function initActions() {
-        \$("#SubMenu a[href*='/home/restart/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Restart');
-        \$("#SubMenu a[href*='/home/shutdown/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Shutdown');
-        \$("#SubMenu a[href*='/home/logout/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Logout');
-        \$("#SubMenu a:contains('Edit')").addClass('btn').html('<span class="ui-icon ui-icon-pencil pull-left"></span> Edit');
-        \$("#SubMenu a:contains('Delete')").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Delete');
-        \$("#SubMenu a:contains('Remove')").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Remove');
-        \$("#SubMenu a:contains('Clear History')").addClass('btn confirm').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
-        \$("#SubMenu a:contains('Trim History')").addClass('btn confirm').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
-        \$("#SubMenu a[href$='/errorlogs/clearerrors/']").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear Errors');
-        \$("#SubMenu a:contains('Re-scan')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Re-scan');
-        \$("#SubMenu a:contains('Backlog Overview')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Backlog Overview');
-        \$("#SubMenu a[href$='/home/updatePLEX/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update PLEX');
-        \$("#SubMenu a:contains('Force')").addClass('btn').html('<span class="ui-icon ui-icon-transfer-e-w pull-left"></span> Force Full Update');
-        \$("#SubMenu a:contains('Rename')").addClass('btn').html('<span class="ui-icon ui-icon-tag pull-left"></span> Preview Rename');
-        \$("#SubMenu a[href$='/config/subtitles/']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Search Subtitles');
-        \$("#SubMenu a[href*='/home/subtitleShow']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Download Subtitles');
-        \$("#SubMenu a:contains('Anime')").addClass('btn').html('<span class="ui-icon ui-icon-anime pull-left"></span> Anime');
-        \$("#SubMenu a:contains('Settings')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Settings');
-        \$("#SubMenu a:contains('Provider')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Providers');
-        \$("#SubMenu a:contains('Backup/Restore')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> Backup/Restore');
-        \$("#SubMenu a:contains('General')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> General');
-        \$("#SubMenu a:contains('Episode Status')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Episode Status Management');
-        \$("#SubMenu a:contains('Missed Subtitle')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Missed Subtitles');
-        \$("#SubMenu a[href$='/home/addShows/']").addClass('btn').html('<span class="ui-icon ui-icon-video pull-left"></span> Add Show');
-        \$("#SubMenu a:contains('Processing')").addClass('btn').html('<span class="ui-icon ui-icon-folder-open pull-left"></span> Post-Processing');
-        \$("#SubMenu a:contains('Manage Searches')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Manage Searches');
-        \$("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<img width="16" height="16" alt="" src="$sbRoot/images/menu/bittorrent.png"> Manage Torrents');
-        \$("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<img width="16" height="16" alt="" src="$sbRoot/images/menu/failed_download.png"> Failed Downloads');
-        \$("#SubMenu a:contains('Notification')").addClass('btn').html('<span class="ui-icon ui-icon-note pull-left"></span> Notification');
-        \$("#SubMenu a:contains('Update show in XBMC')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update show in XBMC');
-        \$("#SubMenu a[href$='/home/updateXBMC/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update XBMC');
-  }
-    \$(document).ready(function(){
-      initActions();
-        \$("ul.sf-menu").supersubs({
-            minWidth:    12,   // minimum width of sub-menus in em units
-            maxWidth:    27,   // maximum width of sub-menus in em units
-            extraWidth:  1     // extra width can ensure lines don't sometimes turn over
-                               // due to slight rounding differences and font-family
-        }).superfish({
-            delay:         150,
-            disableHI:     true,
-            animation:   {opacity:'show',height:'show'},
-            speed:       'fast',
-            dropShadows: false
-        });
-        \$("#MainMenu.sf-menu ul li a").mouseover(function(){
-            imgsrc = \$(this).children("img").attr("src");
-            if(imgsrc!=null) {
-                matches = imgsrc.match(/_over/);
-                if (!matches) {
-                    imgsrcON = imgsrc.replace(/.png$/ig,"_over.png");
-                    \$(this).children("img").attr("src", imgsrcON);
-                }
-                \$("#MainMenu.sf-menu ul li a").mouseout(function(){
-                    \$(this).children("img").attr("src", imgsrc);
-                });
-            }
-        });
-        \$("#MainMenu.sf-menu ul li img").each(function() {
-            rollsrc = \$(this).attr("src");
-            rollON = rollsrc.replace(/.png$/ig,"_over.png");
-            \$("<img>").attr("src", rollON);
-        });
-
-        \$("#NAV$topmenu").addClass("current");
-
-        \$("a.confirm").bind("click",function(e) {
-            \$('#MainMenu.sf-menu').hideSuperfishUl();
-            e.preventDefault();
-            var target = \$( this ).attr('href');
-            if ( confirm("Are you sure you want to " + \$(this).text() + "?") )
-                location.href = target;
-            return false;
-        });
+\$(document).ready(function(){
+	initActions();
+    \$("ul.sf-menu").supersubs({
+        minWidth:    12,   // minimum width of sub-menus in em units
+        maxWidth:    27,   // maximum width of sub-menus in em units
+        extraWidth:  1     // extra width can ensure lines don't sometimes turn over
+                           // due to slight rounding differences and font-family
+    }).superfish({
+        delay:         150,
+		disableHI:     true,
+        animation:   {opacity:'show',height:'show'},
+        speed:       'fast',
+        dropShadows: false
     });
+
+    \$("#NAV$topmenu").addClass("current");
+
+});
 //-->
 </script>
+<script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
 </head>
 
 <body>
@@ -232,84 +180,96 @@ a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-half
 <div id="header-fix"></div>
 #end if
 <div id="header">
-  <div class="wrapper">
+	<div class="wrapper">
     <a name="top"></a>
-    <span id="logo"><a href="$sbRoot/home/" title="SickRage homepage"><img alt="Sick Rage" src="$sbRoot/images/sickrage.png"/></a></span>
-    <ul id="MainMenu" class="sf-menu">
-                <li id="NAVhome"><a href="$sbRoot/home/">Show list</a>
-                    <ul>
-                            <li><a href="$sbRoot/home/addShows/"><img src="$sbRoot/images/menu/addshow16.png" alt="" width="16" height="16" />Add Shows</a></li>
-                            <li><a href="$sbRoot/home/postprocess/"><img src="$sbRoot/images/menu/postprocess16.png" alt="" width="16" height="16" />Manual Post-Processing</a></li>
-                    </ul>
-                </li>
-                <li id="NAVcomingEpisodes"><a href="$sbRoot/comingEpisodes/">Coming Episodes</a></li>
-                <li id="NAVhistory"><a href="$sbRoot/history/">History</a></li>
-                <li id="NAVmanage"><a href="$sbRoot/manage/">Manage</a>
-                    <ul>
-                            <li><a href="$sbRoot/manage/"><img src="$sbRoot/images/menu/manage16.png" alt="" width="16" height="16" />Mass Update</a></li>
-                            <li><a href="$sbRoot/manage/backlogOverview/"><img src="$sbRoot/images/menu/backlog_view16.png" alt="" width="16" height="16" />Backlog Overview</a></li>
-                            <li><a href="$sbRoot/manage/manageSearches/"><img src="$sbRoot/images/menu/managesearches16.png" alt="" width="16" height="16" />Manage Searches</a></li>
-                            #if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
-							and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \
-							or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):                            
-                              <li><a href="$sbRoot/manage/manageTorrents/"><img src="$sbRoot/images/menu/bittorrent.png" alt="" width="16" height="16" />Manage Torrents</a></li>
-                            #end if
-							#if $sickbeard.USE_FAILED_DOWNLOADS:
-                            	<li><a href="$sbRoot/manage/failedDownloads/"><img src="$sbRoot/images/menu/failed_download.png" alt="" width="16" height="16" />Failed Downloads</a></li>
-                            #end if
-                            <li><a href="$sbRoot/manage/episodeStatuses/"><img src="$sbRoot/images/menu/backlog16.png" alt="" width="16" height="16" />Episode Status Management</a></li>
-                            #if $sickbeard.USE_SUBTITLES:
-                              <li><a href="$sbRoot/manage/subtitleMissed/"><img src="$sbRoot/images/menu/backlog16.png" alt="" width="16" height="16" />Missed Subtitle Management</a></li>
-                            #end if
-                    </ul>
-                </li>
-                <li id="NAVerrorlogs"><a href="$sbRoot/errorlogs/" class="log">$logPageTitle</a>
-                    <ul>
-                            <li><a href="$sbRoot/errorlogs/"><img src="$sbRoot/images/menu/viewlog_errors16.png" alt="" width="16" height="16" />View Log (Errors)</a></li>
-                            <li><a href="$sbRoot/errorlogs/viewlog/"><img src="$sbRoot/images/menu/viewlog16.png" alt="" width="16" height="16" />View Log</a></li>
-                    </ul>
-                </li>
-                <li id="NAVconfig"><a href="$sbRoot/config/" class="config"><img src="$sbRoot/images/menu/system18.png" alt="" /></a>
-                    <ul>
-                            <li><a href="$sbRoot/config/"><i class="icon-question-sign" style=" margin-left: -21px;margin-right: 8px;position: absolute;"></i>Help &amp; Info</a></li>
-                            <li><a href="$sbRoot/config/general/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />General</a></li>
-                            <li><a href="$sbRoot/config/backuprestore/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Backup/Restore</a></li>
-                            <li><a href="$sbRoot/config/search/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Search Settings</a></li>
-                            <li><a href="$sbRoot/config/providers/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Search Providers</a></li>
-                            <li><a href="$sbRoot/config/subtitles/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Subtitles Settings</a></li>
-                            <li><a href="$sbRoot/config/postProcessing/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Post Processing</a></li>
-                            <li><a href="$sbRoot/config/notifications/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Notifications</a></li>
-                            <li><a href="$sbRoot/config/anime/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Anime</a></li>
-                    </ul>
-                </li>
-            <li id="donate"><a href="http://sr-upgrade.appspot.com" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" /></a></li>
-    </ul>
-
+	<span id="logo"><a href="$sbRoot/home/" title="SickRage homepage"><img alt="Sick Rage" src="$sbRoot/images/sickrage.png"/></a></span>
+		<ul id="MainMenu" class="sf-menu">
+            <li id="NAVhome"><a href="$sbRoot/home/">Show list</a>
+                <ul>
+                    <li><a href="$sbRoot/home/addShows/"><img src="$sbRoot/images/menu/addshow16.png" alt="" width="16" height="16" />Add Shows</a></li>
+                    <li><a href="$sbRoot/home/postprocess/"><img src="$sbRoot/images/menu/postprocess16.png" alt="" width="16" height="16" />Manual Post-Processing</a></li>
+                </ul>
+            </li>
+            <li id="NAVcomingEpisodes"><a href="$sbRoot/comingEpisodes/">Coming Episodes</a></li>
+            <li id="NAVhistory"><a href="$sbRoot/history/">History</a></li>
+            <li id="NAVmanage"><a href="$sbRoot/manage/">Manage</a>
+                <ul>
+                    <li><a href="$sbRoot/manage/"><img src="$sbRoot/images/menu/manage16.png" alt="" width="16" height="16" />Mass Update</a></li>
+                    <li><a href="$sbRoot/manage/backlogOverview/"><img src="$sbRoot/images/menu/backlog_view16.png" alt="" width="16" height="16" />Backlog Overview</a></li>
+                    <li><a href="$sbRoot/manage/manageSearches/"><img src="$sbRoot/images/menu/managesearches16.png" alt="" width="16" height="16" />Manage Searches</a></li>
+				#if $sickbeard.USE_PLEX and $sickbeard.PLEX_SERVER_HOST != "":
+					<li><a href="$sbRoot/home/updatePLEX/"><img src="$sbRoot/images/menu/backlog_view16.png" alt="" width="16" height="16" />Update PLEX</a></li>
+				#end if
+				#if $sickbeard.USE_XBMC and $sickbeard.XBMC_HOST != "":
+					<li><a href="$sbRoot/home/updateXBMC/"><img src="$sbRoot/images/menu/backlog_view16.png" alt="" width="16" height="16" />Update XBMC</a></li>
+				#end if
+                #if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
+				and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \
+				or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):                            
+                    <li><a href="$sbRoot/manage/manageTorrents/"><img src="$sbRoot/images/menu/bittorrent.png" alt="" width="16" height="16" />Manage Torrents</a></li>
+                #end if
+				#if $sickbeard.USE_FAILED_DOWNLOADS:
+                  	<li><a href="$sbRoot/manage/failedDownloads/"><img src="$sbRoot/images/menu/failed_download.png" alt="" width="16" height="16" />Failed Downloads</a></li>
+                #end if
+                    <li><a href="$sbRoot/manage/episodeStatuses/"><img src="$sbRoot/images/menu/backlog16.png" alt="" width="16" height="16" />Episode Status Management</a></li>
+                #if $sickbeard.USE_SUBTITLES:
+                    <li><a href="$sbRoot/manage/subtitleMissed/"><img src="$sbRoot/images/menu/backlog16.png" alt="" width="16" height="16" />Missed Subtitle Management</a></li>
+                #end if
+                </ul>
+            </li>
+            <li id="NAVerrorlogs"><a href="$sbRoot/errorlogs/" class="log">$logPageTitle</a>
+                <ul>
+                    <li><a href="$sbRoot/errorlogs/"><img src="$sbRoot/images/menu/viewlog_errors16.png" alt="" width="16" height="16" />View Log (Errors)</a></li>
+                    <li><a href="$sbRoot/errorlogs/viewlog/"><img src="$sbRoot/images/menu/viewlog16.png" alt="" width="16" height="16" />View Log</a></li>
+                </ul>
+            </li>
+            <li id="NAVconfig"><a href="$sbRoot/config/" class="config"><img src="$sbRoot/images/menu/system18.png" alt="" /></a>
+                <ul>
+                    <li><a href="$sbRoot/config/"><i class="icon-question-sign" style=" margin-left: -21px;margin-right: 8px;position: absolute;"></i>Help &amp; Info</a></li>
+                    <li><a href="$sbRoot/config/general/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />General</a></li>
+                    <li><a href="$sbRoot/config/backuprestore/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Backup/Restore</a></li>
+                    <li><a href="$sbRoot/config/search/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Search Settings</a></li>
+                    <li><a href="$sbRoot/config/providers/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Search Providers</a></li>
+                    <li><a href="$sbRoot/config/subtitles/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Subtitles Settings</a></li>
+                    <li><a href="$sbRoot/config/postProcessing/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Post Processing</a></li>
+                    <li><a href="$sbRoot/config/notifications/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Notifications</a></li>
+                    <li><a href="$sbRoot/config/anime/"><img src="$sbRoot/images/menu/config16.png" alt="" width="16" height="16" />Anime</a></li>
+                </ul>
+            </li>
+            <li id="NAVsystem"><a href="#" onclick="return false;" class="config"><img src="$sbRoot/images/menu/system18-2.png" alt="" /></a>
+                <ul>
+                    <li><a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" style="margin-top: -1px;" />Force Version Check</a></li>
+                    <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm restart"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" style="margin-top: -2px;" />Restart</a></li>
+					<li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm shutdown"><img src="$sbRoot/images/menu/shutdown16.png" alt="" width="16" height="16" style="margin-top: -2px;" />Shutdown</a></li>
+                </ul>
+            </li>
+			<li id="donate"><a href="http://sr-upgrade.appspot.com" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" /></a></li>
+		</ul>
     </div>
 </div>
 
 <div id="contentWrapper">
     <div id="content">
-      #if $varExists('submenu'):
-      <div id="SubMenu">
-      <span>
-      #set $first = True
-      #for $menuItem in $submenu:
+		#if $varExists('submenu'):
+		<div id="SubMenu">
+		<span>
+		#set $first = True
+		#for $menuItem in $submenu:
 	  	#if 'requires' not in $menuItem or $menuItem.requires():      
-              #if type($menuItem.path) == dict:
-                  #if $first then "" else "</span><span>"#<b>$menuItem.title</b>
-                  #set $first = False
-                  #set $inner_first = True
-                  #for $cur_link in $menuItem.path:
-                      #if $inner_first then "" else "&middot; "#<a class="inner" href="$sbRoot/$menuItem.path[$cur_link]">$cur_link</a>
-                      #set $inner_first = False
-                  #end for
-              #else
-                  #if $first then "" else ""#<a href="$sbRoot/$menuItem.path" #if 'confirm' in $menuItem then "class=\"confirm\"" else "" #>$menuItem.title</a>
-                  #set $first = False
-              #end if
+            #if type($menuItem.path) == dict:
+                #if $first then "" else "</span>&nbsp;<span>"#$menuItem.title
+                #set $first = False
+                #set $inner_first = True
+                #for $cur_link in $menuItem.path:
+                    #if $inner_first then "" else "&middot; "#<a class="inner" href="$sbRoot/$menuItem.path[$cur_link]">$cur_link</a>
+                    #set $inner_first = False
+                #end for
+            #else
+                #if $first then "" else ""#<a href="$sbRoot/$menuItem.path" #if 'confirm' in $menuItem then "class=\"confirm\"" else "" #>$menuItem.title</a>
+                #set $first = False
+            #end if
       	#end if
-      #end for
-      </span>
-      </div>
-      #end if
+		#end for
+		</span>
+		</div>
+		#end if

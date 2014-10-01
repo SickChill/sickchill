@@ -21,11 +21,12 @@ $(document).ready(function(){
         $(this).nFileBrowser(edit_root_dir, {initialDir: initial_dir, which_id: cur_id});
         
     });
+	
+	$('.delete_root_dir').click(function(){
+		var cur_id = find_dir_index($(this).attr('id'));
 
-    $('.delete_root_dir').click(function(){
-        var cur_id = find_dir_index($(this).attr('id'));
+		$('#new_root_dir_'+cur_id).val(null);
+		$('#display_new_root_dir_'+cur_id).html('<b>DELETED</b>');
+	});
 
-        $('#new_root_dir_'+cur_id).val(null);
-        $('#display_new_root_dir_'+cur_id).html('<b>DELETED</b>');
-    });
 });

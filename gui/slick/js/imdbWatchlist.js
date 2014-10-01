@@ -143,7 +143,7 @@ $(document).ready(function() {
     		$('#editImdbWlText').val("");
     	}
     	$('#updateImdbWl').attr('action', updateVal);
-    	$('#editImdbWlText').attr('style','display: block; width: 100%; margin-top: 4px; margin-bottom: 4px;');
+    	$('#editImdbWlText').attr('style','display: block; width: 583px; margin-top: 4px; margin-bottom: 4px;');
     	$('#imdbWl').prop('disabled', 'true');
     	$('#updateImdbWl').attr('style','display: block;');
     	$('#editImdbWlText').select();

@@ -42,7 +42,7 @@ function updateImages(data) {
 		// Get td element for current ep
 		var loadingImage = 'loading16_dddddd.gif';
         var queuedImage = 'queued.png';
-        var searchImage = 'search32.png';
+        var searchImage = 'search16.png';
         var status = null;
         //Try to get the <a> Element
         el=$('a[id=' + ep.season + 'x' + ep.episode+']');
@@ -52,7 +52,7 @@ function updateImages(data) {
         	if (ep.searchstatus == 'searching') {
 				//el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
 				img.attr('title','Searching');
-				img.attr('alt','searching');
+				img.attr('alt','earching');
 				img.attr('src',sbRoot+'/images/' + loadingImage);
 				disableLink(el);
 				// Update Status and Quality

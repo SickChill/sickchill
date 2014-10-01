@@ -69,10 +69,20 @@ function preventDefault() {
 
 function initFancybox() {
     if ($("a[rel=dialog]").length > 0) {
-        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox-1.3.4.js', function () {
-            $("head").append("<link rel='stylesheet' href='" + sbRoot + "/js/fancybox/jquery.fancybox-1.3.4.css'>");
+        $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.js', function () {
+            $("head").append("<link rel='stylesheet' href='" + sbRoot + "/js/fancybox/jquery.fancybox.css'>");
             $("a[rel=dialog]").fancybox({
-                type: "image"
+                type: "image",
+				padding: 0,
+				helpers : {
+					title : null,
+					overlay : {
+						locked: false,
+						css : {
+							'background' : 'rgba(0, 0, 0, 0.4)'
+						}
+					}
+				}
             });
         });
     }
@@ -96,7 +106,7 @@ function initTabs() {
 
             //Dont use the builtin fx effects. This will fade in/out both tabs, we dont want that
             //Fadein the new tab yourself            
-            $(ui.newPanel).hide().fadeIn(700);
+            $(ui.newPanel).hide().fadeIn(0);
 
             if (lastOpenedPanel) {
 
@@ -108,7 +118,7 @@ function initTabs() {
                     .toggleClass("ui-tabs-hide")
                     .css("position", "absolute")
                     .css("top", $(this).data("topPositionTab") + "px")
-                    .fadeOut(700, function () {
+                    .fadeOut(0, function () {
                         $(this)
                             .css("position", "");
                     });
