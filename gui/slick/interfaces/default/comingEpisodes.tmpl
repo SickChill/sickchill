@@ -172,7 +172,7 @@
 		<tr class="$show_div">
 			## forced to use a div to wrap airdate, the column sort went crazy with a span
 			<td align="center" class="nowrap">
-				<div class="${fuzzydate}">$sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbfdate().decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span>
+				<div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result["localtime"]).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result["localtime"].timetuple())</span>
 			</td>
 			
 			<td class="comingtvShow"><a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}">$cur_result["show_name"]</a>
