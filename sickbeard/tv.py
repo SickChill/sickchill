@@ -25,6 +25,7 @@ import re
 import glob
 import stat
 import traceback
+import shutil
 
 import sickbeard
 
@@ -1004,7 +1005,7 @@ class TVShow(object):
                     except:
                         logger.log(u'Cannot change permissions of ' + self.location, logger.WARNING)
 
-                ek.ek(os.rmdir, self.location)
+                ek.ek(shutil.rmtree, self.location)
             except OSError, e:
                 logger.log(u"Unable to delete " + self.location + ": " + repr(e) + " / " + str(e), logger.WARNING)
 
