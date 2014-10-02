@@ -7,3 +7,4 @@
 -Allow customization of skin colours
 -Add prefer torrents/usenet and allow custom delay between grabs from torrents/usenet
 -Better postprocessing handling for torrents
+-Add global preferred words
