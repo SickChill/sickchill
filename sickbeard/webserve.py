@@ -468,7 +468,7 @@ class MainHandler(RequestHandler):
                     ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
                            episode['description'].splitlines()[0] + '\r\n'
                 else:
-                    ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\r\n'
+                    ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (show['network'] or 'Unknown network') + '\r\n'
                 ical = ical + 'LOCATION:' + 'Episode ' + str(episode['episode']) + ' - Season ' + str(
                     episode['season']) + '\r\n'
                 ical = ical + 'END:VEVENT\r\n'
