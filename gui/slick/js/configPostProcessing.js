@@ -384,6 +384,9 @@ $(document).ready(function () {
     $('#show_naming_sports_key').click(function () {
         $('#naming_sports_key').toggle();
     });
+    $('#show_naming_anime_key').click(function () {
+        $('#naming_anime_key').toggle();
+    });
     $('#do_custom').click(function () {
         $('#naming_pattern').val($('#name_presets :selected').attr('id'));
         $('#naming_custom').show();
