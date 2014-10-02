@@ -4,3 +4,6 @@
 -Add anidb indexer
 -Add supplemental data from anidb during postprocessing
 -Fix grabbing non-propers as propers for certain air-by-date shows
+-Allow customization of skin colours
+-Add prefer torrents/usenet and allow custom delay between grabs from torrents/usenet
+-Better postprocessing handling for torrents
