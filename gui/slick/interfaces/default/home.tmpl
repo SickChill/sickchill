@@ -334,7 +334,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         #set $download_stat = str($cur_downloaded)
         #set $download_stat_tip = "Downloaded: " + str($cur_downloaded)
         #if $cur_snatched > 0:
-            #set $download_stat = download_stat + "+" + str($cur_snatched)
+            #set $download_stat = download_stat
             #set $download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
         #end if
         #set $download_stat = download_stat + " / " + str($cur_total)
@@ -351,8 +351,22 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #end if
 
 #set $progressbar_percent = $nom * 100 / $den
+	
+	#if "a" in sickbeard.DATE_PRESET:
+		#set $showheight = "344px"
+		#set $tableheight = "62px"
+	#else if "B" in sickbeard.DATE_PRESET:
+		#set $showheight = "374px"
+		#set $tableheight = "92px"
+	#else if "A" in sickbeard.DATE_PRESET:
+		#set $showheight = "344px"
+		#set $tableheight = "62px"
+	#else
+		#set $showheight = "323px"
+		#set $tableheight = "42px"
+	#end if
 
-	<div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="#if $cur_airs_next then $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple()) else ""#" data-network="$curShow.network" data-progress="$progressbar_percent">
+	<div class="show" style="height: $showheight" id="show$curShow.indexerid" data-name="$curShow.name" data-date="#if $cur_airs_next then $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple()) else ""#" data-network="$curShow.network" data-progress="$progressbar_percent">
 		<div class="show-image">
 			<a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
 			<div class="show-image-slide">
@@ -382,41 +396,45 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 				});
 			//-->
 			</script>
-
-		<div class="show-details">
-			<div class="show-airby">
-				#if $cur_airs_next
-				#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
-					<div class="show-date">Next Ep: $sbdatetime.sbdatetime.sbfdate($ldatetime)</div>
-				#else if $curShow.status != "Ended" and int($curShow.paused) == 1:
-					<div class="show-status">Paused</div>
-				#else if $curShow.status:
-					<div class="show-status">$curShow.status</div>
-				#else
-					<div class="show-status">?</div>
-				#end if
-			</div>
 		
-			<div class="show-network">
-				#if $curShow.network:
-					<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.lower()}.png" alt="$curShow.network" title="$curShow.network" />
-				#else:
-					$curShow.network
-				#end if
-			</div>
-		
-			<div class="show-quality">
-				<span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
-				<div class="float-right">
-				#if $curShow.quality in $qualityPresets:
-					<span class="show-dlstats">$qualityPresetStrings[$curShow.quality]</span>
-				#else:
-					<span class="show-dlstats">Custom</span>
-				#end if
-				</div>
-			</div>
-		
-		</div>
+		<table width="184px" height="$tableheight" cellspacing="1" border="0" cellpadding="0" style="padding-left: 2px; cursor: default;">
+			<col width="60px" />
+			<col width="59px" />
+			<col width="60px" />
+				
+			<tr>
+				<td style="text-align:center; vertical-align:middle;">
+					#if $cur_airs_next
+					#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
+						<div class="show-date">Next Ep: $sbdatetime.sbdatetime.sbfdate($ldatetime)</div>
+					#else if $curShow.status != "Ended" and int($curShow.paused) == 1:
+						<div class="show-status">Paused</div>
+					#else if $curShow.status:
+						<div class="show-status">$curShow.status</div>
+					#else
+						<div class="show-status">?</div>
+					#end if
+				</td>
+					
+				<td style="text-align:center; vertical-align:middle;">
+					#if $curShow.network:
+						<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.lower()}.png" alt="$curShow.network" title="$curShow.network" />
+					#else:
+						$curShow.network
+					#end if
+				</td>
+					
+				<td style="text-align:center; vertical-align:middle;">
+					<span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
+					<div class="float-right">
+					#if $curShow.quality in $qualityPresets:
+						<span class="show-dlstats">$qualityPresetStrings[$curShow.quality]</span>
+					#else:
+						<span class="show-dlstats">Custom</span>
+					#end if
+				</td>
+			</tr>
+		</table>
           
 	</div>
     
