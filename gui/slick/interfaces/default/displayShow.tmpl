@@ -237,7 +237,10 @@
 			<tr><td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
 			<td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
 			</tr>
-		#end if	
+		#end if
+
+        <tr><td class="showLegend">Size:</td><td>$sickbeard.helpers.human(sickbeard.helpers.get_size($showLoc[0]))</td></tr>
+
 		</table>
 	
 		<table style="width:17%; float: right; vertical-align: middle; height: 100%;">
