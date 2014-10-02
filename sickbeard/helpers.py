@@ -1409,9 +1409,9 @@ def human(size):
 def get_size(start_path='.'):
 
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
+    for dirpath, dirnames, filenames in ek.ek(os.walk, start_path):
         for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
+            fp = ek.ek(os.path.join, dirpath, f)
+            total_size += ek.ek(os.path.getsize, fp)
     return total_size
 
