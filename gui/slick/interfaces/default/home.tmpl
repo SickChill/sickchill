@@ -200,7 +200,7 @@
 		        2: function(node) { return \$(node).find("img").attr("alt"); },
 	        #end if
 	            3: function(node) { return \$(node).find("span").text(); },
-	            6: function(node) { return \$(node).find("img").attr("alt"); }
+	            5: function(node) { return \$(node).find("img").attr("alt"); }
 	        },
 	        widgets: ['saveSort', 'zebra'],
 	        headers: {
@@ -209,6 +209,8 @@
 	            2: { sorter: 'network' },
 	            3: { sorter: 'quality' },
 	            4: { sorter: 'eps' },
+				5: { sorter: 'active' },
+				6: { sorter: 'status' },
 	        }
     });
 
@@ -221,7 +223,7 @@
 		        2: function(node) { return \$(node).find("img").attr("alt"); },
 	        #end if
 	            3: function(node) { return \$(node).find("span").text(); },
-	            6: function(node) { return \$(node).find("img").attr("alt"); }
+	            5: function(node) { return \$(node).find("img").attr("alt"); }
 	        },
 	        widgets: ['saveSort', 'zebra'],
 	        headers: {
@@ -230,6 +232,8 @@
 	            2: { sorter: 'network' },
 	            3: { sorter: 'quality' },
 	            4: { sorter: 'eps' },
+				5: { sorter: 'active' },
+				6: { sorter: 'status' },
 	        }
     });
 
