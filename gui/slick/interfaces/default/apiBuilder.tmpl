@@ -49,6 +49,8 @@ addList("Command", "Scene Exceptions", "?cmd=exceptions", "exceptions");
 addList("Command", "History", "?cmd=history", "history");
 addOption("Command", "History.Clear", "?cmd=history.clear", "", "", "action");
 addOption("Command", "History.Trim", "?cmd=history.trim", "", "", "action");
+addList("Command", "PostProcess", "?cmd=postprocess", "postprocess", "", "","action");
+
 addList("Command", "Logs", "?cmd=logs", "logs");
 addList("Command", "Show", "?cmd=show", "indexerid");
 addList("Command", "Show.AddExisting", "?cmd=show.addexisting", "show.addexisting", "", "", "action");
@@ -78,6 +80,14 @@ addOption("logs", "Debug", "&min_level=debug");
 addOption("logs", "Info", "&min_level=info");
 addOption("logs", "Warning", "&min_level=warning");
 addOption("logs", "Error", "&min_level=error");
+
+addOption("postprocess", "Optional Param", "", 1);
+addOption("postprocess", "C:\\PATH\\TO\\DIR", "&path=C:\\Temp");
+addOption("postprocess", "return_data", "&return_data=1");
+addOption("postprocess", "force_replace", "&force_replace=1");
+addOption("postprocess", "is_priority", "&is_priority=1");
+addOption("postprocess", "process_method", "&process_method=copy");
+addOption("postprocess", "type", "&type=manual")
 
 addOption("sb.setdefaults", "Optional Param", "", 1);
 addList("sb.setdefaults", "Exclude Paused Shows on ComingEps", "&future_show_paused=0", "sb.setdefaults-status");

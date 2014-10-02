@@ -33,6 +33,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import classes
+from sickbeard import processTV
 from sickbeard.exceptions import ex
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
@@ -1273,6 +1274,47 @@ class CMD_Logs(ApiCall):
                 break
 
         return _responds(RESULT_SUCCESS, finalData)
+
+class CMD_PostProcess(ApiCall):
+    _help = {"desc": "Manual postprocess TV Download Dir",
+             "optionalParameters": {"path": {"desc": "Post process this folder"},
+                                    "force_replace": {"desc": "Force already Post Processed Dir/Files"},
+                                    "return_data": {"desc": "Returns result for the process"},
+                                    "process_method": {"desc": "Symlink, hardlink, move or copy the file"},
+                                    "is_priority": {"desc": "Replace the file even if it exists in a higher quality)"},
+                                    "type": {"desc": "What type of postprocess request is this, auto of manual"}
+                                    }
+             }
+
+    def __init__(self, handler, args, kwargs):
+        # required
+        # optional
+        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
+        self.force_replace, args = self.check_params(args, kwargs, "force_replace", 0, False, "bool", [])
+        self.return_data, args = self.check_params(args, kwargs, "return_data", 0, False, "bool", [])
+        self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string", ["copy", "symlink", "hardlink", "move"])
+        self.is_priority, args = self.check_params(args, kwargs, "is_priority", 0, False, "bool", [])
+        self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
+        # super, missing, help
+        ApiCall.__init__(self, handler, args, kwargs)
+
+    def run(self):
+        """ Starts the postprocess """
+        if not self.path and not sickbeard.TV_DOWNLOAD_DIR:
+            return _responds(RESULT_FAILURE, msg="You need to provide a path or set TV Download Dir")
+
+        if not self.path:
+            self.path = sickbeard.TV_DOWNLOAD_DIR
+
+        if not self.type:
+            self.type = 'manual'
+
+        data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace, is_priority=self.is_priority, failed=False, type=self.type)
+
+        if not self.return_data:
+            data = ""
+
+        return _responds(RESULT_SUCCESS, data=data, msg="Started postprocess for %s" % self.path)
 
 
 class CMD_SickBeard(ApiCall):
@@ -2596,6 +2638,7 @@ _functionMaper = {"help": CMD_Help,
                   "history.trim": CMD_HistoryTrim,
                   "logs": CMD_Logs,
                   "sb": CMD_SickBeard,
+                  "postprocess": CMD_PostProcess,
                   "sb.addrootdir": CMD_SickBeardAddRootDir,
                   "sb.checkscheduler": CMD_SickBeardCheckScheduler,
                   "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
