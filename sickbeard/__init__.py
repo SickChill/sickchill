@@ -1425,8 +1425,8 @@ def save_config():
     new_config['General']['naming_abd_pattern'] = NAMING_ABD_PATTERN
     new_config['General']['naming_custom_sports'] = int(NAMING_CUSTOM_SPORTS)
     new_config['General']['naming_sports_pattern'] = NAMING_SPORTS_PATTERN
-    new_config['General']['naming_custom_sports'] = int(NAMING_CUSTOM_ANIME)
-    new_config['General']['naming_sports_pattern'] = NAMING_ANIME_PATTERN
+    new_config['General']['naming_custom_anime'] = int(NAMING_CUSTOM_ANIME)
+    new_config['General']['naming_anime_pattern'] = NAMING_ANIME_PATTERN
     new_config['General']['naming_multi_ep'] = int(NAMING_MULTI_EP)
     new_config['General']['naming_anime_multi_ep'] = int(NAMING_ANIME_MULTI_EP)
     new_config['General']['naming_anime'] = int(NAMING_ANIME)
