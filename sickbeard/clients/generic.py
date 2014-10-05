@@ -207,7 +207,7 @@ class GenericClient(object):
     def testAuthentication(self):
 
         try:
-            self.response = self.session.get(self.url, timeout=20, verify=False)
+            self.response = self.session.get(self.url, timeout=120, verify=False)
         except requests.exceptions.ConnectionError, e:
             return False, 'Error: ' + self.name + ' Connection Error'
         except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
