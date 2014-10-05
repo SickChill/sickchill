@@ -66,6 +66,16 @@ def filterBadReleases(name, parse=True):
                        logger.DEBUG)
             return False
 
+    # if any of the good strings aren't in the name then say no
+    if sickbeard.REQUIRE_WORDS:
+        require_words = sickbeard.REQUIRE_WORDS.split(',')
+        filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in require_words]
+        for regfilter in filters:
+            if not regfilter.search(name):
+                logger.log(u"Invalid scene release: " + name + " doesn't contain pattern: " + regfilter.pattern + ", ignoring it",
+                           logger.DEBUG)
+                return False
+
     return True
 
 
