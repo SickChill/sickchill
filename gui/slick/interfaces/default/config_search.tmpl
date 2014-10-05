@@ -127,6 +127,21 @@
                         </div>
 
                         <div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">Require Words</span>
+                                <input type="text" name="require_words" value="$sickbeard.REQUIRE_WORDS" size="45" />
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Comma separated words to check in episode search.</span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Results not containing all words in the list won't be snatched.</span>
+                            </label>
+                        </div>
+
+                        <div class="field-pair">
                             <input type="checkbox" name="allow_high_priority" id="allow_high_priority" #if $sickbeard.ALLOW_HIGH_PRIORITY == True then "checked=\"checked\"" else ""# />
                             <label class="clearfix" for="allow_high_priority">
                                 <span class="component-title">Allow high priority</span>

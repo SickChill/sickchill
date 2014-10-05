@@ -1632,7 +1632,7 @@ class ConfigSearch(MainHandler):
                    backlog_startup=None, dailysearch_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
-                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None):
+                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None, require_words=None):
 
         results = []
 
@@ -1655,6 +1655,7 @@ class ConfigSearch(MainHandler):
         sickbeard.USENET_RETENTION = config.to_int(usenet_retention, default=500)
 
         sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
+        sickbeard.REQUIRE_WORDS = require_words if require_words else ""
 
         sickbeard.DOWNLOAD_PROPERS = config.checkbox_to_value(download_propers)
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
