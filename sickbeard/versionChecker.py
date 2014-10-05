@@ -543,9 +543,11 @@ class GitUpdateManager(UpdateManager):
             output, err, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)  # @UnusedVariable
 
         if exit_status == 0:
+            self._find_installed_version()
+
             # Notify update successful
             if sickbeard.NOTIFY_ON_UPDATE:
-                notifiers.notify_git_update(self._newest_commit_hash[:10])
+                notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
             return True
 
         return False
