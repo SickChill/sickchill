@@ -419,6 +419,13 @@
                                 <span class="component-desc">Proxy to use for connecting to providers.  Leave empty to not use proxy.</span>
                             </label>
                         </div>
+						<div class="field-pair">
+							<input type="checkbox" name="proxy_indexers" id="proxy_indexers" #if $sickbeard.PROXY_INDEXERS == True then "checked=\"checked\"" else ""#/>
+							<label class="clearfix" for="proxy_indexers">
+								<span class="component-title">Proxy Indexers</span>
+								<span class="component-desc">Use the proxy for connecting to indexers (thetvdb, tvrage)</span>
+							</label>
+						</div>
 
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
