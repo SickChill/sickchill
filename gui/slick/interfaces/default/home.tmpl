@@ -109,6 +109,13 @@
 	});
 });
 
+sortFlipper = true;
+function invertSort(){
+    sortFlipper = !sortFlipper;
+    \$('#container').isotope({sortAscending: sortFlipper});
+    \$('#container-anime').isotope({sortAscending: sortFlipper});
+}
+
 <!--
 
 \$.tablesorter.addParser({
@@ -267,13 +274,14 @@
 	</span>
 	
 	#if $layout == 'poster':
-	<ul id="sort-by" class="option-set clearfix" data-option-key="sortBy">
+	<ul id="sort-by" class="option-set" data-option-key="sortBy">
 	Sort By:
 		<li><a href="#sortBy=name" data-option-value="name">Name</a></li> &middot;
 		<li><a href="#sortBy=date" data-option-value="date">Next Episode</a></li> &middot;
 		<li><a href="#sortBy=network" data-option-value="network">Network</a></li> &middot;
-		<li><a href="#sortBy=progress" data-option-value="progress">Progress</a></li>
+		<li><a href="#sortBy=progress" data-option-value="progress">Progress</a></li> &middot;
     </ul>
+    &nbsp;<a style="display: inline-block; float: right;" class="clearfix" href="javascript:invertSort();">Flip</a>
 	#end if
 </div>
 
