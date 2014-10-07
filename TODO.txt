@@ -7,4 +7,9 @@
 -Allow customization of skin colours
 -Add prefer torrents/usenet and allow custom delay between grabs from torrents/usenet
 -Better postprocessing handling for torrents
--Add global preferred words
+-[DONE] Add global required words
+
+2014-10-07
+-Add release groups/require words/ignore words to add show page
+-Add 'add show and add another show' button to add show page
+-Change the hardcoded global ignore words to optional
