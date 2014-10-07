@@ -107,7 +107,7 @@ class TransmissionAPI(GenericClient):
 
     def _set_torrent_seed_time(self, result):
 
-        if sickbeard.TORRENT_SEED_TIME:
+        if sickbeard.TORRENT_SEED_TIME and sickbeard.TORRENT_SEED_TIME != -1:
             time = int(60 * float(sickbeard.TORRENT_SEED_TIME))
             arguments = {'ids': [result.hash],
                          'seedIdleLimit': time,
