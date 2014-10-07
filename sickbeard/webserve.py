@@ -460,7 +460,8 @@ class MainHandler(RequestHandler):
                 ical = ical + 'DTEND:' + air_date_time_end.strftime(
                     "%Y%m%d") + 'T' + air_date_time_end.strftime(
                     "%H%M%S") + 'Z\r\n'
-                ical = ical + 'SUMMARY:' + show['show_name'] + ': ' + episode['name'] + '\r\n'
+                ical = ical + 'SUMMARY:' + show['show_name'] + ' - ' + str(
+                    episode['season']) + "x" + str(episode['episode']) + " - " + episode['name'] + '\r\n'
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
                     'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
                     episode['season']) + '\r\n'
@@ -469,8 +470,7 @@ class MainHandler(RequestHandler):
                            episode['description'].splitlines()[0] + '\r\n'
                 else:
                     ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (show['network'] or 'Unknown network') + '\r\n'
-                ical = ical + 'LOCATION:' + 'Episode ' + str(episode['episode']) + ' - Season ' + str(
-                    episode['season']) + '\r\n'
+               
                 ical = ical + 'END:VEVENT\r\n'
 
         # Ending the iCal
