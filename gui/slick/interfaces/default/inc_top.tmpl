@@ -34,74 +34,16 @@
 	<meta name="msapplication-config" content="$sbRoot/css/browserconfig.xml">
 
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/default.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/comingEpisodes.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/config.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery.pnotify.default.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery-ui-1.10.4.custom.css?$sbPID" />
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/browser.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/superfish.css?$sbPID" />
-    <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/tablesorter.css?$sbPID"/>
     <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery.qtip-2.0.1.min.css?$sbPID"/>
-	<link rel="stylesheet" type="text/css" href="$sbRoot/css/jquery.confirm.css?$sbPID"/>
     <link rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" href="$sbRoot/css/iphone.css?$sbPID" />
+	#if $sickbeard.THEME_NAME != '':
+	<link rel="stylesheet" type="text/css" href="$sbRoot/css/${sickbeard.THEME_NAME}.css?$sbPID" />
+	#end if
 
 
 <style type="text/css">
 <!--
-.sf-sub-indicator { background: url("$sbRoot/images/arrows.png") no-repeat -10px -100px; }
-.sf-shadow ul { background: url("$sbRoot/images/shadow.png") no-repeat bottom right; }
-
-[class^="icon-"], [class*=" icon-"] { background-image: url("$sbRoot/images/glyphicons-halflings.png"); }
-a:hover > i.icon-question-sign, .icon-white { background-image: url("$sbRoot/images/glyphicons-halflings-white.png"); }
-a > i.icon-question-sign { background-image: url("$sbRoot/images/glyphicons-halflings.png"); }
-
-.dropdown-menu li > a:hover > [class^="icon-"], .dropdown-menu li > a:hover > [class*=" icon-"] { background-image: url("$sbRoot/images/glyphicons-halflings-white.png"); }
-[class^="icon16-"], [class*=" icon16-"] { background-image: url("$sbRoot/images/glyphicons-config.png"); }
-
-.ui-autocomplete-loading { background: white url("$sbRoot/images/loading16.gif") right center no-repeat; }
-.browserDialog.busy .ui-dialog-buttonpane { background: url("$sbRoot/images/loading.gif") 10px 50% no-repeat !important; }
-.ui-progressbar .ui-progressbar-overlay { background: url("$sbRoot/css/lib/images/animated-overlay.gif"); }
-.ui-dialog, .ui-dialog-buttonpane { background: #2a2a2a  50% 50% repeat !important; }
-.ui-dialog-titlebar { background: #3d3d3d !important;}
-.ui-accordion-content, .ui-tabs-panel { background: #484848 !important; background-image: none !important; }
-
-.ui-widget-content { background: #606060 url("$sbRoot/css/lib/images/ui-bg_flat_0_606060_40x100.png") 50% top repeat-x; }
-.ui-widget-header { background: #606060 url("$sbRoot/css/lib/images/ui-bg_flat_0_606060_40x100.png") 50% 50% repeat-x; }
-
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { background: #dddddd url("$sbRoot/css/lib/images/ui-bg_highlight-soft_75_dddddd_1x100.png") 50% 50% repeat-x; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { background: #3d3d3d;  color: #FFFFFF !important; }
-
-.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight { background: #fbf9ee url("$sbRoot/css/lib/images/ui-bg_glass_55_fbf9ee_1x400.png") 50% 50% repeat-x; }
-.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error { background: #fef1ec url("$sbRoot/css/lib/images/ui-bg_glass_95_fef1ec_1x400.png") 50% 50% repeat-x; }
-
-.ui-icon, .ui-widget-content .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
-.ui-widget-header .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
-.ui-state-default .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_09a2ff_256x240.png"); }
-.ui-state-hover .ui-icon, .ui-state-focus .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_ffffff_256x24.png"); }
-.ui-state-active .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_8c291d_256x240.png"); }
-.ui-state-highlight .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_2e83ff_256x240.png"); }
-.ui-state-error .ui-icon, .ui-state-error-text .ui-icon { background-image: url("$sbRoot/css/lib/images/ui-icons_cd0a0a_256x240.png"); }
-
-.ui-widget-overlay { background: #000000 url("$sbRoot/css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x; }
-.ui-widget-shadow { background: #000000 url("$sbRoot/css/lib/images/ui-bg_flat_0_000000_40x100.png") 50% 50% repeat-x; }
-
-.ui-tabs {
-    padding: 0px;
-    background: none;
-    border-width: 0px;
-}
-.ui-tabs .ui-tabs-nav {
-    padding-left: 0px;
-    background: transparent;
-    border-width: 0px 0px 0px 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
-
-}
-.ui-tabs .ui-tabs-panel { background-color: #3d3d3d !important; border-width: 1px 1px 1px 1px; border-color: #111111;}
-
-.ui-tabs-nav > :not(.ui-tabs-active){ background: #333333 !important;  color: #FFFFFF !important; }
 
 #if $sickbeard.NEWEST_VERSION_STRING:
 .ui-pnotify { top: 30px !important; }
