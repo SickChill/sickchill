@@ -90,20 +90,16 @@ Jump to Show
   <tr class="seasoncols"><th>Episode</th><th>Name</th><th class="nowrap">Airdate</th></tr>
 
 #for $curResult in $showSQLResults[$curShow.indexerid]:
-    #set $whichStr = $str($curResult["season"]) + "x" + $str($curResult["episode"])
-    #try:
-        #set $overview = $showCats[$curShow.indexerid][$whichStr]
-    #except Exception
-        #continue
-    #end try
-    #if $overview not in ($Overview.QUAL, $Overview.WANTED):
-        #continue
-    #end if
-    <tr class="seasonstyle $Overview.overviewStrings[$showCats[$curShow.indexerid][$whichStr]]">
-        <td class="tableleft" align="center">$whichStr</td>
-        <td>$curResult["name"]</td>
-        <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">#if int($curResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($curResult["airdate"],$curShow.airs,$curShow.network))#</div></td>
-    </tr>
+#set $whichStr = $str($curResult["season"]) + "x" + $str($curResult["episode"])
+#set $overview = $showCats[$curShow.indexerid][$whichStr]
+#if $overview not in ($Overview.QUAL, $Overview.WANTED):
+#continue
+#end if
+  <tr class="seasonstyle $Overview.overviewStrings[$showCats[$curShow.indexerid][$whichStr]]">
+    <td class="tableleft" align="center">$whichStr</td>
+    <td>$curResult["name"]</td>
+    <td class="tableright" align="center" class="nowrap"><div class="${fuzzydate}">#if int($curResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($curResult["airdate"],$curShow.airs,$curShow.network))#</div></td>
+  </tr>
 
 #end for
 
