@@ -34,6 +34,9 @@ a{
     border-bottom-style: solid;
     border-bottom-width: 1px;      
 	padding: 7px 0;
+	color: #fff;
+	font-weight: 700; 
+	text-shadow: none;
 }
 
 #header-fix {
@@ -528,6 +531,22 @@ a.btn {
 
 a.btn:hover {
     color: #ffffff !important;
+}
+
+.btn-large {
+  	background:#444444 !important;
+	color: #ffffff !important;
+	font-weight: normal !important;
+}
+
+.btn-large:hover,
+.btn-large:active,
+.btn-large.active,
+.btn-large.disabled,
+.btn-large[disabled] {
+	background-color: #666666 !important;
+	color: #ffffff !important;
+	font-weight: normal !important;
 }
 
 .btn.disabled,
@@ -1058,7 +1077,7 @@ jquery-ui-1.10.4.custom.css
 	border: 1px solid #aaaaaa;
 	/* background: #ffffff url(images/ui-bg_flat_0_ffffff_40x100.png) 50% 50% repeat-x; */
 	color: #222222;
-	font-weight: bold;
+	font-weight: normal;
 }
 
 .ui-widget-header a {
@@ -1070,7 +1089,7 @@ jquery-ui-1.10.4.custom.css
 .ui-widget-header .ui-state-default {
 	border: 1px solid #aaaaaa;
 	/* background: #efefef url(images/ui-bg_highlight-soft_75_efefef_1x100.png) 50% 50% repeat-x; */
-	font-weight: bold;
+	font-weight: normal;
 	color: #222222;
 }
 

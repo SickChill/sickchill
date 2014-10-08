@@ -28,12 +28,14 @@ a{
 }
 
 #upgrade-notification div {
-	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, transparent 51%, rgba(0, 0, 0, 0.25)) repeat scroll 0% 0% padding-box #464A4F;
-	background-color: #222;
-	box-sizing: border-box;
-	box-shadow: 0px 1px rgba(255, 255, 255, 0.1) inset, 0px -1px 3px rgba(0, 0, 0, 0.3) inset, 0px 0px 0px 1px rgba(255, 255, 255, 0.08) inset, 0px 1px 2px rgba(0, 0, 0, 0.15);
-	text-shadow: 0px 1px rgba(0, 0, 0, 0.8);
+    background-color: #C6B695;
+    border-bottom-color: #AF986B;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
 	padding: 7px 0;
+	color: #fff;
+	font-weight: 700; 
+	text-shadow: none;
 }
 
 #header-fix {
