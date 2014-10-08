@@ -13,3 +13,6 @@
 -Add release groups/require words/ignore words to add show page
 -Add 'add show and add another show' button to add show page
 -Change the hardcoded global ignore words to optional
+
+2014-10-08
+-Add login page for http auth as opposed to browser dialog box
