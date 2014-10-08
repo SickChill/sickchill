@@ -2609,11 +2609,11 @@ table.tablesorter .tablesorter-header-inner {
 }
 
 table.tablesorter th.tablesorter-headerAsc .tablesorter-header-inner {
-	background: url(/lib/images/tablesorter/asc.gif) no-repeat right center;
+	background: url(/css/lib/images/tablesorter/asc.gif) no-repeat right center;
 }
 
 table.tablesorter th.tablesorter-headerDesc .tablesorter-header-inner {
-	background: url(/lib/images/tablesorter/desc.gif) no-repeat right center;
+	background: url(/css/lib/images/tablesorter/desc.gif) no-repeat right center;
 }
 
 table.tablesorter th.tablesorter-headerAsc {
