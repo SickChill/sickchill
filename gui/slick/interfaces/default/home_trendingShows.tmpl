@@ -14,7 +14,6 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
-<link rel="stylesheet" type="text/css" href="$sbRoot/css/trakt.css?$sbPID" />
 
 #if $varExists('header')
 	<h1 class="header">$header</h1>
@@ -38,7 +37,7 @@
 	</div>
     <div class="clearfix">
         <h2>$cur_show["ratings"]["percentage"]% <img src="$sbRoot/images/heart.png"></h2>
-        <i style="text-shadow: 1px 1px 0px #000;">$cur_show["ratings"]["votes"] votes</i>
+        <i>$cur_show["ratings"]["votes"] votes</i>
 
         <div class="traktShowTitleIcons">
             <a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show["tvdb_id"]}&amp;showName=${cur_show["title"]}" class="btn btn-mini">Add Show</a>

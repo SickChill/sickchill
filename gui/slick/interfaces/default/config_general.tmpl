@@ -41,6 +41,7 @@
 					<li><a href="#core-component-group2">Web Interface</a></li>
 					<li><a href="#core-component-group3">Date and Time</a></li>
 					<li><a href="#core-component-group4">Advanced Settings</a></li>
+					<li><a href="#core-component-group5">UI Theme Settings</a></li>
 				</ul>
 				
                 <div id="core-component-group1" class="component-group clearfix">
@@ -511,6 +512,35 @@
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
                 </div><!-- /component-group3 //-->
+
+                <div id="core-component-group5" class="component-group clearfix">
+
+                    <div class="component-group-desc">
+                        <h3>UI Theme Settings</h3>
+						<p>Change UI settings to your liking.</p>
+                    </div>
+
+                    <fieldset class="component-group-list" style="width:670px">
+
+						<div class="field-pair">
+                            <label class="nocheck clearfix">
+                                <span class="component-title">UI Theme:</span>
+                                <span class="component-desc">
+                                    <select id="theme_name" name="theme_name">
+										<option value="dark" #if $sickbeard.THEME_NAME == "dark" then "selected=\"selected\"" else ""#>Dark</option>
+										<option value="original" #if $sickbeard.THEME_NAME == "original" then "selected=\"selected\"" else ""#>Original</option>
+                                    </select>
+                                </span>
+                            </label>
+                            <label class="nocheck clearfix">
+                                <span class="component-title">&nbsp;</span>
+								<span class="component-desc"><font color="red">Please refresh your browser after you have saved for appearance to take effect.</font></span>
+                            </label>
+                        </div>
+
+                        <input type="submit" class="btn config_submitter" value="Save Changes" />
+                    </fieldset>
+                </div><!-- /component-group5 //-->
                 
                 <br/>
 				<small class="float-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </small>
