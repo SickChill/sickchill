@@ -269,6 +269,7 @@ function invertSort(){
 <div id="HomeLayout" style="float: right; margin-top: -25px;">
 	<span>Layout:
 		<a class="inner" href="$sbRoot/setHomeLayout/?layout=poster">Poster</a> &middot;
+		<a class="inner" href="$sbRoot/setHomeLayout/?layout=small">Small Poster</a> &middot;
 		<a class="inner" href="$sbRoot/setHomeLayout/?layout=banner">Banner</a> &middot;
 		<a class="inner" href="$sbRoot/setHomeLayout/?layout=simple">Simple</a>
 	</span>
@@ -549,7 +550,16 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #else:
     	<td align="center" class="nowrap"></td>
     #end if
-    #if $layout == 'banner':
+	#if $layout == 'small':
+	    <td>
+	    	<div class="imgsmallposter $layout">
+		    	<a href="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=$layout" rel="dialog" title="$curShow.name">
+		    		<img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" class="$layout" alt="$curShow.indexerid"/>
+		    	</a>
+				<a href="$sbRoot/home/displayShow?show=$curShow.indexerid" style="vertical-align: middle;">$curShow.name</a>
+	    	</div>
+	    </td>
+    #else if $layout == 'banner':
 	    <td>
 	    	<span style="display: none;">$curShow.name</span>
 	    	<div class="imgbanner $layout">

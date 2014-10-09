@@ -282,7 +282,7 @@ class MainHandler(RequestHandler):
 
     def setHomeLayout(self, layout):
 
-        if layout not in ('poster', 'banner', 'simple'):
+        if layout not in ('poster', 'small', 'banner', 'simple'):
             layout = 'poster'
 
         sickbeard.HOME_LAYOUT = layout
