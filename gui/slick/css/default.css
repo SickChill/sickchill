@@ -214,6 +214,14 @@ img {
     vertical-align: middle;
 }
 
+.imgHomeWrapper .smallposter {
+    float: left;
+    width: 45px;
+    height: 66px;
+    position: relative;
+    vertical-align: middle;
+}
+
 .imgHomeWrapper .banner {
     height: 66px;
     overflow: hidden;
@@ -235,6 +243,16 @@ img {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.imgsmallposter .small {
+    height: 66px;
+    overflow: hidden;
+    border-radius: 3px;
+    vertical-align: middle;
+    width: 45px;
+	border: 1px solid #111;
+	margin-right: 5px;
 }
 
 .imgposter .poster {
@@ -705,6 +723,7 @@ input:not(.btn){
 .sickbeardTable td {
 	font-size: 13px;
 	cursor: default;
+	line-height: normal;
 }
 
 .sickbeardTable td.title {
@@ -2551,6 +2570,7 @@ table.tablesorter {
 table.tablesorter td {
 	font-size: 14px;
 	padding: 8px 10px;
+	line-height: normal;
 }
 
 /* remove extra border from left edge */
@@ -3630,6 +3650,7 @@ comingEpisodes.css
 	border-top-left-radius: 8px;
 	border-bottom-left-radius: 8px;
 }
+
 .bannerThumb {
     -ms-interpolation-mode: bicubic; /* make scaling look nicer for ie */
     vertical-align: top;

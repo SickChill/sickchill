@@ -11,6 +11,10 @@
     border: 1px solid #ddd;
 }
 
+.imgsmallposter .small {
+	border: 1px solid #ddd;
+}
+
 body {
 	background: none repeat scroll 0 0 #FFFFFF;
 	color: #343434;
