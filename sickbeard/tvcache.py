@@ -51,7 +51,7 @@ class CacheDBConnection(db.DBConnection):
                     self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
 
             # add unique index to prevent further dupes from happening if one does not exist
-            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON " + providerName + " (url)")
+            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + providerName + "] (url)")
 
             # add release_group column to table if missing
             if not self.hasColumn(providerName, 'release_group'):
