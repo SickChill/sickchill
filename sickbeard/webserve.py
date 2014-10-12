@@ -4451,30 +4451,28 @@ class Home(MainHandler):
         return quality_class
 
     def searchEpisodeSubtitles(self, show=None, season=None, episode=None):
-
         # retrieve the episode object and fail if we can't get one
         ep_obj = _getEpisode(show, season, episode)
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
         # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
+        previous_subtitles = set(subliminal.language.Language(x) for x in ep_obj.subtitles)
         try:
-            ep_obj.subtitles = ep_obj.downloadSubtitles()
+            ep_obj.subtitles = set(x.language for x in ep_obj.downloadSubtitles().values()[0])
         except:
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
         if previous_subtitles != ep_obj.subtitles:
             status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + subliminal.language.Language(
-                    x).alpha2 + ".png' alt='" + subliminal.language.Language(x).name + "'/>" for x in
-                sorted(list(set(ep_obj.subtitles).difference(previous_subtitles)))])
+                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + x.alpha2 +
+                ".png' alt='" + x.name + "'/>" for x in
+                sorted(list(ep_obj.subtitles.difference(previous_subtitles)))])
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
-        return json.dumps({'result': status, 'subtitles': ','.join([x for x in ep_obj.subtitles])})
-
+        return json.dumps({'result': status, 'subtitles': ','.join([x.alpha2 for x in ep_obj.subtitles])})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):

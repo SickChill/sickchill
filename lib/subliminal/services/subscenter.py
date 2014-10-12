@@ -18,9 +18,8 @@
 import logging
 import re
 import json
-import os
 from . import ServiceBase
-from ..exceptions import DownloadFailedError, ServiceError
+from ..exceptions import ServiceError
 from ..language import language_set
 from ..subtitles import get_subtitle_path, ResultSubtitle
 from ..videos import Episode, Movie
@@ -82,34 +81,20 @@ class Subscenter(ServiceBase):
         response_json = json.loads(response.content)
         for lang, lang_json in response_json.items():
             lang_obj = self.get_language(lang)
-            if lang_obj in self.languages and lang in languages:
+            if lang_obj in self.languages and lang_obj in languages:
                 for group_data in lang_json.values():
                     for quality in group_data.values():
                         for sub in quality.values():
                             release = sub.get('subtitle_version')
                             sub_path = get_subtitle_path(filepath, lang_obj, self.config.multi)
                             link = self.server_url + 'subtitle/download/' + lang + '/' + str(sub.get('id')) + \
-                                            '/?v=' + release + '&key=' + str(sub.get('key'))
+                                   '/?v=' + release + '&key=' + str(sub.get('key'))
                             subtitles.append(ResultSubtitle(sub_path, lang_obj, self.__class__.__name__.lower(),
                                                             link, release=to_unicode(release)))
         return subtitles
 
     def download(self, subtitle):
-        logger.info(u'Downloading %s in %s' % (subtitle.link, subtitle.path))
-        try:
-            r = self.session.get(subtitle.link, headers={'Referer': subtitle.link, 'User-Agent': self.user_agent})
-            if r.status_code != 200:
-                raise DownloadFailedError('Request failed with status code %d' % r.status_code)
-            if r.headers['Content-Type'] == 'text/html':
-                raise DownloadFailedError('Download limit exceeded')
-            with open(subtitle.path, 'wb') as f:
-                f.write(r.content)
-        except Exception as e:
-            logger.error(u'Download failed: %s' % e)
-            if os.path.exists(subtitle.path):
-                os.remove(subtitle.path)
-            raise DownloadFailedError(str(e))
-        logger.debug(u'Download finished')
+        self.download_zip_file(subtitle.link, subtitle.path)
         return subtitle
 
 
