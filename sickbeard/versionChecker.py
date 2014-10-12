@@ -378,7 +378,7 @@ class GitUpdateManager(UpdateManager):
 
             if output:
                 output = output.strip()
-            logger.log(u"git output: " + output, logger.DEBUG)
+            logger.log(u"git output: " + str(output), logger.DEBUG)
 
         except OSError:
             logger.log(u"Command " + cmd + " didn't work")
@@ -389,15 +389,15 @@ class GitUpdateManager(UpdateManager):
             exit_status = 0
 
         elif exit_status == 1:
-            logger.log(cmd + u" returned : " + output, logger.ERROR)
+            logger.log(cmd + u" returned : " + str(output), logger.ERROR)
             exit_status = 1
 
         elif exit_status == 128 or 'fatal:' in output or err:
-            logger.log(cmd + u" returned : " + output, logger.ERROR)
+            logger.log(cmd + u" returned : " + str(output), logger.ERROR)
             exit_status = 128
 
         else:
-            logger.log(cmd + u" returned : " + output + u", treat as error for now", logger.ERROR)
+            logger.log(cmd + u" returned : " + str(output) + u", treat as error for now", logger.ERROR)
             exit_status = 1
 
         return (output, err, exit_status)
