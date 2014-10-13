@@ -386,7 +386,7 @@ a.inner {
 #header .wrapper {
 	margin: 0 auto;
 	position: relative;
-	width: 1250px;
+	width: 1024px;
 }
 
 #header a:hover {
@@ -396,7 +396,7 @@ a.inner {
 #header .showInfo .checkboxControls {
 	margin: 0 auto;
 	position: relative;
-	width: 1250px;
+	width: 1024px;
 }
 
 #logo {
@@ -493,7 +493,7 @@ h2 {
 }
 
 .h2footer {
-	margin: -35px 5px 6px 0px;
+	margin: -35px 0px 6px 0px;
 }
 
 .h2footer select {
@@ -606,7 +606,6 @@ input:not(.btn){
 
 .footer {
 	clear: both;
-	width: 1250px;
 	text-align: center;
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -1148,7 +1147,7 @@ div#summary tr td {
 	line-height: 24px;
 	margin: 0 auto;
 	padding: 105px 0 0;
-	width: 1250px;
+	width: 1024px;
 }
 
 #content960 {
