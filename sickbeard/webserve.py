@@ -4472,7 +4472,8 @@ class Home(MainHandler):
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
-        return json.dumps({'result': status, 'subtitles': ','.join([x.alpha2 for x in ep_obj.subtitles])})
+        return json.dumps({'result': status, 'subtitles': ','.join(sorted([x.alpha2 for x in
+                                                                    ep_obj.subtitles.union(previous_subtitles)]))})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
