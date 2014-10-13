@@ -1,10 +1,10 @@
 2014-10-02
--Fix fuzzy dates on new skin
+-[done] Fix fuzzy dates on new skin
 -Move the sql from the *.tmpl files
 -Add anidb indexer
 -Add supplemental data from anidb during postprocessing
 -Fix grabbing non-propers as propers for certain air-by-date shows
--Allow customization of skin colours
+-[done] Allow customization of skin colours
 -Add prefer torrents/usenet and allow custom delay between grabs from torrents/usenet
 -Better postprocessing handling for torrents
 -[DONE] Add global required words
@@ -16,3 +16,7 @@
 
 2014-10-08
 -Add login page for http auth as opposed to browser dialog box
+
+2014-10-13
+-Fix broken backlog
+-Fix season searches
