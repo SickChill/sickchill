@@ -10,7 +10,7 @@ from tornado.stack_context import NullContext
 from tornado.testing import AsyncHTTPTestCase, AsyncHTTPSTestCase, AsyncTestCase, bind_unused_port, ExpectLog, gen_test
 from tornado.test.util import unittest, skipIfNonUnix
 from tornado.web import RequestHandler, Application
-import certifi
+import lib.certifi
 import errno
 import logging
 import os
@@ -511,7 +511,7 @@ class TestIOStreamMixin(object):
         server, client = self.make_iostream_pair()
         server.set_close_callback(self.stop)
         try:
-            # Start a read that will be fullfilled asynchronously.
+            # Start a read that will be fulfilled asynchronously.
             server.read_bytes(1, lambda data: None)
             client.write(b'a')
             # Stub out read_from_fd to make it fail.
