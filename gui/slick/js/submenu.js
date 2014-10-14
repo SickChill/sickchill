@@ -25,8 +25,8 @@ function initActions() {
     $("#SubMenu a[href$='/home/addShows/']").addClass('btn').html('<span class="ui-icon ui-icon-video pull-left"></span> Add Show');
     $("#SubMenu a:contains('Processing')").addClass('btn').html('<span class="ui-icon ui-icon-folder-open pull-left"></span> Post-Processing');
     $("#SubMenu a:contains('Manage Searches')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Manage Searches');
-    $("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<img width="16" height="16" alt="" src="../images/menu/bittorrent.png"> Manage Torrents');
-    $("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<img width="16" height="16" alt="" src="../images/menu/failed_download.png"> Failed Downloads');
+    $("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<img width="16" height="16" alt="" src="/images/menu/bittorrent.png"> Manage Torrents');
+    $("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<img width="16" height="16" alt="" src="/images/menu/failed_download.png"> Failed Downloads');
     $("#SubMenu a:contains('Notification')").addClass('btn').html('<span class="ui-icon ui-icon-note pull-left"></span> Notification');
     $("#SubMenu a:contains('Update show in XBMC')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update show in XBMC');
     $("#SubMenu a[href$='/home/updateXBMC/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update XBMC');
