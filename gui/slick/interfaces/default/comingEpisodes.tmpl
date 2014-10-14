@@ -434,7 +434,7 @@
 
 <input type="hidden" id="sbRoot" value="$sbRoot" />
     #for $day in $dates
-        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:178px;white-space: nowrap; table-layout: fixed;">
+        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:146px;white-space: nowrap; table-layout: fixed;">
         <thead><tr><th>$day.strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
         <tbody>
 
@@ -447,7 +447,7 @@
                 
                 <tr>
                 <td style="overflow: hidden; text-overflow: ellipsis;  font-size: 12px;  LINE-HEIGHT:14px;">
-                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="155" style="padding-bottom: 5px;" /></a>
+                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="122" style="padding-bottom: 5px;" /></a>
                         <br> $cur_result["localtime"].strftime("%H:%M") on $cur_result["network"]
                         #set $episodestring = "%sx%s %s" % ($cur_result["season"], $cur_result["episode"], $cur_result["name"])
                         <br> <%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"]
