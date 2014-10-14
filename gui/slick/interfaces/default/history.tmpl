@@ -186,7 +186,7 @@
 		#for $hItem in $compactResults:
 			<tr>
 				#set $curdatetime = $datetime.datetime.strptime(str($hItem["actions"][0]["time"]), $history.dateFormat)
-				<td class="nowrap">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)<span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
+				<td class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
 				<td width="25%">
 					<span><a style="color: #fff; text-align: center;" href="$sbRoot/home/displayShow?show=$hItem["show_id"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></span>
 				</td>

@@ -2467,7 +2467,7 @@ ul.tags li a{
    	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
-	padding: 5px 10px;
+	padding: 5px 0 0 10px;
 	margin-bottom: -3px;
 	text-shadow: 0px 1px rgba(0, 0, 0, 0.8);
 	background: #333;
@@ -5066,7 +5066,7 @@ posterlist.css
 	font-size: 11px;
 	text-align: left;
 	display: block;
-	line-height: 18px;
+	line-height: 13px;
 }
 
 .show-status {
@@ -5074,7 +5074,7 @@ posterlist.css
 	font-size: 11px;
 	text-align: left;
 	display: block;
-	line-height: 34px;
+	line-height: 15px;
 }
 
 .show-network-image {
@@ -5085,9 +5085,9 @@ posterlist.css
 .show-dlstats {
 	text-shadow: 1px 1px #000;
 	font-size: 11px;
-	text-align: right;
+	text-align: left;
 	display: block;
-	line-height: 18px;
+	line-height: 15px;
 }
 
 #sort-by {

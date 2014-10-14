@@ -245,6 +245,20 @@
 			});
 		});
 	});
+
+    #set $fuzzydate = 'airdate'
+    #if $sickbeard.FUZZY_DATING:
+    fuzzyMoment({
+        dtInline : true,
+        dtGlue : ' at ',
+        containerClass : '.${fuzzydate}',
+        dateHasTime : true,
+        dateFormat : '${sickbeard.DATE_PRESET}',
+        timeFormat : '${sickbeard.TIME_PRESET}',
+        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+    });
+    #end if
+
 });
 //-->
 </script>
@@ -388,10 +402,11 @@
 					</span>
 				</div>
 			
-				<span class="title">Next Episode:</span> <span><%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"] ($sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbfdate().decode($sickbeard.SYS_ENCODING))</span>
+				<span class="title">Next Episode:</span> <span><%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"]</span>
             
 				<div class="clearfix">
-					<span class="title">Airs:</span> <span>$sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING) on $cur_result["network"]</span>
+
+					<span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result["localtime"]).decode($sickbeard.SYS_ENCODING)</span><span> on $cur_result["network"]</span>
 				</div>
 			
 				<div class="clearfix">
