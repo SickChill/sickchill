@@ -194,7 +194,7 @@
 	</div>
 	
 	<div class="showsummary">
-		<table style="width:83%; float: left;">
+		<table style="width:73%; float: left;">
 		#if $show.network and $show.airs:
 			<tr><td class="showLegend">Originally Airs: </td><td>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
 		#else if $show.network:
@@ -243,7 +243,7 @@
 
 		</table>
 	
-		<table style="width:17%; float: right; vertical-align: middle; height: 100%;">
+		<table style="width:27%; float: right; vertical-align: middle; height: 100%;">
 			<tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/flags/${show.lang}.png" width="16" height="11" alt="$show.lang" title="$show.lang" /></td></tr>
 			#if $sickbeard.USE_SUBTITLES
 			<tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if int($show.subtitles) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
@@ -279,18 +279,18 @@
 		<input type="hidden" id="indexer" value="$show.indexer" />
 		<input class="btn" type="button" id="changeStatus" value="Go" />
 	</div>
-
-	<div class="float-right clearfix" id="checkboxControls" style="display:inline-block; vertical-align:baseline;">
-		<label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>$epCounts[$Overview.WANTED]</b></span></label>
-		<label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>$epCounts[$Overview.QUAL]</b></span></label>
-		<label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>$epCounts[$Overview.GOOD]</b></span></label>
-		<label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>$epCounts[$Overview.SKIPPED]</b></span></label>
-		<label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>$epCounts[$Overview.SNATCHED]</b></span></label>
-    </div>
 </div>
 
-<div class="float-right" style="margin-top: -4px;">
-    <button class="btn btn-mini seriesCheck" style="line-height: 10px;">Select Filtered Episodes</button> 
+<div id="checkboxControls" style="display:inline-block; vertical-align:baseline;">
+   Filters: <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>$epCounts[$Overview.WANTED]</b></span></label>
+    <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>$epCounts[$Overview.QUAL]</b></span></label>
+    <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>$epCounts[$Overview.GOOD]</b></span></label>
+    <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>$epCounts[$Overview.SKIPPED]</b></span></label>
+    <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>$epCounts[$Overview.SNATCHED]</b></span></label>
+</div>
+
+<div style="margin-top: -4px; display:inline-block; vertical-align:middle">
+    <button class="btn btn-mini seriesCheck" style="line-height: 10px;">Select Filtered Episodes</button>
     <button class="btn btn-mini clearAll" style="line-height: 10px;">Clear All</button>
 </div>
 

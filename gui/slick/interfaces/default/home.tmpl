@@ -247,6 +247,7 @@ function invertSort(){
     #set $fuzzydate = 'airdate'
     #if $sickbeard.FUZZY_DATING:
     fuzzyMoment({
+        dtInline : #if $layout == 'poster' then "true" else "false"#,
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
@@ -365,14 +366,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #set $progressbar_percent = $nom * 100 / $den
 	
 	#if "a" in sickbeard.DATE_PRESET:
-		#set $showheight = "344px"
-		#set $tableheight = "62px"
+		#set $showheight = "334px"
+		#set $tableheight = "52px"
 	#else if "B" in sickbeard.DATE_PRESET:
 		#set $showheight = "374px"
 		#set $tableheight = "92px"
 	#else if "A" in sickbeard.DATE_PRESET:
-		#set $showheight = "344px"
-		#set $tableheight = "62px"
+		#set $showheight = "334px"
+		#set $tableheight = "52px"
 	#else
 		#set $showheight = "323px"
 		#set $tableheight = "42px"
@@ -410,15 +411,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 			</script>
 		
 		<table width="184px" height="$tableheight" cellspacing="1" border="0" cellpadding="0" style="padding-left: 2px; cursor: default;">
-			<col width="60px" />
+			<col width="120px" />
 			<col width="59px" />
-			<col width="60px" />
-				
+
 			<tr>
-				<td style="text-align:center; vertical-align:middle;">
+				<td style="text-align:center; vertical-align:middle;" colspan="3">
 					#if $cur_airs_next
 					#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
-						<div class="show-date">Next Ep: $sbdatetime.sbdatetime.sbfdate($ldatetime)</div>
+						<div class="show-date">Next Ep: <span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span></div>
 					#else if $curShow.status != "Ended" and int($curShow.paused) == 1:
 						<div class="show-status">Paused</div>
 					#else if $curShow.status:
@@ -427,26 +427,27 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 						<div class="show-status">?</div>
 					#end if
 				</td>
-					
-				<td style="text-align:center; vertical-align:middle;">
-				    #if $layout != 'simple':	
-						#if $curShow.network:
-							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
-						#else:
-							<img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
-						#end if
-					#else:
-						$curShow.network
-					#end if	
-				</td>
-					
+			</tr>
+			<tr>
 				<td style="text-align:center; vertical-align:middle;">
 					<span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
-					<div class="float-right">
+					<div class="float-left">
 					#if $curShow.quality in $qualityPresets:
 						<span class="show-dlstats">$qualityPresetStrings[$curShow.quality]</span>
 					#else:
 						<span class="show-dlstats">Custom</span>
+					#end if
+				</td>
+					
+				<td style="text-align:center; vertical-align:middle;">
+				    #if $layout != 'simple':
+						#if $curShow.network:
+							<img class="show-network-image float-right" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
+						#else:
+							<img class="show-network-image float-right" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+						#end if
+					#else:
+						$curShow.network
 					#end if
 				</td>
 			</tr>
