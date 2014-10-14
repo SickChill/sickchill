@@ -9,12 +9,12 @@ from tornado.http1connection import HTTP1Connection
 from tornado.httpserver import HTTPServer
 from tornado.httputil import HTTPHeaders, HTTPMessageDelegate, HTTPServerConnectionDelegate, ResponseStartLine
 from tornado.iostream import IOStream
-from tornado.log import gen_log, app_log
+from tornado.log import gen_log
 from tornado.netutil import ssl_options_to_context
 from tornado.simple_httpclient import SimpleAsyncHTTPClient
 from tornado.testing import AsyncHTTPTestCase, AsyncHTTPSTestCase, AsyncTestCase, ExpectLog, gen_test
 from tornado.test.util import unittest, skipOnTravis
-from tornado.util import u, bytes_type
+from tornado.util import u
 from tornado.web import Application, RequestHandler, asynchronous, stream_request_body
 from contextlib import closing
 import datetime
@@ -25,11 +25,7 @@ import socket
 import ssl
 import sys
 import tempfile
-
-try:
-    from io import BytesIO  # python 3
-except ImportError:
-    from cStringIO import StringIO as BytesIO  # python 2
+from io import BytesIO
 
 
 def read_stream_body(stream, callback):
@@ -297,10 +293,10 @@ class TypeCheckHandler(RequestHandler):
         # secure cookies
 
         self.check_type('arg_key', list(self.request.arguments.keys())[0], str)
-        self.check_type('arg_value', list(self.request.arguments.values())[0][0], bytes_type)
+        self.check_type('arg_value', list(self.request.arguments.values())[0][0], bytes)
 
     def post(self):
-        self.check_type('body', self.request.body, bytes_type)
+        self.check_type('body', self.request.body, bytes)
         self.write(self.errors)
 
     def get(self):
@@ -358,7 +354,7 @@ class HTTPServerTest(AsyncHTTPTestCase):
         # if the data is not utf8.  On python 2 parse_qs will work,
         # but then the recursive_unicode call in EchoHandler will
         # fail.
-        if str is bytes_type:
+        if str is bytes:
             return
         with ExpectLog(gen_log, 'Invalid x-www-form-urlencoded body'):
             response = self.fetch(
@@ -586,6 +582,8 @@ class KeepAliveTest(AsyncHTTPTestCase):
         class HelloHandler(RequestHandler):
             def get(self):
                 self.finish('Hello world')
+            def post(self):
+                self.finish('Hello world')
 
         class LargeHandler(RequestHandler):
             def get(self):
@@ -687,6 +685,17 @@ class KeepAliveTest(AsyncHTTPTestCase):
         self.assertEqual(self.headers['Connection'], 'Keep-Alive')
         self.close()
 
+    def test_http10_keepalive_extra_crlf(self):
+        self.http_version = b'HTTP/1.0'
+        self.connect()
+        self.stream.write(b'GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n\r\n')
+        self.read_response()
+        self.assertEqual(self.headers['Connection'], 'Keep-Alive')
+        self.stream.write(b'GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n')
+        self.read_response()
+        self.assertEqual(self.headers['Connection'], 'Keep-Alive')
+        self.close()
+
     def test_pipelined_requests(self):
         self.connect()
         self.stream.write(b'GET / HTTP/1.1\r\n\r\nGET / HTTP/1.1\r\n\r\n')
@@ -715,6 +724,19 @@ class KeepAliveTest(AsyncHTTPTestCase):
         self.read_headers()
         self.close()
 
+    def test_keepalive_chunked(self):
+        self.http_version = b'HTTP/1.0'
+        self.connect()
+        self.stream.write(b'POST / HTTP/1.0\r\nConnection: keep-alive\r\n'
+                          b'Transfer-Encoding: chunked\r\n'
+                          b'\r\n0\r\n')
+        self.read_response()
+        self.assertEqual(self.headers['Connection'], 'Keep-Alive')
+        self.stream.write(b'GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n')
+        self.read_response()
+        self.assertEqual(self.headers['Connection'], 'Keep-Alive')
+        self.close()
+
 
 class GzipBaseTest(object):
     def get_app(self):
@@ -736,7 +758,7 @@ class GzipBaseTest(object):
 
 class GzipTest(GzipBaseTest, AsyncHTTPTestCase):
     def get_httpserver_options(self):
-        return dict(gzip=True)
+        return dict(decompress_request=True)
 
     def test_gzip(self):
         response = self.post_gzip('foo=bar')
@@ -764,7 +786,7 @@ class StreamingChunkSizeTest(AsyncHTTPTestCase):
         return SimpleAsyncHTTPClient(io_loop=self.io_loop)
 
     def get_httpserver_options(self):
-        return dict(chunk_size=self.CHUNK_SIZE, gzip=True)
+        return dict(chunk_size=self.CHUNK_SIZE, decompress_request=True)
 
     class MessageDelegate(HTTPMessageDelegate):
         def __init__(self, connection):

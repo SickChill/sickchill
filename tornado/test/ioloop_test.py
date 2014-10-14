@@ -173,6 +173,25 @@ class TestIOLoop(AsyncTestCase):
         self.io_loop.add_callback(lambda: self.io_loop.add_callback(self.stop))
         self.wait()
 
+    def test_remove_timeout_from_timeout(self):
+        calls = [False, False]
+
+        # Schedule several callbacks and wait for them all to come due at once.
+        # t2 should be cancelled by t1, even though it is already scheduled to
+        # be run before the ioloop even looks at it.
+        now = self.io_loop.time()
+        def t1():
+            calls[0] = True
+            self.io_loop.remove_timeout(t2_handle)
+        self.io_loop.add_timeout(now + 0.01, t1)
+        def t2():
+            calls[1] = True
+        t2_handle = self.io_loop.add_timeout(now + 0.02, t2)
+        self.io_loop.add_timeout(now + 0.03, self.stop)
+        time.sleep(0.03)
+        self.wait()
+        self.assertEqual(calls, [True, False])
+
     def test_timeout_with_arguments(self):
         # This tests that all the timeout methods pass through *args correctly.
         results = []
@@ -184,6 +203,23 @@ class TestIOLoop(AsyncTestCase):
         self.io_loop.call_later(0, self.stop)
         self.wait()
         self.assertEqual(results, [1, 2, 3, 4])
+
+    def test_add_timeout_return(self):
+        # All the timeout methods return non-None handles that can be
+        # passed to remove_timeout.
+        handle = self.io_loop.add_timeout(self.io_loop.time(), lambda: None)
+        self.assertFalse(handle is None)
+        self.io_loop.remove_timeout(handle)
+
+    def test_call_at_return(self):
+        handle = self.io_loop.call_at(self.io_loop.time(), lambda: None)
+        self.assertFalse(handle is None)
+        self.io_loop.remove_timeout(handle)
+
+    def test_call_later_return(self):
+        handle = self.io_loop.call_later(0, lambda: None)
+        self.assertFalse(handle is None)
+        self.io_loop.remove_timeout(handle)
 
     def test_close_file_object(self):
         """When a file object is used instead of a numeric file descriptor,
@@ -297,6 +333,33 @@ class TestIOLoop(AsyncTestCase):
         self.io_loop.add_callback(self.stop)
         with ExpectLog(app_log, "Exception in callback"):
             self.wait()
+
+    @skipIfNonUnix
+    def test_remove_handler_from_handler(self):
+        # Create two sockets with simultaneous read events.
+        client, server = socket.socketpair()
+        try:
+            client.send(b'abc')
+            server.send(b'abc')
+
+            # After reading from one fd, remove the other from the IOLoop.
+            chunks = []
+            def handle_read(fd, events):
+                chunks.append(fd.recv(1024))
+                if fd is client:
+                    self.io_loop.remove_handler(server)
+                else:
+                    self.io_loop.remove_handler(client)
+            self.io_loop.add_handler(client, handle_read, self.io_loop.READ)
+            self.io_loop.add_handler(server, handle_read, self.io_loop.READ)
+            self.io_loop.call_later(0.01, self.stop)
+            self.wait()
+
+            # Only one fd was read; the other was cleanly removed.
+            self.assertEqual(chunks, [b'abc'])
+        finally:
+            client.close()
+            server.close()
 
 
 # Deliberately not a subclass of AsyncTestCase so the IOLoop isn't
