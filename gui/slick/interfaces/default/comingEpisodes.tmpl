@@ -24,11 +24,13 @@
 </style>
 
 <div class="h2footer align-right">
+#if $layout != 'calendar':
     <b>Key:</b> 
     <span class="listing_overdue">Missed</span>
     <span class="listing_current">Current</span>
     <span class="listing_default">Future</span>
     <span class="listing_toofar">Distant</span>
+#end if
 	<a class="btn forceBacklog" href="webcal://$sbHost:$sbHttpPort/calendar">
 	<i class="icon-calendar icon-white"></i>Subscribe</a>    
     <!-- <span class="listing_unknown">Unknown</span> //-->
@@ -449,29 +451,43 @@
 
 <input type="hidden" id="sbRoot" value="$sbRoot" />
     #for $day in $dates
-        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:146px;white-space: nowrap; table-layout: fixed;">
+        <table class="sickbeardTable tablesorter" cellspacing="0" border="0" cellpadding="0" style="float:left;width:146px;white-space: nowrap; table-layout: fixed; background-color:rgb(51,51,51)">
         <thead><tr><th>$day.strftime("%A").decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
         <tbody>
-
+        #set $day_has_show = False
         #for $cur_result in $sql_results:
             #set $cur_indexer = int($cur_result["indexer"])
             #set $runtime = $cur_result["runtime"]
             #set $airday = $cur_result["localtime"].date()
 
             #if $airday == $day:
-                
+                #set $day_has_show = True
+                #set $airtime = $sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result["localtime"].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING)
+                #if $sickbeard.TRIM_ZERO:
+                #set $airtime = re.sub(r"0(\d:\d\d)", r"\1", $airtime, 0, re.IGNORECASE | re.MULTILINE)
+                #end if
+
                 <tr>
-                <td style="overflow: hidden; text-overflow: ellipsis;  font-size: 12px;  LINE-HEIGHT:14px;">
-                        <a href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="122" style="padding-bottom: 5px;" /></a>
-                        <br> $cur_result["localtime"].strftime("%H:%M") on $cur_result["network"]
-                        #set $episodestring = "%sx%s %s" % ($cur_result["season"], $cur_result["episode"], $cur_result["name"])
-                        <br> <%="S%02i" % int(cur_result["season"])+"E%02i" % int(cur_result["episode"]) %> - $cur_result["name"]
-                    </td>
+                    <td style="padding:0">
+                        <div>
+                            <a title="${cur_result["show_name"]}" href="$sbRoot/home/displayShow?show=${cur_result["showid"]}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result["showid"]}&amp;which=poster_thumb" width="144" style="padding-bottom: 5px;" /></a>
+                        </div>
+                        <div class="show-status" style="padding:0 5px 10px 5px">
+                            <span style="overflow: hidden; text-overflow: ellipsis; display:block">
+                                ${airtime} on $cur_result["network"]
+                            </span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; display:block"  title="$cur_result["name"]">
+                                <%= "S%02i" % int(cur_result["season"]) + "E%02i" % int(cur_result["episode"]) %> - $cur_result["name"]
+                            </span>
+                        </div>
+                    </td> <!-- end $cur_result["show_name"] //-->
                 </tr>
             #end if
-        
-        <!-- end $cur_result["show_name"] //-->
+
         #end for
+        #if not $day_has_show:
+            <tr><td style="padding:0"><span class="show-status" style="padding:5px 10px 10px; text-align:center">No shows for this day</span></td></tr>
+        #end if
         </tbody>
         </table>
     #end for
