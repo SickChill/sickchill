@@ -41,7 +41,7 @@ except ImportError:
 
 
 class XBMCNotifier:
-    sb_logo_url = 'https://raw.githubusercontent.com/echel0n/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
+    sb_logo_url = 'https://raw.githubusercontent.com/SickragePVR/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
     def _get_xbmc_version(self, host, username, password):
         """Returns XBMC JSON-RPC API version (odd # = dev, even # = stable)
