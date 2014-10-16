@@ -70,7 +70,7 @@ class GrowlNotifier:
             notice.add_header('Notification-Priority', options['priority'])
         if options['icon']:
             notice.add_header('Notification-Icon',
-                              'https://raw.github.com/echel0n/SickRage/master/gui/slick/images/sickrage.png')
+                              'https://raw.github.com/SickragePVR/SickRage/master/gui/slick/images/sickrage.png')
 
         if message:
             notice.add_header('Notification-Text', message)
@@ -174,7 +174,7 @@ class GrowlNotifier:
         register = gntp.GNTPRegister()
         register.add_header('Application-Name', opts['app'])
         register.add_header('Application-Icon',
-                            'https://raw.githubusercontent.com/echel0n/SickRage/master/gui/slick/images/sickrage-shark-mascot.png')
+                            'https://raw.githubusercontent.com/SickragePVR/SickRage/master/gui/slick/images/sickrage-shark-mascot.png')
 
         register.add_notification('Test', True)
         register.add_notification(common.notifyStrings[common.NOTIFY_SNATCH], True)

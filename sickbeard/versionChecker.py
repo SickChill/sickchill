@@ -130,7 +130,7 @@ class CheckVersion():
 
 class UpdateManager():
     def get_github_repo_user(self):
-        return 'echel0n'
+        return 'SickragePVR'
 
     def get_github_repo(self):
         return 'SickRage'
