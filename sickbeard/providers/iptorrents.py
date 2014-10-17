@@ -174,6 +174,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                     continue
 
                 try:
+                    data = re.sub(r'<button.+?<[\/]button>', '', data, 0, re.IGNORECASE | re.MULTILINE)
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         if not html:
                             logger.log(u"Invalid HTML data: " + str(data), logger.DEBUG)
