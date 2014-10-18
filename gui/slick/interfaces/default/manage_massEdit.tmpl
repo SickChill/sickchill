@@ -72,6 +72,23 @@
     </div>
 </div>
 
+#if $anyQualities + $bestQualities:
+#set $isSelected = ' selected="selected"'
+#set $isEnabled = $isSelected
+#set $isDisabled = $isSelected
+#if $archive_firstmatch_value##set $isDisabled = ''##else##set $isEnabled = ''##end if#
+<div class="optionWrapper clearfix">
+<span class="selectTitle">Archive on first match</span>
+    <div class="selectChoices">
+        <select id="edit_archive_firstmatch" name="archive_firstmatch">
+            <option value="keep">&lt; keep &gt;</option>
+            <option value="enable"${isEnabled}>enable</option>
+            <option value="disable"${isDisabled}>disable</option>
+        </select>
+    </div>
+</div>
+#end if
+
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Flatten Folders <span class="separator">*</span></span>
     <div class="selectChoices">
