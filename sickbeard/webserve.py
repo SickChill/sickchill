@@ -948,6 +948,9 @@ class Manage(MainHandler):
             if showObj:
                 showList.append(showObj)
 
+        archive_firstmatch_all_same = True
+        last_archive_firstmatch = None
+
         flatten_folders_all_same = True
         last_flatten_folders = None
 
@@ -979,6 +982,13 @@ class Manage(MainHandler):
             cur_root_dir = ek.ek(os.path.dirname, curShow._location)
             if cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
+
+            if archive_firstmatch_all_same:
+                # if we had a value already and this value is different then they're not all the same
+                if last_archive_firstmatch not in (None, curShow.archive_firstmatch):
+                    archive_firstmatch_all_same = False
+                else:
+                    last_archive_firstmatch = curShow.archive_firstmatch
 
             # if we know they're not all the same then no point even bothering
             if paused_all_same:
@@ -1032,6 +1042,7 @@ class Manage(MainHandler):
                     last_air_by_date = curShow.air_by_date
 
         t.showList = toEdit
+        t.archive_firstmatch_value = last_archive_firstmatch if archive_firstmatch_all_same else None
         t.paused_value = last_paused if paused_all_same else None
         t.anime_value = last_anime if anime_all_same else None
         t.flatten_folders_value = last_flatten_folders if flatten_folders_all_same else None
@@ -1045,7 +1056,7 @@ class Manage(MainHandler):
         return _munge(t)
 
 
-    def massEditSubmit(self, paused=None, anime=None, sports=None, scene=None, flatten_folders=None,
+    def massEditSubmit(self, archive_firstmatch=None, paused=None, anime=None, sports=None, scene=None, flatten_folders=None,
                        quality_preset=False,
                        subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
                        **kwargs):
@@ -1074,6 +1085,12 @@ class Manage(MainHandler):
                     u"For show " + showObj.name + " changing dir from " + showObj._location + " to " + new_show_dir)
             else:
                 new_show_dir = showObj._location
+
+            if archive_firstmatch == 'keep':
+                new_archive_firstmatch = showObj.archive_firstmatch
+            else:
+                new_archive_firstmatch = True if archive_firstmatch == 'enable' else False
+            new_archive_firstmatch = 'on' if new_archive_firstmatch else 'off'
 
             if paused == 'keep':
                 new_paused = showObj.paused
@@ -1125,6 +1142,7 @@ class Manage(MainHandler):
 
             curErrors += Home(self.application, self.request).editShow(curShow, new_show_dir, anyQualities,
                                                                        bestQualities, exceptions_list,
+                                                                       archive_firstmatch=new_archive_firstmatch,
                                                                        flatten_folders=new_flatten_folders,
                                                                        paused=new_paused, sports=new_sports,
                                                                        subtitles=new_subtitles, anime=new_anime,
@@ -1486,7 +1504,7 @@ class ConfigGeneral(MainHandler):
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-                    proxy_setting=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
+                    proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, play_videos=None, rootDir=None, use_imdbwl=None, imdbWatchlistCsv=None, theme_name=None):
 
@@ -1508,6 +1526,7 @@ class ConfigGeneral(MainHandler):
         sickbeard.CPU_PRESET = cpu_preset
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
+        sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
         sickbeard.GIT_PATH = git_path
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
@@ -3932,6 +3951,7 @@ class Home(MainHandler):
         with showObj.lock:
             newQuality = Quality.combineQualities(map(int, anyQualities), map(int, bestQualities))
             showObj.quality = newQuality
+            showObj.archive_firstmatch = archive_firstmatch
 
             # reversed for now
             if bool(showObj.flatten_folders) != bool(flatten_folders):
@@ -3951,7 +3971,6 @@ class Home(MainHandler):
             if not directCall:
                 showObj.lang = indexer_lang
                 showObj.dvdorder = dvdorder
-                showObj.archive_firstmatch = archive_firstmatch
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
 
@@ -4450,30 +4469,29 @@ class Home(MainHandler):
         return quality_class
 
     def searchEpisodeSubtitles(self, show=None, season=None, episode=None):
-
         # retrieve the episode object and fail if we can't get one
         ep_obj = _getEpisode(show, season, episode)
         if isinstance(ep_obj, str):
             return json.dumps({'result': 'failure'})
 
         # try do download subtitles for that episode
-        previous_subtitles = ep_obj.subtitles
+        previous_subtitles = set(subliminal.language.Language(x) for x in ep_obj.subtitles)
         try:
-            ep_obj.subtitles = ep_obj.downloadSubtitles()
+            ep_obj.subtitles = set(x.language for x in ep_obj.downloadSubtitles().values()[0])
         except:
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
         if previous_subtitles != ep_obj.subtitles:
             status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + subliminal.language.Language(
-                    x).alpha2 + ".png' alt='" + subliminal.language.Language(x).name + "'/>" for x in
-                sorted(list(set(ep_obj.subtitles).difference(previous_subtitles)))])
+                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + x.alpha2 +
+                ".png' alt='" + x.name + "'/>" for x in
+                sorted(list(ep_obj.subtitles.difference(previous_subtitles)))])
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
-        return json.dumps({'result': status, 'subtitles': ','.join([x for x in ep_obj.subtitles])})
-
+        return json.dumps({'result': status, 'subtitles': ','.join(sorted([x.alpha2 for x in
+                                                                    ep_obj.subtitles.union(previous_subtitles)]))})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):

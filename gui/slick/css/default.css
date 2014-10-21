@@ -386,7 +386,7 @@ a.inner {
 #header .wrapper {
 	margin: 0 auto;
 	position: relative;
-	width: 1250px;
+	width: 1024px;
 }
 
 #header a:hover {
@@ -396,7 +396,7 @@ a.inner {
 #header .showInfo .checkboxControls {
 	margin: 0 auto;
 	position: relative;
-	width: 1250px;
+	width: 1024px;
 }
 
 #logo {
@@ -493,7 +493,7 @@ h2 {
 }
 
 .h2footer {
-	margin: -35px 5px 6px 0px;
+	margin: -35px 0px 6px 0px;
 }
 
 .h2footer select {
@@ -606,7 +606,6 @@ input:not(.btn){
 
 .footer {
 	clear: both;
-	width: 1250px;
 	text-align: center;
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -1148,7 +1147,7 @@ div#summary tr td {
 	line-height: 24px;
 	margin: 0 auto;
 	padding: 105px 0 0;
-	width: 1250px;
+	width: 1024px;
 }
 
 #content960 {
@@ -2431,7 +2430,7 @@ span.imdbstars > * {
 }
 
 #showCol {
-	width: 950px;
+	width: 730px;
 	float: right;
 	height: 390px;
 	position: relative;
@@ -2468,7 +2467,7 @@ ul.tags li a{
    	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
-	padding: 5px 10px;
+	padding: 5px 0 0 10px;
 	margin-bottom: -3px;
 	text-shadow: 0px 1px rgba(0, 0, 0, 0.8);
 	background: #333;
@@ -4976,7 +4975,7 @@ posterlist.css
 }
 
 .show {
-    margin: 10px;
+    margin: 8px;
     background-color: #333;
     border-radius: 3px;
 	width: 186px;
@@ -5067,7 +5066,7 @@ posterlist.css
 	font-size: 11px;
 	text-align: left;
 	display: block;
-	line-height: 18px;
+	line-height: 13px;
 }
 
 .show-status {
@@ -5075,7 +5074,7 @@ posterlist.css
 	font-size: 11px;
 	text-align: left;
 	display: block;
-	line-height: 34px;
+	line-height: 15px;
 }
 
 .show-network-image {
@@ -5086,9 +5085,9 @@ posterlist.css
 .show-dlstats {
 	text-shadow: 1px 1px #000;
 	font-size: 11px;
-	text-align: right;
+	text-align: left;
 	display: block;
-	line-height: 18px;
+	line-height: 15px;
 }
 
 #sort-by {

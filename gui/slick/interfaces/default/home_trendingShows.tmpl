@@ -23,14 +23,15 @@
 
 <table id="trakt" width="100%" cellspacing="1" border="0" cellpadding="0">
 #for $i, $cur_show in $enumerate($trending_shows):
-#if not $i%6
+#set $image = re.sub(r"(.*)(\..*?)$", r"\1-300\2", $cur_show["images"]["poster"], 0, re.IGNORECASE | re.MULTILINE)
+#if not $i%5
 <tr>
 #end if
 
 <td class="trakt_show">
 	<div class="traktContainer">
 	<div class="trakt-image">
-    <a href="${cur_show["url"]}" target="_blank"><img alt="" class="trakt-image" src="${cur_show["images"]["poster"]}" /></a>
+    <a href="${cur_show["url"]}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
 		<div class="trakt-image-slide">
 			<p>$cur_show["title"]</p>
 		</div>

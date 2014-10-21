@@ -32,7 +32,8 @@ __all__ = ['SERVICES', 'LANGUAGE_INDEX', 'SERVICE_INDEX', 'SERVICE_CONFIDENCE', 
            'create_list_tasks', 'create_download_tasks', 'consume_task', 'matching_confidence',
            'key_subtitles', 'group_by_video']
 logger = logging.getLogger("subliminal")
-SERVICES = ['opensubtitles', 'subswiki', 'subtitulos', 'thesubdb', 'addic7ed', 'tvsubtitles', 'itasa', 'usub']
+SERVICES = ['opensubtitles', 'subswiki', 'subtitulos', 'thesubdb', 'addic7ed', 'tvsubtitles', 'itasa',
+            'usub', 'subscenter']
 LANGUAGE_INDEX, SERVICE_INDEX, SERVICE_CONFIDENCE, MATCHING_CONFIDENCE = range(4)
 
 

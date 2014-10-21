@@ -378,8 +378,9 @@ def hardlinkFile(srcFile, destFile):
     try:
         ek.ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
-    except:
-        logger.log(u"Failed to create hardlink of " + srcFile + " at " + destFile + ". Copying instead", logger.ERROR)
+    except Exception, e:
+        logger.log(u"Failed to create hardlink of " + srcFile + " at " + destFile + ": " + ex(e) + ". Copying instead",
+                   logger.ERROR)
         copyFile(srcFile, destFile)
 
 
