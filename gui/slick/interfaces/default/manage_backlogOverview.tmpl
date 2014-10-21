@@ -52,14 +52,14 @@
 #set $totalQual = $totalQual + $showCounts[$curShow.indexerid][$Overview.QUAL]
 #end for
 
-<div class="h2footer align-right">
-    <span class="wanted nowrap">Wanted: <b>$totalWanted</b></span>
-    <span class="qual nowrap">Low Quality: <b>$totalQual</b></span>
+<div class="h2footer pull-right">
+    <span class="listing-key wanted">Wanted: <b>$totalWanted</b></span>
+    <span class="listing-key qual">Low Quality: <b>$totalQual</b></span>
 </div><br/>
 
 <div class="float-left">
 Jump to Show  
-	<select id="pickShow">
+	<select id="pickShow" class="form-control form-control-inline input-sm">
 	#for $curShow in sorted($sickbeard.showList, key=operator.attrgetter('name')):
 	#if $showCounts[$curShow.indexerid][$Overview.QUAL]+$showCounts[$curShow.indexerid][$Overview.WANTED] != 0:
 	<option value="$curShow.indexerid">$curShow.name</option>
@@ -79,10 +79,10 @@ Jump to Show
   <tr class="seasonheader" id="show-$curShow.indexerid">
     <td colspan="3" class="align-left">
         <br/><h2><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></h2>
-        <div class="float-right">
-            <span class="wanted nowrap">Wanted: <b>$showCounts[$curShow.indexerid][$Overview.WANTED]</b></span>
-            <span class="qual nowrap">Low Quality: <b>$showCounts[$curShow.indexerid][$Overview.QUAL]</b></span>
-            <a class="btn forceBacklog" style="font-size:13px;" href="$sbRoot/manage/backlogShow?indexer_id=$curShow.indexerid"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
+        <div class="pull-right">
+            <span class="listing-key wanted">Wanted: <b>$showCounts[$curShow.indexerid][$Overview.WANTED]</b></span>
+            <span class="listing-key qual">Low Quality: <b>$showCounts[$curShow.indexerid][$Overview.QUAL]</b></span>
+            <a class="btn btn-inline forceBacklog" href="$sbRoot/manage/backlogShow?indexer_id=$curShow.indexerid"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
         </div>
     </td>
   </tr>

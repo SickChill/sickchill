@@ -1,7 +1,8 @@
 ### 0.x.x (2014-10-22 xx:xx:xx UTC)
 
-* Added date formats for dd/mm/yy & day, dd/mm/yy
-* Added date formats for dd/mm/yyyy & day, dd/mm/yyyy
+* Add Bootstrap for UI features.
+* Change UI to resize fluidly on different display sizes.
+* Add date formats "dd/mm/yy", "dd/mm/yyyy", "day, dd/mm/yy" and "day, dd/mm/yyyy"
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)

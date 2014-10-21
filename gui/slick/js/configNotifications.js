@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var loading = '<div class="spinner2"></div>';
+    var loading = '<img src="' + sbRoot + '/images/loading16.gif" height="16" width="16" />';
 
     $('#testGrowl').click(function(){
         $('#testGrowl-result').html(loading);

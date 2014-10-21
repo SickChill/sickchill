@@ -15,40 +15,64 @@
 
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 
+<script type="text/javascript" charset="utf-8">
+<!--
+
+\$(document).ready(function(){ 
+	
+	var \$container = [\$('#container'), \$('#container-anime')];
+	
+	jQuery.each(\$container, function (j) {
+        this.isotope({
+			itemSelector: '.trakt_show',
+			layoutMode: 'masonry',
+			masonry: {
+				columnWidth: 12,
+				isFitWidth: true
+			}
+		});
+	});
+	
+});
+
+//-->
+</script>
+
 #if $varExists('header')
 	<h1 class="header">$header</h1>
 #else 
 	<h1 class="title">$title</h1>
 #end if
 
-<table id="trakt" width="100%" cellspacing="1" border="0" cellpadding="0">
-#for $i, $cur_show in $enumerate($trending_shows):
-#set $image = re.sub(r"(.*)(\..*?)$", r"\1-300\2", $cur_show["images"]["poster"], 0, re.IGNORECASE | re.MULTILINE)
-#if not $i%5
-<tr>
-#end if
+<div id="container">
 
-<td class="trakt_show">
-	<div class="traktContainer">
-	<div class="trakt-image">
-    <a href="${cur_show["url"]}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
-		<div class="trakt-image-slide">
-			<p>$cur_show["title"]</p>
+#for $cur_show in $trending_shows:
+	
+	#set $image = re.sub(r"(.*)(\..*?)$", r"\1-300\2", $cur_show["images"]["poster"], 0, re.IGNORECASE | re.MULTILINE)
+
+	<div class="trakt_show">
+		<div class="traktContainer">
+			<div class="trakt-image">
+				<a href="${cur_show["url"]}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
+			</div>
+			
+			<div class="show-title">
+				$cur_show["title"]
+			</div>
+			
+		<div class="clearfix">
+			<p>$cur_show["ratings"]["percentage"]% <img src="$sbRoot/images/heart.png"></p>
+			<i>$cur_show["ratings"]["votes"] votes</i>
+
+			<div class="traktShowTitleIcons">
+				<a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show["tvdb_id"]}&amp;showName=${cur_show["title"]}" class="btn btn-xs">Add Show</a>
+			</div>
+		</div>
 		</div>
 	</div>
-    <div class="clearfix">
-        <h2>$cur_show["ratings"]["percentage"]% <img src="$sbRoot/images/heart.png"></h2>
-        <i>$cur_show["ratings"]["votes"] votes</i>
-
-        <div class="traktShowTitleIcons">
-            <a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show["tvdb_id"]}&amp;showName=${cur_show["title"]}" class="btn btn-mini">Add Show</a>
-        </div>
-    </div>
-	</div>
-</td>
 
 #end for
-</table>
+</div>
 
 <script type="text/javascript" charset="utf-8">
 <!--

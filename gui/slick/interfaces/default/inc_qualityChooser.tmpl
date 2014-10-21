@@ -6,7 +6,7 @@
 #set $overall_quality = $Quality.combineQualities($anyQualities, $bestQualities)
 <span class="component-title">
 #set $selected = None
-<select id="qualityPreset">
+<select id="qualityPreset" class="form-control form-control-inline input-sm">
 <option value="0">Custom</option>
 #for $curPreset in sorted($qualityPresets):
 <option value="$curPreset" #if $curPreset == $overall_quality then "selected=\"selected\"" else ""# #if $qualityPresetStrings[$curPreset].endswith("0p") then "style=\"padding-left: 15px;\"" else ""#>$qualityPresetStrings[$curPreset]</option>
@@ -27,7 +27,7 @@
         <div style="padding-right: 40px; text-align: center;" class="float-left">
             <h4>Initial</h4>
             #set $anyQualityList = filter(lambda x: x > $Quality.NONE, $Quality.qualityStrings)
-            <select id="anyQualities" name="anyQualities" multiple="multiple" size="$len($anyQualityList)">
+            <select id="anyQualities" name="anyQualities" multiple="multiple" size="$len($anyQualityList)" class="form-control form-control-inline input-sm">
             #for $curQuality in sorted($anyQualityList):
                 <option value="$curQuality" #if $curQuality in $anyQualities then "selected=\"selected\"" else ""#>$Quality.qualityStrings[$curQuality]</option>
             #end for
@@ -37,7 +37,7 @@
         <div style="text-align: center;" class="float-left">
             <h4>Archive</h4>
             #set $bestQualityList = filter(lambda x: x > $Quality.SDTV and x < $Quality.UNKNOWN, $Quality.qualityStrings)
-            <select id="bestQualities" name="bestQualities" multiple="multiple" size="$len($bestQualityList)">
+            <select id="bestQualities" name="bestQualities" multiple="multiple" size="$len($bestQualityList)" class="form-control form-control-inline input-sm">
             #for $curQuality in sorted($bestQualityList):
                 <option value="$curQuality" #if $curQuality in $bestQualities then "selected=\"selected\"" else ""#>$Quality.qualityStrings[$curQuality]</option>
             #end for

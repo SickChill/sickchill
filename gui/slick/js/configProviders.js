@@ -389,7 +389,7 @@ $(document).ready(function(){
                   radius: 2,
                   color: '#e1e1e1'
               },
-              width: 350,
+              width: 400,
               background: '#FFF',
               padding: 15,
               tip: true, // Give it a speech bubble tip with automatic corner detection

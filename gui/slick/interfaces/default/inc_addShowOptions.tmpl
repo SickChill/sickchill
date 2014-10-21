@@ -15,7 +15,7 @@
         <div class="field-pair">
             <label for="statusSelect" class="nocheck clearfix">
                 <span class="component-title">
-                    <select name="defaultStatus" id="statusSelect">
+                    <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm">
                     #for $curStatus in [$SKIPPED, $WANTED, $ARCHIVED, $IGNORED]:
                         <option value="$curStatus" #if $sickbeard.STATUS_DEFAULT == $curStatus then 'selected="selected"' else ''#>$statusStrings[$curStatus]</option>
                     #end for
@@ -53,10 +53,11 @@
         #set global $anyQualities = $qualities[0]
         #set global $bestQualities = $qualities[1]
         #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
-
+		
+		<br>
         <div class="field-pair alt">
             <label for="saveDefaultsButton" class="nocheck clearfix">
-                <span class="component-title"><input class="btn" type="button" id="saveDefaultsButton" value="Save Defaults" disabled="disabled" /></span>
+                <span class="component-title"><input class="btn btn-inline" type="button" id="saveDefaultsButton" value="Save Defaults" disabled="disabled" /></span>
                 <span class="component-desc">Persist current values as the defaults</span>
             </label>
         </div>

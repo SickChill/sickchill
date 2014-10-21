@@ -25,7 +25,7 @@
 <span class="selectTitle">Root Directories <span class="separator">*</span></span><br />
         #for $cur_dir in $root_dir_list:
         #set $cur_index = $root_dir_list.index($cur_dir)
-        <div style="padding: 6px 0 3px 25px;">
+        <div>
             <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_$cur_index" value="Edit" />
 			<input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_$cur_index" value="Delete" />
             $cur_dir => <span id="display_new_root_dir_$cur_index">$cur_dir</span>
@@ -36,10 +36,10 @@
 
 </div>
 
-<div class="optionWrapper alt">
+<div class="optionWrapper">
 <span class="selectTitle">Quality</span>
     <div class="selectChoices">
-        <select id="qualityPreset" name="quality_preset">
+        <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             #set $selected = None
             <option value="0"  #if $quality_value != None and $quality_value not in $common.qualityPresets then "selected=\"selected\"" else ""#>Custom</option>
@@ -50,8 +50,8 @@
     </div><br />
 
     <div id="customQuality">
-        <div style="width: 50%; text-align: center;" class="float-left">
-        <h3>Inital</h3>
+        <div class="manageCustom pull-left">
+        <h4>Inital</h4>
             #set $anyQualityList = filter(lambda x: x > $common.Quality.NONE, $common.Quality.qualityStrings)
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="len($anyQualityList)">
             #for $curQuality in sorted($anyQualityList):
@@ -59,8 +59,8 @@
             #end for
             </select>
         </div>
-        <div style="width: 50%; text-align: center;" class="float-left">
-        <h3>Archive</h3>
+        <div class="manageCustom pull-left">
+        <h4>Archive</h4>
             #set $bestQualityList = filter(lambda x: x > $common.Quality.SDTV, $common.Quality.qualityStrings)
             <select id="bestQualities" name="bestQualities" multiple="multiple" size="len($bestQualityList)">
             #for $curQuality in sorted($bestQualityList):
@@ -80,7 +80,7 @@
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Archive on first match</span>
     <div class="selectChoices">
-        <select id="edit_archive_firstmatch" name="archive_firstmatch">
+        <select id="edit_archive_firstmatch" name="archive_firstmatch" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable"${isEnabled}>enable</option>
             <option value="disable"${isDisabled}>disable</option>
@@ -92,7 +92,7 @@
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Flatten Folders <span class="separator">*</span></span>
     <div class="selectChoices">
-        <select id="edit_flatten_folders" name="flatten_folders">
+        <select id="edit_flatten_folders" name="flatten_folders" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $flatten_folders_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $flatten_folders_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -100,10 +100,10 @@
     </div>
 </div>
 
-<div class="optionWrapper alt">
+<div class="optionWrapper">
     <span class="selectTitle">Paused</span>
     <div class="selectChoices">
-        <select id="edit_paused" name="paused">
+        <select id="edit_paused" name="paused" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $paused_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $paused_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -114,7 +114,7 @@
 <div class="optionWrapper">
     <span class="selectTitle">Scene Numbering</span>
     <div class="selectChoices">
-        <select id="edit_scene" name="scene">
+        <select id="edit_scene" name="scene" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $scene_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $scene_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -125,7 +125,7 @@
 <div class="optionWrapper">
     <span class="selectTitle">Anime</span>
     <div class="selectChoices">
-        <select id="edit_anime" name="anime">
+        <select id="edit_anime" name="anime" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $anime_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $anime_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -136,7 +136,7 @@
 <div class="optionWrapper">
     <span class="selectTitle">Sports</span>
     <div class="selectChoices">
-        <select id="edit_sports" name="sports">
+        <select id="edit_sports" name="sports" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $sports_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $sports_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -147,7 +147,7 @@
 <div class="optionWrapper">
     <span class="selectTitle">Air-By-Date</span>
     <div class="selectChoices">
-        <select id="edit_air_by_date" name="air_by_date">
+        <select id="edit_air_by_date" name="air_by_date" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $air_by_date_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $air_by_date_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -158,7 +158,7 @@
 <div class="optionWrapper">
 <span class="selectTitle">Subtitles<span class="separator"></span></span>
     <div class="selectChoices">
-        <select id="edit_subtitles" name="subtitles">
+        <select id="edit_subtitles" name="subtitles" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
             <option value="enable" #if $subtitles_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $subtitles_value == False then "selected=\"selected\"" else ""#>disable</option>
@@ -172,7 +172,7 @@
 </div>
 
 <div class="optionWrapper" style="text-align: center;">
-    <input type="submit" value="Submit" class="btn btn-primary" /><br />
+    <input type="submit" value="Submit" class="btn" /><br />
 </div>
 
 </form>
