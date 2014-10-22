@@ -1,3 +1,7 @@
+### 0.x.x (2014-10-22 xx:xx:xx UTC)
+* Added date formats for dd/mm/yy & day, dd/mm/yy
+* Added date formats for dd/mm/yyyy & day, dd/mm/yyyy
+
 ### 0.2.0 (2014-10-21 12:36:50 UTC)
 
 [full changelog](https://github.com/SickragePVR/SickRage/compare/release_0.1.0...release_0.2.0)
