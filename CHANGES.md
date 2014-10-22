@@ -1,6 +1,15 @@
 ### 0.x.x (2014-10-22 xx:xx:xx UTC)
+
 * Added date formats for dd/mm/yy & day, dd/mm/yy
 * Added date formats for dd/mm/yyyy & day, dd/mm/yyyy
+
+
+### 0.2.1 (2014-10-22 06:41:00 UTC)
+
+[full changelog](https://github.com/SickragePVR/SickRage/compare/release_0.2.0...release_0.2.1)
+
+* Fix HDtorrents provider screen scraping
+
 
 ### 0.2.0 (2014-10-21 12:36:50 UTC)
 

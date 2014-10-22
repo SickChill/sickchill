@@ -199,13 +199,17 @@ class HDTorrentsProvider(generic.TorrentProvider):
                     continue
 
                 # Remove HDTorrents NEW list
-                split_data = data.partition('<!-- show New Torrents After Last Visit -->\n\n\n\n')
+                split_data = data.partition('<!-- Show New Torrents After Last Visit -->\n\n\n\n')
                 data = split_data[2]
 
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         #Get first entry in table
                         entries = html.find_all('td', attrs={'align': 'center'})
+
+                        if html.find(text='No torrents here...'):
+                            logger.log(u"No results found for: " + search_string + " (" + searchURL + ")", logger.DEBUG)
+                            continue
 
                         if not entries:
                             logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
