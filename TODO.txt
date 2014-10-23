@@ -1,13 +1,10 @@
 2014-10-02
--[done] Fix fuzzy dates on new skin
 -Move the sql from the *.tmpl files
 -Add anidb indexer
 -Add supplemental data from anidb during postprocessing
 -Fix grabbing non-propers as propers for certain air-by-date shows
--[done] Allow customization of skin colours
 -Add prefer torrents/usenet and allow custom delay between grabs from torrents/usenet
 -Better postprocessing handling for torrents
--[DONE] Add global required words
 
 2014-10-07
 -Add release groups/require words/ignore words to add show page
@@ -20,3 +17,8 @@
 2014-10-13
 -Fix broken backlog
 -Fix season searches
+
+2014-10-21
+-Remove qtip from config providers and go back to tab
+-Find out why superfish & supersubs js breaks provider sorting
+-Ability to save poster sorting and asc/desc in config

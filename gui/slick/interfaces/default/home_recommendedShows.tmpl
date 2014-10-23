@@ -18,43 +18,43 @@
 <script type="text/javascript" src="$sbRoot/js/recommendedShows.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
 
-<div id="content960">
-
 #if $varExists('header')
 <h1 class="header">$header</h1>
 #else
 <h1 class="title">$title</h1>
 #end if
 
-<div id="summary2" class="align-left">
-<div id="displayText"></div>
-<br />
+<div id="newShowPortal">
 
-<form id="recommendedShowsForm" method="post" action="$sbRoot/home/addShows/addRecommendedShow" accept-charset="utf-8"  style="width: 800px;">
-<fieldset class="sectionwrap">
-    <legend class="legendStep">Select a recommended show</legend>
+	<div id="displayText"></div>
+	<br />
 
-    <div class="stepDiv">
-        <div id="searchResults" style="height: 100%;"><br/></div>
-    </div>
-</fieldset>
+	<form id="recommendedShowsForm" method="post" action="$sbRoot/home/addShows/addRecommendedShow" accept-charset="utf-8"  style="width: 800px;">
+	
+		<fieldset class="sectionwrap">
+			<legend class="legendStep">Select a recommended show</legend>
 
-<fieldset class="sectionwrap">
-    <legend class="legendStep">Pick the parent folder</legend>
+			<div class="stepDiv">
+				<div id="searchResults" style="height: 100%;"><br/></div>
+			</div>
+		</fieldset>
 
-    <div class="stepDiv">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
-    </div>
-</fieldset>
+		<fieldset class="sectionwrap">
+			<legend class="legendStep">Pick the parent folder</legend>
 
-<fieldset class="sectionwrap">
-    <legend class="legendStep">Customize options</legend>
+			<div class="stepDiv">
+				#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+			</div>
+		</fieldset>
 
-    <div class="stepDiv">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
-    </div>
-</fieldset>
-</form>
+		<fieldset class="sectionwrap">
+			<legend class="legendStep">Customize options</legend>
+
+			<div class="stepDiv">
+				#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+			</div>
+		</fieldset>
+	</form>
 
 <br />
 
@@ -64,6 +64,6 @@
 
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 
-</div></div>
+</div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

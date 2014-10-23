@@ -133,39 +133,11 @@ function initTabs() {
     });
 }
 
-function initDonateBox() {
-    //open popup
-    $("#donate").click(function () {
-        $("#donate_form").fadeIn(1000);
-        positionPopup();
-    });
-
-    //close popup
-    $("#close").click(function () {
-        $("#donate_form").fadeOut(500);
-    });
-}
-
-//position the popup at the center of the page
-function positionPopup() {
-    if (!$("#donate_form").is(':visible')) {
-        return;
-    }
-    $("#donate_form").css({
-        left: ($(window).width() - $('#donate_form').width()) / 2,
-        top: ($(window).width() - $('#donate_form').width()) / 4,
-        position: 'absolute'
-    });
-}
-
-//maintain the popup at center of the page when browser resized
-$(window).bind('resize', positionPopup);
 function init() {
     initHeader();
     preventDefault();
     initFancybox();
     initTabs();
-    initDonateBox();
 }
 
 $(document).ready(function () {

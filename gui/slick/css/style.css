@@ -1414,17 +1414,46 @@ h2.day, h2.network {
 	vertical-align: middle;
 }
 
-table.cal-odd {
-    background-color: #ddd;
+.calendarWrapper {
+	width:1000px; 
+	margin:0 auto;
+    padding:0 3px
 }
-table.cal-even {
-    background-color: #d2d2d2;
+
+.calendarTable {
+	float:left;
+	width:142px !important;
+	white-space:nowrap;
+	table-layout:fixed !important;
 }
-.calendarShow .text .airtime {
-    color:#000
+
+.calendarShow {
+    padding:0 !important
 }
+
+.calendarShow .poster {
+	padding-bottom:2px
+}
+.calendarShow .poster img {
+	width:142px;
+	height:auto
+}
+
+.calendarShow .text {
+	padding:0 5px 10px 5px
+}
+
+.calendarShow .text .airtime,
 .calendarShow .text .episode-title {
-    color:#888
+	overflow:hidden;
+	text-overflow:ellipsis;
+	display:block;
+	font-size:11px
+}
+
+.calendarShow .show-status {
+	padding:5px 10px 10px;
+	text-align:center
 }
 
 /* =======================================================================
@@ -2056,9 +2085,9 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-    color: #fff;
+    color: #262626;
     text-decoration: none;
-    background-color: #333;
+    background-color: #F5F5F5;
 }
 
 .dropdown-menu > li > a {
@@ -2638,6 +2667,30 @@ div.formpaginate .prev, div.formpaginate .next {
 	padding: 15px;
 }
 
+#tabs .nocheck,
+.stepDiv .nocheck {
+	padding-left: 16px;
+}
+
+#tabs label span.component-title,
+.stepDiv label span.component-title {
+	padding-bottom: 6px;
+	float: left;
+	width: 172px;
+	margin-right: 10px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+#tabs label span.component-desc,
+.stepDiv label span.component-desc {
+	padding-bottom: 6px;
+	font-size: 12px;
+	font-weight: normal;
+	display:inline-block;
+	width:475px;
+}
+
 /* step 3 related */
 #customQuality {
 	display: block;
@@ -2668,7 +2721,7 @@ tablesorter.css
 	margin-left: auto;
 	color: #000;
 	text-align: left;
-	background-color: #ddd;
+	background-color: #fff;
 	border-spacing: 0;
 }
 
