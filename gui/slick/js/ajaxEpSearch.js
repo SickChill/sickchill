@@ -40,7 +40,7 @@ function updateImages(data) {
 	$.each(data.episodes, function (name, ep) {
 		console.debug(ep.searchstatus);
 		// Get td element for current ep
-		var loadingImage = 'loading16_dddddd.gif';
+		var loadingImage = 'loading16.gif';
         var queuedImage = 'queued.png';
         var searchImage = 'search16.png';
         var status = null;
@@ -113,7 +113,7 @@ function disableLink(el) {
 	    defaults: {
 	        size:				16,
 	        colorRow:         	false,
-	        loadingImage:		'loading16_dddddd.gif',
+	        loadingImage:		'loading16.gif',
 	        queuedImage:		'queued.png',
 	        noImage:			'no16.png',
 	        yesImage:			'yes16.png'

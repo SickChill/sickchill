@@ -5,7 +5,7 @@
 			var subtitles_search_link = $(this);
 			// fill with the ajax loading gif
 			subtitles_search_link.empty();
-			subtitles_search_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16_dddddd.gif", "alt": "", "title": "loading"}));
+			subtitles_search_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
 			$.getJSON($(this).attr('href'), function(data){
 				if (data.result != "failure" && data.result != "No subtitles downloaded") {
 				// clear and update the subtitles column with new informations
@@ -37,7 +37,7 @@
 			var subtitles_merge_link = $(this);
 			// fill with the ajax loading gif
 			subtitles_merge_link.empty();
-			subtitles_merge_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16_dddddd.gif", "alt": "", "title": "loading"}));
+			subtitles_merge_link.append($("<img/>").attr({"src": sbRoot+"/images/loading16.gif", "alt": "", "title": "loading"}));
 			$.getJSON($(this).attr('href'), function(data){
 				// don't allow other merges
 				subtitles_merge_link.remove();

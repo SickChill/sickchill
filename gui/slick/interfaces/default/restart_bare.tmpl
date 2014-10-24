@@ -22,24 +22,36 @@ sbHost = "$curSBHost";
 <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.8.3.min.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/restart.js?$sbPID"></script>
 
+#try:
+    #sickbeard
+#except NameError:
+    #set themeSpinner = '';
+#else:
+#if 'dark' != sickbeard.THEME_NAME:
+#set themeSpinner = ''
+#else:
+#set themeSpinner = '-dark'
+#end if
+#end try
+
 <h2>Performing Restart</h2>
 <br />
 <div id="shut_down_message">
 Waiting for SickRage to shut down:
-<img src="$sbRoot/images/loading16.gif" height="16" width="16" id="shut_down_loading" />
+<img src="$sbRoot/images/loading16${themeSpinner}.gif" height="16" width="16" id="shut_down_loading" />
 <img src="$sbRoot/images/yes16.png" height="16" width="16" id="shut_down_success" style="display: none;" />
 </div>
 
 <div id="restart_message" style="display: none;">
 Waiting for SickRage to start again:
-<img src="$sbRoot/images/loading16.gif" height="16" width="16" id="restart_loading" />
+<img src="$sbRoot/images/loading16${themeSpinner}.gif" height="16" width="16" id="restart_loading" />
 <img src="$sbRoot/images/yes16.png" height="16" width="16" id="restart_success" style="display: none;" />
 <img src="$sbRoot/images/no16.png" height="16" width="16" id="restart_failure" style="display: none;" />
 </div>
 
 <div id="refresh_message" style="display: none;">
 Loading the home page:
-<img src="$sbRoot/images/loading16.gif" height="16" width="16" id="refresh_loading" />
+<img src="$sbRoot/images/loading16${themeSpinner}.gif" height="16" width="16" id="refresh_loading" />
 </div>
 
 <div id="restart_fail_message" style="display: none;">

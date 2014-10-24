@@ -47,7 +47,7 @@ $(document).ready(function(){
         beforeSubmit: function(){
             $('.config_submitter').each(function(){
                 $(this).attr("disabled", "disabled");
-                $(this).after('<span><img src="' + sbRoot + '/images/loading16.gif"> Saving...</span>');
+                $(this).after('<span><img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
                 $(this).hide();
             });
         },
