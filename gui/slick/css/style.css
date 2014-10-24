@@ -631,6 +631,18 @@ home.tmpl
 	border-left: 0px;
 	border-right: 0px;
 }
+.ui-progressbar .ui-progressbar-value {
+    height:20px
+}
+.ui-progressbar .progress-20 {
+    border: none;
+}
+.show .progress-20,
+.show .progress-40,
+.show .progress-60,
+.show .progress-80 {
+    height: 7px
+}
 
 .show .progress-80 {
 	border-radius: 0px;
