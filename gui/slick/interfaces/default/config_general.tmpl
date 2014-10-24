@@ -28,7 +28,6 @@
 
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/imdbWatchlist.js?$sbPID"></script>
 
 <div id="config">
 	<div id="config-content">
@@ -178,26 +177,9 @@
 								#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
 							</label>
 						</div>
-						
-                        <div class="field-pair">
-                            <input type="checkbox" name="use_imdbwl" class="enabler" id="use_imdbwl" #if $sickbeard.USE_IMDBWATCHLIST then "checked=\"checked\"" else ""#/>
-                            <label for="use_imdbwl">
-                                <span class="component-title">Use IMDB Watchlists</span>
-                            </label>
-                        </div>
-                        
-                        <div id="content_use_imdbwl">
-	                        <!--  Multiselect for managing IMDB watchlist csv url's -->
-	                        <div class="field-pair">
-	                            <label>
-	                                <span class="">Manage your IMDB watchlist url's. Each url should contain your list id and user id. <br>They look like: ls014134 and us0918234.</span>
-	                                #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_imdbWatchlists.tmpl")
-	                            </label>
-	                        </div>
-	                    </div>
 
 	                    <input type="submit" class="btn config_submitter" value="Save Changes" />
-	                    </fieldset>
+                    </fieldset>
 
                 </div><!-- /component-group1 //-->
 
