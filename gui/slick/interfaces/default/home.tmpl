@@ -151,8 +151,8 @@
 	jQuery.each(\$container, function (j) {
         this.isotope({
 			itemSelector: '.show',
-			sortBy : 'name',
-			sortAscending: 'true',
+            sortBy : '$sickbeard.POSTER_SORTBY',
+            sortAscending: $sickbeard.POSTER_SORTDIR,
 			layoutMode: 'masonry',
 			masonry: {
 				columnWidth: 12,
@@ -168,13 +168,9 @@
 					#end if	
 				},
 				network: '[data-network]',
-				date: function( itemElem ) { 
+				date: function( itemElem ) {
 					var date = \$( itemElem ).attr('data-date');
-					if (sortDirection = 'true') {
-						return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
-					} else {
-						return date.length && parseInt( date, 10 ) * -1 || Number.POSITIVE_INFINITY;
-					}
+                    return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
 				},
 				progress: function( itemElem ) {
 					var progress = \$( itemElem ).attr('data-progress');
@@ -188,6 +184,7 @@
 		var sortValue = this.value;
 		\$('#container').isotope({ sortBy: sortValue });
 		\$('#container-anime').isotope({ sortBy: sortValue });
+        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
 	});
 	
 	\$('#postersortdirection').on( 'change', function() {
@@ -195,6 +192,7 @@
 		sortDirection = sortDirection == 'true';
 		\$('#container').isotope({ sortAscending: sortDirection });
 		\$('#container-anime').isotope({ sortAscending: sortDirection });
+        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
 	});
 	
 });
@@ -222,17 +220,17 @@
 	&nbsp;
 	<span> Sort By: 
 		<select id="postersort" class="form-control form-control-inline input-sm">
-			<option value="name">Name</option>
-			<option value="date">Next Episode</option>
-			<option value="network">Network</option>			
-			<option value="progress">Progress</option>
+            <option value="name" data-sort="$sbRoot/setPosterSortBy/?sort=name" #if $sickbeard.POSTER_SORTBY == "name" then "selected=\"selected\"" else ""#>Name</option>
+            <option value="date" data-sort="$sbRoot/setPosterSortBy/?sort=date" #if $sickbeard.POSTER_SORTBY == "date" then "selected=\"selected\"" else ""#>Next Episode</option>
+            <option value="network" data-sort="$sbRoot/setPosterSortBy/?sort=network" #if $sickbeard.POSTER_SORTBY == "network" then "selected=\"selected\"" else ""#>Network</option>
+            <option value="progress" data-sort="$sbRoot/setPosterSortBy/?sort=progress" #if $sickbeard.POSTER_SORTBY == "progress" then "selected=\"selected\"" else ""#>Progress</option>
 		</select>
 	</span>
 	&nbsp;
 	<span> Sort Order: 
 		<select id="postersortdirection" class="form-control form-control-inline input-sm">
-			<option value="true">Asc</option>
-			<option value="false">Desc</option>
+            <option value="true" data-sort="$sbRoot/setPosterSortDir/?direction=1" #if $sickbeard.POSTER_SORTDIR == 1 then "selected=\"selected\"" else ""#>Asc</option>
+            <option value="false" data-sort="$sbRoot/setPosterSortDir/?direction=0" #if $sickbeard.POSTER_SORTDIR == 0 then "selected=\"selected\"" else ""#>Desc</option>
 		</select>
 	</span>
 	&nbsp;

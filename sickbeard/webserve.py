@@ -290,6 +290,19 @@ class MainHandler(RequestHandler):
 
         redirect("/home/")
 
+    def setPosterSortBy(self, sort):
+
+        if sort not in ('name', 'date', 'network', 'progress'):
+            sort = 'name'
+
+        sickbeard.POSTER_SORTBY = sort
+        sickbeard.save_config()
+
+    def setPosterSortDir(self, direction):
+
+        sickbeard.POSTER_SORTDIR = int(direction)
+        sickbeard.save_config()
+
     def setHistoryLayout(self, layout):
 
         if layout not in ('compact', 'detailed'):

@@ -428,6 +428,8 @@ TIME_PRESET = None
 TIME_PRESET_W_SECONDS = None
 TIMEZONE_DISPLAY = None
 THEME_NAME = None
+POSTER_SORTBY = None
+POSTER_SORTDIR = None
 
 USE_SUBTITLES = False
 SUBTITLES_LANGUAGES = []
@@ -496,6 +498,7 @@ def initialize(consoleLogging=True):
             USE_LISTVIEW, METADATA_XBMC, METADATA_XBMC_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, \
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
+            POSTER_SORTBY, POSTER_SORTDIR, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
@@ -946,6 +949,8 @@ def initialize(consoleLogging=True):
         TIME_PRESET_W_SECONDS = check_setting_str(CFG, 'GUI', 'time_preset', '%I:%M:%S %p')
         TIME_PRESET = TIME_PRESET_W_SECONDS.replace(u":%S", u"")
         TIMEZONE_DISPLAY = check_setting_str(CFG, 'GUI', 'timezone_display', 'network')
+        POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
+        POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1)
 
         # initialize NZB and TORRENT providers
         providerList = providers.makeProviderList()
@@ -1762,6 +1767,8 @@ def save_config():
     new_config['GUI']['date_preset'] = DATE_PRESET
     new_config['GUI']['time_preset'] = TIME_PRESET_W_SECONDS
     new_config['GUI']['timezone_display'] = TIMEZONE_DISPLAY
+    new_config['GUI']['poster_sortby'] = POSTER_SORTBY
+    new_config['GUI']['poster_sortdir'] = POSTER_SORTDIR
 
     new_config['Subtitles'] = {}
     new_config['Subtitles']['use_subtitles'] = int(USE_SUBTITLES)
