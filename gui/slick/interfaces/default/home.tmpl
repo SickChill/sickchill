@@ -280,6 +280,11 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #set $cur_downloaded = 0
     #set $cur_total = 0
     #set $download_stat_tip = ''
+    #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status):
+	    #set $display_status = 'Continuing'
+    #else:
+        #set $display_status = $curShow.status
+    #end if
 
     #if $curShow.indexerid in $show_stat:
         #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
@@ -322,7 +327,18 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
 	#set $progressbar_percent = $nom * 100 / $den
 	
-	<div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="#if $cur_airs_next then $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple()) else ""#" data-network="$curShow.network" data-progress="$progressbar_percent">
+#if $cur_airs_next:
+    #set $data_date = $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple())
+#else if 'nded' not in $display_status and 1 == int($curShow.paused):
+    #set $data_date = '5000000500.0'
+#else if 'ontinu' in $display_status:
+    #set $data_date = '5000000000.0'
+#else if 'nded' in $display_status:
+    #set $data_date = '5000000100.0'
+#else:
+    #set $data_date = '6000000000.0'
+#end if
+	<div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
 		<div class="show-image">
 			<a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
 		</div>
@@ -354,18 +370,20 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		<div class="show-title">
 			$curShow.name
 		</div>
-		
-		#if $cur_airs_next
-			#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
-				<div class="show-date"><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span></div>
-			#else if $curShow.status != "Ended" and int($curShow.paused) == 1:
-				<div class="show-date">Paused</div>
-			#else if $curShow.status:
-				<div class="show-date">$curShow.status</div>
-			#else
-				<div class="show-date">?</div>
-		#end if
-		
+
+		<div class="show-date">
+#if $cur_airs_next
+#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
+			<span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span>
+#else if 'nded' not in $display_status and 1 == int($curShow.paused):
+			Paused
+#else if $display_status:
+			$display_status
+#else
+			?
+#end if
+        </div>
+
 		<table width="100%" cellspacing="1" border="0" cellpadding="0">
 			<tr>
 				<td class="show-table">
@@ -581,7 +599,11 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		</td>
 		
         <td align="center">
+#if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status):
+			Continuing
+#else:
 			$curShow.status
+#end if
 		</td>
 		
     </tr>
