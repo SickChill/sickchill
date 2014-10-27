@@ -21,7 +21,7 @@
 * Fix imdb and three other images rejected by IExplorer because they were corrupt. Turns out that they were .ico files renamed to either .gif or .png instead of being properly converted
 * Fix "Subtitle Language" drop down font colour when entering text on the Subtitles Search settings
 * Clean up text, correct quotations, use spaces for code lines, tabs for html
-* Update changelog
+* Implement automatic saving of poster layout sorting options on show list
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
