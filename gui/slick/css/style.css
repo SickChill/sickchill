@@ -489,6 +489,20 @@ inc_bottom.tmpl
 	display: inline;
 }
 
+/* =======================================================================
+inc_rootDirs.tmpl
+========================================================================== */
+.rootdir-selectbox,
+.rootdir-selectbox #rootDirs,
+.rootdir-controls {
+    width: 430px
+}
+.rootdir-selectbox {
+    padding: 0 0 5px
+}
+.rootdir-controls {
+    text-align: center
+}
 
 /* =======================================================================
 home.tmpl
@@ -1511,16 +1525,20 @@ config*.tmpl
 	padding: 12px 0px;
 }
 
+#config div.field-pair select,
 #config div.field-pair input {
-	float: left;
 	margin-right: 6px;
+}
+
+#config div.field-pair input {
+    float: left;
 }
 
 #config .nocheck, #config div #customQuality, .metadataDiv, .providerDiv {
 	padding-left: 20px;
 }
 
-#config label span.component-title {
+#config span.component-title {
 	float: left;
 	width: 172px;
 	margin-right: 10px;
@@ -1528,14 +1546,17 @@ config*.tmpl
 	font-weight: bold;
 }
 
-#config label span.component-desc {
-	padding-bottom: 2px;
+#config span.component-desc {
 	font-size: 12px;
 	font-weight: normal;
-	display:inline-block;
+	display:block;
 	width:475px;
+    margin-left:182px
 }
 
+#config label.space-right {
+    margin-right:10px
+}
 #config .metadataDiv {
 	display: none;
 }
@@ -1956,7 +1977,7 @@ html * {
 }
 
 input[type="checkbox"] {
-    margin: 3px 0px 0px;
+    margin: 2px 0px 0px;
     line-height: normal;
 }
 
@@ -1980,12 +2001,6 @@ input, textarea, select, .uneditable-input {
 }
 
 /* navbar styling */
-.navbar-default {
-	background-image: -moz-linear-gradient(#555555, #333333);
-	background-image: linear-gradient(#555555, #333333);
-	border-color: #3e3f3a;
-}
-
 .navbar-default .navbar-brand {
 	color: #ffffff;
 }
@@ -2480,9 +2495,7 @@ label {
 }
 
 pre {
-    color: #fff;
-    background-color: #3d3d3d;
-    border: 1px solid #111;
+    border: 1px solid;
 }
 
 /* =======================================================================
@@ -2933,11 +2946,10 @@ li.token-input-input-token input {
 div.token-input-dropdown {
     position: absolute;
     width: 273px;
-    background-color: #fff;
     overflow: hidden;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
     cursor: default;
     font-size: 11px;
     font-family: Verdana;
@@ -2982,3 +2994,6 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {
 span.token-input-delete-token {
     margin: 0 1px;
 }
+
+.red-text {color:#d33}
+.clear-left {clear:left}
