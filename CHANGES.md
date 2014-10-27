@@ -22,6 +22,7 @@
 * Fix "Subtitle Language" drop down font colour when entering text on the Subtitles Search settings
 * Clean up text, correct quotations, use spaces for code lines, tabs for html
 * Implement automatic saving of poster layout sorting options on show list
+* Clarify description for backlog searches option on provider settings page
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)

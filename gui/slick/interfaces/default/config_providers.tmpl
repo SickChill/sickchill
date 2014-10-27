@@ -173,7 +173,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <div class="field-pair">
                             <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" #if $curNewznabProvider.enable_backlog then "checked=\"checked\"" else ""#/>
                             <label for="${curNewznabProvider.getID()}_enable_backlog">
-                                <span class="component-title">Backlog Only</span>
+                                <span class="component-title">Enable Backlog Searches</span>
                                 <span class="component-desc">
 									Enables backlog searches
 								</span>
