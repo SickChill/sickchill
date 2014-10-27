@@ -1502,22 +1502,6 @@ config*.tmpl
 	padding-left: 20px;
 }
 
-#config label span.component-title {
-	float: left;
-	width: 172px;
-	margin-right: 10px;
-	font-size: 13px;
-	font-weight: bold;
-}
-
-#config label span.component-desc {
-	padding-bottom: 2px;
-	font-size: 12px;
-	font-weight: normal;
-	display:inline-block;
-	width:475px;
-}
-
 #config .metadataDiv {
 	display: none;
 }
@@ -1768,7 +1752,7 @@ td.tableright {
 
 .separator {
 	font-size: 90%;
-	color: #333333;
+	color: #fff;
 }
 
 a.whitelink {
@@ -1939,10 +1923,6 @@ html * {
 	outline: 0 !important; 
 }
 
-input[type="checkbox"] {
-    margin: 3px 0px 0px;
-    line-height: normal;
-}
 
 input[type="radio"] {
     margin: 2px 0px 0px;
@@ -1965,8 +1945,10 @@ input, textarea, select, .uneditable-input {
 
 /* navbar styling */
 .navbar-default {
-	background-image: -moz-linear-gradient(#297AB8, #15528F);
-	background-image: linear-gradient(#297AB8, #15528F);
+    background-color: #15528F;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#297AB8', endColorstr='#15528F');
+    background: -webkit-gradient(linear, left top, left bottom, from(#297AB8), to(#15528F));
+    background: -moz-linear-gradient(top,  #297AB8,  #15528F);
 	border-color: #3e3f3a;
 }
 
@@ -2468,6 +2450,12 @@ label {
     font-weight: normal;
 }
 
+pre {
+    color: #fff;
+    background-color: #3d3d3d;
+    border-color: #111;
+}
+
 /* =======================================================================
 input sizing (for config pages)
 ========================================================================== */
@@ -2922,17 +2910,11 @@ li.token-input-input-token input {
 }
 
 div.token-input-dropdown {
-    position: absolute;
-    width: 273px;
     background-color: #fff;
-    overflow: hidden;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    cursor: default;
-    font-size: 11px;
-    font-family: Verdana;
-    z-index: 1;
+    color: #000;
+    border-left-color: #ccc;
+    border-right-color: #ccc;
+    border-bottom-color: #ccc;
 }
 
 div.token-input-dropdown p {
