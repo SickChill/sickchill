@@ -23,6 +23,9 @@
 * Clean up text, correct quotations, use spaces for code lines, tabs for html
 * Implement automatic saving of poster layout sorting options on show list
 * Clarify description for backlog searches option on provider settings page
+* Fix Layout "Poster" sort of Paused, Ended, and Continuing shows as they were random
+* Fix Layout "Simple" sort of tvrage "New" and "Returning" series by changing status column text to "Continuing"
+* Add dark spinner to "Add New Show" (searching indexers), "Add existing shows" (Loading Folders), Coming Eps and all config pages (when saving)
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)

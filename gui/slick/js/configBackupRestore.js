@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var loading = '<img src="' + sbRoot + '/images/loading16.gif" height="16" width="16" />';
+    var loading = '<img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
     $('#Backup').click(function() {
         $("#Backup").attr("disabled", true);

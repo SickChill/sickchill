@@ -23,11 +23,7 @@
   margin: 0 4px;
   float: left;
 }
-/*
-.browserDialog.busy .ui-dialog-buttonpane {
-  background: url("/images/loading.gif") 10px 50% no-repeat;
-}
-*/
+
 
 /* jquery ui autocomplete overrides to make it look more like the old autocomplete */
 .ui-autocomplete {
