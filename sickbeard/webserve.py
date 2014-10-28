@@ -513,6 +513,7 @@ class PageTemplate(Template):
         self.sbHttpsPort = sickbeard.WEB_PORT
         self.sbHttpsEnabled = sickbeard.ENABLE_HTTPS
         self.sbHandleReverseProxy = sickbeard.HANDLE_REVERSE_PROXY
+        self.sbThemeName = sickbeard.THEME_NAME
 
         if headers['Host'][0] == '[':
             self.sbHost = re.match("^\[.*\]", headers['Host'], re.X | re.M | re.S).group(0)

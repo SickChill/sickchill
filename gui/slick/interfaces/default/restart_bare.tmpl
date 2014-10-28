@@ -5,11 +5,13 @@
     #set curSBHttpPort = $sbHttpPort
     #set curSBHttpsEnabled = $sbHttpsEnabled
     #set curSBHandleReverseProxy = $sbHandleReverseProxy
+    #set themeSpinner = $sbThemeName
 #except NameMapper.NotFound:
     #set curSBHost = "localhost"
     #set curSBHttpPort = $sickbeard.WEB_PORT
     #set curSBHttpsEnabled = "False"
     #set curSBHandleReverseProxy = "False"
+    #set themeSpinner = $sickbeard.THEME_NAME
 #end try
 sbRoot = "$sbRoot";
 sbHttpPort = "$curSBHttpPort";
@@ -22,18 +24,7 @@ sbHost = "$curSBHost";
 <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.8.3.min.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/restart.js?$sbPID"></script>
 
-#try:
-    #sickbeard
-#except NameError:
-    #set themeSpinner = '';
-#else:
-#if 'dark' != sickbeard.THEME_NAME:
-#set themeSpinner = ''
-#else:
-#set themeSpinner = '-dark'
-#end if
-#end try
-
+#set themeSpinner = '-dark' if 'dark' == themeSpinner else ''
 <h2>Performing Restart</h2>
 <br />
 <div id="shut_down_message">
