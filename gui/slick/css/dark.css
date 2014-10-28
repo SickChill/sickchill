@@ -1701,6 +1701,10 @@ div.metadataDiv .disabled {
     margin: 6px 4px 0px 0px;
 }
 
+.warning {
+	border-color: #F89406;
+	background: url("../images/warning16.png") no-repeat right 5px center #fff;
+}
 
 /* =======================================================================
 manage*.tmpl
