@@ -1534,7 +1534,7 @@ config*.tmpl
     float: left;
 }
 
-#config .nocheck, #config div #customQuality, .metadataDiv, .providerDiv {
+#config .nocheck, #config div #customQuality, .metadataDiv {
 	padding-left: 20px;
 }
 

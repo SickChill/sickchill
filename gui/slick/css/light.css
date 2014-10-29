@@ -1475,7 +1475,7 @@ config*.tmpl
 	margin-right: 6px;
 }
 
-#config .nocheck, #config div #customQuality, .metadataDiv, .providerDiv {
+#config .nocheck, #config div #customQuality, .metadataDiv {
 	padding-left: 20px;
 }
 

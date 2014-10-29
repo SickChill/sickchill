@@ -1,4 +1,4 @@
-### 0.x.x (2014-10-27 xx:xx:xx UTC)
+### 0.x.x (2014-10-29 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -26,6 +26,9 @@
 * Fix Layout "Poster" sort of Paused, Ended, and Continuing shows as they were random
 * Fix Layout "Simple" sort of tvrage "New" and "Returning" series by changing status column text to "Continuing"
 * Add dark spinner to "Add New Show" (searching indexers), "Add existing shows" (Loading Folders), Coming Eps and all config pages (when saving)
+* Styled config_providers to match new config_general styling
+* Removed qtip from providers and converted back to a tab
+* Removed superfish-1.4.8.js and supersubs-0.2b.js as they no longer break provider sorting with qtip removed and is no longer required due to new UI
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
