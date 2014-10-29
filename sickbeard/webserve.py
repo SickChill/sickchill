@@ -3708,9 +3708,6 @@ class Home(MainHandler):
         if not sickbeard.showQueueScheduler.action.isBeingAdded(showObj):  # @UndefinedVariable
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
                 t.submenu.append(
-                    {'title': 'Delete', 'path': 'home/deleteShow?show=%d&amp;full=1' % showObj.indexerid,
-                     'confirm': True})
-                t.submenu.append(
                     {'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True})
                 t.submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid})
                 t.submenu.append(
