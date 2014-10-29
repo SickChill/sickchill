@@ -90,14 +90,14 @@
 		<script type="text/javascript">
 		<!--
 			function initActions() {
-				\$("#SubMenu a[href*='/home/restart/']").addClass('btn').html('<span class="submenu-icon-restart pull-left"></span> Restart');
-				\$("#SubMenu a[href*='/home/shutdown/']").addClass('btn').html('<span class="submenu-icon-shutdown pull-left"></span> Shutdown');
+				\$("#SubMenu a[href*='/home/restart/']").addClass('btn restart').html('<span class="submenu-icon-restart pull-left"></span> Restart');
+				\$("#SubMenu a[href*='/home/shutdown/']").addClass('btn shutdown').html('<span class="submenu-icon-shutdown pull-left"></span> Shutdown');
 				\$("#SubMenu a[href*='/home/logout/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Logout');
 				\$("#SubMenu a:contains('Edit')").addClass('btn').html('<span class="ui-icon ui-icon-pencil pull-left"></span> Edit');
-				\$("#SubMenu a:contains('Delete')").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Delete');
-				\$("#SubMenu a:contains('Remove')").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Remove');
-				\$("#SubMenu a:contains('Clear History')").addClass('btn confirm').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
-				\$("#SubMenu a:contains('Trim History')").addClass('btn confirm').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
+				\$("#SubMenu a:contains('Delete')").addClass('btn delete').html('<span class="ui-icon ui-icon-trash pull-left"></span> Delete');
+				\$("#SubMenu a:contains('Remove')").addClass('btn remove').html('<span class="ui-icon ui-icon-trash pull-left"></span> Remove');
+				\$("#SubMenu a:contains('Clear History')").addClass('btn clearhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
+				\$("#SubMenu a:contains('Trim History')").addClass('btn trimhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
 				\$("#SubMenu a[href$='/errorlogs/clearerrors/']").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear Errors');
 				\$("#SubMenu a:contains('Re-scan')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Re-scan');
 				\$("#SubMenu a:contains('Backlog Overview')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Backlog Overview');
@@ -129,19 +129,12 @@
 				
 				\$("#NAV$topmenu").addClass("active");
 				
-				\$("a.confirm").bind("click",function(e) {
-					e.preventDefault();
-					var target = \$( this ).attr('href');
-					if ( confirm("Are you sure you want to " + \$(this).text() + "?") )
-						location.href = target;
-					return false;
-				});
-				
 				\$('.dropdown-toggle').dropdownHover();
 				
 			});
 		//-->
 		</script>
+        <script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
 	</head>
 
 	<body>

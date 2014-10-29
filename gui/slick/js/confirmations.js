@@ -47,7 +47,7 @@ $(document).ready(function () {
 		var showname = document.getElementById("showtitle").getAttribute('data-showname');
 		$.confirm({
 			'title'		: 'Delete Show',
-			'message'	: 'Are you sure you want to permanently delete <font color="#09A2FF">' + showname + '</font> ? <br /><br /> <font color="red">WARNING - This process will also delete all stored files. <br /> This process cannot be un-done.</font>',
+			'message'	: 'Are you sure you want to permanently delete <span class="footerhighlight">' + showname + '</span> ? <br /><br /> <font color="red">WARNING - This process will also delete all stored files. <br /> This process cannot be un-done.</font>',
 			'buttons'	: {
 				'Yes'	: {
 					'class'	: 'green',
@@ -69,7 +69,7 @@ $(document).ready(function () {
 		var showname = document.getElementById("showtitle").getAttribute('data-showname');
 		$.confirm({
 			'title'		: 'Remove Show',
-			'message'	: 'Are you sure you want to remove <font color="#09A2FF">' + showname + '</font> from the database ?',
+			'message'	: 'Are you sure you want to remove <span class="footerhighlight">' + showname + '</span> from the database ?',
 			'buttons'	: {
 				'Yes'	: {
 					'class'	: 'green',
