@@ -806,7 +806,11 @@ class TVShow(object):
             self.flatten_folders = int(sqlResults[0]["flatten_folders"])
             self.paused = int(sqlResults[0]["paused"])
 
-            self.location = sqlResults[0]["location"]
+            try:
+                self.location = sqlResults[0]["location"]
+            except Exception:
+                dirty_setter("_location")(self, sqlResults[0]["location"])
+                self._isDirGood = False
 
             if not self.lang:
                 self.lang = sqlResults[0]["lang"]
