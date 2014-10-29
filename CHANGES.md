@@ -1,4 +1,4 @@
-### 0.x.x (2014-10-28 xx:xx:xx UTC)
+### 0.x.x (2014-10-29 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -30,6 +30,9 @@
 * Required fields will now highlight input box and add an icon if field is missing when test is pushed
 * Changed Test Plex Media Server to Test Plex Client as it only tests the client and not the server
 * Styled config_notifications to match new config_general styling
+* Styled config_providers to match new config_general styling
+* Removed qtip from providers and converted back to a tab
+* Removed superfish-1.4.8.js and supersubs-0.2b.js as they no longer break provider sorting with qtip removed and is no longer required due to new UI
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
