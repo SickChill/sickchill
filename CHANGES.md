@@ -1,4 +1,4 @@
-### 0.x.x (2014-10-27 xx:xx:xx UTC)
+### 0.x.x (2014-10-28 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -26,6 +26,10 @@
 * Fix Layout "Poster" sort of Paused, Ended, and Continuing shows as they were random
 * Fix Layout "Simple" sort of tvrage "New" and "Returning" series by changing status column text to "Continuing"
 * Add dark spinner to "Add New Show" (searching indexers), "Add existing shows" (Loading Folders), Coming Eps and all config pages (when saving)
+* Changed notifier test buttons to not run if required field is missing
+* Required fields will now highlight input box and add an icon if field is missing when test is pushed
+* Changed Test Plex Media Server to Test Plex Client as it only tests the client and not the server
+* Styled config_notifications to match new config_general styling
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
