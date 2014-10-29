@@ -33,6 +33,7 @@
 * Styled config_providers to match new config_general styling
 * Removed qtip from providers and converted back to a tab
 * Removed superfish-1.4.8.js and supersubs-0.2b.js as they no longer break provider sorting with qtip removed and is no longer required due to new UI
+* Overhaul Config Search Settings in line with General Configuration
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
