@@ -26,17 +26,18 @@
 * Fix Layout "Poster" sort of Paused, Ended, and Continuing shows as they were random
 * Fix Layout "Simple" sort of tvrage "New" and "Returning" series by changing status column text to "Continuing"
 * Add dark spinner to "Add New Show" (searching indexers), "Add existing shows" (Loading Folders), Coming Eps and all config pages (when saving)
-* Changed notifier test buttons to not run if required field is missing
-* Required fields will now highlight input box and add an icon if field is missing when test is pushed
-* Changed Test Plex Media Server to Test Plex Client as it only tests the client and not the server
-* Styled config_notifications to match new config_general styling
-* Styled config_providers to match new config_general styling
-* Removed qtip from providers and converted back to a tab
-* Removed superfish-1.4.8.js and supersubs-0.2b.js as they no longer break provider sorting with qtip removed and is no longer required due to new UI
+* Change notifier test buttons to not run if required field is missing
+* Require fields will now highlight input box and add an icon if field is missing when test is pushed
+* Change Test Plex Media Server to Test Plex Client as it only tests the client and not the server
+* Style config_notifications to match new config_general styling
+* Style config_providers to match new config_general styling
+* Remove qtip from providers and converted back to a tab
+* Remove superfish-1.4.8.js and supersubs-0.2b.js as they no longer break provider sorting with qtip removed and is no longer required due to new UI
 * Overhaul Config Search Settings in line with General Configuration
-* Fixes errors occurring when a show folder is deleted outside of SickRage
-* Added confirmation dialogs back in that were missed due to new UI changes
+* Fix errors occurring when a show folder is deleted outside of SickRage
+* Add confirmation dialogs back in that were missed due to new UI changes
 * Combined delete and remove buttons in to one on individual show pages
+* Fix the home page from failing to load if a show status contains nothing
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
