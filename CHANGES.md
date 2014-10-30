@@ -30,6 +30,7 @@
 * Fix errors occurring when a show folder is deleted outside of SickRage
 * Combined delete and remove buttons in to one on individual show pages
 * Other small UI tweaks
+* Fix keyerrors on backlog overview preventing the page to load
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
