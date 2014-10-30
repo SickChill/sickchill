@@ -327,6 +327,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
 	#set $progressbar_percent = $nom * 100 / $den
 	
+#set $data_date = '6000000000.0'
 #if $cur_airs_next:
     #set $data_date = $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple())
 #else if None is not $display_status
@@ -337,8 +338,6 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #else if 'nded' in $display_status
         #set $data_date = '5000000100.0'
     #end if
-#else
-    #set $data_date = '6000000000.0'
 #end if
 	<div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
 		<div class="show-image">
