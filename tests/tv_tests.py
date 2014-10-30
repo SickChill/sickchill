@@ -29,11 +29,11 @@ class TVShowTests(test.SickbeardTestDBCase):
         super(TVShowTests, self).setUp()
         sickbeard.showList = []
 
-    def test_init_tvdbid(self):
+    def test_init_indexerid(self):
         show = TVShow(1, 0001, "en")
-        self.assertEqual(show.tvdbid, 0001)
+        self.assertEqual(show.indexerid, 0001)
 
-    def test_change_tvdbid(self):
+    def test_change_indexerid(self):
         show = TVShow(1, 0001, "en")
         show.name = "show name"
         show.tvrname = "show name"
@@ -47,11 +47,11 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.saveToDB()
         show.loadFromDB(skipNFO=True)
 
-        show.tvdbid = 0002
+        show.indexerid = 0002
         show.saveToDB()
         show.loadFromDB(skipNFO=True)
 
-        self.assertEqual(show.tvdbid, 0002)
+        self.assertEqual(show.indexerid, 0002)
 
     def test_set_name(self):
         show = TVShow(1, 0001, "en")

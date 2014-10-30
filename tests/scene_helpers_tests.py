@@ -22,8 +22,8 @@ class SceneTests(test.SickbeardTestDBCase):
         dot_expected = [x.replace(' ', '.') for x in expected]
         self.assertTrue(len(set(dot_expected).intersection(set(dot_result))) == len(dot_expected))
 
-    def _test_allPossibleShowNames(self, name, tvdbid=0, expected=[]):
-        s = Show(tvdbid)
+    def _test_allPossibleShowNames(self, name, indexerid=0, expected=[]):
+        s = Show(1, indexerid)
         s.name = name
 
         result = show_name_helpers.allPossibleShowNames(s)
@@ -48,7 +48,7 @@ class SceneTests(test.SickbeardTestDBCase):
 
         for testCase in listOfcases:
             scene_name, show_name = testCase
-            s = Show(0)
+            s = Show(1, 0)
             s.name = show_name
             self._test_isGoodName(scene_name, s)
 
@@ -69,7 +69,7 @@ class SceneTests(test.SickbeardTestDBCase):
     def test_allPossibleShowNames(self):
         #common.sceneExceptions[-1] = ['Exception Test']
         myDB = db.DBConnection("cache.db")
-        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name) VALUES (?,?)", [-1, 'Exception Test'])
+        myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)", [-1, 'Exception Test', -1])
         common.countryList['Full Country Name'] = 'FCN'
 
         self._test_allPossibleShowNames('Show Name', expected=['Show Name'])
