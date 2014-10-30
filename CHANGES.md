@@ -37,7 +37,7 @@
 * Fixes errors occurring when a show folder is deleted outside of SickRage
 * Added confirmation dialogs back in that were missed due to new UI changes
 * Combined delete and remove buttons in to one on individual show pages
-
+* Fix keyerrors on backlog overview preventing the page to load
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
 
