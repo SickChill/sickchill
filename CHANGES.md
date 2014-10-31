@@ -31,6 +31,7 @@
 * Combined delete and remove buttons in to one on individual show pages
 * Other small UI tweaks
 * Fix keyerrors on backlog overview preventing the page to load
+* Fix exception raised when converting 12pm to 24hr format and handle 12am when setting file modify time (e.g. used during PP)
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page

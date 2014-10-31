@@ -2470,6 +2470,7 @@ class TVEpisode(object):
         if airs:
             hr = int(airs.group(1))
             hr = (12 + hr, hr)[None is airs.group(3)]
+            hr = (hr, hr - 12)[0 == hr % 12]
             min = int((airs.group(2), min)[None is airs.group(2)])
         airtime = datetime.time(hr, min)
 
