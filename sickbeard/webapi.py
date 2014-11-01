@@ -1788,6 +1788,7 @@ class CMD_Show(ApiCall):
         showDict["language"] = showObj.lang
         showDict["show_name"] = showObj.name
         showDict["paused"] = showObj.paused
+        showDict["subtitles"] = showObj.subtitles
         showDict["air_by_date"] = showObj.air_by_date
         showDict["flatten_folders"] = showObj.flatten_folders
         showDict["sports"] = showObj.sports
@@ -2578,6 +2579,7 @@ class CMD_Shows(ApiCall):
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,
+                "subtitles": curShow.subtitles,
                 "next_ep_airdate": nextAirdate
             }
 
