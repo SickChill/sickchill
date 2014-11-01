@@ -34,6 +34,7 @@
 * Fix exception raised when converting 12pm to 24hr format and handle 12am when setting file modify time (e.g. used during PP)
 * Fix proxy_indexers setting not loading from config file
 * Add subtitle information to the cmd show and cmd shows api output
+* Added network logo for SVT
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
