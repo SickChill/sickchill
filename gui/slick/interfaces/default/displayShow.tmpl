@@ -15,10 +15,6 @@
 <script type="text/javascript" src="$sbRoot/js/jwplayer/jwplayer.js"></script>
 <script type="text/javascript">jwplayer.key="Zq3m618ITHrFxeKGi3Gf33ovC+XtdGQz19MMug==";</script>
 
-#if $show_message:
-    <div id="show_message" class="ui-corner-all">$show_message</div><br />
-#end if
-
 <input type="hidden" id="sbRoot" value="$sbRoot" />
 
 <script type="text/javascript" src="$sbRoot/js/displayShow.js?$sbPID"></script>
@@ -139,50 +135,14 @@
 
 		#end if
 		</div>
-	<!--
-	<div id="showinfo">
-		#if 'rating' in $show.imdb_info:
-			#set $rating_tip = str($show.imdb_info['rating']) + " / 10" + " Stars" + "<br />" + str($show.imdb_info['votes']) + " Votes"
-			<span class="imdbstars" qtip-content="$rating_tip">$show.imdb_info['rating']</span>
-		#end if
-		
-		#if not $show.imdbid
-			<span>($show.startyear) - $show.runtime minutes - </span>
-		#else
-		#if 'country_codes' in $show.imdb_info:
-        #for $country in $show.imdb_info['country_codes'].split('|')
-			<img src="$sbRoot/images/flags/${$country}.png" width="16" height="11" style="margin-left: 3px;" />
-        #end for
-		#end if
-		#if 'year' in $show.imdb_info:
-			<span>($show.imdb_info['year']) - $show.imdb_info['runtimes'] minutes - </span>
-		#end if
-			<a href="http://www.imdb.com/title/$show.imdbid" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://www.imdb.com/title/$show.imdbid"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" /></a>
-		#end if
-			<a href="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid" onclick="window.open(this.href, '_blank'); return false;" title="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid"><img alt="$sickbeard.indexerApi($show.indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($show.indexer).config["icon"]" /></a>
-		#if $xem_numbering or $xem_absolute_numbering:
-			<a href="http://thexem.de/search?q=$show.name" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href, '_blank'); return false;" title="http://thexem.de/search?q-$show.name"><img alt="[xem]" height="16" width="16" src="$sbRoot/images/xem.png" /></a>
-		#end if
-	</div>
-	
-	<div id="tags" class="pull-right">
-		<ul class="tags">
-			#if not $show.imdbid
-			#if $show.genre:
-			#for $genre in $show.genre[1:-1].split('|')
-				<a href="http://trakt.tv/shows/popular/${genre.lower()}" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
-			#end for
-			#end if
-			#end if
-			#if 'year' in $show.imdb_info:
-			#for $imdbgenre in $show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-				<a href="http://trakt.tv/shows/popular/${imdbgenre.lower()}" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
-			#end for
-			#end if
-		</ul>
-	</div> //-->
 	
 	<div class="clearfix"></div>
+    
+#if $show_message:
+	<div class="alert alert-info">
+		$show_message
+	</div>
+#end if
 	
 	<div id="container">
 		<div id="posterCol">

@@ -1,4 +1,4 @@
-### 0.x.x (2014-10-29 xx:xx:xx UTC)
+### 0.x.x (2014-11-01 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -43,6 +43,8 @@
 * Fix "Subtitle Language" drop down font colour when entering text on the Subtitles Search settings
 * Add confirmation dialogs back in that were missed due to new UI changes
 * Fix the home page from failing to load if a show status contains nothing
+* Fix and repositioned show_message on display show to use bootstrap styling
+* Remove commented out html from display show accidently left in during UI changes
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
