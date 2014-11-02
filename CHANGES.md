@@ -49,6 +49,7 @@
 * Fix and repositioned show_message on display show to use bootstrap styling
 * Remove commented out html from display show accidently left in during UI changes
 * Fix display issue of season tables in displayShow view / Display Specials
+* Change API now uses Timezone setting at General Config/Interface/User Interface/ at relevant endpoints
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
