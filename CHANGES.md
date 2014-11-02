@@ -35,6 +35,7 @@
 * Fix proxy_indexers setting not loading from config file
 * Add subtitle information to the cmd show and cmd shows api output
 * Added network logo for SVT
+* Removed requirement for http login for API when an API key is provided
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
