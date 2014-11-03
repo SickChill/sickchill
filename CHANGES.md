@@ -41,6 +41,7 @@
 * Fix Coming Episodes/Layout Calender/View Paused and tweak its UI text
 * Made all init scripts executable
 * Fix invalid responses when using sickbeard.searchtvdb api command
+* Fixes unicode issues during searches on newznab providers when rid mapping occur
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page

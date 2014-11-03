@@ -664,7 +664,7 @@ class TVRage:
                 self._getShowData(key, True)
             return self.shows[key]
 
-        key = str(key).lower()
+        key = key.lower()
         self.config['searchterm'] = key
         selected_series = self._getSeries(key)
         if isinstance(selected_series, dict):
