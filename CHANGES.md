@@ -35,6 +35,7 @@
 * Fix proxy_indexers setting not loading from config file
 * Add subtitle information to the cmd show and cmd shows api output
 * Removed requirement for http login for API when an API key is provided
+* Change API now uses Timezone setting at General Config/Interface/User Interface/ at relevant endpoints
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
@@ -49,7 +50,7 @@
 * Fix and repositioned show_message on display show to use bootstrap styling
 * Remove commented out html from display show accidently left in during UI changes
 * Fix display issue of season tables in displayShow view / Display Specials
-* Change API now uses Timezone setting at General Config/Interface/User Interface/ at relevant endpoints
+* Change to suppress reporting of Tornado exception error 1
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
