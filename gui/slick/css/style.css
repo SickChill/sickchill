@@ -1178,6 +1178,7 @@ span.snatched b {
 	text-align: center;
 	border: none;
 	empty-cells: show;
+	clear:both
 }
 
 .sickbeardTable th{
