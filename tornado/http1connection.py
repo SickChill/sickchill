@@ -686,8 +686,9 @@ class HTTP1ServerConnection(object):
                     # This exception was already logged.
                     conn.close()
                     return
-                except Exception:
-                    gen_log.error("Uncaught exception", exc_info=True)
+                except Exception as e:
+                    if 1 != e.errno:
+                        gen_log.error("Uncaught exception", exc_info=True)
                     conn.close()
                     return
                 if not ret:
