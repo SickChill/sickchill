@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-01 xx:xx:xx UTC)
+### 0.x.x (2014-11-03 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -34,7 +34,6 @@
 * Fix exception raised when converting 12pm to 24hr format and handle 12am when setting file modify time (e.g. used during PP)
 * Fix proxy_indexers setting not loading from config file
 * Add subtitle information to the cmd show and cmd shows api output
-* Added network logo for SVT
 * Removed requirement for http login for API when an API key is provided
 
 [develop changelog]
@@ -49,6 +48,7 @@
 * Fix the home page from failing to load if a show status contains nothing
 * Fix and repositioned show_message on display show to use bootstrap styling
 * Remove commented out html from display show accidently left in during UI changes
+* Fix display issue of season tables in displayShow view / Display Specials
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
