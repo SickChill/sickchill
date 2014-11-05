@@ -3877,7 +3877,10 @@ class Home(MainHandler):
         anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
 
-        indexer_lang = indexerLang
+        if indexerLang and indexerLang in sickbeard.indexerApi(showObj.indexer).indexer().config['valid_languages']:
+            indexer_lang = indexerLang
+        else:
+            indexer_lang = showObj.lang
 
         # if we changed the language then kick off an update
         if indexer_lang == showObj.lang:

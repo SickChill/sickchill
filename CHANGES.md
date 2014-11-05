@@ -36,6 +36,7 @@
 * Add subtitle information to the cmd show and cmd shows api output
 * Removed requirement for http login for API when an API key is provided
 * Change API now uses Timezone setting at General Config/Interface/User Interface/ at relevant endpoints
+* Fixes changing root dirs on the mass edit page
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
