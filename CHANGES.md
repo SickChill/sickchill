@@ -54,6 +54,7 @@
 * Fix post processing when using tvrage indexer and mediabrowser metadata generation
 * Change reporting failed network_timezones.txt updates from an error to a warning
 * Fix missing header and "on <missing text>" when network is none and Layout "Poster" with Sort By "Network" on coming episodes page.
+* Change how the "local/network" setting is handled to address some issues
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page

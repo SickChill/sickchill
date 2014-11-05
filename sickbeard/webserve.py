@@ -45,6 +45,7 @@ from sickbeard import naming
 from sickbeard import scene_exceptions
 from sickbeard import subtitles
 from sickbeard import network_timezones
+from sickbeard import sbdatetime
 
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
@@ -392,8 +393,8 @@ class MainHandler(RequestHandler):
 
         # add localtime to the dict
         for index, item in enumerate(sql_results):
-            sql_results[index]['localtime'] = network_timezones.parse_date_time(item['airdate'], item['airs'],
-                                                                                item['network'])
+            sql_results[index]['localtime'] = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(item['airdate'], 
+                                                                                       item['airs'], item['network']))
 
         sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
 
