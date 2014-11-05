@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-03 xx:xx:xx UTC)
+### 0.x.x (2014-11-05 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens.
@@ -37,6 +37,8 @@
 * Removed requirement for http login for API when an API key is provided
 * Change API now uses Timezone setting at General Config/Interface/User Interface/ at relevant endpoints
 * Fixes changing root dirs on the mass edit page
+* Add the ability to use trash (or Recycle Bin) for selected actions on General Config/Misc/Send to trash
+* Add handling for when deleting a show and the show folder no longer exists
 
 [develop changelog]
 * Improve display of progress bars in the Downloads columns of the show list page
