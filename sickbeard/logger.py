@@ -29,6 +29,11 @@ import sickbeard
 
 from sickbeard import classes
 
+try:
+    from lib.send2trash import send2trash
+except ImportError:
+    pass
+
 
 # number of log files to keep
 NUM_LOGS = 3
@@ -231,7 +236,12 @@ class SBRotatingLogHandler(object):
             cur_file_name = self._log_file_name(i)
             try:
                 if i >= NUM_LOGS:
-                    os.remove(cur_file_name)
+                    if sickbeard.TRASH_ROTATE_LOGS:
+                        new_name = '%s.%s' % (cur_file_name, int(time.time()))
+                        os.rename(cur_file_name, new_name)
+                        send2trash(new_name)
+                    else:
+                        os.remove(cur_file_name)
                 else:
                     os.rename(cur_file_name, self._log_file_name(i + 1))
             except OSError:
