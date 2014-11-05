@@ -46,8 +46,8 @@
 	
 	<span> View Paused:
 		<select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-			<option value="$sbRoot/toggleComingEpsDisplayPaused" #if $sickbeard.COMING_EPS_DISPLAY_PAUSED == "0" then "selected=\"selected\"" else ""#>Hide</option>
-			<option value="$sbRoot/toggleComingEpsDisplayPaused" #if $sickbeard.COMING_EPS_DISPLAY_PAUSED == "1" then "selected=\"selected\"" else ""#>Show</option>
+			<option value="$sbRoot/toggleComingEpsDisplayPaused"<%= (' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Hidden</option>
+			<option value="$sbRoot/toggleComingEpsDisplayPaused"<%= ('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Shown</option>
 		</select>
 	</span>
 </div>
@@ -487,6 +487,10 @@
         <tbody>
         #set $day_has_show = False
         #for $cur_result in $sql_results:
+            #if int($cur_result['paused']) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                #continue
+            #end if
+
             #set $cur_indexer = int($cur_result["indexer"])
             #set $runtime = $cur_result["runtime"]
             #set $airday = $cur_result["localtime"].date()
