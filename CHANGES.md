@@ -39,6 +39,7 @@
 * Add use trash (or Recycle Bin) for selected actions on General Config/Misc/Send to trash
 * Add handling for when deleting a show and the show folder no longer exists
 * Fix Coming Episodes/Layout Calender/View Paused and tweak its UI text
+* Made all init scripts executable
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page
