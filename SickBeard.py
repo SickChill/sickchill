@@ -129,6 +129,9 @@ class SickRage(object):
         try:
             locale.setlocale(locale.LC_ALL, "UTF-8")
             locale.setlocale(locale.LC_CTYPE, "UTF-8")
+        except (locale.Error, IOError):
+            pass
+        try:
             sickbeard.SYS_ENCODING = locale.getpreferredencoding()
         except (locale.Error, IOError):
             pass
