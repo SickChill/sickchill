@@ -340,7 +340,7 @@ class MainHandler(RequestHandler):
     def setComingEpsSort(self, sort):
         if sort not in ('date', 'network', 'show'):
             sort = 'date'
-        
+
         if sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
 
@@ -486,7 +486,7 @@ class MainHandler(RequestHandler):
                            episode['description'].splitlines()[0] + '\r\n'
                 else:
                     ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (show['network'] or 'Unknown network') + '\r\n'
-               
+
                 ical = ical + 'END:VEVENT\r\n'
 
         # Ending the iCal
@@ -1984,25 +1984,25 @@ class ConfigProviders(MainHandler):
         '''
         error = ""
         success = False
-        
+
         if not name:
-            error += "\nNo Provider Name specified" 
+            error += "\nNo Provider Name specified"
         if not url:
             error += "\nNo Provider Url specified"
         if not key:
             error += "\nNo Provider Api key specified"
-            
+
         if error <> "":
             return json.dumps({'success' : False, 'error': error})
-        
-        #Get list with Newznabproviders        
+
+        #Get list with Newznabproviders
         #providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
-        
+
         #Get newznabprovider obj with provided name
         tempProvider= newznab.NewznabProvider(name, url, key)
-        
+
         success, tv_categories, error = tempProvider.get_newznab_categories()
-        
+
         return json.dumps({'success' : success,'tv_categories' : tv_categories, 'error' : error})
 
     def deleteNewznabProvider(self, nnid):
@@ -2109,13 +2109,13 @@ class ConfigProviders(MainHandler):
                     newznabProviderDict[cur_id].name = cur_name
                     newznabProviderDict[cur_id].url = cur_url
                     newznabProviderDict[cur_id].key = cur_key
-                    newznabProviderDict[cur_id].catIDs = cur_cat 
+                    newznabProviderDict[cur_id].catIDs = cur_cat
                     # a 0 in the key spot indicates that no key is needed
                     if cur_key == '0':
                         newznabProviderDict[cur_id].needs_auth = False
                     else:
                         newznabProviderDict[cur_id].needs_auth = True
-                    
+
                     try:
                         newznabProviderDict[cur_id].search_mode = str(kwargs[cur_id + '_search_mode']).strip()
                     except:
@@ -2988,6 +2988,11 @@ class NewHomeAddShows(MainHandler):
         t.submenu = HomeMenu()
 
         t.trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
+
+        if None is not t.trending_shows:
+            for item in t.trending_shows:
+                if helpers.findCertainShow(sickbeard.showList, int(item['tvdb_id'])):
+                    item['tvdb_id'] = u'ExistsInLibrary'
 
         return _munge(t)
 
@@ -4372,9 +4377,9 @@ class Home(MainHandler):
             root_ep_obj.rename()
 
         redirect("/home/displayShow?show=" + show)
-    
+
     def searchEpisode(self, show=None, season=None, episode=None):
-        
+
         # retrieve the episode object and fail if we can't get one
         ep_obj = _getEpisode(show, season, episode)
         if isinstance(ep_obj, str):
@@ -4384,7 +4389,7 @@ class Home(MainHandler):
         ep_queue_item = search_queue.ManualSearchQueueItem(ep_obj.show, ep_obj)
 
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
-        
+
         if ep_queue_item.success:
             return returnManualSearchResult(ep_queue_item)
         if not ep_queue_item.started and ep_queue_item.success is None:
@@ -4403,35 +4408,35 @@ class Home(MainHandler):
         currentManualSearchThreadsQueued = []
         currentManualSearchThreadActive = []
         finishedManualSearchThreadItems= []
-        
+
         # Queued Searches
         currentManualSearchThreadsQueued = sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show)
         # Running Searches
         if (sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress()):
             currentManualSearchThreadActive = sickbeard.searchQueueScheduler.action.currentItem
-            
+
         # Finished Searches
         finishedManualSearchThreadItems =  sickbeard.search_queue.MANUAL_SEARCH_HISTORY
-        
+
         if currentManualSearchThreadsQueued:
             for searchThread in currentManualSearchThreadsQueued:
                 searchstatus = 'queued'
-                if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):    
+                if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                     episodes.append({'episode': searchThread.segment.episode,
-                                     'episodeindexid': searchThread.segment.indexerid, 
-                                     'season' : searchThread.segment.season, 
-                                     'searchstatus' : searchstatus, 
-                                     'status' : statusStrings[searchThread.segment.status], 
+                                     'episodeindexid': searchThread.segment.indexerid,
+                                     'season' : searchThread.segment.season,
+                                     'searchstatus' : searchstatus,
+                                     'status' : statusStrings[searchThread.segment.status],
                                      'quality': self.getQualityClass(searchThread.segment)})
                 else:
                     for epObj in searchThread.segment:
                         episodes.append({'episode': epObj.episode,
                              'episodeindexid': epObj.indexerid,
-                             'season' : epObj.season, 
-                             'searchstatus' : searchstatus, 
-                             'status' : statusStrings[epObj.status], 
+                             'season' : epObj.season,
+                             'searchstatus' : searchstatus,
+                             'status' : statusStrings[epObj.status],
                              'quality': self.getQualityClass(epObj)})
-        
+
         if currentManualSearchThreadActive:
             searchThread = currentManualSearchThreadActive
             searchstatus = 'searching'
@@ -4441,11 +4446,11 @@ class Home(MainHandler):
                 searchstatus = 'searching'
             episodes.append({'episode': searchThread.segment.episode,
                              'episodeindexid': searchThread.segment.indexerid,
-                             'season' : searchThread.segment.season, 
-                             'searchstatus' : searchstatus, 
-                             'status' : statusStrings[searchThread.segment.status], 
+                             'season' : searchThread.segment.season,
+                             'searchstatus' : searchstatus,
+                             'status' : statusStrings[searchThread.segment.status],
                              'quality': self.getQualityClass(searchThread.segment)})
-            
+
         if finishedManualSearchThreadItems:
             for searchThread in finishedManualSearchThreadItems:
                 if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
@@ -4453,9 +4458,9 @@ class Home(MainHandler):
                         searchstatus = 'finished'
                         episodes.append({'episode': searchThread.segment.episode,
                                          'episodeindexid': searchThread.segment.indexerid,
-                                 'season' : searchThread.segment.season, 
-                                 'searchstatus' : searchstatus, 
-                                 'status' : statusStrings[searchThread.segment.status], 
+                                 'season' : searchThread.segment.season,
+                                 'searchstatus' : searchstatus,
+                                 'status' : statusStrings[searchThread.segment.status],
                                  'quality': self.getQualityClass(searchThread.segment)})
                 else:
                     ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
@@ -4465,18 +4470,18 @@ class Home(MainHandler):
                                 searchstatus = 'finished'
                                 episodes.append({'episode': epObj.episode,
                                                  'episodeindexid': epObj.indexerid,
-                                         'season' : epObj.season, 
-                                         'searchstatus' : searchstatus, 
-                                         'status' : statusStrings[epObj.status], 
+                                         'season' : epObj.season,
+                                         'searchstatus' : searchstatus,
+                                         'status' : statusStrings[epObj.status],
                                          'quality': self.getQualityClass(epObj)})
-        
+
         return json.dumps({'show': show, 'episodes' : episodes})
 
         #return json.dumps()
-    
+
     def getQualityClass(self, ep_obj):
         # return the correct json value
-    
+
         # Find the quality class for the episode
         quality_class = Quality.qualityStrings[Quality.UNKNOWN]
         ep_status, ep_quality = Quality.splitCompositeStatus(ep_obj.status)
@@ -4605,7 +4610,7 @@ class Home(MainHandler):
             return json.dumps({'result': 'success'})
         else:
             return json.dumps({'result': 'failure'})
-        
+
 
 class UI(MainHandler):
     def add_message(self):

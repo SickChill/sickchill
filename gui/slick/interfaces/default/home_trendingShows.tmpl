@@ -4,35 +4,74 @@
 #from sickbeard.common import *
 #from sickbeard import sbdatetime
 
-#set global $title="Trending Shows"
-#set global $header="Trending Shows"
+#set global $title='Trending Shows'
+#set global $header='Trending Shows'
 
-#set global $sbPath=".."
+#set global $sbPath='..'
 
-#set global $topmenu="comingEpisodes"
+#set global $topmenu='comingEpisodes'
 #import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--
 
-\$(document).ready(function(){ 
-	
-	var \$container = [\$('#container'), \$('#container-anime')];
-	
-	jQuery.each(\$container, function (j) {
+\$(document).ready(function(){
+    // initialise combos for dirty page refreshes
+    \$('#showsort').val('original');
+    \$('#showsortdirection').val('asc');
+
+    var \$container = [\$('#container')];
+    jQuery.each(\$container, function (j) {
         this.isotope({
-			itemSelector: '.trakt_show',
-			layoutMode: 'masonry',
-			masonry: {
-				columnWidth: 12,
-				isFitWidth: true
-			}
-		});
-	});
-	
+            itemSelector: '.trakt_show',
+            sortBy: 'original-order',
+            layoutMode: 'fitRows',
+            getSortData: {
+                name: function( itemElem ) {
+                    var name = \$( itemElem ).attr('data-name') || '';
+#if not $sickbeard.SORT_ARTICLE:
+                    name = name.replace(/^(The|A|An)\s/i, '');
+#end if
+                    return name.toLowerCase();
+                },
+                rating: '[data-rating] parseInt',
+                votes: '[data-votes] parseInt',
+            }
+        });
+    });
+
+    \$('#showsort').on( 'change', function() {
+        var sortCriteria;
+        switch (this.value) {
+            case 'original':
+                sortCriteria = 'original-order'
+                break;
+            case 'rating':
+                /* randomise, else the rating_votes can already
+                 * have sorted leaving this with nothing to do.
+                 */
+                \$('#container').isotope({sortBy: 'random'});
+                sortCriteria = 'rating';
+                break;
+            case 'rating_votes':
+                sortCriteria = ['rating', 'votes'];
+                break;
+            case 'votes':
+                sortCriteria = 'votes';
+                break;
+            default:
+                sortCriteria = 'name'
+                break;
+        }
+        \$('#container').isotope({sortBy: sortCriteria});
+    });
+
+    \$('#showsortdirection').on( 'change', function() {
+        \$('#container').isotope({sortAscending: ('asc' == this.value)});
+    });
 });
 
 //-->
@@ -40,44 +79,74 @@
 
 #if $varExists('header')
 	<h1 class="header">$header</h1>
-#else 
+#else
 	<h1 class="title">$title</h1>
+#end if
+
+#if $trending_shows
+<div class="pull-right" style="margin-top: -40px;">
+	<span>Sort By:</span>
+	<select id="showsort" class="form-control form-control-inline input-sm">
+		<option value="name">Name</option>
+		<option value="original" selected="selected">Original</option>
+		<option value="votes">Votes</option>
+		<option value="rating">% Rating</option>
+		<option value="rating_votes">% Rating > Votes</option>
+	</select>
+
+	<span style="margin-left:12px">Sort Order:</span>
+	<select id="showsortdirection" class="form-control form-control-inline input-sm">
+		<option value="asc" selected="selected">Asc</option>
+		<option value="desc">Desc</option>
+	</select>
+</div>
 #end if
 
 <div id="container">
 
+#if None is $trending_shows
+	<div class="trakt_show" style="width:100%; margin-top:20px">
+		<p class="red-text">Trakt API did not return results, this can happen from time to time.
+		<br /><br />This view should auto refresh every 10 mins.</p>
+	</div>
+#else
 #for $cur_show in $trending_shows:
-	
-	#set $image = re.sub(r"(.*)(\..*?)$", r"\1-300\2", $cur_show["images"]["poster"], 0, re.IGNORECASE | re.MULTILINE)
 
-	<div class="trakt_show">
+#set $image = re.sub(r'(.*)(\..*?)$', r'\1-300\2', $cur_show['images']['poster'], 0, re.IGNORECASE | re.MULTILINE)
+
+	<div class="trakt_show" data-name="$cur_show['title']" data-rating="$cur_show['ratings']['percentage']" data-votes="$cur_show['ratings']['votes']">
 		<div class="traktContainer">
 			<div class="trakt-image">
-				<a href="${cur_show["url"]}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
+				<a class="trakt-image" href="${cur_show['url']}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
 			</div>
-			
+
 			<div class="show-title">
-				$cur_show["title"]
+				<%= (cur_show['title'], '<span>&nbsp;</span>')[ '' == cur_show['title']] %>
 			</div>
-			
+
 		<div class="clearfix">
-			<p>$cur_show["ratings"]["percentage"]% <img src="$sbRoot/images/heart.png"></p>
-			<i>$cur_show["ratings"]["votes"] votes</i>
+			<p>$cur_show['ratings']['percentage']% <img src="$sbRoot/images/heart.png"></p>
+			<i>$cur_show['ratings']['votes'] votes</i>
 
 			<div class="traktShowTitleIcons">
-				<a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show["tvdb_id"]}&amp;showName=${cur_show["title"]}" class="btn btn-xs">Add Show</a>
+#if 'ExistsInLibrary' in $cur_show['tvdb_id']:
+				<p style="line-height: 1.5; padding: 2px 5px 3px">In library</p>
+#else
+				<a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show['tvdb_id']}&amp;showName=${cur_show['title']}" class="btn btn-xs">Add Show</a>
+#end if
 			</div>
 		</div>
 		</div>
 	</div>
 
 #end for
+#end if
 </div>
 
 <script type="text/javascript" charset="utf-8">
 <!--
-window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
+window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-05 xx:xx:xx UTC)
+### 0.x.x (2014-11-07 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens
@@ -42,6 +42,11 @@
 * Made all init scripts executable
 * Fix invalid responses when using sickbeard.searchtvdb api command
 * Fixes unicode issues during searches on newznab providers when rid mapping occur
+* Fix white screen of death when trying to add a show that is already in library on Add Show/Add Trending Show page
+* Add show sorting options to Add Show/Add Trending Show page
+* Add handler for when Trakt returns no results for Add Show/Add Trending Show page
+* Fix image links when anchor child images are not found at Trakt on Add Show/Add Trending Show page
+* Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page
