@@ -1,10 +1,5 @@
 var search_status_url = sbRoot + '/getManualSearchStatus';
-$.pnotify.defaults.width = "400px";
-$.pnotify.defaults.styling = "jqueryui";
-$.pnotify.defaults.history = false;
-$.pnotify.defaults.shadow = false;
-$.pnotify.defaults.delay = 4000;
-$.pnotify.defaults.maxonscreen = 5;
+PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
 

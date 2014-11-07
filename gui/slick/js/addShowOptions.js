@@ -21,10 +21,10 @@ $(document).ready(function () {
         });
 
         $(this).attr('disabled', true);
-        $.pnotify({
-            pnotify_title: 'Saved Defaults',
-            pnotify_text: 'Your "add show" defaults have been set to your current selections.',
-            pnotify_shadow: false
+        new PNotify({
+            title: 'Saved Defaults',
+            text: 'Your "add show" defaults have been set to your current selections.',
+            shadow: false
         });
     });
 

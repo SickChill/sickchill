@@ -3112,3 +3112,16 @@ jquery.confirm.css
 #confirmBox .red:hover {
 	background-color: #A13331;
 }
+
+/* =======================================================================
+pnotify.css
+========================================================================== */
+
+.ui-pnotify-sticker {
+    margin-top: -12px;
+}
+
+.ui-pnotify-closer {
+    margin-top: -12px;
+    margin-right: -10px;
+}
