@@ -1595,7 +1595,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
-        self.indexer, args = self.check_params(args, kwargs, "indexer", None, False, "string", [])
+        self.indexer, args = self.check_params(args, kwargs, "indexer", 1, False, "int", [])
 
         # super, missing, help
         ApiCall.__init__(self, handler, args, kwargs)
@@ -1620,10 +1620,11 @@ class CMD_SickBeardSearchIndexers(ApiCall):
 
             results = []
             for curSeries in apiData:
-                results.append({"indexerid": int(curSeries.findtext('seriesid')),
-                                "tvdbid": int(curSeries.findtext('seriesid')),
-                                "name": curSeries.findtext('SeriesName'),
-                                "first_aired": curSeries.findtext('FirstAired')})
+                results.append({"indexerid": int(curSeries['id']),
+                                "tvdbid": int(curSeries['id']),
+                                "name": curSeries['seriesname'],
+                                "first_aired": curSeries['firstaired'],
+                                "indexer": self.indexer})
 
             lang_id = self.valid_languages[self.lang]
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
