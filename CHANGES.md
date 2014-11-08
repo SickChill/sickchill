@@ -47,6 +47,7 @@
 * Add handler for when Trakt returns no results for Add Show/Add Trending Show page
 * Fix image links when anchor child images are not found at Trakt on Add Show/Add Trending Show page
 * Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
+* Fix growl registration not sending sickrage update notification registration.
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page
