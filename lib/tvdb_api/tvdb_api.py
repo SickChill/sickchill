@@ -619,10 +619,9 @@ class Tvdb:
                     raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
             else:
                 try:
-                    return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=process)
-                except:
                     return xmltodict.parse(resp.content.strip(), postprocessor=process)
-
+                except:
+                    return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
