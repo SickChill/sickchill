@@ -64,6 +64,7 @@
 * Remove commented out html from display show accidently left in during UI changes
 * Fix display issue of season tables in displayShow view / Display Specials
 * Change to suppress reporting of Tornado exception error 1
+* Fix progress sort direction for poster layout view on home page
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
