@@ -1,5 +1,7 @@
 #import os.path
 #import sickbeard
+#from sickbeard.helpers import anon_url
+
 #set global $header="New Show"
 #set global $title="New Show"
 
@@ -36,7 +38,7 @@
 			<input type="hidden" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" />
 
 			#if $use_provided_info:
-				Show retrieved from existing metadata: <a href="$sickbeard.indexerApi($provided_indexer).config["show_url"]$provided_indexer_id">$provided_indexer_name</a>
+				Show retrieved from existing metadata: <a href="<%= anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id) %>">$provided_indexer_name</a>
 				<input type="hidden" name="indexerLang" value="en" />
 				<input type="hidden" name="whichSeries" value="$provided_indexer_id" />
 				<input type="hidden" id="providedName" value="$provided_indexer_name" />

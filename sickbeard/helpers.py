@@ -954,6 +954,13 @@ def check_url(url):
         return None
 
 
+def anon_url(*url):
+    """
+    Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
+    """
+    return '' if None in url else '%s%s' % (sickbeard.ANON_REDIRECT, ''.join(str(s) for s in url))
+
+
 """
 Encryption
 ==========

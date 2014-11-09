@@ -19,7 +19,7 @@ $(document).ready(function () {
                     var whichSeries = obj.join('|');
 
                     resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
-                    resultStr += '<a href="' + obj[1] + '" onclick=\"window.open(this.href, \'_blank\'); return false;\" ><b>' + obj[2] + '</b></a>';
+                    resultStr += '<a href="' + anonURL + obj[1] + '" onclick="window.open(this.href, \'_blank\'); return false;"><b>' + obj[2] + '</b></a>';
 
                     if (obj[4] !== null) {
                         var startDate = new Date(obj[4]);
