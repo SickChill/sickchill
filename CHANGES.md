@@ -66,6 +66,7 @@
 * Fix display issue of season tables in displayShow view / Display Specials
 * Change to suppress reporting of Tornado exception error 1
 * Fix progress sort direction for poster layout view on home page
+* Fix invalid use of str() in the Send2Trash library for platforms other
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
