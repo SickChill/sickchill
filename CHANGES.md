@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-07 xx:xx:xx UTC)
+### 0.x.x (2014-11-09 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens
@@ -63,6 +63,7 @@
 * Remove commented out html from display show accidently left in during UI changes
 * Fix display issue of season tables in displayShow view / Display Specials
 * Change to suppress reporting of Tornado exception error 1
+* Fix progress sort direction for poster layout view on home page
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
