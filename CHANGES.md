@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-09 xx:xx:xx UTC)
+### 0.x.x (2014-11-10 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens
@@ -67,6 +67,7 @@
 * Change to suppress reporting of Tornado exception error 1
 * Fix progress sort direction for poster layout view on home page
 * Fix invalid use of str() in the Send2Trash library for platforms other
+* Fix dropdown confirm dialogs for restart and shutdown
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
