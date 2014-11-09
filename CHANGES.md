@@ -1,4 +1,4 @@
-### 0.x.x (2014-11-07 xx:xx:xx UTC)
+### 0.x.x (2014-11-09 xx:xx:xx UTC)
 
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens
@@ -48,6 +48,7 @@
 * Fix image links when anchor child images are not found at Trakt on Add Show/Add Trending Show page
 * Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
 * Fix growl registration not sending sickrage update notification registration.
+* Fix missing url for kickasstorrents in config_providers
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page
