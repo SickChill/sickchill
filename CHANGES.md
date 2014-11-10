@@ -52,6 +52,7 @@
 * Update xbmc link to Kodi at Config Notifications
 * Fix missing url for kickasstorrents in config_providers
 * Fix post processing when using tvrage indexer and mediabrowser metadata generation
+* Change reporting failed network_timezones.txt updates from an error to a warning
 
 [develop changelog]
 * Change improve display of progress bars in the Downloads columns of the show list page
