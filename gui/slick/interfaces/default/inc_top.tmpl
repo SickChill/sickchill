@@ -78,10 +78,11 @@
 		#end if
 		<script type="text/javascript" charset="utf-8">
 		<!--
-			sbRoot = "$sbRoot"; // needed for browser.js & ajaxNotifications.js
+			sbRoot = '$sbRoot'; // needed for browser.js & ajaxNotifications.js
 			//HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
 			top_image_html = '<img src="$sbRoot/images/top.gif" width="31" height="11" alt="Jump to top" />';
 			themeSpinner = <%= '\'\'' if 'dark' != sickbeard.THEME_NAME else '\'-dark\'' %>;
+			anonURL = '<%= sickbeard.ANON_REDIRECT %>'
 		//-->
 		</script>
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery.scrolltopcontrol-1.1.js"></script>

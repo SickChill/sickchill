@@ -47,7 +47,9 @@
 * Add handler for when Trakt returns no results for Add Show/Add Trending Show page
 * Fix image links when anchor child images are not found at Trakt on Add Show/Add Trending Show page
 * Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
-* Fix growl registration not sending sickrage update notification registration.
+* Fix growl registration not sending sickrage an update notification registration
+* Add an anonymous redirect builder for external links
+* Update xbmc link to Kodi at Config Notifications
 * Fix missing url for kickasstorrents in config_providers
 * Fix post processing when using tvrage indexer and mediabrowser metadata generation
 

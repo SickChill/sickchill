@@ -1,5 +1,6 @@
 #from sickbeard import subtitles
 #import sickbeard
+#from sickbeard.helpers import anon_url
 
 #set global $title="Config - Subtitles"
 #set global $header="Subtitles"
@@ -125,7 +126,8 @@
                             #set $curName = $curService.id
                           <li class="ui-state-default" id="$curName">
                             <input type="checkbox" id="enable_$curName" class="service_enabler" #if $curService.enabled then "checked=\"checked\"" else ""#/>
-                            <a href="$curService.url" class="imgLink" target="_new">
+                            #set $provider_url = $curService.url
+                            <a href="<%= anon_url(provider_url) %>" class="imgLink" target="_new">
                                 <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService.name" title="$curService.name" width="16" height="16" style="vertical-align:middle;"/>
                             </a>
                             <span style="vertical-align:middle;">$curService.name.capitalize()</span>

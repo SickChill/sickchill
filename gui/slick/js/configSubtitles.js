@@ -21,7 +21,7 @@ $(document).ready(function(){
         var newData = [isDefault, [name, url, key]];
 
         if ($('#service_order_list > #'+id).length == 0 && showService != false) {
-            var toAdd = '<li class="ui-state-default" id="'+id+'"> <input type="checkbox" id="enable_'+id+'" class="service_enabler" CHECKED> <a href="'+url+'" class="imgLink" target="_new"><img src="'+sbRoot+'/images/services/newznab.gif" alt="'+name+'" width="16" height="16"></a> '+name+'</li>'
+            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + sbRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>'
 
             $('#service_order_list').append(toAdd);
             $('#service_order_list').sortable("refresh");

@@ -3,6 +3,7 @@
 #import re
 #from sickbeard.common import *
 #from sickbeard import sbdatetime
+#from sickbeard.helpers import anon_url
 
 #set global $title='Trending Shows'
 #set global $header='Trending Shows'
@@ -117,7 +118,7 @@
 	<div class="trakt_show" data-name="$cur_show['title']" data-rating="$cur_show['ratings']['percentage']" data-votes="$cur_show['ratings']['votes']">
 		<div class="traktContainer">
 			<div class="trakt-image">
-				<a class="trakt-image" href="${cur_show['url']}" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
+				<a class="trakt-image" href="<%= anon_url(cur_show['url']) %>" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
 			</div>
 
 			<div class="show-title">
