@@ -479,9 +479,9 @@ class TVRage:
 
         if resp.ok:
             try:
-                return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=remap_keys)
-            except:
                 return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
+            except:
+                return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source

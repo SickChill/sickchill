@@ -68,6 +68,7 @@
 * Fix progress sort direction for poster layout view on home page
 * Fix invalid use of str() in the Send2Trash library for platforms other
 * Fix dropdown confirm dialogs for restart and shutdown
+* Fix parsing utf8 data from tvdb and tvrage
 
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
