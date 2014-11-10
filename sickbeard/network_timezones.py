@@ -149,7 +149,7 @@ def update_network_dict():
     url_data = helpers.getURL(url)
     if url_data is None:
         # When urlData is None, trouble connecting to github
-        logger.log(u"Loading Network Timezones update failed. Unable to get URL: " + url, logger.ERROR)
+        logger.log(u"Updating Network Timezones failed, this can happen from time to time. URL: " + url, logger.WARNING)
         load_network_dict()
         return
 
