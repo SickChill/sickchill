@@ -82,7 +82,7 @@ function updateImages(data) {
 		        
 			}
         	// update the status column if it exists
-	        parent.siblings('.status_column').html(HtmlContent)
+	        parent.siblings('.col-status').html(HtmlContent)
         	
         }
 		
@@ -167,7 +167,7 @@ function disableLink(el) {
                     var rSearchTerm = /(\w+)\s\((.+?)\)/;
 	                    HtmlContent = data.result.replace(rSearchTerm,"$1"+' <span class="quality '+data.quality+'">'+"$2"+'</span>');
 	                // update the status column if it exists
-                    parent.siblings('.status_column').html(HtmlContent)
+                    parent.siblings('.col-status').html(HtmlContent)
                     // Only if the queing was succesfull, disable the onClick event of the loading image
                     disableLink(link);
 	            }
