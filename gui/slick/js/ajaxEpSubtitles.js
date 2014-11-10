@@ -1,7 +1,7 @@
 (function(){
 	$.fn.ajaxEpSubtitlesSearch = function(){
 		$('.epSubtitlesSearch').click(function(){
-			var subtitles_td = $(this).parent().siblings('.subtitles_column');
+			var subtitles_td = $(this).parent().siblings('.col-subtitles');
 			var subtitles_search_link = $(this);
 			// fill with the ajax loading gif
 			subtitles_search_link.empty();
