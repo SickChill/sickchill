@@ -75,6 +75,9 @@
 * Fix parsing utf8 data from tvdb and tvrage
 * Fix display show status and subtitle searches to use new column class names
 * Fix API response header for JSON content type and the return of JSONP data
+* Update PNotify to version [2.0.1]
+* Change the notification popups to always show the close button.
+* Fix issue where popups did not show if multiple tabs are used. Popups now queue and display when a tab is brought into focus.
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
 
