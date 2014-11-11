@@ -329,7 +329,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 	
 #set $data_date = '6000000000.0'
 #if $cur_airs_next:
-    #set $data_date = $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple())
+    #set $data_date = $time.mktime($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)).timetuple())
 #else if None is not $display_status
     #if 'nded' not in $display_status and 1 == int($curShow.paused)
         #set $data_date = '5000000500.0'
@@ -374,7 +374,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
 		<div class="show-date">
 #if $cur_airs_next
-    #set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
+    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
 			<span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span>
 #else
     #set $output_html = '?'
@@ -526,7 +526,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <tr>
 	
 	#if $cur_airs_next
-	#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
+    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
 		<td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$time.mktime($ldatetime.timetuple())</span></td>
     #else:
     	<td align="center" class="nowrap"></td>

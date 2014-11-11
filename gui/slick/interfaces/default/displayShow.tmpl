@@ -466,7 +466,7 @@
 		</td>
 		
 		<td class="col-airdate">
-			<span class="${fuzzydate}">#if int($epResult["airdate"]) == 1 then "never" else $sbdatetime.sbdatetime.sbfdate($network_timezones.parse_date_time($epResult["airdate"],$show.airs,$show.network))#</span>
+			<span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
 		</td>
 		
 		#if $sickbeard.USE_SUBTITLES and $show.subtitles:
