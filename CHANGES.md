@@ -73,7 +73,7 @@
 * Fix dropdown confirm dialogs for restart and shutdown
 * Fix parsing utf8 data from tvdb and tvrage
 * Fix display show status and subtitle searches to use new column class names
-
+* Fix API response header for JSON content type and the return of JSONP data
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
 
