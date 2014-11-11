@@ -322,10 +322,11 @@
     #set $runtime = $cur_result['runtime']
 
     #if 'network' == $sort:
-        #if $cur_result['network'] and $cur_segment != $cur_result['network']:
+        #set $show_network = $cur_result['network'] if $cur_result['network'] else 'no network'
+        #if $cur_segment != $show_network:
 			<div class="comingepheader">
-				<br><h2 class="network">$cur_result['network']</h2>
-                #set $cur_segment = $cur_result['network']
+				<br><h2 class="network">$show_network</h2>
+            #set $cur_segment = $cur_result['network']
         #end if
         #set $cur_ep_airdate = $cur_result['localtime'].date()
 
@@ -440,7 +441,7 @@
 
 				<div class="clearfix">
 
-					<span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</span><span> on $cur_result['network']</span>
+					<span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
 				</div>
 
 				<div class="clearfix">
