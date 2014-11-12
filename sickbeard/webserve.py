@@ -4250,6 +4250,7 @@ class Home(MainHandler):
 
         if int(status) == WANTED:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
+            msg += '<ul>'
 
             for season, segment in segments.items():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
@@ -4266,6 +4267,7 @@ class Home(MainHandler):
 
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
+            msg += '<ul>'
 
             for season, segment in segments.items():
                 cur_failed_queue_item = search_queue.FailedQueueItem(showObj, [segment])

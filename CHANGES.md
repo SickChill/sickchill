@@ -79,6 +79,7 @@
 * Update PNotify to version [2.0.1]
 * Change the notification popups to always show the close button.
 * Fix issue where popups did not show if multiple tabs are used. Popups now queue and display when a tab is brought into focus.
+* Fix missing HTML in notifications resulting in incorrect formatting.
 
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
 
