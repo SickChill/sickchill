@@ -89,7 +89,7 @@ Please follow this process; it's the best way to get your work included in the p
    # navigate to the newly cloned directory
    cd SickRage
    # assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/SickragePVR/SickRage.git
+   git remote add upstream https://github.com/SiCKRAGETV/SickRage.git
    ```
 
 - If you cloned a while ago, get the latest changes from upstream:

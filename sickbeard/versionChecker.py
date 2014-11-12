@@ -26,8 +26,8 @@ import zipfile
 import tarfile
 import stat
 import traceback
-import gh_api as github
 
+import gh_api as github
 import sickbeard
 from sickbeard import helpers, notifiers
 from sickbeard import ui
@@ -130,7 +130,7 @@ class CheckVersion():
 
 class UpdateManager():
     def get_github_repo_user(self):
-        return 'SickragePVR'
+        return 'SiCKRAGETV'
 
     def get_github_repo(self):
         return 'SickRage'
