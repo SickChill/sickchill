@@ -1,12 +1,12 @@
 ### 0.2.1 (2014-10-22 06:41:00 UTC)
 
-[full changelog](https://github.com/SickragePVR/SickRage/compare/release_0.2.0...release_0.2.1)
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/release_0.2.0...release_0.2.1)
 
 * Fix HDtorrents provider screen scraping
 
 ### 0.2.0 (2014-10-21 12:36:50 UTC)
 
-[full changelog](https://github.com/SickragePVR/SickRage/compare/release_0.1.0...release_0.2.0)
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/release_0.1.0...release_0.2.0)
 
 * Fix for failed episodes not counted in total
 * Fix for custom newznab providers with leading integer in name
