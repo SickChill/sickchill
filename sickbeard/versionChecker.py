@@ -442,6 +442,9 @@ class GitUpdateManager(UpdateManager):
         self._num_commits_behind = 0
         self._num_commits_ahead = 0
 
+        # update remote origin url
+        self.update_remote_origin()
+
         # get all new info from github
         output, err, exit_status = self._run_git(self._git_path, 'fetch %s' % sickbeard.GIT_REMOTE)
 
@@ -537,6 +540,9 @@ class GitUpdateManager(UpdateManager):
         on the call's success.
         """
 
+        # update remote origin url
+        self.update_remote_origin()
+
         if self.branch == self._find_installed_branch():
             output, err, exit_status = self._run_git(self._git_path, 'pull -f %s %s' % (sickbeard.GIT_REMOTE, self.branch))  # @UnusedVariable
         else:
@@ -553,11 +559,16 @@ class GitUpdateManager(UpdateManager):
         return False
 
     def list_remote_branches(self):
+        # update remote origin url
+        self.update_remote_origin()
+
         branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
         if exit_status == 0 and branches:
             return re.findall('\S+\Wrefs/heads/(.*)', branches)
         return []
 
+    def update_remote_origin(self):
+        self._run_git(self._git_path, 'config remote.origin.url %s' % sickbeard.GIT_REMOTE_URL)
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
