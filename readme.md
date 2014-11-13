@@ -12,7 +12,7 @@ While we're doing this, please expect SickRage do strange things, or maybe even 
 
 !!! Please before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present, we HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk !!!
 
-FEATURES:
+## Features
 - XBMC library updates, poster/fanart downloads, and NFO/TBN generation
 - configurable episode renaming
 - available for any platform, uses simple HTTP interface
@@ -29,11 +29,9 @@ FEATURES:
 - Sports shows are now able to be searched for..
 
 ## Dependencies
-
 To run SickRage from source you will need Python 2.6+ and Cheetah 2.1.0+.
 
 ## Forums
-
 Any questions or setup info your looking for can be found at out forums https://www.sickrage.tv
 <br>
 If you find a bug please report at our forums https://sickrage.tv/forums/forum/help-support/bug-issue-reports
