@@ -25,11 +25,17 @@
    #end if
    
 <div id="newShowPortal">
+	<div id="config-components">
+	    <ul>
+			<li><a href="#core-component-group1">Add New Show</a></li>
+		</ul>
 
+	<div id="core-component-group1" class="tab-pane active component-group">
+				
 	<div id="displayText">aoeu</div>
 	<br />
 
-	<form id="addShowForm" method="post" action="$sbRoot/home/addShows/addNewShow" accept-charset="utf-8" style="width: 800px;">
+	<form id="addShowForm" method="post" action="$sbRoot/home/addShows/addNewShow" accept-charset="utf-8">
 
 	<fieldset class="sectionwrap">
 		<legend class="legendStep">Find a show on the TVDB or TVRAGE</legend>
@@ -46,7 +52,7 @@
 			#else:
 				
 				<input type="text" id="nameToSearch" value="$default_show_name" class="form-control form-control-inline input-sm input350" />
-				&nbsp;
+				&nbsp;&nbsp;
 				<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm">
 					<option value="en" selected="selected">en</option>
 				</select><b>*</b>
@@ -60,7 +66,7 @@
 				&nbsp;
 				<input class="btn btn-inline" type="button" id="searchName" value="Search" />
 				
-				<br />
+				<br /><br />
 				<b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
 				This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 				<br />
@@ -107,6 +113,6 @@
 
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 
-</div></div>
+</div></div></div></div>
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
