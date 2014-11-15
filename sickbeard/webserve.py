@@ -1768,10 +1768,20 @@ class ConfigPostProcessing(MainHandler):
         sickbeard.PROCESS_AUTOMATICALLY = config.checkbox_to_value(process_automatically)
         config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
 
-        if sickbeard.PROCESS_AUTOMATICALLY:
+        if sickbeard.PROCESS_AUTOMATICALLY and not sickbeard.autoPostProcesserScheduler.isAlive():
             sickbeard.autoPostProcesserScheduler.silent = False
-        else:
+            try:
+                sickbeard.autoPostProcesserScheduler.start()
+            except:
+                pass
+        elif not sickbeard.PROCESS_AUTOMATICALLY:
+            sickbeard.autoPostProcesserScheduler.stop.set()
             sickbeard.autoPostProcesserScheduler.silent = True
+            try:
+                sickbeard.autoPostProcesserScheduler.join(5)
+            except:
+                pass
+
 
         if unpack:
             if self.isRarSupported() != 'not supported':
@@ -2591,11 +2601,13 @@ class ConfigSubtitles(MainHandler):
 
         if use_subtitles == "on" and not sickbeard.subtitlesFinderScheduler.isAlive():
             sickbeard.subtitlesFinderScheduler.silent = False
-            sickbeard.subtitlesFinderScheduler.start()
-        else:
+            try:
+                sickbeard.subtitlesFinderScheduler.start()
+            except:
+                pass
+        elif not use_subtitles == "on":
             sickbeard.subtitlesFinderScheduler.stop.set()
             sickbeard.subtitlesFinderScheduler.silent = True
-            logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
             try:
                 sickbeard.subtitlesFinderScheduler.join(5)
             except:
