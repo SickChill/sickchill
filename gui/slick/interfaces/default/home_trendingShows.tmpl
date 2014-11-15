@@ -14,12 +14,18 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
+<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--
 
 \$(document).ready(function(){
+    \$( "#tabs" ).tabs({
+        collapsible: true,
+        selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
+    });
+
     // initialise combos for dirty page refreshes
     \$('#showsort').val('original');
     \$('#showsortdirection').val('asc');
@@ -85,7 +91,19 @@
 #end if
 
 #if $trending_shows
-<div class="pull-right" style="margin-top: -40px;">
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Manage Directories</a></li>
+        <li><a href="#tabs-2">Customize Options</a></li>
+    </ul>
+    <div id="tabs-1" class="existingtabs">
+        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+    </div>
+    <div id="tabs-2" class="existingtabs">
+        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+    </div>
+    <br>
+
 	<span>Sort By:</span>
 	<select id="showsort" class="form-control form-control-inline input-sm">
 		<option value="name">Name</option>

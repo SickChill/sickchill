@@ -1462,7 +1462,6 @@ class ConfigGeneral(MainHandler):
     def saveRootDirs(self, rootDirString=None):
         sickbeard.ROOT_DIRS = rootDirString
 
-
     def saveAddShowDefaults(self, defaultStatus, anyQualities, bestQualities, defaultFlattenFolders, subtitles=False,
                             anime=False, scene=False):
 
@@ -3036,7 +3035,7 @@ class NewHomeAddShows(MainHandler):
             ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
         else:
             logger.log(u"There was an error creating the show, no root directory setting found", logger.ERROR)
-            return
+            return "No root directories setup, please go back and add one."
 
         # done adding show
         redirect('/home/')

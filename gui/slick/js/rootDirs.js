@@ -40,8 +40,8 @@ $(document).ready(function() {
         if (is_default)
             setDefault($('#rootDirs option').attr('id'));
 
-        $.get(sbRoot+'/config/general/saveRootDirs', { rootDirString: $('#rootDirText').val() });
         refreshRootDirs();
+        $.get(sbRoot+'/config/general/saveRootDirs', { rootDirString: $('#rootDirText').val() });
     }
 
     function editRootDir(path) {
