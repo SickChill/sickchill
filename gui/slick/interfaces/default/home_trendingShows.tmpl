@@ -130,6 +130,7 @@
 	</div>
 #else
 #for $cur_show in $trending_shows:
+#if not 'ExistsInLibrary' in $cur_show['tvdb_id']:
 
 #set $image = re.sub(r'(?im)(.*)(\..*?)$', r'\1-300\2', $cur_show['images']['poster'], 0)
 
@@ -148,16 +149,13 @@
 			<i>$cur_show['ratings']['votes'] votes</i>
 
 			<div class="traktShowTitleIcons">
-#if 'ExistsInLibrary' in $cur_show['tvdb_id']:
-				<p style="line-height: 1.5; padding: 2px 5px 3px">In library</p>
-#else
 				<a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show['tvdb_id']}&amp;showName=${cur_show['title']}" class="btn btn-xs">Add Show</a>
-#end if
 			</div>
 		</div>
 		</div>
 	</div>
 
+#end if
 #end for
 #end if
 </div>
