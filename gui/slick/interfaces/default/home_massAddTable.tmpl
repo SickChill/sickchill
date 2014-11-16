@@ -3,11 +3,6 @@
 
 <table id="addRootDirTable" class="sickbeardTable tablesorter">
   <thead><tr><th class="col-checkbox"><input type="checkbox" id="checkAll" checked=checked></th><th>Directory</th><th width="20%">Show Name (tvshow.nfo)<th width="20%">Indexer</td></tr></thead>
-  <tfoot>
-    <tr>
-      <th rowspan="1" colspan="4" align="left"><a href="#" style="padding-left: 10px;" class="showManage">Manage Directories</a></th>
-    </tr>
-  </tfoot>
   <tbody>
 #for $curDir in $dirList:
 #if $curDir['added_already']:
