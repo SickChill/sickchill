@@ -30,6 +30,8 @@ from threading import Lock
 import sys
 import os.path
 sys.path.append(os.path.abspath('../lib'))
+
+from github import Github
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
@@ -78,6 +80,10 @@ NO_RESIZE = False
 # system events
 events = None
 
+# github
+gh = None
+
+# schedualers
 dailySearchScheduler = None
 backlogSearchScheduler = None
 showUpdateScheduler = None
@@ -510,7 +516,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, BACKLOG_DAYS, GIT_ORG, GIT_REPO
+            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, BACKLOG_DAYS, GIT_ORG, GIT_REPO, gh
 
         if __INITIALIZED__:
             return False
@@ -1106,6 +1112,9 @@ def initialize(consoleLogging=True):
             tmp_provider = cur_metadata_class.metadata_class()
             tmp_provider.set_config(cur_metadata_config)
             metadata_provider_dict[tmp_provider.name] = tmp_provider
+
+        # github
+        gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
 
         # initialize schedulers
         # updaters

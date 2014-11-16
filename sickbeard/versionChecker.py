@@ -28,13 +28,11 @@ import stat
 import traceback
 
 import sickbeard
-from github import Github
 from sickbeard import helpers, notifiers
 from sickbeard import ui
 from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
-
 
 class CheckVersion():
     """
@@ -617,11 +615,9 @@ class SourceUpdateManager(UpdateManager):
         self._num_commits_behind = 0
         self._newest_commit_hash = None
 
-        gh = Github().get_organization(self.github_org).get_repo(self.github_repo)
-
         # try to get newest commit hash and commits behind directly by comparing branch and current commit
         if self._cur_commit_hash:
-            branch_compared = gh.compare(base=self.branch, head=self._cur_commit_hash)
+            branch_compared = sickbeard.gh.compare(base=self.branch, head=self._cur_commit_hash)
 
             if 'base_commit' in branch_compared:
                 self._newest_commit_hash = branch_compared['base_commit']['sha']
@@ -632,7 +628,7 @@ class SourceUpdateManager(UpdateManager):
         # fall back and iterate over last 100 (items per page in gh_api) commits
         if not self._newest_commit_hash:
 
-            for curCommit in gh.get_commits():
+            for curCommit in sickbeard.gh.get_commits():
                 if not self._newest_commit_hash:
                     self._newest_commit_hash = curCommit['sha']
                     if not self._cur_commit_hash:
@@ -764,5 +760,4 @@ class SourceUpdateManager(UpdateManager):
         return True
 
     def list_remote_branches(self):
-        gh = Github().get_organization(self.github_org).get_repo(self.github_repo)
-        return [x.name for x in gh.get_branches() if x]
+        return [x.name for x in sickbeard.gh.get_branches() if x]

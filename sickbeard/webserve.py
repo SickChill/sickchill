@@ -82,6 +82,7 @@ from lib import adba
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError, asynchronous
 
+from bug_tracker import BugTracker
 
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
