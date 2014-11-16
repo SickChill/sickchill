@@ -56,7 +56,7 @@ import threading
 import getopt
 
 import sickbeard
-from sickbeard import db, logger, network_timezones, failed_history, name_cache, versionChecker
+from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION

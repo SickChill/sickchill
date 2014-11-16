@@ -543,6 +543,9 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
+        # github api
+        gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
+
         # wanted branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
@@ -1112,9 +1115,6 @@ def initialize(consoleLogging=True):
             tmp_provider = cur_metadata_class.metadata_class()
             tmp_provider.set_config(cur_metadata_config)
             metadata_provider_dict[tmp_provider.name] = tmp_provider
-
-        # github
-        gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
 
         # initialize schedulers
         # updaters
