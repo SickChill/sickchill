@@ -270,7 +270,7 @@ class MainHandler(RequestHandler):
             image_file_name = None
             if which == 'poster':
                 image_file_name = cache_obj.poster_path(show)
-            if which == 'poster_thumb':
+            if which == 'poster_thumb' or which == 'small':
                 image_file_name = cache_obj.poster_thumb_path(show)
             if which == 'banner':
                 image_file_name = cache_obj.banner_path(show)
