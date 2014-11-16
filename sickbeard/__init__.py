@@ -26,8 +26,6 @@ import re
 import sys
 import os.path
 
-import github
-
 from threading import Lock
 
 from sickbeard import providers, metadata, config, webserveInit
@@ -541,10 +539,6 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
-        # github api
-        gh = github.Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
-
-        # wanted branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
         # git_remote

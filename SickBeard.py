@@ -54,6 +54,7 @@ import locale
 import datetime
 import threading
 import getopt
+import github
 
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
@@ -68,11 +69,13 @@ throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
-
 class SickRage(object):
     def __init__(self):
         # system event callback for shutdown/restart
         sickbeard.events = Events(self.shutdown)
+
+        # github api
+        sickbeard.gh = github.Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
 
         # daemon constants
         self.runAsDaemon = False
