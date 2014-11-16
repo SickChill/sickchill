@@ -54,7 +54,6 @@ import locale
 import datetime
 import threading
 import getopt
-import github
 
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
@@ -63,6 +62,7 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
 from lib.configobj import ConfigObj
+from lib.github import Github
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -75,7 +75,7 @@ class SickRage(object):
         sickbeard.events = Events(self.shutdown)
 
         # github api
-        sickbeard.gh = github.Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
+        sickbeard.gh = Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
 
         # daemon constants
         self.runAsDaemon = False
