@@ -55,8 +55,6 @@ import datetime
 import threading
 import getopt
 
-import lib.github as github
-
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
@@ -289,9 +287,6 @@ class SickRage(object):
                     CUR_DB_VERSION) + ") has been incremented past what this version of SickRage supports (" + str(
                     MAX_DB_VERSION) + ").\n" + \
                                  "If you have used other forks of SB, your database may be unusable due to their modifications.")
-
-        # github api
-        sickbeard.gh = github.Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.consoleLogging)

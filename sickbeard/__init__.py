@@ -28,6 +28,8 @@ import os.path
 
 from threading import Lock
 
+from github import Github
+
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, tvtorrents, btn, newznab, womble, thepiratebay, torrentleech, kat, iptorrents, \
@@ -538,6 +540,9 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushalot')
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
+
+        # github api
+        gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)  # wanted branch
 
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
