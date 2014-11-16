@@ -55,6 +55,8 @@ import datetime
 import threading
 import getopt
 
+import lib.github as github
+
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
@@ -62,7 +64,6 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
 from lib.configobj import ConfigObj
-from lib.github import Github
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -73,9 +74,6 @@ class SickRage(object):
     def __init__(self):
         # system event callback for shutdown/restart
         sickbeard.events = Events(self.shutdown)
-
-        # github api
-        sickbeard.gh = Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
 
         # daemon constants
         self.runAsDaemon = False
@@ -291,6 +289,9 @@ class SickRage(object):
                     CUR_DB_VERSION) + ") has been incremented past what this version of SickRage supports (" + str(
                     MAX_DB_VERSION) + ").\n" + \
                                  "If you have used other forks of SB, your database may be unusable due to their modifications.")
+
+        # github api
+        sickbeard.gh = github.Github().get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)  # wanted branch
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.consoleLogging)
