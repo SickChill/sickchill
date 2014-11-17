@@ -11,5 +11,9 @@ branches:
 install:
   - pip install cheetah
 
-before_script: cd ./tests
-script: ./all_tests.py
+before_script:
+  - cd ./tests
+  - chmod +x ./all_tests.py
+  
+script:
+  - ./all_tests.py
