@@ -34,7 +34,7 @@ import shutil
 from sickbeard import encodingKludge as ek, providers, tvcache
 from sickbeard import db
 from sickbeard.databases import mainDB
-from sickbeard.databases import cache_db
+from sickbeard.databases import cache_db, failed_db
 
 #=================
 # test globals
@@ -42,7 +42,7 @@ from sickbeard.databases import cache_db
 TESTDIR = os.path.abspath('.')
 TESTDBNAME = "sickbeard.db"
 TESTCACHEDBNAME = "cache.db"
-
+TESTFAILEDDBNAME = "failed.db"
 
 SHOWNAME = u"show name"
 SEASON = 4
@@ -102,6 +102,7 @@ createTestCacheFolder()
 #=================
 def _dummy_saveConfig():
     return True
+
 # this overrides the sickbeard save_config which gets called during a db upgrade
 # this might be considered a hack
 mainDB.sickbeard.save_config = _dummy_saveConfig
@@ -165,7 +166,6 @@ class TestCacheDBConnection(TestDBConnection, object):
 sickbeard.db.DBConnection = TestDBConnection
 sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
 
-
 #=================
 # test functions
 #=================
@@ -174,11 +174,15 @@ def setUp_test_db():
     """
     # upgrading the db
     db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+
     # fix up any db problems
     db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
 
-    #and for cache.b too
+    # and for cachedb too
     db.upgradeDatabase(db.DBConnection("cache.db"), cache_db.InitialSchema)
+
+    # and for faileddb too
+    db.upgradeDatabase(db.DBConnection("failed.db"), failed_db.InitialSchema)
 
 
 def tearDown_test_db():
@@ -186,11 +190,13 @@ def tearDown_test_db():
         although this seams not to work on my system it leaves me with an zero kb file
     """
     # uncomment next line so leave the db intact between test and at the end
-    return False
+    #return False
     if os.path.exists(os.path.join(TESTDIR, TESTDBNAME)):
         os.remove(os.path.join(TESTDIR, TESTDBNAME))
     if os.path.exists(os.path.join(TESTDIR, TESTCACHEDBNAME)):
         os.remove(os.path.join(TESTDIR, TESTCACHEDBNAME))
+    if os.path.exists(os.path.join(TESTDIR, TESTFAILEDDBNAME)):
+        os.remove(os.path.join(TESTDIR, TESTFAILEDDBNAME))
 
 
 def setUp_test_episode_file():

@@ -53,26 +53,27 @@ def filterBadReleases(name, parse=True):
         logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)
         return False
     except InvalidShowException:
-        logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
-        return False
+        pass
+    #    logger.log(u"Unable to parse the filename " + name + " into a valid show", logger.DEBUG)
+    #    return False
 
     # if any of the bad strings are in the name then say no
     if sickbeard.IGNORE_WORDS:
         resultFilters.extend(sickbeard.IGNORE_WORDS.split(','))
-    filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in resultFilters]
+    filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in resultFilters]
     for regfilter in filters:
         if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contains pattern: " + regfilter.pattern + ", ignoring it",
+            logger.log(u"Invalid scene release: " + name + " contained: " + regfilter.pattern + ", ignoring it",
                        logger.DEBUG)
             return False
 
     # if any of the good strings aren't in the name then say no
     if sickbeard.REQUIRE_WORDS:
         require_words = sickbeard.REQUIRE_WORDS.split(',')
-        filters = [re.compile('(^|[\W_])%s($|[\W_])' % filter.strip(), re.I) for filter in require_words]
+        filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in require_words]
         for regfilter in filters:
             if not regfilter.search(name):
-                logger.log(u"Invalid scene release: " + name + " doesn't contain pattern: " + regfilter.pattern + ", ignoring it",
+                logger.log(u"Invalid scene release: " + name + " doesn't contain: " + regfilter.pattern + ", ignoring it",
                            logger.DEBUG)
                 return False
 

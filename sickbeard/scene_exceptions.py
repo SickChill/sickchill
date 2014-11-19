@@ -154,8 +154,8 @@ def get_scene_exception_by_name_multiple(show_name):
 
     if out:
         return out
-    else:
-        return [(None, None)]
+
+    return (None, None)
 
 
 def retrieve_exceptions():
@@ -245,7 +245,6 @@ def retrieve_exceptions():
         logger.log(u"Updated scene exceptions")
     else:
         logger.log(u"No scene exceptions update needed")
-
 
     # cleanup
     exception_dict.clear()
