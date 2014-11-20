@@ -42,7 +42,7 @@ $(document).ready(function() {
             }
         });
 
-        $('#tableDiv').html('<div id="wrap"><div class="spinner"></div><div class="item"> loading folders...</div></div>');
+        $('#tableDiv').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> loading folders...');
         $.get(sbRoot+'/home/addShows/massAddTable', url, function(data) {
             $('#tableDiv').html(data);
             $("#addRootDirTable").tablesorter({

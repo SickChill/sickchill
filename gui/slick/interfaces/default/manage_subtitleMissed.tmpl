@@ -27,7 +27,7 @@
 #end if
 
 <form action="$sbRoot/manage/subtitleMissed" method="get">
-Manage episodes without <select name="whichSubs">
+Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
 #for $sub_lang in $subliminal.language.language_list($sickbeard.SUBTITLES_LANGUAGES):
 <option value="$sub_lang.alpha2">$sub_lang</option>
@@ -45,13 +45,13 @@ subtitles
 <form action="$sbRoot/manage/downloadSubtitleMissed" method="post">
 <h2>Episodes without $subsLanguage subtitles.</h2>
 <br />
-Download missed subtitles for selected episodes <input class="btn" type="submit" value="Go" />
+Download missed subtitles for selected episodes <input class="btn btn-inline" type="submit" value="Go" />
 <div>
-	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a style="color: #fff">Select all</a></button> 
-	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a style="color: #fff">Clear all</a></button>
+	<button type="button" class="btn btn-xs selectAllShows">Select all</a></button> 
+	<button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
 <br />
-<table class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 #for $cur_indexer_id in $sorted_show_ids:
  <tr id="$cur_indexer_id">
   <th><input type="checkbox" class="allCheck" id="allCheck-$cur_indexer_id" name="$cur_indexer_id-all" checked="checked" /></th>

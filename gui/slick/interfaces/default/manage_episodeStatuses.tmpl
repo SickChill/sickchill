@@ -25,12 +25,12 @@
 #end if
 
 <form action="$sbRoot/manage/episodeStatuses" method="get">
-Manage episodes with status <select name="whichStatus">
+Manage episodes with status <select name="whichStatus" class="form-control form-control-inline input-sm">
 #for $curStatus in [$common.SKIPPED, $common.SNATCHED, $common.WANTED, $common.ARCHIVED, $common.IGNORED]:
 <option value="$curStatus">$common.statusStrings[$curStatus]</option>
 #end for
 </select>
-<input class="btn" type="submit" value="Manage" /> 
+<input class="btn btn-inline" type="submit" value="Manage" /> 
 </form>
 
 #else
@@ -51,7 +51,7 @@ Manage episodes with status <select name="whichStatus">
 #end if
 <input type="hidden" id="row_class" value="$row_class" />
 
-Set checked shows/episodes to <select name="newStatus">
+Set checked shows/episodes to <select name="newStatus" class="form-control form-control-inline input-sm">
 #set $statusList = [$common.SKIPPED, $common.WANTED, $common.ARCHIVED, $common.IGNORED]
 #if $int($whichStatus) in $statusList
 $statusList.remove($int($whichStatus))
@@ -65,19 +65,19 @@ $statusList.append($common.FAILED)
 <option value="$curStatus">$common.statusStrings[$curStatus]</option>
 #end for
 </select>
-<input class="btn" type="submit" value="Go" />
+<input class="btn btn-inline" type="submit" value="Go" />
 
 <div>
-	<button type="button" class="btn btn-mini selectAllShows" style="line-height: 8px;"><a style="color: #fff">Select all</a></button> 
-	<button type="button" class="btn btn-mini unselectAllShows" style="line-height: 8px;"><a style="color: #fff">Clear all</a></button>
+	<button type="button" class="btn btn-xs selectAllShows">Select all</a></button> 
+	<button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
 <br />
 
-<table class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 #for $cur_indexer_id in $sorted_show_ids:
  <tr id="$cur_indexer_id">
   <th><input type="checkbox" class="allCheck" id="allCheck-$cur_indexer_id" name="$cur_indexer_id-all" checked="checked" /></th>
-  <th colspan="2" style="width: 100%; text-align: left;"><a class="whitelink" href="$sbRoot/home/displayShow?show=$cur_indexer_id">$show_names[$cur_indexer_id]</a> ($ep_counts[$cur_indexer_id]) <input type="button" class="float-right get_more_eps btn" id="$cur_indexer_id" value="Expand" /></th>
+  <th colspan="2" style="width: 100%; text-align: left;"><a class="whitelink" href="$sbRoot/home/displayShow?show=$cur_indexer_id">$show_names[$cur_indexer_id]</a> ($ep_counts[$cur_indexer_id]) <input type="button" class="pull-right get_more_eps btn" id="$cur_indexer_id" value="Expand" /></th>
  </tr>
 #end for
 </table>

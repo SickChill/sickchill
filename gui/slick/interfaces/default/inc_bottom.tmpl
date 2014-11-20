@@ -6,8 +6,8 @@
     </div> <!-- /content -->
 </div> <!-- /contentWrapper -->
 
-<div class="footer clearfix">
-	<div class="meta" style="display: table; margin: 0 auto; font-size: 12px;">
+<footer>
+	<div class="footer clearfix">
 		#set $myDB = $db.DBConnection()
 		#set $today = str($datetime.date.today().toordinal())
 		#set status_quality = '(' + ','.join([str(quality) for quality in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
@@ -41,15 +41,15 @@
 		
 		<div class="footerhighlight">$shows_total</div> Shows (<div class="footerhighlight">$shows_active</div> Active) | <div class="footerhighlight"><%=ep_downloaded%></div>#if $ep_snatched > 0 then " (" + "<div class=\"footerhighlight\">+" + str($ep_snatched) + "</div> snatched)" else ""# / <div class="footerhighlight">$ep_total</div> Episodes Downloaded | Daily Search: <div class="footerhighlight"><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></div> | Backlog Search: <div class="footerhighlight">$sbdatetime.sbdatetime.sbfdate($sickbeard.backlogSearchScheduler.nextRun())</div>	
 
-		</div>
-	<!-- 
-	<ul style="display: table; margin: 0 auto; font-size: 12px; list-style-type: none; padding: 0; padding-top: 10px;">
-        <li><a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Force Version Check</a></li>
-        <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Restart</a></li>
-        <li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/shutdown16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Shutdown</a></li>
-	</ul>
-	-->
-</div>
+	</div>
+		<!-- 
+		<ul style="display: table; margin: 0 auto; font-size: 12px; list-style-type: none; padding: 0; padding-top: 10px;">
+			<li><a href="$sbRoot/manage/manageSearches/forceVersionCheck"><img src="$sbRoot/images/menu/update16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Force Version Check</a></li>
+			<li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/restart16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Restart</a></li>
+			<li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm"><img src="$sbRoot/images/menu/shutdown16.png" alt="" width="16" height="16" style="vertical-align:middle;" />Shutdown</a></li>
+		</ul>
+		-->
+</footer>
 	
 </body>
 </html>

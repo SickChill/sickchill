@@ -667,9 +667,9 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 def sanitizeSceneName(name, ezrss=False):
     """
     Takes a show name and returns the "scenified" version of it.
-    
+
     ezrss: If true the scenified version will follow EZRSS's cracksmoker rules as best as possible
-    
+
     Returns: A string containing the scene version of the show name given.
     """
 
@@ -900,7 +900,7 @@ def md5_for_file(filename, block_size=2 ** 16):
 
 def get_lan_ip():
     """
-    Simple function to get LAN localhost_ip 
+    Simple function to get LAN localhost_ip
     http://stackoverflow.com/questions/11735821/python-get-localhost-ip
     """
 
@@ -954,6 +954,13 @@ def check_url(url):
         return None
 
 
+def anon_url(*url):
+    """
+    Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
+    """
+    return '' if None in url else '%s%s' % (sickbeard.ANON_REDIRECT, ''.join(str(s) for s in url))
+
+
 """
 Encryption
 ==========
@@ -963,7 +970,7 @@ By Pedro Jose Pereira Vieito <pvieito@gmail.com> (@pvieito)
 * The keys should be unique for each device
 
 To add a new encryption_version:
-  1) Code your new encryption_version        
+  1) Code your new encryption_version
   2) Update the last encryption_version available in webserve.py
   3) Remember to maintain old encryption versions and key generators for retrocompatibility
 """
@@ -1157,8 +1164,12 @@ def mapIndexersToShow(showObj):
 
     # for each mapped entry
     for curResult in sqlResults:
-        logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
-        mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
+        nlist = [i for i in curResult if i is not None]
+        # Check if its mapped with both tvdb and tvrage.
+        if len(nlist) >= 4:
+            logger.log(u"Found indexer mapping in cache for show: " + showObj.name, logger.DEBUG)
+            mapped[int(curResult['mindexer'])] = int(curResult['mindexer_id'])
+            return mapped
     else:
         sql_l = []
         for indexer in sickbeard.indexerApi().indexers:

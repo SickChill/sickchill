@@ -40,41 +40,20 @@ $(document).ready(function () {
 			}
 		});
 	});
-	
-	$('a.delete').bind("click",function(e) {
-		e.preventDefault();
-		var target = $( this ).attr('href');
-		var showname = document.getElementById("showtitle").getAttribute('data-showname');
-		$.confirm({
-			'title'		: 'Delete Show',
-			'message'	: 'Are you sure you want to permanently delete <font color="#09A2FF">' + showname + '</font> ? <br /><br /> <font color="red">WARNING - This process will also delete all stored files. <br /> This process cannot be un-done.</font>',
-			'buttons'	: {
-				'Yes'	: {
-					'class'	: 'green',
-					'action': function(){
-						location.href = target;
-					}
-				},
-				'No'	: {
-					'class'	: 'red',
-					'action': function(){}	// Nothing to do in this case. You can as well omit the action property.
-				}
-			}
-		});
-	});
-	
+
 	$('a.remove').bind("click",function(e) {
 		e.preventDefault();
 		var target = $( this ).attr('href');
 		var showname = document.getElementById("showtitle").getAttribute('data-showname');
 		$.confirm({
 			'title'		: 'Remove Show',
-			'message'	: 'Are you sure you want to remove <font color="#09A2FF">' + showname + '</font> from the database ?',
+			'message'	: 'Are you sure you want to remove <span class="footerhighlight">' + showname + '</span> from the database ?<br /><br /><input type="checkbox" id="deleteFiles"> <span class="red-text">Check to delete files as well. IRREVERSIBLE</span></input>',
 			'buttons'	: {
 				'Yes'	: {
 					'class'	: 'green',
 					'action': function(){
-						location.href = target;
+						location.href = target + (document.getElementById('deleteFiles').checked ? '&full=1' : '');
+						// If checkbox is ticked, remove show and delete files. Else just remove show.
 					}
 				},
 				'No'	: {

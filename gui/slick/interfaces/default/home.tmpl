@@ -45,77 +45,7 @@
 
 #set $max_download_count = $max_download_count * 100
 
-<style type="text/css">
-.sort_data {display:none}
-</style>
-
 <script type="text/javascript" charset="utf-8">
-
-\$(document).ready(function(){
-      
-    var \$container = [\$('#container'), \$('#container-anime')];
-      
-    jQuery.each(\$container, function (j) {
-        this.isotope({
-			sortBy : \$.cookie('sortby'),
-			itemSelector : '.show',
-			getSortData : {
-				name : function( \$elem ) {
-				return \$elem.attr('data-name');
-			},
-				network : function( \$elem ) {
-				return \$elem.attr('data-network');
-			},
-				date: function( \$elem ) {
-				return parseInt( \$elem.attr('data-date'), 10 ) || Number.POSITIVE_INFINITY;
-			},
-				progress : function( \$elem ) {
-				return parseInt( \$elem.attr('data-progress'), 10) * -1 || Number.POSITIVE_INFINITY;
-			}
-		}
-		});
-	});
-      
-	var \$optionSets = \$('.option-set'),
-		\$optionLinks = \$optionSets.find('a');
-
-	\$optionLinks.click(function(){
-		var \$this = \$(this);
-		// don't proceed if already selected
-		if ( \$this.hasClass('selected') ) {
-			return false;
-		}
-		var \$optionSet = \$this.parents('.option-set');
-		\$optionSet.find('.selected').removeClass('selected');
-		\$this.addClass('selected');
-		  
-		// make option object dynamically, i.e. { filter: '.my-filter-class' }
-		var options = {},
-		key = \$optionSet.attr('data-option-key'),
-		value = \$this.attr('data-option-value');
-		// parse 'false' as false boolean
-		value = value === 'false' ? false : value;
-		options[ key ] = value;
-		if ( key === 'layoutMode' && typeof changeLayoutMode === 'function' ) {
-		// changes in layout modes need extra logic
-		changeLayoutMode( \$this, options )
-		} else {
-		// otherwise apply new options & save sort cookie
-		\$('#container').isotope( options );
-		\$('#container-anime').isotope( options );
-		\$.cookie('sortby', value, { expires: 365 });
-		}
-		return false;
-	});
-});
-
-sortFlipper = true;
-function invertSort(){
-    sortFlipper = !sortFlipper;
-    \$('#container').isotope({sortAscending: sortFlipper});
-    \$('#container-anime').isotope({sortAscending: sortFlipper});
-}
-
 <!--
 
 \$.tablesorter.addParser({
@@ -125,7 +55,7 @@ function invertSort(){
     },
     format: function(s) {
         if (s.indexOf('Loading...') == 0)
-        	return s.replace('Loading...','000');
+          return s.replace('Loading...','000');
 		else
 		#if not $sickbeard.SORT_ARTICLE:
 			return (s || '').replace(/^(The|A|An)\s/i,'');
@@ -137,113 +67,73 @@ function invertSort(){
 });
 
 \$.tablesorter.addParser({
-    id: 'cDate',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        return s; 
-    },
-    type: 'numeric'
-});
-
-
-\$.tablesorter.addParser({
     id: 'quality',
     is: function(s) {
         return false;
     },
     format: function(s) { 
-        return s.replace('HD1080p',5).replace('HD720p',4).replace('HD',3).replace('SD',2).replace('Any',1).replace('Best',0).replace('Custom',7);
-    },
-    type: 'numeric'
-});
-
-\$.tablesorter.addParser({
-    id: 'eps',
-    is: function(s) {
-        return false;
-    },
-    format: function(s) {
-        match = s.match(/^(.*)/);
-
-        if (match == null || match[1] == "?")
-          return -10;
-
-        var nums = match[1].split(" / ");
-        if (nums[0].indexOf("+") != -1) {
-            var num_parts = nums[0].split("+");
-            nums[0] = num_parts[0];
-        }
-
-        nums[0] = parseInt(nums[0])
-        nums[1] = parseInt(nums[1])
-
-        if (nums[0] === 0)
-          return nums[1];
-
-        var finalNum = parseInt($max_download_count*nums[0]/nums[1]);
-        if (finalNum > 0)
-          finalNum += nums[0];
-
-        return finalNum;
+        return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('custom',7);
     },
     type: 'numeric'
 });
 
 \$(document).ready(function(){ 
-
+	
     \$("img#network").on('error', function(){
     	\$(this).parent().text(\$(this).attr('alt'));
     	\$(this).remove();
     });
 
     \$("#showListTableShows:has(tbody tr)").tablesorter({
+        sortList: [[5,1],[1,0]],
+        textExtraction: {
+			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			4: function(node) { return \$(node).find("span").text(); },
+			5: function(node) { return \$(node).find("img").attr("alt"); }
+        },
+        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter'],
+        headers: {
+			0: { sorter: 'isoDate' },
+			1: { sorter: 'loadingNames' },
+			3: { sorter: 'quality' },
+			4: { sorter: 'eps' }
+        },
+		widgetOptions : {
+            filter_columnFilters: false,
+			filter_reset: '.resetshows'
+		},
+        sortStable: true
+    });
 	
-	        sortList: [[6,1],[1,0]],
-	        textExtraction: {
-				0: function(node) { return \$(node).find("span").text().toLowerCase(); },			
-	        #if ( $layout != 'simple'):
-		        2: function(node) { return \$(node).find("img").attr("alt"); },
-	        #end if
-	            3: function(node) { return \$(node).find("span").text(); },
-	            5: function(node) { return \$(node).find("img").attr("alt"); }
-	        },
-	        widgets: ['saveSort', 'zebra'],
-	        headers: {
-				0: { sorter: 'cDate' },
-	            1: { sorter: 'loadingNames' },
-	            2: { sorter: 'network' },
-	            3: { sorter: 'quality' },
-	            4: { sorter: 'eps' },
-				5: { sorter: 'active' },
-				6: { sorter: 'status' },
-	        }
+	\$("#showListTableAnime:has(tbody tr)").tablesorter({
+        sortList: [[5,1],[1,0]],
+        textExtraction: {
+			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			4: function(node) { return \$(node).find("span").text(); },
+			5: function(node) { return \$(node).find("img").attr("alt"); }
+        },
+        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter'],
+        headers: {
+			0: { sorter: 'isoDate' },
+			1: { sorter: 'loadingNames' },
+			3: { sorter: 'quality' },
+			4: { sorter: 'eps' }
+        },
+		widgetOptions : {
+            filter_columnFilters: false,
+			filter_reset: '.resetanime'
+		},
+        sortStable: true
     });
 
-    \$("#showListTableAnime:has(tbody tr)").tablesorter({
-
-	        sortList: [[6,1],[1,0]],
-	        textExtraction: {
-				0: function(node) { return \$(node).find("span").text().toLowerCase(); },			
-	        #if ( $layout != 'simple'):
-		        2: function(node) { return \$(node).find("img").attr("alt"); },
-	        #end if
-	            3: function(node) { return \$(node).find("span").text(); },
-	            5: function(node) { return \$(node).find("img").attr("alt"); }
-	        },
-	        widgets: ['saveSort', 'zebra'],
-	        headers: {
-				0: { sorter: 'cDate' },
-	            1: { sorter: 'loadingNames' },
-	            2: { sorter: 'network' },
-	            3: { sorter: 'quality' },
-	            4: { sorter: 'eps' },
-				5: { sorter: 'active' },
-				6: { sorter: 'status' },
-	        }
-    });
-
+	\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
+	
+	#if $sickbeard.ANIME_SPLIT_HOME:
+	\$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
+	#end if
+	
     #set $fuzzydate = 'airdate'
     #if $sickbeard.FUZZY_DATING:
     fuzzyMoment({
@@ -255,7 +145,56 @@ function invertSort(){
         trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
     });
     #end if
+	
+	var \$container = [\$('#container'), \$('#container-anime')];
+	
+	jQuery.each(\$container, function (j) {
+        this.isotope({
+			itemSelector: '.show',
+            sortBy : '$sickbeard.POSTER_SORTBY',
+            sortAscending: $sickbeard.POSTER_SORTDIR,
+			layoutMode: 'masonry',
+			masonry: {
+				columnWidth: 12,
+				isFitWidth: true
+			},
+			getSortData: {
+				name: function( itemElem ) { 
+					var name = \$( itemElem ).attr('data-name');
+					#if not $sickbeard.SORT_ARTICLE:
+						return (name || '').replace(/^(The|A|An)\s/i,'');
+					#else:
+						return (name || '');
+					#end if	
+				},
+				network: '[data-network]',
+				date: function( itemElem ) {
+					var date = \$( itemElem ).attr('data-date');
+                    return date.length && parseInt( date, 10 ) || Number.POSITIVE_INFINITY;
+				},
+				progress: function( itemElem ) {
+					var progress = \$( itemElem ).attr('data-progress');
+					return progress.length && parseInt( progress, 10 ) || Number.NEGATIVE_INFINITY;
+				}
+			}
+		});
+	});
 
+	\$('#postersort').on( 'change', function() {
+		var sortValue = this.value;
+		\$('#container').isotope({ sortBy: sortValue });
+		\$('#container-anime').isotope({ sortBy: sortValue });
+        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
+	});
+	
+	\$('#postersortdirection').on( 'change', function() {
+		var sortDirection = this.value;
+		sortDirection = sortDirection == 'true';
+		\$('#container').isotope({ sortAscending: sortDirection });
+		\$('#container-anime').isotope({ sortAscending: sortDirection });
+        \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
+	});
+	
 });
 
 //-->
@@ -267,25 +206,43 @@ function invertSort(){
 	<h1 class="title">$title</h1>
 #end if
 
-<div id="HomeLayout" style="float: right; margin-top: -25px;">
-	<span>Layout:
-		<a class="inner" href="$sbRoot/setHomeLayout/?layout=poster">Poster</a> &middot;
-		<a class="inner" href="$sbRoot/setHomeLayout/?layout=small">Small Poster</a> &middot;
-		<a class="inner" href="$sbRoot/setHomeLayout/?layout=banner">Banner</a> &middot;
-		<a class="inner" href="$sbRoot/setHomeLayout/?layout=simple">Simple</a>
+<div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
+	<span> Layout: 
+		<select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+			<option value="$sbRoot/setHomeLayout/?layout=poster" #if $sickbeard.HOME_LAYOUT == "poster" then "selected=\"selected\"" else ""#>Poster</option>
+			<option value="$sbRoot/setHomeLayout/?layout=small" #if $sickbeard.HOME_LAYOUT == "small" then "selected=\"selected\"" else ""#>Small Poster</option>
+			<option value="$sbRoot/setHomeLayout/?layout=banner" #if $sickbeard.HOME_LAYOUT == "banner" then "selected=\"selected\"" else ""#>Banner</option>
+			<option value="$sbRoot/setHomeLayout/?layout=simple" #if $sickbeard.HOME_LAYOUT == "simple" then "selected=\"selected\"" else ""#>Simple</option>
+		</select>
 	</span>
 	
 	#if $layout == 'poster':
-	<ul id="sort-by" class="option-set" data-option-key="sortBy">
-	Sort By:
-		<li><a href="#sortBy=name" data-option-value="name">Name</a></li> &middot;
-		<li><a href="#sortBy=date" data-option-value="date">Next Episode</a></li> &middot;
-		<li><a href="#sortBy=network" data-option-value="network">Network</a></li> &middot;
-		<li><a href="#sortBy=progress" data-option-value="progress">Progress</a></li> &middot;
-    </ul>
-    &nbsp;<a style="display: inline-block; float: right;" class="clearfix" href="javascript:invertSort();">Flip</a>
+	&nbsp;
+	<span> Sort By: 
+		<select id="postersort" class="form-control form-control-inline input-sm">
+            <option value="name" data-sort="$sbRoot/setPosterSortBy/?sort=name" #if $sickbeard.POSTER_SORTBY == "name" then "selected=\"selected\"" else ""#>Name</option>
+            <option value="date" data-sort="$sbRoot/setPosterSortBy/?sort=date" #if $sickbeard.POSTER_SORTBY == "date" then "selected=\"selected\"" else ""#>Next Episode</option>
+            <option value="network" data-sort="$sbRoot/setPosterSortBy/?sort=network" #if $sickbeard.POSTER_SORTBY == "network" then "selected=\"selected\"" else ""#>Network</option>
+            <option value="progress" data-sort="$sbRoot/setPosterSortBy/?sort=progress" #if $sickbeard.POSTER_SORTBY == "progress" then "selected=\"selected\"" else ""#>Progress</option>
+		</select>
+	</span>
+	&nbsp;
+	<span> Sort Order: 
+		<select id="postersortdirection" class="form-control form-control-inline input-sm">
+            <option value="true" data-sort="$sbRoot/setPosterSortDir/?direction=1" #if $sickbeard.POSTER_SORTDIR == 1 then "selected=\"selected\"" else ""#>Asc</option>
+            <option value="false" data-sort="$sbRoot/setPosterSortDir/?direction=0" #if $sickbeard.POSTER_SORTDIR == 0 then "selected=\"selected\"" else ""#>Desc</option>
+		</select>
+	</span>
+	&nbsp;
+
 	#end if
 </div>
+
+#if $layout != 'poster':
+<div class="pull-right">
+	<input class="search form-control form-control-inline input-sm input200" type="search" data-column="1" placeholder="Search Show Name"> <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
+</div>
+#end if
 
 #for $curShowlist in $showlists:
 #set $curListType = $curShowlist[0]
@@ -296,7 +253,7 @@ function invertSort(){
 
 #if $layout == 'poster':
 <div id=#if $curListType == "Anime" and $layout == 'poster' then "container-anime" else "container"# class="clearfix">
-
+<div class="posterview">
 #for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
 
 	#if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
@@ -323,6 +280,11 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #set $cur_downloaded = 0
     #set $cur_total = 0
     #set $download_stat_tip = ''
+    #if None is not $curShow.status and re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+	    #set $display_status = 'Continuing'
+    #else
+        #set $display_status = $curShow.status
+    #end if
 
     #if $curShow.indexerid in $show_stat:
         #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
@@ -363,29 +325,25 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         #set $den = 1
     #end if
 
-#set $progressbar_percent = $nom * 100 / $den
+	#set $progressbar_percent = $nom * 100 / $den
 	
-	#if "a" in sickbeard.DATE_PRESET:
-		#set $showheight = "334px"
-		#set $tableheight = "52px"
-	#else if "B" in sickbeard.DATE_PRESET:
-		#set $showheight = "374px"
-		#set $tableheight = "92px"
-	#else if "A" in sickbeard.DATE_PRESET:
-		#set $showheight = "334px"
-		#set $tableheight = "52px"
-	#else
-		#set $showheight = "323px"
-		#set $tableheight = "42px"
-	#end if
-
-	<div class="show" style="height: $showheight" id="show$curShow.indexerid" data-name="$curShow.name" data-date="#if $cur_airs_next then $time.mktime($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network).timetuple()) else ""#" data-network="$curShow.network" data-progress="$progressbar_percent">
+#set $data_date = '6000000000.0'
+#if $cur_airs_next:
+    #set $data_date = $time.mktime($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)).timetuple())
+#else if None is not $display_status
+    #if 'nded' not in $display_status and 1 == int($curShow.paused)
+        #set $data_date = '5000000500.0'
+    #else if 'ontinu' in $display_status
+        #set $data_date = '5000000000.0'
+    #else if 'nded' in $display_status
+        #set $data_date = '5000000100.0'
+    #end if
+#end if
+	<div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
 		<div class="show-image">
 			<a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
-			<div class="show-image-slide">
-				<p>$curShow.name</p>
-			</div>
 		</div>
+		
 		<div id="progressbar$curShow.indexerid"></div>
 			<script type="text/javascript">
 			<!--
@@ -409,67 +367,88 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 				});
 			//-->
 			</script>
-		
-		<table width="184px" height="$tableheight" cellspacing="1" border="0" cellpadding="0" style="padding-left: 2px; cursor: default;">
-			<col width="120px" />
-			<col width="59px" />
+			
+		<div class="show-title">
+			$curShow.name
+		</div>
 
+		<div class="show-date">
+#if $cur_airs_next
+    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
+			<span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span>
+#else
+    #set $output_html = '?'
+    #if None is not $display_status
+        #if 'nded' not in $display_status and 1 == int($curShow.paused)
+            #set $output_html = 'Paused'
+        #else if $display_status
+            #set $output_html = $display_status
+        #end if
+    #end if
+    $output_html
+#end if
+        </div>
+
+		<table width="100%" cellspacing="1" border="0" cellpadding="0">
 			<tr>
-				<td style="text-align:center; vertical-align:middle;" colspan="3">
-					#if $cur_airs_next
-					#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
-						<div class="show-date">Next Ep: <span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span></div>
-					#else if $curShow.status != "Ended" and int($curShow.paused) == 1:
-						<div class="show-status">Paused</div>
-					#else if $curShow.status:
-						<div class="show-status">$curShow.status</div>
-					#else
-						<div class="show-status">?</div>
-					#end if
-				</td>
-			</tr>
-			<tr>
-				<td style="text-align:center; vertical-align:middle;">
+				<td class="show-table">
 					<span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
-					<div class="float-left">
-					#if $curShow.quality in $qualityPresets:
-						<span class="show-dlstats">$qualityPresetStrings[$curShow.quality]</span>
-					#else:
-						<span class="show-dlstats">Custom</span>
-					#end if
 				</td>
-					
-				<td style="text-align:center; vertical-align:middle;">
-				    #if $layout != 'simple':
+				
+				<td class="show-table">
+				    #if $layout != 'simple':	
 						#if $curShow.network:
-							<img class="show-network-image float-right" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
+							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
 						#else:
-							<img class="show-network-image float-right" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+							<img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
 						#end if
 					#else:
 						$curShow.network
+					#end if	
+				</td>
+				
+				<td class="show-table">
+					#if $curShow.quality in $qualityPresets:
+						<span class="show-quality">$qualityPresetStrings[$curShow.quality]</span>
+					#else:
+						<span class="show-quality">Custom</span>
 					#end if
 				</td>
 			</tr>
 		</table>
-          
+		
 	</div>
+  
+
     
 #end for    
+</div> 
 </div> 
 
 #else
 
 <table id="showListTable$curListType" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
 
-  <thead><tr><th class="nowrap">Next Ep</th><th>$curListType</th><th>Network</th><th>Quality</th><th>Downloads</th><th>Active</th><th>Status</th></tr></thead>
-  <tfoot>
-    <tr>
-      <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">&nbsp Add Show</a></th>
-      <th rowspan="1" colspan="7"></th>
-    </tr>
-  </tfoot>
-  <tbody>
+    <thead>
+		<tr>
+			<th class="nowrap">Next Ep</th>
+			<th>Show</th>
+			<th>Network</th>
+			<th>Quality</th>
+			<th>Downloads</th>
+			<th>Active</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	
+    <tfoot>
+        <tr>
+			<th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">Add Show</a></th>
+			<th rowspan="1" colspan="6"></th>
+        </tr>
+    </tfoot>
+    
+	<tbody>
 
 #for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
 
@@ -542,17 +521,19 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         #set $den = 1
     #end if
 
-#set $progressbar_percent = $nom * 100 / $den
+	#set $progressbar_percent = $nom * 100 / $den
 
-  <tr>
-    #if $cur_airs_next
-	#set $ldatetime = $network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)
-    	<td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$time.mktime($ldatetime.timetuple())</span> </td>
+    <tr>
+	
+	#if $cur_airs_next
+    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
+		<td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$time.mktime($ldatetime.timetuple())</span></td>
     #else:
     	<td align="center" class="nowrap"></td>
     #end if
+	
 	#if $layout == 'small':
-	    <td>
+	    <td class="tvShow">
 	    	<div class="imgsmallposter $layout">
 		    	<a href="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=$layout" rel="dialog" title="$curShow.name">
 		    		<img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" class="$layout" alt="$curShow.indexerid"/>
@@ -571,56 +552,71 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 	#else if $layout == 'simple':
 	    <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
     #end if
-    <!--<td align="center">$curShow.network</td>//-->
-    <td align="center">
+
     #if $layout != 'simple':	
+		<td align="center">
         #if $curShow.network:
         	<img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
     	#else:
     		<img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
 		#end if
+		</td>
 	#else:
-		$curShow.network
+		<td>
+			$curShow.network
+		</td>
 	#end if		
-    </td>
-    
-#if $curShow.quality in $qualityPresets:
-    <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
+
+	#if $curShow.quality in $qualityPresets:
+		<td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
+	#else:
+		<td align="center"><span class="quality Custom">Custom</span></td>
+	#end if
+	
+		<td align="center"><span style="display: none;">$progressbar_percent</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
+			<script type="text/javascript">
+			<!--
+				\$(function() {
+					\$("\#progressbar$curShow.indexerid").progressbar({
+					value: $progressbar_percent });
+					\$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='$download_stat_tip'>$download_stat</div>" )
+					classvalue = $progressbar_percent
+					if (classvalue<20) {
+						classtoadd = "progress-20"
+					}
+					if (classvalue>20 && classvalue<60) {
+						classtoadd = "progress-40"
+					}
+					if (classvalue>40 && classvalue<80) {
+						classtoadd = "progress-60"
+					}
+					if (classvalue>80) {
+						classtoadd = "progress-80"
+					}
+					\$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
+				});
+			//-->
+			</script>
+		</td>
+	
+        <td align="center">
+			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status != "Ended" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
+		</td>
+		
+        <td align="center">
+#if None is not $curShow.status and re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+			Continuing
 #else:
-    <td align="center"><span class="quality Custom">Custom</span></td>
+			$curShow.status
 #end if
-    <td align="center"><span style="display: none;">$download_stat</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
-        <script type="text/javascript">
-        <!--
-            \$(function() {
-               \$("\#progressbar$curShow.indexerid").progressbar({
-       			value: $progressbar_percent });
-               \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='$download_stat_tip'>$download_stat</div>" )
-				classvalue = $progressbar_percent
-                if (classvalue<20) {
-                    classtoadd = "progress-20"
-                }
-                if (classvalue>20 && classvalue<60) {
-                    classtoadd = "progress-40"
-                }
-				if (classvalue>40 && classvalue<80) {
-                    classtoadd = "progress-60"
-                }
-                if (classvalue>80) {
-                    classtoadd = "progress-80"
-                }
-               \$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
-            });
-        //-->
-        </script>
-    </td>
-    <td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status != "Ended" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
-    <td align="center">$curShow.status</td>
-  </tr>
+		</td>
+		
+    </tr>
 
 #end for
 </tbody>
 </table>
+
 #end if
 #end for
 

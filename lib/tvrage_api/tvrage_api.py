@@ -101,15 +101,12 @@ class ShowContainer(dict):
 
         #keep only the 100th latest results
         if time.time() - self._lastgc > 20:
-            tbd = self._stack[:-100]
-            i = 0
-            for o in tbd:
+            for o in self._stack[:-100]:
                 del self[o]
-                del self._stack[i]
-                i += 1
+                
+            self._stack = self._stack[-100:]
 
-            _lastgc = time.time()
-            del tbd
+            self._lastgc = time.time()
 
         super(ShowContainer, self).__setitem__(key, value)
 
@@ -479,9 +476,9 @@ class TVRage:
 
         if resp.ok:
             try:
-                return xmltodict.parse(resp.content.strip().encode('utf-8'), postprocessor=remap_keys)
-            except:
                 return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
+            except:
+                return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -664,7 +661,7 @@ class TVRage:
                 self._getShowData(key, True)
             return self.shows[key]
 
-        key = str(key).lower()
+        key = key.lower()
         self.config['searchterm'] = key
         selected_series = self._getSeries(key)
         if isinstance(selected_series, dict):

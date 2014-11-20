@@ -34,6 +34,7 @@ from sickbeard import search_queue
 from sickbeard import image_cache
 from sickbeard import classes
 from sickbeard import processTV
+from sickbeard import network_timezones, sbdatetime
 from sickbeard.exceptions import ex
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
 from common import Quality, qualityPresetStrings, statusStrings
@@ -47,6 +48,7 @@ from lib import subliminal
 
 dateFormat = "%Y-%m-%d"
 dateTimeFormat = "%Y-%m-%d %H:%M"
+timeFormat = '%A %I:%M %p'
 
 RESULT_SUCCESS = 10  # only use inside the run methods
 RESULT_FAILURE = 20  # only use inside the run methods
@@ -162,14 +164,16 @@ class Api(webserve.MainHandler):
         self.set_header("Content-Type", "application/json")
         try:
             out = json.dumps(dict, indent=self.intent, sort_keys=True)
-            callback = self.request.headers.get('callback', None) or self.request.headers.get('jsonp', None)
-            if callback != None:
-                out = callback + '(' + out + ');'  # wrap with JSONP call if requested
+            if 'jsonp' in self.request.query_arguments:
+                out = self.request.arguments['jsonp'] + '(' + out + ');'  # wrap with JSONP call if requested
+
         except Exception, e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
             out = '{"result":"' + result_type_map[RESULT_ERROR] + '", "message": "error while composing output: "' + ex(
                 e) + '"}'
-        return out
+
+        tornado_write_hack_dict = {'unwrap_json': out}
+        return tornado_write_hack_dict
 
     def _grand_access(self, realKey, args, kwargs):
         """ validate api key and log result """
@@ -773,6 +777,10 @@ class CMD_ComingEpisodes(ApiCall):
             if ep["paused"] and not self.paused:
                 continue
 
+            ep['airs'] = str(ep['airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+            dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(int(ep['airdate']), ep['airs'], ep['network']))
+            ep['airdate'] = dtEpisodeAirs.toordinal()
+
             status = "soon"
             if ep["airdate"] < today:
                 status = "missed"
@@ -785,20 +793,20 @@ class CMD_ComingEpisodes(ApiCall):
                     status = "soon"
 
             # skip unwanted
-            if self.type != None and not status in self.type:
+            if self.type is not None and not status in self.type:
                 continue
 
-            ordinalAirdate = int(ep["airdate"])
             if not ep["network"]:
                 ep["network"] = ""
-            ep["airdate"] = _ordinal_to_dateForm(ordinalAirdate)
+
             ep["quality"] = _get_quality_string(ep["quality"])
             # clean up tvdb horrible airs field
-            ep["airs"] = str(ep["airs"]).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+            ep['airs'] = sbdatetime.sbdatetime.sbftime(dtEpisodeAirs, t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
             # start day of the week on 1 (monday)
-            ep["weekday"] = 1 + datetime.date.fromordinal(ordinalAirdate).weekday()
+            ep['weekday'] = 1 + datetime.date.fromordinal(dtEpisodeAirs.toordinal()).weekday()
             # Add tvdbid for backward compability
             ep["tvdbid"] = ep['indexerid']
+            ep['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
 
             # TODO: check if this obsolete
             if not status in finalEpResults:
@@ -860,7 +868,7 @@ class CMD_Episode(ApiCall):
         elif not showPath:  # show dir is broken ... episode path will be empty
             episode["location"] = ""
         # convert stuff to human form
-        episode["airdate"] = _ordinal_to_dateForm(episode["airdate"])
+        episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(int(episode['airdate']), showObj.airs, showObj.network)), d_preset=dateFormat)
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
         episode["status"] = _get_status_Strings(status)
         episode["quality"] = _get_quality_string(quality)
@@ -1589,7 +1597,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
-        self.indexer, args = self.check_params(args, kwargs, "indexer", None, False, "string", [])
+        self.indexer, args = self.check_params(args, kwargs, "indexer", 1, False, "int", [])
 
         # super, missing, help
         ApiCall.__init__(self, handler, args, kwargs)
@@ -1614,10 +1622,11 @@ class CMD_SickBeardSearchIndexers(ApiCall):
 
             results = []
             for curSeries in apiData:
-                results.append({"indexerid": int(curSeries.findtext('seriesid')),
-                                "tvdbid": int(curSeries.findtext('seriesid')),
-                                "name": curSeries.findtext('SeriesName'),
-                                "first_aired": curSeries.findtext('FirstAired')})
+                results.append({"indexerid": int(curSeries['id']),
+                                "tvdbid": int(curSeries['id']),
+                                "name": curSeries['seriesname'],
+                                "first_aired": curSeries['firstaired'],
+                                "indexer": self.indexer})
 
             lang_id = self.valid_languages[self.lang]
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
@@ -1788,6 +1797,7 @@ class CMD_Show(ApiCall):
         showDict["language"] = showObj.lang
         showDict["show_name"] = showObj.name
         showDict["paused"] = showObj.paused
+        showDict["subtitles"] = showObj.subtitles
         showDict["air_by_date"] = showObj.air_by_date
         showDict["flatten_folders"] = showObj.flatten_folders
         showDict["sports"] = showObj.sports
@@ -1802,13 +1812,12 @@ class CMD_Show(ApiCall):
             showDict["network"] = ""
         showDict["status"] = showObj.status
 
-        nextAirdate = showObj.nextaired
-        if nextAirdate:
-            nextAirdate = _ordinal_to_dateForm(nextAirdate)
+        if showObj.nextaired:
+            dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(showObj.nextaired, showDict['airs'], showDict['network']))
+            showDict['airs'] = sbdatetime.sbdatetime.sbftime(dtEpisodeAirs, t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
+            showDict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
         else:
-            nextAirdate = ''
-
-        showDict["next_ep_airdate"] = nextAirdate
+            showDict['next_ep_airdate'] = ''
 
         return _responds(RESULT_SUCCESS, showDict)
 
@@ -2311,7 +2320,8 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = _get_quality_string(quality)
-                row["airdate"] = _ordinal_to_dateForm(row["airdate"])
+                dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(row['airdate'],showObj.airs,showObj.network))
+                row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
                 curSeason = int(row["season"])
                 curEpisode = int(row["episode"])
                 del row["season"]
@@ -2333,7 +2343,8 @@ class CMD_ShowSeasons(ApiCall):
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
                 row["status"] = _get_status_Strings(status)
                 row["quality"] = _get_quality_string(quality)
-                row["airdate"] = _ordinal_to_dateForm(row["airdate"])
+                dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(row['airdate'], showObj.airs, showObj.network))
+                row['airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
                 if not curEpisode in seasons:
                     seasons[curEpisode] = {}
                 seasons[curEpisode] = row
@@ -2555,11 +2566,6 @@ class CMD_Shows(ApiCall):
         """ display_is_int_multi( self.indexerid )shows in sickbeard """
         shows = {}
         for curShow in sickbeard.showList:
-            nextAirdate = curShow.nextaired
-            if nextAirdate:
-                nextAirdate = _ordinal_to_dateForm(nextAirdate)
-            else:
-                nextAirdate = ''
 
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue
@@ -2578,8 +2584,14 @@ class CMD_Shows(ApiCall):
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,
-                "next_ep_airdate": nextAirdate
+                "subtitles": curShow.subtitles,
             }
+
+            if curShow.nextaired:
+                dtEpisodeAirs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curShow.nextaired, curShow.airs, showDict['network']))
+                showDict['next_ep_airdate'] = sbdatetime.sbdatetime.sbfdate(dtEpisodeAirs, d_preset=dateFormat)
+            else:
+                showDict['next_ep_airdate'] = ''
 
             showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": curShow.indexerid}).run()["data"]
             if not showDict["network"]:
@@ -2588,6 +2600,7 @@ class CMD_Shows(ApiCall):
                 shows[curShow.name] = showDict
             else:
                 shows[curShow.indexerid] = showDict
+
         return _responds(RESULT_SUCCESS, shows)
 
 

@@ -177,7 +177,8 @@ class GrowlNotifier:
         register.add_notification('Test', True)
         register.add_notification(common.notifyStrings[common.NOTIFY_SNATCH], True)
         register.add_notification(common.notifyStrings[common.NOTIFY_DOWNLOAD], True)
-
+        register.add_notification(common.notifyStrings[common.NOTIFY_GIT_UPDATE], True)
+        
         if opts['password']:
             register.set_password(opts['password'])
 

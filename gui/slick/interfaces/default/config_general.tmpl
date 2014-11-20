@@ -7,17 +7,19 @@
 #from sickbeard import config
 #from sickbeard import metadata
 #from sickbeard.metadata.generic import GenericMetadata
-#set global $title  = "Config - General"
-#set global $header = "General Configuration"
+#from sickbeard.helpers import anon_url
 
-#set global $sbPath="../.."
+#set global $title  = 'Config - General'
+#set global $header = 'General Configuration'
 
-#set global $topmenu="config"#
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-<div id="content960">
-#if $varExists('header') 
+#set global $sbPath = '../..'
+
+#set global $topmenu = 'config'
+#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+
+#if $varExists('header')
 	<h1 class="header">$header</h1>
-#else 
+#else
 	<h1 class="title">$title</h1>
 #end if
 
@@ -28,543 +30,543 @@
 
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/imdbWatchlist.js?$sbPID"></script>
 
 <div id="config">
-<div id="config-content">
+	<div id="config-content">
 
-<form id="configForm" action="saveGeneral" method="post">
-            <div id="config-components">
-				
+		<form id="configForm" action="saveGeneral" method="post">
+			<div id="config-components">
+
 				<ul>
 					<li><a href="#core-component-group1">Misc</a></li>
-					<li><a href="#core-component-group2">Web Interface</a></li>
-					<li><a href="#core-component-group3">Date and Time</a></li>
-					<li><a href="#core-component-group4">Advanced Settings</a></li>
-					<li><a href="#core-component-group5">UI Theme Settings</a></li>
+					<li><a href="#core-component-group2">Interface</a></li>
+					<li><a href="#core-component-group3">Advanced Settings</a></li>
 				</ul>
-				
-                <div id="core-component-group1" class="component-group clearfix">
-					
-                    <div class="component-group-desc">
-                        <h3>Misc</h3>
-                        <p>Startup options.</p>
-                        <p><b>Some options may require a manual restart to take effect.</b></p>
-                    </div>
 
-                    <fieldset class="component-group-list" style="width:670px">
-                        <div class="field-pair">
-                            <input type="checkbox" name="launch_browser" id="launch_browser" #if $sickbeard.LAUNCH_BROWSER then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="launch_browser">
-                                <span class="component-title">Launch Browser</span>
-                                <span class="component-desc">Should SickRage open its home page when started?</span>
-                            </label>
-                        </div>
+				<div id="core-component-group1">
+				<div class="component-group">
 
-                        <div class="field-pair">
-                            <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" #if $sickbeard.UPDATE_SHOWS_ON_START then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="update_shows_on_start">
-                                <span class="component-title">Update Shows on Start</span>
-                                <span class="component-desc">Should SickRage update shows info when started?</span>
-                            </label>
-                        </div>  
-                        
-                        <div class="field-pair">
-                            <input type="checkbox" name="version_notify" id="version_notify" #if $sickbeard.VERSION_NOTIFY then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="version_notify">
-                                <span class="component-title">Check for Update</span>
-                                <span class="component-desc">Show notification about updates for SickRage if available.</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Checking for updates runs on startup and on the interval specified below.</span>
-                            </label>
-                        </div>
+					<div class="component-group-desc">
+						<h3>Misc</h3>
+						<p>Startup options. Indexer options. Log and show file locations.</p>
+						<p><b>Some options may require a manual restart to take effect.</b></p>
+					</div>
 
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Update Frequency</span>
-                                <input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" size="5" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in hours to check for software updates (eg. 12)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="auto_update">
-                                <span class="component-title">Automatic Updates</span>
-                                <span class="component-desc">Automatically get and install updates for SickRage when available.</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">updates run on startup and in the background on the interval specified above.</span>
-                            </label>
-                        </div>
-                        <div class="field-pair">
-                            <input type="checkbox" name="notify_on_update" id="notify_on_update" #if $sickbeard.NOTIFY_ON_UPDATE then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="notify_on_update">
-                                <span class="component-title">Notify on Update</span>
-                                <span class="component-desc">Sends the notification SickRage has been updated to all enabled notifiers.</span>
-                            </label>
-                        </div>
-						
-                        <div class="field-pair">
-                            <input type="checkbox" name="sort_article" id="sort_article" #if $sickbeard.SORT_ARTICLE then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="sort_article"> 
-                                <span class="component-title">Sort Articles</span>
-                                <span class="component-desc">Include articles (The, A, An) when sorting show lists.</span>
-                            </label>
-                        </div>
-                        
-                        <div class="field-pair">
-                            <label class="nocheck clearfix" for="indexer_default">
-                                <span class="component-title">Default Indexer:</span>
-                                <span class="component-desc">
-                                    <select id="indexer_default" name="indexer_default">
-                                        <option value="0" #if $indexer == 0 then "selected=\"selected\"" else ""#>All Indexers</option>
-                                        #for $indexer in $sickbeard.indexerApi().indexers
-                                        <option value="$indexer" #if $indexer == $sickbeard.INDEXER_DEFAULT then "selected=\"selected\"" else ""#>$sickbeard.indexerApi().indexers[$indexer]</option>
-                                        #end for
-                                    </select>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Indexer Timeout</span>
-                                <input type="text" name="indexer_timeout" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" size="5" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Time in seconds before Indexer search times out for adding shows (eg. 10)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix" for="log_dir">
-                                <span class="component-title">Logging Directory</span>
-                                <input type="text" name="log_dir" id="log_dir" value="$sickbeard.ACTUAL_LOG_DIR" size="40" />
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" #if $sickbeard.HANDLE_REVERSE_PROXY then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="handle_reverse_proxy">
-                                <span class="component-title">Reverse Proxy Headers</span>
-                                <span class="component-desc">Should SickRage accept the following reverse proxy headers?</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">(X-Forwarded-Host, X-Forwarded-For, X-Forwarded-Proto)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="play_videos" id="play_videos" #if $sickbeard.PLAY_VIDEOS then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="play_videos">
-                                <span class="component-title">Play Videos</span>
-                                <span class="component-desc">Play video files from display show page?</span>
-                            </label>
-                        </div>
-						
+					<fieldset class="component-group-list">
 						<div class="field-pair">
-							<label class="clearfix">
-								<span class="component-title">Show Root Directories</span>
-								<span class="component-desc">Set root directories for where you want your shows to be.</span>
-								#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
-							</label>
-						</div>
-						
-                        <div class="field-pair">
-                            <input type="checkbox" name="use_imdbwl" class="enabler" id="use_imdbwl" #if $sickbeard.USE_IMDBWATCHLIST then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="use_imdbwl">
-                                <span class="component-title">Use IMDB Watchlists</span>
-                            </label>
-                        </div>
-                        
-                        <div id="content_use_imdbwl">
-	                        <!--  Multiselect for managing IMDB watchlist csv url's -->
-	                        <div class="field-pair">
-	                            <label class="clearfix">
-	                                <span class="">Manage your IMDB watchlist url's. Each url should contain your list id and user id. <br>They look like: ls014134 and us0918234.</span>
-	                                #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_imdbWatchlists.tmpl")
-	                            </label>
-	                        </div>
-	                    </div>
-
-	                    <input type="submit" class="btn config_submitter" value="Save Changes" />
-	                    </fieldset>
-
-                </div><!-- /component-group1 //-->
-
-
-                <div id="core-component-group2" class="component-group clearfix">
-
-                    <div class="component-group-desc">
-                        <h3>Web Interface</h3>
-                        <p>It is recommended that you enable a username and password to secure SickRage from being tampered with remotely.</p>
-                        <p><b>These options require a manual restart to take effect.</b></p>
-                    </div>
-
-                    <fieldset class="component-group-list">
-                        
-                        <div class="field-pair">
-                            <input type="checkbox" name="web_ipv6" id="web_ipv6" #if $sickbeard.WEB_IPV6 then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="web_ipv6">
-                                <span class="component-title">Listen on IPv6</span>
-                                <span class="component-desc">Allow SickRage to bind to any available IPv6 address?</span>
-                            </label>
-                        </div>
-                        
-                        <div class="field-pair">
-                            <input type="checkbox" name="web_log" id="web_log" #if $sickbeard.WEB_LOG then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="web_log">
-                                <span class="component-title">HTTP Logs</span>
-                                <span class="component-desc">Have SickRage's web server (tornado) generate logs?</span>
-                            </label>
-                        </div>
-                        
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">HTTP Port</span>
-                                <input type="text" name="web_port" value="$sickbeard.WEB_PORT" size="10" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Web port that SickRage should listen on (eg. 8081)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">HTTP Username</span>
-                                <input type="text" name="web_username" value="$sickbeard.WEB_USERNAME" size="35" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Username for authentication (blank for none)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">HTTP Password</span>
-                                <input type="password" name="web_password" value="$sickbeard.WEB_PASSWORD" size="35" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Password for authentication (blank for none)</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="clearfix">
-                                <input type="checkbox" name="enable_https" class="enabler" id="enable_https" #if $sickbeard.ENABLE_HTTPS then "checked=\"checked\"" else ""#/>
-                                <span class="component-title">Enable HTTPS</span>
-                                <span class="component-desc">Enable accessing the interface from a HTTPS address.</span>
-                            </label>
-                        </div>
-                        
-                        <div id="content_enable_https">
-                            <div class="field-pair">
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">HTTPS Certificate</span>
-                                    <input type="text" name="https_cert" value="$sickbeard.HTTPS_CERT" size="35" />
-                                </label>
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">File name or path to HTTPS Certificate.</span>
-                                </label>
-                            </div>
-    
-                            <div class="field-pair">
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">HTTPS Key</span>
-                                    <input type="text" name="https_key" value="$sickbeard.HTTPS_KEY" size="35" />
-                                </label>
-                                <label class="nocheck clearfix">
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">File name or path to HTTPS Key.</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
-                    </fieldset>
-                </div><!-- /component-group2 //-->
-
-                <div id="core-component-group4" class="component-group clearfix">
-
-                    <div class="component-group-desc">
-                        <h3>Advanced Settings</h3>
-                        <p>You need to know what you are doing here!!!</p>
-                    </div>
-
-                    <fieldset class="component-group-list" style="width:670px">
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Branch Version:</span>
-                                <span class="component-desc">
-                                    <select id="branchVersion">
-                                    #for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
-                                        <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then "selected=\"selected\"" else ""#>$cur_branch</option>
-                                    #end for
-                                    </select>
-                                    <input class="btn" class="btn" type="button" id="branchCheckout" value="Checkout Branch">
-                                </span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Select the branch you wish to use, changing this will require a restart.</span>
-                            </label>
-                        </div>
-						
-						<div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">CPU Throttling:</span>
-                                <span class="component-desc">
-                                    <select id="cpu_presets" name="cpu_preset">
-                                    #for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then "selected=\"selected\"" else ""#>$cur_preset.capitalize()</option>
-                                    #end for
-                                    </select>
-                                </span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Normal = Default.&nbsp;&nbsp;High = Lower CPU usage.&nbsp;&nbsp;Low =  Higher CPU usage.</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Anonymous Redirect</span>
-                                <input type="text" name="anon_redirect" value="$sickbeard.ANON_REDIRECT" size="40" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Backlink protection via anonymizer service, must end in <b>?</b></span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Git Path</span>
-                                <input type="text" name="git_path" value="$sickbeard.GIT_PATH" size="40" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Specify path to Git binary, use only if OS is unable to find the path.</span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="use_api" class="enabler" id="use_api" #if $sickbeard.USE_API then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="use_api">
-                                <span class="component-title">Enable API</span>
-                                <span class="component-desc">Allow the use of the Sick-Beard API.</span>
-                            </label>
-                        </div>
-
-                        <div id="content_use_api">
-                        <div class="field-pair">
-                            <label class="nocheck clearfix" for="api_key">
-                                <span class="component-title">API Key</span>
-                                <input type="text" name="api_key" id="api_key" value="$sickbeard.API_KEY" size="35" readonly="readonly" />
-                                <input class="btn" class="btn" type="button" id="generate_new_apikey" value="Generate">
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Used to give 3rd party programs limited access to Sick-Beard.</span>
-                            </label>
-                        </div>
-                        </div>
-                        
-                        <div class="field-pair">
-                            <input type="checkbox" name="encryption_version" id="encryption_version" #if $sickbeard.ENCRYPTION_VERSION then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="encryption_version">
-                                <span class="component-title">Encrypt Passwords</span>
-                                <span class="component-desc">Should SickRage encrypt passwords in <code>config.ini</code> file?</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>Warning</b>: Passwords must only contain <a style="color: #09A2FF;" href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">ASCII characters</a></span>
-                            </label>
-                        </div> 
-                        
-                        <div class="field-pair">
-                            <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" #if $sickbeard.CALENDAR_UNPROTECTED then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="calendar_unprotected">
-                                <span class="component-title">Unprotected Calendar</span>
-                                <span class="component-desc">Allow subscribing to the calendar without user and password.</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Some services like Google Calendar only work this way.</span>
-                            </label>
-                        </div>                      
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Proxy Settings</span>
-                                <input type="text" name="proxy_setting" value="$sickbeard.PROXY_SETTING" size="40" />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">Proxy to use for connecting to providers.  Leave empty to not use proxy.</span>
-                            </label>
-                        </div>
-						<div class="field-pair">
-							<input type="checkbox" name="proxy_indexers" id="proxy_indexers" #if $sickbeard.PROXY_INDEXERS == True then "checked=\"checked\"" else ""#/>
-							<label class="clearfix" for="proxy_indexers">
-								<span class="component-title">Proxy Indexers</span>
-								<span class="component-desc">Use the proxy for connecting to indexers (thetvdb, tvrage)</span>
-							</label>
-						</div>
-
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
-                    </fieldset>
-                </div><!-- /component-group4 //-->
-
-                <div id="core-component-group3" class="component-group clearfix">
-
-                    <div class="component-group-desc">
-                        <h3>Date and Time</h3>
-                    </div>
-
-                    <fieldset class="component-group-list" style="width:670px">
-
-                        <div class="field-pair">
-                            <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" #if $sickbeard.FUZZY_DATING == True then "checked=\"checked\"" else ""#/>
-                            <label class="clearfix" for="fuzzy_dating">
-                                <span class="component-title">Display Fuzzy Dates</span>
-                                <span class="component-desc">E.g "Last Thu", "On Tue" and move the absolute date into time tooltips?</span>
-                            </label>
-                        </div>
-                        <div class="show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
-                            <div class="field-pair">
-                                <input type="checkbox" name="trim_zero" id="trim_zero" #if $sickbeard.TRIM_ZERO == True then "checked=\"checked\"" else ""#/>
-                                <label class="clearfix" for="trim_zero">
-                                    <span class="component-title">Trim Zero Padding</span>
-                                    <span class="component-desc">Trim leading number "0" shown on hour of day and date of month?</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix" for="date_presets">
-                                <span class="component-title">Date Style:</span>
-                                <span class="component-desc">
-                                    <div class="show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
-                                        <select id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
-                                            #for $cur_preset in $date_presets:
-                                                <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then "selected=\"selected\"" else ""#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
-                                            #end for
-                                        </select>
-                                    </div>
-                                    <div class="hide_if_fuzzy_dating#if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
-                                        <select id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
-                                            <option value="%x" #if "%x" == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>Use System Default</option>
-                                            #for $cur_preset in $date_presets:
-                                                <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then "selected=\"selected\"" else ""#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
-                                            #end for
-                                        </select>
-                                    </div>
-                                    <div id="date_use_system_default" class="metadataDiv"></div>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix" for="time_presets">
-                                <span class="component-title">Time Style:</span>
-                                <span class="component-desc">
-                                    <select id="time_presets" name="time_preset">
-                                         #for $cur_preset in $time_presets:
-                                            <option value="$cur_preset" #if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then "selected=\"selected\"" else ""#>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
-                                         #end for
-                                    </select>
-                                </span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><b>Note:</b> Seconds are only shown on the History page.</span>
-                            </label>
-
-                        </div>
-
-                        <div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">Timezones:</span>
-                                <span class="component-desc">Display dates and times in either your timezone or the shows network timezone?</span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">
-                                    <input type="radio" name="timezone_display" id="local" value="local" class="radio" #if $sickbeard.TIMEZONE_DISPLAY=="local" then "checked=\"checked\"" else ""# />Local Timezone<br />
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
+							<label for="launch_browser">
+								<span class="component-title">Launch browser</span>
 								<span class="component-desc">
-                                    <input type="radio" name="timezone_display" id="network" value="network" class="radio" #if $sickbeard.TIMEZONE_DISPLAY=="network" then "checked=\"checked\"" else ""# />Network Timezone<br />
-                                </span>
-                            </label>
-                        </div>
-
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
-                    </fieldset>
-                </div><!-- /component-group3 //-->
-
-                <div id="core-component-group5" class="component-group clearfix">
-
-                    <div class="component-group-desc">
-                        <h3>UI Theme Settings</h3>
-						<p>Change UI settings to your liking.</p>
-                    </div>
-
-                    <fieldset class="component-group-list" style="width:670px">
+									<input type="checkbox" name="launch_browser" id="launch_browser" #if $sickbeard.LAUNCH_BROWSER then 'checked="checked"' else ''#/>
+									<p>open the SickRage home page on startup</p>
+								</span>
+							</label>
+						</div>
 
 						<div class="field-pair">
-                            <label class="nocheck clearfix">
-                                <span class="component-title">UI Theme:</span>
-                                <span class="component-desc">
-                                    <select id="theme_name" name="theme_name">
-										<option value="dark" #if $sickbeard.THEME_NAME == "dark" then "selected=\"selected\"" else ""#>Dark</option>
-										<option value="original" #if $sickbeard.THEME_NAME == "original" then "selected=\"selected\"" else ""#>Original</option>
-                                    </select>
-                                </span>
-                            </label>
-                            <label class="nocheck clearfix">
-                                <span class="component-title">&nbsp;</span>
-								<span class="component-desc"><font color="red">Please refresh your browser after you have saved for appearance to take effect.</font></span>
-                            </label>
-                        </div>
+							<label for="update_shows_on_start">
+								<span class="component-title">Update shows on startup</span>
+								<span class="component-desc">
+									<input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" #if $sickbeard.UPDATE_SHOWS_ON_START then 'checked="checked"' else ''#/>
+									<p>with information such as next air dates, show ended, etc. Disable for a faster startup as show info is sheduled to update in the background anyway</p>
+								</span>
+							</label>
+						</div>
 
-                        <input type="submit" class="btn config_submitter" value="Save Changes" />
-                    </fieldset>
-                </div><!-- /component-group5 //-->
-                
-                <br/>
-				<small class="float-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </small>
-				<input type="submit" class="btn config_submitter button" value="Save Changes" />
-            
-            </div><!-- /config-components -->
-		
-</form>
-</div></div></div>
+						<div class="field-pair">
+							<span class="component-title">Send to trash for actions</span>
+							<span class="component-desc">
+								<label for="trash_remove_show" class="nextline-block">
+									<input type="checkbox" name="trash_remove_show" id="trash_remove_show" #if $sickbeard.TRASH_REMOVE_SHOW then 'checked="checked"' else ''#/>
+									<p>when using show "Remove" and delete files</p>
+								</label>
+								<label for="trash_rotate_logs" class="nextline-block">
+									<input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" #if $sickbeard.TRASH_ROTATE_LOGS then 'checked="checked"' else ''#/>
+									<p>on scheduled deletes of the oldest log files</p>
+								</label>
+								<div class="clear-left"><p>selected actions use trash (recycle bin) instead of the default permanent delete</p></div>
+							</span>
+						</div>
 
-<div class="clearfix"></div>
+						<div class="field-pair">
+							<label for="log_dir">
+								<span class="component-title">Log file folder location</span>
+								<span class="component-desc">
+									<input type="text" name="log_dir" id="log_dir" value="$sickbeard.ACTUAL_LOG_DIR" class="form-control input-sm input350" />
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="indexer_default">
+								<span class="component-title">Use initial indexer set to</span>
+								<span class="component-desc">
+									<select id="indexer_default" name="indexer_default" class="form-control input-sm">
+										<option value="0" #if $indexer == 0 then 'selected="selected"' else ''#>All Indexers</option>
+										#for $indexer in $sickbeard.indexerApi().indexers
+										<option value="$indexer" #if $indexer == $sickbeard.INDEXER_DEFAULT then 'selected="selected"' else ''#>$sickbeard.indexerApi().indexers[$indexer]</option>
+										#end for
+									</select>
+									<span>as the default selection when adding new shows</span>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="indexer_timeout">
+								<span class="component-title">Timeout show indexer at</span>
+								<span class="component-desc">
+									<input type="text" name="indexer_timeout" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" class="form-control input-sm input75" />
+									<p>seconds of inactivity when finding new shows (default:10)</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Show root directories</span>
+								<span class="component-desc">
+								    <p>where the files of shows are located</p>
+								    #include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.tmpl')
+							    </span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+					</fieldset>
+				</div>
+				<div class="component-group">
+
+					<div class="component-group-desc">
+						<h3>Updates</h3>
+						<p>Options for software updates.</p>
+					</div>
+					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label for="version_notify">
+								<span class="component-title">Check software updates</span>
+								<span class="component-desc">
+									<input type="checkbox" name="version_notify" id="version_notify" #if $sickbeard.VERSION_NOTIFY then 'checked="checked"' else ''#/>
+									<p>and display notifications when updates are available.
+									Checks are run on startup and at the frequency set below*</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="auto_update">
+								<span class="component-title">Automatically update</span>
+								<span class="component-desc">
+									<input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then 'checked="checked"' else ''#/>
+									<p>fetch and install software updates.
+									Updates are run on startup and in the background at the frequency set below*</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Check the server every*</span>
+								<span class="component-desc">
+									<input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" class="form-control input-sm input75" />
+									<p>hours for software updates (default:12)</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="notify_on_update">
+								<span class="component-title">Notify on software update</span>
+								<span class="component-desc">
+									<input type="checkbox" name="notify_on_update" id="notify_on_update" #if $sickbeard.NOTIFY_ON_UPDATE then 'checked="checked"' else ''#/>
+									<p>send a message to all enabled notifiers when SickRage has been updated</p>
+								</span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+					</fieldset>
+
+				</div>
+				</div><!-- /component-group1 //-->
+
+
+				<div id="core-component-group2">
+				<div class="component-group">
+
+					<div class="component-group-desc">
+						<h3>User Interface</h3>
+						<p>Options for visual appearance.</p>
+					</div>
+
+					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label for="theme_name">
+								<span class="component-title">Display theme:</span>
+								<span class="component-desc">
+									<select id="theme_name" name="theme_name" class="form-control input-sm">
+										<option value="dark" #if $sickbeard.THEME_NAME == 'dark' then 'selected="selected"' else ''#>Dark</option>
+										<option value="light" #if $sickbeard.THEME_NAME == 'light' then 'selected="selected"' else ''#>Light</option>
+									</select>
+									<span class="red-text">for appearance to take effect, save then refresh your browser</span>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="sort_article">
+								<span class="component-title">Sort with "The", "A", "An"</span>
+								<span class="component-desc">
+									<input type="checkbox" name="sort_article" id="sort_article" #if $sickbeard.SORT_ARTICLE then 'checked="checked"' else ''#/>
+									<p>include articles ("The", "A", "An") when sorting show lists</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="fuzzy_dating">
+								<span class="component-title">Display fuzzy dates</span>
+								<span class="component-desc">
+									<input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" #if $sickbeard.FUZZY_DATING == True then 'checked="checked"' else ''#/>
+									<p>move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"</p>
+								</span>
+							</label>
+						</div>
+						<div class="field-pair show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
+							<label for="trim_zero">
+								<span class="component-title">Trim zero padding</span>
+								<span class="component-desc">
+									<input type="checkbox" name="trim_zero" id="trim_zero" #if True == $sickbeard.TRIM_ZERO then 'checked="checked"' else ''#/>
+									<p>remove the leading number "0" shown on hour of day, and date of month</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="date_presets">
+								<span class="component-title">Date style:</span>
+								<span class="component-desc">
+									<select class="form-control input-sm #if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
+										#for $cur_preset in $date_presets:
+											<option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+										#end for
+									</select>
+
+									<select class="form-control input-sm #if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
+										<option value="%x" #if "%x" == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>Use System Default</option>
+										#for $cur_preset in $date_presets:
+											<option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+										#end for
+									</select>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="time_presets">
+								<span class="component-title">Time style:</span>
+								<span class="component-desc">
+									<select id="time_presets" name="time_preset" class="form-control input-sm">
+										 #for $cur_preset in $time_presets:
+											<option value="$cur_preset" #if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else ''#>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
+										 #end for
+									</select>
+									<span><b>note:</b> seconds are only shown on the History page</span>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<span class="component-title">Timezone:</span>
+							<span class="component-desc">
+								<label for="local" class="space-right">
+									<input type="radio" name="timezone_display" id="local" value="local" #if "local" == $sickbeard.TIMEZONE_DISPLAY then 'checked="checked"' else ''# />Local
+								</label>
+								<label for="network">
+									<input type="radio" name="timezone_display" id="network" value="network" #if "network" == $sickbeard.TIMEZONE_DISPLAY then 'checked="checked"' else ''# />Network
+								</label>
+								<div class="clear-left"><p>display dates and times in either your timezone or the shows network timezone</p></div>
+							</span>
+						</div>
+
+						<div class="field-pair">
+							<label for="play_videos">
+								<span class="component-title">Browser video player</span>
+								<span class="component-desc">
+									<input type="checkbox" name="play_videos" id="play_videos" #if $sickbeard.PLAY_VIDEOS then 'checked="checked"' else ''#/>
+									<p>play video files from display show page<?p>
+								</span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+
+					</fieldset>
+
+				</div><!-- /User interface component-group -->
+
+				<div class="component-group">
+
+					<div class="component-group-desc">
+						<h3>Web Interface</h3>
+						<p>It is recommended that you enable a username and password to secure SickRage from being tampered with remotely.</p>
+						<p><b>These options require a manual restart to take effect.</b></p>
+					</div>
+
+					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label for="use_api">
+								<span class="component-title">Enable API</span>
+								<span class="component-desc">
+									<input type="checkbox" name="use_api" class="enabler" id="use_api" #if $sickbeard.USE_API then 'checked="checked"' else ''#/>
+									<p>allow the use of the SickRage API</p>
+								</span>
+							</label>
+						</div>
+						<div id="content_use_api">
+						<div class="field-pair">
+							<label for="api_key">
+								<span class="component-title">API key</span>
+								<span class="component-desc">
+									<input type="text" name="api_key" id="api_key" value="$sickbeard.API_KEY" class="form-control input-sm input300" readonly="readonly" />
+									<input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
+									<div class="clear-left"><p>used to give 3rd party programs limited access to SickRage</p></div>
+								</span>
+							</label>
+						</div>
+						</div>
+
+						<div class="field-pair">
+							<label for="web_log">
+								<span class="component-title">HTTP logs</span>
+								<span class="component-desc">
+									<input type="checkbox" name="web_log" id="web_log" #if $sickbeard.WEB_LOG then 'checked="checked"' else ''#/>
+									<p>enable logs from the internal Tornado web server</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="web_username">
+								<span class="component-title">HTTP username</span>
+								<span class="component-desc">
+									<input type="text" name="web_username" id="web_username" value="$sickbeard.WEB_USERNAME" class="form-control input-sm input300" />
+									<p>set blank for no login</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="web_password">
+								<span class="component-title">HTTP password</span>
+								<span class="component-desc">
+									<input type="password" name="web_password" id="web_password" value="$sickbeard.WEB_PASSWORD" class="form-control input-sm input300" />
+									<p>blank = no authentication</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="web_port">
+								<span class="component-title">HTTP port</span>
+								<span class="component-desc">
+									<input type="text" name="web_port" id="web_port" value="$sickbeard.WEB_PORT" class="form-control input-sm input100" />
+									<p>web port to browse and access SickRage (default:8081)</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="web_ipv6">
+								<span class="component-title">Listen on IPv6</span>
+								<span class="component-desc">
+									<input type="checkbox" name="web_ipv6" id="web_ipv6" #if $sickbeard.WEB_IPV6 then 'checked="checked"' else ''#/>
+									<p>attempt binding to any available IPv6 address</p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="enable_https">
+								<span class="component-title">Enable HTTPS</span>
+								<span class="component-desc">
+									<input type="checkbox" name="enable_https" class="enabler" id="enable_https" #if $sickbeard.ENABLE_HTTPS then 'checked="checked"' else ''#/>
+									<p>enable access to the web interface using a HTTPS address</p>
+								</span>
+							</label>
+						</div>
+						<div id="content_enable_https">
+							<div class="field-pair">
+								<label for="https_cert">
+									<span class="component-title">HTTPS certificate</span>
+									<span class="component-desc">
+										<input type="text" name="https_cert" id="https_cert" value="$sickbeard.HTTPS_CERT" class="form-control input-sm input300" />
+										<div class="clear-left"><p>file name or path to HTTPS certificate</p></div>
+									</span>
+								</label>
+							</div>
+							<div class="field-pair">
+								<label for="https_key">
+									<span class="component-title">HTTPS key</span>
+									<span class="component-desc">
+										<input type="text" name="https_key" id="https_key" value="$sickbeard.HTTPS_KEY" class="form-control input-sm input300" />
+										<div class="clear-left"><p>file name or path to HTTPS key</p></div>
+									</span>
+								</label>
+							</div>
+						</div>
+
+						<div class="field-pair">
+							<label for="handle_reverse_proxy">
+								<span class="component-title">Reverse proxy headers</span>
+								<span class="component-desc">
+									<input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" #if $sickbeard.HANDLE_REVERSE_PROXY then 'checked="checked"' else ''#/>
+									<p>accept the following reverse proxy headers (advanced)...<br />(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)</p>
+								</span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+
+					</fieldset>
+
+				</div><!-- /component-group2 //-->
+				</div>
+
+
+				<div id="core-component-group3" class="component-group">
+
+					<div class="component-group-desc">
+						<h3>Advanced Settings</h3>
+
+					</div>
+
+					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Branch version:</span>
+								<span class="component-desc">
+									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
+									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
+										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+									#end for
+									</select>
+									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+									<div class="clear-left"><p>select branch to use (restart required)</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="git_remote">
+								<span class="component-title">Git remote for branch</span>
+								<span class="component-desc">
+									<input type="text" name="git_remote" id="git_remote" value="$sickbeard.GIT_REMOTE" class="form-control input-sm input300" />
+									<div class="clear-left"><p>default:origin. Access repo configured remotes (save then refresh browser)</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Git executable path</span>
+								<span class="component-desc">
+									<input type="text" name="git_path" value="$sickbeard.GIT_PATH" class="form-control input-sm input300" />
+									<div class="clear-left"><p>only needed if OS is unable to locate git from env</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">CPU throttling:</span>
+								<span class="component-desc">
+									<select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
+									#for $cur_preset in $cpu_presets:
+										<option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else ''#>$cur_preset.capitalize()</option>
+									#end for
+									</select>
+									<span>Normal (default). High is lower and Low is higher CPU use</span>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Anonymous redirect</span>
+								<span class="component-desc">
+									<input type="text" name="anon_redirect" value="$sickbeard.ANON_REDIRECT" class="form-control input-sm input300" />
+									<div class="clear-left"><p>backlink protection via anonymizer service, must end in "?"</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="encryption_version">
+								<span class="component-title">Encrypt passwords</span>
+								<span class="component-desc">
+									<input type="checkbox" name="encryption_version" id="encryption_version" #if $sickbeard.ENCRYPTION_VERSION then 'checked="checked"' else ''#/>
+									<p>in the <code>config.ini</code> file.
+									<b>Warning:</b> Passwords must only contain <a target="_blank" href="<%= anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters') %>">ASCII characters</a></p>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="calendar_unprotected">
+								<span class="component-title">Unprotected calendar</span>
+								<span class="component-desc">
+									<input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" #if $sickbeard.CALENDAR_UNPROTECTED then 'checked="checked"' else ''#/>
+									<p>allow subscribing to the calendar without user and password.
+									Some services like Google Calendar only work this way</p>
+								</span>
+
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Proxy host</span>
+								<span class="component-desc">
+									<input type="text" name="proxy_setting" value="$sickbeard.PROXY_SETTING" class="form-control input-sm input300" />
+									<div class="clear-left"><p>blank to disable or proxy to use when connecting to providers</p></div>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="proxy_indexers">
+								<span class="component-title">Use proxy for indexers</span>
+								<span class="component-desc">
+									<input type="checkbox" name="proxy_indexers" id="proxy_indexers" #if True == $sickbeard.PROXY_INDEXERS then 'checked="checked"' else ''#/>
+									<p>use proxy host for connecting to indexers (thetvdb, tvrage)</p>
+								</span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+					</fieldset>
+				</div><!-- /component-group3 //-->
+
+				<br/>
+				<h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </h6>
+				<input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
+
+			</div><!-- /config-components -->
+
+		</form>
+	</div>
+</div>
+
+<div></div>
 
 <script type="text/javascript" charset="utf-8">
 <!--
-    jQuery('#log_dir').fileBrowser({ title: 'Select Log Directory' });
+    jQuery('#log_dir').fileBrowser({ title: 'Select log file folder location' });
     jQuery('#config-components').tabs();
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

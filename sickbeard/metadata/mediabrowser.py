@@ -498,7 +498,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 Persons = etree.SubElement(episode, "Persons")
 
                 Language = etree.SubElement(episode, "Language")
-                Language.text = myEp['language']
+                try:
+                    Language.text = myEp['language']
+                except:
+                    Language.text = 'en'  # tvrage api doesn't provide language so we must assume a value here
 
                 thumb = etree.SubElement(episode, "filename")
                 # TODO: See what this is needed for.. if its still needed

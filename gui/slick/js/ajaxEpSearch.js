@@ -1,10 +1,5 @@
 var search_status_url = sbRoot + '/getManualSearchStatus';
-$.pnotify.defaults.width = "400px";
-$.pnotify.defaults.styling = "jqueryui";
-$.pnotify.defaults.history = false;
-$.pnotify.defaults.shadow = false;
-$.pnotify.defaults.delay = 4000;
-$.pnotify.defaults.maxonscreen = 5;
+PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
 
@@ -40,7 +35,7 @@ function updateImages(data) {
 	$.each(data.episodes, function (name, ep) {
 		console.debug(ep.searchstatus);
 		// Get td element for current ep
-		var loadingImage = 'loading16_dddddd.gif';
+		var loadingImage = 'loading16.gif';
         var queuedImage = 'queued.png';
         var searchImage = 'search16.png';
         var status = null;
@@ -82,7 +77,7 @@ function updateImages(data) {
 		        
 			}
         	// update the status column if it exists
-	        parent.siblings('.status_column').html(HtmlContent)
+	        parent.siblings('.col-status').html(HtmlContent)
         	
         }
 		
@@ -113,7 +108,7 @@ function disableLink(el) {
 	    defaults: {
 	        size:				16,
 	        colorRow:         	false,
-	        loadingImage:		'loading16_dddddd.gif',
+	        loadingImage:		'loading16.gif',
 	        queuedImage:		'queued.png',
 	        noImage:			'no16.png',
 	        yesImage:			'yes16.png'
@@ -167,7 +162,7 @@ function disableLink(el) {
                     var rSearchTerm = /(\w+)\s\((.+?)\)/;
 	                    HtmlContent = data.result.replace(rSearchTerm,"$1"+' <span class="quality '+data.quality+'">'+"$2"+'</span>');
 	                // update the status column if it exists
-                    parent.siblings('.status_column').html(HtmlContent)
+                    parent.siblings('.col-status').html(HtmlContent)
                     // Only if the queing was succesfull, disable the onClick event of the loading image
                     disableLink(link);
 	            }

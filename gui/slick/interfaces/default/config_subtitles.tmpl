@@ -1,5 +1,6 @@
 #from sickbeard import subtitles
 #import sickbeard
+#from sickbeard.helpers import anon_url
 
 #set global $title="Config - Subtitles"
 #set global $header="Subtitles"
@@ -13,7 +14,6 @@
 <script type="text/javascript" src="$sbRoot/js/configSubtitles.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js"></script>
 <script type="text/javascript" src="$sbRoot/js/lib/jquery.tokeninput.js"></script>
-<link rel="stylesheet" type="text/css" href="$sbRoot/css/token-input.css" />
 
 <script type="text/javascript">
   	\$(document).ready(function() {
@@ -36,7 +36,7 @@
             );
 	});
 </script>
-<div id="content960">
+
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
@@ -54,7 +54,7 @@
                 	<li><a href="#core-component-group2">Subtitles Plugin</a></li>
                 </ul>
                 
-                <div id="core-component-group4" class="component-group clearfix">
+                <div id="core-component-group4" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Subtitles Search</h3>
@@ -70,31 +70,31 @@
                         </div>
                         <div id="content_use_subtitles">
 	                        	<div class="field-pair">
-		                            <label class="nocheck clearfix">
+		                            <label class="nocheck">
 		                                <span class="component-title">Subtitle Languages</span>
-		                                <input type="text" id="subtitles_languages" name="subtitles_languages" style="border: 0px none"/>
+		                                <span class="component-desc"><input type="text" id="subtitles_languages" name="subtitles_languages" /></span>
 		                            </label>
 		                        </div>
                         		<div class="field-pair">
-	                        		<label class="nocheck clearfix">
+	                        		<label class="nocheck">
 		                                <span class="component-title">Subtitle Directory</span>
-		                                <input type="text" size="35" value="$sickbeard.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir">
+		                                <input type="text" value="$sickbeard.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
 		                            </label>
-	                            	<label class="nocheck clearfix">
+	                            	<label class="nocheck">
 	    	                            	<span class="component-title">&nbsp;</span>
 			                                <span class="component-desc">The directory where SickRage should store your <i>Subtitles</i> files.</span>
 	          	                	</label>
-	                            	<label class="nocheck clearfix">
+	                            	<label class="nocheck">
 	    	                            	<span class="component-title">&nbsp;</span>
 			                                <span class="component-desc"><b>NOTE:</b> Leave empty if you want store subtitle in episode path.</span>
 	          	                	</label>
                         		</div>
 	                            <div class="field-pair">
-	                            	<label class="nocheck clearfix">
+	                            	<label class="nocheck">
 	                                	<span class="component-title">Subtitle Find Frequency</span>
-	                                    <input type="number" name="subtitles_finder_frequency" value="$sickbeard.SUBTITLES_FINDER_FREQUENCY" size="5" hours="1" class="input-small" />
+	                                    <input type="number" name="subtitles_finder_frequency" value="$sickbeard.SUBTITLES_FINDER_FREQUENCY" hours="1" class="form-control input-sm input75" />
 	                                </label>
-	                                <label class="nocheck clearfix">
+	                                <label class="nocheck">
 	                                	<span class="component-title">&nbsp;</span>
 	                                    <span class="component-desc">Time in hours between scans (hours. 1)</span>
 	                                </label>
@@ -111,7 +111,7 @@
                     </fieldset>
                 </div><!-- /component-group1 //-->
 
-                <div id="core-component-group2" class="component-group clearfix">
+                <div id="core-component-group2" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Subtitle Plugins</h3>
@@ -126,7 +126,8 @@
                             #set $curName = $curService.id
                           <li class="ui-state-default" id="$curName">
                             <input type="checkbox" id="enable_$curName" class="service_enabler" #if $curService.enabled then "checked=\"checked\"" else ""#/>
-                            <a href="$curService.url" class="imgLink" target="_new">
+                            #set $provider_url = $curService.url
+                            <a href="<%= anon_url(provider_url) %>" class="imgLink" target="_new">
                                 <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService.name" title="$curService.name" width="16" height="16" style="vertical-align:middle;"/>
                             </a>
                             <span style="vertical-align:middle;">$curService.name.capitalize()</span>
@@ -146,7 +147,9 @@
             </div><!-- /config-components //-->
 
 </form>
-</div></div></div>
+</div>
+</div>
+
 <div class="clearfix"></div>
 <script type="text/javascript" charset="utf-8">
 <!--

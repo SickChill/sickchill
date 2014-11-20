@@ -142,7 +142,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     # Don't post process if files are still being synced and option is activated
     if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
-        returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
+        returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.WARNING)
         return returnStr
 
     returnStr += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
@@ -190,7 +190,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
             # Don't post process if files are still being synced and option is activated
             if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
-                returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.ERROR)
+                returnStr += logHelper(u"Found temporary sync files, skipping post processing", logger.WARNING)
                 return returnStr
 
             rarFiles = filter(helpers.isRarFile, fileList)

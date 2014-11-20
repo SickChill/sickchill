@@ -35,6 +35,11 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 
 from lib import subliminal
 
+try:
+    from lib.send2trash import send2trash
+except ImportError:
+    pass
+
 from lib.imdb import imdb
 
 from sickbeard import db
@@ -806,7 +811,11 @@ class TVShow(object):
             self.flatten_folders = int(sqlResults[0]["flatten_folders"])
             self.paused = int(sqlResults[0]["paused"])
 
-            self.location = sqlResults[0]["location"]
+            try:
+                self.location = sqlResults[0]["location"]
+            except Exception:
+                dirty_setter("_location")(self, sqlResults[0]["location"])
+                self._isDirGood = False
 
             if not self.lang:
                 self.lang = sqlResults[0]["lang"]
@@ -982,32 +991,51 @@ class TVShow(object):
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
 
+        action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
+
         # remove self from show list
         sickbeard.showList = [x for x in sickbeard.showList if int(x.indexerid) != self.indexerid]
 
         # clear the cache
         image_cache_dir = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'images')
         for cache_file in ek.ek(glob.glob, ek.ek(os.path.join, image_cache_dir, str(self.indexerid) + '.*')):
-            logger.log(u"Deleting cache file " + cache_file)
-            os.remove(cache_file)
+            logger.log(u'Attempt to %s cache file %s' % (action, cache_file))
+            try:
+                if sickbeard.TRASH_REMOVE_SHOW:
+                    send2trash(cache_file)
+                else:
+                    os.remove(cache_file)
+
+            except OSError, e:
+                logger.log(u'Unable to %s %s: %s / %s' % (action, cache_file, repr(e), str(e)), logger.WARNING)
 
         # remove entire show folder
         if full:
             try:
-                logger.log(u"Deleting show folder " + self.location)
+                logger.log(u'Attempt to %s show folder %s' % (action, self._location))
                 # check first the read-only attribute
                 file_attribute = ek.ek(os.stat, self.location)[0]
                 if (not file_attribute & stat.S_IWRITE):
                     # File is read-only, so make it writeable
-                    logger.log('Read only mode on folder ' + self.location + ' Will try to make it writeable', logger.DEBUG)
+                    logger.log('Attempting to make writeable the read only folder %s' % self._location, logger.DEBUG)
                     try:
                         ek.ek(os.chmod, self.location, stat.S_IWRITE)
                     except:
-                        logger.log(u'Cannot change permissions of ' + self.location, logger.WARNING)
+                        logger.log(u'Unable to change permissions of %s' % self._location, logger.WARNING)
 
-                ek.ek(shutil.rmtree, self.location)
+                if sickbeard.TRASH_REMOVE_SHOW:
+                    send2trash(self.location)
+                else:
+                    ek.ek(shutil.rmtree, self.location)
+
+                logger.log(u'%s show folder %s' %
+                           (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW],
+                            self._location))
+
+            except exceptions.ShowDirNotFoundException:
+                logger.log(u"Show folder does not exist, no need to %s %s" % (action, self._location), logger.WARNING)
             except OSError, e:
-                logger.log(u"Unable to delete " + self.location + ": " + repr(e) + " / " + str(e), logger.WARNING)
+                logger.log(u'Unable to %s %s: %s / %s' % (action, self._location, repr(e), str(e)), logger.WARNING)
 
     def populateCache(self):
         cache_inst = image_cache.ImageCache()
@@ -2466,6 +2494,7 @@ class TVEpisode(object):
         if airs:
             hr = int(airs.group(1))
             hr = (12 + hr, hr)[None is airs.group(3)]
+            hr = (hr, hr - 12)[0 == hr % 12]
             min = int((airs.group(2), min)[None is airs.group(2)])
         airtime = datetime.time(hr, min)
 

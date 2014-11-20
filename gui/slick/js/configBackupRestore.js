@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var loading = '<div id="wrap"><div class="spinner2"></div><div class="item"> Processing...</div></div>';
+    var loading = '<img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
     $('#Backup').click(function() {
         $("#Backup").attr("disabled", true);

@@ -5,11 +5,11 @@ $(document).ready(function(){
             var providerName = $(this).attr('id');
             var selectedProvider = $('#editAProvider :selected').val();
 
-            if (selectedProvider+'Div' == providerName)
+            if (selectedProvider + 'Div' == providerName) {
                 $(this).show();
-            else
+            } else {
                 $(this).hide();
-
+            }
         });
     }
 
@@ -24,7 +24,6 @@ $(document).ready(function(){
     	var name = selectedProvider[0];
     	var url = selectedProvider[1];
     	var key = selectedProvider[2];
-    	
     	
     	if (!name)
     		return;
@@ -66,7 +65,8 @@ $(document).ready(function(){
         }
 
         if ($('#provider_order_list > #'+id).length == 0 && showProvider != false) {
-            var toAdd = '<li class="ui-state-default" id="'+id+'"> <input type="checkbox" id="enable_'+id+'" class="provider_enabler" CHECKED> <a href="'+url+'" class="imgLink" target="_new"><img src="'+sbRoot+'/images/providers/newznab.png" alt="'+name+'" width="16" height="16"></a> '+name+'</li>'
+            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + sbRoot
+                + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>'
 
             $('#provider_order_list').append(toAdd);
             $('#provider_order_list').sortable("refresh");
@@ -85,7 +85,8 @@ $(document).ready(function(){
         $(this).populateTorrentRssSection();
 
         if ($('#provider_order_list > #'+id).length == 0) {
-            var toAdd = '<li class="ui-state-default" id="'+id+'"> <input type="checkbox" id="enable_'+id+'" class="provider_enabler" CHECKED> <a href="'+url+'" class="imgLink" target="_new"><img src="'+sbRoot+'/images/providers/torrentrss.png" alt="'+name+'" width="16" height="16"></a> '+name+'</li>'
+            var toAdd = '<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + sbRoot
+                + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>'
 
             $('#provider_order_list').append(toAdd);
             $('#provider_order_list').sortable("refresh");
@@ -205,12 +206,8 @@ $(document).ready(function(){
                 else {
                 	updateNewznabCaps( null, data );
                 }
-                
-                
-                
             }
         }
-
     }
 
     ifExists = function(loopThroughArray, searchFor) {
@@ -252,12 +249,8 @@ $(document).ready(function(){
         				});
         				$("#newznab_cap").replaceOptions(newCapOptions);
             	}
-            	
             });
         };
-        
-        
-        
     }
     
     $.fn.makeNewznabProviderString = function() {
@@ -326,91 +319,9 @@ $(document).ready(function(){
             $("#provider_order").val(finalArr.join(' '));
     }
 
-    $.fn.hideConfigTab = function () {
-
-      $("#config-components").tabs( "disable", 1 );
-      $("#config-components ul li:eq(1)").hide();
-
-    };
-
-    $.fn.showProvidersConfig = function () {
-
-    $("#provider_order_list li").each(function( index ) {
-
-      if ($(this).find("input").attr("checked")) {
-        $(this).addTip();
-        } else {
-          $(this).qtip('destroy');
-        }
-      });
-    };
-
-  $.fn.addTip = function() {
-
-      var config_id = $(this).find("input").attr('id').replace("enable_", "") + "Div";
-      var config_form = '<div id="config"><form id="configForm_tip" action="saveProviders" method="post"><fieldset class="component-group-list tip_scale"><div class="providerDiv_tip">' + $("div[id*="+config_id+"]").html() + '</div></fieldset></form></div>'
-      var provider_name =  $.trim($(this).text()).replace('*','')
-  
-      if ($("div[id*="+config_id+"]").length == 0) {
-        return false
-      }
-  
-      $(this).qtip({
-  
-          overwrite: true,
-          position: {
-             adjust: {
-                x: 0, y: 0,
-             },
-             my: 'left top',
-               at: 'top right',
-          },
-          show: {
-               event: 'mouseenter', // Show it on click...
-               target: false,
-               solo: true,
-               delay: 90,
-               effect: true,
-          },
-          hide: {
-               fixed: true,
-               delay: 900,
-          },
-          content: {
-          text: config_form,
-                title: {
-                    text: provider_name + ' Config',
-                    button: true
-                }
-          },
-          style: {
-              border: {
-                  width: 5,
-                  radius: 2,
-                  color: '#e1e1e1'
-              },
-              width: 350,
-              background: '#FFF',
-              padding: 15,
-              tip: true, // Give it a speech bubble tip with automatic corner detection
-              classes: 'qtip-dark qtip-shadow',
-          },
-      });
-
-    }
-
     var newznabProviders = new Array();
     var torrentRssProviders = new Array();
     
-     $("#provider_order_list li").on('change', function() {
-        if ($(this).find("input").attr("checked")) {
-            $(this).addTip();
-            $(this).qtip('show');
-        } else {
-            $(this).qtip('destroy');
-        }
-      });
-
     $(this).on('change', '.newznab_key', function(){
 
         var provider_id = $(this).attr('id');
@@ -660,18 +571,13 @@ $(document).ready(function(){
 
     
     $.fn.newznabProvidersCapabilities = [];
-    
-    $(this).hideConfigTab();
 
     $(this).showHideProviders();
-
-    $(this).showProvidersConfig();
 
     $("#provider_order_list").sortable({
         placeholder: 'ui-state-highlight',
         update: function (event, ui) {
             $(this).refreshProviderList();
-            ui.item.qtip('reposition');
         }
     });
 

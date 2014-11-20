@@ -13,14 +13,14 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-<div id="content960">
+
 #if $varExists('header') 
 	<h1 class="header">$header</h1>
 #else 
 	<h1 class="title">$title</h1>
 #end if
 
-<div id="summary2" class="align-left">
+<div id="editShow">
 <script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -59,10 +59,11 @@
 //-->
 </script>
 
+<br>
 
 <form action="editShow" method="post">
 <input type="hidden" name="show" value="$show.indexerid" />
-<b>Location:</b> <input type="text" name="location" id="location" value="$show._location" size="50" /><br />
+<b>Location:</b> <input type="text" name="location" id="location" value="$show._location" class="form-control form-control-inline input-sm input350" /><br />
 <br />
 <b>Quality:</b>
 #set $qualities = $common.Quality.splitQuality(int($show.quality))
@@ -73,25 +74,25 @@
 
 #if $anyQualities + $bestQualities
 <b>Archive on first match: </b>
-<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# />
+<input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# /><br>
 (check this to have the episode archived after the first best match is found from your archive quality list)
 <br />
 <br />
 #end if
 
 <b>Scene Exception:</b>
-<input type="text" id="SceneName"> 
-<input class="btn" type="button" value="Add" id="addSceneName"><br />
+<input type="text" id="SceneName" class="form-control form-control-inline input-sm input200"> 
+<input class="btn btn-inline" type="button" value="Add" id="addSceneName"><br />
 
 <div id="SceneException" >
 
-	<div class="component-group-desc">
+	<div>
 		<p>This will <b>affect the episode show search</b> on nzb and torrent provider.<br />
 		This list overrides the original name, it doesn't append to it.<br />
 		</p>
 	</div>		
 	
-	<div class="float-left" style="text-align:center;">
+	<div class="pull-left" style="text-align:center;">
 		<h4>Exceptions List</h4>
 		<select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
 				#for $cur_exception in $show.exceptions:
@@ -104,9 +105,10 @@
 <br />
 </div>	
 </div>
+<div class="clearfix"></div>
 <br />
 
-<b>Info Language:</b> <select name="indexerLang" id="indexerLangSelect"></select><br />
+<b>Info Language:</b> <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm"></select><br />
 Note: This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
 This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 <br />
@@ -136,12 +138,12 @@ This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />
 (check this if you wish to use the DVD order instead of the Airing order)
 <br/><br/>
 
-<b>Ignored Words:</b>  <input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$show.rls_ignore_words" size="50" /><br />
+<b>Ignored Words:</b>  <input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$show.rls_ignore_words" class="form-control form-control-inline input-sm input350" /><br />
 Results with any of these words in the title will be filtered out <br />
 Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
 
-<b>Required Words:</b> <input type="text" name="rls_require_words" id="rls_require_words" value="$show.rls_require_words" size="50" /><br />
+<b>Required Words:</b> <input type="text" name="rls_require_words" id="rls_require_words" value="$show.rls_require_words" class="form-control form-control-inline input-sm input350" /><br />
 Results without one of these words in the title will be filtered out <br />
 Separate words with a comma, e.g. "word1,word2,word3"
 <br /><br />
@@ -268,5 +270,5 @@ Separate words with a comma, e.g. "word1,word2,word3"
 
 //-->
 </script>
-</div></div>
+</div>
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

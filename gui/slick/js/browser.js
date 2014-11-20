@@ -73,7 +73,7 @@
         fileBrowserDialog.dialog('option', 'buttons', [
                     {
                         text: "Ok",
-                        "class": "btn btn-large",
+                        "class": "btn",
                         click: function() {
                             // store the browsed path to the associated text field
                             callback(currentBrowserPath, options);
@@ -82,7 +82,7 @@
                     },
                     {
                         text: "Cancel",
-                        "class": "btn btn-large",
+                        "class": "btn",
                         click: function() {
                             $(this).dialog("close");
                         }
@@ -172,7 +172,7 @@
         options = $.extend(options, {initialDir: initialDir});
 
         // append the browse button and give it a click behaviour
-        return options.field.addClass('fileBrowserField').after($('<input type="button" value="Browse&hellip;" class="btn fileBrowser" />').click(function () {
+        return options.field.addClass('fileBrowserField').after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser" />').click(function () {
             $(this).nFileBrowser(callback, options);
             return false;
         }));
