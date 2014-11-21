@@ -167,7 +167,7 @@
 		<tr>
 			<th>Airdate</th>
 			<th>Show</th>
-			<th class="nowrap">Next Ep</th>
+			<th nowrap="nowrap">Next Ep</th>
 			<th>Next Ep Name</th>
 			<th>Network</th>
 			<th>Quality</th>
@@ -206,17 +206,17 @@
 		<!-- start $cur_result['show_name'] //-->
 		<tr class="$show_div">
 			## forced to use a div to wrap airdate, the column sort went crazy with a span
-			<td align="center" class="nowrap">
+			<td align="center" nowrap="nowrap">
 				<div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result['localtime'].timetuple())</span>
 			</td>
 
-			<td class="tvShow"><a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']</a>
+			<td class="tvShow" nowrap="nowrap"><a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']</a>
 #if int($cur_result['paused']):
 				<span class="pause">[paused]</span>
 #end if
 			</td>
 
-			<td class="nowrap" align="center">
+			<td nowrap="nowrap" align="center">
 				<%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %>
 			</td>
 
