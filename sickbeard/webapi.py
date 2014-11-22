@@ -2313,7 +2313,7 @@ class CMD_ShowSeasons(ApiCall):
         myDB = db.DBConnection(row_type="dict")
 
         if self.season == None:
-            sqlResults = myDB.select("SELECT name, episode, airdate, status, season FROM tv_episodes WHERE showid = ?",
+            sqlResults = myDB.select("SELECT name, episode, airdate, status, release_name, season, location, file_size, subtitles FROM tv_episodes WHERE showid = ?",
                                      [self.indexerid])
             seasons = {}
             for row in sqlResults:
@@ -2332,7 +2332,7 @@ class CMD_ShowSeasons(ApiCall):
 
         else:
             sqlResults = myDB.select(
-                "SELECT name, episode, airdate, status FROM tv_episodes WHERE showid = ? AND season = ?",
+                "SELECT name, episode, airdate, status, location, file_size, release_name, subtitles FROM tv_episodes WHERE showid = ? AND season = ?",
                 [self.indexerid, self.season])
             if len(sqlResults) is 0:
                 return _responds(RESULT_FAILURE, msg="Season not found")
