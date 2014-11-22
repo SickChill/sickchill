@@ -626,11 +626,11 @@ class SourceUpdateManager(UpdateManager):
 
             for curCommit in sickbeard.gh.get_commits():
                 if not self._newest_commit_hash:
-                    self._newest_commit_hash = curCommit['sha']
+                    self._newest_commit_hash = curCommit.sha
                     if not self._cur_commit_hash:
                         break
 
-                if curCommit['sha'] == self._cur_commit_hash:
+                if curCommit.sha == self._cur_commit_hash:
                     break
 
                 # when _cur_commit_hash doesn't match anything _num_commits_behind == 100
