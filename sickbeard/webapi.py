@@ -163,7 +163,7 @@ class Api(webserve.MainHandler):
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json")
         try:
-            out = json.dumps(dict, indent=self.intent, sort_keys=True)
+            out = json.dumps(dict, indent=self.intent,ensure_ascii=False,sort_keys=True)
             if 'jsonp' in self.request.query_arguments:
                 out = self.request.arguments['jsonp'] + '(' + out + ');'  # wrap with JSONP call if requested
 
