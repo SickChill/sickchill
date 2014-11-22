@@ -155,7 +155,7 @@ def get_scene_exception_by_name_multiple(show_name):
     if out:
         return out
 
-    return (None, None)
+    return [(None, None)]
 
 
 def retrieve_exceptions():
