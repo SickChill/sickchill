@@ -3007,8 +3007,11 @@ class NewHomeAddShows(MainHandler):
         trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
         if trending_shows:
             for show in trending_shows:
-                if not helpers.findCertainShow(sickbeard.showList, [int(show['tvdb_id']), int(show['tvrage_id'])]):
-                    t.trending_shows += [show]
+                try:
+                    if not helpers.findCertainShow(sickbeard.showList, [int(show['tvdb_id']), int(show['tvrage_id'])]):
+                        t.trending_shows += [show]
+                except exceptions.MultipleShowObjectsException:
+                    continue
 
         return _munge(t)
 
