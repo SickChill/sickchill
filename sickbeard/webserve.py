@@ -3833,7 +3833,7 @@ class Home(MainHandler):
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
                  rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None,
-                 scene=None):
+                 scene=None, defaultEpStatus=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -4007,6 +4007,7 @@ class Home(MainHandler):
                 showObj.dvdorder = dvdorder
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
+                showObj.default_ep_status = defaultEpStatus
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
@@ -4405,8 +4406,6 @@ class Home(MainHandler):
 
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
-        if ep_queue_item.success:
-            return returnManualSearchResult(ep_queue_item)
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({'result': 'success'}) #I Actually want to call it queued, because the search hasnt been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:
@@ -4422,10 +4421,11 @@ class Home(MainHandler):
         episodes = []
         currentManualSearchThreadsQueued = []
         currentManualSearchThreadActive = []
-        finishedManualSearchThreadItems= []
+        finishedManualSearchThreadItems = []
 
         # Queued Searches
         currentManualSearchThreadsQueued = sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show)
+
         # Running Searches
         if (sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress()):
             currentManualSearchThreadActive = sickbeard.searchQueueScheduler.action.currentItem
@@ -4491,8 +4491,6 @@ class Home(MainHandler):
                                          'quality': self.getQualityClass(epObj)})
 
         return json.dumps({'show': show, 'episodes' : episodes})
-
-        #return json.dumps()
 
     def getQualityClass(self, ep_obj):
         # return the correct json value
@@ -4617,8 +4615,6 @@ class Home(MainHandler):
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj])
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
-        if ep_queue_item.success:
-            return returnManualSearchResult(ep_queue_item)
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({'result': 'success'}) #I Actually want to call it queued, because the search hasnt been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:

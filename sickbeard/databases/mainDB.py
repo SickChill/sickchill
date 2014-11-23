@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 40
+MAX_DB_VERSION = 41
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -913,5 +913,17 @@ class AddVersionToTvEpisodes(AddIndexerMapping):
         self.addColumn("tv_episodes", "version", "NUMERIC", "-1")
         self.addColumn("tv_episodes", "release_group", "TEXT", "")
         self.addColumn("history", "version", "NUMERIC", "-1")
+
+        self.incDBVersion()
+
+class AddDefaultEpStatusToTvShows(AddVersionToTvEpisodes):
+    def test(self):
+        return self.checkDBVersion() >= 41
+
+    def execute(self):
+        backupDatabase(41)
+
+        logger.log(u"Adding column default_ep_status to tv_shows")
+        self.addColumn("tv_shows", "default_ep_status", "TEXT", "")
 
         self.incDBVersion()
