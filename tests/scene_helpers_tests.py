@@ -2,7 +2,9 @@ import unittest
 import test_lib as test
 
 import sys, os.path
+
 sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../lib'))
 
 from sickbeard import show_name_helpers, scene_exceptions, common, name_cache
 
@@ -105,7 +107,7 @@ class SceneExceptionTestCase(test.SickbeardTestDBCase):
         self.assertEqual(scene_exceptions.get_scene_exception_by_name('Carlos 2010'), (164451, -1))
 
     def test_sceneExceptionByNameEmpty(self):
-        self.assertEqual(scene_exceptions.get_scene_exception_by_name('nothing useful'), None)
+        self.assertEqual(scene_exceptions.get_scene_exception_by_name('nothing useful'), (None, None))
 
     def test_sceneExceptionsResetNameCache(self):
         # clear the exceptions
