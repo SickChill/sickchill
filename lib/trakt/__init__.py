@@ -4,10 +4,6 @@ import requests
 def TraktCall(method, api, username=None, password=None, data={}):
     base_url = 'http://api.trakt.tv/'
 
-    # if the API isn't given then it failed
-    if not api:
-        return None
-
     # if username and password given then encode password with sha1
     auth = None
     if username and password:

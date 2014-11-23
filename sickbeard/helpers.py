@@ -213,8 +213,12 @@ def _remove_file_failed(file):
 def findCertainShow(showList, indexerid):
 
     results = []
-    if showList and indexerid:
-        results = filter(lambda x: int(x.indexerid) == int(indexerid), showList)
+
+    if not isinstance(indexerid, list):
+        indexerid = [indexerid]
+
+    if showList and len(indexerid):
+        results = filter(lambda x: int(x.indexerid) in indexerid, showList)
 
     if len(results) == 1:
         return results[0]
