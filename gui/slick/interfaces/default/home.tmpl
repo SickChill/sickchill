@@ -280,10 +280,13 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #set $cur_downloaded = 0
     #set $cur_total = 0
     #set $download_stat_tip = ''
-    #if None is not $curShow.status and re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-	    #set $display_status = 'Continuing'
-    #else
-        #set $display_status = $curShow.status
+    #set $display_status = $curShow.status
+    #if None is not $display_status
+        #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+            #set $display_status = 'Continuing'
+        #else if re.search(r'(?i)(?:nded)', $curShow.status)
+            #set $display_status = 'Ended'
+        #end if
     #end if
 
     #if $curShow.indexerid in $show_stat:
@@ -604,11 +607,17 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		</td>
 		
         <td align="center">
-#if None is not $curShow.status and re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-			Continuing
-#else:
-			$curShow.status
+#set $display_status = $curShow.status
+#if None is not $display_status
+    #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+        #set $display_status = 'Continuing'
+    #else if re.search(r'(?i)(?:nded)', $curShow.status)
+        #set $display_status = 'Ended'
+    #end if
 #end if
+
+		$display_status
+
 		</td>
 		
     </tr>

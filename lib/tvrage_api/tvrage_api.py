@@ -604,9 +604,13 @@ class TVRage:
             log().debug('Getting all episodes of %s' % (sid))
 
             self.config['params_epInfo']['sid'] = sid
-            epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
 
-            seasons = epsEt['episodelist']['season']
+            try:
+                epsEt = self._getetsrc(self.config['url_epInfo'], self.config['params_epInfo'])
+                seasons = epsEt['episodelist']['season']
+            except:
+                return False
+
             if not isinstance(seasons, list):
                 seasons = [seasons]
 

@@ -870,9 +870,12 @@ class Tvdb:
             else:
                 url = self.config['url_epInfo'] % (sid, language)
 
-            epsEt = self._getetsrc(url, language=language)
+            try:
+                epsEt = self._getetsrc(url, language=language)
+                episodes = epsEt["episode"]
+            except:
+                return False
 
-            episodes =  epsEt["episode"]
             if not isinstance(episodes, list):
                 episodes = [episodes]
 
