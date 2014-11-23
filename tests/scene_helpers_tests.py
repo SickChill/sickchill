@@ -2,7 +2,9 @@ import unittest
 import test_lib as test
 
 import sys, os.path
+
 sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../lib'))
 
 from sickbeard import show_name_helpers, scene_exceptions, common, name_cache
 
