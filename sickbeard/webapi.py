@@ -985,7 +985,7 @@ class CMD_EpisodeSetStatus(ApiCall):
             with epObj.lock:
                 if self.status == WANTED:
                     # figure out what episodes are wanted so we can backlog them
-                    if epObj.season in ep_segment:
+                    if epObj.season in segments:
                         segments[epObj.season].append(epObj)
                     else:
                         segments[epObj.season] = [epObj]
