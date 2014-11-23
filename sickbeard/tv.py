@@ -827,7 +827,9 @@ class TVShow(object):
             self.rls_ignore_words = sqlResults[0]["rls_ignore_words"]
             self.rls_require_words = sqlResults[0]["rls_require_words"]
 
-            self.default_ep_status = int(sqlResults[0]["default_ep_status"])
+            self.default_ep_status = sqlResults[0]["default_ep_status"]
+            if not self.default_ep_status:
+                self.default_ep_status = ""
 
             if not self.imdbid:
                 self.imdbid = sqlResults[0]["imdb_id"]

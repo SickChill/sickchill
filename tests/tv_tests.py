@@ -41,6 +41,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.genre = "crime"
         show.runtime = 40
         show.status = "5"
+        show.default_ep_status = "5"
         show.airs = "monday"
         show.startyear = 1987
 
@@ -90,6 +91,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.genre = "crime"
         show.runtime = 40
         show.status = "5"
+        show.default_ep_status = "5"
         show.airs = "monday"
         show.startyear = 1987
         show.saveToDB()
