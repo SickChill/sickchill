@@ -38,7 +38,9 @@ addOption("Command", "SickBeard.GetRootDirs", "?cmd=sb.getrootdirs", "", "", "ac
 addList("Command", "SickBeard.PauseBacklog", "?cmd=sb.pausebacklog", "sb.pausebacklog", "", "", "action");
 addOption("Command", "SickBeard.Ping", "?cmd=sb.ping", "", "", "action");
 addOption("Command", "SickBeard.Restart", "?cmd=sb.restart", "", "", "action");
-addList("Command", "SickBeard.SearchTVDB", "?cmd=sb.searchtvdb", "sb.searchtvdb", "", "", "action");
+addList("Command", "SickBeard.SearchAllIndexers", "?cmd=sb.searchindexers", "sb.searchindexers", "", "", "action");
+addList("Command", "SickBeard.SearchTVDB", "?cmd=sb.searchtvdb&indexer=1", "sb.searchindexers", "", "", "action");
+addList("Command", "SickBeard.SearchTVRage", "?cmd=sb.searchtvrage&indexer=2", "sb.searchindexers", "", "", "action");
 addList("Command", "SickBeard.SetDefaults", "?cmd=sb.setdefaults", "sb.setdefaults", "", "", "action");
 addOption("Command", "SickBeard.Shutdown", "?cmd=sb.shutdown", "", "", "action");
 addList("Command", "Coming Episodes", "?cmd=future", "future");
@@ -140,44 +142,44 @@ addOption("show.addnew-opt", "Optional Param", "", 1);
 addList("show.addnew-opt", "No Season Folder", "&season_folder=0", "quality");
 addList("show.addnew-opt", "Use Season Folder", "&season_folder=1", "quality");
 
-addOptGroup("sb.searchtvdb", "Search by Name");
-addList("sb.searchtvdb", "Lost", "&name=Lost", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "office", "&name=office", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "OffiCE", "&name=OffiCE", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "Leno", "&name=leno", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "Top Gear", "&name=Top Gear", "sb.searchtvdb-lang");
-endOptGroup("sb.searchtvdb");
-addOptGroup("sb.searchtvdb", "Search by indexerid");
-addList("sb.searchtvdb", "73739", "&indexerid=73739", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "74608", "&indexerid=74608", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "199051", "&indexerid=199051", "sb.searchtvdb-lang");
-addList("sb.searchtvdb", "123456 (invalid show)", "&indexerid=123456", "sb.searchtvdb-lang");
-endOptGroup("sb.searchtvdb");
+addOptGroup("sb.searchindexers", "Search by Name");
+addList("sb.searchindexers", "Lost", "&name=Lost", "sb.searchindexers-lang");
+addList("sb.searchindexers", "office", "&name=office", "sb.searchindexers-lang");
+addList("sb.searchindexers", "OffiCE", "&name=OffiCE", "sb.searchindexers-lang");
+addList("sb.searchindexers", "Leno", "&name=leno", "sb.searchindexers-lang");
+addList("sb.searchindexers", "Top Gear", "&name=Top Gear", "sb.searchindexers-lang");
+endOptGroup("sb.searchindexers");
+addOptGroup("sb.searchindexers", "Search by indexerid");
+addList("sb.searchindexers", "73739", "&indexerid=73739", "sb.searchindexers-lang");
+addList("sb.searchindexers", "74608", "&indexerid=74608", "sb.searchindexers-lang");
+addList("sb.searchindexers", "199051", "&indexerid=199051", "sb.searchindexers-lang");
+addList("sb.searchindexers", "123456 (invalid show)", "&indexerid=123456", "sb.searchindexers-lang");
+endOptGroup("sb.searchindexers");
 
-addOption("sb.searchtvdb-lang", "Optional Param", "", 1);
-addOption("sb.searchtvdb-lang", "Chinese", "&lang=zh");   // 27
-addOption("sb.searchtvdb-lang", "Croatian", "&lang=hr");  // 31
-addOption("sb.searchtvdb-lang", "Czech", "&lang=cs");     // 28
-addOption("sb.searchtvdb-lang", "Danish", "&lang=da");    // 10
-addOption("sb.searchtvdb-lang", "Dutch", "&lang=nl");     // 13
-addOption("sb.searchtvdb-lang", "English", "&lang=en");   // 7
-addOption("sb.searchtvdb-lang", "Finnish", "&lang=fi");   // 11 -- Suomeksi
-addOption("sb.searchtvdb-lang", "French", "&lang=fr");    // 17
-addOption("sb.searchtvdb-lang", "German", "&lang=de");    // 14
-addOption("sb.searchtvdb-lang", "Greek", "&lang=el");     // 20
-addOption("sb.searchtvdb-lang", "Hebrew", "&lang=he");    // 24
-addOption("sb.searchtvdb-lang", "Hungarian", "&lang=hu"); // 19 -- Magyar
-addOption("sb.searchtvdb-lang", "Italian", "&lang=it");   // 15
-addOption("sb.searchtvdb-lang", "Japanese", "&lang=ja");  // 25
-addOption("sb.searchtvdb-lang", "Korean", "&lang=ko");    // 32
-addOption("sb.searchtvdb-lang", "Norwegian", "&lang=no"); // 9
-addOption("sb.searchtvdb-lang", "Polish", "&lang=pl");    // 18
-addOption("sb.searchtvdb-lang", "Portuguese", "&lang=pt");// 26
-addOption("sb.searchtvdb-lang", "Russian", "&lang=ru");   // 22
-addOption("sb.searchtvdb-lang", "Slovenian", "&lang=sl"); // 30
-addOption("sb.searchtvdb-lang", "Spanish", "&lang=es");   // 16
-addOption("sb.searchtvdb-lang", "Swedish", "&lang=sv");   // 8
-addOption("sb.searchtvdb-lang", "Turkish", "&lang=tr");   // 21
+addOption("sb.searchindexers-lang", "Optional Param", "", 1);
+addOption("sb.searchindexers-lang", "Chinese", "&lang=zh");   // 27
+addOption("sb.searchindexers-lang", "Croatian", "&lang=hr");  // 31
+addOption("sb.searchindexers-lang", "Czech", "&lang=cs");     // 28
+addOption("sb.searchindexers-lang", "Danish", "&lang=da");    // 10
+addOption("sb.searchindexers-lang", "Dutch", "&lang=nl");     // 13
+addOption("sb.searchindexers-lang", "English", "&lang=en");   // 7
+addOption("sb.searchindexers-lang", "Finnish", "&lang=fi");   // 11 -- Suomeksi
+addOption("sb.searchindexers-lang", "French", "&lang=fr");    // 17
+addOption("sb.searchindexers-lang", "German", "&lang=de");    // 14
+addOption("sb.searchindexers-lang", "Greek", "&lang=el");     // 20
+addOption("sb.searchindexers-lang", "Hebrew", "&lang=he");    // 24
+addOption("sb.searchindexers-lang", "Hungarian", "&lang=hu"); // 19 -- Magyar
+addOption("sb.searchindexers-lang", "Italian", "&lang=it");   // 15
+addOption("sb.searchindexers-lang", "Japanese", "&lang=ja");  // 25
+addOption("sb.searchindexers-lang", "Korean", "&lang=ko");    // 32
+addOption("sb.searchindexers-lang", "Norwegian", "&lang=no"); // 9
+addOption("sb.searchindexers-lang", "Polish", "&lang=pl");    // 18
+addOption("sb.searchindexers-lang", "Portuguese", "&lang=pt");// 26
+addOption("sb.searchindexers-lang", "Russian", "&lang=ru");   // 22
+addOption("sb.searchindexers-lang", "Slovenian", "&lang=sl"); // 30
+addOption("sb.searchindexers-lang", "Spanish", "&lang=es");   // 16
+addOption("sb.searchindexers-lang", "Swedish", "&lang=sv");   // 8
+addOption("sb.searchindexers-lang", "Turkish", "&lang=tr");   // 21
 
 #for $curShow in $sortedShowList:
 addList("seasons", "$curShow.name", "&indexerid=$curShow.indexerid", "seasons-$curShow.indexerid");
