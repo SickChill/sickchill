@@ -36,7 +36,6 @@ class TVShowTests(test.SickbeardTestDBCase):
     def test_change_indexerid(self):
         show = TVShow(1, 0001, "en")
         show.name = "show name"
-        show.tvrname = "show name"
         show.network = "cbs"
         show.genre = "crime"
         show.runtime = 40
@@ -86,7 +85,6 @@ class TVTests(test.SickbeardTestDBCase):
     def test_getEpisode(self):
         show = TVShow(1, 0001, "en")
         show.name = "show name"
-        show.tvrname = "show name"
         show.network = "cbs"
         show.genre = "crime"
         show.runtime = 40
