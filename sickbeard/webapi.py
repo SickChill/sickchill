@@ -1805,9 +1805,8 @@ class CMD_Show(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         showDict = {}
-        showDict["season_list"] = \
-        CMD_ShowSeasonList(self.handler, (), {"indexerid or tvdbid or tvrageid": self.indexerid}).run()["data"]
-        showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid or tvdbid or tvrageid": self.indexerid}).run()[
+        showDict["season_list"] = CMD_ShowSeasonList(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
+        showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": self.indexerid}).run()[
             "data"]
 
         genreList = []
@@ -1816,6 +1815,7 @@ class CMD_Show(ApiCall):
             for genre in genreListTmp:
                 if genre:
                     genreList.append(genre)
+
         showDict["genre"] = genreList
         showDict["quality"] = _get_quality_string(showObj.quality)
 
