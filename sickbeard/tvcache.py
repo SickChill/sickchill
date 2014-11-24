@@ -33,7 +33,7 @@ from sickbeard.exceptions import AuthException
 from sickbeard.rssfeeds import RSSFeeds
 from sickbeard import clients
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import fixStupidEncodings
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):

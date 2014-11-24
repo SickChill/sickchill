@@ -29,7 +29,7 @@ import sickbeard
 
 from sickbeard import logger, common
 from sickbeard import db
-from encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import fixStupidEncodings
 from sickbeard.exceptions import ex
 
 

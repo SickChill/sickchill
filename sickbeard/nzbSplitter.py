@@ -29,7 +29,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import fixStupidEncodings
 
 
 def getSeasonNZBs(name, urlData, season):

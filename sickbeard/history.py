@@ -20,7 +20,7 @@ import db
 import datetime
 
 from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
-from encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import fixStupidEncodings
 
 
 dateFormat = "%Y%m%d%H%M%S"

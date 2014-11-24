@@ -27,7 +27,7 @@ from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
-from encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import fixStupidEncodings
 
 exception_dict = {}
 anidb_exception_dict = {}

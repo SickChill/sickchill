@@ -26,8 +26,7 @@ from sickbeard.exceptions import ex, EpisodeNotFoundException
 from sickbeard.history import dateFormat
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
-from encodingKludge import fixStupidEncodings
-
+from sickbeard.encodingKludge import fixStupidEncodings
 
 def prepareFailedName(release):
     """Standardizes release name for failed DB"""
