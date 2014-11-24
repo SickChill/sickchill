@@ -1,5 +1,5 @@
 # !/usr/bin/env python2
-#encoding:utf-8
+# encoding:utf-8
 #author:dbr/Ben
 #project:tvdb_api
 #repository:http://github.com/dbr/tvdb_api
@@ -598,9 +598,9 @@ class Tvdb:
                         value = parse(value, fuzzy=True).date()
                         value = value.strftime("%Y-%m-%d")
 
-                    #if key == 'airs_time':
-                    #    value = parse(value).time()
-                    #    value = value.strftime("%I:%M %p")
+                        #if key == 'airs_time':
+                        #    value = parse(value).time()
+                        #    value = value.strftime("%I:%M %p")
                 except:
                     pass
 
@@ -840,19 +840,20 @@ class Tvdb:
             self.config['url_seriesInfo'] % (sid, getShowInLanguage)
         )
 
-        # check and make sure we have data to process and that it contains a series name
-        if not len(seriesInfoEt) or (isinstance(seriesInfoEt, dict) and 'seriesname' not in seriesInfoEt['series']):
+        # get series data
+        try:
+            for k, v in seriesInfoEt['series'].items():
+                if v is not None:
+                    if k in ['banner', 'fanart', 'poster']:
+                        v = self.config['url_artworkPrefix'] % (v)
+                    else:
+                        v = self._cleanData(v)
+
+                self._setShowData(sid, k, v)
+        except:
             return False
 
-        for k, v in seriesInfoEt['series'].items():
-            if v is not None:
-                if k in ['banner', 'fanart', 'poster']:
-                    v = self.config['url_artworkPrefix'] % (v)
-                else:
-                    v = self._cleanData(v)
-
-            self._setShowData(sid, k, v)
-
+        # get episode data
         if getEpInfo:
             # Parse banners
             if self.config['banners_enabled']:

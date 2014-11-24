@@ -588,17 +588,17 @@ class TVRage:
             self.config['params_seriesInfo']
         )
 
-        # check and make sure we have data to process and that it contains a series name
-        if not len(seriesInfoEt) or (isinstance(seriesInfoEt, dict) and 'seriesname' not in seriesInfoEt):
+        # get series data
+        try:
+            for k, v in seriesInfoEt.items():
+                if v is not None:
+                    v = self._cleanData(v)
+
+                self._setShowData(sid, k, v)
+        except:
             return False
 
-        for k, v in seriesInfoEt.items():
-            if v is not None:
-                v = self._cleanData(v)
-
-            self._setShowData(sid, k, v)
-
-        # series search ends here
+        # get episode data
         if getEpInfo:
             # Parse episode data
             log().debug('Getting all episodes of %s' % (sid))
