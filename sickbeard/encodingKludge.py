@@ -18,22 +18,23 @@
 
 import os
 
-from sickbeard import logger
 import sickbeard
+from sickbeard import logger
+
+import ftfy
+import ftfy.bad_codecs
 
 # This module tries to deal with the apparently random behavior of python when dealing with unicode <-> utf-8
 # encodings. It tries to just use unicode, but if that fails then it tries forcing it to utf-8. Any functions
 # which return something should always return unicode.
 
 def fixStupidEncodings(x, silent=False):
-    if type(x) == str:
+    if type(x) in [str, unicode]:
         try:
-            return x.decode(sickbeard.SYS_ENCODING)
+            return ftfy.fix_text(u'' + x).decode(sickbeard.SYS_ENCODING)
         except UnicodeDecodeError:
             logger.log(u"Unable to decode value: " + repr(x), logger.ERROR)
             return None
-    elif type(x) == unicode:
-        return x
     else:
         logger.log(
             u"Unknown value passed in, ignoring it: " + str(type(x)) + " (" + repr(x) + ":" + repr(type(x)) + ")",
@@ -49,12 +50,12 @@ def fixListEncodings(x):
 
 def callPeopleStupid(x):
     try:
-        return x.encode(sickbeard.SYS_ENCODING)
+        return ftfy.fix_text(x).encode(sickbeard.SYS_ENCODING)
     except (UnicodeEncodeError, UnicodeDecodeError):
         logger.log(
             u"YOUR COMPUTER SUCKS! Your data is being corrupted by a bad locale/encoding setting. Report this error on the forums or IRC please: " + repr(
                 x) + ", " + sickbeard.SYS_ENCODING, logger.ERROR)
-        return x.encode(sickbeard.SYS_ENCODING, 'ignore')
+        return ftfy.fix_text(x).encode(sickbeard.SYS_ENCODING, 'ignore')
 
 def ek(func, *args, **kwargs):
     if os.name == 'nt':

@@ -20,13 +20,14 @@ import re
 import time
 import threading
 import datetime
-import sickbeard
 
-from lib import adba
+import sickbeard
+import adba
 from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
+from encodingKludge import fixStupidEncodings
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -233,8 +234,7 @@ def retrieve_exceptions():
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
 
-                if not isinstance(cur_exception, unicode):
-                    cur_exception = unicode(cur_exception, 'utf-8', 'replace')
+                cur_exception = fixStupidEncodings(cur_exception)
 
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                             [cur_indexer_id, cur_exception, curSeason])
@@ -267,9 +267,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
         exceptionsCache[indexer_id][season] = scene_exceptions
 
     for cur_exception in scene_exceptions:
-
-        if not isinstance(cur_exception, unicode):
-            cur_exception = unicode(cur_exception, 'utf-8', 'replace')
+        cur_exception = fixStupidEncodings(cur_exception)
 
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                     [indexer_id, cur_exception, season])

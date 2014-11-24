@@ -64,8 +64,8 @@ from browser import WebFileBrowser
 from lib.dateutil import tz
 from lib.unrar2 import RarFile
 
-from lib import subliminal
-from trakt import TraktCall
+from lib import adba, subliminal
+from lib.trakt import TraktCall
 
 try:
     import json
@@ -77,7 +77,6 @@ try:
 except ImportError:
     import xml.etree.ElementTree as etree
 
-from lib import adba
 
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError, asynchronous
@@ -3289,7 +3288,7 @@ class ErrorLogs(MainHandler):
 
         for x in reversed(data):
 
-            x = x.decode('utf-8', 'replace')
+            x = ek.fixStupidEncodings(x)
             match = re.match(regex, x)
 
             if match:

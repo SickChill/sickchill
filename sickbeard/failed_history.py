@@ -26,6 +26,7 @@ from sickbeard.exceptions import ex, EpisodeNotFoundException
 from sickbeard.history import dateFormat
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
+from encodingKludge import fixStupidEncodings
 
 
 def prepareFailedName(release):
@@ -36,9 +37,7 @@ def prepareFailedName(release):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub("[\.\-\+\ ]", "_", fixed)
-
-    if not isinstance(fixed, unicode):
-        fixed = unicode(fixed, 'utf-8', 'replace')
+    fixed = fixStupidEncodings(fixed)
 
     return fixed
 
