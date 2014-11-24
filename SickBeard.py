@@ -25,6 +25,7 @@ import signal
 import sys
 import shutil
 import subprocess
+import traceback
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -67,6 +68,7 @@ throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
 signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
+
 
 class SickRage(object):
     def __init__(self):
@@ -127,9 +129,6 @@ class SickRage(object):
 
         try:
             locale.setlocale(locale.LC_ALL, "")
-        except (locale.Error, IOError):
-            pass
-        try:
             sickbeard.SYS_ENCODING = locale.getpreferredencoding()
         except (locale.Error, IOError):
             pass
@@ -146,9 +145,8 @@ class SickRage(object):
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
             sys.setdefaultencoding(sickbeard.SYS_ENCODING)
         except:
-            print 'Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable'
-            print 'or find another way to force Python to use ' + sickbeard.SYS_ENCODING + ' for string encoding.'
-            sys.exit(1)
+            sys.exit("Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n" +
+                     "or find another way to force Python to use " + sickbeard.SYS_ENCODING + " for string encoding.")
 
         # Need console logging for SickBeard.py and SickBeard-console.exe
         self.consoleLogging = (not hasattr(sys, "frozen")) or (sickbeard.MY_NAME.lower().find('-console') > 0)
@@ -456,9 +454,9 @@ class SickRage(object):
                 sickbeard.showList.append(curShow)
             except Exception, e:
                 logger.log(
-                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8',
-                                                                                                             'replace'),
+                    u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
                     logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
     def restore(self, srcDir, dstDir):
         try:
@@ -508,7 +506,7 @@ class SickRage(object):
                         popen_list = [os.path.join(sickbeard.PROG_DIR, 'updater.exe'), str(sickbeard.PID),
                                       sys.executable]
                     else:
-                        logger.log(u"Unknown SB launch method, please file a bug report about this", logger.ERROR)
+                        logger.log(u"Unknown SR launch method, please file a bug report about this", logger.ERROR)
                         popen_list = [sys.executable, os.path.join(sickbeard.PROG_DIR, 'updater.py'),
                                       str(sickbeard.PID),
                                       sys.executable,

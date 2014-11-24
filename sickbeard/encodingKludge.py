@@ -40,8 +40,6 @@ def fixStupidEncodings(x, silent=False):
             logger.DEBUG if silent else logger.ERROR)
         return None
 
-
-
 def fixListEncodings(x):
     if type(x) != list and type(x) != tuple:
         return x
@@ -52,12 +50,11 @@ def fixListEncodings(x):
 def callPeopleStupid(x):
     try:
         return x.encode(sickbeard.SYS_ENCODING)
-    except UnicodeEncodeError:
+    except (UnicodeEncodeError, UnicodeDecodeError):
         logger.log(
             u"YOUR COMPUTER SUCKS! Your data is being corrupted by a bad locale/encoding setting. Report this error on the forums or IRC please: " + repr(
                 x) + ", " + sickbeard.SYS_ENCODING, logger.ERROR)
         return x.encode(sickbeard.SYS_ENCODING, 'ignore')
-
 
 def ek(func, *args, **kwargs):
     if os.name == 'nt':
