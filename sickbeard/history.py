@@ -20,6 +20,7 @@ import db
 import datetime
 
 from sickbeard.common import SNATCHED, SUBTITLED, FAILED, Quality
+from sickbeard.encodingKludge import fixStupidEncodings
 
 
 dateFormat = "%Y%m%d%H%M%S"
@@ -27,9 +28,7 @@ dateFormat = "%Y%m%d%H%M%S"
 
 def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):
     logDate = datetime.datetime.today().strftime(dateFormat)
-
-    if not isinstance(resource, unicode):
-        resource = unicode(resource, 'utf-8', 'replace')
+    resource = fixStupidEncodings(resource)
 
     myDB = db.DBConnection()
     myDB.action(

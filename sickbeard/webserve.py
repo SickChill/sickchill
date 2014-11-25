@@ -64,8 +64,8 @@ from browser import WebFileBrowser
 from lib.dateutil import tz
 from lib.unrar2 import RarFile
 
-from lib import subliminal
-from trakt import TraktCall
+from lib import adba, subliminal
+from lib.trakt import TraktCall
 
 try:
     import json
@@ -77,12 +77,12 @@ try:
 except ImportError:
     import xml.etree.ElementTree as etree
 
-from lib import adba
 
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError, asynchronous
 
 from bug_tracker import BugTracker
+
 
 def authenticated(handler_class):
     def wrap_execute(handler_execute):
@@ -101,7 +101,7 @@ def authenticated(handler_class):
                               '/api/builder' not in handler.request.uri):
                     return True
                 elif (handler.request.uri.startswith(sickbeard.WEB_ROOT + '/calendar') and
-                        sickbeard.CALENDAR_UNPROTECTED):
+                          sickbeard.CALENDAR_UNPROTECTED):
                     return True
 
                 auth_hdr = handler.request.headers.get('Authorization')
@@ -394,8 +394,9 @@ class MainHandler(RequestHandler):
 
         # add localtime to the dict
         for index, item in enumerate(sql_results):
-            sql_results[index]['localtime'] = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(item['airdate'], 
-                                                                                       item['airs'], item['network']))
+            sql_results[index]['localtime'] = sbdatetime.sbdatetime.convert_to_setting(
+                network_timezones.parse_date_time(item['airdate'],
+                                                  item['airs'], item['network']))
 
         sql_results.sort(sorts[sickbeard.COMING_EPS_SORT])
 
@@ -424,7 +425,7 @@ class MainHandler(RequestHandler):
         t.sql_results = sql_results
 
         # Allow local overriding of layout parameter
-        if layout and layout in ('poster', 'banner', 'list','calendar'):
+        if layout and layout in ('poster', 'banner', 'list', 'calendar'):
             t.layout = layout
         else:
             t.layout = sickbeard.COMING_EPS_LAYOUT
@@ -487,7 +488,8 @@ class MainHandler(RequestHandler):
                     ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
                            episode['description'].splitlines()[0] + '\r\n'
                 else:
-                    ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (show['network'] or 'Unknown network') + '\r\n'
+                    ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
+                        show['network'] or 'Unknown network') + '\r\n'
 
                 ical = ical + 'END:VEVENT\r\n'
 
@@ -1074,7 +1076,8 @@ class Manage(MainHandler):
         return _munge(t)
 
 
-    def massEditSubmit(self, archive_firstmatch=None, paused=None, anime=None, sports=None, scene=None, flatten_folders=None,
+    def massEditSubmit(self, archive_firstmatch=None, paused=None, anime=None, sports=None, scene=None,
+                       flatten_folders=None,
                        quality_preset=False,
                        subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
                        **kwargs):
@@ -1179,7 +1182,8 @@ class Manage(MainHandler):
         redirect("/manage/")
 
 
-    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
+    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None,
+                   toSubtitle=None):
 
         if toUpdate is not None:
             toUpdate = toUpdate.split('|')
@@ -1515,11 +1519,13 @@ class ConfigGeneral(MainHandler):
 
 
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, launch_browser=None, web_username=None,
+                    update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
+                    launch_browser=None, web_username=None,
                     use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-                    proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None, calendar_unprotected=None,
+                    proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
+                    calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, play_videos=None, rootDir=None, theme_name=None):
 
@@ -1671,7 +1677,8 @@ class ConfigSearch(MainHandler):
                    backlog_startup=None, dailysearch_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_path=None, torrent_verify_cert=None,
-                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None, require_words=None):
+                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None,
+                   require_words=None):
 
         results = []
 
@@ -1753,7 +1760,8 @@ class ConfigPostProcessing(MainHandler):
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, process_automatically=None,
                            rename_episodes=None, airdate_episodes=None, unpack=None,
-                           move_associated_files=None, postpone_if_sync_files=None, nfo_rename=None, tv_download_dir=None, naming_custom_abd=None,
+                           move_associated_files=None, postpone_if_sync_files=None, nfo_rename=None,
+                           tv_download_dir=None, naming_custom_abd=None,
                            naming_anime=None,
                            naming_abd_pattern=None, naming_strip_year=None, use_failed_downloads=None,
                            delete_failed=None, extra_scripts=None, skip_removed_files=None,
@@ -1782,7 +1790,6 @@ class ConfigPostProcessing(MainHandler):
                 sickbeard.autoPostProcesserScheduler.join(5)
             except:
                 pass
-
 
         if unpack:
             if self.isRarSupported() != 'not supported':
@@ -2004,17 +2011,17 @@ class ConfigProviders(MainHandler):
             error += "\nNo Provider Api key specified"
 
         if error <> "":
-            return json.dumps({'success' : False, 'error': error})
+            return json.dumps({'success': False, 'error': error})
 
-        #Get list with Newznabproviders
-        #providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
+        # Get list with Newznabproviders
+        # providerDict = dict(zip([x.getID() for x in sickbeard.newznabProviderList], sickbeard.newznabProviderList))
 
-        #Get newznabprovider obj with provided name
-        tempProvider= newznab.NewznabProvider(name, url, key)
+        # Get newznabprovider obj with provided name
+        tempProvider = newznab.NewznabProvider(name, url, key)
 
         success, tv_categories, error = tempProvider.get_newznab_categories()
 
-        return json.dumps({'success' : success,'tv_categories' : tv_categories, 'error' : error})
+        return json.dumps({'success': success, 'tv_categories': tv_categories, 'error': error})
 
     def deleteNewznabProvider(self, nnid):
 
@@ -2310,14 +2317,14 @@ class ConfigProviders(MainHandler):
                     curTorrentProvider.enable_daily = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_enable_daily'])
                 except:
-                    curTorrentProvider.enable_daily = 0 # these exceptions are actually catching unselected checkboxes
+                    curTorrentProvider.enable_daily = 0  # these exceptions are actually catching unselected checkboxes
 
             if hasattr(curTorrentProvider, 'enable_backlog'):
                 try:
                     curTorrentProvider.enable_backlog = config.checkbox_to_value(
                         kwargs[curTorrentProvider.getID() + '_enable_backlog'])
                 except:
-                    curTorrentProvider.enable_backlog = 0 # these exceptions are actually catching unselected checkboxes
+                    curTorrentProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 
         for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
                                curProvider.providerType == sickbeard.GenericProvider.NZB]:
@@ -2876,18 +2883,19 @@ class NewHomeAddShows(MainHandler):
 
                 indexer_id = show_name = indexer = None
                 for cur_provider in sickbeard.metadata_provider_dict.values():
-                    (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                    if not (indexer_id and show_name):
+                        (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
 
-                    # default to TVDB if indexer was not detected
-                    if show_name and not (indexer or indexer_id):
-                        (sn, idx, id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
+                        # default to TVDB if indexer was not detected
+                        if show_name and not (indexer or indexer_id):
+                            (sn, idx, id) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
 
-                        # set indexer and indexer_id from found info
-                        if not indexer and idx:
-                            indexer = idx
+                            # set indexer and indexer_id from found info
+                            if not indexer and idx:
+                                indexer = idx
 
-                        if not indexer_id and id:
-                            indexer_id = id
+                            if not indexer_id and id:
+                                indexer_id = id
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
@@ -2921,7 +2929,7 @@ class NewHomeAddShows(MainHandler):
         if not show_dir:
             t.default_show_name = ''
         elif not show_name:
-            t.default_show_name = ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' ')
+            t.default_show_name = re.sub(' \(\d{4}\)','', ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
         else:
             t.default_show_name = show_name
 
@@ -2959,19 +2967,13 @@ class NewHomeAddShows(MainHandler):
         recommendedlist = TraktCall("recommendations/shows.json/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME,
                                     sickbeard.TRAKT_PASSWORD)
 
-        if recommendedlist == 'NULL':
-            logger.log(u"No shows found in your recommendedlist, aborting recommendedlist update", logger.DEBUG)
-            return
-
-        if recommendedlist is None:
-            logger.log(u"Could not connect to trakt service, aborting recommended list update", logger.ERROR)
-            return
-
-        map(final_results.append,
-            ([int(show['tvdb_id'] or 0) if sickbeard.TRAKT_DEFAULT_INDEXER == 1 else int(show['tvdb_id'] or 0),
-              show['url'], show['title'], show['overview'],
-              datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')] for show in
-             recommendedlist if not helpers.findCertainShow(sickbeard.showList, indexerid=int(show['tvdb_id']))))
+        if recommendedlist:
+            indexers = ['tvdb_id', 'tvrage_id']
+            map(final_results.append, (
+                [int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]), show['url'], show['title'], show['overview'],
+                 datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')]
+                for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
+                int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
 
         return json.dumps({'results': final_results})
 
@@ -3000,12 +3002,16 @@ class NewHomeAddShows(MainHandler):
         t = PageTemplate(headers=self.request.headers, file="home_trendingShows.tmpl")
         t.submenu = HomeMenu()
 
-        t.trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
+        t.trending_shows = []
 
-        if None is not t.trending_shows:
-            for item in t.trending_shows:
-                if helpers.findCertainShow(sickbeard.showList, int(item['tvdb_id'])):
-                    item['tvdb_id'] = u'ExistsInLibrary'
+        trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
+        if trending_shows:
+            for show in trending_shows:
+                try:
+                    if not helpers.findCertainShow(sickbeard.showList, [int(show['tvdb_id']), int(show['tvrage_id'])]):
+                        t.trending_shows += [show]
+                except exceptions.MultipleShowObjectsException:
+                    continue
 
         return _munge(t)
 
@@ -3282,7 +3288,7 @@ class ErrorLogs(MainHandler):
 
         for x in reversed(data):
 
-            x = x.decode('utf-8', 'replace')
+            x = ek.fixStupidEncodings(x)
             match = re.match(regex, x)
 
             if match:
@@ -3833,7 +3839,7 @@ class Home(MainHandler):
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
                  rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None,
-                 scene=None):
+                 scene=None, defaultEpStatus=None):
 
         if show is None:
             errString = "Invalid show ID: " + str(show)
@@ -4007,6 +4013,7 @@ class Home(MainHandler):
                 showObj.dvdorder = dvdorder
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
+                showObj.default_ep_status = defaultEpStatus
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
@@ -4087,8 +4094,8 @@ class Home(MainHandler):
 
         ui.notifications.message('<b>%s</b> has been %s %s' %
                                  (showObj.name,
-                                 ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
-                                 ('(media untouched)', '(with all related media)')[bool(full)]))
+                                  ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
+                                  ('(media untouched)', '(with all related media)')[bool(full)]))
         redirect("/home/")
 
 
@@ -4405,10 +4412,9 @@ class Home(MainHandler):
 
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
-        if ep_queue_item.success:
-            return returnManualSearchResult(ep_queue_item)
         if not ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({'result': 'success'}) #I Actually want to call it queued, because the search hasnt been started yet!
+            return json.dumps(
+                {'result': 'success'})  # I Actually want to call it queued, because the search hasnt been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({'result': 'success'})
         else:
@@ -4422,16 +4428,17 @@ class Home(MainHandler):
         episodes = []
         currentManualSearchThreadsQueued = []
         currentManualSearchThreadActive = []
-        finishedManualSearchThreadItems= []
+        finishedManualSearchThreadItems = []
 
         # Queued Searches
         currentManualSearchThreadsQueued = sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show)
+
         # Running Searches
         if (sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress()):
             currentManualSearchThreadActive = sickbeard.searchQueueScheduler.action.currentItem
 
         # Finished Searches
-        finishedManualSearchThreadItems =  sickbeard.search_queue.MANUAL_SEARCH_HISTORY
+        finishedManualSearchThreadItems = sickbeard.search_queue.MANUAL_SEARCH_HISTORY
 
         if currentManualSearchThreadsQueued:
             for searchThread in currentManualSearchThreadsQueued:
@@ -4439,18 +4446,18 @@ class Home(MainHandler):
                 if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                     episodes.append({'episode': searchThread.segment.episode,
                                      'episodeindexid': searchThread.segment.indexerid,
-                                     'season' : searchThread.segment.season,
-                                     'searchstatus' : searchstatus,
-                                     'status' : statusStrings[searchThread.segment.status],
+                                     'season': searchThread.segment.season,
+                                     'searchstatus': searchstatus,
+                                     'status': statusStrings[searchThread.segment.status],
                                      'quality': self.getQualityClass(searchThread.segment)})
                 else:
                     for epObj in searchThread.segment:
                         episodes.append({'episode': epObj.episode,
-                             'episodeindexid': epObj.indexerid,
-                             'season' : epObj.season,
-                             'searchstatus' : searchstatus,
-                             'status' : statusStrings[epObj.status],
-                             'quality': self.getQualityClass(epObj)})
+                                         'episodeindexid': epObj.indexerid,
+                                         'season': epObj.season,
+                                         'searchstatus': searchstatus,
+                                         'status': statusStrings[epObj.status],
+                                         'quality': self.getQualityClass(epObj)})
 
         if currentManualSearchThreadActive:
             searchThread = currentManualSearchThreadActive
@@ -4461,22 +4468,23 @@ class Home(MainHandler):
                 searchstatus = 'searching'
             episodes.append({'episode': searchThread.segment.episode,
                              'episodeindexid': searchThread.segment.indexerid,
-                             'season' : searchThread.segment.season,
-                             'searchstatus' : searchstatus,
-                             'status' : statusStrings[searchThread.segment.status],
+                             'season': searchThread.segment.season,
+                             'searchstatus': searchstatus,
+                             'status': statusStrings[searchThread.segment.status],
                              'quality': self.getQualityClass(searchThread.segment)})
 
         if finishedManualSearchThreadItems:
             for searchThread in finishedManualSearchThreadItems:
                 if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
-                    if str(searchThread.show.indexerid) == show and not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
+                    if str(searchThread.show.indexerid) == show and not [x for x in episodes if x[
+                        'episodeindexid'] == searchThread.segment.indexerid]:
                         searchstatus = 'finished'
                         episodes.append({'episode': searchThread.segment.episode,
                                          'episodeindexid': searchThread.segment.indexerid,
-                                 'season' : searchThread.segment.season,
-                                 'searchstatus' : searchstatus,
-                                 'status' : statusStrings[searchThread.segment.status],
-                                 'quality': self.getQualityClass(searchThread.segment)})
+                                         'season': searchThread.segment.season,
+                                         'searchstatus': searchstatus,
+                                         'status': statusStrings[searchThread.segment.status],
+                                         'quality': self.getQualityClass(searchThread.segment)})
                 else:
                     ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
                     if str(searchThread.show.indexerid) == show:
@@ -4485,14 +4493,12 @@ class Home(MainHandler):
                                 searchstatus = 'finished'
                                 episodes.append({'episode': epObj.episode,
                                                  'episodeindexid': epObj.indexerid,
-                                         'season' : epObj.season,
-                                         'searchstatus' : searchstatus,
-                                         'status' : statusStrings[epObj.status],
-                                         'quality': self.getQualityClass(epObj)})
+                                                 'season': epObj.season,
+                                                 'searchstatus': searchstatus,
+                                                 'status': statusStrings[epObj.status],
+                                                 'quality': self.getQualityClass(epObj)})
 
-        return json.dumps({'show': show, 'episodes' : episodes})
-
-        #return json.dumps()
+        return json.dumps({'show': show, 'episodes': episodes})
 
     def getQualityClass(self, ep_obj):
         # return the correct json value
@@ -4530,7 +4536,8 @@ class Home(MainHandler):
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
         return json.dumps({'result': status, 'subtitles': ','.join(sorted([x.alpha2 for x in
-                                                                    ep_obj.subtitles.union(previous_subtitles)]))})
+                                                                           ep_obj.subtitles.union(
+                                                                               previous_subtitles)]))})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
@@ -4617,10 +4624,9 @@ class Home(MainHandler):
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj])
         sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
-        if ep_queue_item.success:
-            return returnManualSearchResult(ep_queue_item)
         if not ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({'result': 'success'}) #I Actually want to call it queued, because the search hasnt been started yet!
+            return json.dumps(
+                {'result': 'success'})  # I Actually want to call it queued, because the search hasnt been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({'result': 'success'})
         else:

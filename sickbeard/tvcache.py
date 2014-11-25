@@ -20,19 +20,20 @@ from __future__ import with_statement
 
 import time
 import datetime
+import itertools
+
 import sickbeard
 
 from sickbeard import db
 from sickbeard import logger
 from sickbeard.common import Quality
-
 from sickbeard import helpers, show_name_helpers
 from sickbeard.exceptions import MultipleShowObjectsException
 from sickbeard.exceptions import AuthException
-from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.rssfeeds import RSSFeeds
 from sickbeard import clients
-import itertools
+from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
+from sickbeard.encodingKludge import fixStupidEncodings
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -262,8 +263,7 @@ class TVCache():
             # get quality of release
             quality = parse_result.quality
 
-            if not isinstance(name, unicode):
-                name = unicode(name, 'utf-8', 'replace')
+            name = fixStupidEncodings(name)
 
             # get release group
             release_group = parse_result.release_group

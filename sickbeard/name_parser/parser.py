@@ -26,7 +26,7 @@ import os.path
 import regexes
 import sickbeard
 
-from sickbeard import logger, helpers, scene_numbering, common, exceptions, scene_exceptions, encodingKludge as ek, db
+from sickbeard import logger, helpers, scene_numbering, common, exceptions as ex, scene_exceptions, encodingKludge as ek, db
 from dateutil import parser
 
 

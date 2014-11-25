@@ -198,19 +198,6 @@
 		
 			<div id="summary">
 				<table class="summaryTable pull-left">
-				#if $show.network and $show.airs:
-					<tr><td class="showLegend">Originally Airs: </td><td>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
-				#else if $show.network:
-					<tr><td class="showLegend">Originally Airs: </td><td>$show.network</td></tr>
-				#else if $show.airs:
-					<tr><td class="showLegend">Originally Airs: </td><td>>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
-				#end if
-					<tr><td class="showLegend">Status: </td><td>$show.status</td></tr>
-				#if $showLoc[1]:
-					<tr><td class="showLegend">Location: </td><td>$showLoc[0]</td></tr>
-				#else:
-					<tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">$showLoc[0]</span> (dir is missing)</td></tr>
-				#end if
 				#set $anyQualities, $bestQualities = $Quality.splitQuality(int($show.quality))
 					<tr><td class="showLegend">Quality: </td><td>
 				#if $show.quality in $qualityPresets:
@@ -222,6 +209,21 @@
 				#if $bestQualities:
 					<i>Replace with:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%>
 				#end if
+				#end if
+
+				#if $show.network and $show.airs:
+					<tr><td class="showLegend">Originally Airs: </td><td>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
+				#else if $show.network:
+					<tr><td class="showLegend">Originally Airs: </td><td>$show.network</td></tr>
+				#else if $show.airs:
+					<tr><td class="showLegend">Originally Airs: </td><td>>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
+				#end if
+					<tr><td class="showLegend">Show Status: </td><td>$show.status</td></tr>
+					<tr><td class="showLegend">Default EP Status: </td><td>$statusStrings[$show.default_ep_status]</td></tr>
+				#if $showLoc[1]:
+					<tr><td class="showLegend">Location: </td><td>$showLoc[0]</td></tr>
+				#else:
+					<tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">$showLoc[0]</span> (dir is missing)</td></tr>
 				#end if
 					<tr><td class="showLegend">Scene Name:</td><td>#if $show.exceptions then $exceptions_string else $show.name#</td></tr>
 					
@@ -263,14 +265,13 @@
 					#end if
 				</table>
 			</div>
-		
 		</div>
 	</div>
 		
 	<div class="clearfix"></div>
-		
-	<div class="pull-left" style="padding-bottom: 10px;">
-		Change selected episodes to 
+
+	<div class="pull-left" >
+		Change selected episodes to:</br>
 		<select id="statusSelect" class="form-control form-control-inline input-sm">
 			#for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED, $FAILED] + sorted($Quality.DOWNLOADED):
 			#if $curStatus == $DOWNLOADED:
@@ -283,6 +284,8 @@
 		<input type="hidden" id="indexer" value="$show.indexer" />
 		<input class="btn btn-inline" type="button" id="changeStatus" value="Go" />
 	</div>
+
+	</br>
 
 	<div class="pull-right clearfix" id="checkboxControls">
 		<div style="padding-bottom: 5px;">
@@ -298,7 +301,6 @@
 			<button class="btn btn-xs clearAll">Clear All</button>
 		</div>
 	</div>
-
 <br />	
 
 <table class="sickbeardTable display_show" cellspacing="0" border="0" cellpadding="0">

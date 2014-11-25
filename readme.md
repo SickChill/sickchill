@@ -1,9 +1,12 @@
 SickRage
 =====
- Video File Manager for TV Shows, It watches for new episodes of your favorite shows and when they are posted it does its magic.
+Video File Manager for TV Shows, It watches for new episodes of your favorite shows and when they are posted it does its magic.
 
-## Important
- Please before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present, we HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk
+## Branch Build Status
+ - DEVELOP<br>
+[![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=develop)](https://travis-ci.org/SiCKRAGETV/SickRage)
+ - MASTER<br>
+[![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=master)](https://travis-ci.org/SiCKRAGETV/SickRage)
 
 ## Features
  - XBMC library updates, poster/fanart downloads, and NFO/TBN generation
@@ -36,3 +39,6 @@ With your bug reports, specify:
  - What happened
  - What you expected
  - Link to logfile on http://www.pastebin.com
+
+## Important
+Please before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present, we HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk

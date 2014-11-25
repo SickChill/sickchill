@@ -11,15 +11,18 @@
 # SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
-from sickbeard import logger
 import sickbeard
+from sickbeard import logger
+
+import ftfy
+import ftfy.bad_codecs
 
 # This module tries to deal with the apparently random behavior of python when dealing with unicode <-> utf-8
 # encodings. It tries to just use unicode, but if that fails then it tries forcing it to utf-8. Any functions
@@ -28,18 +31,19 @@ import sickbeard
 def fixStupidEncodings(x, silent=False):
     if type(x) == str:
         try:
-            return x.decode(sickbeard.SYS_ENCODING)
+            return str(ftfy.fix_text(u'' + x)).decode(sickbeard.SYS_ENCODING)
         except UnicodeDecodeError:
             logger.log(u"Unable to decode value: " + repr(x), logger.ERROR)
-            return None
+            return x
+        except UnicodeEncodeError:
+            logger.log(u"Unable to encode value: " + repr(x), logger.ERROR)
+            return x
     elif type(x) == unicode:
         return x
     else:
         logger.log(
             u"Unknown value passed in, ignoring it: " + str(type(x)) + " (" + repr(x) + ":" + repr(type(x)) + ")",
             logger.DEBUG if silent else logger.ERROR)
-        return None
-
 
 
 def fixListEncodings(x):
@@ -49,21 +53,13 @@ def fixListEncodings(x):
         return filter(lambda x: x != None, map(fixStupidEncodings, x))
 
 
-def callPeopleStupid(x):
-    try:
-        return x.encode(sickbeard.SYS_ENCODING)
-    except UnicodeEncodeError:
-        logger.log(
-            u"YOUR COMPUTER SUCKS! Your data is being corrupted by a bad locale/encoding setting. Report this error on the forums or IRC please: " + repr(
-                x) + ", " + sickbeard.SYS_ENCODING, logger.ERROR)
-        return x.encode(sickbeard.SYS_ENCODING, 'ignore')
-
-
 def ek(func, *args, **kwargs):
     if os.name == 'nt':
         result = func(*args, **kwargs)
     else:
-        result = func(*[callPeopleStupid(x) if type(x) in (str, unicode) else x for x in args], **kwargs)
+        result = func(
+            *[fixStupidEncodings(x).encode(sickbeard.SYS_ENCODING) if type(x) in (str, unicode) else x for x in args],
+            **kwargs)
 
     if type(result) in (list, tuple):
         return fixListEncodings(result)

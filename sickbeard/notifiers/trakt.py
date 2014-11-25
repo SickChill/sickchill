@@ -34,7 +34,7 @@ class TraktNotifier:
 
     def notify_subtitle_download(self, ep_name, lang):
         pass
-        
+
     def notify_git_update(self, new_version):
         pass
 
@@ -45,11 +45,11 @@ class TraktNotifier:
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        if sickbeard.USE_TRAKT:
+        trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
 
+        if sickbeard.USE_TRAKT:
             # URL parameters
             data = {
-                'tvdb_id': ep_obj.show.indexerid,
                 'title': ep_obj.show.name,
                 'year': ep_obj.show.startyear,
                 'episodes': [{
@@ -58,48 +58,53 @@ class TraktNotifier:
                              }]
             }
 
-            if data is not None:
-                TraktCall("show/episode/library/%API%", self._api(), self._username(), self._password(), data)
-                if sickbeard.TRAKT_REMOVE_WATCHLIST:
-                    TraktCall("show/episode/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
+            if trakt_id == 'tvdb_id':
+                data[trakt_id] = ep_obj.show.indexerid
 
-                if sickbeard.TRAKT_REMOVE_SERIESLIST:
-                    data_show = None
+            # update library
+            TraktCall("show/episode/library/%API%", self._api(), self._username(), self._password(), data)
 
-                    # URL parameters, should not need to recheck data (done above)
-                    data = {
-                        'shows': [
-                            {
-                                'tvdb_id': ep_obj.show.indexerid,
-                                'title': ep_obj.show.name,
-                                'year': ep_obj.show.startyear
-                            }
-                        ]
-                    }
-                    
-                    TraktCall("show/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
+            # remove from watchlist
+            if sickbeard.TRAKT_REMOVE_WATCHLIST:
+                TraktCall("show/episode/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
 
-                    # Remove all episodes from episode watchlist
-                    # Start by getting all episodes in the watchlist
-                    watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+            if sickbeard.TRAKT_REMOVE_SERIESLIST:
+                data = {
+                    'shows': [
+                        {
+                            'title': ep_obj.show.name,
+                            'year': ep_obj.show.startyear
+                        }
+                    ]
+                }
 
-                    # Convert watchlist to only contain current show
+                if trakt_id == 'tvdb_id':
+                    data['shows'][trakt_id] = ep_obj.show.indexerid
+
+                TraktCall("show/unwatchlist/%API%", self._api(), self._username(), self._password(), data)
+
+                # Remove all episodes from episode watchlist
+                # Start by getting all episodes in the watchlist
+                watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME,
+                                      sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+                # Convert watchlist to only contain current show
+                if watchlist:
                     for show in watchlist:
-                        # Check if tvdb_id exists
-                        if 'tvdb_id' in show:
-                            if unicode(data['shows'][0]['tvdb_id']) == show['tvdb_id']:
-                                data_show = {
-                                    'title': show['title'],
-                                    'tvdb_id': show['tvdb_id'],
-                                    'episodes': []
-                                }
-                            
-                                # Add series and episode (number) to the arry
-                                for episodes in show['episodes']:
-                                    ep = {'season': episodes['season'], 'episode': episodes['number']}
-                                    data_show['episodes'].append(ep)
-                    if data_show is not None:
-                        TraktCall("show/episode/unwatchlist/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, data_show)
+                        if show[trakt_id] == ep_obj.show.indexerid:
+                            data_show = {
+                                'title': show['title'],
+                                trakt_id: show[trakt_id],
+                                'episodes': []
+                            }
+
+                            # Add series and episode (number) to the array
+                            for episodes in show['episodes']:
+                                ep = {'season': episodes['season'], 'episode': episodes['number']}
+                                data_show['episodes'].append(ep)
+
+                            TraktCall("show/episode/unwatchlist/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME,
+                                      sickbeard.TRAKT_PASSWORD, data_show)
 
     def test_notify(self, api, username, password):
         """
