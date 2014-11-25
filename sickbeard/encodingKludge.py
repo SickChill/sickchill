@@ -34,6 +34,10 @@ def fixStupidEncodings(x, silent=False):
             return str(ftfy.fix_text(u'' + x)).decode(sickbeard.SYS_ENCODING)
         except UnicodeDecodeError:
             logger.log(u"Unable to decode value: " + repr(x), logger.ERROR)
+            return x
+        except UnicodeEncodeError:
+            logger.log(u"Unable to encode value: " + repr(x), logger.ERROR)
+            return x
     elif type(x) == unicode:
         return x
     else:
@@ -48,12 +52,13 @@ def fixListEncodings(x):
     else:
         return filter(lambda x: x != None, map(fixStupidEncodings, x))
 
+
 def ek(func, *args, **kwargs):
     if os.name == 'nt':
         result = func(*args, **kwargs)
     else:
         result = func(
-            *[ftfy.fix_text(u'' + x).encode(sickbeard.SYS_ENCODING) if type(x) in (str, unicode) else x for x in args],
+            *[fixStupidEncodings(x).encode(sickbeard.SYS_ENCODING) if type(x) in (str, unicode) else x for x in args],
             **kwargs)
 
     if type(result) in (list, tuple):
