@@ -234,7 +234,9 @@ class MainHandler(RequestHandler):
                     func = getattr(klass, 'index', None)
 
             if callable(func):
-                return func(**args)
+                out = func(**args)
+                self._headers = klass._headers
+                return out
 
         raise HTTPError(404)
 
@@ -279,9 +281,11 @@ class MainHandler(RequestHandler):
                 image_file_name = cache_obj.banner_thumb_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
+                self.set_header('Content-Type', 'image/jpeg')
                 with file(image_file_name, 'rb') as img:
                     return img.read()
 
+        self.set_header('Content-Type', 'image/png')
         with file(default_image_path, 'rb') as img:
             return img.read()
 
