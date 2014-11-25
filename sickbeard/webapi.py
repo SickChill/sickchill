@@ -1260,6 +1260,31 @@ class CMD_HistoryTrim(ApiCall):
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
 
+class CMD_Failed(ApiCall):
+    _help = {"desc": "display failed downloads",
+             "optionalParameters": {"limit": {"desc": "limit returned results"}
+             }
+    }
+
+    def __init__(self, handler, args, kwargs):
+        # required
+        # optional
+        self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
+        # super, missing, help
+        ApiCall.__init__(self, handler, args, kwargs)
+
+    def run(self):
+        """ display failed downloads """
+
+        myDB = db.DBConnection('failed.db', row_type="dict")
+
+        ulimit = min(int(self.limit), 100)
+        if ulimit == 0:
+            sqlResults = myDB.select("SELECT * FROM failed")
+        else:
+            sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [ulimit])
+
+        return _responds(RESULT_SUCCESS, sqlResults)
 
 class CMD_Logs(ApiCall):
     _help = {"desc": "view sickrage's log",
@@ -2807,6 +2832,7 @@ _functionMaper = {"help": CMD_Help,
                   "history": CMD_History,
                   "history.clear": CMD_HistoryClear,
                   "history.trim": CMD_HistoryTrim,
+                  "failed": CMD_Failed,
                   "logs": CMD_Logs,
                   "sb": CMD_SickBeard,
                   "postprocess": CMD_PostProcess,
