@@ -73,7 +73,6 @@ class Api(webserve.MainHandler):
     intent = 4
 
     def index(self, *args, **kwargs):
-
         self.apiKey = sickbeard.API_KEY
         access, accessMsg, args, kwargs = self._grand_access(self.apiKey, args, kwargs)
 
@@ -373,7 +372,7 @@ class ApiCall(object):
         """
 
         # auto-select indexer
-        if key == "indexerid":
+        if key in indexer_ids:
             if "tvdbid" in kwargs:
                 key = "tvdbid"
             elif "tvrageid" in kwargs:
@@ -1132,6 +1131,7 @@ class CMD_Exceptions(ApiCall):
         # required
         # optional
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
+
         # super, missing, help
         ApiCall.__init__(self, handler, args, kwargs)
 
@@ -1642,7 +1642,6 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
 
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
-        self.indexer, args = self.check_params(args, kwargs, "indexer", self.indexer, False, "int", [])
 
         # super, missing, help
         ApiCall.__init__(self, handler, args, kwargs)
@@ -1654,42 +1653,45 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            for self.indexer in sickbeard.indexerApi().indexers if not self.indexer else [int(self.indexer)]:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-                lINDEXER_API_PARMS['language'] = self.lang
+            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
+                lINDEXER_API_PARMS = sickbeard.indexerApi(_indexer).api_params.copy()
+
+                if self.lang and not self.lang == 'en':
+                    lINDEXER_API_PARMS['language'] = self.lang
+
+                lINDEXER_API_PARMS['actors'] = False
                 lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
 
-                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-                apiData = None
+                t = sickbeard.indexerApi(_indexer).indexer(**lINDEXER_API_PARMS)
 
                 try:
                     apiData = t[str(self.name).encode()]
-                except Exception, e:
-                    pass
+                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
+                    logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                    return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
                 for curSeries in apiData:
-                    results.append({indexer_ids[self.indexer]: int(curSeries['id']),
+                    results.append({indexer_ids[_indexer]: int(curSeries['id']),
                                     "name": curSeries['seriesname'],
                                     "first_aired": curSeries['firstaired'],
-                                    "indexer": self.indexer})
+                                    "indexer": int(_indexer)})
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            for self.indexer in sickbeard.indexerApi().indexers if not self.indexer > 0 else [int(self.indexer)]:
-                lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
+                lINDEXER_API_PARMS = sickbeard.indexerApi(_indexer).api_params.copy()
 
                 if self.lang and not self.lang == 'en':
                     lINDEXER_API_PARMS['language'] = self.lang
 
                 lINDEXER_API_PARMS['actors'] = False
 
-                t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
+                t = sickbeard.indexerApi(_indexer).indexer(**lINDEXER_API_PARMS)
 
                 try:
                     myShow = t[int(self.indexerid)]
-                except (sickbeard.indexer_shownotfound, sickbeard.indexer_error):
+                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
                     logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                     return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
@@ -1699,9 +1701,12 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                             self.indexerid) + ", however it contained no show name", logger.DEBUG)
                     return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
-                results = [{indexer_ids[self.indexer]: self.indexerid,
+                # found show
+                results = [{indexer_ids[_indexer]: int(myShow.data['id']),
                             "name": unicode(myShow.data['seriesname']),
-                            "first_aired": myShow.data['firstaired']}]
+                            "first_aired": myShow.data['firstaired'],
+                            "indexer": int(_indexer)}]
+                break
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
         else:
@@ -1711,29 +1716,27 @@ class CMD_SickBeardSearchIndexers(ApiCall):
 class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
     _help = {"desc": "search for show on theTVDB with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
-                                    "tvdbid": {
-                                        "desc": "thetvdb.com unique id of a show"},
+                                    "tvdbid": {"desc": "thetvdb.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
     }
 
 
     def __init__(self, handler, args, kwargs):
-        self.indexer = 1
+        self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, handler, args, kwargs)
 
 
 class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
     _help = {"desc": "search for show on TVRage with a given string and language",
              "optionalParameters": {"name": {"desc": "name of the show you want to search for"},
-                                    "tvrageid": {
-                                        "desc": "tvrage.com unique id of a show"},
+                                    "tvrageid": {"desc": "tvrage.com unique id of a show"},
                                     "lang": {"desc": "the 2 letter abbreviation lang id"}
              }
     }
 
     def __init__(self, handler, args, kwargs):
-        self.indexer = 2
+        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, handler, args, kwargs)
 
 
@@ -1835,8 +1838,9 @@ class CMD_Show(ApiCall):
              "requiredParameters": {
                  "indexerid": {"desc": "unique id of a show"},
              },
-             "optionalParameters": {"tvdbid": {"desc": "thetvdb.com unique id of a show"},
-                                    "tvrageid": {"desc": "tvrage.com unique id of a show"},
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
 
     }
@@ -1910,13 +1914,16 @@ class CMD_Show(ApiCall):
 
 class CMD_ShowAddExisting(ApiCall):
     _help = {"desc": "add a show in sickrage with an existing folder",
-             "requiredParameters": {"indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com id"},
+             "requiredParameters": {"indexerid": {"desc": "unique id of a show"},
                                     "location": {"desc": "full path to the existing folder for the show"}
              },
-             "optionalParameters": {"initial": {"desc": "initial quality for the show"},
-                                    "archive": {"desc": "archive quality for the show"},
-                                    "flatten_folders": {"desc": "flatten subfolders for the show"},
-                                    "subtitles": {"desc": "allow search episode subtitle"}
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "initial": {"desc": "initial quality for the show"},
+                 "archive": {"desc": "archive quality for the show"},
+                 "flatten_folders": {"desc": "flatten subfolders for the show"},
+                 "subtitles": {"desc": "allow search episode subtitle"}
              }
     }
 
@@ -1963,6 +1970,9 @@ class CMD_ShowAddExisting(ApiCall):
         if not indexerName:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
+        # set indexer so we can pass it along when adding show to SR
+        indexer = indexerResult['data']['results'][0]['indexer']
+
         quality_map = {'sdtv': Quality.SDTV,
                        'sddvd': Quality.SDDVD,
                        'hdtv': Quality.HDTV,
@@ -1989,7 +1999,7 @@ class CMD_ShowAddExisting(ApiCall):
         if iqualityID or aqualityID:
             newQuality = Quality.combineQualities(iqualityID, aqualityID)
 
-        sickbeard.showQueueScheduler.action.addShow(int(self.indexer), int(self.indexerid), self.location, SKIPPED,
+        sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), self.location, SKIPPED,
                                                     newQuality, int(self.flatten_folders))
 
         return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
@@ -1997,17 +2007,20 @@ class CMD_ShowAddExisting(ApiCall):
 
 class CMD_ShowAddNew(ApiCall):
     _help = {"desc": "add a new show to sickrage",
-             "requiredParameters": {"indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com id"}
+             "requiredParameters": {"indexerid": {"desc": "unique id of a show"}
              },
-             "optionalParameters": {"initial": {"desc": "initial quality for the show"},
-                                    "location": {"desc": "base path for where the show folder is to be created"},
-                                    "archive": {"desc": "archive quality for the show"},
-                                    "flatten_folders": {"desc": "flatten subfolders for the show"},
-                                    "status": {"desc": "status of missing episodes"},
-                                    "lang": {"desc": "the 2 letter lang abbreviation id"},
-                                    "subtitles": {"desc": "allow search episode subtitle"},
-                                    "anime": {"desc": "set show to anime"},
-                                    "scene": {"desc": "show searches episodes by scene numbering"}
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "initial": {"desc": "initial quality for the show"},
+                 "location": {"desc": "base path for where the show folder is to be created"},
+                 "archive": {"desc": "archive quality for the show"},
+                 "flatten_folders": {"desc": "flatten subfolders for the show"},
+                 "status": {"desc": "status of missing episodes"},
+                 "lang": {"desc": "the 2 letter lang abbreviation id"},
+                 "subtitles": {"desc": "allow search episode subtitle"},
+                 "anime": {"desc": "set show to anime"},
+                 "scene": {"desc": "show searches episodes by scene numbering"}
              }
     }
 
@@ -2123,6 +2136,9 @@ class CMD_ShowAddNew(ApiCall):
         if not indexerName:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
+        # set indexer for found show so we can pass it along
+        indexer = indexerResult['data']['results'][0]['indexer']
+
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
         showPath = ek.ek(os.path.join, self.location, helpers.sanitizeFileName(indexerName))
 
@@ -2138,7 +2154,7 @@ class CMD_ShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(showPath)
 
-        sickbeard.showQueueScheduler.action.addShow(int(self.indexer), int(self.indexerid), showPath, newStatus,
+        sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), showPath, newStatus,
                                                     newQuality,
                                                     int(self.flatten_folders), self.lang, self.subtitles, self.anime,
                                                     self.scene)  # @UndefinedVariable
@@ -2149,7 +2165,11 @@ class CMD_ShowAddNew(ApiCall):
 class CMD_ShowCache(ApiCall):
     _help = {"desc": "check sickrage's cache to see if the banner or poster image for a show is valid",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
+                 "indexerid": {"desc": "unique id of a show"}
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2185,7 +2205,11 @@ class CMD_ShowCache(ApiCall):
 class CMD_ShowDelete(ApiCall):
     _help = {"desc": "delete a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2213,7 +2237,11 @@ class CMD_ShowDelete(ApiCall):
 class CMD_ShowGetQuality(ApiCall):
     _help = {"desc": "get quality setting for a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
+                 "indexerid": {"desc": "unique id of a show"}
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2238,7 +2266,11 @@ class CMD_ShowGetQuality(ApiCall):
 class CMD_ShowGetPoster(ApiCall):
     _help = {"desc": "get the poster stored for a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
+                 "indexerid": {"desc": "unique id of a show"}
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2257,7 +2289,11 @@ class CMD_ShowGetPoster(ApiCall):
 class CMD_ShowGetBanner(ApiCall):
     _help = {"desc": "get the banner stored for a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
+                 "indexerid": {"desc": "unique id of a show"}
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2276,9 +2312,12 @@ class CMD_ShowGetBanner(ApiCall):
 class CMD_ShowPause(ApiCall):
     _help = {"desc": "set a show's paused state in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
              },
-             "optionalParameters": {"pause": {"desc": "set the pause state of the show"}
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "pause": {"desc": "set the pause state of the show"}
              }
     }
 
@@ -2309,7 +2348,11 @@ class CMD_ShowPause(ApiCall):
 class CMD_ShowRefresh(ApiCall):
     _help = {"desc": "refresh a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2337,9 +2380,12 @@ class CMD_ShowRefresh(ApiCall):
 class CMD_ShowSeasonList(ApiCall):
     _help = {"desc": "display the season list for a given show",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
              },
-             "optionalParameters": {"sort": {"desc": "change the sort order from descending to ascending"}
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "sort": {"desc": "change the sort order from descending to ascending"}
              }
     }
 
@@ -2376,9 +2422,12 @@ class CMD_ShowSeasonList(ApiCall):
 class CMD_ShowSeasons(ApiCall):
     _help = {"desc": "display a listing of episodes for all or a given season",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
              },
-             "optionalParameters": {"season": {"desc": "the season number"},
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "season": {"desc": "the season number"},
              }
     }
 
@@ -2445,10 +2494,13 @@ class CMD_ShowSetQuality(ApiCall):
     _help = {
         "desc": "set desired quality of a show in sickrage. if neither initial or archive are provided then the config default quality will be used",
         "requiredParameters": {
-            "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"}
+            "indexerid": {"desc": "unique id of a show"}
         },
-        "optionalParameters": {"initial": {"desc": "initial quality for the show"},
-                               "archive": {"desc": "archive quality for the show"}
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "tvrageid": {"desc": "tvrage.com unique id of a show"},
+            "initial": {"desc": "initial quality for the show"},
+            "archive": {"desc": "archive quality for the show"}
         }
     }
 
@@ -2510,7 +2562,11 @@ class CMD_ShowSetQuality(ApiCall):
 class CMD_ShowStats(ApiCall):
     _help = {"desc": "display episode statistics for a given show",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 
@@ -2615,7 +2671,11 @@ class CMD_ShowStats(ApiCall):
 class CMD_ShowUpdate(ApiCall):
     _help = {"desc": "update a show in sickrage",
              "requiredParameters": {
-                 "indexerid or tvdbid or tvrageid": {"desc": "thetvdb.com or tvrage.com unique id of a show"},
+                 "indexerid": {"desc": "unique id of a show"},
+             },
+             "optionalParameters": {
+                 "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+                 "tvrageid": {"desc": "tvrage.com unique id of a show"},
              }
     }
 

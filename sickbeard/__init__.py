@@ -45,8 +45,8 @@ from sickbeard import naming
 from sickbeard import dailysearcher
 from sickbeard import scene_numbering, scene_exceptions, name_cache
 from indexers.indexer_api import indexerApi
-from indexers.indexer_exceptions import indexer_shownotfound, indexer_exception, indexer_error, indexer_episodenotfound, \
-    indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
+from indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomplete, indexer_exception, indexer_error, \
+    indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
 
@@ -466,9 +466,11 @@ TRAKT_API_KEY = 'abd806c54516240c76e4ebc9c5ccf394'
 
 __INITIALIZED__ = False
 
+
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
+
 
 def initialize(consoleLogging=True):
     with INIT_LOCK:
@@ -548,7 +550,8 @@ def initialize(consoleLogging=True):
 
         # git_remote
         GIT_REMOTE = check_setting_str(CFG, 'General', 'git_remote', 'origin')
-        GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url', 'https://github.com/SiCKRAGETV/SickRage.git')
+        GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
+                                           'https://github.com/SiCKRAGETV/SickRage.git')
 
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash', '')
@@ -659,7 +662,8 @@ def initialize(consoleLogging=True):
         NAMING_ABD_PATTERN = check_setting_str(CFG, 'General', 'naming_abd_pattern', '%SN - %A.D - %EN')
         NAMING_CUSTOM_ABD = bool(check_setting_int(CFG, 'General', 'naming_custom_abd', 0))
         NAMING_SPORTS_PATTERN = check_setting_str(CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
-        NAMING_ANIME_PATTERN = check_setting_str(CFG, 'General', 'naming_anime_pattern', 'Season %0S/%SN - S%0SE%0E - %EN')
+        NAMING_ANIME_PATTERN = check_setting_str(CFG, 'General', 'naming_anime_pattern',
+                                                 'Season %0S/%SN - S%0SE%0E - %EN')
         NAMING_ANIME = check_setting_int(CFG, 'General', 'naming_anime', 3)
         NAMING_CUSTOM_SPORTS = bool(check_setting_int(CFG, 'General', 'naming_custom_sports', 0))
         NAMING_CUSTOM_ANIME = bool(check_setting_int(CFG, 'General', 'naming_custom_anime', 0))
@@ -1466,7 +1470,7 @@ def save_config():
     new_config['General']['keep_processed_dir'] = int(KEEP_PROCESSED_DIR)
     new_config['General']['process_method'] = PROCESS_METHOD
     new_config['General']['move_associated_files'] = int(MOVE_ASSOCIATED_FILES)
-    new_config['General']['postpone_if_sync_files'] = int (POSTPONE_IF_SYNC_FILES)
+    new_config['General']['postpone_if_sync_files'] = int(POSTPONE_IF_SYNC_FILES)
     new_config['General']['nfo_rename'] = int(NFO_RENAME)
     new_config['General']['process_automatically'] = int(PROCESS_AUTOMATICALLY)
     new_config['General']['unpack'] = int(UNPACK)
