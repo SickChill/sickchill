@@ -37,7 +37,7 @@ from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
 from sickbeard.exceptions import ex
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
-from common import Quality, qualityPresetStrings, statusStrings
+from common import Quality, Overview, qualityPresetStrings, statusStrings
 
 try:
     import json
@@ -1285,6 +1285,45 @@ class CMD_Failed(ApiCall):
             sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [ulimit])
 
         return _responds(RESULT_SUCCESS, sqlResults)
+
+class CMD_Backlog(ApiCall):
+    _help = {"desc": "display backlogged episodes"}
+
+    def __init__(self, handler, args, kwargs):
+        # required
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, handler, args, kwargs)
+
+    def run(self):
+        """ display backlogged episodes """
+
+        shows = []
+
+        myDB = db.DBConnection(row_type="dict")
+        for curShow in sickbeard.showList:
+
+            showEps = []
+
+            sqlResults = myDB.select(
+                "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
+
+            for curResult in sqlResults:
+
+                curEpCat = curShow.getOverview(int(curResult["status"]))
+                if curEpCat and curEpCat in (Overview.WANTED, Overview.QUAL):
+                    showEps.append(curResult)
+            
+            if showEps:
+                shows.append({
+                    "indexerid": curShow.indexerid,
+                    "show_name": curShow.name,
+                    "status": curShow.status,
+                    "episodes": showEps
+                })
+               
+        return _responds(RESULT_SUCCESS, shows)
 
 class CMD_Logs(ApiCall):
     _help = {"desc": "view sickrage's log",
@@ -2833,6 +2872,7 @@ _functionMaper = {"help": CMD_Help,
                   "history.clear": CMD_HistoryClear,
                   "history.trim": CMD_HistoryTrim,
                   "failed": CMD_Failed,
+                  "backlog": CMD_Backlog,
                   "logs": CMD_Logs,
                   "sb": CMD_SickBeard,
                   "postprocess": CMD_PostProcess,
