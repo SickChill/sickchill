@@ -2724,6 +2724,8 @@ class CMD_Shows(ApiCall):
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue
 
+            indexerShow = helpers.mapIndexersToShow(curShow)
+
             showDict = {
                 "paused": curShow.paused,
                 "quality": _get_quality_string(curShow.quality),
@@ -2732,8 +2734,8 @@ class CMD_Shows(ApiCall):
                 "sports": curShow.sports,
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
-                "tvdbid": helpers.mapIndexersToShow(curShow)[1],
-                "tvrage_id": helpers.mapIndexersToShow(curShow)[2],
+                "tvdbid": indexerShow[1],
+                "tvrage_id": indexerShow[2],
                 "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,
