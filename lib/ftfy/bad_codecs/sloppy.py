@@ -94,7 +94,7 @@ def make_sloppy_codec(encoding):
 
     # Get a list of what they decode to in the given encoding. Use the
     # replacement character for unassigned bytes.
-    decoded_chars = all_bytes.decode(encoding, errors='replace')
+    decoded_chars = all_bytes.decode(encoding, 'replace')
 
     # Update the sloppy_chars list. Each byte that was successfully decoded
     # gets its decoded value in the list. The unassigned bytes are left as
