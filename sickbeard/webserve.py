@@ -1669,14 +1669,14 @@ class ConfigSearch(MainHandler):
 
 
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
-                   sab_apikey=None, sab_category=None, sab_host=None, nzbget_username=None, nzbget_password=None,
-                   nzbget_category=None, nzbget_priority=None, nzbget_host=None, nzbget_use_https=None,
-                   backlog_days=None, backlog_frequency=None, dailysearch_frequency=None,
-                   nzb_method=None, torrent_method=None, usenet_retention=None,
+                   sab_apikey=None, sab_category=None, sab_category_anime=None, sab_host=None, nzbget_username=None,
+                   nzbget_password=None, nzbget_category=None, nzbget_category_anime=None, nzbget_priority=None,
+                   nzbget_host=None, nzbget_use_https=None, backlog_days=None, backlog_frequency=None,
+                   dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None,
                    backlog_startup=None, dailysearch_startup=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
-                   torrent_label=None, torrent_path=None, torrent_verify_cert=None,
+                   torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, ignore_words=None,
                    require_words=None):
 
@@ -1715,11 +1715,13 @@ class ConfigSearch(MainHandler):
         sickbeard.SAB_PASSWORD = sab_password
         sickbeard.SAB_APIKEY = sab_apikey.strip()
         sickbeard.SAB_CATEGORY = sab_category
+        sickbeard.SAB_CATEGORY_ANIME = sab_category_anime
         sickbeard.SAB_HOST = config.clean_url(sab_host)
 
         sickbeard.NZBGET_USERNAME = nzbget_username
         sickbeard.NZBGET_PASSWORD = nzbget_password
         sickbeard.NZBGET_CATEGORY = nzbget_category
+        sickbeard.NZBGET_CATEGORY_ANIME = nzbget_category_anime
         sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
         sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
         sickbeard.NZBGET_PRIORITY = config.to_int(nzbget_priority, default=100)
@@ -1727,6 +1729,7 @@ class ConfigSearch(MainHandler):
         sickbeard.TORRENT_USERNAME = torrent_username
         sickbeard.TORRENT_PASSWORD = torrent_password
         sickbeard.TORRENT_LABEL = torrent_label
+        sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
         sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
         sickbeard.TORRENT_PATH = torrent_path
         sickbeard.TORRENT_SEED_TIME = torrent_seed_time

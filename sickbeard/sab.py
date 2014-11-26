@@ -51,8 +51,11 @@ def sendNZB(nzb):
         params['ma_password'] = sickbeard.SAB_PASSWORD
     if sickbeard.SAB_APIKEY != None:
         params['apikey'] = sickbeard.SAB_APIKEY
-    if sickbeard.SAB_CATEGORY != None:
-        params['cat'] = sickbeard.SAB_CATEGORY
+    category = sickbeard.SAB_CATEGORY
+    if nzb.show.is_anime:
+        category = sickbeard.SAB_CATEGORY_ANIME
+    if category != None:
+        params['cat'] = category
 
     # use high priority if specified (recently aired episode)
     if nzb.priority == 1:
