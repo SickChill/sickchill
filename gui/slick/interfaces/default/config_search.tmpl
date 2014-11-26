@@ -259,6 +259,16 @@
 									</span>
 								</label>
 							</div>
+
+                            <div class="field-pair">
+								<label>
+									<span class="component-title">Use SABnzbd category for anime</span>
+									<span class="component-desc">
+										<input type="text" name="sab_category_anime" id="sab_category_anime" value="$sickbeard.SAB_CATEGORY_ANIME" class="form-control input-sm input200" />
+										<p>add anime downloads to this category (e.g. anime)</p>
+									</span>
+								</label>
+							</div>
 						</div>
 
 						<div id="nzbget_settings">
@@ -310,6 +320,16 @@
 									<span class="component-desc">
 										<input type="text" name="nzbget_category" id="nzbget_category" value="$sickbeard.NZBGET_CATEGORY" class="form-control input-sm input200" />
 										<p>send downloads marked this category (e.g. TV)</p>
+									</span>
+								</label>
+							</div>
+
+                            <div class="field-pair">
+								<label>
+									<span class="component-title">Use NZBget category for anime</span>
+									<span class="component-desc">
+										<input type="text" name="nzbget_category_anime" id="nzbget_category_anime" value="$sickbeard.NZBGET_CATEGORY_ANIME" class="form-control input-sm input200" />
+										<p>send anime downloads marked this category (e.g. anime)</p>
 									</span>
 								</label>
 							</div>
@@ -462,6 +482,18 @@
 									<span class="component-desc">
 										<input type="text" name="torrent_label" id="torrent_label" value="$sickbeard.TORRENT_LABEL" class="form-control input-sm input200" />
 										<span id="label_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
+											<div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
+										</span>
+									</span>
+								</label>
+							</div>
+
+                            <div class="field-pair" id="torrent_label_anime_option">
+								<label>
+									<span class="component-title">Add label to torrent for anime</span>
+									<span class="component-desc">
+										<input type="text" name="torrent_label_anime" id="torrent_label_anime" value="$sickbeard.TORRENT_LABEL_ANIME" class="form-control input-sm input200" />
+										<span id="label_anime_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
 											<div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
 										</span>
 									</span>

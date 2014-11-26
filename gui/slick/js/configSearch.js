@@ -50,6 +50,7 @@ $(document).ready(function(){
 
         if ('blackhole' != selectedProvider) {
             var label_warning_deluge = '#label_warning_deluge',
+                label_anime_warning_deluge = '#label_anime_warning_deluge',
                 host_desc_rtorrent = '#host_desc_rtorrent',
                 host_desc_torrent = '#host_desc_torrent',
                 torrent_verify_cert_option = '#torrent_verify_cert_option',
@@ -57,10 +58,13 @@ $(document).ready(function(){
                 torrent_seed_time_option = '#torrent_seed_time_option',
                 torrent_high_bandwidth_option = '#torrent_high_bandwidth_option',
                 torrent_label_option = '#torrent_label_option',
+                torrent_label_anime_option = '#torrent_label_anime_option',
                 path_synology = '#path_synology',
                 torrent_paused_option = '#torrent_paused_option';
 
             $(label_warning_deluge).hide();
+            $(label_anime_warning_deluge).hide();
+            $(label_anime_warning_deluge).hide();
             $(host_desc_rtorrent).hide();
             $(host_desc_torrent).show();
             $(torrent_verify_cert_option).hide();
@@ -69,6 +73,7 @@ $(document).ready(function(){
             $(torrent_seed_time_option).hide();
             $(torrent_high_bandwidth_option).hide();
             $(torrent_label_option).show();
+            $(torrent_label_anime_option).show();
             $(path_synology).hide();
             $(torrent_paused_option).show();
 
@@ -81,15 +86,18 @@ $(document).ready(function(){
                 $(torrent_seed_time_option).show();
                 $(torrent_high_bandwidth_option).show();
                 $(torrent_label_option).hide();
+                $(torrent_label_anime_option).hide();
                 //$('#directory_title').text(client + directory);
             } else if ('deluge' == selectedProvider){
                 client = 'Deluge';
                 $(torrent_verify_cert_option).show();
                 $(label_warning_deluge).show();
+                $(label_anime_warning_deluge).show();
                 //$('#directory_title').text(client + directory);
             } else if ('download_station' == selectedProvider){
                 client = 'Synology DS';
                 $(torrent_label_option).hide();
+                $(torrent_label_anime_option).hide();
                 $('#torrent_paused_option').hide();
                 $(torrent_path_option).find('.fileBrowser').hide();
                 //$('#directory_title').text(client + directory);
