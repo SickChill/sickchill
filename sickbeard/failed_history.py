@@ -26,7 +26,7 @@ from sickbeard.exceptions import ex, EpisodeNotFoundException
 from sickbeard.history import dateFormat
 from sickbeard.common import Quality
 from sickbeard.common import WANTED, FAILED
-from sickbeard.encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import toUnicode
 
 def prepareFailedName(release):
     """Standardizes release name for failed DB"""
@@ -36,7 +36,7 @@ def prepareFailedName(release):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub("[\.\-\+\ ]", "_", fixed)
-    fixed = fixStupidEncodings(fixed)
+    fixed = toUnicode(fixed)
 
     return fixed
 

@@ -29,7 +29,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import toUnicode
 
 
 def getSeasonNZBs(name, urlData, season):
@@ -85,7 +85,7 @@ def createNZBString(fileElements, xmlns):
     for curFile in fileElements:
         rootElement.append(stripNS(curFile, xmlns))
 
-    return xml.etree.ElementTree.tostring(fixStupidEncodings(rootElement))
+    return xml.etree.ElementTree.tostring(toUnicode(rootElement))
 
 
 def saveNZB(nzbName, nzbString):

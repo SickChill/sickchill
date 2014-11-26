@@ -3288,7 +3288,7 @@ class ErrorLogs(MainHandler):
 
         for x in reversed(data):
 
-            x = ek.fixStupidEncodings(x)
+            x = ek.toUnicode(x)
             match = re.match(regex, x)
 
             if match:

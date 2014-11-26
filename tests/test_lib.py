@@ -51,7 +51,6 @@ EPISODE = 2
 FILENAME = u"show name - s0" + str(SEASON) + "e0" + str(EPISODE) + ".mkv"
 FILEDIR = os.path.join(TESTDIR, SHOWNAME)
 FILEPATH = os.path.join(FILEDIR, FILENAME)
-
 SHOWDIR = os.path.join(TESTDIR, SHOWNAME + " final")
 
 #sickbeard.logger.sb_log_instance = sickbeard.logger.SBRotatingLogHandler(os.path.join(TESTDIR, 'sickbeard.log'), sickbeard.logger.NUM_LOGS, sickbeard.logger.LOG_SIZE)
