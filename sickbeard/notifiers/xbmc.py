@@ -26,7 +26,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import common
 from sickbeard.exceptions import ex
-from sickbeard.encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import toUnicode
 
 
 try:
@@ -236,9 +236,9 @@ class XBMCNotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting XBMC (with auth header) via url: " + fixStupidEncodings(url), logger.DEBUG)
+                logger.log(u"Contacting XBMC (with auth header) via url: " + toUnicode(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting XBMC via url: " + fixStupidEncodings(url), logger.DEBUG)
+                logger.log(u"Contacting XBMC via url: " + toUnicode(url), logger.DEBUG)
 
             response = urllib2.urlopen(req)
             result = response.read().decode(sickbeard.SYS_ENCODING)
@@ -248,7 +248,7 @@ class XBMCNotifier:
             return result
 
         except (urllib2.URLError, IOError), e:
-            logger.log(u"Warning: Couldn't contact XBMC HTTP at " + fixStupidEncodings(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact XBMC HTTP at " + toUnicode(url) + " " + ex(e),
                        logger.WARNING)
             return False
 
@@ -379,9 +379,9 @@ class XBMCNotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting XBMC (with auth header) via url: " + fixStupidEncodings(url), logger.DEBUG)
+                logger.log(u"Contacting XBMC (with auth header) via url: " + toUnicode(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting XBMC via url: " + fixStupidEncodings(url), logger.DEBUG)
+                logger.log(u"Contacting XBMC via url: " + toUnicode(url), logger.DEBUG)
 
             try:
                 response = urllib2.urlopen(req)
@@ -401,7 +401,7 @@ class XBMCNotifier:
                 return False
 
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact XBMC JSON API at " + fixStupidEncodings(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact XBMC JSON API at " + toUnicode(url) + " " + ex(e),
                        logger.WARNING)
             return False
 

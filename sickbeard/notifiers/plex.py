@@ -25,7 +25,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import common
 from sickbeard.exceptions import ex
-from sickbeard.encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import toUnicode
 
 from sickbeard.notifiers.xbmc import XBMCNotifier
 
