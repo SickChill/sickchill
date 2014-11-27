@@ -165,16 +165,14 @@ class Api(webserve.MainHandler):
         self.set_header("Content-Type", "application/json")
         try:
             out = json.dumps(dict, indent=self.intent, ensure_ascii=False, sort_keys=True)
-            if 'jsonp' in self.request.query_arguments:
-                out = self.request.arguments['jsonp'] + '(' + out + ');'  # wrap with JSONP call if requested
-
+            callback = self.request.headers.get('callback', None) or self.request.headers.get('jsonp', None)
+            if callback != None:
+                out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
             logger.log(u"API :: " + traceback.format_exc(), logger.DEBUG)
             out = '{"result":"' + result_type_map[RESULT_ERROR] + '", "message": "error while composing output: "' + ex(
                 e) + '"}'
-
-        tornado_write_hack_dict = {'unwrap_json': out}
-        return tornado_write_hack_dict
+        return out
 
     def _grand_access(self, realKey, args, kwargs):
         """ validate api key and log result """
