@@ -58,10 +58,14 @@ class uTorrentAPI(GenericClient):
 
     def _set_torrent_label(self, result):
 
+        label = sickbeard.TORRENT_LABEL
+        if result.show.is_anime:
+            label = sickbeard.TORRENT_LABEL_ANIME
+
         params = {'action': 'setprops',
                   'hash': result.hash,
                   's': 'label',
-                  'v': sickbeard.TORRENT_LABEL
+                  'v': label
         }
         return self._request(params=params)
 

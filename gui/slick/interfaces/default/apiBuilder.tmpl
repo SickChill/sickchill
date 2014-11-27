@@ -51,6 +51,8 @@ addList("Command", "Scene Exceptions", "?cmd=exceptions", "exceptions");
 addList("Command", "History", "?cmd=history", "history");
 addOption("Command", "History.Clear", "?cmd=history.clear", "", "", "action");
 addOption("Command", "History.Trim", "?cmd=history.trim", "", "", "action");
+addList("Command", "Failed", "?cmd=failed", "failed");
+addOption("Command", "Backlog", "?cmd=backlog");
 addList("Command", "PostProcess", "?cmd=postprocess", "postprocess", "", "","action");
 
 addList("Command", "Logs", "?cmd=logs", "logs");
@@ -320,6 +322,15 @@ addOption("history-type", "Limit Results (50)", "&limit=50");
 addOption("history-limit", "Optional Param", "", 1);
 addOption("history-limit", "Show Only Downloaded", "&type=downloaded");
 addOption("history-limit", "Show Only Snatched", "&type=snatched");
+
+addOption("failed", "Optional Param", "", 1);
+//addOptGroup("failed", "Limit Results");
+addList("failed", "Limit Results (2)", "&limit=2", "failed-limit");
+addList("failed", "Limit Results (25)", "&limit=25", "failed-limit");
+addList("failed", "Limit Results (50)", "&limit=50", "failed-limit");
+//endOptGroup("failed");
+
+addOption("failed-limit", "Optional Param", "", 1);
 
 addOption("exceptions", "Optional Param", "", 1);
 #for $curShow in $sortedShowList:

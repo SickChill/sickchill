@@ -255,11 +255,13 @@ SAB_USERNAME = None
 SAB_PASSWORD = None
 SAB_APIKEY = None
 SAB_CATEGORY = None
+SAB_CATEGORY_ANIME = None
 SAB_HOST = ''
 
 NZBGET_USERNAME = None
 NZBGET_PASSWORD = None
 NZBGET_CATEGORY = None
+NZBGET_CATEGORY_ANIME = None
 NZBGET_HOST = None
 NZBGET_USE_HTTPS = False
 NZBGET_PRIORITY = 100
@@ -272,6 +274,7 @@ TORRENT_SEED_TIME = None
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
 TORRENT_LABEL = ''
+TORRENT_LABEL_ANIME = ''
 TORRENT_VERIFY_CERT = False
 
 USE_XBMC = False
@@ -477,9 +480,9 @@ def initialize(consoleLogging=True):
 
         global BRANCH, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
-            SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_HOST, \
-            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
-            TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_VERIFY_CERT, \
+            SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_ANIME, SAB_HOST, \
+            NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_CATEGORY_ANIME, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
+            TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, \
             USE_XBMC, XBMC_ALWAYS_ON, XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_NOTIFY_ONSUBTITLEDOWNLOAD, XBMC_UPDATE_FULL, XBMC_UPDATE_ONLYFIRST, \
             XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, BACKLOG_FREQUENCY, \
             USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_API, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, \
@@ -746,11 +749,13 @@ def initialize(consoleLogging=True):
         SAB_PASSWORD = check_setting_str(CFG, 'SABnzbd', 'sab_password', '')
         SAB_APIKEY = check_setting_str(CFG, 'SABnzbd', 'sab_apikey', '')
         SAB_CATEGORY = check_setting_str(CFG, 'SABnzbd', 'sab_category', 'tv')
+        SAB_CATEGORY_ANIME = check_setting_str(CFG, 'SABnzbd', 'sab_category_anime', 'anime')
         SAB_HOST = check_setting_str(CFG, 'SABnzbd', 'sab_host', '')
 
         NZBGET_USERNAME = check_setting_str(CFG, 'NZBget', 'nzbget_username', 'nzbget')
         NZBGET_PASSWORD = check_setting_str(CFG, 'NZBget', 'nzbget_password', 'tegbzn6789')
         NZBGET_CATEGORY = check_setting_str(CFG, 'NZBget', 'nzbget_category', 'tv')
+        NZBGET_CATEGORY_ANIME = check_setting_str(CFG, 'NZBget', 'nzbget_category_anime', 'anime')
         NZBGET_HOST = check_setting_str(CFG, 'NZBget', 'nzbget_host', '')
         NZBGET_USE_HTTPS = bool(check_setting_int(CFG, 'NZBget', 'nzbget_use_https', 0))
         NZBGET_PRIORITY = check_setting_int(CFG, 'NZBget', 'nzbget_priority', 100)
@@ -763,6 +768,7 @@ def initialize(consoleLogging=True):
         TORRENT_PAUSED = bool(check_setting_int(CFG, 'TORRENT', 'torrent_paused', 0))
         TORRENT_HIGH_BANDWIDTH = bool(check_setting_int(CFG, 'TORRENT', 'torrent_high_bandwidth', 0))
         TORRENT_LABEL = check_setting_str(CFG, 'TORRENT', 'torrent_label', '')
+        TORRENT_LABEL_ANIME = check_setting_str(CFG, 'TORRENT', 'torrent_label_anime', '')
         TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
 
         USE_XBMC = bool(check_setting_int(CFG, 'XBMC', 'use_xbmc', 0))
@@ -1589,6 +1595,7 @@ def save_config():
     new_config['SABnzbd']['sab_password'] = helpers.encrypt(SAB_PASSWORD, ENCRYPTION_VERSION)
     new_config['SABnzbd']['sab_apikey'] = SAB_APIKEY
     new_config['SABnzbd']['sab_category'] = SAB_CATEGORY
+    new_config['SABnzbd']['sab_category_anime'] = SAB_CATEGORY_ANIME
     new_config['SABnzbd']['sab_host'] = SAB_HOST
 
     new_config['NZBget'] = {}
@@ -1596,6 +1603,7 @@ def save_config():
     new_config['NZBget']['nzbget_username'] = NZBGET_USERNAME
     new_config['NZBget']['nzbget_password'] = helpers.encrypt(NZBGET_PASSWORD, ENCRYPTION_VERSION)
     new_config['NZBget']['nzbget_category'] = NZBGET_CATEGORY
+    new_config['NZBget']['nzbget_category_anime'] = NZBGET_CATEGORY_ANIME
     new_config['NZBget']['nzbget_host'] = NZBGET_HOST
     new_config['NZBget']['nzbget_use_https'] = int(NZBGET_USE_HTTPS)
     new_config['NZBget']['nzbget_priority'] = NZBGET_PRIORITY
@@ -1609,6 +1617,7 @@ def save_config():
     new_config['TORRENT']['torrent_paused'] = int(TORRENT_PAUSED)
     new_config['TORRENT']['torrent_high_bandwidth'] = int(TORRENT_HIGH_BANDWIDTH)
     new_config['TORRENT']['torrent_label'] = TORRENT_LABEL
+    new_config['TORRENT']['torrent_label_anime'] = TORRENT_LABEL_ANIME
     new_config['TORRENT']['torrent_verify_cert'] = int(TORRENT_VERIFY_CERT)
 
     new_config['XBMC'] = {}

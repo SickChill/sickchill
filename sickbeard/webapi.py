@@ -37,7 +37,7 @@ from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
 from sickbeard.exceptions import ex
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
-from common import Quality, qualityPresetStrings, statusStrings
+from common import Quality, Overview, qualityPresetStrings, statusStrings
 
 try:
     import json
@@ -1258,6 +1258,70 @@ class CMD_HistoryTrim(ApiCall):
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries greater than 30 days old")
 
+class CMD_Failed(ApiCall):
+    _help = {"desc": "display failed downloads",
+             "optionalParameters": {"limit": {"desc": "limit returned results"}
+             }
+    }
+
+    def __init__(self, handler, args, kwargs):
+        # required
+        # optional
+        self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
+        # super, missing, help
+        ApiCall.__init__(self, handler, args, kwargs)
+
+    def run(self):
+        """ display failed downloads """
+
+        myDB = db.DBConnection('failed.db', row_type="dict")
+
+        ulimit = min(int(self.limit), 100)
+        if ulimit == 0:
+            sqlResults = myDB.select("SELECT * FROM failed")
+        else:
+            sqlResults = myDB.select("SELECT * FROM failed LIMIT ?", [ulimit])
+
+        return _responds(RESULT_SUCCESS, sqlResults)
+
+class CMD_Backlog(ApiCall):
+    _help = {"desc": "display backlogged episodes"}
+
+    def __init__(self, handler, args, kwargs):
+        # required
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, handler, args, kwargs)
+
+    def run(self):
+        """ display backlogged episodes """
+
+        shows = []
+
+        myDB = db.DBConnection(row_type="dict")
+        for curShow in sickbeard.showList:
+
+            showEps = []
+
+            sqlResults = myDB.select(
+                "SELECT * FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
+
+            for curResult in sqlResults:
+
+                curEpCat = curShow.getOverview(int(curResult["status"]))
+                if curEpCat and curEpCat in (Overview.WANTED, Overview.QUAL):
+                    showEps.append(curResult)
+            
+            if showEps:
+                shows.append({
+                    "indexerid": curShow.indexerid,
+                    "show_name": curShow.name,
+                    "status": curShow.status,
+                    "episodes": showEps
+                })
+               
+        return _responds(RESULT_SUCCESS, shows)
 
 class CMD_Logs(ApiCall):
     _help = {"desc": "view sickrage's log",
@@ -2722,6 +2786,8 @@ class CMD_Shows(ApiCall):
             if self.paused != None and bool(self.paused) != bool(curShow.paused):
                 continue
 
+            indexerShow = helpers.mapIndexersToShow(curShow)
+
             showDict = {
                 "paused": curShow.paused,
                 "quality": _get_quality_string(curShow.quality),
@@ -2730,8 +2796,8 @@ class CMD_Shows(ApiCall):
                 "sports": curShow.sports,
                 "anime": curShow.anime,
                 "indexerid": curShow.indexerid,
-                "tvdbid": helpers.mapIndexersToShow(curShow)[1],
-                "tvrage_id": helpers.mapIndexersToShow(curShow)[2],
+                "tvdbid": indexerShow[1],
+                "tvrage_id": indexerShow[2],
                 "tvrage_name": curShow.name,
                 "network": curShow.network,
                 "show_name": curShow.name,
@@ -2803,6 +2869,8 @@ _functionMaper = {"help": CMD_Help,
                   "history": CMD_History,
                   "history.clear": CMD_HistoryClear,
                   "history.trim": CMD_HistoryTrim,
+                  "failed": CMD_Failed,
+                  "backlog": CMD_Backlog,
                   "logs": CMD_Logs,
                   "sb": CMD_SickBeard,
                   "postprocess": CMD_PostProcess,
