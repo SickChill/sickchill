@@ -162,10 +162,10 @@ class Api(webserve.MainHandler):
         return webserve._munge(t)
 
     def _out_as_json(self, dict):
-        self.set_header("Content-Type", "application/json")
+        self.set_header("Content-Type", "application/json;charset=UTF-8'")
         try:
             out = json.dumps(dict, indent=self.intent, ensure_ascii=False, sort_keys=True)
-            callback = self.request.headers.get('callback', None) or self.request.headers.get('jsonp', None)
+            callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
             if callback != None:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception, e:  # if we fail to generate the output fake an error
@@ -186,7 +186,7 @@ class Api(webserve.MainHandler):
             del kwargs["apikey"]
 
         if not sickbeard.USE_API:
-            msg = u"API :: " + remoteIp + " - SB API Disabled. ACCESS DENIED"
+            msg = u"API :: " + remoteIp + " - SR API Disabled. ACCESS DENIED"
             return False, msg, args, kwargs
         elif apiKey == realKey:
             msg = u"API :: " + remoteIp + " - gave correct API KEY. ACCESS GRANTED"
@@ -713,7 +713,7 @@ class CMD_ComingEpisodes(ApiCall):
              "optionalParameters": {"sort": {"desc": "change the sort order"},
                                     "type": {"desc": "one or more of allowedValues separated by |"},
                                     "paused": {
-                                        "desc": "0 to exclude paused shows, 1 to include them, or omitted to use the SB default"},
+                                        "desc": "0 to exclude paused shows, 1 to include them, or omitted to use the SR default"},
              }
     }
 
