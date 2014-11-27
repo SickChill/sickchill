@@ -124,6 +124,8 @@ class DelugeAPI(GenericClient):
     def _set_torrent_label(self, result):
 
         label = sickbeard.TORRENT_LABEL
+        if result.show.is_anime:
+            label = sickbeard.TORRENT_LABEL_ANIME
         if ' ' in label:
             logger.log(self.name + u': Invalid label. Label must not contain a space', logger.ERROR)
             return False

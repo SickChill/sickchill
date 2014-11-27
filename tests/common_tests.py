@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath('../lib'))
 
 from sickbeard import common
 
-
 class QualityTests(unittest.TestCase):
 
     # TODO: repack / proper ? air-by-date ? season rip? multi-ep?

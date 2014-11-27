@@ -652,10 +652,7 @@ class RequestHandler(object):
         if not isinstance(chunk, (bytes, unicode_type, dict)):
             raise TypeError("write() only accepts bytes, unicode, and dict objects")
         if isinstance(chunk, dict):
-            if 'unwrap_json' in chunk:
-                chunk = chunk['unwrap_json']
-            else:
-                chunk = escape.json_encode(chunk)
+            chunk = escape.json_encode(chunk)
             self.set_header("Content-Type", "application/json; charset=UTF-8")
         chunk = utf8(chunk)
         self._write_buffer.append(chunk)

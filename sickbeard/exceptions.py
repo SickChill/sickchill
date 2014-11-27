@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from sickbeard.encodingKludge import fixStupidEncodings
+from sickbeard.encodingKludge import toUnicode
 
 def ex(e):
     """
@@ -32,11 +32,11 @@ def ex(e):
 
         if arg is not None:
             if isinstance(arg, (str, unicode)):
-                fixed_arg = fixStupidEncodings(arg, True)
+                fixed_arg = toUnicode(arg)
 
             else:
                 try:
-                    fixed_arg = u"error " + fixStupidEncodings(str(arg), True)
+                    fixed_arg = u"error " + toUnicode(str(arg))
 
                 except:
                     fixed_arg = None
