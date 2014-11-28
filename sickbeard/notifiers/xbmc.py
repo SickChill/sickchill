@@ -40,27 +40,27 @@ except ImportError:
     from lib import simplejson as json
 
 
-class XBMCNotifier:
+class KODINotifier:
     sb_logo_url = 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
 
-    def _get_xbmc_version(self, host, username, password):
-        """Returns XBMC JSON-RPC API version (odd # = dev, even # = stable)
+    def _get_kodi_version(self, host, username, password):
+        """Returns KODI JSON-RPC API version (odd # = dev, even # = stable)
 
-        Sends a request to the XBMC host using the JSON-RPC to determine if
+        Sends a request to the KODI host using the JSON-RPC to determine if
         the legacy API or if the JSON-RPC API functions should be used.
 
         Fallback to testing legacy HTTPAPI before assuming it is just a badly configured host.
 
         Args:
-            host: XBMC webserver host:port
-            username: XBMC webserver username
-            password: XBMC webserver password
+            host: KODI webserver host:port
+            username: KODI webserver username
+            password: KODI webserver password
 
         Returns:
             Returns API number or False
 
             List of possible known values:
-                API | XBMC Version
+                API | KODI Version
                -----+---------------
                  2  | v10 (Dharma)
                  3  | (pre Eden)
@@ -75,7 +75,7 @@ class XBMCNotifier:
         socket.setdefaulttimeout(10)
 
         checkCommand = '{"jsonrpc":"2.0","method":"JSONRPC.Version","id":1}'
-        result = self._send_to_xbmc_json(checkCommand, host, username, password)
+        result = self._send_to_kodi_json(checkCommand, host, username, password)
 
         # revert back to default socket timeout
         socket.setdefaulttimeout(sickbeard.SOCKET_TIMEOUT)
@@ -85,14 +85,14 @@ class XBMCNotifier:
         else:
             # fallback to legacy HTTPAPI method
             testCommand = {'command': 'Help'}
-            request = self._send_to_xbmc(testCommand, host, username, password)
+            request = self._send_to_kodi(testCommand, host, username, password)
             if request:
                 # return a fake version number, so it uses the legacy method
                 return 1
             else:
                 return False
 
-    def _notify_xbmc(self, message, title="SickRage", host=None, username=None, password=None, force=False):
+    def _notify_kodi(self, message, title="SickRage", host=None, username=None, password=None, force=False):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Detects JSON-RPC version then branches the logic for either the JSON-RPC or legacy HTTP API methods.
@@ -100,9 +100,9 @@ class XBMCNotifier:
         Args:
             message: Message body of the notice to send
             title: Title of the notice to send
-            host: XBMC webserver host:port
-            username: XBMC webserver username
-            password: XBMC webserver password
+            host: KODI webserver host:port
+            username: KODI webserver username
+            password: KODI webserver password
             force: Used for the Test method to override config saftey checks
 
         Returns:
@@ -113,42 +113,42 @@ class XBMCNotifier:
 
         # fill in omitted parameters
         if not host:
-            host = sickbeard.XBMC_HOST
+            host = sickbeard.KODI_HOST
         if not username:
-            username = sickbeard.XBMC_USERNAME
+            username = sickbeard.KODI_USERNAME
         if not password:
-            password = sickbeard.XBMC_PASSWORD
+            password = sickbeard.KODI_PASSWORD
 
         # suppress notifications if the notifier is disabled but the notify options are checked
-        if not sickbeard.USE_XBMC and not force:
-            logger.log("Notification for XBMC not enabled, skipping this notification", logger.DEBUG)
+        if not sickbeard.USE_KODI and not force:
+            logger.log("Notification for KODI not enabled, skipping this notification", logger.DEBUG)
             return False
 
         result = ''
         for curHost in [x.strip() for x in host.split(",")]:
-            logger.log(u"Sending XBMC notification to '" + curHost + "' - " + message, logger.MESSAGE)
+            logger.log(u"Sending KODI notification to '" + curHost + "' - " + message, logger.MESSAGE)
 
-            xbmcapi = self._get_xbmc_version(curHost, username, password)
-            if xbmcapi:
-                if (xbmcapi <= 4):
-                    logger.log(u"Detected XBMC version <= 11, using XBMC HTTP API", logger.DEBUG)
+            kodiapi = self._get_kodi_version(curHost, username, password)
+            if kodiapi:
+                if (kodiapi <= 4):
+                    logger.log(u"Detected KODI version <= 11, using KODI HTTP API", logger.DEBUG)
                     command = {'command': 'ExecBuiltIn',
                                'parameter': 'Notification(' + title.encode("utf-8") + ',' + message.encode(
                                    "utf-8") + ')'}
-                    notifyResult = self._send_to_xbmc(command, curHost, username, password)
+                    notifyResult = self._send_to_kodi(command, curHost, username, password)
                     if notifyResult:
                         result += curHost + ':' + str(notifyResult)
                 else:
-                    logger.log(u"Detected XBMC version >= 12, using XBMC JSON API", logger.DEBUG)
+                    logger.log(u"Detected KODI version >= 12, using KODI JSON API", logger.DEBUG)
                     command = '{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{"title":"%s","message":"%s", "image": "%s"},"id":1}' % (
                         title.encode("utf-8"), message.encode("utf-8"), self.sb_logo_url)
-                    notifyResult = self._send_to_xbmc_json(command, curHost, username, password)
+                    notifyResult = self._send_to_kodi_json(command, curHost, username, password)
                     if notifyResult.get('result'):
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
-                if sickbeard.XBMC_ALWAYS_ON or force:
+                if sickbeard.KODI_ALWAYS_ON or force:
                     logger.log(
-                        u"Failed to detect XBMC version for '" + curHost + "', check configuration and try again.",
+                        u"Failed to detect KODI version for '" + curHost + "', check configuration and try again.",
                         logger.ERROR)
                 result += curHost + ':False'
 
@@ -157,10 +157,10 @@ class XBMCNotifier:
     def _send_update_library(self, host, showName=None):
         """Internal wrapper for the update library function to branch the logic for JSON-RPC or legacy HTTP API
 
-        Checks the XBMC API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
+        Checks the KODI API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
 
         Args:
-            host: XBMC webserver host:port
+            host: KODI webserver host:port
             showName: Name of a TV show to specifically target the library update for
 
         Returns:
@@ -168,43 +168,43 @@ class XBMCNotifier:
 
         """
 
-        logger.log(u"Sending request to update library for XBMC host: '" + host + "'", logger.MESSAGE)
+        logger.log(u"Sending request to update library for KODI host: '" + host + "'", logger.MESSAGE)
 
-        xbmcapi = self._get_xbmc_version(host, sickbeard.XBMC_USERNAME, sickbeard.XBMC_PASSWORD)
-        if xbmcapi:
-            if (xbmcapi <= 4):
+        kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
+        if kodiapi:
+            if (kodiapi <= 4):
                 # try to update for just the show, if it fails, do full update if enabled
-                if not self._update_library(host, showName) and sickbeard.XBMC_UPDATE_FULL:
+                if not self._update_library(host, showName) and sickbeard.KODI_UPDATE_FULL:
                     logger.log(u"Single show update failed, falling back to full update", logger.WARNING)
                     return self._update_library(host)
                 else:
                     return True
             else:
                 # try to update for just the show, if it fails, do full update if enabled
-                if not self._update_library_json(host, showName) and sickbeard.XBMC_UPDATE_FULL:
+                if not self._update_library_json(host, showName) and sickbeard.KODI_UPDATE_FULL:
                     logger.log(u"Single show update failed, falling back to full update", logger.WARNING)
                     return self._update_library_json(host)
                 else:
                     return True
         else:
-            logger.log(u"Failed to detect XBMC version for '" + host + "', check configuration and try again.",
+            logger.log(u"Failed to detect KODI version for '" + host + "', check configuration and try again.",
                        logger.DEBUG)
             return False
 
         return False
 
     # #############################################################################
-    # Legacy HTTP API (pre XBMC 12) methods
+    # Legacy HTTP API (pre KODI 12) methods
     ##############################################################################
 
-    def _send_to_xbmc(self, command, host=None, username=None, password=None):
-        """Handles communication to XBMC servers via HTTP API
+    def _send_to_kodi(self, command, host=None, username=None, password=None):
+        """Handles communication to KODI servers via HTTP API
 
         Args:
-            command: Dictionary of field/data pairs, encoded via urllib and passed to the XBMC API via HTTP
-            host: XBMC webserver host:port
-            username: XBMC webserver username
-            password: XBMC webserver password
+            command: Dictionary of field/data pairs, encoded via urllib and passed to the KODI API via HTTP
+            host: KODI webserver host:port
+            username: KODI webserver username
+            password: KODI webserver password
 
         Returns:
             Returns response.result for successful commands or False if there was an error
@@ -213,12 +213,12 @@ class XBMCNotifier:
 
         # fill in omitted parameters
         if not username:
-            username = sickbeard.XBMC_USERNAME
+            username = sickbeard.KODI_USERNAME
         if not password:
-            password = sickbeard.XBMC_PASSWORD
+            password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No XBMC host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
         for key in command:
@@ -226,9 +226,9 @@ class XBMCNotifier:
                 command[key] = command[key].encode('utf-8')
 
         enc_command = urllib.urlencode(command)
-        logger.log(u"XBMC encoded API command: " + enc_command, logger.DEBUG)
+        logger.log(u"KODI encoded API command: " + enc_command, logger.DEBUG)
 
-        url = 'http://%s/xbmcCmds/xbmcHttp/?%s' % (host, enc_command)
+        url = 'http://%s/kodiCmds/kodiHttp/?%s' % (host, enc_command)
         try:
             req = urllib2.Request(url)
             # if we have a password, use authentication
@@ -236,30 +236,30 @@ class XBMCNotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting XBMC (with auth header) via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI (with auth header) via url: " + toUnicode(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting XBMC via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI via url: " + toUnicode(url), logger.DEBUG)
 
             response = urllib2.urlopen(req)
             result = response.read().decode(sickbeard.SYS_ENCODING)
             response.close()
 
-            logger.log(u"XBMC HTTP response: " + result.replace('\n', ''), logger.DEBUG)
+            logger.log(u"KODI HTTP response: " + result.replace('\n', ''), logger.DEBUG)
             return result
 
         except (urllib2.URLError, IOError), e:
-            logger.log(u"Warning: Couldn't contact XBMC HTTP at " + toUnicode(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact KODI HTTP at " + toUnicode(url) + " " + ex(e),
                        logger.WARNING)
             return False
 
     def _update_library(self, host=None, showName=None):
-        """Handles updating XBMC host via HTTP API
+        """Handles updating KODI host via HTTP API
 
-        Attempts to update the XBMC video library for a specific tv show if passed,
+        Attempts to update the KODI video library for a specific tv show if passed,
         otherwise update the whole library if enabled.
 
         Args:
-            host: XBMC webserver host:port
+            host: KODI webserver host:port
             showName: Name of a TV show to specifically target the library update for
 
         Returns:
@@ -268,14 +268,14 @@ class XBMCNotifier:
         """
 
         if not host:
-            logger.log(u'No XBMC host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
         logger.log(u"Updating XMBC library via HTTP method for host: " + host, logger.DEBUG)
 
         # if we're doing per-show
         if showName:
-            logger.log(u"Updating library in XBMC via HTTP method for show " + showName, logger.DEBUG)
+            logger.log(u"Updating library in KODI via HTTP method for show " + showName, logger.DEBUG)
 
             pathSql = 'select path.strPath from path, tvshow, tvshowlinkpath where ' \
                       'tvshow.c00 = "%s" and tvshowlinkpath.idShow = tvshow.idShow ' \
@@ -290,12 +290,12 @@ class XBMCNotifier:
             resetCommand = {'command': 'SetResponseFormat()'}
 
             # set xml response format, if this fails then don't bother with the rest
-            request = self._send_to_xbmc(xmlCommand, host)
+            request = self._send_to_kodi(xmlCommand, host)
             if not request:
                 return False
 
-            sqlXML = self._send_to_xbmc(sqlCommand, host)
-            request = self._send_to_xbmc(resetCommand, host)
+            sqlXML = self._send_to_kodi(sqlCommand, host)
+            request = self._send_to_kodi(resetCommand, host)
 
             if not sqlXML:
                 logger.log(u"Invalid response for " + showName + " on " + host, logger.DEBUG)
@@ -305,7 +305,7 @@ class XBMCNotifier:
             try:
                 et = etree.fromstring(encSqlXML)
             except SyntaxError, e:
-                logger.log(u"Unable to parse XML returned from XBMC: " + ex(e), logger.ERROR)
+                logger.log(u"Unable to parse XML returned from KODI: " + ex(e), logger.ERROR)
                 return False
 
             paths = et.findall('.//field')
@@ -317,40 +317,40 @@ class XBMCNotifier:
             for path in paths:
                 # we do not need it double-encoded, gawd this is dumb
                 unEncPath = urllib.unquote(path.text).decode(sickbeard.SYS_ENCODING)
-                logger.log(u"XBMC Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
-                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'XBMC.updatelibrary(video, %s)' % (unEncPath)}
-                request = self._send_to_xbmc(updateCommand, host)
+                logger.log(u"KODI Updating " + showName + " on " + host + " at " + unEncPath, logger.DEBUG)
+                updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video, %s)' % (unEncPath)}
+                request = self._send_to_kodi(updateCommand, host)
                 if not request:
                     logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + unEncPath,
                                logger.ERROR)
                     return False
-                # sleep for a few seconds just to be sure xbmc has a chance to finish each directory
+                # sleep for a few seconds just to be sure kodi has a chance to finish each directory
                 if len(paths) > 1:
                     time.sleep(5)
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library XBMC update on host: " + host, logger.MESSAGE)
-            updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'XBMC.updatelibrary(video)'}
-            request = self._send_to_xbmc(updateCommand, host)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.MESSAGE)
+            updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video)'}
+            request = self._send_to_kodi(updateCommand, host)
 
             if not request:
-                logger.log(u"XBMC Full Library update failed on: " + host, logger.ERROR)
+                logger.log(u"KODI Full Library update failed on: " + host, logger.ERROR)
                 return False
 
         return True
 
     ##############################################################################
-    # JSON-RPC API (XBMC 12+) methods
+    # JSON-RPC API (KODI 12+) methods
     ##############################################################################
 
-    def _send_to_xbmc_json(self, command, host=None, username=None, password=None):
-        """Handles communication to XBMC servers via JSONRPC
+    def _send_to_kodi_json(self, command, host=None, username=None, password=None):
+        """Handles communication to KODI servers via JSONRPC
 
         Args:
-            command: Dictionary of field/data pairs, encoded via urllib and passed to the XBMC JSON-RPC via HTTP
-            host: XBMC webserver host:port
-            username: XBMC webserver username
-            password: XBMC webserver password
+            command: Dictionary of field/data pairs, encoded via urllib and passed to the KODI JSON-RPC via HTTP
+            host: KODI webserver host:port
+            username: KODI webserver username
+            password: KODI webserver password
 
         Returns:
             Returns response.result for successful commands or False if there was an error
@@ -359,16 +359,16 @@ class XBMCNotifier:
 
         # fill in omitted parameters
         if not username:
-            username = sickbeard.XBMC_USERNAME
+            username = sickbeard.KODI_USERNAME
         if not password:
-            password = sickbeard.XBMC_PASSWORD
+            password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No XBMC host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
         command = command.encode('utf-8')
-        logger.log(u"XBMC JSON command: " + command, logger.DEBUG)
+        logger.log(u"KODI JSON command: " + command, logger.DEBUG)
 
         url = 'http://%s/jsonrpc' % (host)
         try:
@@ -379,14 +379,14 @@ class XBMCNotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting XBMC (with auth header) via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI (with auth header) via url: " + toUnicode(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting XBMC via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI via url: " + toUnicode(url), logger.DEBUG)
 
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-                logger.log(u"Error while trying to retrieve XBMC API version for " + host + ": " + ex(e),
+                logger.log(u"Error while trying to retrieve KODI API version for " + host + ": " + ex(e),
                            logger.WARNING)
                 return False
 
@@ -394,25 +394,25 @@ class XBMCNotifier:
             try:
                 result = json.load(response)
                 response.close()
-                logger.log(u"XBMC JSON response: " + str(result), logger.DEBUG)
+                logger.log(u"KODI JSON response: " + str(result), logger.DEBUG)
                 return result  # need to return response for parsing
             except ValueError, e:
                 logger.log(u"Unable to decode JSON: " + response, logger.WARNING)
                 return False
 
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact XBMC JSON API at " + toUnicode(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact KODI JSON API at " + toUnicode(url) + " " + ex(e),
                        logger.WARNING)
             return False
 
     def _update_library_json(self, host=None, showName=None):
-        """Handles updating XBMC host via HTTP JSON-RPC
+        """Handles updating KODI host via HTTP JSON-RPC
 
-        Attempts to update the XBMC video library for a specific tv show if passed,
+        Attempts to update the KODI video library for a specific tv show if passed,
         otherwise update the whole library if enabled.
 
         Args:
-            host: XBMC webserver host:port
+            host: KODI webserver host:port
             showName: Name of a TV show to specifically target the library update for
 
         Returns:
@@ -421,7 +421,7 @@ class XBMCNotifier:
         """
 
         if not host:
-            logger.log(u'No XBMC host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
         logger.log(u"Updating XMBC library via JSON method for host: " + host, logger.MESSAGE)
@@ -429,16 +429,16 @@ class XBMCNotifier:
         # if we're doing per-show
         if showName:
             tvshowid = -1
-            logger.log(u"Updating library in XBMC via JSON method for show " + showName, logger.DEBUG)
+            logger.log(u"Updating library in KODI via JSON method for show " + showName, logger.DEBUG)
 
             # get tvshowid by showName
             showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","id":1}'
-            showsResponse = self._send_to_xbmc_json(showsCommand, host)
+            showsResponse = self._send_to_kodi_json(showsCommand, host)
 
             if showsResponse and "result" in showsResponse and "tvshows" in showsResponse["result"]:
                 shows = showsResponse["result"]["tvshows"]
             else:
-                logger.log(u"XBMC: No tvshows in XBMC TV show list", logger.DEBUG)
+                logger.log(u"KODI: No tvshows in KODI TV show list", logger.DEBUG)
                 return False
 
             for show in shows:
@@ -451,13 +451,13 @@ class XBMCNotifier:
 
             # we didn't find the show (exact match), thus revert to just doing a full update if enabled
             if (tvshowid == -1):
-                logger.log(u'Exact show name not matched in XBMC TV show list', logger.DEBUG)
+                logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
             # lookup tv-show path
             pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (
                 tvshowid)
-            pathResponse = self._send_to_xbmc_json(pathCommand, host)
+            pathResponse = self._send_to_kodi_json(pathCommand, host)
 
             path = pathResponse["result"]["tvshowdetails"]["file"]
             logger.log(u"Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path,
@@ -468,10 +468,10 @@ class XBMCNotifier:
                            logger.WARNING)
                 return False
 
-            logger.log(u"XBMC Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
+            logger.log(u"KODI Updating " + showName + " on " + host + " at " + path, logger.DEBUG)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","params":{"directory":%s},"id":1}' % (
                 json.dumps(path))
-            request = self._send_to_xbmc_json(updateCommand, host)
+            request = self._send_to_kodi_json(updateCommand, host)
             if not request:
                 logger.log(u"Update of show directory failed on " + showName + " on " + host + " at " + path,
                            logger.ERROR)
@@ -487,12 +487,12 @@ class XBMCNotifier:
 
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library XBMC update on host: " + host, logger.MESSAGE)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.MESSAGE)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}'
-            request = self._send_to_xbmc_json(updateCommand, host, sickbeard.XBMC_USERNAME, sickbeard.XBMC_PASSWORD)
+            request = self._send_to_kodi_json(updateCommand, host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
 
             if not request:
-                logger.log(u"XBMC Full Library update failed on: " + host, logger.ERROR)
+                logger.log(u"KODI Full Library update failed on: " + host, logger.ERROR)
                 return False
 
         return True
@@ -502,31 +502,31 @@ class XBMCNotifier:
     ##############################################################################
 
     def notify_snatch(self, ep_name):
-        if sickbeard.XBMC_NOTIFY_ONSNATCH:
-            self._notify_xbmc(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
+        if sickbeard.KODI_NOTIFY_ONSNATCH:
+            self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
-        if sickbeard.XBMC_NOTIFY_ONDOWNLOAD:
-            self._notify_xbmc(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
+        if sickbeard.KODI_NOTIFY_ONDOWNLOAD:
+            self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_xbmc(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+        if sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD:
+            self._notify_kodi(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
             
     def notify_git_update(self, new_version = "??"):
-        if sickbeard.USE_XBMC:
+        if sickbeard.USE_KODI:
             update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
-            self._notify_xbmc(update_text + new_version, title)
+            self._notify_kodi(update_text + new_version, title)
 
     def test_notify(self, host, username, password):
-        return self._notify_xbmc("Testing XBMC notifications from SickRage", "Test Notification", host, username,
+        return self._notify_kodi("Testing KODI notifications from SickRage", "Test Notification", host, username,
                                  password, force=True)
 
     def update_library(self, showName=None):
         """Public wrapper for the update library functions to branch the logic for JSON-RPC or legacy HTTP API
 
-        Checks the XBMC API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
+        Checks the KODI API version to branch the logic to call either the legacy HTTP API or the newer JSON-RPC over HTTP methods.
         Do the ability of accepting a list of hosts deliminated by comma, only one host is updated, the first to respond with success.
         This is a workaround for SQL backend users as updating multiple clients causes duplicate entries.
         Future plan is to revist how we store the host/ip/username/pw/options so that it may be more flexible.
@@ -539,27 +539,27 @@ class XBMCNotifier:
 
         """
 
-        if sickbeard.USE_XBMC and sickbeard.XBMC_UPDATE_LIBRARY:
-            if not sickbeard.XBMC_HOST:
-                logger.log(u"No XBMC hosts specified, check your settings", logger.DEBUG)
+        if sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY:
+            if not sickbeard.KODI_HOST:
+                logger.log(u"No KODI hosts specified, check your settings", logger.DEBUG)
                 return False
 
             # either update each host, or only attempt to update until one successful result
             result = 0
-            for host in [x.strip() for x in sickbeard.XBMC_HOST.split(",")]:
+            for host in [x.strip() for x in sickbeard.KODI_HOST.split(",")]:
                 if self._send_update_library(host, showName):
-                    if sickbeard.XBMC_UPDATE_ONLYFIRST:
+                    if sickbeard.KODI_UPDATE_ONLYFIRST:
                         logger.log(u"Successfully updated '" + host + "', stopped sending update library commands.",
                                    logger.DEBUG)
                         return True
                 else:
-                    if sickbeard.XBMC_ALWAYS_ON:
+                    if sickbeard.KODI_ALWAYS_ON:
                         logger.log(
-                            u"Failed to detect XBMC version for '" + host + "', check configuration and try again.",
+                            u"Failed to detect KODI version for '" + host + "', check configuration and try again.",
                             logger.ERROR)
                     result = result + 1
 
-            # needed for the 'update xbmc' submenu command
+            # needed for the 'update kodi' submenu command
             # as it only cares of the final result vs the individual ones
             if result == 0:
                 return True
@@ -567,4 +567,4 @@ class XBMCNotifier:
                 return False
 
 
-notifier = XBMCNotifier
+notifier = KODINotifier

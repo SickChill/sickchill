@@ -17,7 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import generic
-import xbmc_12plus
+import kodi_12plus
 
 import os
 
@@ -25,9 +25,9 @@ from sickbeard import helpers
 from sickbeard import encodingKludge as ek
 
 
-class XBMCMetadata(xbmc_12plus.XBMC_12PlusMetadata):
+class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
     """
-    Metadata generation class for XBMC (legacy).
+    Metadata generation class for KODI (legacy).
 
     The following file structure is used:
 
@@ -66,7 +66,7 @@ class XBMCMetadata(xbmc_12plus.XBMC_12PlusMetadata):
                                          season_all_poster,
                                          season_all_banner)
 
-        self.name = 'XBMC'
+        self.name = 'KODI'
 
         self.poster_name = self.banner_name = "folder.jpg"
         self.season_all_poster_name = "season-all.tbn"
@@ -123,4 +123,4 @@ class XBMCMetadata(xbmc_12plus.XBMC_12PlusMetadata):
 
 
 # present a standard "interface" from the module
-metadata_class = XBMCMetadata
+metadata_class = KODIMetadata

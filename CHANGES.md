@@ -49,7 +49,7 @@
 * Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
 * Fix growl registration not sending sickrage an update notification registration
 * Add an anonymous redirect builder for external links
-* Update xbmc link to Kodi at Config Notifications
+* Update kodi link to Kodi at Config Notifications
 * Fix missing url for kickasstorrents in config_providers
 * Fix post processing when using tvrage indexer and mediabrowser metadata generation
 * Change reporting failed network_timezones.txt updates from an error to a warning

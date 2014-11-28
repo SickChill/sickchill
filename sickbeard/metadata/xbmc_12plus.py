@@ -26,9 +26,9 @@ from sickbeard.exceptions import ex
 import xml.etree.cElementTree as etree
 
 
-class XBMC_12PlusMetadata(generic.GenericMetadata):
+class KODI_12PlusMetadata(generic.GenericMetadata):
     """
-    Metadata generation class for XBMC 12+.
+    Metadata generation class for KODI 12+.
 
     The following file structure is used:
 
@@ -69,7 +69,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
                                          season_all_poster,
                                          season_all_banner)
 
-        self.name = 'XBMC 12+'
+        self.name = 'KODI 12+'
 
         self.poster_name = "poster.jpg"
         self.season_all_poster_name = "season-all-poster.jpg"
@@ -88,7 +88,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
     def _show_data(self, show_obj):
         """
-        Creates an elementTree XML structure for an XBMC-style tvshow.nfo and
+        Creates an elementTree XML structure for an KODI-style tvshow.nfo and
         returns the resulting data object.
 
         show_obj: a TVShow instance to create the NFO for
@@ -212,7 +212,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
     def _ep_data(self, ep_obj):
         """
-        Creates an elementTree XML structure for an XBMC-style episode.nfo and
+        Creates an elementTree XML structure for an KODI-style episode.nfo and
         returns the resulting data object.
             show_obj: a TVEpisode instance to create the NFO for
         """
@@ -242,7 +242,7 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
             return
 
         if len(eps_to_write) > 1:
-            rootNode = etree.Element("xbmcmultiepisode")
+            rootNode = etree.Element("kodimultiepisode")
         else:
             rootNode = etree.Element("episodedetails")
 
@@ -373,4 +373,4 @@ class XBMC_12PlusMetadata(generic.GenericMetadata):
 
 
 # present a standard "interface" from the module
-metadata_class = XBMC_12PlusMetadata
+metadata_class = KODI_12PlusMetadata

@@ -32,93 +32,93 @@
                 <div class="component-group">
                 
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/xbmc.png" alt="" title="XBMC" />
-                        <h3><a href="<%= anon_url('http://kodi.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">XBMC</a></h3>
+                        <img class="notifier-icon" src="$sbRoot/images/notifiers/kodi.png" alt="" title="KODI" />
+                        <h3><a href="<%= anon_url('http://kodi.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
                         <p>A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV.</p>
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <label class="cleafix" for="use_xbmc">
+                            <label class="cleafix" for="use_kodi">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_xbmc" id="use_xbmc" #if $sickbeard.USE_XBMC then "checked=\"checked\"" else ""# />
-                                    <p>should SickRage send XBMC commands ?<p>
+                                    <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" #if $sickbeard.USE_KODI then "checked=\"checked\"" else ""# />
+                                    <p>should SickRage send KODI commands ?<p>
                                 </span>
                             </label>
                         </div>
 
-                        <div id="content_use_xbmc">
+                        <div id="content_use_kodi">
                             <div class="field-pair">
-                                <label for="xbmc_always_on">
+                                <label for="kodi_always_on">
                                     <span class="component-title">Always on</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_always_on" id="xbmc_always_on" #if $sickbeard.XBMC_ALWAYS_ON then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_always_on" id="kodi_always_on" #if $sickbeard.KODI_ALWAYS_ON then "checked=\"checked\"" else ""# />
                                         <p>log errors when unreachable ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_notify_onsnatch">
+                                <label for="kodi_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_notify_onsnatch" id="xbmc_notify_onsnatch" #if $sickbeard.XBMC_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" #if $sickbeard.KODI_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_notify_ondownload">
+                                <label for="kodi_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_notify_ondownload" id="xbmc_notify_ondownload" #if $sickbeard.XBMC_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" #if $sickbeard.KODI_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_notify_onsubtitledownload">
+                                <label for="kodi_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_notify_onsubtitledownload" id="xbmc_notify_onsubtitledownload" #if $sickbeard.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" #if $sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_update_library">
+                                <label for="kodi_update_library">
                                     <span class="component-title">Update library</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_update_library" id="xbmc_update_library" #if $sickbeard.XBMC_UPDATE_LIBRARY then "checked=\"checked\"" else ""# />
-                                        <p>update XBMC library when a download finishes ?</p>
+                                        <input type="checkbox" name="kodi_update_library" id="kodi_update_library" #if $sickbeard.KODI_UPDATE_LIBRARY then "checked=\"checked\"" else ""# />
+                                        <p>update KODI library when a download finishes ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_update_full">
+                                <label for="kodi_update_full">
                                     <span class="component-title">Full library update</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_update_full" id="xbmc_update_full" #if $sickbeard.XBMC_UPDATE_FULL then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_update_full" id="kodi_update_full" #if $sickbeard.KODI_UPDATE_FULL then "checked=\"checked\"" else ""# />
                                         <p>perform a full library update if update per-show fails ?</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_update_onlyfirst">
+                                <label for="kodi_update_onlyfirst">
                                     <span class="component-title">Only update first host</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="xbmc_update_onlyfirst" id="xbmc_update_onlyfirst" #if $sickbeard.XBMC_UPDATE_ONLYFIRST then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" #if $sickbeard.KODI_UPDATE_ONLYFIRST then "checked=\"checked\"" else ""# />
                                         <p>only send library updates to the first active host ?</p>
                                     </span>
                                 </label>
                             </div>                            
                             <div class="field-pair">
-                                <label for="xbmc_host">
-                                    <span class="component-title">XBMC IP:Port</span>
-                                    <input type="text" name="xbmc_host" id="xbmc_host" value="$sickbeard.XBMC_HOST" class="form-control input-sm input350" />
+                                <label for="kodi_host">
+                                    <span class="component-title">KODI IP:Port</span>
+                                    <input type="text" name="kodi_host" id="kodi_host" value="$sickbeard.KODI_HOST" class="form-control input-sm input350" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">host running XBMC (eg. 192.168.1.100:8080)</span>
+                                    <span class="component-desc">host running KODI (eg. 192.168.1.100:8080)</span>
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -126,33 +126,33 @@
                                 </label>                         
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_username">
-                                    <span class="component-title">XBMC username</span>
-                                    <input type="text" name="xbmc_username" id="xbmc_username" value="$sickbeard.XBMC_USERNAME" class="form-control input-sm input250" />
+                                <label for="kodi_username">
+                                    <span class="component-title">KODI username</span>
+                                    <input type="text" name="kodi_username" id="kodi_username" value="$sickbeard.KODI_USERNAME" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">username for your XBMC server (blank for none)</span>
+                                    <span class="component-desc">username for your KODI server (blank for none)</span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="xbmc_password">
-                                    <span class="component-title">XBMC password</span>
-                                    <input type="password" name="xbmc_password" id="xbmc_password" value="$sickbeard.XBMC_PASSWORD" class="form-control input-sm input250" />
+                                <label for="kodi_password">
+                                    <span class="component-title">KODI password</span>
+                                    <input type="password" name="kodi_password" id="kodi_password" value="$sickbeard.KODI_PASSWORD" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">password for your XBMC server (blank for none)</span>
+                                    <span class="component-desc">password for your KODI server (blank for none)</span>
                                 </label>
                             </div>
-                            <div class="testNotification" id="testXBMC-result">Click below to test.</div>
-                            <input  class="btn" type="button" value="Test XBMC" id="testXBMC" />
+                            <div class="testNotification" id="testKODI-result">Click below to test.</div>
+                            <input  class="btn" type="button" value="Test KODI" id="testKODI" />
                             <input type="submit" class="config_submitter btn" value="Save Changes" />
-                        </div><!-- /content_use_xbmc //-->
+                        </div><!-- /content_use_kodi //-->
 
                     </fieldset>
                     
-                </div><!-- /xbmc component-group //-->
+                </div><!-- /kodi component-group //-->
 
 
                 <div class="component-group">
@@ -160,7 +160,7 @@
                         <img class="notifier-icon" src="$sbRoot/images/notifiers/plex.png" alt="" title="Plex Media Server" />
                         <h3><a href="<%= anon_url('http://www.plexapp.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
                         <p>Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!</p>
-                        <p class="plexinfo hide">For sending notifications to Plex Home Theater (PHT) clients, use the XBMC notifier with port <b>3005</b>.</p>
+                        <p class="plexinfo hide">For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>.</p>
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">

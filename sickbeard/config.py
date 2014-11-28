@@ -661,11 +661,11 @@ class ConfigMigrator():
         new format: 0|0|0|0|0|0|0|0|0|0 -- 10 places
 
         Drop the use of use_banner option.
-        Migrate the poster override to just using the banner option (applies to xbmc only).
+        Migrate the poster override to just using the banner option (applies to kodi only).
         """
 
-        metadata_xbmc = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0')
-        metadata_xbmc_12plus = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0')
+        metadata_kodi = check_setting_str(self.config_obj, 'General', 'metadata_kodi', '0|0|0|0|0|0')
+        metadata_kodi_12plus = check_setting_str(self.config_obj, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0')
         metadata_mediabrowser = check_setting_str(self.config_obj, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0')
         metadata_ps3 = check_setting_str(self.config_obj, 'General', 'metadata_ps3', '0|0|0|0|0|0')
         metadata_wdtv = check_setting_str(self.config_obj, 'General', 'metadata_wdtv', '0|0|0|0|0|0')
@@ -686,7 +686,7 @@ class ConfigMigrator():
                 # swap show fanart, show poster
                 cur_metadata[3], cur_metadata[2] = cur_metadata[2], cur_metadata[3]
                 # if user was using use_banner to override the poster, instead enable the banner option and deactivate poster
-                if metadata_name == 'XBMC' and use_banner:
+                if metadata_name == 'KODI' and use_banner:
                     cur_metadata[4], cur_metadata[3] = cur_metadata[3], '0'
                 # write new format
                 metadata = '|'.join(cur_metadata)
@@ -705,8 +705,8 @@ class ConfigMigrator():
 
             return metadata
 
-        sickbeard.METADATA_XBMC = _migrate_metadata(metadata_xbmc, 'XBMC', use_banner)
-        sickbeard.METADATA_XBMC_12PLUS = _migrate_metadata(metadata_xbmc_12plus, 'XBMC 12+', use_banner)
+        sickbeard.METADATA_KODI = _migrate_metadata(metadata_kodi, 'KODI', use_banner)
+        sickbeard.METADATA_KODI_12PLUS = _migrate_metadata(metadata_kodi_12plus, 'KODI 12+', use_banner)
         sickbeard.METADATA_MEDIABROWSER = _migrate_metadata(metadata_mediabrowser, 'MediaBrowser', use_banner)
         sickbeard.METADATA_PS3 = _migrate_metadata(metadata_ps3, 'PS3', use_banner)
         sickbeard.METADATA_WDTV = _migrate_metadata(metadata_wdtv, 'WDTV', use_banner)

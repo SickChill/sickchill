@@ -109,8 +109,8 @@
 				\$("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<span class="submenu-icon-bittorrent pull-left"></span> Manage Torrents');
 				\$("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<span class="submenu-icon-failed-download pull-left"></span> Failed Downloads');
 				\$("#SubMenu a:contains('Notification')").addClass('btn').html('<span class="ui-icon ui-icon-note pull-left"></span> Notifications');
-				\$("#SubMenu a:contains('Update show in XBMC')").addClass('btn').html('<span class="submenu-icon-xbmc pull-left"></span> Update show in XBMC');
-				\$("#SubMenu a[href$='/home/updateXBMC/']").addClass('btn').html('<span class="submenu-icon-xbmc pull-left"></span> Update XBMC');
+				\$("#SubMenu a:contains('Update show in KODI')").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update show in KODI');
+				\$("#SubMenu a[href$='/home/updateKODI/']").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update KODI');
 			}
 		
 			\$(document).ready(function() {
@@ -169,8 +169,8 @@
                             #if $sickbeard.USE_PLEX and $sickbeard.PLEX_SERVER_HOST != "":
 								<li><a href="$sbRoot/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
 							#end if
-							#if $sickbeard.USE_XBMC and $sickbeard.XBMC_HOST != "":
-								<li><a href="$sbRoot/home/updateXBMC/"><i class="menu-icon-xbmc"></i>&nbsp;Update XBMC</a></li>
+							#if $sickbeard.USE_KODI and $sickbeard.KODI_HOST != "":
+								<li><a href="$sbRoot/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
 							#end if	
 							#if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
 							and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \

@@ -154,7 +154,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         for cur_dir in dir_list:
             # MediaBrowser 1.x only supports 'Specials'
             # MediaBrowser 2.x looks to only support 'Season 0'
-            # MediaBrowser 3.x looks to mimic XBMC/Plex support
+            # MediaBrowser 3.x looks to mimic KODI/Plex support
             if season == 0 and cur_dir == "Specials":
                 season_dir = cur_dir
                 break
@@ -194,7 +194,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         for cur_dir in dir_list:
             # MediaBrowser 1.x only supports 'Specials'
             # MediaBrowser 2.x looks to only support 'Season 0'
-            # MediaBrowser 3.x looks to mimic XBMC/Plex support
+            # MediaBrowser 3.x looks to mimic KODI/Plex support
             if season == 0 and cur_dir == "Specials":
                 season_dir = cur_dir
                 break

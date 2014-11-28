@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ['generic', 'helpers', 'xbmc', 'xbmc_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
+__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
 
 import sys
-import xbmc, xbmc_12plus, mediabrowser, ps3, wdtv, tivo, mede8er
+import kodi, kodi_12plus, mediabrowser, ps3, wdtv, tivo, mede8er
 
 
 def available_generators():

@@ -9,10 +9,10 @@ Video File Manager for TV Shows, It watches for new episodes of your favorite sh
 [![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=master)](https://travis-ci.org/SiCKRAGETV/SickRage)
 
 ## Features
- - XBMC library updates, poster/fanart downloads, and NFO/TBN generation
+ - KODI library updates, poster/fanart downloads, and NFO/TBN generation
  - configurable episode renaming
  - available for any platform, uses simple HTTP interface
- - can notify XBMC, Growl, or Twitter when new episodes are available
+ - can notify KODI, Growl, or Twitter when new episodes are available
  - specials and double episode support
  - Automatic XEM Scene Numbering/Naming for seasons/episodes
  - Episode Status Manager now allows for mass failing seasons/episodes to force retrying.
