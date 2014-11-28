@@ -1312,7 +1312,7 @@ class CMD_Backlog(ApiCall):
                 curEpCat = curShow.getOverview(int(curResult["status"]))
                 if curEpCat and curEpCat in (Overview.WANTED, Overview.QUAL):
                     showEps.append(curResult)
-            
+
             if showEps:
                 shows.append({
                     "indexerid": curShow.indexerid,
@@ -1320,7 +1320,7 @@ class CMD_Backlog(ApiCall):
                     "status": curShow.status,
                     "episodes": showEps
                 })
-               
+
         return _responds(RESULT_SUCCESS, shows)
 
 class CMD_Logs(ApiCall):
@@ -1951,6 +1951,20 @@ class CMD_Show(ApiCall):
         showDict["sports"] = showObj.sports
         showDict["anime"] = showObj.anime
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+        showDict["dvdorder"] = showObj.dvdorder
+        
+        if showObj.rls_require_words:
+            showDict["rls_require_words"] = showObj.rls_require_words.split(", ")
+        else:
+            showDict["rls_require_words"] = []
+
+        if showObj.rls_ignore_words:
+            showDict["rls_ignore_words"] = showObj.rls_ignore_words.split(", ")
+        else:
+            showDict["rls_ignore_words"] = []
+        
+        showDict["scene"] = showObj.scene
+        showDict["archive_firstmatch"] = showObj.archive_firstmatch
 
         showDict["indexerid"] = showObj.indexerid
         showDict["tvdbid"] = helpers.mapIndexersToShow(showObj)[1]
