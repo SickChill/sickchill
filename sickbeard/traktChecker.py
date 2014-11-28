@@ -70,7 +70,7 @@ class TraktChecker():
 
             traktShow = filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
 
         return traktShow
 
@@ -95,7 +95,7 @@ class TraktChecker():
             try:
                 self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
 
     def addShowToTraktLibrary(self, show_obj):
         """
@@ -118,7 +118,7 @@ class TraktChecker():
             try:
                 self.trakt_api.traktRequest("show/library/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
@@ -126,7 +126,7 @@ class TraktChecker():
         try:
             watchlist = self.trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
             return
 
         if not len(watchlist):
@@ -161,7 +161,7 @@ class TraktChecker():
         try:
             watchlist = self.trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
             return
 
         if not len(watchlist):

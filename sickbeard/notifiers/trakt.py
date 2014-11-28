@@ -107,7 +107,7 @@ class TraktNotifier:
 
                                 trakt_api.traktRequest("show/episode/unwatchlist/%APIKEY%", data_show)
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
 
     def test_notify(self, api, username, password):
         """
@@ -127,6 +127,6 @@ class TraktNotifier:
             if trakt_api.validateAccount():
                 return True
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
 
 notifier = TraktNotifier
