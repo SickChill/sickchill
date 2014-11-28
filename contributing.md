@@ -1,6 +1,6 @@
 ### Questions about SickRage?
 
-To get your questions answered, please ask in the [SickRage Forum], on IRC \#sickrage pn freenode.net, or webchat.
+To get your questions answered, please ask on the [SickRage Forum](http://sickrage.tv/),  or [#sickrage](http://webchat.freenode.net/?channels=sickrage) IRC channel on irc.freenode.net
 
 # Contributing to SickRage
 
@@ -34,7 +34,7 @@ If you are new to SickRage, it is usually a much better idea to ask for help fir
 
 ### Try the latest version of SickRage
 
-Bugs in old versions of SickRage may have already been fixed. In order to avoid reporting known issues, make sure you are always testing against the latest build/source. Also, we put new code in the `dev` branch first before pushing down to the `master` branch (which is what the binary builds are built off of).
+Bugs in old versions of SickRage may have already been fixed. In order to avoid reporting known issues, make sure you are always testing against the latest build/source. Also, we put new code in the `develop` branch first before pushing down to the `master` branch (which is what the binary builds are built off of).
 
 
 ## Tips For Submitting Code
@@ -49,7 +49,7 @@ Bugs in old versions of SickRage may have already been fixed. In order to avoid 
 
 Please follow these guidelines before reporting a bug:
 
-1. **Update to the latest version** &mdash; Check if you can reproduce the issue with the latest version from the `dev` branch.
+1. **Update to the latest version** &mdash; Check if you can reproduce the issue with the latest version from the `develop` branch.
 
 2. **Use the SickRage Forums search** &mdash; check if the issue has already been reported. If it has been, please comment on the existing issue.
 
@@ -58,7 +58,7 @@ Please follow these guidelines before reporting a bug:
 
 ### Feature requests
 
-Please follow the bug guidelines above for feature requests, i.e. update to the latest version and search for existing issues before posting a new request. You can submit Feature Requests in the [SickRage Forum] as well.
+Please follow the bug guidelines above for feature requests, i.e. update to the latest version and search for existing issues before posting a new request. You can submit Feature Requests in the [SickRage Forum](http://sickrage.tv/) as well.
 
 ### Pull requests
 
@@ -68,7 +68,7 @@ Please follow these guidelines before sending a pull request:
 
 1. Update your fork to the latest upstream version.
 
-2. Use the `dev` branch to base your code off of. Create a topic-branch for your work. We will not merge your 'dev' branch, or your 'master' branch, only topic branches, coming from dev are merged.
+2. Use the `develop` branch to base your code off of. Create a topic-branch for your work. We will not merge your 'dev' branch, or your 'master' branch, only topic branches, coming from dev are merged.
 
 3. Follow the coding conventions of the original repository. Do not change line endings of the existing file, as this will rewrite the file and loses history.
 
@@ -106,7 +106,7 @@ Please follow this process; it's the best way to get your work included in the p
 - Create a new topic branch to contain your feature, change, or fix:
 
    ```bash
-   git checkout -b <topic-branch-name> dev
+   git checkout -b <topic-branch-name> develop
    ```
 
 - Commit your changes in logical chunks. or your pull request is unlikely
