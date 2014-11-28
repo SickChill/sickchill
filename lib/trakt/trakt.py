@@ -1,7 +1,7 @@
 import hashlib
 import requests
 
-from . import traktException, traktAuthException, traktServerBusy
+from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
     def __init__(self, apikey, username=None, password=None, use_https=False, timeout=5):

@@ -26,16 +26,16 @@ from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard.common import SKIPPED, WANTED
+
 from lib.trakt import *
-from trakt.exceptions import traktException
+from trakt.exceptions import traktException, traktAuthException, traktServerBusy
 
-
-trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
 
 class TraktChecker():
 
     def __init__(self):
         self.todoWanted = []
+        self.trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
 
     def run(self, force=False):
         try:
@@ -58,7 +58,7 @@ class TraktChecker():
         traktShow = None
 
         try:
-            library = trakt_api.traktRequest("user/library/shows/all.json/%APIKEY%/%USER%")
+            library = self.trakt_api.traktRequest("user/library/shows/all.json/%APIKEY%/%USER%")
 
             if not library:
                 logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
@@ -93,7 +93,7 @@ class TraktChecker():
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
 
             try:
-                trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
+                self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
 
@@ -116,7 +116,7 @@ class TraktChecker():
             logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
 
             try:
-                trakt_api.traktRequest("show/library/%APIKEY%", data)
+                self.trakt_api.traktRequest("show/library/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
 
@@ -124,7 +124,7 @@ class TraktChecker():
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
 
         try:
-            watchlist = trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
+            watchlist = self.trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
             return
@@ -159,7 +159,7 @@ class TraktChecker():
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
 
         try:
-            watchlist = trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
+            watchlist = self.trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
             return
