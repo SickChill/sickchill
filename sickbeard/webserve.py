@@ -65,7 +65,9 @@ from lib.dateutil import tz
 from lib.unrar2 import RarFile
 
 from lib import adba, subliminal
-from lib.trakt import TraktCall
+
+from lib.trakt import TraktAPI
+from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
 
 try:
     import json
@@ -76,7 +78,6 @@ try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
-
 
 from Cheetah.Template import Template
 from tornado.web import RequestHandler, HTTPError, asynchronous
@@ -282,6 +283,7 @@ class MainHandler(RequestHandler):
                 image_path = image_file_name
 
         from mimetypes import MimeTypes
+
         mime_type, encoding = MimeTypes().guess_type(image_path)
         self.set_header('Content-Type', mime_type)
         with file(image_path, 'rb') as img:
@@ -2934,7 +2936,8 @@ class NewHomeAddShows(MainHandler):
         if not show_dir:
             t.default_show_name = ''
         elif not show_name:
-            t.default_show_name = re.sub(' \(\d{4}\)','', ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
+            t.default_show_name = re.sub(' \(\d{4}\)', '',
+                                         ek.ek(os.path.basename, ek.ek(os.path.normpath, show_dir)).replace('.', ' '))
         else:
             t.default_show_name = show_name
 
@@ -2969,16 +2972,22 @@ class NewHomeAddShows(MainHandler):
         final_results = []
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-        recommendedlist = TraktCall("recommendations/shows.json/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME,
-                                    sickbeard.TRAKT_PASSWORD)
 
-        if recommendedlist:
-            indexers = ['tvdb_id', 'tvrage_id']
-            map(final_results.append, (
-                [int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]), show['url'], show['title'], show['overview'],
-                 datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')]
-                for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
+
+        try:
+            recommendedlist = trakt_api.traktRequest("recommendations/shows.json/%APIKEY%")
+
+            if recommendedlist:
+                indexers = ['tvdb_id', 'tvrage_id']
+                map(final_results.append, (
+                    [int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]), show['url'], show['title'],
+                     show['overview'],
+                     datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')]
+                    for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
+                    int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+        except (traktException, traktAuthException, traktServerBusy) as e:
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
 
         return json.dumps({'results': final_results})
 
@@ -3009,14 +3018,20 @@ class NewHomeAddShows(MainHandler):
 
         t.trending_shows = []
 
-        trending_shows = TraktCall("shows/trending.json/%API%", sickbeard.TRAKT_API_KEY)
-        if trending_shows:
-            for show in trending_shows:
-                try:
-                    if not helpers.findCertainShow(sickbeard.showList, [int(show['tvdb_id']), int(show['tvrage_id'])]):
-                        t.trending_shows += [show]
-                except exceptions.MultipleShowObjectsException:
-                    continue
+        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
+
+        try:
+            trending_shows = trakt_api.traktRequest("shows/trending.json/%APIKEY%")
+
+            if trending_shows:
+                for show in trending_shows:
+                    try:
+                        if not helpers.findCertainShow(sickbeard.showList, [int(show['tvdb_id']), int(show['tvrage_id'])]):
+                            t.trending_shows += [show]
+                    except exceptions.MultipleShowObjectsException:
+                        continue
+        except (traktException, traktAuthException, traktServerBusy) as e:
+            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.ERROR)
 
         return _munge(t)
 
