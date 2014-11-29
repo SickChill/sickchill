@@ -2973,7 +2973,7 @@ class NewHomeAddShows(MainHandler):
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
             recommendedlist = trakt_api.traktRequest("recommendations/shows.json/%APIKEY%")
@@ -3018,7 +3018,7 @@ class NewHomeAddShows(MainHandler):
 
         t.trending_shows = []
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_USERNAME)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
             trending_shows = trakt_api.traktRequest("shows/trending.json/%APIKEY%")
