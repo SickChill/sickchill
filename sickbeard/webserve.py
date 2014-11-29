@@ -99,7 +99,7 @@ def authenticated(handler_class):
                 if not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
                     return True
                 elif (handler.request.uri.startswith(sickbeard.WEB_ROOT + '/api') and
-                              '/api/builder' not in handler.request.uri):
+                              sickbeard.WEB_ROOT + '/api/builder' not in handler.request.uri):
                     return True
                 elif (handler.request.uri.startswith(sickbeard.WEB_ROOT + '/calendar') and
                           sickbeard.CALENDAR_UNPROTECTED):
@@ -107,7 +107,7 @@ def authenticated(handler_class):
 
                 auth_hdr = handler.request.headers.get('Authorization')
 
-                if auth_hdr == None:
+                if auth_hdr is None:
                     return _request_basic_auth(handler)
                 if not auth_hdr.startswith('Basic '):
                     return _request_basic_auth(handler)
