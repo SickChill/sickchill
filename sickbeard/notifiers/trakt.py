@@ -82,7 +82,7 @@ class TraktNotifier:
                     }
 
                     if trakt_id == 'tvdb_id':
-                        data['shows'][trakt_id] = ep_obj.show.indexerid
+                        data['shows'][0][trakt_id] = ep_obj.show.indexerid
 
                     trakt_api.traktRequest("show/unwatchlist/%APIKEY%", data)
 
