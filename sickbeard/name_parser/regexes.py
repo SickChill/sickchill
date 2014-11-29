@@ -59,7 +59,7 @@ normal_regexes = [
      (\()?s(?P<season_num>\d+)[. _-]*            # S01 and optional separator
      e(?P<ep_num>\d+)(\))?                       # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
-     (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+))(\))*   # additional E03/etc
+     (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$              # Group
