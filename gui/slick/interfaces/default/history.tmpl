@@ -128,7 +128,7 @@
 			<tr>
 				#set $curdatetime = $datetime.datetime.strptime(str($hItem["date"]), $history.dateFormat)
 				<td align="center"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
-				<td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
+				<td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
 				<td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
 				#if $curStatus == SUBTITLED:
 					<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>">
@@ -190,7 +190,7 @@
 				#set $curdatetime = $datetime.datetime.strptime(str($hItem["actions"][0]["time"]), $history.dateFormat)
 				<td align="center"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
 				<td class="tvShow" width="25%">
-					<span><a href="$sbRoot/home/displayShow?show=$hItem["show_id"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower or "repack" in $hItem["resource"].lower then ' <span class="quality Proper">Proper</span>' else ""#</a></span>
+					<span><a href="$sbRoot/home/displayShow?show=$hItem["show_id"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></span>
 				</td>
 				<td align="center" provider="<%=str(sorted(hItem["actions"])[0]["provider"])%>">
 					#for $action in sorted($hItem["actions"]):

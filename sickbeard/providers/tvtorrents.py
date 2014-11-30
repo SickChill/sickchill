@@ -61,11 +61,8 @@ class TvTorrentsProvider(generic.TorrentProvider):
         return True
 
     def _checkAuthFromData(self, data):
-        if data.feed.title:
-            description_text = data.feed.title
-
-        if "User can't be found" in description_text or "Invalid Hash" in description_text:
-            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(description_text),
+        if "User can't be found" in data.feed.title or "Invalid Hash" in data.feed.title:
+            logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(data.feed.title),
                        logger.DEBUG)
             raise AuthException(
                 u"Your authentication credentials for " + self.name + " are incorrect, check your config")
