@@ -55,7 +55,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
     def getQuality(self, item, anime=False):
 
-        filename = item.filename
+        filename = item.fileName
         quality = Quality.sceneQuality(filename, anime)
 
         return quality
@@ -145,7 +145,7 @@ class EZRSSProvider(generic.TorrentProvider):
     def _get_title_and_url(self, item):
         (title, url) = generic.TorrentProvider._get_title_and_url(self, item)
 
-        filename = item.filename
+        filename = item.fileName
         if filename:
             new_title = self._extract_name_from_filename(filename)
             if new_title:
