@@ -411,6 +411,7 @@ class TVRage:
             else:
                 resp = requests.get(url.strip(), params=params)
 
+            resp.raise_for_status()
         except requests.exceptions.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
         except requests.exceptions.ConnectionError, e:
@@ -579,7 +580,7 @@ class TVRage:
 
         if not seriesInfoEt:
             log().debug('Series result returned zero')
-            raise tvrage_shownotfound("Show search returned zero results (cannot find show on TVRAGE)")
+            raise tvrage_error("Series result returned zero")
 
         # get series data
         for k, v in seriesInfoEt.items():

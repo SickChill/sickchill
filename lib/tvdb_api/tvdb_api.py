@@ -574,6 +574,8 @@ class Tvdb:
                 resp = session.get(url, cache_auto=True, params=params)
             else:
                 resp = requests.get(url, params=params)
+
+            resp.raise_for_status()
         except requests.exceptions.HTTPError, e:
             raise tvdb_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
         except requests.exceptions.ConnectionError, e:
@@ -604,24 +606,22 @@ class Tvdb:
                 except:
                     pass
 
-            return (key, value)
+            return key, value
 
-        if resp.ok:
-            if 'application/zip' in resp.headers.get("Content-Type", ''):
-                try:
-                    # TODO: The zip contains actors.xml and banners.xml, which are currently ignored [GH-20]
-                    log().debug("We recived a zip file unpacking now ...")
-                    zipdata = StringIO.StringIO()
-                    zipdata.write(resp.content)
-                    myzipfile = zipfile.ZipFile(zipdata)
-                    return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
-                except zipfile.BadZipfile:
-                    raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
-            else:
-                try:
-                    return xmltodict.parse(resp.content.strip(), postprocessor=process)
-                except:
-                    return dict([(u'data', None)])
+        if 'application/zip' in resp.headers.get("Content-Type", ''):
+            try:
+                log().debug("We recived a zip file unpacking now ...")
+                zipdata = StringIO.StringIO()
+                zipdata.write(resp.content)
+                myzipfile = zipfile.ZipFile(zipdata)
+                return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
+            except zipfile.BadZipfile:
+                raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
+        else:
+            try:
+                return xmltodict.parse(resp.content.strip(), postprocessor=process)
+            except:
+                return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None, language=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -839,7 +839,7 @@ class Tvdb:
 
         if not seriesInfoEt:
             log().debug('Series result returned zero')
-            raise tvdb_shownotfound("Show search returned zero results (cannot find show on TVDB)")
+            raise tvdb_error("Series result returned zero")
 
         # get series data
         for k, v in seriesInfoEt['series'].items():
