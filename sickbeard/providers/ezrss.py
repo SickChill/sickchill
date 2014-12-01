@@ -55,7 +55,10 @@ class EZRSSProvider(generic.TorrentProvider):
 
     def getQuality(self, item, anime=False):
 
-        filename = item.fileName
+        if not 'filename' in item:
+            return Quality.UNKNOWN
+
+        filename = item.filename
         quality = Quality.sceneQuality(filename, anime)
 
         return quality
@@ -137,7 +140,7 @@ class EZRSSProvider(generic.TorrentProvider):
                 results.append(curItem)
             else:
                 logger.log(
-                    u"The XML returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
+                    u"The XML returned from the " + self.name + " RSS feed is empty or incomplete, this result is unusable",
                     logger.ERROR)
 
         return results
@@ -145,12 +148,13 @@ class EZRSSProvider(generic.TorrentProvider):
     def _get_title_and_url(self, item):
         (title, url) = generic.TorrentProvider._get_title_and_url(self, item)
 
-        filename = item.fileName
-        if filename:
-            new_title = self._extract_name_from_filename(filename)
-            if new_title:
-                title = new_title
-                logger.log(u"Extracted the name " + title + " from the torrent link", logger.DEBUG)
+        if 'filename' in item:
+            filename = item.filename
+            if filename:
+                new_title = self._extract_name_from_filename(filename)
+                if new_title:
+                    title = new_title
+                    logger.log(u"Extracted the name " + title + " from the torrent link", logger.DEBUG)
 
         return (title, url)
 
