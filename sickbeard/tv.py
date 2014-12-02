@@ -1665,8 +1665,7 @@ class TVEpisode(object):
         if getattr(myEp, 'absolute_number', None) is None:
             logger.log(u"This episode (" + self.show.name + " - " + str(season) + "x" + str(
                 episode) + ") has no absolute number on " + sickbeard.indexerApi(
-                self.indexer).name
-                       , logger.DEBUG)
+                self.indexer).name, logger.DEBUG)
         else:
             logger.log(
                 str(self.show.indexerid) + ": The absolute_number for " + str(season) + "x" + str(episode) + " is : " +

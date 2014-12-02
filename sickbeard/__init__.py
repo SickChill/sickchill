@@ -547,7 +547,10 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Subtitles')
 
         # github api
-        gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)  # wanted branch
+        try:
+            gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
+        except:
+            gh = None
 
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
@@ -609,8 +612,8 @@ def initialize(consoleLogging=True):
         WEB_ROOT = check_setting_str(CFG, 'General', 'web_root', '').rstrip("/")
         WEB_LOG = bool(check_setting_int(CFG, 'General', 'web_log', 0))
         ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
-        WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '')
-        WEB_PASSWORD = check_setting_str(CFG, 'General', 'web_password', '')
+        WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '', censor_log=True)
+        WEB_PASSWORD = check_setting_str(CFG, 'General', 'web_password', '', censor_log=True)
         LAUNCH_BROWSER = bool(check_setting_int(CFG, 'General', 'launch_browser', 1))
 
         PLAY_VIDEOS = bool(check_setting_int(CFG, 'General', 'play_videos', 0))
@@ -634,7 +637,7 @@ def initialize(consoleLogging=True):
         SORT_ARTICLE = bool(check_setting_int(CFG, 'General', 'sort_article', 0))
 
         USE_API = bool(check_setting_int(CFG, 'General', 'use_api', 0))
-        API_KEY = check_setting_str(CFG, 'General', 'api_key', '')
+        API_KEY = check_setting_str(CFG, 'General', 'api_key', '', censor_log=True)
 
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
@@ -738,30 +741,30 @@ def initialize(consoleLogging=True):
         ADD_SHOWS_WO_DIR = bool(check_setting_int(CFG, 'General', 'add_shows_wo_dir', 0))
 
         NZBS = bool(check_setting_int(CFG, 'NZBs', 'nzbs', 0))
-        NZBS_UID = check_setting_str(CFG, 'NZBs', 'nzbs_uid', '')
-        NZBS_HASH = check_setting_str(CFG, 'NZBs', 'nzbs_hash', '')
+        NZBS_UID = check_setting_str(CFG, 'NZBs', 'nzbs_uid', '', censor_log=True)
+        NZBS_HASH = check_setting_str(CFG, 'NZBs', 'nzbs_hash', '', censor_log=True)
 
         NEWZBIN = bool(check_setting_int(CFG, 'Newzbin', 'newzbin', 0))
-        NEWZBIN_USERNAME = check_setting_str(CFG, 'Newzbin', 'newzbin_username', '')
-        NEWZBIN_PASSWORD = check_setting_str(CFG, 'Newzbin', 'newzbin_password', '')
+        NEWZBIN_USERNAME = check_setting_str(CFG, 'Newzbin', 'newzbin_username', '', censor_log=True)
+        NEWZBIN_PASSWORD = check_setting_str(CFG, 'Newzbin', 'newzbin_password', '', censor_log=True)
 
-        SAB_USERNAME = check_setting_str(CFG, 'SABnzbd', 'sab_username', '')
-        SAB_PASSWORD = check_setting_str(CFG, 'SABnzbd', 'sab_password', '')
-        SAB_APIKEY = check_setting_str(CFG, 'SABnzbd', 'sab_apikey', '')
+        SAB_USERNAME = check_setting_str(CFG, 'SABnzbd', 'sab_username', '', censor_log=True)
+        SAB_PASSWORD = check_setting_str(CFG, 'SABnzbd', 'sab_password', '', censor_log=True)
+        SAB_APIKEY = check_setting_str(CFG, 'SABnzbd', 'sab_apikey', '', censor_log=True)
         SAB_CATEGORY = check_setting_str(CFG, 'SABnzbd', 'sab_category', 'tv')
         SAB_CATEGORY_ANIME = check_setting_str(CFG, 'SABnzbd', 'sab_category_anime', 'anime')
         SAB_HOST = check_setting_str(CFG, 'SABnzbd', 'sab_host', '')
 
-        NZBGET_USERNAME = check_setting_str(CFG, 'NZBget', 'nzbget_username', 'nzbget')
-        NZBGET_PASSWORD = check_setting_str(CFG, 'NZBget', 'nzbget_password', 'tegbzn6789')
+        NZBGET_USERNAME = check_setting_str(CFG, 'NZBget', 'nzbget_username', 'nzbget', censor_log=True)
+        NZBGET_PASSWORD = check_setting_str(CFG, 'NZBget', 'nzbget_password', 'tegbzn6789', censor_log=True)
         NZBGET_CATEGORY = check_setting_str(CFG, 'NZBget', 'nzbget_category', 'tv')
         NZBGET_CATEGORY_ANIME = check_setting_str(CFG, 'NZBget', 'nzbget_category_anime', 'anime')
         NZBGET_HOST = check_setting_str(CFG, 'NZBget', 'nzbget_host', '')
         NZBGET_USE_HTTPS = bool(check_setting_int(CFG, 'NZBget', 'nzbget_use_https', 0))
         NZBGET_PRIORITY = check_setting_int(CFG, 'NZBget', 'nzbget_priority', 100)
 
-        TORRENT_USERNAME = check_setting_str(CFG, 'TORRENT', 'torrent_username', '')
-        TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', '')
+        TORRENT_USERNAME = check_setting_str(CFG, 'TORRENT', 'torrent_username', '', censor_log=True)
+        TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', '', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host', '')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path', '')
         TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', 0)
@@ -780,8 +783,8 @@ def initialize(consoleLogging=True):
         KODI_UPDATE_FULL = bool(check_setting_int(CFG, 'KODI', 'kodi_update_full', 0))
         KODI_UPDATE_ONLYFIRST = bool(check_setting_int(CFG, 'KODI', 'kodi_update_onlyfirst', 0))
         KODI_HOST = check_setting_str(CFG, 'KODI', 'kodi_host', '')
-        KODI_USERNAME = check_setting_str(CFG, 'KODI', 'kodi_username', '')
-        KODI_PASSWORD = check_setting_str(CFG, 'KODI', 'kodi_password', '')
+        KODI_USERNAME = check_setting_str(CFG, 'KODI', 'kodi_username', '', censor_log=True)
+        KODI_PASSWORD = check_setting_str(CFG, 'KODI', 'kodi_password', '', censor_log=True)
 
         USE_PLEX = bool(check_setting_int(CFG, 'Plex', 'use_plex', 0))
         PLEX_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Plex', 'plex_notify_onsnatch', 0))
@@ -790,21 +793,21 @@ def initialize(consoleLogging=True):
         PLEX_UPDATE_LIBRARY = bool(check_setting_int(CFG, 'Plex', 'plex_update_library', 0))
         PLEX_SERVER_HOST = check_setting_str(CFG, 'Plex', 'plex_server_host', '')
         PLEX_HOST = check_setting_str(CFG, 'Plex', 'plex_host', '')
-        PLEX_USERNAME = check_setting_str(CFG, 'Plex', 'plex_username', '')
-        PLEX_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_password', '')
+        PLEX_USERNAME = check_setting_str(CFG, 'Plex', 'plex_username', '', censor_log=True)
+        PLEX_PASSWORD = check_setting_str(CFG, 'Plex', 'plex_password', '', censor_log=True)
 
         USE_GROWL = bool(check_setting_int(CFG, 'Growl', 'use_growl', 0))
         GROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Growl', 'growl_notify_onsnatch', 0))
         GROWL_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Growl', 'growl_notify_ondownload', 0))
         GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Growl', 'growl_notify_onsubtitledownload', 0))
         GROWL_HOST = check_setting_str(CFG, 'Growl', 'growl_host', '')
-        GROWL_PASSWORD = check_setting_str(CFG, 'Growl', 'growl_password', '')
+        GROWL_PASSWORD = check_setting_str(CFG, 'Growl', 'growl_password', '', censor_log=True)
 
         USE_PROWL = bool(check_setting_int(CFG, 'Prowl', 'use_prowl', 0))
         PROWL_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsnatch', 0))
         PROWL_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_ondownload', 0))
         PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Prowl', 'prowl_notify_onsubtitledownload', 0))
-        PROWL_API = check_setting_str(CFG, 'Prowl', 'prowl_api', '')
+        PROWL_API = check_setting_str(CFG, 'Prowl', 'prowl_api', '', censor_log=True)
         PROWL_PRIORITY = check_setting_str(CFG, 'Prowl', 'prowl_priority', "0")
 
         USE_TWITTER = bool(check_setting_int(CFG, 'Twitter', 'use_twitter', 0))
@@ -812,30 +815,30 @@ def initialize(consoleLogging=True):
         TWITTER_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Twitter', 'twitter_notify_ondownload', 0))
         TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'Twitter', 'twitter_notify_onsubtitledownload', 0))
-        TWITTER_USERNAME = check_setting_str(CFG, 'Twitter', 'twitter_username', '')
-        TWITTER_PASSWORD = check_setting_str(CFG, 'Twitter', 'twitter_password', '')
+        TWITTER_USERNAME = check_setting_str(CFG, 'Twitter', 'twitter_username', '', censor_log=True)
+        TWITTER_PASSWORD = check_setting_str(CFG, 'Twitter', 'twitter_password', '', censor_log=True)
         TWITTER_PREFIX = check_setting_str(CFG, 'Twitter', 'twitter_prefix', 'SickRage')
 
         USE_BOXCAR = bool(check_setting_int(CFG, 'Boxcar', 'use_boxcar', 0))
         BOXCAR_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Boxcar', 'boxcar_notify_onsnatch', 0))
         BOXCAR_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Boxcar', 'boxcar_notify_ondownload', 0))
         BOXCAR_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'Boxcar', 'boxcar_notify_onsubtitledownload', 0))
-        BOXCAR_USERNAME = check_setting_str(CFG, 'Boxcar', 'boxcar_username', '')
+        BOXCAR_USERNAME = check_setting_str(CFG, 'Boxcar', 'boxcar_username', '', censor_log=True)
 
         USE_BOXCAR2 = bool(check_setting_int(CFG, 'Boxcar2', 'use_boxcar2', 0))
         BOXCAR2_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_onsnatch', 0))
         BOXCAR2_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_ondownload', 0))
         BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'Boxcar2', 'boxcar2_notify_onsubtitledownload', 0))
-        BOXCAR2_ACCESSTOKEN = check_setting_str(CFG, 'Boxcar2', 'boxcar2_accesstoken', '')
+        BOXCAR2_ACCESSTOKEN = check_setting_str(CFG, 'Boxcar2', 'boxcar2_accesstoken', '', censor_log=True)
 
         USE_PUSHOVER = bool(check_setting_int(CFG, 'Pushover', 'use_pushover', 0))
         PUSHOVER_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Pushover', 'pushover_notify_onsnatch', 0))
         PUSHOVER_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Pushover', 'pushover_notify_ondownload', 0))
         PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'Pushover', 'pushover_notify_onsubtitledownload', 0))
-        PUSHOVER_USERKEY = check_setting_str(CFG, 'Pushover', 'pushover_userkey', '')
-        PUSHOVER_APIKEY = check_setting_str(CFG, 'Pushover', 'pushover_apikey', '')
+        PUSHOVER_USERKEY = check_setting_str(CFG, 'Pushover', 'pushover_userkey', '', censor_log=True)
+        PUSHOVER_APIKEY = check_setting_str(CFG, 'Pushover', 'pushover_apikey', '', censor_log=True)
         USE_LIBNOTIFY = bool(check_setting_int(CFG, 'Libnotify', 'use_libnotify', 0))
         LIBNOTIFY_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Libnotify', 'libnotify_notify_onsnatch', 0))
         LIBNOTIFY_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Libnotify', 'libnotify_notify_ondownload', 0))
@@ -863,9 +866,9 @@ def initialize(consoleLogging=True):
             check_setting_int(CFG, 'SynologyNotifier', 'synologynotifier_notify_onsubtitledownload', 0))
 
         USE_TRAKT = bool(check_setting_int(CFG, 'Trakt', 'use_trakt', 0))
-        TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '')
-        TRAKT_PASSWORD = check_setting_str(CFG, 'Trakt', 'trakt_password', '')
-        TRAKT_API = check_setting_str(CFG, 'Trakt', 'trakt_api', '')
+        TRAKT_USERNAME = check_setting_str(CFG, 'Trakt', 'trakt_username', '', censor_log=True)
+        TRAKT_PASSWORD = check_setting_str(CFG, 'Trakt', 'trakt_password', '', censor_log=True)
+        TRAKT_API = check_setting_str(CFG, 'Trakt', 'trakt_api', '', censor_log=True)
         TRAKT_REMOVE_WATCHLIST = bool(check_setting_int(CFG, 'Trakt', 'trakt_remove_watchlist', 0))
         TRAKT_REMOVE_SERIESLIST = bool(check_setting_int(CFG, 'Trakt', 'trakt_remove_serieslist', 0))
         TRAKT_USE_WATCHLIST = bool(check_setting_int(CFG, 'Trakt', 'trakt_use_watchlist', 0))
@@ -889,7 +892,7 @@ def initialize(consoleLogging=True):
         NMA_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'NMA', 'nma_notify_onsnatch', 0))
         NMA_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'NMA', 'nma_notify_ondownload', 0))
         NMA_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(CFG, 'NMA', 'nma_notify_onsubtitledownload', 0))
-        NMA_API = check_setting_str(CFG, 'NMA', 'nma_api', '')
+        NMA_API = check_setting_str(CFG, 'NMA', 'nma_api', '', censor_log=True)
         NMA_PRIORITY = check_setting_str(CFG, 'NMA', 'nma_priority', "0")
 
         USE_PUSHALOT = bool(check_setting_int(CFG, 'Pushalot', 'use_pushalot', 0))
@@ -897,14 +900,14 @@ def initialize(consoleLogging=True):
         PUSHALOT_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Pushalot', 'pushalot_notify_ondownload', 0))
         PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'Pushalot', 'pushalot_notify_onsubtitledownload', 0))
-        PUSHALOT_AUTHORIZATIONTOKEN = check_setting_str(CFG, 'Pushalot', 'pushalot_authorizationtoken', '')
+        PUSHALOT_AUTHORIZATIONTOKEN = check_setting_str(CFG, 'Pushalot', 'pushalot_authorizationtoken', '', censor_log=True)
 
         USE_PUSHBULLET = bool(check_setting_int(CFG, 'Pushbullet', 'use_pushbullet', 0))
         PUSHBULLET_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Pushbullet', 'pushbullet_notify_onsnatch', 0))
         PUSHBULLET_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Pushbullet', 'pushbullet_notify_ondownload', 0))
         PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = bool(
             check_setting_int(CFG, 'Pushbullet', 'pushbullet_notify_onsubtitledownload', 0))
-        PUSHBULLET_API = check_setting_str(CFG, 'Pushbullet', 'pushbullet_api', '')
+        PUSHBULLET_API = check_setting_str(CFG, 'Pushbullet', 'pushbullet_api', '', censor_log=True)
         PUSHBULLET_DEVICE = check_setting_str(CFG, 'Pushbullet', 'pushbullet_device', '')
 
         USE_EMAIL = bool(check_setting_int(CFG, 'Email', 'use_email', 0))
@@ -914,8 +917,8 @@ def initialize(consoleLogging=True):
         EMAIL_HOST = check_setting_str(CFG, 'Email', 'email_host', '')
         EMAIL_PORT = check_setting_int(CFG, 'Email', 'email_port', 25)
         EMAIL_TLS = bool(check_setting_int(CFG, 'Email', 'email_tls', 0))
-        EMAIL_USER = check_setting_str(CFG, 'Email', 'email_user', '')
-        EMAIL_PASSWORD = check_setting_str(CFG, 'Email', 'email_password', '')
+        EMAIL_USER = check_setting_str(CFG, 'Email', 'email_user', '', censor_log=True)
+        EMAIL_PASSWORD = check_setting_str(CFG, 'Email', 'email_password', '', censor_log=True)
         EMAIL_FROM = check_setting_str(CFG, 'Email', 'email_from', '')
         EMAIL_LIST = check_setting_str(CFG, 'Email', 'email_list', '')
 
@@ -949,8 +952,8 @@ def initialize(consoleLogging=True):
 
         ANIMESUPPORT = False
         USE_ANIDB = bool(check_setting_int(CFG, 'ANIDB', 'use_anidb', 0))
-        ANIDB_USERNAME = check_setting_str(CFG, 'ANIDB', 'anidb_username', '')
-        ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '')
+        ANIDB_USERNAME = check_setting_str(CFG, 'ANIDB', 'anidb_username', '', censor_log=True)
+        ANIDB_PASSWORD = check_setting_str(CFG, 'ANIDB', 'anidb_password', '', censor_log=True)
         ANIDB_USE_MYLIST = bool(check_setting_int(CFG, 'ANIDB', 'anidb_use_mylist', 0))
 
         ANIME_SPLIT_HOME = bool(check_setting_int(CFG, 'ANIME', 'anime_split_home', 0))
@@ -995,22 +998,22 @@ def initialize(consoleLogging=True):
                                                                 curTorrentProvider.getID(), 0))
             if hasattr(curTorrentProvider, 'api_key'):
                 curTorrentProvider.api_key = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_api_key', '')
+                                                               curTorrentProvider.getID() + '_api_key', '', censor_log=True)
             if hasattr(curTorrentProvider, 'hash'):
                 curTorrentProvider.hash = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                            curTorrentProvider.getID() + '_hash', '')
+                                                            curTorrentProvider.getID() + '_hash', '', censor_log=True)
             if hasattr(curTorrentProvider, 'digest'):
                 curTorrentProvider.digest = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                              curTorrentProvider.getID() + '_digest', '')
+                                                              curTorrentProvider.getID() + '_digest', '', censor_log=True)
             if hasattr(curTorrentProvider, 'username'):
                 curTorrentProvider.username = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_username', '')
+                                                                curTorrentProvider.getID() + '_username', '', censor_log=True)
             if hasattr(curTorrentProvider, 'password'):
                 curTorrentProvider.password = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                                curTorrentProvider.getID() + '_password', '')
+                                                                curTorrentProvider.getID() + '_password', '', censor_log=True)
             if hasattr(curTorrentProvider, 'passkey'):
                 curTorrentProvider.passkey = check_setting_str(CFG, curTorrentProvider.getID().upper(),
-                                                               curTorrentProvider.getID() + '_passkey', '')
+                                                               curTorrentProvider.getID() + '_passkey', '', censor_log=True)
             if hasattr(curTorrentProvider, 'proxy'):
                 curTorrentProvider.proxy.enabled = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                           curTorrentProvider.getID() + '_proxy', 0))
@@ -1060,10 +1063,10 @@ def initialize(consoleLogging=True):
                 check_setting_int(CFG, curNzbProvider.getID().upper(), curNzbProvider.getID(), 0))
             if hasattr(curNzbProvider, 'api_key'):
                 curNzbProvider.api_key = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                           curNzbProvider.getID() + '_api_key', '')
+                                                           curNzbProvider.getID() + '_api_key', '', censor_log=True)
             if hasattr(curNzbProvider, 'username'):
                 curNzbProvider.username = check_setting_str(CFG, curNzbProvider.getID().upper(),
-                                                            curNzbProvider.getID() + '_username', '')
+                                                            curNzbProvider.getID() + '_username', '', censor_log=True)
             if hasattr(curNzbProvider, 'search_mode'):
                 curNzbProvider.search_mode = check_setting_str(CFG, curNzbProvider.getID().upper(),
                                                                curNzbProvider.getID() + '_search_mode',

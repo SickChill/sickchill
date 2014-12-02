@@ -189,13 +189,13 @@ class Api(webserve.MainHandler):
             msg = u"API :: " + remoteIp + " - SR API Disabled. ACCESS DENIED"
             return False, msg, args, kwargs
         elif apiKey == realKey:
-            msg = u"API :: " + remoteIp + " - gave correct API KEY. ACCESS GRANTED"
+            msg = u"API :: " + remoteIp + " - gave correct API KEY - [" + apiKey + "] - ACCESS GRANTED"
             return True, msg, args, kwargs
         elif not apiKey:
             msg = u"API :: " + remoteIp + " - gave NO API KEY. ACCESS DENIED"
             return False, msg, args, kwargs
         else:
-            msg = u"API :: " + remoteIp + " - gave WRONG API KEY " + apiKey + ". ACCESS DENIED"
+            msg = u"API :: " + remoteIp + " - gave WRONG API KEY - [" + apiKey + "] - ACCESS DENIED"
             return False, msg, args, kwargs
 
 

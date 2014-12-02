@@ -4,25 +4,31 @@ import os
 import urllib
 import urlparse
 import re
+
 import sickbeard
 
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
-from contextlib import closing
 from sickbeard.exceptions import ex
-from lib.feedcache import cache
-from shove import Shove
 
+from contextlib import closing
+from lib.feedcache import cache
+from sqliteshelf import SQLiteShelf
 
 class RSSFeeds:
     def __init__(self, db_name):
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name + '.db')
-        if not os.path.exists(os.path.dirname(self.db_name)):
-            sickbeard.helpers.makeDir(os.path.dirname(self.db_name))
+        db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name) + '.db'
+        if not os.path.exists(os.path.dirname(db_name)):
+            sickbeard.helpers.makeDir(os.path.dirname(db_name))
+
+        try:
+            self.rssDB = SQLiteShelf(db_name)
+        except Exception as e:
+            logger.log(u"RSS error: " + ex(e), logger.DEBUG)
 
     def clearCache(self, age=None):
         try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
+            with closing(self.rssDB) as fs:
                 fc = cache.Cache(fs)
                 fc.purge(age)
         except Exception as e:
@@ -36,7 +42,7 @@ class RSSFeeds:
             url += urllib.urlencode(post_data)
 
         try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
+            with closing(self.rssDB) as fs:
                 fc = cache.Cache(fs)
                 feed = fc.fetch(url, False, False, request_headers)
 

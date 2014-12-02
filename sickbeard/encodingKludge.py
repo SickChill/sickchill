@@ -25,7 +25,6 @@ from sickbeard import logger
 import six
 import chardet
 
-
 # This module tries to deal with the apparently random behavior of python when dealing with unicode <-> utf-8
 # encodings. It tries to just use unicode, but if that fails then it tries forcing it to utf-8. Any functions
 # which return something should always return unicode.
