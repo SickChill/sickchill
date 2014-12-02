@@ -136,6 +136,7 @@ class ProperFinder():
             curProper.indexer = parse_result.show.indexer
 
             # populate our Proper instance
+            curProper.show = parse_result.show
             curProper.season = parse_result.season_number if parse_result.season_number is not None else 1
             curProper.episode = parse_result.episode_numbers[0]
             curProper.release_group = parse_result.release_group
@@ -252,9 +253,11 @@ class ProperFinder():
 
                 # make the result object
                 result = curProper.provider.getResult([epObj])
+                result.show = curProper.show
                 result.url = curProper.url
                 result.name = curProper.name
                 result.quality = curProper.quality
+                result.release_group = curProper.release_group
                 result.version = curProper.version
 
                 # snatch it
