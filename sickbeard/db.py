@@ -118,14 +118,11 @@ class DBConnection(object):
         else:
             return 0
 
-    def mass_action(self, querylist, logTransaction=False, fetchall=False):
+    def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
 
         with db_lock:
             # remove None types
-            querylist = [i for i in querylist if i != None]
-
-            if querylist == None:
-                return
+            querylist = [i for i in querylist if i is not None]
 
             sqlResult = []
             attempt = 0

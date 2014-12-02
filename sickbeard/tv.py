@@ -282,10 +282,10 @@ class TVShow(object):
         cur_indexerid = self.indexerid
 
         # In some situations self.status = None.. need to figure out where that is!
-        if not self.status:
-            self.status = ''
-            logger.log("Status missing for showid: [%s] with status: [%s]" % 
-                       (cur_indexerid, self.status), logger.DEBUG)
+        #if not self.status:
+        #    self.status = ''
+        #    logger.log("Status missing for showid: [%s] with status: [%s]" %
+        #               (cur_indexerid, self.status), logger.DEBUG)
         
         # if show is not 'Ended' always update (status 'Continuing' or '')
         if 'Ended' not in self.status:
@@ -580,6 +580,7 @@ class TVShow(object):
 
         # Done updating save last update date
         self.last_update_indexer = datetime.date.today().toordinal()
+
         self.saveToDB()
 
         return scannedEps
@@ -719,7 +720,7 @@ class TVShow(object):
                 elif oldStatus not in (SNATCHED, SNATCHED_PROPER):
                     newStatus = DOWNLOADED
 
-                if newStatus != None:
+                if newStatus is not None:
                     with curEp.lock:
                         logger.log(u"STATUS: we have an associated file, so setting the status from " + str(
                             curEp.status) + u" to DOWNLOADED/" + str(Quality.statusFromName(file, anime=self.is_anime)),
