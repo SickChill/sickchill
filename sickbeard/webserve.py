@@ -940,7 +940,7 @@ class Manage(MainHandler):
                 [curShow.indexerid])
 
             for curResult in sqlResults:
-                curEpCat = curShow.getOverview(int(curResult["status"]))
+                curEpCat = curShow.getOverview(int(curResult["status"] or -1))
                 if curEpCat:
                     epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                     epCounts[curEpCat] += 1
@@ -3784,7 +3784,7 @@ class Home(MainHandler):
         epCounts[Overview.SNATCHED] = 0
 
         for curResult in sqlResults:
-            curEpCat = showObj.getOverview(int(curResult["status"]))
+            curEpCat = showObj.getOverview(int(curResult["status"] or -1))
             if curEpCat:
                 epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                 epCounts[curEpCat] += 1

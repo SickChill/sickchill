@@ -339,7 +339,7 @@ def wantedEpisodes(show, fromDate):
     # check through the list of statuses to see if we want any
     wanted = []
     for result in sqlResults:
-        curCompositeStatus = int(result["status"])
+        curCompositeStatus = int(result["status"] or -1)
         curStatus, curQuality = common.Quality.splitCompositeStatus(curCompositeStatus)
 
         if bestQualities:

@@ -1309,7 +1309,7 @@ class CMD_Backlog(ApiCall):
 
             for curResult in sqlResults:
 
-                curEpCat = curShow.getOverview(int(curResult["status"]))
+                curEpCat = curShow.getOverview(int(curResult["status"] or -1))
                 if curEpCat and curEpCat in (Overview.WANTED, Overview.QUAL):
                     showEps.append(curResult)
 
