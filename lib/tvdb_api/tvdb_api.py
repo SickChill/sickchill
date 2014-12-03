@@ -571,9 +571,9 @@ class Tvdb:
                         "https": self.config['proxy'],
                     }
 
-                resp = session.get(url, cache_auto=True, params=params)
+                resp = session.get(url.strip(), cache_auto=True, params=params)
             else:
-                resp = requests.get(url, params=params)
+                resp = requests.get(url.strip(), params=params)
 
             resp.raise_for_status()
         except requests.exceptions.HTTPError, e:
@@ -619,7 +619,7 @@ class Tvdb:
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
         else:
             try:
-                return xmltodict.parse(resp.content.strip(), postprocessor=process)
+                return xmltodict.parse(resp.text.rstrip("\r"), postprocessor=process)
             except:
                 return dict([(u'data', None)])
 

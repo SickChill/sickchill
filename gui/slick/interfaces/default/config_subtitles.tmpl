@@ -106,6 +106,13 @@
 		                                <span class="component-desc">Log downloaded Subtitle on History page?</span>
 		                            </label>
 		                        </div>                        		
+		                        <div class="field-pair">
+		                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" #if $sickbeard.SUBTITLES_MULTI then " checked=\"checked\"" else ""#/>
+		                            <label class="clearfix" for="subtitles_multi">
+		                                <span class="component-title">Subtitles Multi-Language</span>
+		                                <span class="component-desc">Append language codes to subtitle filenames?</span>
+		                            </label>
+		                        </div>
 	                    <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                         </div>
                     </fieldset>

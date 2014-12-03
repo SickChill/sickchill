@@ -910,10 +910,13 @@ class TVShow(object):
                      'last_update': ''
         }
 
+        i = imdb.IMDb()
+        if not self.imdbid:
+            self.imdbid = i.title2imdbID(self.name, kind='tv series')
+
         if self.imdbid:
             logger.log(str(self.indexerid) + u": Loading show info from IMDb")
 
-            i = imdb.IMDb()
             imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
 
             for key in filter(lambda x: x.replace('_', ' ') in imdbTv.keys(), imdb_info.keys()):
@@ -1110,30 +1113,28 @@ class TVShow(object):
             myDB.mass_action(sql_l)
 
     def downloadSubtitles(self, force=False):
-        # TODO: Add support for force option
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
             return
+
         logger.log(str(self.indexerid) + ": Downloading subtitles", logger.DEBUG)
 
         try:
-            myDB = db.DBConnection()
-            episodes = myDB.select(
-                "SELECT location FROM tv_episodes WHERE showid = ? AND location NOT LIKE '' ORDER BY season DESC, episode DESC",
-                [self.indexerid])
+            episodes = self.getAllEpisodes(has_location=True)
+            if not len(episodes) > 0:
+                logger.log(str(self.indexerid) + ": No episodes to download subtitles for " + self.name, logger.DEBUG)
+                return
 
-            for episodeLoc in episodes:
-                episode = self.makeEpFromFile(episodeLoc['location'])
-                subtitles = episode.downloadSubtitles(force=force)
-        except Exception as e:
+            for episode in episodes:
+                episode.downloadSubtitles(force=force)
+
+        except Exception:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.DEBUG)
-            return
-
 
     def saveToDB(self, forceSave=False):
 
         if not self.dirty and not forceSave:
-            logger.log(str(self.indexerid) + u": Not saving show to db - record is not dirty", logger.DEBUG)
+            logger.log(str(self.indexerid) + ": Not saving show to db - record is not dirty", logger.DEBUG)
             return
 
         logger.log(str(self.indexerid) + u": Saving show info to database", logger.DEBUG)
@@ -1405,7 +1406,7 @@ class TVEpisode(object):
             need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
             subtitles = subliminal.download_subtitles([self.location], languages=need_languages,
                                                       services=sickbeard.subtitles.getEnabledServiceList(), force=force,
-                                                      multi=True, cache_dir=sickbeard.CACHE_DIR)
+                                                      multi=sickbeard.SUBTITLES_MULTI, cache_dir=sickbeard.CACHE_DIR)
 
             if sickbeard.SUBTITLES_DIR:
                 for video in subtitles:

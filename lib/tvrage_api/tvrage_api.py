@@ -392,7 +392,7 @@ class TVRage:
 
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
-    #@retry(tvrage_error)
+    @retry(tvrage_error)
     def _loadUrl(self, url, params=None):
         try:
             log().debug("Retrieving URL %s" % url)
@@ -471,11 +471,10 @@ class TVRage:
 
             return (key, value)
 
-        if resp.ok:
-            try:
-                return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
-            except:
-                return dict([(u'data', None)])
+        try:
+            return xmltodict.parse(resp.text.rstrip("\r"), postprocessor=remap_keys)
+        except:
+            return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -524,7 +523,7 @@ class TVRage:
         - Trailing whitespace
         """
 
-        if not isinstance(data, dict or list):
+        if isinstance(data, basestring):
             data = data.replace(u"&amp;", u"&")
             data = data.strip()
 

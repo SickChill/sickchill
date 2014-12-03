@@ -119,6 +119,7 @@ class TraktChecker():
                 self.trakt_api.traktRequest("show/library/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+                return
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
