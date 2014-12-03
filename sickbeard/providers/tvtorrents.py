@@ -60,7 +60,7 @@ class TvTorrentsProvider(generic.TorrentProvider):
         return True
 
     def _checkAuthFromData(self, data):
-        if not data.get('entries', None):
+        if not data:
             return self._checkAuth()
 
         if "User can't be found" in data.feed.get('title', None) or "Invalid Hash" in data.feed.get('title', None):

@@ -83,9 +83,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             return True
 
         if self._uid and self._hash:
-
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-
         else:
 
             login_params = {'username': self.username,
@@ -93,6 +91,9 @@ class TorrentDayProvider(generic.TorrentProvider):
                             'submit.x': 0,
                             'submit.y': 0
             }
+
+            if not self.session:
+                self.session = requests.Session()
 
             try:
                 response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -108,18 +109,20 @@ class TorrentDayProvider(generic.TorrentProvider):
                 logger.log(u'Invalid username or password for ' + self.name + ', Check your settings!', logger.ERROR)
                 return False
 
-            if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            try:
+                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                self.cookies = {'uid': self._uid,
-                                'pass': self._hash
-                }
-                return True
+                    self.cookies = {'uid': self._uid,
+                                    'pass': self._hash
+                    }
+                    return True
+            except:
+                pass
 
-            else:
-                logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
-                return False
+            logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
+            return False
 
 
     def _get_season_search_strings(self, ep_obj):

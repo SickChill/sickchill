@@ -21,6 +21,7 @@ from __future__ import with_statement
 import time
 import datetime
 import itertools
+import traceback
 
 import sickbeard
 
@@ -28,7 +29,7 @@ from sickbeard import db
 from sickbeard import logger
 from sickbeard.common import Quality
 from sickbeard import helpers, show_name_helpers
-from sickbeard.exceptions import MultipleShowObjectsException
+from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard.exceptions import AuthException
 from sickbeard.rssfeeds import RSSFeeds
 from sickbeard import clients
@@ -112,31 +113,41 @@ class TVCache():
         if not self.shouldUpdate():
             return
 
-        if self._checkAuth(None):
-            data = self._getRSSData()
-            if data.get('entries', None):
-                # clear cache
-                self._clearCache()
+        try:
+            if self._checkAuth(None):
+                data = self._getRSSData()
+                if len(data) > 0:
+                    # clear cache
+                    self._clearCache()
 
-                # set updated
-                self.setLastUpdate()
+                    # set updated
+                    self.setLastUpdate()
 
-                if self._checkAuth(data):
+                    try:
+                        items = data.get('entries', [])
+                    except:
+                        items = data
 
-                    cl = []
-                    for item in data.get('entries', []):
-                        title, url = self._get_title_and_url(item)
-                        ci = self._parseItem(title, url)
-                        if ci is not None:
-                            cl.append(ci)
+                    if self._checkAuth(items):
+                        cl = []
+                        for item in items:
+                            title, url = self._get_title_and_url(item)
+                            ci = self._parseItem(title, url)
+                            if ci is not None:
+                                cl.append(ci)
 
-                    if len(cl) > 0:
-                        myDB = self._getDB()
-                        myDB.mass_action(cl)
+                        if len(cl) > 0:
+                            myDB = self._getDB()
+                            myDB.mass_action(cl)
 
-                else:
-                    raise AuthException(
-                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+                    else:
+                        raise AuthException(
+                            u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+        except AuthException, e:
+            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+        except Exception, e:
+            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
 
         return []
 

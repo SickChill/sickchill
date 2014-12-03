@@ -90,9 +90,7 @@ class FreshOnTVProvider(generic.TorrentProvider):
             return True
 
         if self._uid and self._hash:
-
            requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-
         else:
             login_params = {'username': self.username,
                             'password': self.password,
@@ -112,17 +110,20 @@ class FreshOnTVProvider(generic.TorrentProvider):
                logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
                return False
 
-            if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            try:
+                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                        self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                        self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                    self.cookies = {'uid': self._uid,
-                                    'pass': self._hash
-                    }
-                    return True
-            else:
-                    logger.log(u'Unable to obtain cookie for FreshOnTV', logger.ERROR)
-                    return False
+                        self.cookies = {'uid': self._uid,
+                                        'pass': self._hash
+                        }
+                        return True
+            except:
+                pass
+
+            logger.log(u'Unable to obtain cookie for FreshOnTV', logger.ERROR)
+            return False
 
     def _get_season_search_strings(self, ep_obj):
 

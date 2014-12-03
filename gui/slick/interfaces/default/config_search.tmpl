@@ -51,6 +51,15 @@
 								</span>
 							</label>
 						</div>
+						<div class="field-pair">
+							<label for="randomize_providers">
+								<span class="component-title">Randomize Providers</span>
+								<span class="component-desc">
+									<input type="checkbox" name="randomize_providers" id="randomize_providers" class="enabler" <%= html_checked if sickbeard.RANDOMIZE_PROVIDERS == True else '' %>/>
+									<p>randomize the provider search order instead of going in order of placement</p>
+								</span>
+							</label>
+						</div>
 						<div id="content_download_propers">
 							<div class="field-pair">
 								<label for="check_propers_interval">

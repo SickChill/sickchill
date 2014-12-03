@@ -237,7 +237,7 @@ class NewznabProvider(generic.NZBProvider):
 
     def _checkAuthFromData(self, data):
 
-        if not data.get('entries', None):
+        if not data:
             return self._checkAuth()
 
         if data.feed.get('error', None):
