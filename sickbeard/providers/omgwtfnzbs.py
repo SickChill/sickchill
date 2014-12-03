@@ -184,11 +184,6 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.getRSSFeed(rss_url)
-
-        if data and 'entries' in data:
-            return data.entries
-        else:
-            return []
+        return self.getRSSFeed(rss_url)
 
 provider = OmgwtfnzbsProvider()

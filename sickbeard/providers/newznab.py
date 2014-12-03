@@ -237,11 +237,12 @@ class NewznabProvider(generic.NZBProvider):
 
     def _checkAuthFromData(self, data):
 
-        if data is None:
+        if not data.get('entries', None):
             return self._checkAuth()
 
-        if 'error' in data.feed:
-            code = data.feed['error']['code']
+        if data.feed.get('error', None):
+
+            code = data.feed.error.get('code', None)
 
             if code == '100':
                 raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
@@ -251,7 +252,7 @@ class NewznabProvider(generic.NZBProvider):
                 raise AuthException(
                     "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
             else:
-                logger.log(u"Unknown error given from " + self.name + ": " + data.feed['error']['description'],
+                logger.log(u"Unknown error given from " + self.name + ": " + data.feed.error.description,
                            logger.ERROR)
                 return False
 

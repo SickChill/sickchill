@@ -102,36 +102,41 @@ class TVCache():
         data = None
         return data
 
-    def _checkAuth(self):
-        return self.provider._checkAuth()
+    def _checkAuth(self, data):
+        return True
 
     def _checkItemAuth(self, title, url):
         return True
 
     def updateCache(self):
-        if self.shouldUpdate() and self._checkAuth():
-            # as long as the http request worked we count this as an update
+        if not self.shouldUpdate():
+            return
+
+        if self._checkAuth(None):
             data = self._getRSSData()
-            if not data:
-                return []
+            if data.get('entries', None):
+                # clear cache
+                self._clearCache()
 
-            # clear cache
-            self._clearCache()
+                # set updated
+                self.setLastUpdate()
 
-            # set updated
-            self.setLastUpdate()
+                if self._checkAuth(data):
 
-            # parse data
-            cl = []
-            for item in data:
-                title, url = self._get_title_and_url(item)
-                ci = self._parseItem(title, url)
-                if ci is not None:
-                    cl.append(ci)
+                    cl = []
+                    for item in data.get('entries', []):
+                        title, url = self._get_title_and_url(item)
+                        ci = self._parseItem(title, url)
+                        if ci is not None:
+                            cl.append(ci)
 
-            if len(cl) > 0:
-                myDB = self._getDB()
-                myDB.mass_action(cl)
+                    if len(cl) > 0:
+                        myDB = self._getDB()
+                        myDB.mass_action(cl)
+
+                else:
+                    raise AuthException(
+                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
 
         return []
 
@@ -159,8 +164,6 @@ class TVCache():
             logger.log(
                 u"The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
                 logger.DEBUG)
-            return None
-
 
     def _getLastUpdate(self):
         myDB = self._getDB()
