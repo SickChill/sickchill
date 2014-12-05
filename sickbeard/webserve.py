@@ -235,7 +235,9 @@ class MainHandler(RequestHandler):
                     func = getattr(klass, 'index', None)
 
             if callable(func):
-                return func(**args)
+                out = func(**args)
+                self._headers = klass._headers
+                return out
 
         raise HTTPError(404)
 
