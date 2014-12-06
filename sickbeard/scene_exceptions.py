@@ -27,7 +27,7 @@ from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -234,7 +234,7 @@ def retrieve_exceptions():
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
 
-                cur_exception = toUnicode(cur_exception)
+                cur_exception = ek.ss(cur_exception)
 
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                             [cur_indexer_id, cur_exception, curSeason])
@@ -267,7 +267,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
         exceptionsCache[indexer_id][season] = scene_exceptions
 
     for cur_exception in scene_exceptions:
-        cur_exception = toUnicode(cur_exception)
+        cur_exception = ek.ss(cur_exception)
 
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                     [indexer_id, cur_exception, season])

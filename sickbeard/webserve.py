@@ -578,7 +578,7 @@ class IndexerWebUI(MainHandler):
 
 
 def _munge(string):
-    return ek.toUnicode(string).encode('utf-8', 'xmlcharrefreplace')
+    return ek.ss(string).encode('utf-8', 'xmlcharrefreplace')
 
 def _getEpisode(show, season=None, episode=None, absolute=None):
     if show is None:
@@ -3315,7 +3315,7 @@ class ErrorLogs(MainHandler):
 
         for x in reversed(data):
 
-            x = ek.toUnicode(x)
+            x = ek.ss(x)
             match = re.match(regex, x)
 
             if match:

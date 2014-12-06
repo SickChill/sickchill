@@ -20,16 +20,16 @@ import os
 import traceback
 
 import sickbeard
-from sickbeard import logger
-
 import six
 import chardet
+
+from sickbeard import logger
 
 # This module tries to deal with the apparently random behavior of python when dealing with unicode <-> utf-8
 # encodings. It tries to just use unicode, but if that fails then it tries forcing it to utf-8. Any functions
 # which return something should always return unicode.
 
-def toUnicode(x):
+def _toUnicode(x):
     try:
         if isinstance(x, unicode):
             return x
@@ -51,10 +51,10 @@ def toUnicode(x):
     except:
         logger.log('Unable to decode value "%s..." : %s ' % (repr(x)[:20], traceback.format_exc()), logger.WARNING)
         ascii_text = str(x).encode('string_escape')
-        return toUnicode(ascii_text)
+        return _toUnicode(ascii_text)
 
 def ss(x):
-    u_x = toUnicode(x)
+    u_x = _toUnicode(x)
 
     try:
         return u_x.encode(sickbeard.SYS_ENCODING)
@@ -69,7 +69,7 @@ def fixListEncodings(x):
     if not isinstance(x, (list, tuple)):
         return x
     else:
-        return filter(lambda x: x != None, map(toUnicode, x))
+        return filter(lambda x: x != None, map(_toUnicode, x))
 
 
 def ek(func, *args, **kwargs):
@@ -81,6 +81,6 @@ def ek(func, *args, **kwargs):
     if isinstance(result, (list, tuple)):
         return fixListEncodings(result)
     elif isinstance(result, str):
-        return toUnicode(result)
+        return _toUnicode(result)
     else:
         return result

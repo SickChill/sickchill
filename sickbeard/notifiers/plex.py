@@ -25,7 +25,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import common
 from sickbeard.exceptions import ex
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
 from sickbeard.notifiers.kodi import KODINotifier
 
@@ -77,7 +77,7 @@ class PLEXNotifier(KODINotifier):
         return self._notify_pmc("Testing Plex notifications from SickRage", "Test Notification", host, username,
                                 password, force=True)
 
-    def update_library(self):
+    def update_library(self, showName=None):
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.

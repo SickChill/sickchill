@@ -26,7 +26,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import common
 from sickbeard.exceptions import ex
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
 
 try:
@@ -236,9 +236,9 @@ class KODINotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting KODI (with auth header) via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI (with auth header) via url: " + ek.ss(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting KODI via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI via url: " + ek.ss(url), logger.DEBUG)
 
             response = urllib2.urlopen(req)
             result = response.read().decode(sickbeard.SYS_ENCODING)
@@ -248,7 +248,7 @@ class KODINotifier:
             return result
 
         except (urllib2.URLError, IOError), e:
-            logger.log(u"Warning: Couldn't contact KODI HTTP at " + toUnicode(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact KODI HTTP at " + ek.ss(url) + " " + ex(e),
                        logger.WARNING)
             return False
 
@@ -379,9 +379,9 @@ class KODINotifier:
                 base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
                 authheader = "Basic %s" % base64string
                 req.add_header("Authorization", authheader)
-                logger.log(u"Contacting KODI (with auth header) via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI (with auth header) via url: " + ek.ss(url), logger.DEBUG)
             else:
-                logger.log(u"Contacting KODI via url: " + toUnicode(url), logger.DEBUG)
+                logger.log(u"Contacting KODI via url: " + ek.ss(url), logger.DEBUG)
 
             try:
                 response = urllib2.urlopen(req)
@@ -401,7 +401,7 @@ class KODINotifier:
                 return False
 
         except IOError, e:
-            logger.log(u"Warning: Couldn't contact KODI JSON API at " + toUnicode(url) + " " + ex(e),
+            logger.log(u"Warning: Couldn't contact KODI JSON API at " + ek.ss(url) + " " + ex(e),
                        logger.WARNING)
             return False
 

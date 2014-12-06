@@ -34,7 +34,7 @@ from sickbeard.exceptions import AuthException
 from sickbeard.rssfeeds import RSSFeeds
 from sickbeard import clients
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
@@ -277,7 +277,7 @@ class TVCache():
             # get quality of release
             quality = parse_result.quality
 
-            name = toUnicode(name)
+            name = ek.ss(name)
 
             # get release group
             release_group = parse_result.release_group

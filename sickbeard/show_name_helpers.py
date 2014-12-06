@@ -234,7 +234,7 @@ def isGoodResult(name, show, log=True, season=-1):
 
     all_show_names = allPossibleShowNames(show, season=season)
     showNames = map(sanitizeSceneName, all_show_names) + all_show_names
-    showNames += map(ek.toUnicode, all_show_names)
+    showNames += map(ek.ss, all_show_names)
 
     for curName in set(showNames):
         if not show.is_anime:
