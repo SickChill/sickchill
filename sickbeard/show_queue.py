@@ -294,8 +294,8 @@ class QueueItemAdd(ShowQueueItem):
             self.show.paused = self.paused if self.paused != None else False
 
             # set up default new/missing episode status
-            self.show.default_ep_status = self.default_status
             logger.log(u"Setting all episodes to the specified default status: " + str(self.show.default_ep_status))
+            self.show.default_ep_status = self.default_status
 
             # be smartish about this
             if self.show.genre and "talk show" in self.show.genre.lower():

@@ -4160,14 +4160,12 @@ class Home(MainHandler):
         try:
             sickbeard.showQueueScheduler.action.updateShow(showObj, bool(force))  # @UndefinedVariable
         except exceptions.CantUpdateException, e:
-            ui.notifications.error("Unable to update this show.",
-                                   ex(e))
+            ui.notifications.error("Unable to update this show.", ex(e))
 
         # just give it some time
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         redirect("/home/displayShow?show=" + str(showObj.indexerid))
-
 
     def subtitleShow(self, show=None, force=0):
 
