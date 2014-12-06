@@ -350,7 +350,8 @@ class MainHandler(RequestHandler):
             sort = 'date'
 
         if sickbeard.COMING_EPS_LAYOUT == 'calendar':
-            sort = 'date'
+            sort\
+                = 'date'
 
         sickbeard.COMING_EPS_SORT = sort
 
@@ -577,8 +578,7 @@ class IndexerWebUI(MainHandler):
 
 
 def _munge(string):
-    return unicode(string).encode('utf-8', 'xmlcharrefreplace')
-
+    return ek.toUnicode(string).encode('utf-8', 'xmlcharrefreplace')
 
 def _getEpisode(show, season=None, episode=None, absolute=None):
     if show is None:
