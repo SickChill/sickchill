@@ -78,6 +78,7 @@ class BTNProvider(generic.TorrentProvider):
 
         self._checkAuth()
 
+        results = []
         params = {}
         apikey = self.api_key
 
@@ -120,16 +121,13 @@ class BTNProvider(generic.TorrentProvider):
                     if 'torrents' in parsedJSON:
                         found_torrents.update(parsedJSON['torrents'])
 
-            results = []
             for torrentid, torrent_info in found_torrents.iteritems():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
                     results.append(torrent_info)
 
-            return results
-
-        return []
+        return results
 
     def _api_call(self, apikey, params={}, results_per_page=1000, offset=0):
 

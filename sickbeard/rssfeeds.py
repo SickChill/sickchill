@@ -42,6 +42,8 @@ class RSSFeeds:
 
         try:
             fc = Cache(self.rssDB)
-            return fc.fetch(url, False, False, request_headers)
+            feed = fc.fetch(url, False, False, request_headers)
+
+            return feed
         finally:
             self.rssDB.close()

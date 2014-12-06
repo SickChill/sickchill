@@ -359,5 +359,4 @@ class KATCache(tvcache.TVCache):
         search_params = {'RSS': ['rss']}
         return self.provider._doSearch(search_params)
 
-
 provider = KATProvider()

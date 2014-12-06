@@ -116,40 +116,40 @@ class TVCache():
         try:
             if self._checkAuth(None):
                 data = self._getRSSData()
-                if len(data) > 0:
-                    # clear cache
-                    self._clearCache()
+                if not data or not len(data) > 0:
+                    return
 
-                    # set updated
-                    self.setLastUpdate()
+                # clear cache
+                self._clearCache()
 
-                    try:
-                        items = data.get('entries', [])
-                    except:
-                        items = data
+                # set updated
+                self.setLastUpdate()
 
-                    if self._checkAuth(items):
-                        cl = []
-                        for item in items:
-                            title, url = self._get_title_and_url(item)
-                            ci = self._parseItem(title, url)
-                            if ci is not None:
-                                cl.append(ci)
+                try:
+                    items = data.get('entries', [])
+                except:
+                    items = data
 
-                        if len(cl) > 0:
-                            myDB = self._getDB()
-                            myDB.mass_action(cl)
+                if self._checkAuth(items):
+                    cl = []
+                    for item in items:
+                        title, url = self._get_title_and_url(item)
+                        ci = self._parseItem(title, url)
+                        if ci is not None:
+                            cl.append(ci)
 
-                    else:
-                        raise AuthException(
-                            u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+                    if len(cl) > 0:
+                        myDB = self._getDB()
+                        myDB.mass_action(cl)
+
+                else:
+                    raise AuthException(
+                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
         except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
         except Exception, e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
-
-        return []
 
     def getRSSFeed(self, url, post_data=None, request_headers=None):
         return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers)

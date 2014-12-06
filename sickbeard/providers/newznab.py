@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+import traceback
 
 import urllib
 import time
@@ -427,36 +428,45 @@ class NewznabCache(tvcache.TVCache):
         return self.provider._checkAuthFromData(data)
 
     def updateCache(self):
+        if not self.shouldUpdate():
+            return
 
-        if self.shouldUpdate() and self._checkAuth(None):
-            data = self._getRSSData()
+        try:
+            if self._checkAuth(None):
+                data = self._getRSSData()
+                if not data or not len(data) > 0:
+                    return
 
-            # as long as the http request worked we count this as an update
-            if not data:
-                return []
+                # clear cache
+                self._clearCache()
 
-            self.setLastUpdate()
+                # set updated
+                self.setLastUpdate()
 
-            # clear cache
-            self._clearCache()
+                try:
+                    items = data.get('entries', [])
+                except:
+                    items = data
 
-            if self._checkAuth(data):
-                items = data.entries
-                cl = []
-                for item in items:
-                    ci = self._parseItem(item)
-                    if ci is not None:
-                        cl.append(ci)
+                if self._checkAuth(items):
+                    cl = []
+                    for item in items:
+                        ci = self._parseItem(item)
+                        if ci is not None:
+                            cl.append(ci)
 
-                if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
+                    if len(cl) > 0:
+                        myDB = self._getDB()
+                        myDB.mass_action(cl)
 
-            else:
-                raise AuthException(
-                    u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
-
-        return []
+                else:
+                    raise AuthException(
+                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
+        except AuthException, e:
+            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+        except Exception, e:
+            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
 
     # overwrite method with that parses the rageid from the newznab feed
     def _parseItem(self, item):

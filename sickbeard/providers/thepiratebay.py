@@ -342,7 +342,6 @@ class ThePirateBayCache(tvcache.TVCache):
         search_params = {'RSS': ['rss']}
         return self.provider._doSearch(search_params)
 
-
 class ThePirateBayWebproxy:
     def __init__(self):
         self.Type = 'GlypeProxy'
