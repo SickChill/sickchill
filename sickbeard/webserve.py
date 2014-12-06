@@ -2994,7 +2994,7 @@ class NewHomeAddShows(MainHandler):
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
                     int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return json.dumps({'results': final_results})
 
@@ -3038,7 +3038,7 @@ class NewHomeAddShows(MainHandler):
                     except exceptions.MultipleShowObjectsException:
                         continue
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return _munge(t)
 

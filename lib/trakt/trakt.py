@@ -32,11 +32,11 @@ class TraktAPI():
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
             if e.response.status_code == 401:
-                raise traktAuthException(e.message)
+                raise traktAuthException(e)
             elif e.response.status_code == 503:
-                raise traktServerBusy(e.message)
+                raise traktServerBusy(e)
             else:
-                raise traktException(e.message)
+                raise traktException(e)
 
         # check and confirm trakt call did not fail
         if isinstance(resp, dict) and resp.get('status', False) == 'failure':

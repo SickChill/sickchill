@@ -22,6 +22,7 @@ import datetime
 
 import sickbeard
 from sickbeard import encodingKludge as ek
+from sickbeard.exceptions import ex
 from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
@@ -70,7 +71,7 @@ class TraktChecker():
 
             traktShow = filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return traktShow
 
@@ -81,21 +82,18 @@ class TraktChecker():
             self.addShowToTraktLibrary(myShow)
 
     def removeShowFromTraktLibrary(self, show_obj):
-        data = {}
-
         if self.findShow(show_obj.indexer, show_obj.indexerid):
             # URL parameters
-            data['tvdb_id'] = helpers.mapIndexersToShow(show_obj)[1]
-            data['title'] = show_obj.name
-            data['year'] = show_obj.startyear
+            data = {'tvdb_id': helpers.mapIndexersToShow(show_obj)[1], 'title': show_obj.name,
+                    'year': show_obj.startyear}
 
-        if len(data):
+
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
-
             try:
                 self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+                logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
+                pass
 
     def addShowToTraktLibrary(self, show_obj):
         """
@@ -118,7 +116,7 @@ class TraktChecker():
             try:
                 self.trakt_api.traktRequest("show/library/%APIKEY%", data)
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+                logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 return
 
     def updateShows(self):
@@ -127,7 +125,7 @@ class TraktChecker():
         try:
             watchlist = self.trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
 
         if not len(watchlist):
@@ -162,7 +160,7 @@ class TraktChecker():
         try:
             watchlist = self.trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log(u"Could not connect to Trakt service: %s" % e.message, logger.WARNING)
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
 
         if not len(watchlist):
