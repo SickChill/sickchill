@@ -25,9 +25,10 @@ import urllib
 import datetime
 import re
 import traceback
-import sickbeard
-import webserve
 
+import sickbeard
+
+from sickbeard.webserve import PageTemplate
 from sickbeard import db, logger, exceptions, history, ui, helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
@@ -45,6 +46,9 @@ except ImportError:
     from lib import simplejson as json
 
 from lib import subliminal
+
+from tornado.web import RequestHandler
+from tornado.routes import route
 
 indexer_ids = ["indexerid", "tvdbid", "tvrageid"]
 
@@ -67,7 +71,8 @@ result_type_map = {RESULT_SUCCESS: "success",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
-class Api(webserve.MainHandler):
+@route('/api/(.*)(/?)')
+class ApiHandler(RequestHandler):
     """ api class that returns json results """
     version = 4  # use an int since float-point is unpredictible
     intent = 4
@@ -123,7 +128,7 @@ class Api(webserve.MainHandler):
 
     def builder(self):
         """ expose the api-builder template """
-        t = webserve.PageTemplate(headers=self.request.headers, file="apiBuilder.tmpl")
+        t = PageTemplate(headers=self.request.headers, file="apiBuilder.tmpl")
 
         def titler(x):
             if not x or sickbeard.SORT_ARTICLE:
@@ -159,7 +164,7 @@ class Api(webserve.MainHandler):
         else:
             t.apikey = "api key not generated"
 
-        return webserve._munge(t)
+        return t
 
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8'")
@@ -298,7 +303,7 @@ def filter_params(cmd, args, kwargs):
     return curArgs, curKwargs
 
 
-class ApiCall(object):
+class ApiCall(ApiHandler):
     _help = {"desc": "No help message available. Please tell the devs that a help msg is missing for this cmd"}
 
     def __init__(self, handler, args, kwargs):
@@ -1440,7 +1445,7 @@ class CMD_SickBeard(ApiCall):
 
     def run(self):
         """ display misc sickrage related information """
-        data = {"sb_version": sickbeard.BRANCH, "api_version": Api.version,
+        data = {"sb_version": sickbeard.BRANCH, "api_version": self.version,
                 "api_commands": sorted(_functionMaper.keys())}
         return _responds(RESULT_SUCCESS, data)
 
@@ -2424,9 +2429,6 @@ class CMD_ShowPause(ApiCall):
         else:
             showObj.paused = 0
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been unpaused")
-
-        return _responds(RESULT_FAILURE, msg=str(showObj.name) + " was unable to be paused")
-
 
 class CMD_ShowRefresh(ApiCall):
     _help = {"desc": "refresh a show in sickrage",

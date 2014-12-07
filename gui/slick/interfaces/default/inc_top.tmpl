@@ -140,6 +140,7 @@
 					<a class="navbar-brand" href="$sbRoot/home/" title="SickRage"><img alt="SickRage" src="$sbRoot/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
 				</div>
 
+			#if $sbLogin:
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
 						<li id="NAVhome" class="dropdown">
@@ -215,11 +216,12 @@
 								<li><a href="$sbRoot/manage/manageSearches/forceVersionCheck"><i class="menu-icon-update"></i>&nbsp;Force Version Check</a></li>
                                 <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
                                 <li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
+                                <li><a href="$sbRoot/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
 							</ul>
 						</li>
 			            <li id="donate"><a href="http://sr-upgrade.appspot.com" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
 					</ul>
-
+			#end if
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
 		</nav>

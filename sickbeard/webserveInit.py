@@ -7,9 +7,10 @@ import sickbeard
 import webserve
 import webapi
 
+from sickbeard.webserve import LoginHandler, LogoutHandler
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates
-from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
+from tornado.web import Application, StaticFileHandler, HTTPError
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
@@ -91,12 +92,14 @@ class SRWebServer(threading.Thread):
                                  gzip=True,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
                                  cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
-                                 username=self.options['username'],
-                                 password=self.options['password'],
+                                 login_url='%slogin/' % self.options['web_root'],
         )
 
         # Main Handlers
-        self.app.add_handlers(".*$", [] + route.get_routes())
+        self.app.add_handlers(".*$", [
+            (r'%slogin(/?)' % self.options['web_root'], LoginHandler),
+            (r'%slogout(/?)' % self.options['web_root'], LogoutHandler)
+        ] + route.get_routes())
 
         # Static Path Handlers
         self.app.add_handlers(".*$", [
