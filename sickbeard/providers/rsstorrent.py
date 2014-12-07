@@ -107,11 +107,11 @@ class TorrentRssProvider(generic.TorrentProvider):
                 if not cookie_validator.match(self.cookies):
                     return (False, 'Cookie is not correctly formatted: ' + self.cookies)
 
-            data = self.cache._getRSSData()
-            if not data or not len(data) > 0:
+            data = self.cache._getRSSData()['entries']
+            if not data:
                 return (False, 'No items found in the RSS feed ' + self.url)
 
-            (title, url) = self._get_title_and_url(data.entries[0])
+            (title, url) = self._get_title_and_url(data[0])
 
             if not title:
                 return (False, 'Unable to get title from first item')
@@ -168,4 +168,4 @@ class TorrentRssCache(tvcache.TVCache):
         if self.provider.cookies:
             request_headers = {'Cookie': self.provider.cookies}
 
-        return self.getRSSFeed(self.provider.url, request_headers=request_headers)
+        return self.getRSSFeed(self.provider.url, request_headers=request_headers, items=['entries', 'feed'])

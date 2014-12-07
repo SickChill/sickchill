@@ -123,7 +123,7 @@ class EZRSSProvider(generic.TorrentProvider):
         logger.log(u"Search string: " + search_url, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(search_url):
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries']) or []:
 
             (title, url) = self._get_title_and_url(curItem)
 
@@ -172,6 +172,6 @@ class EZRSSCache(tvcache.TVCache):
         rss_url = self.provider.url + 'feed/'
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
 provider = EZRSSProvider()

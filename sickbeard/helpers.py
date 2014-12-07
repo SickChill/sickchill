@@ -1431,3 +1431,5 @@ def get_size(start_path='.'):
             total_size += ek.ek(os.path.getsize, fp)
     return total_size
 
+def md5(text):
+    return hashlib.md5(ek.ss(text)).hexdigest()

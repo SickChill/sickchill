@@ -12,7 +12,7 @@ from sickbeard.helpers import create_https_certificates
 from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-
+from tornado.routes import route
 
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths, default_filename=None):
@@ -62,8 +62,8 @@ class SRWebServer(threading.Thread):
             self.video_root = None
 
         # web root
-        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options[
-            'web_root'] else ''
+        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options['web_root'] else '/'
+        sickbeard.WEB_ROOT = self.options['web_root'].strip('/')
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -90,33 +90,31 @@ class SRWebServer(threading.Thread):
                                  autoreload=False,
                                  gzip=True,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
-                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
+                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
+                                 username=self.options['username'],
+                                 password=self.options['password'],
         )
 
-        # Main Handler
-        self.app.add_handlers(".*$", [
-            (r'%s/api/(.*)(/?)' % self.options['web_root'], webapi.Api),
-            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler),
-            (r'(.*)', webserve.MainHandler)
-        ])
+        # Main Handlers
+        self.app.add_handlers(".*$", [] + route.get_routes())
 
-        # Static Path Handler
+        # Static Path Handlers
         self.app.add_handlers(".*$", [
-            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
+            (r'%s(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
+            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
+            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
+            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'js')]}),
         ])
 
         # Static Videos Path
         if self.video_root:
             self.app.add_handlers(".*$", [
-                (r'%s/%s/(.*)' % (self.options['web_root'], 'videos'), MultiStaticFileHandler,
+                (r'%s%s/(.*)' % (self.options['web_root'], 'videos'), MultiStaticFileHandler,
                  {'paths': [self.video_root]}),
             ])
 
