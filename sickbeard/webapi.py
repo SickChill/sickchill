@@ -67,7 +67,7 @@ result_type_map = {RESULT_SUCCESS: "success",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
-class Api(webserve.MainHandler):
+class Api(webserve.WebHandler):
     """ api class that returns json results """
     version = 4  # use an int since float-point is unpredictible
     intent = 4
@@ -2311,7 +2311,7 @@ class CMD_ShowDelete(ApiCall):
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
             # remove show from trakt.tv library
             sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-        
+
         showObj.deleteShow(bool(self.removefiles))
 
         return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been deleted")
