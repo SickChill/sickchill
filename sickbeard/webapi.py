@@ -28,7 +28,6 @@ import traceback
 
 import sickbeard
 
-from sickbeard.webserve import PageTemplate
 from sickbeard import db, logger, exceptions, history, ui, helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
@@ -48,7 +47,6 @@ except ImportError:
 from lib import subliminal
 
 from tornado.web import RequestHandler
-from tornado.routes import route
 
 indexer_ids = ["indexerid", "tvdbid", "tvrageid"]
 
@@ -71,46 +69,32 @@ result_type_map = {RESULT_SUCCESS: "success",
 }
 # basically everything except RESULT_SUCCESS / success is bad
 
-@route('/api/(.*)(/?)')
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
     version = 4  # use an int since float-point is unpredictible
     intent = 4
 
-    def index(self, *args, **kwargs):
-        self.apiKey = sickbeard.API_KEY
-        access, accessMsg, args, kwargs = self._grand_access(self.apiKey, args, kwargs)
-
+    def get(self, *args, **kwargs):
         # set the output callback
         # default json
         outputCallbackDict = {'default': self._out_as_json,
                               'image': lambda x: x['image'],
         }
 
-        # do we have acces ?
-        if access:
-            logger.log(accessMsg, logger.DEBUG)
-        else:
-            logger.log(accessMsg, logger.WARNING)
-            return outputCallbackDict['default'](_responds(RESULT_DENIED, msg=accessMsg))
-
         # set the original call_dispatcher as the local _call_dispatcher
-        _call_dispatcher = call_dispatcher
+        _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
-        if 'profile' in kwargs:
+        if self.get_argument('profile', None):
             from lib.profilehooks import profile
 
             _call_dispatcher = profile(_call_dispatcher, immediate=True)
-            del kwargs["profile"]
 
         # if debug was set call the "_call_dispatcher"
-        if 'debug' in kwargs:
-            outDict = _call_dispatcher(self, args,
-                                       kwargs)  # this way we can debug the cherry.py traceback in the browser
-            del kwargs["debug"]
+        if self.get_argument('debug', None):
+            outDict = _call_dispatcher(args, kwargs)  # this way we can debug the cherry.py traceback in the browser
         else:  # if debug was not set we wrap the "call_dispatcher" in a try block to assure a json output
             try:
-                outDict = _call_dispatcher(self, args, kwargs)
+                outDict = _call_dispatcher(args, kwargs)
             except Exception, e:  # real internal error oohhh nooo :(
                 logger.log(u"API :: " + ex(e), logger.ERROR)
                 errorData = {"error_msg": ex(e),
@@ -124,47 +108,7 @@ class ApiHandler(RequestHandler):
         else:
             outputCallback = outputCallbackDict['default']
 
-        return outputCallback(outDict)
-
-    def builder(self):
-        """ expose the api-builder template """
-        t = PageTemplate(headers=self.request.headers, file="apiBuilder.tmpl")
-
-        def titler(x):
-            if not x or sickbeard.SORT_ARTICLE:
-                return x
-            if x.lower().startswith('a '):
-                x = x[2:]
-            elif x.lower().startswith('an '):
-                x = x[3:]
-            elif x.lower().startswith('the '):
-                x = x[4:]
-            return x
-
-        t.sortedShowList = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
-
-        seasonSQLResults = {}
-        episodeSQLResults = {}
-
-        myDB = db.DBConnection(row_type="dict")
-        for curShow in t.sortedShowList:
-            seasonSQLResults[curShow.indexerid] = myDB.select(
-                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
-
-        for curShow in t.sortedShowList:
-            episodeSQLResults[curShow.indexerid] = myDB.select(
-                "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
-                [curShow.indexerid])
-
-        t.seasonSQLResults = seasonSQLResults
-        t.episodeSQLResults = episodeSQLResults
-
-        if len(sickbeard.API_KEY) == 32:
-            t.apikey = sickbeard.API_KEY
-        else:
-            t.apikey = "api key not generated"
-
-        return t
+        return self.write(outputCallback(outDict))
 
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8'")
@@ -179,146 +123,118 @@ class ApiHandler(RequestHandler):
                 e) + '"}'
         return out
 
-    def _grand_access(self, realKey, args, kwargs):
-        """ validate api key and log result """
-        remoteIp = self.request.remote_ip
-        apiKey = kwargs.get("apikey", None)
-        if not apiKey:
-            if args:  # if we have keyless vars we assume first one is the api key, always !
-                apiKey = args[0]
-                args = args[1:]  # remove the apikey from the args tuple
-        else:
-            del kwargs["apikey"]
 
-        if not sickbeard.USE_API:
-            msg = u"API :: " + remoteIp + " - SR API Disabled. ACCESS DENIED"
-            return False, msg, args, kwargs
-        elif apiKey == realKey:
-            msg = u"API :: " + remoteIp + " - gave correct API KEY - [" + apiKey + "] - ACCESS GRANTED"
-            return True, msg, args, kwargs
-        elif not apiKey:
-            msg = u"API :: " + remoteIp + " - gave NO API KEY. ACCESS DENIED"
-            return False, msg, args, kwargs
-        else:
-            msg = u"API :: " + remoteIp + " - gave WRONG API KEY - [" + apiKey + "] - ACCESS DENIED"
-            return False, msg, args, kwargs
+    def call_dispatcher(self, args, kwargs):
+        """ calls the appropriate CMD class
+            looks for a cmd in args and kwargs
+            or calls the TVDBShorthandWrapper when the first args element is a number
+            or returns an error that there is no such cmd
+        """
+        logger.log(u"API :: all args: '" + str(self.get_arguments('cmd')) + "'", logger.DEBUG)
+        # logger.log(u"API :: dateFormat: '" + str(dateFormat) + "'", logger.DEBUG)
 
+        cmds = None
+        if args:
+            cmds = args[0]
+            args = args[1:]
 
-def call_dispatcher(handler, args, kwargs):
-    """ calls the appropriate CMD class
-        looks for a cmd in args and kwargs
-        or calls the TVDBShorthandWrapper when the first args element is a number
-        or returns an error that there is no such cmd
-    """
-    logger.log(u"API :: all args: '" + str(args) + "'", logger.DEBUG)
-    logger.log(u"API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
-    # logger.log(u"API :: dateFormat: '" + str(dateFormat) + "'", logger.DEBUG)
+        if "cmd" in kwargs:
+            cmds = kwargs["cmd"]
+            del kwargs["cmd"]
 
-    cmds = None
-    if args:
-        cmds = args[0]
-        args = args[1:]
+        outDict = {}
+        if cmds != None:
+            cmds = cmds.split("|")
+            multiCmds = bool(len(cmds) > 1)
+            for cmd in cmds:
+                curArgs, curKwargs = self.filter_params(cmd, args, kwargs)
+                cmdIndex = None
+                if len(cmd.split("_")) > 1:  # was a index used for this cmd ?
+                    cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
 
-    if "cmd" in kwargs:
-        cmds = kwargs["cmd"]
-        del kwargs["cmd"]
+                logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
+                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')):  # skip these cmd while chaining
+                    try:
+                        if cmd in _functionMaper:
+                            curOutDict = _functionMaper.get(cmd)(curArgs, curKwargs).run()
+                        elif _is_int(cmd):
+                            curOutDict = TVDBShorthandWrapper(curArgs, curKwargs, cmd).run()
+                        else:
+                            curOutDict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
+                    except ApiError, e:  # Api errors that we raised, they are harmless
+                        curOutDict = _responds(RESULT_ERROR, msg=ex(e))
+                else:  # if someone chained one of the forbiden cmds they will get an error for this one cmd
+                    curOutDict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
 
-    outDict = {}
-    if cmds != None:
-        cmds = cmds.split("|")
-        multiCmds = bool(len(cmds) > 1)
-        for cmd in cmds:
-            curArgs, curKwargs = filter_params(cmd, args, kwargs)
-            cmdIndex = None
-            if len(cmd.split("_")) > 1:  # was a index used for this cmd ?
-                cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
-
-            logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
-            if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')):  # skip these cmd while chaining
-                try:
-                    if cmd in _functionMaper:
-                        curOutDict = _functionMaper.get(cmd)(handler, curArgs,
-                                                             curKwargs).run()  # get the cmd class, init it and run()
-                    elif _is_int(cmd):
-                        curOutDict = TVDBShorthandWrapper(handler, curArgs, curKwargs, cmd).run()
+                if multiCmds:
+                    # note: if multiple same cmds are issued but one has not an index defined it will override all others
+                    # or the other way around, this depends on the order of the cmds
+                    # this is not a bug
+                    if cmdIndex is None:  # do we need a index dict for this cmd ?
+                        outDict[cmd] = curOutDict
                     else:
-                        curOutDict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
-                except ApiError, e:  # Api errors that we raised, they are harmless
-                    curOutDict = _responds(RESULT_ERROR, msg=ex(e))
-            else:  # if someone chained one of the forbiden cmds they will get an error for this one cmd
-                curOutDict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
-
-            if multiCmds:
-                # note: if multiple same cmds are issued but one has not an index defined it will override all others
-                # or the other way around, this depends on the order of the cmds
-                # this is not a bug
-                if cmdIndex is None:  # do we need a index dict for this cmd ?
-                    outDict[cmd] = curOutDict
+                        if not cmd in outDict:
+                            outDict[cmd] = {}
+                        outDict[cmd][cmdIndex] = curOutDict
                 else:
-                    if not cmd in outDict:
-                        outDict[cmd] = {}
-                    outDict[cmd][cmdIndex] = curOutDict
-            else:
-                outDict = curOutDict
+                    outDict = curOutDict
 
-        if multiCmds:  # if we had multiple cmds we have to wrap it in a response dict
-            outDict = _responds(RESULT_SUCCESS, outDict)
-    else:  # index / no cmd given
-        outDict = CMD_SickBeard(handler, args, kwargs).run()
+            if multiCmds:  # if we had multiple cmds we have to wrap it in a response dict
+                outDict = _responds(RESULT_SUCCESS, outDict)
+        else:  # index / no cmd given
+            outDict = CMD_SickBeard(args, kwargs).run()
 
-    return outDict
+        return outDict
 
 
-def filter_params(cmd, args, kwargs):
-    """ return only params kwargs that are for cmd
-        and rename them to a clean version (remove "<cmd>_")
-        args are shared across all cmds
+    def filter_params(self, cmd, args, kwargs):
+        """ return only params kwargs that are for cmd
+            and rename them to a clean version (remove "<cmd>_")
+            args are shared across all cmds
 
-        all args and kwarks are lowerd
+            all args and kwarks are lowerd
 
-        cmd are separated by "|" e.g. &cmd=shows|future
-        kwargs are namespaced with "." e.g. show.indexerid=101501
-        if a karg has no namespace asing it anyways (global)
+            cmd are separated by "|" e.g. &cmd=shows|future
+            kwargs are namespaced with "." e.g. show.indexerid=101501
+            if a karg has no namespace asing it anyways (global)
 
-        full e.g.
-        /api?apikey=1234&cmd=show.seasonlist_asd|show.seasonlist_2&show.seasonlist_asd.indexerid=101501&show.seasonlist_2.indexerid=79488&sort=asc
+            full e.g.
+            /api?apikey=1234&cmd=show.seasonlist_asd|show.seasonlist_2&show.seasonlist_asd.indexerid=101501&show.seasonlist_2.indexerid=79488&sort=asc
 
-        two calls of show.seasonlist
-        one has the index "asd" the other one "2"
-        the "indexerid" kwargs / params have the indexed cmd as a namspace
-        and the kwarg / param "sort" is a used as a global
-    """
-    curArgs = []
-    for arg in args:
-        curArgs.append(arg.lower())
-    curArgs = tuple(curArgs)
+            two calls of show.seasonlist
+            one has the index "asd" the other one "2"
+            the "indexerid" kwargs / params have the indexed cmd as a namspace
+            and the kwarg / param "sort" is a used as a global
+        """
+        curArgs = []
+        for arg in args:
+            curArgs.append(arg.lower())
+        curArgs = tuple(curArgs)
 
-    curKwargs = {}
-    for kwarg in kwargs:
-        if kwarg.find(cmd + ".") == 0:
-            cleanKey = kwarg.rpartition(".")[2]
-            curKwargs[cleanKey] = kwargs[kwarg].lower()
-        elif not "." in kwarg:  # the kwarg was not namespaced therefore a "global"
-            curKwargs[kwarg] = kwargs[kwarg]
-    return curArgs, curKwargs
+        curKwargs = {}
+        for kwarg in kwargs:
+            if kwarg.find(cmd + ".") == 0:
+                cleanKey = kwarg.rpartition(".")[2]
+                curKwargs[cleanKey] = kwargs[kwarg].lower()
+            elif not "." in kwarg:  # the kwarg was not namespaced therefore a "global"
+                curKwargs[kwarg] = kwargs[kwarg]
+        return curArgs, curKwargs
 
 
 class ApiCall(ApiHandler):
     _help = {"desc": "No help message available. Please tell the devs that a help msg is missing for this cmd"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # missing
         try:
             if self._missing:
                 self.run = self.return_missing
         except AttributeError:
             pass
-        # help
-        if 'help' in kwargs:
-            self.run = self.return_help
 
-        # RequestHandler
-        self.handler = handler
+        # help
+        if self.get_argument('help', None):
+            self.run = self.return_help
 
     def run(self):
         # override with real output function in subclass
@@ -492,8 +408,7 @@ class ApiCall(ApiHandler):
 class TVDBShorthandWrapper(ApiCall):
     _help = {"desc": "this is an internal function wrapper. call the help command directly for more information"}
 
-    def __init__(self, handler, args, kwargs, sid):
-        self.handler = handler
+    def __init__(self, args, kwargs, sid):
         self.origArgs = args
         self.kwargs = kwargs
         self.sid = sid
@@ -502,17 +417,17 @@ class TVDBShorthandWrapper(ApiCall):
         self.e, args = self.check_params(args, kwargs, "e", None, False, "ignore", [])
         self.args = args
 
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ internal function wrapper """
         args = (self.sid,) + self.origArgs
         if self.e:
-            return CMD_Episode(self.handler, args, self.kwargs).run()
+            return CMD_Episode(args, self.kwargs).run()
         elif self.s:
-            return CMD_ShowSeasons(self.handler, args, self.kwargs).run()
+            return CMD_ShowSeasons(args, self.kwargs).run()
         else:
-            return CMD_Show(self.handler, args, self.kwargs).run()
+            return CMD_Show(args, self.kwargs).run()
 
 
 # ###############################
@@ -697,12 +612,12 @@ class CMD_Help(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string",
                                                _functionMaper.keys())
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display help information for a given subject/command """
@@ -722,7 +637,7 @@ class CMD_ComingEpisodes(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string",
@@ -734,7 +649,7 @@ class CMD_ComingEpisodes(ApiCall):
                                               False, "int",
                                               [0, 1])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display the coming episodes """
@@ -847,7 +762,7 @@ class CMD_Episode(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
@@ -855,7 +770,7 @@ class CMD_Episode(ApiCall):
         # optional
         self.fullPath, args = self.check_params(args, kwargs, "full_path", 0, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display detailed info about an episode """
@@ -911,14 +826,14 @@ class CMD_EpisodeSearch(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ search for an episode """
@@ -965,7 +880,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
@@ -975,7 +890,7 @@ class CMD_EpisodeSetStatus(ApiCall):
         self.e, args = self.check_params(args, kwargs, "episode", None, False, "int", [])
         self.force, args = self.check_params(args, kwargs, "force", 0, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ set status of an episode or a season (when no ep is provided) """
@@ -1077,14 +992,14 @@ class CMD_SubtitleSearch(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ search episode subtitles """
@@ -1130,13 +1045,13 @@ class CMD_Exceptions(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
 
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display scene exceptions for all or a given show """
@@ -1173,14 +1088,14 @@ class CMD_History(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string",
                                             ["downloaded", "snatched"])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display sickrage downloaded/snatched history """
@@ -1231,11 +1146,11 @@ class CMD_HistoryClear(ApiCall):
     _help = {"desc": "clear sickrage's history",
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ clear sickrage's history """
@@ -1249,11 +1164,11 @@ class CMD_HistoryTrim(ApiCall):
     _help = {"desc": "trim sickrage's history by removing entries greater than 30 days old"
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ trim sickrage's history """
@@ -1269,12 +1184,12 @@ class CMD_Failed(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display failed downloads """
@@ -1292,11 +1207,11 @@ class CMD_Failed(ApiCall):
 class CMD_Backlog(ApiCall):
     _help = {"desc": "display backlogged episodes"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display backlogged episodes """
@@ -1334,13 +1249,13 @@ class CMD_Logs(ApiCall):
                  "desc": "the minimum level classification of log entries to show, with each level inherting its above level"}}
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string",
                                                  ["error", "warning", "info", "debug"])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ view sickrage's log """
@@ -1400,7 +1315,7 @@ class CMD_PostProcess(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
@@ -1412,7 +1327,7 @@ class CMD_PostProcess(ApiCall):
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string",
                                             ["auto", "manual"])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ Starts the postprocess """
@@ -1437,11 +1352,11 @@ class CMD_PostProcess(ApiCall):
 class CMD_SickBeard(ApiCall):
     _help = {"desc": "display misc sickrage related information"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display misc sickrage related information """
@@ -1458,13 +1373,13 @@ class CMD_SickBeardAddRootDir(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         # optional
         self.default, args = self.check_params(args, kwargs, "default", 0, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ add a parent directory to sickrage's config """
@@ -1511,11 +1426,11 @@ class CMD_SickBeardAddRootDir(ApiCall):
 class CMD_SickBeardCheckScheduler(ApiCall):
     _help = {"desc": "query the scheduler"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ query the scheduler """
@@ -1537,12 +1452,12 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
              "requiredParameters": {"location": {"desc": "the full path to root (parent) directory"}}
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ delete a parent directory from sickrage's config """
@@ -1581,11 +1496,11 @@ class CMD_SickBeardDeleteRootDir(ApiCall):
 class CMD_SickBeardGetDefaults(ApiCall):
     _help = {"desc": "get sickrage user defaults"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ get sickrage user defaults """
@@ -1601,15 +1516,15 @@ class CMD_SickBeardGetDefaults(ApiCall):
 class CMD_SickBeardGetMessages(ApiCall):
     _help = {"desc": "get all messages"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         messages = []
-        for cur_notification in ui.notifications.get_notifications(self.handler.request.remote_ip):
+        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
             messages.append({"title": cur_notification.title,
                              "message": cur_notification.message,
                              "type": cur_notification.type})
@@ -1619,11 +1534,11 @@ class CMD_SickBeardGetMessages(ApiCall):
 class CMD_SickBeardGetRootDirs(ApiCall):
     _help = {"desc": "get sickrage user parent directories"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ get the parent directories defined in sickrage's config """
@@ -1636,12 +1551,12 @@ class CMD_SickBeardPauseBacklog(ApiCall):
              "optionalParameters": {"pause ": {"desc": "pause or unpause the global backlog"}}
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.pause, args = self.check_params(args, kwargs, "pause", 0, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ pause the backlog search """
@@ -1656,15 +1571,15 @@ class CMD_SickBeardPauseBacklog(ApiCall):
 class CMD_SickBeardPing(ApiCall):
     _help = {"desc": "check to see if sickrage is running"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ check to see if sickrage is running """
-        self.handler.set_header('Cache-Control', "max-age=0,no-cache,no-store")
+        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:
@@ -1674,11 +1589,11 @@ class CMD_SickBeardPing(ApiCall):
 class CMD_SickBeardRestart(ApiCall):
     _help = {"desc": "restart sickrage"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ restart sickrage """
@@ -1702,7 +1617,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
         'sv': 8, 'sl': 30}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
@@ -1711,7 +1626,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
 
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ search for show at tvdb with a given string and language """
@@ -1789,9 +1704,9 @@ class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
     }
 
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
-        CMD_SickBeardSearchIndexers.__init__(self, handler, args, kwargs)
+        CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
 
 
 class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
@@ -1802,9 +1717,9 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
-        CMD_SickBeardSearchIndexers.__init__(self, handler, args, kwargs)
+        CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
 
 
 class CMD_SickBeardSetDefaults(ApiCall):
@@ -1816,7 +1731,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.initial, args = self.check_params(args, kwargs, "initial", None, False, "list",
@@ -1833,7 +1748,7 @@ class CMD_SickBeardSetDefaults(ApiCall):
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "archived", "ignored"])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ set sickrage user defaults """
@@ -1888,11 +1803,11 @@ class CMD_SickBeardSetDefaults(ApiCall):
 class CMD_SickBeardShutdown(ApiCall):
     _help = {"desc": "shutdown sickrage"}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ shutdown sickrage """
@@ -1912,12 +1827,12 @@ class CMD_Show(ApiCall):
 
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display information for a given show """
@@ -1926,8 +1841,8 @@ class CMD_Show(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         showDict = {}
-        showDict["season_list"] = CMD_ShowSeasonList(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
-        showDict["cache"] = CMD_ShowCache(self.handler, (), {"indexerid": self.indexerid}).run()["data"]
+        showDict["season_list"] = CMD_ShowSeasonList((), {"indexerid": self.indexerid}).run()["data"]
+        showDict["cache"] = CMD_ShowCache((), {"indexerid": self.indexerid}).run()["data"]
 
         genreList = []
         if showObj.genre:
@@ -2008,7 +1923,7 @@ class CMD_ShowAddExisting(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
 
@@ -2027,7 +1942,7 @@ class CMD_ShowAddExisting(ApiCall):
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
                                                  False, "int", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ add a show in sickrage with an existing folder """
@@ -2039,8 +1954,7 @@ class CMD_ShowAddExisting(ApiCall):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexerName = None
-        indexerResult = CMD_SickBeardSearchIndexers(self.handler, [],
-                                                    {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexerResult = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
         if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexerResult['data']['results']:
@@ -2111,7 +2025,7 @@ class CMD_ShowAddNew(ApiCall):
         'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
         'sv': 8, 'sl': 30}
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
@@ -2142,7 +2056,7 @@ class CMD_ShowAddNew(ApiCall):
             [])
 
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ add a show in sickrage with an existing folder """
@@ -2205,8 +2119,7 @@ class CMD_ShowAddNew(ApiCall):
             newStatus = self.status
 
         indexerName = None
-        indexerResult = CMD_SickBeardSearchIndexers(self.handler, [],
-                                                    {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexerResult = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
         if indexerResult['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexerResult['data']['results']:
@@ -2254,12 +2167,12 @@ class CMD_ShowCache(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ check sickrage's cache to see if the banner or poster image for a show is valid """
@@ -2295,13 +2208,13 @@ class CMD_ShowDelete(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0,1])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ delete a show in sickrage """
@@ -2333,12 +2246,12 @@ class CMD_ShowGetQuality(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ get quality setting for a show in sickrage """
@@ -2362,16 +2275,16 @@ class CMD_ShowGetPoster(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ get the poster for a show in sickrage """
-        return {'outputType': 'image', 'image': self.handler.showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2385,12 +2298,12 @@ class CMD_ShowGetBanner(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ get the banner for a show in sickrage """
@@ -2409,13 +2322,13 @@ class CMD_ShowPause(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         self.pause, args = self.check_params(args, kwargs, "pause", 0, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ set a show's paused state in sickrage """
@@ -2441,12 +2354,12 @@ class CMD_ShowRefresh(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ refresh a show in sickrage """
@@ -2474,7 +2387,7 @@ class CMD_ShowSeasonList(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
@@ -2482,7 +2395,7 @@ class CMD_ShowSeasonList(ApiCall):
                                             ["asc",
                                              "desc"])  # "asc" and "desc" default and fallback is "desc"
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display the season list for a given show """
@@ -2516,13 +2429,13 @@ class CMD_ShowSeasons(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         self.season, args = self.check_params(args, kwargs, "season", None, False, "int", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display a listing of episodes for all or a given show """
@@ -2589,7 +2502,7 @@ class CMD_ShowSetQuality(ApiCall):
         }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
@@ -2603,7 +2516,7 @@ class CMD_ShowSetQuality(ApiCall):
                                                 "fullhdwebdl",
                                                 "hdbluray", "fullhdbluray"])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ set the quality for a show in sickrage by taking in a deliminated
@@ -2655,12 +2568,12 @@ class CMD_ShowStats(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display episode statistics for a given show """
@@ -2764,12 +2677,12 @@ class CMD_ShowUpdate(ApiCall):
              }
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ update a show in sickrage """
@@ -2793,13 +2706,13 @@ class CMD_Shows(ApiCall):
              },
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         self.sort, args = self.check_params(args, kwargs, "sort", "id", False, "string", ["id", "name"])
         self.paused, args = self.check_params(args, kwargs, "paused", None, False, "bool", [])
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display_is_int_multi( self.indexerid )shows in sickrage """
@@ -2836,7 +2749,7 @@ class CMD_Shows(ApiCall):
                 showDict['next_ep_airdate'] = ''
 
             showDict["cache"] = \
-                CMD_ShowCache(self.handler, (), {"indexerid": curShow.indexerid}).run()["data"]
+                CMD_ShowCache((), {"indexerid": curShow.indexerid}).run()["data"]
             if not showDict["network"]:
                 showDict["network"] = ""
             if self.sort == "name":
@@ -2851,11 +2764,11 @@ class CMD_ShowsStats(ApiCall):
     _help = {"desc": "display the global shows and episode stats"
     }
 
-    def __init__(self, handler, args, kwargs):
+    def __init__(self, args, kwargs):
         # required
         # optional
         # super, missing, help
-        ApiCall.__init__(self, handler, args, kwargs)
+        ApiCall.__init__(self, args, kwargs)
 
     def run(self):
         """ display the global shows and episode stats """

@@ -58,7 +58,7 @@ $(document).ready(function(){
 
     $('#api_key').click(function(){ $('#api_key').select() });
     $("#generate_new_apikey").click(function(){
-        $.get(sbRoot + '/config/general/generateKey', 
+        $.get(sbRoot + '/config/general/generateApiKey',
             function(data){
                 if (data.error != undefined) {
                     alert(data.error);

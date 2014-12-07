@@ -1,16 +1,13 @@
 import os
-import socket
-import time
 import threading
 import sys
 import sickbeard
-import webserve
-import webapi
 
-from sickbeard.webserve import LoginHandler, LogoutHandler
+from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler
+from sickbeard.webapi import ApiHandler
 from sickbeard import logger
-from sickbeard.helpers import create_https_certificates
-from tornado.web import Application, StaticFileHandler, HTTPError
+from sickbeard.helpers import create_https_certificates, generateApiKey
+from tornado.web import Application, StaticFileHandler, HTTPError, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
@@ -63,8 +60,13 @@ class SRWebServer(threading.Thread):
             self.video_root = None
 
         # web root
-        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options['web_root'] else '/'
-        sickbeard.WEB_ROOT = self.options['web_root'].strip('/')
+        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')).strip('/')
+        sickbeard.WEB_ROOT = self.options['web_root']
+
+        # api root
+        if not sickbeard.API_KEY:
+            sickbeard.API_KEY = generateApiKey()
+        self.options['api_root'] = r'%s/api/%s/' % (sickbeard.WEB_ROOT, sickbeard.API_KEY)
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -97,20 +99,23 @@ class SRWebServer(threading.Thread):
 
         # Main Handlers
         self.app.add_handlers(".*$", [
-            (r'%slogin(/?)' % self.options['web_root'], LoginHandler),
-            (r'%slogout(/?)' % self.options['web_root'], LogoutHandler)
+            (r'%s(/?)' % self.options['api_root'], ApiHandler),
+            (r'%s/getkey(/?)' % self.options['web_root'], KeyHandler),
+            (r'%s/api/builder' % self.options['web_root'], RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
+            (r'%s/login(/?)' % self.options['web_root'], LoginHandler),
+            (r'%s/logout(/?)' % self.options['web_root'], LogoutHandler)
         ] + route.get_routes())
 
         # Static Path Handlers
         self.app.add_handlers(".*$", [
-            (r'%s(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
+            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images'),
                         os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
+            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'js')]}),
         ])
 

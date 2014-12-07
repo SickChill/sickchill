@@ -45,7 +45,7 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
         html += $.ajax({
           url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions,
           async: false,
-          dataType: "html",
+          dataType: "html"
         }).responseText;
 
         html += '</pre>';

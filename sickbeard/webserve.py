@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import random
 
 import traceback
 import os
@@ -24,7 +25,6 @@ import time
 import urllib
 import re
 import datetime
-import random
 import sys
 
 import sickbeard
@@ -133,7 +133,7 @@ def haveTORRENT():
         return False
 
 class Menus:
-    def HomeMenu(self):
+    def HomeMenu(self, *args, **kwargs):
         menu = [
             {'title': 'Add Shows', 'path': 'home/addShows/', },
             {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
@@ -146,7 +146,7 @@ class Menus:
         
         return menu
 
-    def ConfigMenu(self):
+    def ConfigMenu(self, *args, **kwargs):
         menu = [
             {'title': 'General', 'path': 'config/general/'},
             {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
@@ -160,7 +160,7 @@ class Menus:
         
         return menu
     
-    def ManageMenu(self):
+    def ManageMenu(self, *args, **kwargs):
         menu = [
             {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
             {'title': 'Manage Searches', 'path': 'manage/manageSearches/'},
@@ -179,7 +179,7 @@ class Menus:
     
         return menu
 
-    def ErrorLogsMenu(self): 
+    def ErrorLogsMenu(self, *args, **kwargs): 
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
             # { 'title': 'View Log',  'path': 'errorlogs/viewlog'  },
@@ -236,7 +236,7 @@ class PageTemplate(Template):
         return super(PageTemplate, self).compile(*args, **kwargs)
 
 class BaseHandler(RequestHandler):
-    def get_current_user(self):
+    def get_current_user(self, *args, **kwargs):
         if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
             return self.get_secure_cookie('user')
         else:
@@ -249,7 +249,6 @@ class BaseHandler(RequestHandler):
         t.message = message
         return t
 
-# Make non basic auth option to get api key
 class KeyHandler(RequestHandler):
     def get(self, *args, **kwargs):
         api_key = None
@@ -258,8 +257,8 @@ class KeyHandler(RequestHandler):
             username = sickbeard.WEB_USERNAME
             password = sickbeard.WEB_PASSWORD
 
-            if (self.get_argument('u') == sickbeard.helpers.md5(username) or not username) \
-                    and (self.get_argument('p') == password or not password):
+            if (self.get_argument('u', None) == username or not username) \
+                    and (self.get_argument('p', None) == password or not password):
                 api_key = sickbeard.API_KEY
 
             self.write({
@@ -269,24 +268,6 @@ class KeyHandler(RequestHandler):
         except:
             logger.log('Failed doing key request: %s' % (traceback.format_exc()), logger.ERROR)
             self.write({'success': False, 'error': 'Failed returning results'})
-
-class UIHandler(RequestHandler):
-    def add_message(self):
-        ui.notifications.message('Test 1', 'This is test number 1')
-        ui.notifications.error('Test 2', 'This is test number 2')
-
-        return "ok"
-
-    def get_messages(self):
-        messages = {}
-        cur_notification_num = 1
-        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
-            messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
-                                                                     'message': cur_notification.message,
-                                                                     'type': cur_notification.type}
-            cur_notification_num += 1
-
-        return json.dumps(messages)
 
 class WebHandler(BaseHandler):
     def write_error(self, status_code, **kwargs):
@@ -323,7 +304,7 @@ class WebHandler(BaseHandler):
                 self.write('Could not load webui module')
                 return
         except:
-            page_not_found(self)
+            page_not_found(self, *args, **kwargs)
             return
 
         try:
@@ -377,13 +358,52 @@ class LogoutHandler(BaseHandler):
 
 @route('(.*)(/?)')
 class WebRoot(WebHandler):
-    def index(self):
+    def index(self, *args, **kwargs):
         self.redirect('/home/')
 
-    def robots_txt(self):
+    def robots_txt(self, *args, **kwargs):
         """ Keep web crawlers out """
         self.set_header('Content-Type', 'text/plain')
         return "User-agent: *\nDisallow: /"
+
+    def apibuilder(self, *args, **kwargs):
+        t = PageTemplate(rh=self, file="apiBuilder.tmpl")
+
+        def titler(x):
+            if not x or sickbeard.SORT_ARTICLE:
+                return x
+            if x.lower().startswith('a '):
+                x = x[2:]
+            elif x.lower().startswith('an '):
+                x = x[3:]
+            elif x.lower().startswith('the '):
+                x = x[4:]
+            return x
+
+        t.sortedShowList = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+
+        seasonSQLResults = {}
+        episodeSQLResults = {}
+
+        myDB = db.DBConnection(row_type="dict")
+        for curShow in t.sortedShowList:
+            seasonSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
+
+        for curShow in t.sortedShowList:
+            episodeSQLResults[curShow.indexerid] = myDB.select(
+                "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
+                [curShow.indexerid])
+
+        t.seasonSQLResults = seasonSQLResults
+        t.episodeSQLResults = episodeSQLResults
+
+        if len(sickbeard.API_KEY) == 32:
+            t.apikey = sickbeard.API_KEY
+        else:
+            t.apikey = "api key not generated"
+
+        return t
 
     def showPoster(self, show=None, which=None):
         # Redirect initial poster/banner thumb to default images
@@ -630,9 +650,28 @@ class WebRoot(WebHandler):
 
         return ical
 
+@route('/ui/(.*)(/?)')
+class UIHandler(WebRoot):
+    def add_message(self, *args, **kwargs):
+        ui.notifications.message('Test 1', 'This is test number 1')
+        ui.notifications.error('Test 2', 'This is test number 2')
+
+        return "ok"
+
+    def get_messages(self, *args, **kwargs):
+        messages = {}
+        cur_notification_num = 1
+        for cur_notification in ui.notifications.get_notifications(self.request.remote_ip):
+            messages['notification-' + str(cur_notification_num)] = {'title': cur_notification.title,
+                                                                     'message': cur_notification.message,
+                                                                     'type': cur_notification.type}
+            cur_notification_num += 1
+
+        return json.dumps(messages)
+
 @route('/home/(.*)(/?)')
 class Home(WebRoot):
-    def index(self):
+    def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="home.tmpl")
         if sickbeard.ANIME_SPLIT_HOME:
             shows = []
@@ -3293,6 +3332,10 @@ class ConfigGeneral(Config):
         t.submenu = Menus().ConfigMenu()
         return t
 
+
+    def generateApiKey(self, *args, **kwargs):
+        return helpers.generateApiKey()
+
     def saveRootDirs(self, rootDirString=None):
         sickbeard.ROOT_DIRS = rootDirString
 
@@ -3321,31 +3364,6 @@ class ConfigGeneral(Config):
         sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
 
         sickbeard.save_config()
-
-
-    def generateKey(self, *args, **kwargs):
-        """ Return a new randomized API_KEY
-        """
-
-        try:
-            from hashlib import md5
-        except ImportError:
-            from md5 import md5
-
-        # Create some values to seed md5
-        t = str(time.time())
-        r = str(random.random())
-
-        # Create the md5 instance and give it the current time
-        m = md5(t)
-
-        # Update the md5 instance with the random variable
-        m.update(r)
-
-        # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
-        logger.log(u"New API generated")
-        return m.hexdigest()
-
 
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
@@ -4523,7 +4541,7 @@ class ConfigAnime(Config):
 
 @route('/errorlogs/(.*)(/?)')
 class ErrorLogs(WebRoot):
-    def index(self):
+    def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="errorlogs.tmpl")
         t.submenu = Menus().ErrorLogsMenu()
