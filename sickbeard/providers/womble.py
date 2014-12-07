@@ -43,30 +43,31 @@ class WombleCache(tvcache.TVCache):
         self.minTime = 15
 
     def updateCache(self):
-
-        # delete anything older then 7 days
-        self._clearCache()
-
+        # check if we should update
         if not self.shouldUpdate():
             return
+
+        # clear cache
+        self._clearCache()
+
+        # set updated
+        self.setLastUpdate()
 
         cl = []
         for url in [self.provider.url + 'rss/?sec=tv-sd&fr=false', self.provider.url + 'rss/?sec=tv-hd&fr=false']:
             logger.log(u"Womble's Index cache update URL: " + url, logger.DEBUG)
 
-            # By now we know we've got data and no auth errors, all we need to do is put it in the database
-            for item in self.getRSSFeed(url).get('entries', []):
-                ci = self._parseItem(item.title, item.url)
+            for item in self.getRSSFeed(url, items=['entries', 'feed'])['entries'] or []:
+                ci = self._parseItem(item)
                 if ci is not None:
                     cl.append(ci)
 
         if len(cl) > 0:
             myDB = self._getDB()
             myDB.mass_action(cl)
-            self.setLastUpdate()
 
     def _checkAuth(self, data):
-        return data.feed.get('title', None) != 'Invalid Link'
+        return data if data.feed.title != 'Invalid Link' else None
 
 provider = WombleProvider()
 

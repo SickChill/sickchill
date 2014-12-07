@@ -375,7 +375,6 @@ def searchForNeededEpisodes():
 
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive() and x.enable_daily]
     for curProvider in providers:
-        # spawn separate threads for each provider so we don't need to wait for providers with slow network operation
         threads += [threading.Thread(target=curProvider.cache.updateCache, name=origThreadName + " :: [" + curProvider.name + "]")]
 
     # start the thread we just created
@@ -393,13 +392,6 @@ def searchForNeededEpisodes():
 
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
-
-            if curEp.show.paused:
-                logger.log(
-                    u"Show " + curEp.show.name + " is paused, ignoring all RSS items for " + curEp.prettyName(),
-                    logger.DEBUG)
-                continue
-
             # find the best result for the current episode
             bestResult = None
             for curResult in curFoundResults[curEp]:
@@ -442,6 +434,7 @@ def searchProviders(show, episodes, manualSearch=False):
     finalResults = []
 
     didSearch = False
+    threads = []
 
     # build name cache for show
     sickbeard.name_cache.buildNameCache(show)
@@ -449,6 +442,18 @@ def searchProviders(show, episodes, manualSearch=False):
     origThreadName = threading.currentThread().name
 
     providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive() and x.enable_backlog]
+    for curProvider in providers:
+        threads += [threading.Thread(target=curProvider.cache.updateCache,
+                                     name=origThreadName + " :: [" + curProvider.name + "]")]
+
+    # start the thread we just created
+    for t in threads:
+        t.start()
+
+    # wait for all threads to finish
+    for t in threads:
+        t.join()
+
     for providerNum, curProvider in enumerate(providers):
         if curProvider.anime_only and not show.is_anime:
             logger.log(u"" + str(show.name) + " is not an anime, skiping", logger.DEBUG)
@@ -470,7 +475,6 @@ def searchProviders(show, episodes, manualSearch=False):
                 logger.log(u"Performing season pack search for " + show.name)
 
             try:
-                curProvider.cache.updateCache()
                 searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch)
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)

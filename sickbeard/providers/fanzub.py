@@ -74,7 +74,7 @@ class Fanzub(generic.NZBProvider):
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(search_url):
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries']) or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:
@@ -129,6 +129,6 @@ class FanzubCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
 provider = Fanzub()

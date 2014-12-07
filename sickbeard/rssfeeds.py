@@ -33,7 +33,7 @@ class RSSFeeds:
         finally:
             self.rssDB.close()
 
-    def getFeed(self, url, post_data=None, request_headers=None):
+    def getFeed(self, url, post_data=None, request_headers=None, items=[]):
         parsed = list(urlparse.urlparse(url))
         parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
@@ -42,8 +42,15 @@ class RSSFeeds:
 
         try:
             fc = Cache(self.rssDB)
-            feed = fc.fetch(url, False, False, request_headers)
+            resp = fc.fetch(url, False, False, request_headers)
 
-            return feed
+            data = {}
+            for item in items:
+                try:
+                    data[item] = resp[item]
+                except:
+                    data[item] = None
+
+            return data
         finally:
             self.rssDB.close()

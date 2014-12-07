@@ -96,12 +96,10 @@ class TVCache():
             myDB.action("DELETE FROM [" + self.providerID + "] WHERE 1")
 
     def _get_title_and_url(self, item):
-        # override this in the provider if daily search has a different data layout to backlog searches
         return self.provider._get_title_and_url(item)
 
     def _getRSSData(self):
-        data = None
-        return data
+        return None
 
     def _checkAuth(self, data):
         return True
@@ -110,49 +108,37 @@ class TVCache():
         return True
 
     def updateCache(self):
+        # check if we should update
         if not self.shouldUpdate():
             return
 
         try:
-            if self._checkAuth(None):
-                data = self._getRSSData()
-                if not data or not len(data) > 0:
-                    return
-
+            data = self._getRSSData()
+            if self._checkAuth(data):
                 # clear cache
                 self._clearCache()
 
                 # set updated
                 self.setLastUpdate()
 
-                try:
-                    items = data.get('entries', [])
-                except:
-                    items = data
+                cl = []
+                for item in data['entries']:
+                    ci = self._parseItem(item)
+                    if ci is not None:
+                        cl.append(ci)
 
-                if self._checkAuth(items):
-                    cl = []
-                    for item in items:
-                        title, url = self._get_title_and_url(item)
-                        ci = self._parseItem(title, url)
-                        if ci is not None:
-                            cl.append(ci)
+                if len(cl) > 0:
+                    myDB = self._getDB()
+                    myDB.mass_action(cl)
 
-                    if len(cl) > 0:
-                        myDB = self._getDB()
-                        myDB.mass_action(cl)
-
-                else:
-                    raise AuthException(
-                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
         except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
         except Exception, e:
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-    def getRSSFeed(self, url, post_data=None, request_headers=None):
-        return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers)
+    def getRSSFeed(self, url, post_data=None, request_headers=None, items=[]):
+        return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers, items)
 
     def _translateTitle(self, title):
         return u'' + title.replace(' ', '.')
@@ -160,7 +146,8 @@ class TVCache():
     def _translateLinkURL(self, url):
         return url.replace('&amp;', '&')
 
-    def _parseItem(self, title, url):
+    def _parseItem(self, item):
+        title, url = self._get_title_and_url(item)
 
         self._checkItemAuth(title, url)
 

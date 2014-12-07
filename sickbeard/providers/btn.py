@@ -92,7 +92,7 @@ class BTNProvider(generic.TorrentProvider):
         parsedJSON = self._api_call(apikey, params)
         if not parsedJSON:
             logger.log(u"No data returned from " + self.name, logger.ERROR)
-            return []
+            return results
 
         if self._checkAuthFromData(parsedJSON):
 
@@ -311,7 +311,7 @@ class BTNCache(tvcache.TVCache):
                 logger.WARNING)
             seconds_since_last_update = 86400
 
-        return self.provider._doSearch(search_params=None, age=seconds_since_last_update)
+        return {'entries': self.provider._doSearch(search_params=None, age=seconds_since_last_update)}
 
 
 provider = BTNProvider()

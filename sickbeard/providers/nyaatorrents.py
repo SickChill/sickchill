@@ -80,8 +80,7 @@ class NyaaProvider(generic.TorrentProvider):
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(searchURL):
-
+        for curItem in self.cache.getRSSFeed(searchURL, items=['entries']) or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:
@@ -126,6 +125,6 @@ class NyaaCache(tvcache.TVCache):
 
         logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
 
-        return self.getRSSFeed(url)
+        return self.getRSSFeed(url, items=['entries', 'feed'])
 
 provider = NyaaProvider()

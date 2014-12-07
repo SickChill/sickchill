@@ -238,11 +238,10 @@ class NewznabProvider(generic.NZBProvider):
 
     def _checkAuthFromData(self, data):
 
-        if not data:
+        if not (data.entries and data.feed):
             return self._checkAuth()
 
         if data.feed.get('error', None):
-
             code = data.feed.error.get('code', None)
 
             if code == '100':
@@ -297,12 +296,12 @@ class NewznabProvider(generic.NZBProvider):
         while (total >= offset) and (offset < 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
-            data = self.cache.getRSSFeed(search_url)
 
-            if not data or not self._checkAuthFromData(data):
+            data = self.cache.getRSSFeed(search_url, items=['entries', 'feed'])
+            if not self._checkAuthFromData(data):
                 break
 
-            for item in data.entries:
+            for item in data.entries or []:
 
                 (title, url) = self._get_title_and_url(item)
 
@@ -422,56 +421,13 @@ class NewznabCache(tvcache.TVCache):
 
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
 
-    def updateCache(self):
-        if not self.shouldUpdate():
-            return
-
-        try:
-            if self._checkAuth(None):
-                data = self._getRSSData()
-                if not data or not len(data) > 0:
-                    return
-
-                # clear cache
-                self._clearCache()
-
-                # set updated
-                self.setLastUpdate()
-
-                try:
-                    items = data.get('entries', [])
-                except:
-                    items = data
-
-                if self._checkAuth(items):
-                    cl = []
-                    for item in items:
-                        ci = self._parseItem(item)
-                        if ci is not None:
-                            cl.append(ci)
-
-                    if len(cl) > 0:
-                        myDB = self._getDB()
-                        myDB.mass_action(cl)
-
-                else:
-                    raise AuthException(
-                        u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
-        except AuthException, e:
-            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
-        except Exception, e:
-            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-
-    # overwrite method with that parses the rageid from the newznab feed
     def _parseItem(self, item):
-        title = item.title
-        url = item.link
+        (title, url) = self._get_title_and_url(item)
 
         attrs = item.newznab_attr
         if not isinstance(attrs, list):

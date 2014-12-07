@@ -340,7 +340,7 @@ class ThePirateBayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['rss']}
-        return self.provider._doSearch(search_params)
+        return {'entries': self.provider._doSearch(search_params)}
 
 class ThePirateBayWebproxy:
     def __init__(self):
