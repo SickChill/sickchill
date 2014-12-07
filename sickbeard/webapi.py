@@ -1952,7 +1952,7 @@ class CMD_Show(ApiCall):
         showDict["anime"] = showObj.anime
         showDict["airs"] = str(showObj.airs).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
         showDict["dvdorder"] = showObj.dvdorder
-        
+
         if showObj.rls_require_words:
             showDict["rls_require_words"] = showObj.rls_require_words.split(", ")
         else:
@@ -1962,7 +1962,7 @@ class CMD_Show(ApiCall):
             showDict["rls_ignore_words"] = showObj.rls_ignore_words.split(", ")
         else:
             showDict["rls_ignore_words"] = []
-        
+
         showDict["scene"] = showObj.scene
         showDict["archive_firstmatch"] = showObj.archive_firstmatch
 
@@ -2286,6 +2286,7 @@ class CMD_ShowDelete(ApiCall):
              "optionalParameters": {
                  "tvdbid": {"desc": "thetvdb.com unique id of a show"},
                  "tvrageid": {"desc": "tvrage.com unique id of a show"},
+                 "removefiles":{"desc": "Deletes the files, there is no going back!"},
              }
     }
 
@@ -2293,6 +2294,7 @@ class CMD_ShowDelete(ApiCall):
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         # optional
+        self.removefiles, args = self.check_params(args, kwargs, "removefiles", 0, False, "int", [0,1])
         # super, missing, help
         ApiCall.__init__(self, handler, args, kwargs)
 
@@ -2306,7 +2308,12 @@ class CMD_ShowDelete(ApiCall):
                 showObj) or sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):  # @UndefinedVariable
             return _responds(RESULT_FAILURE, msg="Show can not be deleted while being added or updated")
 
-        showObj.deleteShow()
+        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
+            # remove show from trakt.tv library
+            sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
+        
+        showObj.deleteShow(bool(self.removefiles))
+
         return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been deleted")
 
 

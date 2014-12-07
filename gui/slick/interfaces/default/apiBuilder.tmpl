@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"> 
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>API Builder</title>
 <script type="text/javascript" charset="utf-8">
@@ -22,7 +22,7 @@ sbRoot = "$sbRoot";
 </style>
 
 <script type="text/javascript">
-var hide_empty_list=true; 
+var hide_empty_list=true;
 var disable_empty_list=true;
 
 addListGroup("api", "Command");
@@ -84,6 +84,10 @@ addOption("logs", "Debug", "&min_level=debug");
 addOption("logs", "Info", "&min_level=info");
 addOption("logs", "Warning", "&min_level=warning");
 addOption("logs", "Error", "&min_level=error");
+
+addOption("show.delete", "Optional Param", "", 1);
+addOption("show.delete", "removefiles", "&removefiles=0");
+addOption("show.delete", "removefiles", "&removefiles=1");
 
 addOption("postprocess", "Optional Param", "", 1);
 addOption("postprocess", "C:\\PATH\\TO\\DIR", "&path=C:\\Temp");
