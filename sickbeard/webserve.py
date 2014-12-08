@@ -265,6 +265,9 @@ class WebHandler(BaseHandler):
             logger.log("Failed doing web request '%s': %s" % (route, traceback.format_exc()), logger.ERROR)
             self.write({'success': False, 'error': 'Failed returning results'})
 
+    # link post to get
+    post = get
+
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
