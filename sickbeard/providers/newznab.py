@@ -281,10 +281,6 @@ class NewznabProvider(generic.NZBProvider):
         if search_params:
             params.update(search_params)
 
-        if 'rid' not in search_params and 'q' not in search_params:
-            logger.log("Error no rid or search term given. Report to forums with a full debug log")
-            return []
-
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
@@ -434,7 +430,7 @@ class NewznabCache(tvcache.TVCache):
         tvrageid = 0
         for attr in attrs:
             if attr['name'] == 'tvrageid':
-                tvrageid = int(attr['value'])
+                tvrageid = int(attr['value'] or 0)
                 break
 
         self._checkItemAuth(title, url)
