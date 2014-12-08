@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import threading
 
 import traceback
 import os
@@ -75,7 +76,7 @@ except ImportError:
 from Cheetah.Template import Template
 
 from tornado.routes import route
-from tornado.web import RequestHandler, authenticated
+from tornado.web import RequestHandler, authenticated, asynchronous
 
 from bug_tracker import BugTracker
 
@@ -89,6 +90,23 @@ def page_not_found(rh):
     else:
         rh.set_status(404)
         rh.write('Wrong API key used')
+
+class Worker(threading.Thread):
+    def __init__(self, func, params=None, callback=None, *args, **kwargs):
+        super(Worker, self).__init__(*args, **kwargs)
+        self.callback = callback
+        self.func = func
+        self.params = params
+
+    def run(self):
+        # Get response
+        resp = self.func(**self.params)
+        if resp:
+            # Issue callback
+            try:
+                self.callback(ek.ss(resp).encode('utf-8', 'xmlcharrefreplace'))
+            except:
+                self.callback(resp)
 
 class PageTemplate(Template):
     def __init__(self, rh, *args, **kwargs):
@@ -235,6 +253,8 @@ class WebHandler(BaseHandler):
                                  </body>
                                </html>""" % (error, error,
                                              trace_info, request_info))
+
+    @asynchronous
     @authenticated
     def get(self, route, *args, **kwargs):
         route = route.strip('/')
@@ -249,24 +269,22 @@ class WebHandler(BaseHandler):
             page_not_found(self)
             return
 
+        # Sanitize argument lists:
+        params = self.request.arguments
+        for arg, value in params.items():
+            if len(value) == 1:
+                params[arg] = value[0]
+
+        Worker(route, params, self.worker_done).start()
+
+    def worker_done(self, value):
         try:
-            # Sanitize argument lists:
-            params = self.request.arguments
-            for arg, value in params.items():
-                if len(value) == 1:
-                    params[arg] = value[0]
-
-            resp = route(**params)
-            if resp:
-                try:
-                    resp = ek.ss(resp).encode('utf-8', 'xmlcharrefreplace')
-                except Exception, e:
-                    pass
-
-                self.write(resp)
+            self.write(value)
         except:
             logger.log("Failed doing web request '%s': %s" % (route, traceback.format_exc()), logger.ERROR)
             self.write({'success': False, 'error': 'Failed returning results'})
+
+        self.finish()
 
     # link post to get
     post = get
