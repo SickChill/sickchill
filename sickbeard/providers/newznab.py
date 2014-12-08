@@ -238,8 +238,10 @@ class NewznabProvider(generic.NZBProvider):
 
     def _checkAuthFromData(self, data):
 
-        if not (data.entries and data.feed):
-            return self._checkAuth()
+        try:
+            data['feed']
+            data['entries']
+        except:return self._checkAuth()
 
         try:
             err_code = int(data['feed']['error']['code'] or 0)
