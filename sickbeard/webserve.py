@@ -211,6 +211,7 @@ class WebHandler(BaseHandler):
     def write_error(self, status_code, **kwargs):
         if status_code == 404:
             self.redirect(sickbeard.WEB_ROOT + '/home/')
+            return
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
             trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
@@ -993,6 +994,7 @@ class Home(WebRoot):
 
         if str(pid) != str(sickbeard.PID):
             self.redirect("/home/")
+            return
 
         sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
 
@@ -1005,6 +1007,7 @@ class Home(WebRoot):
 
         if str(pid) != str(sickbeard.PID):
             self.redirect("/home/")
+            return
 
         t = PageTemplate(rh=self, file="restart.tmpl")
         t.submenu = MenuHandler().HomeMenu()
@@ -1018,6 +1021,7 @@ class Home(WebRoot):
 
         if str(pid) != str(sickbeard.PID):
             self.redirect("/home/")
+            return
 
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
         if updated:
@@ -1724,6 +1728,7 @@ class Home(WebRoot):
 
         if eps is None:
             self.redirect("/home/displayShow?show=" + show)
+            return
 
         myDB = db.DBConnection()
         for curEp in eps.split('|'):
@@ -2331,6 +2336,7 @@ class NewHomeAddShows(Home):
             # if there are no extra shows then go home
             if not other_shows:
                 self.redirect('/home/')
+                return
 
             # peel off the next one
             next_show_dir = other_shows[0]
@@ -2356,6 +2362,8 @@ class NewHomeAddShows(Home):
                            logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
                 self.redirect('/home/addShows/existingShows/')
+                return
+
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
             show_name = series_pieces[4]
@@ -2378,6 +2386,7 @@ class NewHomeAddShows(Home):
         if ek.ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
             self.redirect('/home/addShows/existingShows/')
+            return
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2389,6 +2398,7 @@ class NewHomeAddShows(Home):
                 ui.notifications.error("Unable to add show",
                                        "Unable to create the folder " + show_dir + ", can't add the show")
                 self.redirect("/home/")
+                return
             else:
                 helpers.chmodAsParent(show_dir)
 
@@ -2494,6 +2504,7 @@ class NewHomeAddShows(Home):
         # if we're done then go home
         if not dirs_only:
             self.redirect('/home/')
+            return
 
         # for the remaining shows we need to prompt for each one, so forward this on to the newShow page
         return self.newShow(dirs_only[0], dirs_only[1:])
@@ -2779,6 +2790,7 @@ class Manage(WebRoot):
 
         if not toEdit:
             self.redirect("/manage/")
+            return
 
         showIDs = toEdit.split("|")
         showList = []
@@ -3164,6 +3176,7 @@ class Manage(WebRoot):
 
         if toRemove:
             self.redirect('/manage/failedDownloads/')
+            return
 
         t = PageTemplate(rh=self, file="manage_failedDownloads.tmpl")
         t.failedResults = sqlResults
