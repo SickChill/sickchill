@@ -40,17 +40,17 @@ class RSSFeeds:
         if post_data:
             url += urllib.urlencode(post_data)
 
+        data = dict.fromkeys(items, None)
+
         try:
             fc = Cache(self.rssDB)
             resp = fc.fetch(url, False, False, request_headers)
 
-            data = {}
             for item in items:
-                try:
-                    data[item] = resp[item]
-                except:
-                    data[item] = None
+                try:data[item] = resp[item]
+                except:continue
 
-            return data
         finally:
             self.rssDB.close()
+
+        return data
