@@ -286,11 +286,12 @@ class WebHandler(BaseHandler):
 
     def taskFinished(self, result, route):
         try:
-            if result:
-                # encode result data
-                try:result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
-                except:pass
+            # encode results
+            try:result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace') if result else None
+            except:pass
 
+            # ignore empty results
+            if result:
                 # Check JSONP callback
                 jsonp_callback = self.get_argument('callback_func', default=None)
 
@@ -2108,8 +2109,11 @@ class NewHomeAddShows(Home):
 
             for cur_file in file_list:
 
-                cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
-                if not ek.ek(os.path.isdir, cur_path):
+                try:
+                    cur_path = ek.ek(os.path.normpath, ek.ek(os.path.join, root_dir, cur_file))
+                    if not ek.ek(os.path.isdir, cur_path):
+                        continue
+                except:
                     continue
 
                 cur_dir = {
