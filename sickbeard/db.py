@@ -65,6 +65,7 @@ class DBConnection(object):
         self.close()
         self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
         self.connection.isolation_level = None
+        self.connection.text_factory = self._unicode_text_factory
 
         if self.row_type == "dict":
             self.connection.row_factory = self._dict_factory
@@ -94,9 +95,17 @@ class DBConnection(object):
             cursor.close()
 
     def _execute(self, cursor, query, args):
+        def convert(x):
+            if isinstance(x, basestring):
+                try:
+                    x = unicode(x).decode(sickbeard.SYS_ENCODING)
+                except:
+                    pass
+            return x
         try:
-            if args == None:
+            if not args:
                 return cursor.execute(query)
+            #args = map(convert, args)
             return cursor.execute(query, args)
         except sqlite3.OperationalError as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
@@ -244,6 +253,9 @@ class DBConnection(object):
         for column in sqlResult:
             columns[column['name']] = {'type': column['type']}
         return columns
+
+    def _unicode_text_factory(self, x):
+        return unicode(x, 'utf-8')
 
     # http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
     def _dict_factory(self, cursor, row):
