@@ -286,12 +286,18 @@ class SBRotatingLogHandler(object):
             out_line = ek.ss(message)
 
             sb_logger = logging.getLogger('sickbeard')
-            setattr(sb_logger, 'db', lambda *args: sb_logger.log(DB, *args))
-
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
             tornado_logger = logging.getLogger('tornado')
             feedcache_logger = logging.getLogger('feedcache')
+            setattr(sb_logger, 'db', lambda *args: sb_logger.log(DB, *args))
+
+            # filtering
+            sb_logger.addFilter(self.blacklistFilter)
+            sub_logger.addFilter(self.blacklistFilter)
+            imdb_logger.addFilter(self.blacklistFilter)
+            tornado_logger.addFilter(self.blacklistFilter)
+            feedcache_logger.addFilter(self.blacklistFilter)
 
             try:
                 if logLevel == DEBUG:
