@@ -74,6 +74,9 @@ class ApiHandler(RequestHandler):
     version = 4  # use an int since float-point is unpredictible
     intent = 4
 
+    def __init__(self, *args, **kwargs):
+        super(ApiHandler, self).__init__(*args, **kwargs)
+
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
 

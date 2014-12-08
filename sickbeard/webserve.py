@@ -139,15 +139,18 @@ class PageTemplate(Template):
         return super(PageTemplate, self).compile(*args, **kwargs)
 
 class BaseHandler(RequestHandler):
+    def __init__(self, *args, **kwargs):
+        super(BaseHandler, self).__init__(*args, **kwargs)
+
     def get_current_user(self, *args, **kwargs):
-        if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+        if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
             return self.get_secure_cookie('user')
         else:
             return True
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = Home().HomeMenu()
         t.subject = subject
         t.message = message
         return t
@@ -297,64 +300,6 @@ class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("user")
         self.redirect('%slogin/' % sickbeard.WEB_ROOT)
-
-class MenuHandler(BaseHandler):
-    def __init__(self):
-        pass
-
-    def HomeMenu(self, *args, **kwargs):
-        menu = [
-            {'title': 'Add Shows', 'path': 'home/addShows/', },
-            {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
-            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI},
-            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX},
-            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents', 'requires': self.haveTORRENT},
-            {'title': 'Restart', 'path': 'home/restart/?pid=' + str(sickbeard.PID), 'confirm': True},
-            {'title': 'Shutdown', 'path': 'home/shutdown/?pid=' + str(sickbeard.PID), 'confirm': True},
-        ]
-
-        return menu
-
-    def ConfigMenu(self, *args, **kwargs):
-        menu = [
-            {'title': 'General', 'path': 'config/general/'},
-            {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
-            {'title': 'Search Settings', 'path': 'config/search/'},
-            {'title': 'Search Providers', 'path': 'config/providers/'},
-            {'title': 'Subtitles Settings', 'path': 'config/subtitles/'},
-            {'title': 'Post Processing', 'path': 'config/postProcessing/'},
-            {'title': 'Notifications', 'path': 'config/notifications/'},
-            {'title': 'Anime', 'path': 'config/anime/'},
-        ]
-
-        return menu
-
-    def ManageMenu(self, *args, **kwargs):
-        menu = [
-            {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
-            {'title': 'Manage Searches', 'path': 'manage/manageSearches/'},
-            {'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/'}, ]
-
-        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
-                and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
-                     or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
-            menu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/'})
-
-        if sickbeard.USE_SUBTITLES:
-            menu.append({'title': 'Missed Subtitle Management', 'path': 'manage/subtitleMissed/'})
-
-        if sickbeard.USE_FAILED_DOWNLOADS:
-            menu.append({'title': 'Failed Downloads', 'path': 'manage/failedDownloads/'})
-
-        return menu
-
-    def ErrorLogsMenu(self, *args, **kwargs):
-        menu = [
-            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
-            # { 'title': 'View Log',  'path': 'errorlogs/viewlog'  },
-        ]
-
-        return menu
 
 @route('(.*)(/?)')
 class WebRoot(WebHandler):
@@ -684,6 +629,19 @@ class WebFileBrowser(WebRoot):
 
 @route('/home/(.*)(/?)')
 class Home(WebRoot):
+    def HomeMenu(self, *args, **kwargs):
+        menu = [
+            {'title': 'Add Shows', 'path': 'home/addShows/', },
+            {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
+            {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI},
+            {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX},
+            {'title': 'Manage Torrents', 'path': 'manage/manageTorrents', 'requires': self.haveTORRENT},
+            {'title': 'Restart', 'path': 'home/restart/?pid=' + str(sickbeard.PID), 'confirm': True},
+            {'title': 'Shutdown', 'path': 'home/shutdown/?pid=' + str(sickbeard.PID), 'confirm': True},
+        ]
+
+        return menu
+
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="home.tmpl")
         if sickbeard.ANIME_SPLIT_HOME:
@@ -699,7 +657,7 @@ class Home(WebRoot):
         else:
             t.showlists = [["Shows", sickbeard.showList]]
 
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         return t
 
@@ -1013,7 +971,7 @@ class Home(WebRoot):
             return
 
         t = PageTemplate(rh=self, file="restart.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         # restart
         sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
@@ -1222,7 +1180,7 @@ class Home(WebRoot):
 
         if not location and not anyQualities and not bestQualities and not flatten_folders:
             t = PageTemplate(rh=self, file="editShow.tmpl")
-            t.submenu = MenuHandler().HomeMenu()
+            t.submenu = self.HomeMenu()
 
             if showObj.is_anime:
                 bwl = BlackAndWhiteList(showObj.indexerid)
@@ -1983,7 +1941,7 @@ class HomePostProcess(Home):
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="home_postprocess.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
         return t
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
@@ -2020,7 +1978,7 @@ class NewHomeAddShows(Home):
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="home_addShows.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
         return t
 
 
@@ -2074,7 +2032,7 @@ class NewHomeAddShows(Home):
 
     def massAddTable(self, rootDir=None):
         t = PageTemplate(rh=self, file="home_massAddTable.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         if not rootDir:
             return "No folders selected."
@@ -2160,7 +2118,7 @@ class NewHomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_newShow.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
 
@@ -2204,7 +2162,7 @@ class NewHomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_recommendedShows.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         return t
 
@@ -2254,7 +2212,7 @@ class NewHomeAddShows(Home):
         posts them to addNewShow
         """
         t = PageTemplate(rh=self, file="home_trendingShows.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         t.trending_shows = []
 
@@ -2281,7 +2239,7 @@ class NewHomeAddShows(Home):
         Prints out the page to add existing shows from a root dir
         """
         t = PageTemplate(rh=self, file="home_addExistingShow.tmpl")
-        t.submenu = MenuHandler().HomeMenu()
+        t.submenu = self.HomeMenu()
 
         return t
 
@@ -2514,9 +2472,28 @@ class NewHomeAddShows(Home):
 
 @route('/manage/(.*)(/?)')
 class Manage(WebRoot):
+    def ManageMenu(self, *args, **kwargs):
+        menu = [
+            {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
+            {'title': 'Manage Searches', 'path': 'manage/manageSearches/'},
+            {'title': 'Episode Status Management', 'path': 'manage/episodeStatuses/'}, ]
+
+        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' \
+                and (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https'
+                     or not sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
+            menu.append({'title': 'Manage Torrents', 'path': 'manage/manageTorrents/'})
+
+        if sickbeard.USE_SUBTITLES:
+            menu.append({'title': 'Missed Subtitle Management', 'path': 'manage/subtitleMissed/'})
+
+        if sickbeard.USE_FAILED_DOWNLOADS:
+            menu.append({'title': 'Failed Downloads', 'path': 'manage/failedDownloads/'})
+
+        return menu
+
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="manage.tmpl")
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
         return t
 
 
@@ -2553,7 +2530,7 @@ class Manage(WebRoot):
             status_list = []
 
         t = PageTemplate(rh=self, file="manage_episodeStatuses.tmpl")
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
         t.whichStatus = whichStatus
 
         # if we have no status then this is as far as we need to go
@@ -2662,7 +2639,7 @@ class Manage(WebRoot):
     def subtitleMissed(self, whichSubs=None):
 
         t = PageTemplate(rh=self, file="manage_subtitleMissed.tmpl")
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
         t.whichSubs = whichSubs
 
         if not whichSubs:
@@ -2747,7 +2724,7 @@ class Manage(WebRoot):
     def backlogOverview(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="manage_backlogOverview.tmpl")
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
 
         showCounts = {}
         showCats = {}
@@ -2789,7 +2766,7 @@ class Manage(WebRoot):
     def massEdit(self, toEdit=None):
 
         t = PageTemplate(rh=self, file="manage_massEdit.tmpl")
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
 
         if not toEdit:
             self.redirect("/manage/")
@@ -3141,7 +3118,7 @@ class Manage(WebRoot):
 
         t = PageTemplate(rh=self, file="manage_torrents.tmpl")
         t.info_download_station = ''
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
 
         if re.search('localhost', sickbeard.TORRENT_HOST):
 
@@ -3184,7 +3161,7 @@ class Manage(WebRoot):
         t = PageTemplate(rh=self, file="manage_failedDownloads.tmpl")
         t.failedResults = sqlResults
         t.limit = limit
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
 
         return t
 
@@ -3199,7 +3176,7 @@ class ManageSearches(Manage):
         t.findPropersStatus = sickbeard.properFinderScheduler.action.amActive  # @UndefinedVariable
         t.queueLength = sickbeard.searchQueueScheduler.action.queue_length()
 
-        t.submenu = MenuHandler().ManageMenu()
+        t.submenu = self.ManageMenu()
 
         return t
 
@@ -3343,9 +3320,23 @@ class History(WebRoot):
 
 @route('/config/(.*)(/?)')
 class Config(WebRoot):
+    def ConfigMenu(self, *args, **kwargs):
+        menu = [
+            {'title': 'General', 'path': 'config/general/'},
+            {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
+            {'title': 'Search Settings', 'path': 'config/search/'},
+            {'title': 'Search Providers', 'path': 'config/providers/'},
+            {'title': 'Subtitles Settings', 'path': 'config/subtitles/'},
+            {'title': 'Post Processing', 'path': 'config/postProcessing/'},
+            {'title': 'Notifications', 'path': 'config/notifications/'},
+            {'title': 'Anime', 'path': 'config/anime/'},
+        ]
+
+        return menu
+
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
 
         return t
 
@@ -3354,7 +3345,7 @@ class ConfigGeneral(Config):
 
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_general.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -3488,7 +3479,7 @@ class ConfigGeneral(Config):
 class ConfigBackupRestore(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_backuprestore.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
     def backup(self, backupDir=None):
@@ -3536,7 +3527,7 @@ class ConfigSearch(Config):
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="config_search.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -3628,7 +3619,7 @@ class ConfigPostProcessing(Config):
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="config_postProcessing.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -3826,7 +3817,7 @@ class ConfigPostProcessing(Config):
 class ConfigProviders(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_providers.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -4264,7 +4255,7 @@ class ConfigProviders(Config):
 class ConfigNotifications(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_notifications.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -4473,7 +4464,7 @@ class ConfigNotifications(Config):
 class ConfigSubtitles(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_subtitles.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -4537,7 +4528,7 @@ class ConfigAnime(Config):
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="config_anime.tmpl")
-        t.submenu = MenuHandler().ConfigMenu()
+        t.submenu = self.ConfigMenu()
         return t
 
 
@@ -4566,10 +4557,18 @@ class ConfigAnime(Config):
 
 @route('/errorlogs/(.*)(/?)')
 class ErrorLogs(WebRoot):
+    def ErrorLogsMenu(self, *args, **kwargs):
+        menu = [
+            {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
+            # { 'title': 'View Log',  'path': 'errorlogs/viewlog'  },
+        ]
+
+        return menu
+
     def index(self, *args, **kwargs):
 
         t = PageTemplate(rh=self, file="errorlogs.tmpl")
-        t.submenu = MenuHandler().ErrorLogsMenu()
+        t.submenu = self.ErrorLogsMenu()
 
         return t
 
@@ -4582,7 +4581,7 @@ class ErrorLogs(WebRoot):
     def viewlog(self, minLevel=logger.MESSAGE, maxLines=500):
 
         t = PageTemplate(rh=self, file="viewlogs.tmpl")
-        t.submenu = MenuHandler().ErrorLogsMenu()
+        t.submenu = self.ErrorLogsMenu()
 
         minLevel = int(minLevel)
 
