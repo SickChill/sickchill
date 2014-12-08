@@ -63,7 +63,9 @@ class TvTorrentsProvider(generic.TorrentProvider):
         if not (data.entries and data.feed):
             return self._checkAuth()
 
-        title = data.feed.get('title', None)
+        try:title = data['feed']['title']
+        except:return False
+
         if "User can't be found" in title or "Invalid Hash" in title:
             logger.log(u"Incorrect authentication credentials for " + self.name + " : " + str(title),
                        logger.DEBUG)
