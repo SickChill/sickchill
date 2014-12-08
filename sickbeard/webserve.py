@@ -288,7 +288,8 @@ class WebHandler(BaseHandler):
         try:
             if result:
                 # encode result data
-                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
+                try:result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
+                except:pass
 
                 # Check JSONP callback
                 jsonp_callback = self.get_argument('callback_func', default=None)
