@@ -30,9 +30,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
 
-db_lock = threading.Lock()
-
-
 def dbFilename(filename="sickbeard.db", suffix=None):
     """
     @param filename: The sqlite database filename to use. If not specified,
@@ -46,13 +43,14 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
 
-class DBConnection(object):
+class DBConnection(threading.Thread):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
         self.suffix = suffix
         self.row_type = row_type
         self.connection = None
+        self.db_lock = threading.Lock()
 
         try:
             self.reconnect()
@@ -64,16 +62,18 @@ class DBConnection(object):
         """Closes the existing database connection and re-opens it."""
         self.close()
         self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-        self.connection.isolation_level = None
+        self.connection.execute("pragma synchronous = off")
+        self.connection.execute("pragma temp_store = memory")
+        self.connection.execute("pragma journal_mode = memory")
+        self.connection.execute("pragma secure_delete = false")
+        self.connection.execute("pragma foreign_keys = on")
         self.connection.text_factory = self._unicode_text_factory
+        self.connection.isolation_level = None
 
         if self.row_type == "dict":
             self.connection.row_factory = self._dict_factory
         else:
             self.connection.row_factory = sqlite3.Row
-
-    def __del__(self):
-        self.close()
 
     def _cursor(self):
         """Returns the cursor; reconnects if disconnected."""
@@ -82,8 +82,8 @@ class DBConnection(object):
 
     def execute(self, query, args=None, fetchall=False, fetchone=False):
         """Executes the given query, returning the lastrowid from the query."""
-        cursor = self._cursor()
 
+        cursor = self._cursor()
         try:
             if fetchall:
                 return self._execute(cursor, query, args).fetchall()
@@ -102,11 +102,13 @@ class DBConnection(object):
                 except:
                     pass
             return x
+
         try:
-            if not args:
-                return cursor.execute(query)
-            #args = map(convert, args)
-            return cursor.execute(query, args)
+            with self.db_lock:
+                if not args:
+                    return cursor.execute(query)
+                #args = map(convert, args)
+                return cursor.execute(query, args)
         except sqlite3.OperationalError as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             self.close()
@@ -128,88 +130,83 @@ class DBConnection(object):
             return 0
 
     def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
+        # remove None types
+        querylist = [i for i in querylist if i is not None]
 
-        with db_lock:
-            # remove None types
-            querylist = [i for i in querylist if i is not None]
+        sqlResult = []
+        attempt = 0
 
-            sqlResult = []
-            attempt = 0
+        while attempt < 5:
+            try:
+                for qu in querylist:
+                    if len(qu) == 1:
+                        if logTransaction:
+                            logger.log(qu[0], logger.DEBUG)
+                        sqlResult.append(self.execute(qu[0], fetchall=fetchall))
+                    elif len(qu) > 1:
+                        if logTransaction:
+                            logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
+                        sqlResult.append(self.execute(qu[0], qu[1], fetchall=fetchall))
 
-            while attempt < 5:
-                try:
-                    for qu in querylist:
-                        if len(qu) == 1:
-                            if logTransaction:
-                                logger.log(qu[0], logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], fetchall=fetchall))
-                        elif len(qu) > 1:
-                            if logTransaction:
-                                logger.log(qu[0] + " with args " + str(qu[1]), logger.DEBUG)
-                            sqlResult.append(self.execute(qu[0], qu[1], fetchall=fetchall))
+                logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
 
-                    logger.log(u"Transaction with " + str(len(querylist)) + u" queries executed", logger.DEBUG)
-
-                    # finished
-                    break
-                except sqlite3.OperationalError, e:
-                    sqlResult = []
-                    if self.connection:
-                        self.connection.rollback()
-                    if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
-                        logger.log(u"DB error: " + ex(e), logger.WARNING)
-                        attempt += 1
-                        time.sleep(1)
-                    else:
-                        logger.log(u"DB error: " + ex(e), logger.ERROR)
-                        raise
-                except sqlite3.DatabaseError, e:
-                    sqlResult = []
-                    if self.connection:
-                        self.connection.rollback()
-                    logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                # finished
+                break
+            except sqlite3.OperationalError, e:
+                sqlResult = []
+                if self.connection:
+                    self.connection.rollback()
+                if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
+                    logger.log(u"DB error: " + ex(e), logger.WARNING)
+                    attempt += 1
+                    time.sleep(1)
+                else:
+                    logger.log(u"DB error: " + ex(e), logger.ERROR)
                     raise
+            except sqlite3.DatabaseError, e:
+                sqlResult = []
+                if self.connection:
+                    self.connection.rollback()
+                logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                raise
 
-            #time.sleep(0.02)
+        #time.sleep(0.02)
 
-            return sqlResult
+        return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
+        if query == None:
+            return
 
-        with db_lock:
+        sqlResult = None
+        attempt = 0
 
-            if query == None:
-                return
+        while attempt < 5:
+            try:
+                if args == None:
+                    logger.log(self.filename + ": " + query, logger.DB)
+                else:
+                    logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
 
-            sqlResult = None
-            attempt = 0
+                sqlResult = self.execute(query, args, fetchall=fetchall, fetchone=fetchone)
 
-            while attempt < 5:
-                try:
-                    if args == None:
-                        logger.log(self.filename + ": " + query, logger.DB)
-                    else:
-                        logger.log(self.filename + ": " + query + " with args " + str(args), logger.DB)
-
-                    sqlResult = self.execute(query, args, fetchall=fetchall, fetchone=fetchone)
-
-                    # get out of the connection attempt loop since we were successful
-                    break
-                except sqlite3.OperationalError, e:
-                    if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
-                        logger.log(u"DB error: " + ex(e), logger.WARNING)
-                        attempt += 1
-                        time.sleep(1)
-                    else:
-                        logger.log(u"DB error: " + ex(e), logger.ERROR)
-                        raise
-                except sqlite3.DatabaseError, e:
-                    logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                # get out of the connection attempt loop since we were successful
+                break
+            except sqlite3.OperationalError, e:
+                if "unable to open database file" in e.args[0] or "database is locked" in e.args[0]:
+                    logger.log(u"DB error: " + ex(e), logger.WARNING)
+                    attempt += 1
+                    time.sleep(1)
+                else:
+                    logger.log(u"DB error: " + ex(e), logger.ERROR)
                     raise
+            except sqlite3.DatabaseError, e:
+                logger.log(u"Fatal error executing query: " + ex(e), logger.ERROR)
+                raise
 
-            #time.sleep(0.02)
+        #time.sleep(0.02)
 
-            return sqlResult
+        return sqlResult
 
     def select(self, query, args=None):
 
@@ -246,8 +243,6 @@ class DBConnection(object):
             self.action(query, valueDict.values() + keyDict.values())
 
     def tableInfo(self, tableName):
-
-        # FIXME ? binding is not supported here, but I cannot find a way to escape a string manually
         sqlResult = self.select("PRAGMA table_info(%s)" % tableName)
         columns = {}
         for column in sqlResult:
@@ -257,7 +252,6 @@ class DBConnection(object):
     def _unicode_text_factory(self, x):
         return unicode(x, 'utf-8')
 
-    # http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
     def _dict_factory(self, cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
