@@ -75,6 +75,8 @@ class ApiHandler(RequestHandler):
     intent = 4
 
     def get(self, *args, **kwargs):
+        kwargs = self.request.arguments
+
         # set the output callback
         # default json
         outputCallbackDict = {'default': self._out_as_json,
@@ -84,14 +86,16 @@ class ApiHandler(RequestHandler):
         # set the original call_dispatcher as the local _call_dispatcher
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
-        if self.get_argument('profile', None):
+        if 'profile' in kwargs:
             from lib.profilehooks import profile
 
             _call_dispatcher = profile(_call_dispatcher, immediate=True)
+            del kwargs["profile"]
 
         # if debug was set call the "_call_dispatcher"
-        if self.get_argument('debug', None):
+        if 'debug' in kwargs:
             outDict = _call_dispatcher(args, kwargs)  # this way we can debug the cherry.py traceback in the browser
+            del kwargs["debug"]
         else:  # if debug was not set we wrap the "call_dispatcher" in a try block to assure a json output
             try:
                 outDict = _call_dispatcher(args, kwargs)
@@ -130,7 +134,8 @@ class ApiHandler(RequestHandler):
             or calls the TVDBShorthandWrapper when the first args element is a number
             or returns an error that there is no such cmd
         """
-        logger.log(u"API :: all args: '" + str(self.get_arguments('cmd')) + "'", logger.DEBUG)
+        logger.log(u"API :: all args: '" + str(args) + "'", logger.DEBUG)
+        logger.log(u"API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
         # logger.log(u"API :: dateFormat: '" + str(dateFormat) + "'", logger.DEBUG)
 
         cmds = None
@@ -144,7 +149,6 @@ class ApiHandler(RequestHandler):
 
         outDict = {}
         if cmds != None:
-            cmds = cmds.split("|")
             multiCmds = bool(len(cmds) > 1)
             for cmd in cmds:
                 curArgs, curKwargs = self.filter_params(cmd, args, kwargs)
@@ -233,7 +237,7 @@ class ApiCall(ApiHandler):
             pass
 
         # help
-        if self.get_argument('help', None):
+        if 'help' in kwargs:
             self.run = self.return_help
 
     def run(self):
@@ -310,7 +314,7 @@ class ApiCall(ApiHandler):
             missing = False
             args = args[1:]
         if kwargs.get(key):
-            default = kwargs.get(key)
+            default = kwargs.get(key)[0]
             missing = False
         if required:
             try:
@@ -2229,7 +2233,7 @@ class CMD_ShowDelete(ApiCall):
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
             # remove show from trakt.tv library
             sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
-        
+
         showObj.deleteShow(bool(self.removefiles))
 
         return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been deleted")
