@@ -17,8 +17,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import threading
 
+import threading
 import traceback
 import os
 import time
@@ -75,10 +75,30 @@ except ImportError:
 
 from Cheetah.Template import Template
 
+from functools import wraps
 from tornado.routes import route
 from tornado.web import RequestHandler, authenticated, asynchronous
 
 from bug_tracker import BugTracker
+
+route_locks = {}
+
+def run_async(func):
+    @wraps(func)
+    def async_func(*args, **kwargs):
+        func_hl = threading.Thread(target = func, args = args, kwargs = kwargs)
+        func_hl.start()
+
+    return async_func
+
+@run_async
+def run_handler(route, kwargs, callback = None):
+    try:
+        res = route(**kwargs)
+        callback(res, route)
+    except:
+        logger.log('Failed doing api request "%s": %s' % (route, traceback.format_exc()), logger.ERROR)
+        callback({'success': False, 'error': 'Failed returning results'}, route)
 
 def page_not_found(rh):
     index_url = sickbeard.WEB_ROOT
@@ -90,23 +110,6 @@ def page_not_found(rh):
     else:
         rh.set_status(404)
         rh.write('Wrong API key used')
-
-class Worker(threading.Thread):
-    def __init__(self, func, params=None, callback=None, *args, **kwargs):
-        super(Worker, self).__init__(*args, **kwargs)
-        self.callback = callback
-        self.func = func
-        self.params = params
-
-    def run(self):
-        # Get response
-        resp = self.func(**self.params)
-        if resp:
-            # Issue callback
-            try:
-                self.callback(ek.ss(resp).encode('utf-8', 'xmlcharrefreplace'))
-            except:
-                self.callback(resp)
 
 class PageTemplate(Template):
     def __init__(self, rh, *args, **kwargs):
@@ -260,31 +263,52 @@ class WebHandler(BaseHandler):
         route = route.strip('/')
 
         try:
-            route = getattr(self, route, self.index)
-            if not callable(route):
-                self.set_status(404)
-                self.write('Could not load webui module')
-                return
+            route = getattr(self, route)
         except:
-            page_not_found(self)
-            return
+            route = getattr(self, 'index')
 
-        # Sanitize argument lists:
-        params = self.request.arguments
-        for arg, value in params.items():
-            if len(value) == 1:
-                params[arg] = value[0]
+        # acquire route lock
+        route_locks[route] = threading.Lock()
+        route_locks[route].acquire()
 
-        Worker(route, params, self.worker_done).start()
-
-    def worker_done(self, value):
         try:
-            self.write(value)
+
+            # Sanitize argument lists:
+            kwargs = self.request.arguments
+            for arg, value in kwargs.items():
+                if len(value) == 1:
+                    kwargs[arg] = value[0]
+
+            run_handler(route, kwargs, callback=self.taskFinished)
+        except:
+            route_locks[route].release()
+            page_not_found(self)
+
+    def taskFinished(self, result, route):
+        try:
+            if result:
+                # encode result data
+                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
+
+                # Check JSONP callback
+                jsonp_callback = self.get_argument('callback_func', default=None)
+
+                if jsonp_callback:
+                    self.write(str(jsonp_callback) + '(' + json.dumps(result) + ')')
+                    self.set_header("Content-Type", "text/javascript")
+                    self.finish()
+                else:
+                    self.write(result)
+                    self.finish()
+        except UnicodeDecodeError:
+            logger.log('Failed proper encode: %s' % traceback.format_exc(), logger.ERROR)
         except:
             logger.log("Failed doing web request '%s': %s" % (route, traceback.format_exc()), logger.ERROR)
-            self.write({'success': False, 'error': 'Failed returning results'})
+            try:self.finish({'success': False, 'error': 'Failed returning results'})
+            except:pass
 
-        self.finish()
+        # release route lock
+        route_locks[route].release()
 
     # link post to get
     post = get
