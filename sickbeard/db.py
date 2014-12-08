@@ -42,43 +42,15 @@ def dbFilename(filename="sickbeard.db", suffix=None):
         filename = "%s.%s" % (filename, suffix)
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
-class Cursor:
-    def __init__(self, cursor):
-        self.cursor = cursor
-        self.lock = threading.Lock()
 
-    def execute(self, query, args):
-        self.lock.acquire()
-
-        def convert(x):
-            if isinstance(x, basestring):
-                try:
-                    x = unicode(x).decode(sickbeard.SYS_ENCODING)
-                except:
-                    pass
-            return x
-
-        try:
-            if not args:
-                return self.cursor.execute(query)
-            # args = map(convert, args)
-            return self.cursor.execute(query, args)
-        except Exception as e:
-            raise e
-        finally:
-            self.lock.release()
-
-    def close(self):
-        self.cursor.close()
-
-class DBConnection(object):
+class DBConnection(threading.Thread):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
         self.suffix = suffix
         self.row_type = row_type
         self.connection = None
-        self.cursor = None
+        self.db_lock = threading.Lock()
 
         try:
             self.reconnect()
@@ -90,7 +62,6 @@ class DBConnection(object):
         """Closes the existing database connection and re-opens it."""
         self.close()
         self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-
         self.connection.execute("pragma synchronous = off")
         self.connection.execute("pragma temp_store = memory")
         self.connection.execute("pragma journal_mode = memory")
@@ -104,22 +75,44 @@ class DBConnection(object):
         else:
             self.connection.row_factory = sqlite3.Row
 
-        self.cursor = Cursor(self.connection.cursor())
+    def _cursor(self):
+        """Returns the cursor; reconnects if disconnected."""
+        if self.connection is None: self.reconnect()
+        return self.connection.cursor()
 
     def execute(self, query, args=None, fetchall=False, fetchone=False):
-        if self.connection is None: self.reconnect()
+        """Executes the given query, returning the lastrowid from the query."""
 
+        cursor = self._cursor()
         try:
             if fetchall:
-                return self.cursor.execute(query, args).fetchall()
+                return self._execute(cursor, query, args).fetchall()
             elif fetchone:
-                return self.cursor.execute(query, args).fetchone()
+                return self._execute(cursor, query, args).fetchone()
             else:
-                return self.cursor.execute(query, args)
-        except:
-            self.close()
+                return self._execute(cursor, query, args)
         finally:
-            self.cursor.close()
+            cursor.close()
+
+    def _execute(self, cursor, query, args):
+        def convert(x):
+            if isinstance(x, basestring):
+                try:
+                    x = unicode(x).decode(sickbeard.SYS_ENCODING)
+                except:
+                    pass
+            return x
+
+        try:
+            with self.db_lock:
+                if not args:
+                    return cursor.execute(query)
+                #args = map(convert, args)
+                return cursor.execute(query, args)
+        except sqlite3.OperationalError as e:
+            logger.log(u"DB error: " + ex(e), logger.ERROR)
+            self.close()
+            raise
 
     def checkDBVersion(self):
 
