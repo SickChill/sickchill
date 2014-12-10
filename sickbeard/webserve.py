@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import inspect
 
 import traceback
 import os
@@ -74,8 +75,7 @@ except ImportError:
 from Cheetah.Template import Template
 
 from tornado.routes import route
-from tornado.httpclient import AsyncHTTPClient
-from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous
+from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous, addslash
 from tornado.gen import coroutine
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
@@ -83,6 +83,7 @@ from concurrent.futures import ThreadPoolExecutor
 from bug_tracker import BugTracker
 
 route_locks = {}
+
 
 class PageTemplate(Template):
     def __init__(self, rh, *args, **kwargs):
@@ -132,6 +133,7 @@ class PageTemplate(Template):
         kwargs['cacheDirForModuleFiles'] = os.path.join(sickbeard.CACHE_DIR, 'cheetah')
         return super(PageTemplate, self).compile(*args, **kwargs)
 
+
 class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
@@ -143,8 +145,7 @@ class BaseHandler(RequestHandler):
             url = self.request.uri.replace(index_url, '')
 
             if url[:3] != 'api':
-                r = index_url + url
-                self.redirect(r)
+                self.redirect(url)
             else:
                 self.write('Wrong API key used')
         elif self.settings.get("debug") and "exc_info" in kwargs:
@@ -169,8 +170,11 @@ class BaseHandler(RequestHandler):
                                              trace_info, request_info))
 
     def redirect(self, url, permanent=False, status=None):
-        url = sickbeard.WEB_ROOT + url if sickbeard.WEB_ROOT not in url else url
-        super(BaseHandler, self).redirect(url, permanent, status)
+        if not url.endswith("/"):
+            url = url + "/"
+            permanent = True
+
+        super(BaseHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
@@ -224,6 +228,9 @@ class BaseHandler(RequestHandler):
 class WebHandler(BaseHandler):
     executor = ThreadPoolExecutor(10)
 
+    def __init__(self, *args, **kwargs):
+        super(WebHandler, self).__init__(*args, **kwargs)
+
     @coroutine
     @asynchronous
     @authenticated
@@ -232,12 +239,18 @@ class WebHandler(BaseHandler):
             route = route.strip('/').replace('.', '_') or 'index'
 
             # get route
-            method = getattr(self, route)
+            subclasses = self.__class__.__subclasses__()
+
+            try:
+                method = getattr(self, route)
+            except:
+                method = [getattr(cls, route) for cls in subclasses if getattr(cls, route, None)][0]
 
             # process request async
             self.async_worker(method, self.async_done)
         except:
             raise HTTPError(404)
+
 
     @run_on_executor
     def async_worker(self, method, callback):
@@ -265,6 +278,7 @@ class WebHandler(BaseHandler):
     # post and get use same method
     post = get
 
+
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
@@ -282,7 +296,7 @@ class LoginHandler(BaseHandler):
         password = sickbeard.WEB_PASSWORD
 
         if (self.get_argument('username') == username or not username) and (
-                self.get_argument('password') == password or not password):
+                        self.get_argument('password') == password or not password):
             api_key = sickbeard.API_KEY
 
         if api_key:
@@ -392,7 +406,7 @@ class WebRoot(WebHandler):
             if ek.ek(os.path.isfile, image_file_name):
                 image_path = image_file_name
 
-        #from mimetypes import MimeTypes
+        # from mimetypes import MimeTypes
         #mime_type, encoding = MimeTypes().guess_type(image_path)
         #self.set_header('Content-Type', mime_type)
 
@@ -1998,13 +2012,11 @@ class HomePostProcess(Home):
 
 
 @route('/home/addShows/(.*)(/?)')
-class NewHomeAddShows(Home):
+class HomeAddShows(Home):
     def index(self, *args, **kwargs):
-
         t = PageTemplate(rh=self, file="home_addShows.tmpl")
         t.submenu = self.HomeMenu()
         return t
-
 
     def getIndexerLanguages(self, *args, **kwargs):
         result = sickbeard.indexerApi().config['valid_languages']
@@ -3505,6 +3517,7 @@ class ConfigGeneral(Config):
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
         self.redirect("/config/general/")
+
 
 @route('/config/backuprestore/(.*)(/?)')
 class ConfigBackupRestore(Config):
