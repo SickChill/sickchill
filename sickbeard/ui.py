@@ -30,9 +30,6 @@ class Notifications(object):
         self._messages = []
         self._errors = []
 
-    def __del__(self):
-        pass
-
     def message(self, title, message=''):
         """
         Add a regular notification to the queue
@@ -91,9 +88,6 @@ class Notification(object):
             self._timeout = timeout
         else:
             self._timeout = datetime.timedelta(minutes=1)
-
-    def __del__(self):
-        pass
 
     def is_new(self, remote_ip='127.0.0.1'):
         """

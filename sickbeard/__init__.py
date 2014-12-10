@@ -1844,9 +1844,9 @@ def launchBrowser(startPort=None):
     if not startPort:
         startPort = WEB_PORT
     if ENABLE_HTTPS:
-        browserURL = 'https://localhost:%d%s' % (startPort, WEB_ROOT)
+        browserURL = 'https://localhost:%d/' % (startPort)
     else:
-        browserURL = 'http://localhost:%d%s' % (startPort, WEB_ROOT)
+        browserURL = 'http://localhost:%d/' % (startPort)
     try:
         webbrowser.open(browserURL, 2, 1)
     except:

@@ -68,7 +68,10 @@ def ss(x):
         try:
             return u_x.encode(sickbeard.SYS_ENCODING, 'replace')
         except:
-            return u_x.encode('utf-8', 'replace')
+            try:
+                return u_x.encode('utf-8', 'replace')
+            except:
+                return x
 
 def fixListEncodings(x):
     if not isinstance(x, (list, tuple)):
