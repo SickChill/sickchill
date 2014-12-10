@@ -96,6 +96,7 @@ class SRWebServer(threading.Thread):
 
         # Main Handlers
         self.app.add_handlers('.*$', [
+            (r'/', RedirectHandler, {"url": self.options['web_root'] + '/home/'}),
             (r'%s(/?)' % self.options['api_root'], ApiHandler),
             (r'%s/getkey(/?)' % self.options['web_root'], KeyHandler),
             (r'%s/api/builder' % self.options['web_root'], RedirectHandler,
