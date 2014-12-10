@@ -12,12 +12,10 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
 
+
 class MultiStaticFileHandler(StaticFileHandler):
     def initialize(self, paths):
         self.paths = paths
-
-    def set_extra_headers(self, path):
-        self.set_header("Cache-control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def get(self, path, include_body=True):
         for staticPath in self.paths:
@@ -28,7 +26,7 @@ class MultiStaticFileHandler(StaticFileHandler):
                 if e.status_code == 404:
                     continue
                 raise
-        self.set_status(404)
+        raise HTTPError(404)
 
 
 class SRWebServer(threading.Thread):
@@ -96,16 +94,14 @@ class SRWebServer(threading.Thread):
 
         # Main Handlers
         self.app.add_handlers('.*$', [
-            (r'/', RedirectHandler, {"url": self.options['web_root'] + '/home/'}),
             (r'%s(/?)' % self.options['api_root'], ApiHandler),
             (r'%s/getkey(/?)' % self.options['web_root'], KeyHandler),
-            (r'%s/api/builder' % self.options['web_root'], RedirectHandler,
-             {"url": self.options['web_root'] + '/apibuilder/'}),
+            (r'%s/api/builder' % self.options['web_root'], RedirectHandler, {"url": self.options['web_root'] + '/apibuilder'}),
             (r'%s/login(/?)' % self.options['web_root'], LoginHandler),
             (r'%s/logout(/?)' % self.options['web_root'], LogoutHandler),
         ] + route.get_routes(self.options['web_root']))
 
-        # Static Path Handlers
+        # Static Handlers
         self.app.add_handlers(".*$", [
             (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
              {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),

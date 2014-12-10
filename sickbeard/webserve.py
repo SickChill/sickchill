@@ -17,9 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import inspect
 
-import threading
 import traceback
 import os
 import time
@@ -75,10 +73,10 @@ except ImportError:
 
 from Cheetah.Template import Template
 
-from functools import wraps
 from tornado.routes import route
-from tornado.web import RequestHandler, HTTPError, authenticated, addslash, removeslash, asynchronous
-from tornado.gen import coroutine, Task
+from tornado.httpclient import AsyncHTTPClient
+from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous
+from tornado.gen import coroutine
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
@@ -226,13 +224,12 @@ class BaseHandler(RequestHandler):
 class WebHandler(BaseHandler):
     executor = ThreadPoolExecutor(10)
 
-    @addslash
     @coroutine
     @asynchronous
     @authenticated
     def get(self, route, *args, **kwargs):
         try:
-            route = route.strip('/') or 'index'
+            route = route.strip('/').replace('.', '_') or 'index'
 
             # get route
             method = getattr(self, route)
@@ -244,27 +241,28 @@ class WebHandler(BaseHandler):
 
     @run_on_executor
     def async_worker(self, method, callback):
-        # get params
         kwargs = self.request.arguments
         for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
 
-        # get result
         try:
-            result = ek.ss(method(**kwargs)).encode('utf-8', 'xmlcharrefreplace')
+            callback(method(**kwargs))
+        except Exception as e:
+            callback()
+
+    def async_done(self, result=None):
+        try:
+            if result:
+                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
         except:
-            result = method(**kwargs)
+            pass
 
-        # finish result
-        callback(result)
+        if result:
+            self.write(result)
+            self.finish()
 
-    def async_done(self, result):
-        # write response
-        self.write(result)
-        self.finish()
-
-    # link post to get
+    # post and get use same method
     post = get
 
 class LoginHandler(BaseHandler):
@@ -394,12 +392,12 @@ class WebRoot(WebHandler):
             if ek.ek(os.path.isfile, image_file_name):
                 image_path = image_file_name
 
-        from mimetypes import MimeTypes
+        #from mimetypes import MimeTypes
+        #mime_type, encoding = MimeTypes().guess_type(image_path)
+        #self.set_header('Content-Type', mime_type)
 
-        mime_type, encoding = MimeTypes().guess_type(image_path)
-        self.set_header('Content-Type', mime_type)
-        with file(image_path, 'rb') as img:
-            return img.read()
+        static_image_path = image_path.replace(sickbeard.CACHE_DIR, '')
+        self.redirect(static_image_path)
 
     def setHomeLayout(self, layout):
 
