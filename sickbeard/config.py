@@ -372,6 +372,8 @@ def minimax(val, default, low, high):
 def check_setting_int(config, cfg_name, item_name, def_val):
     try:
         my_val = int(config[cfg_name][item_name])
+        if str(my_val) == str(None):
+            raise
     except:
         my_val = def_val
         try:
@@ -389,6 +391,8 @@ def check_setting_int(config, cfg_name, item_name, def_val):
 def check_setting_float(config, cfg_name, item_name, def_val):
     try:
         my_val = float(config[cfg_name][item_name])
+        if str(my_val) == str(None):
+            raise
     except:
         my_val = def_val
         try:
@@ -414,6 +418,8 @@ def check_setting_str(config, cfg_name, item_name, def_val, log=True, censor_log
 
     try:
         my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
+        if str(my_val) == str(None):
+            raise
     except:
         my_val = def_val
         try:
