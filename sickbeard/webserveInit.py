@@ -102,7 +102,6 @@ class SRWebServer(threading.Thread):
              {"url": self.options['web_root'] + '/apibuilder/'}),
             (r'%s/login(/?)' % self.options['web_root'], LoginHandler),
             (r'%s/logout(/?)' % self.options['web_root'], LogoutHandler),
-            (r'/', RedirectHandler, {"url": self.options['web_root'] + '/home/'}),
         ] + route.get_routes(self.options['web_root']))
 
         # Static Path Handlers

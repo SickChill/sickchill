@@ -235,8 +235,11 @@ class WebHandler(BaseHandler):
     def get(self, route, *args, **kwargs):
         try:
             route = route.strip('/') or 'index'
+
+            # get route
             method = getattr(self, route)
 
+            # process request async
             self.async_worker(method, self.async_done)
         except:
             raise HTTPError(404)
@@ -616,7 +619,7 @@ class WebRoot(WebHandler):
         return ical
 
 
-@route('/ui/(.*)(/?)')
+@route('/ui(.*)(/?)')
 class UI(WebRoot):
     def add_message(self, *args, **kwargs):
         ui.notifications.message('Test 1', 'This is test number 1')
@@ -636,7 +639,7 @@ class UI(WebRoot):
         return json.dumps(messages)
 
 
-@route('/browser/(.*)(/?)')
+@route('/browser(.*)(/?)')
 class WebFileBrowser(WebRoot):
     def index(self, path='', includeFiles=False, *args, **kwargs):
         self.set_header("Content-Type", "application/json")
@@ -650,7 +653,7 @@ class WebFileBrowser(WebRoot):
         return json.dumps(paths)
 
 
-@route('/home/(.*)(/?)')
+@route('/home(.*)(/?)')
 class Home(WebRoot):
     def HomeMenu(self, *args, **kwargs):
         menu = [
@@ -1961,7 +1964,7 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
 
-@route('/home/postprocess/(.*)(/?)')
+@route('/home/postprocess(.*)(/?)')
 class HomePostProcess(Home):
     def index(self, *args, **kwargs):
 
@@ -1999,7 +2002,7 @@ class HomePostProcess(Home):
             return self._genericMessage("Postprocessing results", result)
 
 
-@route('/home/addShows/(.*)(/?)')
+@route('/home/addShows(.*)(/?)')
 class NewHomeAddShows(Home):
     def index(self, *args, **kwargs):
 
@@ -2500,7 +2503,7 @@ class NewHomeAddShows(Home):
         return self.newShow(dirs_only[0], dirs_only[1:])
 
 
-@route('/manage/(.*)(/?)')
+@route('/manage(.*)(/?)')
 class Manage(WebRoot):
     def ManageMenu(self, *args, **kwargs):
         menu = [
@@ -3196,7 +3199,7 @@ class Manage(WebRoot):
         return t
 
 
-@route('/manage/manageSearches/(.*)(/?)')
+@route('/manage/manageSearches(.*)(/?)')
 class ManageSearches(Manage):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="manage_manageSearches.tmpl")
@@ -3259,7 +3262,7 @@ class ManageSearches(Manage):
         self.redirect("/manage/manageSearches/")
 
 
-@route('/history/(.*)(/?)')
+@route('/history(.*)(/?)')
 class History(WebRoot):
     def index(self, limit=100):
 
@@ -3351,7 +3354,7 @@ class History(WebRoot):
         self.redirect("/history/")
 
 
-@route('/config/(.*)(/?)')
+@route('/config(.*)(/?)')
 class Config(WebRoot):
     def ConfigMenu(self, *args, **kwargs):
         menu = [
@@ -3374,7 +3377,7 @@ class Config(WebRoot):
         return t
 
 
-@route('/config/general/(.*)(/?)')
+@route('/config/general(.*)(/?)')
 class ConfigGeneral(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_general.tmpl")
@@ -3508,7 +3511,7 @@ class ConfigGeneral(Config):
 
         self.redirect("/config/general/")
 
-@route('/config/backuprestore/(.*)(/?)')
+@route('/config/backuprestore(.*)(/?)')
 class ConfigBackupRestore(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_backuprestore.tmpl")
@@ -3556,7 +3559,7 @@ class ConfigBackupRestore(Config):
         return finalResult
 
 
-@route('/config/search/(.*)(/?)')
+@route('/config/search(.*)(/?)')
 class ConfigSearch(Config):
     def index(self, *args, **kwargs):
 
@@ -3649,7 +3652,7 @@ class ConfigSearch(Config):
         self.redirect("/config/search/")
 
 
-@route('/config/postProcessing/(.*)(/?)')
+@route('/config/postProcessing(.*)(/?)')
 class ConfigPostProcessing(Config):
     def index(self, *args, **kwargs):
 
@@ -3849,7 +3852,7 @@ class ConfigPostProcessing(Config):
             return 'not supported'
 
 
-@route('/config/providers/(.*)(/?)')
+@route('/config/providers(.*)(/?)')
 class ConfigProviders(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_providers.tmpl")
@@ -4288,7 +4291,7 @@ class ConfigProviders(Config):
         self.redirect("/config/providers/")
 
 
-@route('/config/notifications/(.*)(/?)')
+@route('/config/notifications(.*)(/?)')
 class ConfigNotifications(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_notifications.tmpl")
@@ -4498,7 +4501,7 @@ class ConfigNotifications(Config):
         self.redirect("/config/notifications/")
 
 
-@route('/config/subtitles/(.*)(/?)')
+@route('/config/subtitles(.*)(/?)')
 class ConfigSubtitles(Config):
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, file="config_subtitles.tmpl")
@@ -4562,7 +4565,7 @@ class ConfigSubtitles(Config):
         self.redirect("/config/subtitles/")
 
 
-@route('/config/anime/(.*)(/?)')
+@route('/config/anime(.*)(/?)')
 class ConfigAnime(Config):
     def index(self, *args, **kwargs):
 
@@ -4595,7 +4598,7 @@ class ConfigAnime(Config):
         self.redirect("/config/anime/")
 
 
-@route('/errorlogs/(.*)(/?)')
+@route('/errorlogs(.*)(/?)')
 class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self, *args, **kwargs):
         menu = [
