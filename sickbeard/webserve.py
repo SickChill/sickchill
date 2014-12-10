@@ -142,7 +142,7 @@ class BaseHandler(RequestHandler):
         # handle 404 http errors
         if status_code == 404:
             index_url = sickbeard.WEB_ROOT
-            url = self.request.uri.replace(index_url, '')
+            url = self.request.uri[len(index_url):]
 
             if url[:3] != 'api':
                 self.redirect(url)
@@ -169,11 +169,7 @@ class BaseHandler(RequestHandler):
                                </html>""" % (error, error,
                                              trace_info, request_info))
 
-    def redirect(self, url, permanent=False, status=None):
-        if not url.endswith("/"):
-            url = url + "/"
-            permanent = True
-
+    def redirect(self, url, permanent=True, status=None):
         super(BaseHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
     def get_current_user(self, *args, **kwargs):
@@ -389,7 +385,8 @@ class WebRoot(WebHandler):
         else:
             default_image_name = 'banner.png'
 
-        image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
+        #image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
+        static_image_path = '/images/' + default_image_name
         if show and sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)):
             cache_obj = image_cache.ImageCache()
 
@@ -405,12 +402,8 @@ class WebRoot(WebHandler):
 
             if ek.ek(os.path.isfile, image_file_name):
                 image_path = image_file_name
+                static_image_path = '/cache' + image_path.replace(sickbeard.CACHE_DIR, '')
 
-        # from mimetypes import MimeTypes
-        #mime_type, encoding = MimeTypes().guess_type(image_path)
-        #self.set_header('Content-Type', mime_type)
-
-        static_image_path = image_path.replace(sickbeard.CACHE_DIR, '')
         self.redirect(static_image_path)
 
     def setHomeLayout(self, layout):

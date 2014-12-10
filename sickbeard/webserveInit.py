@@ -12,23 +12,6 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
 
-
-class MultiStaticFileHandler(StaticFileHandler):
-    def initialize(self, paths):
-        self.paths = paths
-
-    def get(self, path, include_body=True):
-        for staticPath in self.paths:
-            try:
-                super(MultiStaticFileHandler, self).initialize(staticPath)
-                return super(MultiStaticFileHandler, self).get(path.strip('/')).result()
-            except HTTPError as e:
-                if e.status_code == 404:
-                    continue
-                raise
-        raise HTTPError(404)
-
-
 class SRWebServer(threading.Thread):
     def __init__(self, options={}, io_loop=None):
         threading.Thread.__init__(self)
@@ -89,37 +72,52 @@ class SRWebServer(threading.Thread):
                                  gzip=True,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
                                  cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
-                                 login_url=r'%s/login/' % self.options['web_root'],
+                                 login_url=r'%s/login' % self.options['web_root'],
         )
 
         # Main Handlers
         self.app.add_handlers('.*$', [
+            # webapi handler
             (r'%s(/?)' % self.options['api_root'], ApiHandler),
+
+            # webapi key retrieval
             (r'%s/getkey(/?)' % self.options['web_root'], KeyHandler),
+
+            # webapi builder redirect
             (r'%s/api/builder' % self.options['web_root'], RedirectHandler, {"url": self.options['web_root'] + '/apibuilder'}),
+
+            # webui login/logout handlers
             (r'%s/login(/?)' % self.options['web_root'], LoginHandler),
             (r'%s/logout(/?)' % self.options['web_root'], LogoutHandler),
+
+            # webui handlers
         ] + route.get_routes(self.options['web_root']))
 
-        # Static Handlers
+        # Static File Handlers
         self.app.add_handlers(".*$", [
-            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s/%s(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'images'),
-                        os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s/%s(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s/%s(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'js')]}),
-        ])
+            # favicon
+            (r'%s/(favicon\.ico)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}),
 
-        # Static Videos Path
-        if self.video_root:
-            self.app.add_handlers(".*$", [
-                (r'%s/%s/(.*)' % (self.options['web_root'], 'videos'), MultiStaticFileHandler,
-                 {'paths': [self.video_root]}),
-            ])
+            # images
+            (r'%s/images/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'images')}),
+
+            # cached images
+            (r'%s/cache/images/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}),
+
+            # css
+            (r'%s/css/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'css')}),
+
+            # javascript
+            (r'%s/js/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'js')}),
+
+            # videos
+        ] + [(r'%s/videos/(.*)' % self.options['web_root'], StaticFileHandler,
+              {"path": self.video_root})])
 
     def run(self):
         if self.enable_https:
