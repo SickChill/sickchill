@@ -35,10 +35,10 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentDayProvider(generic.TorrentProvider):
-    urls = {'base_url': 'http://www.torrentday.com',
-            'login': 'http://www.torrentday.com/torrents/',
-            'search': 'http://www.torrentday.com/V3/API/API.php',
-            'download': 'http://www.torrentday.com/download.php/%s/%s'
+    urls = {'base_url': 'http://www.td.af',
+            'login': 'http://www.td.af/torrents/',
+            'search': 'http://www.td.af/V3/API/API.php',
+            'download': 'http://www.td.af/download.php/%s/%s'
     }
 
     def __init__(self):

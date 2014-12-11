@@ -238,7 +238,7 @@ class GenericProvider:
 
         title = item.get('title')
         if title:
-            title = title.replace(' ', '.')
+            title = u'' + title.replace(' ', '.')
 
         url = item.get('link')
         if url:

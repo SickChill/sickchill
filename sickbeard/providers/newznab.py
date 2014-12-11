@@ -244,9 +244,12 @@ class NewznabProvider(generic.NZBProvider):
         except:return self._checkAuth()
 
         try:
-            err_code = int(data['feed']['error']['code'] or 0)
+            err_code = int(data['feed']['error']['code'])
             err_desc = data['feed']['error']['description']
-        except:return True
+            if not err_code or err_desc:
+                raise
+        except:
+            return True
 
         if err_code == 100:
             raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
@@ -430,13 +433,7 @@ class NewznabCache(tvcache.TVCache):
         return self.provider._checkAuthFromData(data)
 
     def _parseItem(self, item):
-        (title, url) = self._get_title_and_url(item)
-
-        tvrageid = 0
-        for attr in item.get('newznab_attr', []):
-            if attr['name'] == 'tvrageid':
-                tvrageid = int(attr['value'] or 0)
-                break
+        title, url = self._get_title_and_url(item)
 
         self._checkItemAuth(title, url)
 
@@ -446,7 +443,11 @@ class NewznabCache(tvcache.TVCache):
                 logger.DEBUG)
             return None
 
-        url = self._translateLinkURL(url)
+        tvrageid = 0
+        for attr in item['newznab_attr'] if isinstance(item['newznab_attr'], list) else [item['newznab_attr']]:
+            if attr['name'] == 'tvrageid':
+                tvrageid = int(attr['value'] or 0)
+                break
 
         logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url, indexer_id=tvrageid)
