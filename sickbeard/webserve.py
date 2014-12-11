@@ -135,9 +135,6 @@ class PageTemplate(Template):
 
 
 class BaseHandler(RequestHandler):
-    def __init__(self, *args, **kwargs):
-        super(BaseHandler, self).__init__(*args, **kwargs)
-
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
         if status_code == 404:
@@ -178,9 +175,58 @@ class BaseHandler(RequestHandler):
         else:
             return True
 
+class WebHandler(BaseHandler):
+    executor = ThreadPoolExecutor(10)
+
+    @coroutine
+    @asynchronous
+    @authenticated
+    def get(self, route, *args, **kwargs):
+        try:
+            route = route.strip('/').replace('.', '_') or 'index'
+
+            # get route
+            subclasses = self.__class__.__subclasses__()
+
+            try:
+                method = getattr(self, route)
+            except:
+                method = [getattr(cls, route) for cls in subclasses if getattr(cls, route, None)][0]
+
+            # process request async
+            self.async_worker(method, self.async_done)
+        except:
+            raise HTTPError(404)
+
+
+    @run_on_executor
+    def async_worker(self, method, callback):
+        kwargs = self.request.arguments
+        for arg, value in kwargs.items():
+            if len(value) == 1:
+                kwargs[arg] = value[0]
+
+        try:
+            callback(method(**kwargs))
+        except Exception as e:
+            callback()
+
+    def async_done(self, result=None):
+        if result:
+            try:
+                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
+            except:
+                result = str(result)
+
+            try:
+                self.write(result)
+                self.finish()
+            except:
+                pass
+
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
-        t.submenu = Home().HomeMenu()
+        t.submenu = self.HomeMenu()
         t.subject = subject
         t.message = message
         return t
@@ -220,60 +266,8 @@ class BaseHandler(RequestHandler):
         else:
             return False
 
-
-class WebHandler(BaseHandler):
-    executor = ThreadPoolExecutor(10)
-
-    def __init__(self, *args, **kwargs):
-        super(WebHandler, self).__init__(*args, **kwargs)
-
-    @coroutine
-    @asynchronous
-    @authenticated
-    def get(self, route, *args, **kwargs):
-        try:
-            route = route.strip('/').replace('.', '_') or 'index'
-
-            # get route
-            subclasses = self.__class__.__subclasses__()
-
-            try:
-                method = getattr(self, route)
-            except:
-                method = [getattr(cls, route) for cls in subclasses if getattr(cls, route, None)][0]
-
-            # process request async
-            self.async_worker(method, self.async_done)
-        except:
-            raise HTTPError(404)
-
-
-    @run_on_executor
-    def async_worker(self, method, callback):
-        kwargs = self.request.arguments
-        for arg, value in kwargs.items():
-            if len(value) == 1:
-                kwargs[arg] = value[0]
-
-        try:
-            callback(method(**kwargs))
-        except Exception as e:
-            callback()
-
-    def async_done(self, result=None):
-        try:
-            if result:
-                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
-        except:
-            pass
-
-        if result:
-            self.write(result)
-            self.finish()
-
     # post and get use same method
     post = get
-
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -657,7 +651,7 @@ class WebFileBrowser(WebRoot):
 
 @route('/home/(.*)(/?)')
 class Home(WebRoot):
-    def HomeMenu(self, *args, **kwargs):
+    def HomeMenu(self):
         menu = [
             {'title': 'Add Shows', 'path': 'home/addShows/', },
             {'title': 'Manual Post-Processing', 'path': 'home/postprocess/'},
@@ -1969,7 +1963,6 @@ class Home(WebRoot):
 @route('/home/postprocess/(.*)(/?)')
 class HomePostProcess(Home):
     def index(self, *args, **kwargs):
-
         t = PageTemplate(rh=self, file="home_postprocess.tmpl")
         t.submenu = self.HomeMenu()
         return t
@@ -2505,7 +2498,7 @@ class HomeAddShows(Home):
 
 @route('/manage/(.*)(/?)')
 class Manage(WebRoot):
-    def ManageMenu(self, *args, **kwargs):
+    def ManageMenu(self):
         menu = [
             {'title': 'Backlog Overview', 'path': 'manage/backlogOverview/'},
             {'title': 'Manage Searches', 'path': 'manage/manageSearches/'},
@@ -3356,7 +3349,7 @@ class History(WebRoot):
 
 @route('/config/(.*)(/?)')
 class Config(WebRoot):
-    def ConfigMenu(self, *args, **kwargs):
+    def ConfigMenu(self):
         menu = [
             {'title': 'General', 'path': 'config/general/'},
             {'title': 'Backup/Restore', 'path': 'config/backuprestore/'},
@@ -4601,7 +4594,7 @@ class ConfigAnime(Config):
 
 @route('/errorlogs/(.*)(/?)')
 class ErrorLogs(WebRoot):
-    def ErrorLogsMenu(self, *args, **kwargs):
+    def ErrorLogsMenu(self):
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
             # { 'title': 'View Log',  'path': 'errorlogs/viewlog'  },
