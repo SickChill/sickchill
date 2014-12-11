@@ -901,12 +901,7 @@ class Home(WebRoot):
 
     def testTrakt(self, api=None, username=None, password=None):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-
-        result = notifiers.trakt_notifier.test_notify(api, username, password)
-        if result:
-            return "Test notice sent successfully to Trakt"
-        else:
-            return "Test notice failed to Trakt"
+        return notifiers.trakt_notifier.test_notify(api, username, password)
 
 
     def loadShowNotifyLists(self, *args, **kwargs):
@@ -3148,7 +3143,7 @@ class Manage(WebRoot):
 
         if re.search('localhost', sickbeard.TORRENT_HOST):
 
-            if sickbeard.LOCALHOST_IP == '':
+            if not sickbeard.LOCALHOST_IP:
                 t.webui_url = re.sub('localhost', helpers.get_lan_ip(), sickbeard.TORRENT_HOST)
             else:
                 t.webui_url = re.sub('localhost', sickbeard.LOCALHOST_IP, sickbeard.TORRENT_HOST)
