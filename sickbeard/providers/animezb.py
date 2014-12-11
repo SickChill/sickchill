@@ -79,7 +79,7 @@ class Animezb(generic.NZBProvider):
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(search_url, items=['entries']) or []:
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries'])['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:

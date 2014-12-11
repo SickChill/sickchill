@@ -67,7 +67,7 @@ class WombleCache(tvcache.TVCache):
             myDB.mass_action(cl)
 
     def _checkAuth(self, data):
-        return data if data.feed.title != 'Invalid Link' else None
+        return data if data.get('feed') and data['feed']['title'] != 'Invalid Link' else None
 
 provider = WombleProvider()
 

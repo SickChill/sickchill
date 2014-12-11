@@ -1840,13 +1840,12 @@ def save_config():
     new_config.write()
 
 
-def launchBrowser(startPort=None):
+def launchBrowser(protocol='http', startPort=None, web_root='/'):
     if not startPort:
         startPort = WEB_PORT
-    if ENABLE_HTTPS:
-        browserURL = 'https://localhost:%d/' % (startPort)
-    else:
-        browserURL = 'http://localhost:%d/' % (startPort)
+
+    browserURL = '%s://localhost:%d%s' % (protocol, startPort, web_root)
+
     try:
         webbrowser.open(browserURL, 2, 1)
     except:

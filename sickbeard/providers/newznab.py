@@ -297,7 +297,7 @@ class NewznabProvider(generic.NZBProvider):
             if not self._checkAuthFromData(data):
                 break
 
-            for item in data.entries or []:
+            for item in data.get('entries', []):
 
                 (title, url) = self._get_title_and_url(item)
 
@@ -311,8 +311,8 @@ class NewznabProvider(generic.NZBProvider):
             # get total and offset attribs
             try:
                 if total == 0:
-                    total = int(data.feed.newznab_response['total'] or 0)
-                offset = int(data.feed.newznab_response['offset'] or 0)
+                    total = int(data['feed']['newznab_response']['total'] or 0)
+                offset = int(data['feed']['newznab_response']['offset'] or 0)
             except AttributeError:
                 break
 
@@ -377,13 +377,20 @@ class NewznabProvider(generic.NZBProvider):
 
                 (title, url) = self._get_title_and_url(item)
 
-                if item.has_key('published_parsed') and item['published_parsed']:
-                    result_date = item.published_parsed
-                    if result_date:
-                        result_date = datetime.datetime(*result_date[0:6])
-                else:
-                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                    continue
+                try:
+                    result_date = datetime.datetime(*item['published_parsed'][0:6])
+                except AttributeError:
+                    try:
+                        result_date = datetime.datetime(*item['updated_parsed'][0:6])
+                    except AttributeError:
+                        try:
+                            result_date = datetime.datetime(*item['created_parsed'][0:6])
+                        except AttributeError:
+                            try:
+                                result_date = datetime.datetime(*item['date'][0:6])
+                            except AttributeError:
+                                logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
+                                continue
 
                 if not search_date or result_date > search_date:
                     search_result = classes.Proper(title, url, result_date, self.show)
@@ -425,12 +432,8 @@ class NewznabCache(tvcache.TVCache):
     def _parseItem(self, item):
         (title, url) = self._get_title_and_url(item)
 
-        attrs = item.newznab_attr
-        if not isinstance(attrs, list):
-            attrs = [item.newznab_attr]
-
         tvrageid = 0
-        for attr in attrs:
+        for attr in item.get('newznab_attr', []):
             if attr['name'] == 'tvrageid':
                 tvrageid = int(attr['value'] or 0)
                 break

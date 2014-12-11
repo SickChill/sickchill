@@ -176,6 +176,8 @@ class Quality:
         """
         Return The quality from the scene episode File 
         """
+        if not name:
+            return Quality.UNKNOWN
 
         name = os.path.basename(name)
 

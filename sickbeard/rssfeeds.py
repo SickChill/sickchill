@@ -15,6 +15,7 @@ from sickbeard.exceptions import ex
 from feedcache.cache import Cache
 from sqliteshelf import SQLiteShelf
 
+
 class RSSFeeds:
     def __init__(self, db_name):
         try:
@@ -47,8 +48,10 @@ class RSSFeeds:
             resp = fc.fetch(url, False, False, request_headers)
 
             for item in items:
-                try:data[item] = resp[item]
-                except:continue
+                try:
+                    data[item] = resp[item]
+                except:
+                    continue
 
         finally:
             self.rssDB.close()

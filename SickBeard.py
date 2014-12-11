@@ -343,7 +343,7 @@ class SickRage(object):
                        logger.ERROR)
             if sickbeard.LAUNCH_BROWSER and not self.runAsDaemon:
                 logger.log(u"Launching browser and exiting", logger.ERROR)
-                sickbeard.launchBrowser(self.startPort)
+                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.startPort, sickbeard.WEB_ROOT)
             os._exit(1)
 
         if self.consoleLogging:
@@ -368,7 +368,7 @@ class SickRage(object):
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):
-            sickbeard.launchBrowser(self.startPort)
+            sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.startPort, sickbeard.WEB_ROOT)
 
         # main loop
         while (True):

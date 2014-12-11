@@ -122,7 +122,7 @@ class TVCache():
                 self.setLastUpdate()
 
                 cl = []
-                for item in data['entries']:
+                for item in data.get('entries', []):
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
@@ -281,10 +281,7 @@ class TVCache():
 
     def searchCache(self, episode, manualSearch=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch)
-        if len(neededEps) > 0:
-            return neededEps[episode]
-        else:
-            return []
+        return neededEps[episode] if len(neededEps) > 0 else []
 
     def listPropers(self, date=None, delimiter="."):
         myDB = self._getDB()

@@ -123,7 +123,7 @@ class EZRSSProvider(generic.TorrentProvider):
         logger.log(u"Search string: " + search_url, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(search_url, items=['entries']) or []:
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries'])['entries'] or []:
 
             (title, url) = self._get_title_and_url(curItem)
 

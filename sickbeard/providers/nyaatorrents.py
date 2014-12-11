@@ -51,7 +51,7 @@ class NyaaProvider(generic.TorrentProvider):
         return 'nyaatorrents.png'
 
     def getQuality(self, item, anime=False):
-        title = item.title
+        title = item.get('title')
         quality = Quality.sceneQuality(title, anime)
         return quality
 
@@ -80,7 +80,7 @@ class NyaaProvider(generic.TorrentProvider):
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
         results = []
-        for curItem in self.cache.getRSSFeed(searchURL, items=['entries']) or []:
+        for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:

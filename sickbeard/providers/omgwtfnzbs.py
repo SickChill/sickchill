@@ -163,12 +163,12 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         Returns: A tuple containing two strings representing title and URL respectively
         """
 
-        title = item.title if item.title else None
+        title = item.get('title')
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
 
-        url = item.link if item.link else None
+        url = item.get('link')
         if url:
             url = url.replace('&amp;', '&')
 

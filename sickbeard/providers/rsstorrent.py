@@ -74,20 +74,18 @@ class TorrentRssProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title, url = None, None
-
-        title = item.title
-
+        title = item.get('title')
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
 
-        attempt_list = [lambda: item.torrent_magneturi,
+        attempt_list = [lambda: item.get('torrent_magneturi'),
 
                         lambda: item.enclosures[0].href,
 
-                        lambda: item.link]
+                        lambda: item.get('link')]
 
+        url = None
         for cur_attempt in attempt_list:
             try:
                 url = cur_attempt()
@@ -95,9 +93,9 @@ class TorrentRssProvider(generic.TorrentProvider):
                 continue
 
             if title and url:
-                return (title, url)
+                break
 
-        return (title, url)
+        return title, url
 
     def validateRSS(self):
 
