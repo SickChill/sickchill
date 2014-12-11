@@ -297,7 +297,7 @@ class NewznabProvider(generic.NZBProvider):
             if not self._checkAuthFromData(data):
                 break
 
-            for item in data.get('entries', []):
+            for item in data['entries'] or []:
 
                 (title, url) = self._get_title_and_url(item)
 

@@ -60,7 +60,7 @@ class TvTorrentsProvider(generic.TorrentProvider):
         return True
 
     def _checkAuthFromData(self, data):
-        if not (data.get('entries') and data.get('feed')):
+        if not (data['entries'] and data['feed']):
             return self._checkAuth()
 
         try:

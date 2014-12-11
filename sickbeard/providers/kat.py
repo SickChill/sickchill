@@ -242,7 +242,7 @@ class KATProvider(generic.TorrentProvider):
                             id = item['guid']
                             title = item['title']
                             url = item['torrent_magnetURI']
-                            verified = bool(item.get('torrent_verified', 0))
+                            verified = bool(item['torrent_verified'] or 0)
                             seeders = int(item['torrent_seeds'])
                             leechers = int(item['torrent_peers'])
                             size = int(item['torrent_contentLength'])
@@ -358,7 +358,7 @@ class KATCache(tvcache.TVCache):
             searchURL = url + 'tv/?field=time_add&sorder=desc&rss=1'
             logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
 
-            data = self.getRSSFeed(url, items=['entries', 'feed'])['entries']
+            data = self.getRSSFeed(url, items=['entries', 'feed'])
             if data and len(data) > 0:
                 break
 

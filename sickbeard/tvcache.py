@@ -122,7 +122,7 @@ class TVCache():
                 self.setLastUpdate()
 
                 cl = []
-                for item in data.get('entries', []):
+                for item in data['entries'] or []:
                     ci = self._parseItem(item)
                     if ci is not None:
                         cl.append(ci)
