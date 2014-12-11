@@ -1458,3 +1458,21 @@ def generateApiKey(*args, **kwargs):
     # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
     logger.log(u"New API generated")
     return m.hexdigest()
+
+def pretty_filesize(file_bytes):
+    file_bytes = float(file_bytes)
+    if file_bytes >= 1099511627776:
+        terabytes = file_bytes / 1099511627776
+        size = '%.2f TB' % terabytes
+    elif file_bytes >= 1073741824:
+        gigabytes = file_bytes / 1073741824
+        size = '%.2f GB' % gigabytes
+    elif file_bytes >= 1048576:
+        megabytes = file_bytes / 1048576
+        size = '%.2f MB' % megabytes
+    elif file_bytes >= 1024:
+        kilobytes = file_bytes / 1024
+        size = '%.2f KB' % kilobytes
+    else:
+        size = '%.2f b' % file_bytes
+    return size

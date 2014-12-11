@@ -61,7 +61,7 @@ class KATProvider(generic.TorrentProvider):
 
         self.cache = KATCache(self)
 
-        self.urls = ['http://kickass.so/', 'http://katproxy.com/', 'http://www.kickmirror.com/']
+        self.urls = ['http://kickass.so/', 'http://katproxy.com/', 'http://www.kickass.to/']
 
     def isEnabled(self):
         return self.enabled
@@ -241,11 +241,11 @@ class KATProvider(generic.TorrentProvider):
                             link = item['link']
                             id = item['guid']
                             title = item['title']
-                            url = item['torrent_magnetURI']
+                            url = item['torrent_magneturi']
                             verified = bool(item['torrent_verified'] or 0)
                             seeders = int(item['torrent_seeds'])
                             leechers = int(item['torrent_peers'])
-                            size = int(item['torrent_contentLength'])
+                            size = int(item['torrent_contentlength'])
                         except (AttributeError, TypeError):
                             continue
 
