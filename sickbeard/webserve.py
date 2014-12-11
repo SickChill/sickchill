@@ -2234,21 +2234,28 @@ class HomeAddShows(Home):
         t = PageTemplate(rh=self, file="home_trendingShows.tmpl")
         t.submenu = self.HomeMenu()
 
+        return t
+
+    def getTrendingShows(self, *args, **kwargs):
+        """
+        Display the new show page which collects a tvdb id, folder, and extra options and
+        posts them to addNewShow
+        """
+        t = PageTemplate(rh=self, file="trendingShows.tmpl")
+        t.submenu = self.HomeMenu()
+
         t.trending_shows = []
 
         trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
-            trending_shows = trakt_api.traktRequest("shows/trending.json/%APIKEY%")
-
-            if trending_shows:
-                for show in trending_shows:
-                    try:
-                        if not helpers.findCertainShow(sickbeard.showList,
-                                                       [int(show['tvdb_id']), int(show['tvrage_id'])]):
-                            t.trending_shows += [show]
-                    except exceptions.MultipleShowObjectsException:
-                        continue
+            for show in trakt_api.traktRequest("shows/trending.json/%APIKEY%") or []:
+                try:
+                    if not helpers.findCertainShow(sickbeard.showList,
+                                                   [int(show['tvdb_id']), int(show['tvrage_id'])]):
+                        t.trending_shows += [show]
+                except exceptions.MultipleShowObjectsException:
+                    continue
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
