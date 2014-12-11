@@ -62,7 +62,6 @@ class KATProvider(generic.TorrentProvider):
         self.cache = KATCache(self)
 
         self.urls = ['http://kickass.so/', 'http://katproxy.com/', 'http://www.kickmirror.com/']
-        self.url = 'https://kickass.so/'
 
     def isEnabled(self):
         return self.enabled
@@ -233,8 +232,7 @@ class KATProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                     entries = self.cache.getRSSFeed(url, items=['entries', 'feed'])['entries']
-                    if entries:
-                        self.url = url
+                    if entries and len(entries) > 0:
                         break
 
                 try:
@@ -268,7 +266,21 @@ class KATProvider(generic.TorrentProvider):
                         if not title or not url:
                             continue
 
-                        item = title, url, id, seeders, leechers
+                        try:
+                            pubdate = datetime.datetime(*item['published_parsed'][0:6])
+                        except AttributeError:
+                            try:
+                                pubdate = datetime.datetime(*item['updated_parsed'][0:6])
+                            except AttributeError:
+                                try:
+                                    pubdate = datetime.datetime(*item['created_parsed'][0:6])
+                                except AttributeError:
+                                    try:
+                                        pubdate = datetime.datetime(*item['date'][0:6])
+                                    except AttributeError:
+                                        pubdate = datetime.datetime.today()
+
+                        item = title, url, id, seeders, leechers, size, pubdate
 
                         items[mode].append(item)
 
@@ -285,7 +297,7 @@ class KATProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title, url, id, seeders, leechers = item
+        title, url, id, seeders, leechers, size, pubdate = item
 
         if title:
             title = u'' + title
@@ -321,7 +333,9 @@ class KATProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
+                    pubdate = item[6]
+
+                    results.append(classes.Proper(title, url, pubdate, self.show))
 
         return results
 
@@ -334,7 +348,7 @@ class KATCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll ThePirateBay every 10 minutes max
+        # only poll KickAss every 10 minutes max
         self.minTime = 20
 
     def _getRSSData(self):
@@ -345,7 +359,7 @@ class KATCache(tvcache.TVCache):
             logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
 
             data = self.getRSSFeed(url, items=['entries', 'feed'])['entries']
-            if data:
+            if data and len(data) > 0:
                 break
 
         return data

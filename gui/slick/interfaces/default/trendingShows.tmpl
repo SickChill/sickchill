@@ -1,18 +1,66 @@
-#import sickbeard
-#import datetime
-#import re
-#from sickbeard.common import *
-#from sickbeard import sbdatetime
-#from sickbeard.helpers import anon_url
+<script type="text/javascript" charset="utf-8">
+<!--
 
-#set global $title='Trending Shows'
-#set global $header='Trending Shows'
+\$(document).ready(function(){
+    // initialise combos for dirty page refreshes
+    \$('#showsort').val('original');
+    \$('#showsortdirection').val('asc');
 
-#set global $sbPath='..'
+    var \$container = [\$('#container')];
+    jQuery.each(\$container, function (j) {
+        this.isotope({
+            itemSelector: '.trakt_show',
+            sortBy: 'original-order',
+            layoutMode: 'fitRows',
+            getSortData: {
+                name: function( itemElem ) {
+                    var name = \$( itemElem ).attr('data-name') || '';
+#if not $sickbeard.SORT_ARTICLE:
+                    name = name.replace(/^(The|A|An)\s/i, '');
+#end if
+                    return name.toLowerCase();
+                },
+                rating: '[data-rating] parseInt',
+                votes: '[data-votes] parseInt',
+            }
+        });
+    });
 
-#set global $topmenu='comingEpisodes'
-#import os.path
+    \$('#showsort').on( 'change', function() {
+        var sortCriteria;
+        switch (this.value) {
+            case 'original':
+                sortCriteria = 'original-order'
+                break;
+            case 'rating':
+                /* randomise, else the rating_votes can already
+                 * have sorted leaving this with nothing to do.
+                 */
+                \$('#container').isotope({sortBy: 'random'});
+                sortCriteria = 'rating';
+                break;
+            case 'rating_votes':
+                sortCriteria = ['rating', 'votes'];
+                break;
+            case 'votes':
+                sortCriteria = 'votes';
+                break;
+            default:
+                sortCriteria = 'name'
+                break;
+        }
+        \$('#container').isotope({sortBy: sortCriteria});
+    });
 
+    \$('#showsortdirection').on( 'change', function() {
+        \$('#container').isotope({sortAscending: ('asc' == this.value)});
+    });
+});
+
+//-->
+</script>
+
+<div id="container">
 #if not $trending_shows
 	<div class="trakt_show" style="width:100%; margin-top:20px">
 		<p class="red-text">Trakt API did not return any results, please check your config.
@@ -43,3 +91,4 @@
     </div>
 #end for
 #end if
+</div>

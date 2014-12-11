@@ -228,6 +228,10 @@ class BitSoupProvider(generic.TorrentProvider):
 
         title, url, id, seeders, leechers = item
 
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
         if url:
             url = str(url).replace('&amp;', '&')
 
