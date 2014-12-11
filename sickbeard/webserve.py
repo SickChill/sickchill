@@ -2249,7 +2249,8 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
-            for show in trakt_api.traktRequest("shows/trending.json/%APIKEY%") or []:
+            shows = trakt_api.traktRequest("shows/trending.json/%APIKEY%") or []
+            for show in shows:
                 try:
                     if not helpers.findCertainShow(sickbeard.showList,
                                                    [int(show['tvdb_id']), int(show['tvrage_id'])]):
