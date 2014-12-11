@@ -314,8 +314,8 @@ class NewznabProvider(generic.NZBProvider):
             # get total and offset attribs
             try:
                 if total == 0:
-                    total = int(data['feed']['newznab_response']['total'] or 0)
-                offset = int(data['feed']['newznab_response']['offset'] or 0)
+                    total = int(data['feed'].newznab_response['total'] or 0)
+                offset = int(data['feed'].newznab_response['offset'] or 0)
             except AttributeError:
                 break
 
