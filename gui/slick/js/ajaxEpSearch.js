@@ -1,4 +1,4 @@
-var search_status_url = sbRoot + '/getManualSearchStatus';
+var search_status_url = sbRoot + '/home/getManualSearchStatus';
 PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
