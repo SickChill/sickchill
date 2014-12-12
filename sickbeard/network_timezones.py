@@ -75,18 +75,22 @@ def _update_zoneinfo():
     # now check if the zoneinfo needs update
     url_zv = 'https://raw.githubusercontent.com/Prinz23/sb_network_timezones/master/zoneinfo.txt'
 
-    url_data = helpers.getURL(url_zv)
-    if url_data is None:
+    try:
+        url_data = helpers.getURL(url_zv)
+        if not url_data:
+            raise
+
+        if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
+            cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
+        else:
+            cur_zoneinfo = None
+
+        (new_zoneinfo, zoneinfo_md5) = url_data.decode('utf-8').strip().rsplit(u' ')
+    except:
         # When urlData is None, trouble connecting to github
         logger.log(u'Loading zoneinfo.txt failed, this can happen from time to time. Unable to get URL: %s' % url_zv,
                    logger.WARNING)
         return
-
-    if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
-        cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
-    else:
-        cur_zoneinfo = None
-    (new_zoneinfo, zoneinfo_md5) = url_data.decode('utf-8').strip().rsplit(u' ')
 
     if (cur_zoneinfo is not None) and (new_zoneinfo == cur_zoneinfo):
         return

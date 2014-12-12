@@ -234,7 +234,7 @@ class KATProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                     entries = self.cache.getRSSFeed(url, items=['entries', 'feed'])['entries']
-                    if entries and len(entries) > 0:
+                    if entries:
                         break
 
                 try:
@@ -361,7 +361,7 @@ class KATCache(tvcache.TVCache):
             logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
 
             data = self.getRSSFeed(url, items=['entries', 'feed'])
-            if data and len(data) > 0:
+            if data['entries']:
                 break
 
         return data

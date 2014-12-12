@@ -145,6 +145,8 @@ class BaseHandler(RequestHandler):
                 self.redirect(url)
             else:
                 self.write('Wrong API key used')
+                self.finish()
+
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
             trace_info = ''.join(["%s<br/>" % line for line in traceback.format_exception(*exc_info)])
@@ -196,8 +198,11 @@ class WebHandler(BaseHandler):
             # process request async
             self.async_worker(method, self.async_done)
         except:
+            logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.ERROR)
             raise HTTPError(404)
 
+    def post(self, route, *args, **kwargs):
+        super(WebHandler, self).get(route, *args, **kwargs)
 
     @run_on_executor
     def async_worker(self, method, callback):
@@ -207,22 +212,25 @@ class WebHandler(BaseHandler):
                 kwargs[arg] = value[0]
 
         try:
-            callback(method(**kwargs))
-        except Exception as e:
+            res = method(**kwargs)
+            callback(res)
+        except:
+            logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
             callback()
 
     def async_done(self, result=None):
-        if result:
-            try:
-                result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
-            except:
-                result = str(result)
+        try:
+            result = ek.ss(result).encode('utf-8', 'xmlcharrefreplace')
+        except:
+            result = str(result)
 
-            try:
-                self.write(result)
-                self.finish()
-            except:
-                pass
+        try:
+            self.write(result)
+            self.finish()
+        except:
+            logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
+            try:self.finish()
+            except:pass
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
@@ -265,9 +273,6 @@ class WebHandler(BaseHandler):
             return True
         else:
             return False
-
-    # post and get use same method
-    post = get
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -614,7 +619,6 @@ class WebRoot(WebHandler):
 
         return ical
 
-
 @route('/ui/(.*)(/?)')
 class UI(WebRoot):
     def add_message(self, *args, **kwargs):
@@ -658,8 +662,6 @@ class Home(WebRoot):
             {'title': 'Update KODI', 'path': 'home/updateKODI/', 'requires': self.haveKODI},
             {'title': 'Update Plex', 'path': 'home/updatePLEX/', 'requires': self.havePLEX},
             {'title': 'Manage Torrents', 'path': 'manage/manageTorrents', 'requires': self.haveTORRENT},
-            {'title': 'Restart', 'path': 'home/restart/?pid=' + str(sickbeard.PID), 'confirm': True},
-            {'title': 'Shutdown', 'path': 'home/shutdown/?pid=' + str(sickbeard.PID), 'confirm': True},
         ]
 
         return menu
@@ -1003,14 +1005,18 @@ class Home(WebRoot):
 
         updated = sickbeard.versionCheckScheduler.action.update()  # @UndefinedVariable
         if updated:
-            # do a hard restart
-            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+                # do a hard restart
+                sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
-            t = PageTemplate(rh=self, file="restart_bare.tmpl")
-            return t
+                t = PageTemplate(rh=self, file="restart_bare.tmpl")
+                return t
         else:
-            return self._genericMessage("Update Failed",
-                                        "Update wasn't successful, not restarting. Check your log for more information.")
+            if do_update:
+                return self._genericMessage("Update Failed",
+                                            "Update wasn't successful, not restarting. Check your log for more information.")
+
+        if force:
+            self.redirect("/home/")
 
     def branchCheckout(self, branch):
         sickbeard.BRANCH = branch
