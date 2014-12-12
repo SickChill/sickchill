@@ -317,7 +317,7 @@ class ApiCall(ApiHandler):
             missing = False
             args = args[1:]
         if kwargs.get(key):
-            default = kwargs.get(key)[0]
+            default = kwargs.get(key)
             missing = False
         if required:
             try:
