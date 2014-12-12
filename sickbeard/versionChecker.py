@@ -557,6 +557,23 @@ class GitUpdateManager(UpdateManager):
             if sickbeard.NOTIFY_ON_UPDATE:
                 notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
             return True
+        else:
+            # perform a hard reset to try and resolve the issue
+            if self.reset() and self.update():
+                return True
+
+        return False
+
+    def reset(self):
+        """
+        Calls git reset --hard to perform a hard reset. Returns a bool depending
+        on the call's success.
+        """
+
+        output, err, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
+
+        if exit_status == 0:
+            return True
 
         return False
 

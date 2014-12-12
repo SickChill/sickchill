@@ -225,10 +225,12 @@ class KATProvider(generic.TorrentProvider):
 
         for mode in search_params.keys():
             for search_string in search_params[mode]:
+                if isinstance(search_string, unicode):
+                    search_string = unidecode(search_string)
 
                 entries = []
                 for url in self.urls:
-                    searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.urlencode(search_string.encode('utf-8'))
+                    searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote(search_string)
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                     entries = self.cache.getRSSFeed(url, items=['entries', 'feed'])['entries']
