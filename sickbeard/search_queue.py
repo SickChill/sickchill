@@ -68,10 +68,7 @@ class SearchQueue(generic_queue.GenericQueue):
         for cur_item in self.queue:
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and str(cur_item.show.indexerid) == show:
                 ep_obj_list.append(cur_item)
-        
-        if ep_obj_list:
-            return ep_obj_list
-        return False
+        return ep_obj_list
     
     def pause_backlog(self):
         self.min_priority = generic_queue.QueuePriorities.HIGH

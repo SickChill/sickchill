@@ -85,25 +85,6 @@ from bug_tracker import BugTracker
 
 route_locks = {}
 
-class AsyncRunner(object):
-    @run_on_executor
-    def call(self, function, callback=None, **kwargs):
-        try:
-            result = function(**kwargs)
-            if callback:
-                callback(result)
-            return result
-        except:
-            logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
-
-class ThreadedRunner(AsyncRunner):
-    def __init__(self, executor=ThreadPoolExecutor, max_workers=10):
-        self.io_loop = IOLoop.current()
-        self.executor = executor(max_workers)
-
-    def shutdown(self, wait=True):
-        self.executor.shutdown(wait)
-
 class PageTemplate(Template):
     def __init__(self, rh, *args, **kwargs):
         kwargs['file'] = os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/interfaces/default/", kwargs['file'])
@@ -197,7 +178,8 @@ class BaseHandler(RequestHandler):
             return True
 
 class WebHandler(BaseHandler):
-    tr = ThreadedRunner(max_workers=50)
+    io_loop = IOLoop.current()
+    executor = ThreadPoolExecutor(50)
 
     @coroutine
     @asynchronous
@@ -223,15 +205,22 @@ class WebHandler(BaseHandler):
                     params[arg] = value[0]
 
             # process request async
-            self.tr.call(method, callback=self.finished, **params)
+            self.async_call(method, callback=self.async_done, **params)
         except:
             logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.ERROR)
             raise HTTPError(404)
 
-    def post(self, route, *args, **kwargs):
-        super(WebHandler, self).get(route, *args, **kwargs)
+    @run_on_executor
+    def async_call(self, function, callback=None, **kwargs):
+        try:
+            result = function(**kwargs)
+            if callback:
+                callback(result)
+            return result
+        except:
+            logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
 
-    def finished(self, results):
+    def async_done(self, results):
         try:
             if results is not None:
                 try:
@@ -286,6 +275,9 @@ class WebHandler(BaseHandler):
             return True
         else:
             return False
+
+    # post uses get method
+    post = get
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -984,7 +976,6 @@ class Home(WebRoot):
             return "Error sending Pushbullet notification"
 
     def shutdown(self, pid=None):
-
         if str(pid) != str(sickbeard.PID):
             self.redirect("/home/")
             return
@@ -1013,6 +1004,7 @@ class Home(WebRoot):
         if str(pid) != str(sickbeard.PID):
             self.redirect('/home/')
 
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
 
         self.redirect('/home/')

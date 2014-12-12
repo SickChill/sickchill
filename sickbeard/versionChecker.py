@@ -99,9 +99,6 @@ class CheckVersion():
         if not sickbeard.AUTO_UPDATE:
             logger.log(u"Checking for updates using " + self.install_type.upper())
 
-            if force:
-                ui.notifications.message("Checking for updates using " + self.install_type.upper())
-
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
 
