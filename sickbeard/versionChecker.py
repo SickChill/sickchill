@@ -569,11 +569,11 @@ class GitUpdateManager(UpdateManager):
         Calls git reset --hard to perform a hard reset. Returns a bool depending
         on the call's success.
         """
+        if sickbeard.GIT_RESET:
+            output, err, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
 
-        output, err, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
-
-        if exit_status == 0:
-            return True
+            if exit_status == 0:
+                return True
 
         return False
 

@@ -108,12 +108,14 @@ AUTO_UPDATE = False
 NOTIFY_ON_UPDATE = False
 CUR_COMMIT_HASH = None
 BRANCH = ''
+
+GIT_RESET = False
 GIT_REMOTE = ''
 GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
-
 GIT_ORG = 'SiCKRAGETV'
 GIT_REPO = 'SickRage'
+GIT_PATH = None
 
 INIT_LOCK = Lock()
 started = False
@@ -460,8 +462,6 @@ DELETE_FAILED = False
 
 EXTRA_SCRIPTS = []
 
-GIT_PATH = None
-
 IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 REQUIRE_WORDS = ""
 
@@ -481,7 +481,7 @@ def get_backlog_cycle_time():
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
-        global BRANCH, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, API_ROOT, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
+        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, USE_API, API_KEY, API_ROOT, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
             HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_ANIME, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_CATEGORY_ANIME, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
@@ -555,6 +555,10 @@ def initialize(consoleLogging=True):
         except:
             gh = None
 
+        # git reset on update
+        GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
+
+        # current git branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
 
         # git_remote
@@ -1397,6 +1401,7 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     new_config['General'] = {}
+    new_config['General']['git_reset'] = int(GIT_RESET)
     new_config['General']['branch'] = BRANCH
     new_config['General']['git_remote'] = GIT_REMOTE
     new_config['General']['git_remote_url'] = GIT_REMOTE_URL
