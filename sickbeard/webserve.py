@@ -167,7 +167,10 @@ class BaseHandler(RequestHandler):
                                              trace_info, request_info))
 
     def redirect(self, url, permanent=True, status=None):
-        super(BaseHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
+        if not url.startswith(sickbeard.WEB_ROOT):
+            url = sickbeard.WEB_ROOT + url
+
+        super(BaseHandler, self).redirect(url, permanent, status)
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
@@ -267,12 +270,11 @@ class WebHandler(BaseHandler):
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
-
         if self.get_current_user():
-            return self.redirect('/home/')
+            self.redirect('/home/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
-            self.write(ek.ss(t).encode('utf-8', 'xmlcharrefreplace'))
+            self.finish(ek.ss(t))
 
     def post(self, *args, **kwargs):
 
@@ -289,14 +291,13 @@ class LoginHandler(BaseHandler):
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
             self.set_secure_cookie('user', api_key, expires_days=30 if remember_me > 0 else None)
 
-        return self.redirect('/home/')
+        self.redirect('/home/')
 
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("user")
-        return self.redirect('/login/')
-
+        self.redirect('/login/')
 
 class KeyHandler(RequestHandler):
     def get(self, *args, **kwargs):
@@ -310,13 +311,13 @@ class KeyHandler(RequestHandler):
                     and (self.get_argument('p', None) == password or not password):
                 api_key = sickbeard.API_KEY
 
-            self.write({
+            self.finish({
                 'success': api_key is not None,
                 'api_key': api_key
             })
         except:
             logger.log('Failed doing key request: %s' % (traceback.format_exc()), logger.ERROR)
-            self.write({'success': False, 'error': 'Failed returning results'})
+            self.finish({'success': False, 'error': 'Failed returning results'})
 
 
 @route('(.*)(/?)')

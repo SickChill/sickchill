@@ -1849,7 +1849,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
     if not startPort:
         startPort = WEB_PORT
 
-    browserURL = '%s://localhost:%d%s' % (protocol, startPort, web_root)
+    browserURL = '%s://localhost:%d%s/home/' % (protocol, startPort, web_root)
 
     try:
         webbrowser.open(browserURL, 2, 1)
