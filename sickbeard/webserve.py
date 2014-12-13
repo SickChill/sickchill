@@ -132,6 +132,9 @@ class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(BaseHandler, self).__init__(*args, **kwargs)
 
+    def set_default_headers(self):
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
         if status_code == 404:
@@ -217,7 +220,6 @@ class WebHandler(BaseHandler):
             if results is not None:
                 results = ek.ss(results)
 
-                self.set_header('Cache-Control', 'no-cache')
                 self.finish(results)
         except:
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
@@ -676,7 +678,7 @@ class Home(WebRoot):
         else:
             return "Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string."
 
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'text/javascript')
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
@@ -688,7 +690,7 @@ class Home(WebRoot):
             return callback + '(' + json.dumps({"msg": "nope"}) + ');'
 
     def testSABnzbd(self, host=None, username=None, password=None, apikey=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_url(host)
 
@@ -704,7 +706,7 @@ class Home(WebRoot):
 
 
     def testTorrent(self, torrent_method=None, host=None, username=None, password=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_url(host)
 
@@ -716,7 +718,7 @@ class Home(WebRoot):
 
 
     def testGrowl(self, host=None, password=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
 
@@ -733,7 +735,7 @@ class Home(WebRoot):
 
 
     def testProwl(self, prowl_api=None, prowl_priority=0):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.prowl_notifier.test_notify(prowl_api, prowl_priority)
         if result:
@@ -743,7 +745,7 @@ class Home(WebRoot):
 
 
     def testBoxcar(self, username=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.boxcar_notifier.test_notify(username)
         if result:
@@ -753,7 +755,7 @@ class Home(WebRoot):
 
 
     def testBoxcar2(self, accesstoken=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.boxcar2_notifier.test_notify(accesstoken)
         if result:
@@ -763,7 +765,7 @@ class Home(WebRoot):
 
 
     def testPushover(self, userKey=None, apiKey=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushover_notifier.test_notify(userKey, apiKey)
         if result:
@@ -773,13 +775,13 @@ class Home(WebRoot):
 
 
     def twitterStep1(self):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         return notifiers.twitter_notifier._get_authorization()
 
 
     def twitterStep2(self, key):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.twitter_notifier._get_credentials(key)
         logger.log(u"result: " + str(result))
@@ -790,7 +792,7 @@ class Home(WebRoot):
 
 
     def testTwitter(self):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.twitter_notifier.test_notify()
         if result:
@@ -800,7 +802,7 @@ class Home(WebRoot):
 
 
     def testKODI(self, host=None, username=None, password=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_hosts(host)
         finalResult = ''
@@ -816,7 +818,7 @@ class Home(WebRoot):
 
 
     def testPLEX(self, host=None, username=None, password=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(",")]:
@@ -831,7 +833,7 @@ class Home(WebRoot):
 
 
     def testLibnotify(self):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         if notifiers.libnotify_notifier.test_notify():
             return "Tried sending desktop notification via libnotify"
@@ -840,7 +842,7 @@ class Home(WebRoot):
 
 
     def testNMJ(self, host=None, database=None, mount=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host)
         result = notifiers.nmj_notifier.test_notify(urllib.unquote_plus(host), database, mount)
@@ -851,7 +853,7 @@ class Home(WebRoot):
 
 
     def settingsNMJ(self, host=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host)
         result = notifiers.nmj_notifier.notify_settings(urllib.unquote_plus(host))
@@ -863,7 +865,7 @@ class Home(WebRoot):
 
 
     def testNMJv2(self, host=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host)
         result = notifiers.nmjv2_notifier.test_notify(urllib.unquote_plus(host))
@@ -874,7 +876,7 @@ class Home(WebRoot):
 
 
     def settingsNMJv2(self, host=None, dbloc=None, instance=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host)
         result = notifiers.nmjv2_notifier.notify_settings(urllib.unquote_plus(host), dbloc, instance)
@@ -887,12 +889,12 @@ class Home(WebRoot):
 
 
     def testTrakt(self, api=None, username=None, password=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         return notifiers.trakt_notifier.test_notify(api, username, password)
 
 
     def loadShowNotifyLists(self):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         myDB = db.DBConnection()
         rows = myDB.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
@@ -907,7 +909,7 @@ class Home(WebRoot):
 
 
     def testEmail(self, host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host)
         if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
@@ -917,7 +919,7 @@ class Home(WebRoot):
 
 
     def testNMA(self, nma_api=None, nma_priority=0):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.nma_notifier.test_notify(nma_api, nma_priority)
         if result:
@@ -927,7 +929,7 @@ class Home(WebRoot):
 
 
     def testPushalot(self, authorizationToken=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushalot_notifier.test_notify(authorizationToken)
         if result:
@@ -937,7 +939,7 @@ class Home(WebRoot):
 
 
     def testPushbullet(self, api=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.test_notify(api)
         if result:
@@ -947,7 +949,7 @@ class Home(WebRoot):
 
 
     def getPushbulletDevices(self, api=None):
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        #self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
@@ -982,7 +984,6 @@ class Home(WebRoot):
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
-        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
 
         return self.redirect('/home/')
