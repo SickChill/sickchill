@@ -222,7 +222,7 @@ class WebHandler(BaseHandler):
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
-        t.submenu = Home().HomeMenu()
+        t.submenu = self.HomeMenu()
         t.subject = subject
         t.message = message
         return t
