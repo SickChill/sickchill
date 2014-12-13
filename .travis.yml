@@ -3,9 +3,6 @@ python:
   - 2.6
   - 2.7
 
-env:
-  - DB=sqlite://
-
 branches:
   only:
     - develop
@@ -13,12 +10,8 @@ branches:
 install:
   - pip install cheetah
 
-before_script:
-  - cd ./tests
-  - chmod +x ./all_tests.py
-  
 script:
-  - ./all_tests.py
+  - make tests-all
 
 notifications:
   irc: "irc.freenode.net#sickrage"

@@ -50,5 +50,5 @@ if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(DBBasicTests)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
-    suite = unittest.TestLoader().loadTestsFromTestCase(DBMultiTests)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    #suite = unittest.TestLoader().loadTestsFromTestCase(DBMultiTests)
+    #unittest.TextTestRunner(verbosity=2).run(suite)

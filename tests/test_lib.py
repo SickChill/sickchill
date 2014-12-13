@@ -32,10 +32,11 @@ sys.path.append(os.path.abspath('../lib'))
 import sickbeard
 import shutil
 
-from sickbeard import encodingKludge as ek, providers, tvcache
+from sickbeard import providers, tvcache
 from sickbeard import db
 from sickbeard.databases import mainDB
 from sickbeard.databases import cache_db, failed_db
+from sickbeard.tv import TVEpisode
 
 #=================
 # test globals
@@ -55,7 +56,6 @@ SHOWDIR = os.path.join(TESTDIR, SHOWNAME + " final")
 
 #sickbeard.logger.sb_log_instance = sickbeard.logger.SBRotatingLogHandler(os.path.join(TESTDIR, 'sickbeard.log'), sickbeard.logger.NUM_LOGS, sickbeard.logger.LOG_SIZE)
 sickbeard.logger.SBRotatingLogHandler.log_file = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log')
-
 
 #=================
 # prepare env functions
@@ -112,8 +112,7 @@ mainDB.sickbeard.save_config = _dummy_saveConfig
 def _fake_specifyEP(self, season, episode):
     pass
 
-sickbeard.tv.TVEpisode.specifyEpisode = _fake_specifyEP
-
+TVEpisode.specifyEpisode = _fake_specifyEP
 
 #=================
 # test classes

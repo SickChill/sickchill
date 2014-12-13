@@ -24,7 +24,7 @@ class EncodingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     print "=================="
-    print "STARTING - Encoding TESTS"
+    print "STARTING - ENCODING TESTS"
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(EncodingTests)
