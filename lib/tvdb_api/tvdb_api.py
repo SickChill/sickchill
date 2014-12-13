@@ -797,18 +797,20 @@ class Tvdb:
             return
 
         cur_actors = Actors()
-        for curActorItem in actorsEt["actor"].items():
+        for cur_actor in actorsEt['actor']:
             curActor = Actor()
-            for k, v in curActorItem:
+            for k, v in cur_actor.items():
+                if k is None or v is None:
+                    continue
+
                 k = k.lower()
-                if v is not None:
-                    if k == "image":
-                        v = self.config['url_artworkPrefix'] % (v)
-                    else:
-                        v = self._cleanData(v)
+                if k == "image":
+                    v = self.config['url_artworkPrefix'] % (v)
+                else:
+                    v = self._cleanData(v)
+
                 curActor[k] = v
             cur_actors.append(curActor)
-
         self._setShowData(sid, '_actors', cur_actors)
 
     def _getShowData(self, sid, language, getEpInfo=False):

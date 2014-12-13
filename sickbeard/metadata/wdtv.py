@@ -275,12 +275,14 @@ class WDTVMetadata(generic.GenericMetadata):
             if getattr(myShow, '_actors', None) is not None:
                 for actor in myShow['_actors']:
                     cur_actor = etree.SubElement(episode, "actor")
+
                     cur_actor_name = etree.SubElement(cur_actor, "name")
-                    cur_actor_name.text = actor['name']
+                    if getattr(actor, 'name', None):
+                        cur_actor_name.text = actor['name']
+
                     cur_actor_role = etree.SubElement(cur_actor, "role")
-                    cur_actor_role_text = actor['role']
-                    if cur_actor_role_text != None:
-                        cur_actor_role.text = cur_actor_role_text
+                    if getattr(actor, 'role', None):
+                        cur_actor_role.text = actor['role']
 
             overview = etree.SubElement(episode, "overview")
             if curEpToWrite.description != None:

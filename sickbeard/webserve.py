@@ -24,6 +24,7 @@ import time
 import urllib
 import re
 import datetime
+import urlparse
 
 import sickbeard
 from sickbeard import config, sab
@@ -371,7 +372,7 @@ class WebRoot(WebHandler):
             default_image_name = 'banner.png'
 
         #image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
-        static_image_path = '/images/' + default_image_name
+        static_image_path = os.path.join('/images', default_image_name)
         if show and sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)):
             cache_obj = image_cache.ImageCache()
 
@@ -386,9 +387,9 @@ class WebRoot(WebHandler):
                 image_file_name = cache_obj.banner_thumb_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
-                image_path = image_file_name
-                static_image_path = '/cache' + image_path.replace(sickbeard.CACHE_DIR, '')
+                static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
+        static_image_path = static_image_path.replace('\\', '/')
         return self.redirect(static_image_path)
 
     def setHomeLayout(self, layout):
