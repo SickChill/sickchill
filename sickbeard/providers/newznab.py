@@ -120,14 +120,14 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         try:
-            categories = self.getURL("%s/api" % (self.url), params=params, timeout=10)
+            xml_categories = self.getURL("%s/api" % (self.url), params=params, timeout=10, json=True)
         except:
             logger.log(u"Error getting html for [%s]" % 
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
             return (False, return_categories, "Error getting html for [%s]" % 
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
         
-        xml_categories = helpers.parse_xml(categories)
+        #xml_categories = helpers.parse_xml(categories)
         
         if not xml_categories:
             logger.log(u"Error parsing xml for [%s]" % (self.name),

@@ -36,8 +36,8 @@ from sickbeard import classes
 from sickbeard import processTV
 from sickbeard import network_timezones, sbdatetime
 from sickbeard.exceptions import ex
-from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
-from common import Quality, Overview, qualityPresetStrings, statusStrings
+from sickbeard.common import Quality, Overview, qualityPresetStrings, statusStrings, SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN
+from sickbeard.webserve import WebRoot
 
 try:
     import json
@@ -322,12 +322,12 @@ class ApiCall(ApiHandler):
         if required:
             try:
                 self._missing
-                self._requiredParams.append(key)
+                self._requiredParams += [key]
             except AttributeError:
                 self._missing = []
-                self._requiredParams = {}
-                self._requiredParams[key] = {"allowedValues": allowedValues,
-                                             "defaultValue": orgDefault}
+                self._requiredParams = {key: {"allowedValues": allowedValues,
+                                              "defaultValue": orgDefault}}
+
             if missing and key not in self._missing:
                 self._missing.append(key)
         else:
@@ -2291,7 +2291,7 @@ class CMD_ShowGetPoster(ApiCall):
 
     def run(self):
         """ get the poster for a show in sickrage """
-        return {'outputType': 'image', 'image': self.showPoster(self.indexerid, 'poster')}
+        return {'outputType': 'image', 'image': WebRoot().showPoster(self.indexerid, 'poster')}
 
 
 class CMD_ShowGetBanner(ApiCall):
@@ -2314,7 +2314,7 @@ class CMD_ShowGetBanner(ApiCall):
 
     def run(self):
         """ get the banner for a show in sickrage """
-        return {'outputType': 'image', 'image': self.handler.showPoster(self.indexerid, 'banner')}
+        return {'outputType': 'image', 'image': WebRoot().showPoster(self.indexerid, 'banner')}
 
 
 class CMD_ShowPause(ApiCall):

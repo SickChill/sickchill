@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import inspect
 
 import traceback
 import os
@@ -27,7 +26,6 @@ import re
 import datetime
 
 import sickbeard
-
 from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import history, notifiers, processTV
@@ -41,7 +39,6 @@ from sickbeard import scene_exceptions
 from sickbeard import subtitles
 from sickbeard import network_timezones
 from sickbeard import sbdatetime
-
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
@@ -56,9 +53,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 
 from lib.dateutil import tz
 from lib.unrar2 import RarFile
-
 from lib import adba, subliminal
-
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
 
@@ -75,13 +70,11 @@ except ImportError:
 from Cheetah.Template import Template
 
 from tornado.routes import route
-from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous, addslash
+from tornado.web import RequestHandler, HTTPError, authenticated, asynchronous
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
-
-from bug_tracker import BugTracker
 
 route_locks = {}
 
@@ -135,6 +128,9 @@ class PageTemplate(Template):
 
 
 class BaseHandler(RequestHandler):
+    def __init__(self, *args, **kwargs):
+        super(BaseHandler, self).__init__(*args, **kwargs)
+
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
         if status_code == 404:
@@ -186,33 +182,24 @@ class WebHandler(BaseHandler):
     @authenticated
     def get(self, route, *args, **kwargs):
         try:
+            # route -> method obj
             route = route.strip('/').replace('.', '_') or 'index'
-
-            # get route
-            #try:
             method = getattr(self, route)
-            #except:
-                #try:
-                #    subclasses = self.__class__.__subclasses__()
-                #    method = [getattr(cls, route) for cls in subclasses if getattr(cls, route, None)][0]
-                #except:
-                #    raise
-
-            # query params
-            params = self.request.arguments
-            for arg, value in params.items():
-                if len(value) == 1:
-                    params[arg] = value[0]
 
             # process request async
-            self.async_call(method, callback=self.async_done, **params)
+            self.async_call(method, callback=self.async_done)
         except:
             logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.ERROR)
             raise HTTPError(404)
 
     @run_on_executor
-    def async_call(self, function, callback=None, **kwargs):
+    def async_call(self, function, callback=None):
         try:
+            kwargs = self.request.arguments
+            for arg, value in kwargs.items():
+                if len(value) == 1:
+                    kwargs[arg] = value[0]
+
             result = function(**kwargs)
             if callback:
                 callback(result)
@@ -236,7 +223,7 @@ class WebHandler(BaseHandler):
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
-        t.submenu = self.HomeMenu()
+        t.submenu = Home().HomeMenu()
         t.subject = subject
         t.message = message
         return t
@@ -347,22 +334,15 @@ class WebRoot(WebHandler):
         t = PageTemplate(rh=self, file="apiBuilder.tmpl")
 
         def titler(x):
-            if not x or sickbeard.SORT_ARTICLE:
-                return x
-            if x.lower().startswith('a '):
-                x = x[2:]
-            elif x.lower().startswith('an '):
-                x = x[3:]
-            elif x.lower().startswith('the '):
-                x = x[4:]
-            return x
+            return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         t.sortedShowList = sorted(sickbeard.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))
+
+        myDB = db.DBConnection(row_type="dict")
 
         seasonSQLResults = {}
         episodeSQLResults = {}
 
-        myDB = db.DBConnection(row_type="dict")
         for curShow in t.sortedShowList:
             seasonSQLResults[curShow.indexerid] = myDB.select(
                 "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
@@ -1117,15 +1097,7 @@ class Home(WebRoot):
                 epCounts[curEpCat] += 1
 
         def titler(x):
-            if not x or sickbeard.SORT_ARTICLE:
-                return x
-            if x.lower().startswith('a '):
-                x = x[2:]
-            if x.lower().startswith('an '):
-                x = x[3:]
-            elif x.lower().startswith('the '):
-                x = x[4:]
-            return x
+            return (helpers.remove_article(x), x)[not x or sickbeard.SORT_ARTICLE]
 
         if sickbeard.ANIME_SPLIT_HOME:
             shows = []
@@ -3155,7 +3127,7 @@ class Manage(WebRoot):
 
         if re.search('localhost', sickbeard.TORRENT_HOST):
 
-            if not sickbeard.LOCALHOST_IP:
+            if sickbeard.LOCALHOST_IP == '':
                 t.webui_url = re.sub('localhost', helpers.get_lan_ip(), sickbeard.TORRENT_HOST)
             else:
                 t.webui_url = re.sub('localhost', sickbeard.LOCALHOST_IP, sickbeard.TORRENT_HOST)
