@@ -230,7 +230,11 @@ class KATProvider(generic.TorrentProvider):
 
                 entries = []
                 for url in self.urls:
-                    searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote(search_string)
+                    if mode != 'RSS':
+                        searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote(search_string)
+                    else:
+                        searchURL = url + 'tv/?field=time_add&sorder=desc&rss=1'
+
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                     entries = self.cache.getRSSFeed(searchURL, items=['entries', 'feed'])['entries']
@@ -251,7 +255,7 @@ class KATProvider(generic.TorrentProvider):
                         except (AttributeError, TypeError):
                             continue
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
                             continue
 
                         if self.confirmed and not verified:
@@ -354,16 +358,7 @@ class KATCache(tvcache.TVCache):
         self.minTime = 20
 
     def _getRSSData(self):
-        data = {'entries': None}
-
-        for url in self.provider.urls:
-            searchURL = url + 'tv/?field=time_add&sorder=desc&rss=1'
-            logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
-
-            data = self.getRSSFeed(searchURL, items=['entries', 'feed'])
-            if data['entries']:
-                break
-
-        return data
+        search_params = {'RSS': ['rss']}
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = KATProvider()
