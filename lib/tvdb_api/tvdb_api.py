@@ -797,9 +797,9 @@ class Tvdb:
             return
 
         cur_actors = Actors()
-        for curActorItem in actorsEt["actor"]:
+        for curActorItem in actorsEt["actor"].items():
             curActor = Actor()
-            for k, v in curActorItem.items():
+            for k, v in curActorItem:
                 k = k.lower()
                 if v is not None:
                     if k == "image":
