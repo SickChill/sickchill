@@ -44,7 +44,7 @@ class SRWebServer(threading.Thread):
         # api root
         if not sickbeard.API_KEY:
             sickbeard.API_KEY = generateApiKey()
-        self.options['api_root'] = r'%s/api/%s/' % (sickbeard.WEB_ROOT, sickbeard.API_KEY)
+        self.options['api_root'] = r'%s/api/%s' % (sickbeard.WEB_ROOT, sickbeard.API_KEY)
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -78,17 +78,17 @@ class SRWebServer(threading.Thread):
         # Main Handlers
         self.app.add_handlers('.*$', [
             # webapi handler
-            (r'%s(/?)' % self.options['api_root'], ApiHandler),
+            (r'%s(/?.*)' % self.options['api_root'], ApiHandler),
 
             # webapi key retrieval
-            (r'%s/getkey(/?)' % self.options['web_root'], KeyHandler),
+            (r'%s/getkey(/?.*)' % self.options['web_root'], KeyHandler),
 
             # webapi builder redirect
             (r'%s/api/builder' % self.options['web_root'], RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
 
             # webui login/logout handlers
-            (r'%s/login(/?)' % self.options['web_root'], LoginHandler),
-            (r'%s/logout(/?)' % self.options['web_root'], LogoutHandler),
+            (r'%s/login(/?.*)' % self.options['web_root'], LoginHandler),
+            (r'%s/logout(/?.*)' % self.options['web_root'], LogoutHandler),
 
             # webui redirect
             (r'/', RedirectHandler, {"url": self.options['web_root'] + '/home/'}),

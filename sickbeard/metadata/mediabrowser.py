@@ -362,14 +362,17 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         if getattr(myShow, 'actors', None) is not None:
             for actor in myShow['_actors']:
                 cur_actor = etree.SubElement(Persons, "Person")
+
                 cur_actor_name = etree.SubElement(cur_actor, "Name")
-                cur_actor_name.text = actor['name'].strip()
+                if getattr(actor, 'name', None):
+                    cur_actor_name.text = actor['name'].strip()
+
                 cur_actor_type = etree.SubElement(cur_actor, "Type")
                 cur_actor_type.text = "Actor"
+
                 cur_actor_role = etree.SubElement(cur_actor, "Role")
-                cur_actor_role_text = actor['role']
-                if cur_actor_role_text != None:
-                    cur_actor_role.text = cur_actor_role_text
+                if getattr(actor, 'role', None):
+                    cur_actor_role.text = actor['role']
 
         helpers.indentXML(tv_node)
 

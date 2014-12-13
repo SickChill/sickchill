@@ -24,6 +24,7 @@ import time
 import urllib
 import re
 import datetime
+import urlparse
 
 import sickbeard
 from sickbeard import config, sab
@@ -134,16 +135,14 @@ class BaseHandler(RequestHandler):
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
         if status_code == 404:
-            index_url = sickbeard.WEB_ROOT
-            url = self.request.uri[len(index_url):]
+            url = self.request.uri
+            if self.request.uri.startswith(sickbeard.WEB_ROOT):
+                url = url[len(sickbeard.WEB_ROOT)+1:]
 
-            if url[1:4] != 'api':
+            if url[:3] != 'api':
                 return self.redirect(url)
             else:
-                if url.endswith('/'):
-                    self.finish('Wrong API key used')
-                else:
-                    return self.redirect(url + '/')
+                self.finish('Wrong API key used')
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -166,7 +165,7 @@ class BaseHandler(RequestHandler):
                                </html>""" % (error, error,
                                              trace_info, request_info))
 
-    def redirect(self, url, permanent=True, status=None):
+    def redirect(self, url, permanent=False, status=None):
         if not url.startswith(sickbeard.WEB_ROOT):
             url = sickbeard.WEB_ROOT + url
 
@@ -371,7 +370,7 @@ class WebRoot(WebHandler):
             default_image_name = 'banner.png'
 
         #image_path = ek.ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', default_image_name)
-        static_image_path = '/images/' + default_image_name
+        static_image_path = os.path.join('/images', default_image_name)
         if show and sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)):
             cache_obj = image_cache.ImageCache()
 
@@ -386,9 +385,9 @@ class WebRoot(WebHandler):
                 image_file_name = cache_obj.banner_thumb_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
-                image_path = image_file_name
-                static_image_path = '/cache' + image_path.replace(sickbeard.CACHE_DIR, '')
+                static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
+        static_image_path = static_image_path.replace('\\', '/')
         return self.redirect(static_image_path)
 
     def setHomeLayout(self, layout):
@@ -605,7 +604,7 @@ class WebRoot(WebHandler):
 
         return ical
 
-@route('/ui/(.*)(/?)')
+@route('/ui(/?.*)')
 class UI(WebRoot):
     def add_message(self):
         ui.notifications.message('Test 1', 'This is test number 1')
@@ -625,7 +624,7 @@ class UI(WebRoot):
         return json.dumps(messages)
 
 
-@route('/browser/(.*)(/?)')
+@route('/browser(/?.*)')
 class WebFileBrowser(WebRoot):
     def index(self, path='', includeFiles=False, *args, **kwargs):
         self.set_header("Content-Type", "application/json")
@@ -639,7 +638,7 @@ class WebFileBrowser(WebRoot):
         return json.dumps(paths)
 
 
-@route('/home/(.*)(/?)')
+@route('/home(/?.*)')
 class Home(WebRoot):
     def HomeMenu(self):
         menu = [
@@ -1743,11 +1742,11 @@ class Home(WebRoot):
 
         episodes = []
 
-        # Queued Searches
-        for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
-            searchstatus = 'queued'
+        def getEpisodes(searchThread, searchstatus):
+            results = []
+
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
-                episodes.append({'episode': searchThread.segment.episode,
+                results.append({'episode': searchThread.segment.episode,
                                  'episodeindexid': searchThread.segment.indexerid,
                                  'season': searchThread.segment.season,
                                  'searchstatus': searchstatus,
@@ -1755,12 +1754,18 @@ class Home(WebRoot):
                                  'quality': self.getQualityClass(searchThread.segment)})
             else:
                 for epObj in searchThread.segment:
-                    episodes.append({'episode': epObj.episode,
+                    results.append({'episode': epObj.episode,
                                      'episodeindexid': epObj.indexerid,
                                      'season': epObj.season,
                                      'searchstatus': searchstatus,
                                      'status': statusStrings[epObj.status],
                                      'quality': self.getQualityClass(epObj)})
+
+            return results
+
+        # Queued Searches
+        for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
+            episodes += getEpisodes(searchThread, 'queued')
 
         # Running Searches
         if (sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress()):
@@ -1769,12 +1774,7 @@ class Home(WebRoot):
                 searchstatus = 'finished'
             else:
                 searchstatus = 'searching'
-            episodes.append({'episode': searchThread.segment.episode,
-                             'episodeindexid': searchThread.segment.indexerid,
-                             'season': searchThread.segment.season,
-                             'searchstatus': searchstatus,
-                             'status': statusStrings[searchThread.segment.status],
-                             'quality': self.getQualityClass(searchThread.segment)})
+            episodes += getEpisodes(searchThread, searchstatus)
 
         # Finished Searches
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
@@ -1782,24 +1782,14 @@ class Home(WebRoot):
                 if str(searchThread.show.indexerid) == show and not [x for x in episodes if x[
                     'episodeindexid'] == searchThread.segment.indexerid]:
                     searchstatus = 'finished'
-                    episodes.append({'episode': searchThread.segment.episode,
-                                     'episodeindexid': searchThread.segment.indexerid,
-                                     'season': searchThread.segment.season,
-                                     'searchstatus': searchstatus,
-                                     'status': statusStrings[searchThread.segment.status],
-                                     'quality': self.getQualityClass(searchThread.segment)})
+                    episodes += getEpisodes(searchThread, searchstatus)
             else:
                 ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
                 if str(searchThread.show.indexerid) == show:
                     for epObj in searchThread.segment:
                         if not [x for x in episodes if x['episodeindexid'] == epObj.indexerid]:
                             searchstatus = 'finished'
-                            episodes.append({'episode': epObj.episode,
-                                             'episodeindexid': epObj.indexerid,
-                                             'season': epObj.season,
-                                             'searchstatus': searchstatus,
-                                             'status': statusStrings[epObj.status],
-                                             'quality': self.getQualityClass(epObj)})
+                            episodes += getEpisodes(searchThread, searchstatus)
 
         return json.dumps({'show': show, 'episodes': episodes})
 
@@ -1936,7 +1926,7 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
 
-@route('/home/postprocess/(.*)(/?)')
+@route('/home/postprocess(/?.*)')
 class HomePostProcess(Home):
     def index(self):
         t = PageTemplate(rh=self, file="home_postprocess.tmpl")
@@ -1973,7 +1963,7 @@ class HomePostProcess(Home):
             return self._genericMessage("Postprocessing results", result)
 
 
-@route('/home/addShows/(.*)(/?)')
+@route('/home/addShows(/?.*)')
 class HomeAddShows(Home):
     def index(self):
         t = PageTemplate(rh=self, file="home_addShows.tmpl")
@@ -2475,7 +2465,7 @@ class HomeAddShows(Home):
         return self.newShow(dirs_only[0], dirs_only[1:])
 
 
-@route('/manage/(.*)(/?)')
+@route('/manage(/?.*)')
 class Manage(WebRoot):
     def ManageMenu(self):
         menu = [
@@ -3169,7 +3159,7 @@ class Manage(WebRoot):
         return t
 
 
-@route('/manage/manageSearches/(.*)(/?)')
+@route('/manage/manageSearches(/?.*)')
 class ManageSearches(Manage):
     def index(self):
         t = PageTemplate(rh=self, file="manage_manageSearches.tmpl")
@@ -3224,7 +3214,7 @@ class ManageSearches(Manage):
         return self.redirect("/manage/manageSearches/")
 
 
-@route('/history/(.*)(/?)')
+@route('/history(/?.*)')
 class History(WebRoot):
     def index(self, limit=100):
 
@@ -3316,7 +3306,7 @@ class History(WebRoot):
         return self.redirect("/history/")
 
 
-@route('/config/(.*)(/?)')
+@route('/config(/?.*)')
 class Config(WebRoot):
     def ConfigMenu(self):
         menu = [
@@ -3339,7 +3329,7 @@ class Config(WebRoot):
         return t
 
 
-@route('/config/general/(.*)(/?)')
+@route('/config/general(/?.*)')
 class ConfigGeneral(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_general.tmpl")
@@ -3474,7 +3464,7 @@ class ConfigGeneral(Config):
         return self.redirect("/config/general/")
 
 
-@route('/config/backuprestore/(.*)(/?)')
+@route('/config/backuprestore(/?.*)')
 class ConfigBackupRestore(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_backuprestore.tmpl")
@@ -3522,7 +3512,7 @@ class ConfigBackupRestore(Config):
         return finalResult
 
 
-@route('/config/search/(.*)(/?)')
+@route('/config/search(/?.*)')
 class ConfigSearch(Config):
     def index(self):
 
@@ -3615,7 +3605,7 @@ class ConfigSearch(Config):
         return self.redirect("/config/search/")
 
 
-@route('/config/postProcessing/(.*)(/?)')
+@route('/config/postProcessing(/?.*)')
 class ConfigPostProcessing(Config):
     def index(self):
 
@@ -3815,7 +3805,7 @@ class ConfigPostProcessing(Config):
             return 'not supported'
 
 
-@route('/config/providers/(.*)(/?)')
+@route('/config/providers(/?.*)')
 class ConfigProviders(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_providers.tmpl")
@@ -4254,7 +4244,7 @@ class ConfigProviders(Config):
         return self.redirect("/config/providers/")
 
 
-@route('/config/notifications/(.*)(/?)')
+@route('/config/notifications(/?.*)')
 class ConfigNotifications(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_notifications.tmpl")
@@ -4464,7 +4454,7 @@ class ConfigNotifications(Config):
         return self.redirect("/config/notifications/")
 
 
-@route('/config/subtitles/(.*)(/?)')
+@route('/config/subtitles(/?.*)')
 class ConfigSubtitles(Config):
     def index(self):
         t = PageTemplate(rh=self, file="config_subtitles.tmpl")
@@ -4528,7 +4518,7 @@ class ConfigSubtitles(Config):
         return self.redirect("/config/subtitles/")
 
 
-@route('/config/anime/(.*)(/?)')
+@route('/config/anime(/?.*)')
 class ConfigAnime(Config):
     def index(self):
 
@@ -4561,7 +4551,7 @@ class ConfigAnime(Config):
         return self.redirect("/config/anime/")
 
 
-@route('/errorlogs/(.*)(/?)')
+@route('/errorlogs(/?.*)')
 class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self):
         menu = [
