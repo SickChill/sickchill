@@ -71,7 +71,7 @@ result_type_map = {RESULT_SUCCESS: "success",
 
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
-    version = 4  # use an int since float-point is unpredictible
+    version = 5  # use an int since float-point is unpredictible
     intent = 4
 
     def __init__(self, *args, **kwargs):
@@ -79,6 +79,7 @@ class ApiHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
+        args = args[1:]
 
         # set the output callback
         # default json
@@ -122,9 +123,6 @@ class ApiHandler(RequestHandler):
             outputCallback = outputCallbackDict[outDict['outputType']]
         else:
             outputCallback = outputCallbackDict['default']
-
-        if not len(outDict) > 0:
-            outDict = _responds(RESULT_SUCCESS, msg=accessMsg)
 
         return self.finish(outputCallback(outDict))
 
@@ -1377,7 +1375,7 @@ class CMD_SickBeard(ApiCall):
 
     def run(self):
         """ display misc sickrage related information """
-        data = {"sb_version": sickbeard.BRANCH, "api_version": self.version,
+        data = {"sr_version": sickbeard.BRANCH, "api_version": self.version,
                 "api_commands": sorted(_functionMaper.keys())}
         return _responds(RESULT_SUCCESS, data)
 
