@@ -11,15 +11,14 @@ from sickbeard.exceptions import ex
 
 sickbeard.SYS_ENCODING = 'UTF-8'
 
-DEBUG = VERBOSE = False
-
 class EncodingTests(unittest.TestCase):
     def test_encoding(self):
         strings = [u'Les Enfants De La Télé']
 
         for s in strings:
             try:
-                print 'Encoded: ' + ek.ss(s)
+                x = ek.ss(s)
+                assert isinstance(x, unicode)
             except Exception, e:
                 ex(e)
 
@@ -29,3 +28,4 @@ if __name__ == "__main__":
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(EncodingTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)

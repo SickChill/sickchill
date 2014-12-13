@@ -38,7 +38,7 @@ class DBMultiTests(test.SickbeardTestDBCase):
         self.db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
     def test_threaded(self):
-        for i in xrange(20):
+        for i in xrange(4):
             t = threading.Thread(target=self.select)
             t.start()
 
