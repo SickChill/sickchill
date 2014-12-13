@@ -74,7 +74,10 @@ def ss(x):
                 try:
                     u_x_encoded = u_x.encode('utf-8', 'replace')
                 except:
-                    u_x_encoded = x
+                    try:
+                        u_x_encoded = str(x)
+                    except:
+                        u_x_encoded = x
 
     return u_x_encoded
 

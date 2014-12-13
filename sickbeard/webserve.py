@@ -221,7 +221,7 @@ class WebHandler(BaseHandler):
 
     def async_done(self, results):
         try:
-            if results is not None:
+            if results:
                 results = ek.ss(results)
 
                 self.finish(results)
