@@ -218,6 +218,7 @@ class WebHandler(BaseHandler):
             if results is not None:
                 results = ek.ss(results)
 
+                self.set_header('Cache-Control', 'no-cache')
                 self.finish(results)
         except:
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
