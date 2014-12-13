@@ -86,6 +86,14 @@ class ApiHandler(RequestHandler):
                               'image': lambda x: x['image'],
         }
 
+        if sickbeard.USE_API is not True:
+            accessMsg = u"API :: " + self.request.remote_ip + " - SB API Disabled. ACCESS DENIED"
+            logger.log(accessMsg, logger.WARNING)
+            return self.finish(outputCallbackDict['default'](_responds(RESULT_DENIED, msg=accessMsg)))
+        else:
+            accessMsg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
+            logger.log(accessMsg, logger.DEBUG)
+
         # set the original call_dispatcher as the local _call_dispatcher
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
@@ -115,7 +123,10 @@ class ApiHandler(RequestHandler):
         else:
             outputCallback = outputCallbackDict['default']
 
-        return self.write(outputCallback(outDict))
+        if not len(outDict) > 0:
+            outDict = _responds(RESULT_SUCCESS, msg=accessMsg)
+
+        return self.finish(outputCallback(outDict))
 
     def _out_as_json(self, dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8'")
@@ -139,7 +150,6 @@ class ApiHandler(RequestHandler):
         """
         logger.log(u"API :: all args: '" + str(args) + "'", logger.DEBUG)
         logger.log(u"API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
-        # logger.log(u"API :: dateFormat: '" + str(dateFormat) + "'", logger.DEBUG)
 
         cmds = None
         if args:

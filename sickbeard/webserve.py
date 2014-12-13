@@ -137,11 +137,13 @@ class BaseHandler(RequestHandler):
             index_url = sickbeard.WEB_ROOT
             url = self.request.uri[len(index_url):]
 
-            if url[:3] != 'api':
+            if url[1:4] != 'api':
                 return self.redirect(url)
             else:
-                self.write('Wrong API key used')
-                self.finish()
+                if url.endswith('/'):
+                    self.finish('Wrong API key used')
+                else:
+                    return self.redirect(url + '/')
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -216,8 +218,7 @@ class WebHandler(BaseHandler):
                 except:
                     results = str(results)
 
-                self.write(results)
-                self.finish()
+                self.finish(results)
         except:
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
             raise
