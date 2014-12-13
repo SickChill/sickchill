@@ -22,7 +22,12 @@ from __future__ import with_statement
 
 import os.path
 import sys
-import requests
+
+try:
+    import requests
+except ImportError:
+    print ("You need to install python requests library")
+    sys.exit(1)
 
 # Try importing Python 2 modules using new names
 try:
