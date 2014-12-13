@@ -3,7 +3,9 @@ python:
   - 2.6
   - 2.7
 
-# whitelist
+env:
+  - DB=sqlite://
+
 branches:
   only:
     - develop
@@ -17,3 +19,6 @@ before_script:
   
 script:
   - ./all_tests.py
+
+notifications:
+  irc: "irc.freenode.net#sickrage"
