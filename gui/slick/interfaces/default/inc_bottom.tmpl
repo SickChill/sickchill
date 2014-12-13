@@ -27,7 +27,7 @@
 		#set $sql_result = $myDB.select($sql_statement)
 
 		#set $shows_total = len($sickbeard.showList)
-		#set $shows_active = len([show for show in $sickbeard.showList if show.paused == 0 and show.status != "Ended"])
+		#set $shows_active = len([show for show in $sickbeard.showList if show.paused == 0 and show.status == "Continuing"])
 
 		#if $sql_result:
 			#set $ep_snatched = $sql_result[0]['ep_snatched']

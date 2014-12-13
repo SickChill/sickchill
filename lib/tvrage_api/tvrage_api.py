@@ -439,6 +439,22 @@ class TVRage:
                 'seasonnum': 'episodenumber'
             }
 
+            status_map = {
+                'returning series': 'Continuing',
+                'canceled/ended': 'Ended',
+                'tbd/on the bubble': 'Continuing',
+                'in development': 'Continuing',
+                'new series': 'Continuing',
+                'never aired': 'Ended',
+                'final season': 'Continuing',
+                'on hiatus': 'Continuing',
+                'pilot ordered': 'Continuing',
+                'pilot rejected': 'Ended',
+                'canceled': 'Ended',
+                'ended': 'Ended',
+                '': 'Unknown',
+            }
+
             try:
                 key = name_map[key.lower()]
             except (ValueError, TypeError, KeyError):
@@ -447,8 +463,17 @@ class TVRage:
             # clean up value and do type changes
             if value:
                 if isinstance(value, dict):
+                    if key == 'status':
+                        try:
+                            value = status_map[str(value).lower()]
+                            if not value:
+                                raise
+                        except:
+                            value = 'Unknown'
+
                     if key == 'network':
                         value = value['#text']
+
                     if key == 'genre':
                         value = value['genre']
                         if not value:
@@ -457,6 +482,7 @@ class TVRage:
                             value = [value]
                         value = filter(None, value)
                         value = '|' + '|'.join(value) + '|'
+
                 try:
                     if key == 'firstaired' and value in "0000-00-00":
                         new_value = str(dt.date.fromordinal(1))

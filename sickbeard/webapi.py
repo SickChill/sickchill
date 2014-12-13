@@ -2793,7 +2793,7 @@ class CMD_ShowsStats(ApiCall):
         today = str(datetime.date.today().toordinal())
         stats["shows_total"] = len(sickbeard.showList)
         stats["shows_active"] = len(
-            [show for show in sickbeard.showList if show.paused == 0 and show.status != "Ended"])
+            [show for show in sickbeard.showList if show.paused == 0 and "Unknown" not in show.status and "Ended" not in show.status])
         stats["ep_downloaded"] = myDB.select("SELECT COUNT(*) FROM tv_episodes WHERE status IN (" + ",".join(
             [str(show) for show in
              Quality.DOWNLOADED + [ARCHIVED]]) + ") AND season != 0 and episode != 0 AND airdate <= " + today + "")[0][

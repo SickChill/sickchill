@@ -82,7 +82,7 @@ class TVShow(object):
         self._imdb_info = {}
         self._quality = int(sickbeard.QUALITY_DEFAULT)
         self._flatten_folders = int(sickbeard.FLATTEN_FOLDERS_DEFAULT)
-        self._status = ""
+        self._status = "Unknown"
         self._airs = ""
         self._startyear = 0
         self._paused = 0
@@ -282,7 +282,7 @@ class TVShow(object):
     def should_update(self, update_date=datetime.date.today()):
 
         # if show is not 'Ended' always update (status 'Continuing')
-        if not self.status or 'Ended' not in self.status:
+        if 'Unknown' not in self.status and 'Ended' not in self.status:
             return True
 
         # run logic against the current show latest aired and next unaired data to see if we should bypass 'Ended' status
@@ -776,7 +776,7 @@ class TVShow(object):
 
             self.status = sqlResults[0]["status"]
             if self.status is None:
-                self.status = ""
+                self.status = "Unknown"
 
             self.airs = sqlResults[0]["airs"]
             if self.airs is None:
@@ -873,7 +873,7 @@ class TVShow(object):
         if getattr(myEp, 'firstaired', None) is not None:
             self.startyear = int(str(myEp["firstaired"]).split('-')[0])
 
-        self.status = getattr(myEp, 'status', '')
+        self.status = getattr(myEp, 'status', 'Unknown')
 
     def loadIMDbInfo(self, imdbapi=None):
 
@@ -1174,8 +1174,7 @@ class TVShow(object):
             toReturn += "network: " + self.network + "\n"
         if self.airs:
             toReturn += "airs: " + self.airs + "\n"
-        if self.status:
-            toReturn += "status: " + self.status + "\n"
+        toReturn += "status: " + self.status + "\n"
         toReturn += "startyear: " + str(self.startyear) + "\n"
         if self.genre:
             toReturn += "genre: " + self.genre + "\n"
