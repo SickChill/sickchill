@@ -138,7 +138,7 @@ class BaseHandler(RequestHandler):
             url = self.request.uri[len(index_url):]
 
             if url[:3] != 'api':
-                self.redirect(url)
+                return self.redirect(url)
             else:
                 self.write('Wrong API key used')
                 self.finish()
@@ -165,7 +165,7 @@ class BaseHandler(RequestHandler):
                                              trace_info, request_info))
 
     def redirect(self, url, permanent=True, status=None):
-        return super(BaseHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
+        super(BaseHandler, self).redirect(sickbeard.WEB_ROOT + url, permanent, status)
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
@@ -206,6 +206,7 @@ class WebHandler(BaseHandler):
             return result
         except:
             logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
+            raise
 
     def async_done(self, results):
         try:
@@ -219,7 +220,7 @@ class WebHandler(BaseHandler):
                 self.finish()
         except:
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
-            self.finish()
+            raise
 
     def _genericMessage(self, subject, message):
         t = PageTemplate(rh=self, file="genericMessage.tmpl")
@@ -270,7 +271,7 @@ class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
         if self.get_current_user():
-            self.redirect('/home/')
+            return self.redirect('/home/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
             self.write(ek.ss(t).encode('utf-8', 'xmlcharrefreplace'))
@@ -290,13 +291,13 @@ class LoginHandler(BaseHandler):
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
             self.set_secure_cookie('user', api_key, expires_days=30 if remember_me > 0 else None)
 
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("user")
-        self.redirect('/login/')
+        return self.redirect('/login/')
 
 
 class KeyHandler(RequestHandler):
@@ -323,7 +324,7 @@ class KeyHandler(RequestHandler):
 @route('(.*)(/?)')
 class WebRoot(WebHandler):
     def index(self):
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -388,7 +389,7 @@ class WebRoot(WebHandler):
                 image_path = image_file_name
                 static_image_path = '/cache' + image_path.replace(sickbeard.CACHE_DIR, '')
 
-        self.redirect(static_image_path)
+        return self.redirect(static_image_path)
 
     def setHomeLayout(self, layout):
 
@@ -397,7 +398,7 @@ class WebRoot(WebHandler):
 
         sickbeard.HOME_LAYOUT = layout
 
-        self.redirect("/home/")
+        return self.redirect("/home/")
 
     def setPosterSortBy(self, sort):
 
@@ -419,13 +420,13 @@ class WebRoot(WebHandler):
 
         sickbeard.HISTORY_LAYOUT = layout
 
-        self.redirect("/history/")
+        return self.redirect("/history/")
 
     def toggleDisplayShowSpecials(self, show):
 
         sickbeard.DISPLAY_SHOW_SPECIALS = not sickbeard.DISPLAY_SHOW_SPECIALS
 
-        self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=" + show)
 
     def setComingEpsLayout(self, layout):
         if layout not in ('poster', 'banner', 'list', 'calendar'):
@@ -436,13 +437,13 @@ class WebRoot(WebHandler):
 
         sickbeard.COMING_EPS_LAYOUT = layout
 
-        self.redirect("/comingEpisodes/")
+        return self.redirect("/comingEpisodes/")
 
     def toggleComingEpsDisplayPaused(self):
 
         sickbeard.COMING_EPS_DISPLAY_PAUSED = not sickbeard.COMING_EPS_DISPLAY_PAUSED
 
-        self.redirect("/comingEpisodes/")
+        return self.redirect("/comingEpisodes/")
 
     def setComingEpsSort(self, sort):
         if sort not in ('date', 'network', 'show'):
@@ -454,7 +455,7 @@ class WebRoot(WebHandler):
 
         sickbeard.COMING_EPS_SORT = sort
 
-        self.redirect("/comingEpisodes/")
+        return self.redirect("/comingEpisodes/")
 
     def comingEpisodes(self, layout="None"):
 
@@ -957,8 +958,7 @@ class Home(WebRoot):
 
     def shutdown(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            self.redirect("/home/")
-            return
+            return self.redirect("/home/")
 
         sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
 
@@ -969,8 +969,7 @@ class Home(WebRoot):
 
     def restart(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            self.redirect("/home/")
-            return
+            return self.redirect("/home/")
 
         t = PageTemplate(rh=self, file="restart.tmpl")
         t.submenu = self.HomeMenu()
@@ -982,16 +981,16 @@ class Home(WebRoot):
 
     def updateCheck(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            self.redirect('/home/')
+            return self.redirect('/home/')
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
 
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
     def update(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            self.redirect('/home/')
+            return self.redirect('/home/')
 
         if sickbeard.versionCheckScheduler.action.update():
                 # do a hard restart
@@ -1388,7 +1387,7 @@ class Home(WebRoot):
             ui.notifications.error('%d error%s while saving changes:' % (len(errors), "" if len(errors) == 1 else "s"),
                                    '<ul>' + '\n'.join(['<li>%s</li>' % error for error in errors]) + "</ul>")
 
-        self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=" + show)
 
 
     def deleteShow(self, show=None, full=0):
@@ -1415,7 +1414,7 @@ class Home(WebRoot):
                                  (showObj.name,
                                   ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
-        self.redirect("/home/")
+        return self.redirect("/home/")
 
 
     def refreshShow(self, show=None):
@@ -1437,7 +1436,7 @@ class Home(WebRoot):
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
+        return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
 
     def updateShow(self, show=None, force=0):
@@ -1459,7 +1458,7 @@ class Home(WebRoot):
         # just give it some time
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
+        return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
     def subtitleShow(self, show=None, force=0):
 
@@ -1476,7 +1475,7 @@ class Home(WebRoot):
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
-        self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
+        return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
 
     def updateKODI(self, showName=None):
@@ -1492,7 +1491,7 @@ class Home(WebRoot):
             ui.notifications.message("Library update command sent to KODI host(s): " + host)
         else:
             ui.notifications.error("Unable to contact one or more KODI host(s): " + host)
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
 
     def updatePLEX(self):
@@ -1501,7 +1500,7 @@ class Home(WebRoot):
                 "Library update command sent to Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST)
         else:
             ui.notifications.error("Unable to contact Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST)
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
 
     def setStatus(self, show=None, eps=None, status=None, direct=False):
@@ -1621,7 +1620,7 @@ class Home(WebRoot):
         if direct:
             return json.dumps({'result': 'success'})
         else:
-            self.redirect("/home/displayShow?show=" + show)
+            return self.redirect("/home/displayShow?show=" + show)
 
 
     def testRename(self, show=None):
@@ -1688,7 +1687,7 @@ class Home(WebRoot):
             return self._genericMessage("Error", "Can't rename episodes when the show dir is missing.")
 
         if eps is None:
-            self.redirect("/home/displayShow?show=" + show)
+            return self.redirect("/home/displayShow?show=" + show)
 
         myDB = db.DBConnection()
         for curEp in eps.split('|'):
@@ -1715,7 +1714,7 @@ class Home(WebRoot):
 
             root_ep_obj.rename()
 
-        self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=" + show)
 
     def searchEpisode(self, show=None, season=None, episode=None):
 
@@ -1963,7 +1962,7 @@ class HomePostProcess(Home):
             is_priority = False
 
         if not dir:
-            self.redirect("/home/postprocess/")
+            return self.redirect("/home/postprocess/")
         else:
             result = processTV.processDir(dir, nzbName, process_method=process_method, force=force,
                                           is_priority=is_priority, failed=failed, type=type)
@@ -2286,7 +2285,7 @@ class HomeAddShows(Home):
             return "No root directories setup, please go back and add one."
 
         # done adding show
-        self.redirect('/home/')
+        return self.redirect('/home/')
 
     def addNewShow(self, whichSeries=None, indexerLang="en", rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
@@ -2306,7 +2305,7 @@ class HomeAddShows(Home):
         def finishAddShow():
             # if there are no extra shows then go home
             if not other_shows:
-                self.redirect('/home/')
+                return self.redirect('/home/')
 
             # peel off the next one
             next_show_dir = other_shows[0]
@@ -2331,7 +2330,7 @@ class HomeAddShows(Home):
                 logger.log("Unable to add show due to show selection. Not anough arguments: %s" % (repr(series_pieces)),
                            logger.ERROR)
                 ui.notifications.error("Unknown error. Unable to add show due to problem with show selection.")
-                self.redirect('/home/addShows/existingShows/')
+                return self.redirect('/home/addShows/existingShows/')
 
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
@@ -2354,7 +2353,7 @@ class HomeAddShows(Home):
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if ek.ek(os.path.isdir, show_dir) and not fullShowPath:
             ui.notifications.error("Unable to add show", "Folder " + show_dir + " exists already")
-            self.redirect('/home/addShows/existingShows/')
+            return self.redirect('/home/addShows/existingShows/')
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2365,7 +2364,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Unable to create the folder " + show_dir + ", can't add the show")
-                self.redirect("/home/")
+                return self.redirect("/home/")
             else:
                 helpers.chmodAsParent(show_dir)
 
@@ -2470,7 +2469,7 @@ class HomeAddShows(Home):
 
         # if we're done then go home
         if not dirs_only:
-            self.redirect('/home/')
+            return self.redirect('/home/')
 
         # for the remaining shows we need to prompt for each one, so forward this on to the newShow page
         return self.newShow(dirs_only[0], dirs_only[1:])
@@ -2606,7 +2605,7 @@ class Manage(WebRoot):
             WebRoot.Home.setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
                                    newStatus, direct=True)
 
-        self.redirect('/manage/episodeStatuses/')
+        return self.redirect('/manage/episodeStatuses/')
 
 
     def showSubtitleMissed(self, indexer_id, whichSubs):
@@ -2714,7 +2713,7 @@ class Manage(WebRoot):
                 show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(cur_indexer_id))
                 subtitles = show.getEpisode(int(season), int(episode)).downloadSubtitles()
 
-        self.redirect('/manage/subtitleMissed/')
+        return self.redirect('/manage/subtitleMissed/')
 
 
     def backlogShow(self, indexer_id):
@@ -2724,7 +2723,7 @@ class Manage(WebRoot):
         if show_obj:
             sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])  # @UndefinedVariable
 
-        self.redirect("/manage/backlogOverview/")
+        return self.redirect("/manage/backlogOverview/")
 
 
     def backlogOverview(self):
@@ -2775,7 +2774,7 @@ class Manage(WebRoot):
         t.submenu = self.ManageMenu()
 
         if not toEdit:
-            self.redirect("/manage/")
+            return self.redirect("/manage/")
 
         showIDs = toEdit.split("|")
         showList = []
@@ -2996,7 +2995,7 @@ class Manage(WebRoot):
             ui.notifications.error('%d error%s while saving changes:' % (len(errors), "" if len(errors) == 1 else "s"),
                                    " ".join(errors))
 
-        self.redirect("/manage/")
+        return self.redirect("/manage/")
 
 
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None,
@@ -3116,7 +3115,7 @@ class Manage(WebRoot):
             ui.notifications.message("The following actions were queued:",
                                      messageDetail)
 
-        self.redirect("/manage/")
+        return self.redirect("/manage/")
 
 
     def manageTorrents(self):
@@ -3160,7 +3159,7 @@ class Manage(WebRoot):
             myDB.action('DELETE FROM failed WHERE release = ?', [release])
 
         if toRemove:
-            self.redirect('/manage/failedDownloads/')
+            return self.redirect('/manage/failedDownloads/')
 
         t = PageTemplate(rh=self, file="manage_failedDownloads.tmpl")
         t.failedResults = sqlResults
@@ -3192,7 +3191,7 @@ class ManageSearches(Manage):
             logger.log(u"Backlog search forced")
             ui.notifications.message('Backlog search started')
 
-        self.redirect("/manage/manageSearches/")
+        return self.redirect("/manage/manageSearches/")
 
     def forceSearch(self):
 
@@ -3202,7 +3201,7 @@ class ManageSearches(Manage):
             logger.log(u"Daily search forced")
             ui.notifications.message('Daily search started')
 
-        self.redirect("/manage/manageSearches/")
+        return self.redirect("/manage/manageSearches/")
 
 
     def forceFindPropers(self):
@@ -3213,7 +3212,7 @@ class ManageSearches(Manage):
             logger.log(u"Find propers search forced")
             ui.notifications.message('Find propers search started')
 
-        self.redirect("/manage/manageSearches/")
+        return self.redirect("/manage/manageSearches/")
 
 
     def pauseBacklog(self, paused=None):
@@ -3222,7 +3221,7 @@ class ManageSearches(Manage):
         else:
             sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
 
-        self.redirect("/manage/manageSearches/")
+        return self.redirect("/manage/manageSearches/")
 
 
 @route('/history/(.*)(/?)')
@@ -3304,7 +3303,7 @@ class History(WebRoot):
         myDB.action("DELETE FROM history WHERE 1=1")
 
         ui.notifications.message('History cleared')
-        self.redirect("/history/")
+        return self.redirect("/history/")
 
 
     def trimHistory(self):
@@ -3314,7 +3313,7 @@ class History(WebRoot):
             (datetime.datetime.today() - datetime.timedelta(days=30)).strftime(history.dateFormat)))
 
         ui.notifications.message('Removed history entries greater than 30 days old')
-        self.redirect("/history/")
+        return self.redirect("/history/")
 
 
 @route('/config/(.*)(/?)')
@@ -3472,7 +3471,7 @@ class ConfigGeneral(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/general/")
+        return self.redirect("/config/general/")
 
 
 @route('/config/backuprestore/(.*)(/?)')
@@ -3613,7 +3612,7 @@ class ConfigSearch(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/search/")
+        return self.redirect("/config/search/")
 
 
 @route('/config/postProcessing/(.*)(/?)')
@@ -3746,7 +3745,7 @@ class ConfigPostProcessing(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/postProcessing/")
+        return self.redirect("/config/postProcessing/")
 
     def testNaming(self, pattern=None, multi=None, abd=False, sports=False, anime_type=None):
 
@@ -4252,7 +4251,7 @@ class ConfigProviders(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/providers/")
+        return self.redirect("/config/providers/")
 
 
 @route('/config/notifications/(.*)(/?)')
@@ -4462,7 +4461,7 @@ class ConfigNotifications(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/notifications/")
+        return self.redirect("/config/notifications/")
 
 
 @route('/config/subtitles/(.*)(/?)')
@@ -4526,7 +4525,7 @@ class ConfigSubtitles(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/subtitles/")
+        return self.redirect("/config/subtitles/")
 
 
 @route('/config/anime/(.*)(/?)')
@@ -4559,7 +4558,7 @@ class ConfigAnime(Config):
         else:
             ui.notifications.message('Configuration Saved', ek.ek(os.path.join, sickbeard.CONFIG_FILE))
 
-        self.redirect("/config/anime/")
+        return self.redirect("/config/anime/")
 
 
 @route('/errorlogs/(.*)(/?)')
@@ -4582,7 +4581,7 @@ class ErrorLogs(WebRoot):
 
     def clearerrors(self):
         classes.ErrorViewer.clear()
-        self.redirect("/errorlogs/")
+        return self.redirect("/errorlogs/")
 
 
     def viewlog(self, minLevel=logger.MESSAGE, maxLines=500):
