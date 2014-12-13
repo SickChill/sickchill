@@ -233,7 +233,7 @@ class KATProvider(generic.TorrentProvider):
                     searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote(search_string)
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-                    entries = self.cache.getRSSFeed(url, items=['entries', 'feed'])['entries']
+                    entries = self.cache.getRSSFeed(searchURL, items=['entries', 'feed'])['entries']
                     if entries:
                         break
 
@@ -360,7 +360,7 @@ class KATCache(tvcache.TVCache):
             searchURL = url + 'tv/?field=time_add&sorder=desc&rss=1'
             logger.log(u"KAT cache update URL: " + searchURL, logger.DEBUG)
 
-            data = self.getRSSFeed(url, items=['entries', 'feed'])
+            data = self.getRSSFeed(searchURL, items=['entries', 'feed'])
             if data['entries']:
                 break
 
