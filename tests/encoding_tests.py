@@ -15,14 +15,13 @@ DEBUG = VERBOSE = False
 
 class EncodingTests(unittest.TestCase):
     def test_encoding(self):
-        strings = [u'הערוץ הראשון', 'Les Enfants De La Télé', u'\x89']
+        strings = [u'Les Enfants De La Télé']
 
         for s in strings:
             try:
-                print ek.ss(s)
-                print unicode(s).decode('UTF-8')
+                print 'Encoded: ' + ek.ss(s)
             except Exception, e:
-                print ex(e)
+                ex(e)
 
 if __name__ == "__main__":
     print "=================="

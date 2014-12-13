@@ -213,10 +213,7 @@ class WebHandler(BaseHandler):
     def async_done(self, results):
         try:
             if results is not None:
-                try:
-                    results = ek.ss(results).encode('utf-8', 'xmlcharrefreplace')
-                except:
-                    results = str(results)
+                results = ek.ss(results)
 
                 self.finish(results)
         except:

@@ -63,15 +63,20 @@ def ss(x):
     u_x = _toUnicode(x)
 
     try:
-        return u_x.encode(sickbeard.SYS_ENCODING)
+        u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')
     except:
         try:
-            return u_x.encode(sickbeard.SYS_ENCODING, 'replace')
+            u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING)
         except:
             try:
-                return u_x.encode('utf-8', 'replace')
+                u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING, 'replace')
             except:
-                return x
+                try:
+                    u_x_encoded = u_x.encode('utf-8', 'replace')
+                except:
+                    u_x_encoded = x
+
+    return u_x_encoded
 
 def fixListEncodings(x):
     if not isinstance(x, (list, tuple)):
