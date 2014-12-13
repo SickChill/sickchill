@@ -2593,7 +2593,7 @@ class Manage(WebRoot):
                 all_eps = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
                 to_change[cur_indexer_id] = all_eps
 
-            WebRoot.Home.setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
+            self.Home.setStatus(cur_indexer_id, '|'.join(to_change[cur_indexer_id]),
                                    newStatus, direct=True)
 
         return self.redirect('/manage/episodeStatuses/')
@@ -2968,7 +2968,7 @@ class Manage(WebRoot):
 
             exceptions_list = []
 
-            curErrors += WebRoot.Home.editShow(curShow, new_show_dir, anyQualities,
+            curErrors += self.Home.editShow(curShow, new_show_dir, anyQualities,
                                                bestQualities, exceptions_list,
                                                archive_firstmatch=new_archive_firstmatch,
                                                flatten_folders=new_flatten_folders,
