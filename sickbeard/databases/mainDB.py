@@ -36,6 +36,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
         self.fix_unaired_episodes()
+        self.fix_tvrage_show_statues()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -142,6 +143,25 @@ class MainSanityCheck(db.DBSanityCheck):
         else:
             logger.log(u"No UNAIRED episodes, check passed")
 
+    def fix_tvrage_show_statues(self):
+        status_map = {
+            'returning series': 'Continuing',
+            'canceled/ended': 'Ended',
+            'tbd/on the bubble': 'Continuing',
+            'in development': 'Continuing',
+            'new series': 'Continuing',
+            'never aired': 'Ended',
+            'final season': 'Continuing',
+            'on hiatus': 'Continuing',
+            'pilot ordered': 'Continuing',
+            'pilot rejected': 'Ended',
+            'canceled': 'Ended',
+            'ended': 'Ended',
+            '': 'Unknown',
+        }
+
+        for old_status, new_status in status_map.items():
+            self.connection.action("UPDATE tv_shows SET status = ? WHERE LOWER(status) = ?", [new_status, old_status])
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
