@@ -3,7 +3,6 @@ python:
   - 2.6
   - 2.7
 
-# whitelist
 branches:
   only:
     - develop
@@ -12,8 +11,10 @@ install:
   - pip install cheetah
 
 before_script:
-  - cd ./tests
-  - chmod +x ./all_tests.py
-  
+ - chmod +x ./tests/all_tests.py
+
 script:
-  - ./all_tests.py
+  - ./tests/all_tests.py
+
+notifications:
+  irc: "irc.freenode.net#sickrage"
