@@ -11,7 +11,7 @@ install:
   - pip install cheetah
 
 before_script:
- - chmod +x /tests/all_tests.py
+ - chmod +x ./tests/all_tests.py
 
 script:
   - ./tests/all_tests.py
