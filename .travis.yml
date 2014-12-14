@@ -11,7 +11,7 @@ install:
   - pip install cheetah
 
 script:
-  - make test-all
+  - ./tests/all_tests.py
 
 notifications:
   irc: "irc.freenode.net#sickrage"
