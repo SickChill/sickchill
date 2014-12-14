@@ -31,14 +31,7 @@ Video File Manager for TV Shows, It watches for new episodes of your favorite sh
  Any questions or setup info your looking for can be found at out forums https://www.sickrage.tv
 
 ## Bug/Issues
-With your bug reports, specify:
- - Branch
- - Commit hash
- - Your operating system and python version
- - What you did
- - What happened
- - What you expected
- - Link to logfile on http://www.pastebin.com
+[SickRage Issue Tracker](https://github.com/SiCKRAGETV/sickrage-issues)
 
 ## Important
 Please before using this with your existing database (sickbeard.db) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present, we HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk
