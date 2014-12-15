@@ -619,7 +619,7 @@ class Tvdb:
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
         else:
             try:
-                return xmltodict.parse(resp.text.rstrip("\r"), postprocessor=process)
+                return xmltodict.parse(resp.content.decode('utf-8'), postprocessor=process)
             except:
                 return dict([(u'data', None)])
 

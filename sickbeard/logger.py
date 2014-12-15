@@ -283,13 +283,14 @@ class SBRotatingLogHandler(object):
             meThread = threading.currentThread().getName()
             message = meThread + u" :: " + toLog
 
-            out_line = ek.ss(message)
+            out_line = message
 
             sb_logger = logging.getLogger('sickbeard')
             sub_logger = logging.getLogger('subliminal')
             imdb_logger = logging.getLogger('imdbpy')
             tornado_logger = logging.getLogger('tornado')
             feedcache_logger = logging.getLogger('feedcache')
+
             setattr(sb_logger, 'db', lambda *args: sb_logger.log(DB, *args))
 
             # filtering

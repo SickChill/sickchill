@@ -498,7 +498,7 @@ class TVRage:
             return (key, value)
 
         try:
-            return xmltodict.parse(resp.text.rstrip("\r"), postprocessor=remap_keys)
+            return xmltodict.parse(resp.content.decode('utf-8'), postprocessor=remap_keys)
         except:
             return dict([(u'data', None)])
 

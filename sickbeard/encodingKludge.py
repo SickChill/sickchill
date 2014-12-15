@@ -26,60 +26,32 @@ import unicodedata
 
 from string import ascii_letters, digits
 from sickbeard import logger
+from unidecode import unidecode
 
-def toSafeString(original):
-    valid_chars = "-_.() %s%s" % (ascii_letters, digits)
-    cleaned_filename = unicodedata.normalize('NFKD', _toUnicode(original)).encode('ASCII', 'ignore')
-    valid_string = ''.join(c for c in cleaned_filename if c in valid_chars)
-    return ' '.join(valid_string.split())
-
-
-def simplifyString(original):
-    string = stripAccents(original.lower())
-    string = toSafeString(' '.join(re.split('\W+', string)))
-    split = re.split('\W+|_', string.lower())
-    return _toUnicode(' '.join(split))
 
 def _toUnicode(x):
-    if isinstance(x, unicode):
+    try:
+        if not isinstance(x, unicode):
+            if chardet.detect(x).get('encoding') == 'utf-8':
+                x = x.decode('utf-8')
+            elif isinstance(x, str):
+                x = x.decode(sickbeard.SYS_ENCODING)
+    finally:
         return x
-    else:
-        try:
-            return six.text_type(x)
-        except:
-            try:
-                if chardet.detect(x).get('encoding') == 'utf-8':
-                    return x.decode('utf-8')
-                if isinstance(x, str):
-                    try:
-                        return x.decode(sickbeard.SYS_ENCODING)
-                    except UnicodeDecodeError:
-                        raise
-                return x
-            except:
-                return x
 
 def ss(x):
-    u_x = _toUnicode(x)
+    x = _toUnicode(x)
 
     try:
-        u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')
-    except:
         try:
-            u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING)
-        except:
             try:
-                u_x_encoded = u_x.encode(sickbeard.SYS_ENCODING, 'replace')
+                x = x.encode(sickbeard.SYS_ENCODING)
             except:
-                try:
-                    u_x_encoded = u_x.encode('utf-8', 'replace')
-                except:
-                    try:
-                        u_x_encoded = str(x)
-                    except:
-                        u_x_encoded = x
-
-    return u_x_encoded
+                x = x.encode(sickbeard.SYS_ENCODING, 'ignore')
+        except:
+            x = x.encode('utf-8', 'ignore')
+    finally:
+        return x
 
 def fixListEncodings(x):
     if not isinstance(x, (list, tuple)):
@@ -100,6 +72,3 @@ def ek(func, *args, **kwargs):
         return _toUnicode(result)
     else:
         return result
-
-def stripAccents(s):
-    return ''.join((c for c in unicodedata.normalize('NFD', _toUnicode(s)) if unicodedata.category(c) != 'Mn'))
