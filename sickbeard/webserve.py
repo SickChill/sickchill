@@ -81,15 +81,15 @@ route_locks = {}
 
 class html_entities(CheetahFilter):
     def filter(self, val, **dummy_kw):
-        """Filter incoming strings so they use HTML entity characters"""
         if isinstance(val, unicode):
             filtered = val.encode('ascii', 'xmlcharrefreplace')
         elif val is None:
             filtered = ''
         elif isinstance(val, str):
-            filtered = val.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
+            filtered = val.decode(sickbeard.SYS_ENCODING).encode('ascii', 'xmlcharrefreplace')
         else:
             filtered = self.filter(str(val))
+
         return filtered
 
 class PageTemplate(CheetahTemplate):

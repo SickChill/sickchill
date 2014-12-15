@@ -1,3 +1,4 @@
+# coding=utf-8
 import locale
 import unittest
 import sys, os.path
@@ -13,7 +14,7 @@ from sickbeard.helpers import sanitizeFileName
 class EncodingTests(unittest.TestCase):
     def test_encoding(self):
         rootDir = 'C:\\Temp\\TV'
-        strings = [u'Les Enfants De La T\xe9l\xe9']
+        strings = [u'Les Enfants De La T\xe9l\xe9', u'RT� One']
 
         sickbeard.SYS_ENCODING = None
 
@@ -40,6 +41,7 @@ class EncodingTests(unittest.TestCase):
 
         for s in strings:
             try:
+                show_name = s.decode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')
                 show_dir = ek.ek(os.path.join, rootDir, sanitizeFileName(s))
                 self.assertTrue(isinstance(show_dir, unicode))
             except Exception, e:
