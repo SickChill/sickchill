@@ -29,7 +29,7 @@ import sickbeard
 
 from sickbeard import logger, common
 from sickbeard import db
-from sickbeard import encodingKludge as ek
+from sickbeard.encodingKludge import toUnicode
 from sickbeard.exceptions import ex
 
 
@@ -51,7 +51,7 @@ class EmailNotifier:
         ep_name: The name of the episode that was snatched
         title: The title of the notification (optional)
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = toUnicode(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
@@ -68,7 +68,10 @@ class EmailNotifier:
                             1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name)
+                    try:
+                        msg = MIMEText(ep_name)
+                    except:
+                        msg = MIMEText("Episode Snatched")
 
                 msg['Subject'] = 'Snatched: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
@@ -86,7 +89,7 @@ class EmailNotifier:
         ep_name: The name of the episode that was downloaded
         title: The title of the notification (optional)
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = toUnicode(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
@@ -103,7 +106,10 @@ class EmailNotifier:
                             1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name)
+                    try:
+                        msg = MIMEText(ep_name)
+                    except:
+                        mag = 'Episode Downloaded'
 
                 msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
@@ -121,7 +127,7 @@ class EmailNotifier:
         ep_name: The name of the episode that was downloaded
         lang: Subtitle language wanted
         """
-        ep_name = ek.ss(ep_name)
+        ep_name = toUnicode(ep_name)
 
         if sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
@@ -138,7 +144,10 @@ class EmailNotifier:
                             1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name + ": " + lang)
+                    try:
+                        msg = MIMEText(ep_name + ": " + lang)
+                    except:
+                        msg = "Episode Subtitle Downloaded"
 
                 msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
@@ -198,7 +207,7 @@ class EmailNotifier:
             return False
 
     def _parseEp(self, ep_name):
-        ep_name = ek.ss(ep_name)
+        ep_name = toUnicode(ep_name)
 
         sep = " - "
         titles = ep_name.split(sep)
