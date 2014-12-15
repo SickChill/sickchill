@@ -79,6 +79,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 route_locks = {}
 
+
 class html_entities(CheetahFilter):
     def filter(self, val, **dummy_kw):
         if isinstance(val, unicode):
@@ -91,6 +92,7 @@ class html_entities(CheetahFilter):
             filtered = self.filter(str(val))
 
         return filtered
+
 
 class PageTemplate(CheetahTemplate):
     def __init__(self, rh, *args, **kwargs):
@@ -140,6 +142,7 @@ class PageTemplate(CheetahTemplate):
         kwargs['cacheModuleFilesForTracebacks'] = True
         kwargs['cacheDirForModuleFiles'] = os.path.join(sickbeard.CACHE_DIR, 'cheetah')
         return super(PageTemplate, self).compile(*args, **kwargs)
+
 
 class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
@@ -243,6 +246,7 @@ class WebHandler(BaseHandler):
     # post uses get method
     post = get
 
+
 class LoginHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
         super(LoginHandler, self).__init__(*args, **kwargs)
@@ -252,7 +256,7 @@ class LoginHandler(BaseHandler):
             self.redirect('/home/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
-            self.finish(ek.ss(t))
+            self.finish(t.respond())
 
     def post(self, *args, **kwargs):
 
@@ -261,8 +265,8 @@ class LoginHandler(BaseHandler):
         username = sickbeard.WEB_USERNAME
         password = sickbeard.WEB_PASSWORD
 
-        if (self.get_argument('username') == username or not username) and (
-                        self.get_argument('password') == password or not password):
+        if (self.get_argument('username') == username or not username) \
+                and (self.get_argument('password') == password or not password):
             api_key = sickbeard.API_KEY
 
         if api_key:
@@ -292,14 +296,11 @@ class KeyHandler(BaseHandler):
             username = sickbeard.WEB_USERNAME
             password = sickbeard.WEB_PASSWORD
 
-            if (self.get_argument('u', None) == username or not username) \
-                    and (self.get_argument('p', None) == password or not password):
+            if (self.get_argument('u', None) == username or not username) and \
+                    (self.get_argument('p', None) == password or not password):
                 api_key = sickbeard.API_KEY
 
-            self.finish({
-                'success': api_key is not None,
-                'api_key': api_key
-            })
+            self.finish({'success': api_key is not None, 'api_key': api_key})
         except:
             logger.log('Failed doing key request: %s' % (traceback.format_exc()), logger.ERROR)
             self.finish({'success': False, 'error': 'Failed returning results'})
@@ -457,14 +458,14 @@ class WebRoot(WebHandler):
 
         myDB = db.DBConnection()
         sql_results = myDB.select(
-            "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
+            "SELECT *, tv_shows.status AS show_status FROM tv_episodes, tv_shows WHERE season != 0 AND airdate >= ? AND airdate < ? AND tv_shows.indexer_id = tv_episodes.showid AND tv_episodes.status NOT IN (" + ','.join(
                 ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
 
         for cur_result in sql_results:
             done_show_list.append(int(cur_result["showid"]))
 
         more_sql_results = myDB.select(
-            "SELECT *, tv_shows.status as show_status FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
+            "SELECT *, tv_shows.status AS show_status FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
                 ['?'] * len(
                     done_show_list)) + ") AND tv_shows.indexer_id = outer_eps.showid AND airdate = (SELECT airdate FROM tv_episodes inner_eps WHERE inner_eps.season != 0 AND inner_eps.showid = outer_eps.showid AND inner_eps.airdate >= ? ORDER BY inner_eps.airdate ASC LIMIT 1) AND outer_eps.status NOT IN (" + ','.join(
                 ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
@@ -472,7 +473,7 @@ class WebRoot(WebHandler):
         sql_results += more_sql_results
 
         more_sql_results = myDB.select(
-            "SELECT *, tv_shows.status as show_status FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
+            "SELECT *, tv_shows.status AS show_status FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
                 ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
         sql_results += more_sql_results
 
@@ -591,6 +592,7 @@ class WebRoot(WebHandler):
         ical += 'END:VCALENDAR'
 
         return ical
+
 
 @route('/ui(/?.*)')
 class UI(WebRoot):
@@ -1056,7 +1058,7 @@ class Home(WebRoot):
 
         myDB = db.DBConnection()
         seasonResults = myDB.select(
-            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season desc",
+            "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC",
             [showObj.indexerid]
         )
 
@@ -2580,7 +2582,7 @@ class Manage(Home, WebRoot):
 
         myDB = db.DBConnection()
         status_results = myDB.select(
-            "SELECT show_name, tv_shows.indexer_id as indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN (" + ','.join(
+            "SELECT show_name, tv_shows.indexer_id AS indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN (" + ','.join(
                 ['?'] * len(
                     status_list)) + ") AND season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name",
             status_list)
@@ -3191,7 +3193,7 @@ class Manage(Home, WebRoot):
         toRemove = toRemove.split("|") if toRemove is not None else []
 
         for release in toRemove:
-            myDB.action("DELETE FROM failed WHERE release = ?", [release])
+            myDB.action("DELETE FROM failed WHERE failed.release = ?", [release])
 
         if toRemove:
             return self.redirect('/manage/failedDownloads/')
