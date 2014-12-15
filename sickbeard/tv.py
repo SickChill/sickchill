@@ -2498,9 +2498,18 @@ class TVEpisode(object):
             import time
 
             airdatetime = airdatetime.timetuple()
-            if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                logger.log(str(self.show.indexerid) + u": Changed modify date of " + os.path.basename(self.location)
-                           + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
+            logger.log(str(self.show.indexerid) + u": About to modify date of '" + self.location
+                       + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.DEBUG)
+            try:
+                if helpers.touchFile(self.location, time.mktime(airdatetime)):
+                    logger.log(str(self.show.indexerid) + u": Changed modify date of " + os.path.basename(self.location)
+                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime))
+                else:
+                    logger.log(str(self.show.indexerid) + u": Unable to modify date of " + os.path.basename(self.location)
+                               + " to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
+            except:
+                logger.log(str(self.show.indexerid) + u": Failed to modify date of '" + os.path.basename(self.location)
+                           + "' to show air date " + time.strftime("%b %d,%Y (%H:%M)", airdatetime), logger.ERROR)
 
     def __getstate__(self):
         d = dict(self.__dict__)
