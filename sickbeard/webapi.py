@@ -1278,8 +1278,8 @@ class CMD_Logs(ApiCall):
         minLevel = logger.reverseNames[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.sb_log_instance.log_file_path):
-            with ek.ek(open, logger.sb_log_instance.log_file_path) as f:
+        if os.path.isfile(logger.logFile):
+            with ek.ek(open, logger.logFile) as f:
                 data = f.readlines()
 
         regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"

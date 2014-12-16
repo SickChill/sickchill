@@ -27,6 +27,8 @@ import threading
 import sickbeard
 from sickbeard import classes
 
+censoredItems = {}
+
 # log levels
 ERROR = logging.ERROR
 WARNING = logging.WARNING
@@ -40,8 +42,6 @@ reverseNames = {u'ERROR': ERROR,
                 u'DEBUG': DEBUG,
                 u'DB': DB}
 
-censoredItems = {}
-
 # send logging to null
 class NullFilter(logging.Filter):
     def filter(self, record):
@@ -54,9 +54,7 @@ class CensorFilter(logging.Filter):
                 record.msg = record.msg.replace(v, len(v) * '*')
         return True
 
-def initLogging(consoleLogging=False, fileLogging=False, debug=False):
-    logFile = os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
-
+def initLogging(logFile=os.path.join(sickbeard.LOG_DIR, 'sickrage.log'), consoleLogging=False, fileLogging=False, debug=False):
     # Add a new logging level DB
     logging.addLevelName(DB, 'DB')
 
