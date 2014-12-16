@@ -34,6 +34,12 @@ INFO = logging.INFO
 DEBUG = logging.DEBUG
 DB = 5
 
+reverseNames = {u'ERROR': ERROR,
+                u'WARNING': WARNING,
+                u'INFO': INFO,
+                u'DEBUG': DEBUG,
+                u'DB': DB}
+
 censoredItems = {}
 
 # send logging to null
