@@ -93,7 +93,7 @@ class PLEXNotifier(KODINotifier):
                 return False
 
             logger.log(u"Updating library for the Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST,
-                       logger.MESSAGE)
+                       logger.INFO)
 
             url = "http://%s/library/sections" % sickbeard.PLEX_SERVER_HOST
             try:
@@ -104,7 +104,7 @@ class PLEXNotifier(KODINotifier):
 
             sections = xml_sections.getElementsByTagName('Directory')
             if not sections:
-                logger.log(u"Plex Media Server not running on: " + sickbeard.PLEX_SERVER_HOST, logger.MESSAGE)
+                logger.log(u"Plex Media Server not running on: " + sickbeard.PLEX_SERVER_HOST, logger.INFO)
                 return False
 
             for s in sections:

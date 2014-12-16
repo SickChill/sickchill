@@ -256,7 +256,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     myDB = db.DBConnection('cache.db')
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
-    logger.log(u"Updating scene exceptions", logger.MESSAGE)
+    logger.log(u"Updating scene exceptions", logger.INFO)
     
     # A change has been made to the scene exception list. Let's clear the cache, to make this visible
     if indexer_id in exceptionsCache:

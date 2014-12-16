@@ -214,7 +214,7 @@ def pickBestResult(results, show, quality_list=None):
 
         if bwl:
             if not bwl.is_valid(cur_result):
-                logger.log(cur_result.name+" does not match the blacklist or the whitelist, rejecting it. Result: " + bwl.get_last_result_msg(), logger.MESSAGE)
+                logger.log(cur_result.name+" does not match the blacklist or the whitelist, rejecting it. Result: " + bwl.get_last_result_msg(), logger.INFO)
                 continue
 
         if quality_list and cur_result.quality not in quality_list:
@@ -223,12 +223,12 @@ def pickBestResult(results, show, quality_list=None):
 
         if show.rls_ignore_words and filter_release_name(cur_result.name, show.rls_ignore_words):
             logger.log(u"Ignoring " + cur_result.name + " based on ignored words filter: " + show.rls_ignore_words,
-                       logger.MESSAGE)
+                       logger.INFO)
             continue
 
         if show.rls_require_words and not filter_release_name(cur_result.name, show.rls_require_words):
             logger.log(u"Ignoring " + cur_result.name + " based on required words filter: " + show.rls_require_words,
-                       logger.MESSAGE)
+                       logger.INFO)
             continue
 
         if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,

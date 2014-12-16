@@ -33,7 +33,6 @@ if sys.version_info < (2, 6):
 
 try:
     import Cheetah
-
     if Cheetah.Version[0] != '2':
         raise ValueError
 except ValueError:
@@ -256,35 +255,21 @@ class SickRage(object):
                 raise SystemExit(
                     "Config file root dir '" + os.path.dirname(sickbeard.CONFIG_FILE) + "' must be writeable.")
 
-        # Check if we need to perform a restore first
-        restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
-        if os.path.exists(restoreDir):
-            if self.restore(restoreDir, sickbeard.DATA_DIR):
-                logger.log(u"Restore successful...")
-            else:
-                logger.log(u"Restore FAILED!", logger.ERROR)
-
         os.chdir(sickbeard.DATA_DIR)
 
+        # Check if we need to perform a restore first
+        restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
+        if self.consoleLogging and os.path.exists(restoreDir):
+            if self.restore(restoreDir, sickbeard.DATA_DIR):
+                sys.stdout.write("Restore successful...\n")
+            else:
+                sys.stdout.write("Restore FAILED!\n")
+
         # Load the config and publish it to the sickbeard package
-        if not os.path.isfile(sickbeard.CONFIG_FILE):
-            logger.log(u"Unable to find '" + sickbeard.CONFIG_FILE + "' , all settings will be default!", logger.ERROR)
+        if self.consoleLogging and not os.path.isfile(sickbeard.CONFIG_FILE):
+            sys.stdout.write("Unable to find '" + sickbeard.CONFIG_FILE + "' , all settings will be default!" + "\n")
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
-
-        CUR_DB_VERSION = db.DBConnection().checkDBVersion()
-
-        if CUR_DB_VERSION > 0:
-            if CUR_DB_VERSION < MIN_DB_VERSION:
-                raise SystemExit("Your database version (" + str(
-                    CUR_DB_VERSION) + ") is too old to migrate from with this version of SickRage (" + str(
-                    MIN_DB_VERSION) + ").\n" + \
-                                 "Upgrade using a previous version of SB first, or start with no database file to begin fresh.")
-            if CUR_DB_VERSION > MAX_DB_VERSION:
-                raise SystemExit("Your database version (" + str(
-                    CUR_DB_VERSION) + ") has been incremented past what this version of SickRage supports (" + str(
-                    MAX_DB_VERSION) + ").\n" + \
-                                 "If you have used other forks of SB, your database may be unusable due to their modifications.")
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.consoleLogging)
@@ -517,7 +502,6 @@ class SickRage(object):
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
                     logger.log(u"Restarting SickRage with " + str(popen_list))
-                    logger.close()
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
         # system exit

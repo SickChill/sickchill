@@ -159,14 +159,14 @@ class ProperFinder():
                                                                                  parse_result.show.rls_ignore_words):
                 logger.log(
                     u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
-                    logger.MESSAGE)
+                    logger.INFO)
                 continue
 
             if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name,
                                                                                       parse_result.show.rls_require_words):
                 logger.log(
                     u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
-                    logger.MESSAGE)
+                    logger.INFO)
                 continue
 
             # check if we actually want this proper (if it's the right quality)

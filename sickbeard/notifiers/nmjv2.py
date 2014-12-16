@@ -154,7 +154,7 @@ class NMJv2Notifier:
                 logger.log(u"Popcorn Hour returned an error: %s" % (error_messages[index]), logger.ERROR)
                 return False
             else:
-                logger.log(u"NMJv2 started background scan", logger.MESSAGE)
+                logger.log(u"NMJv2 started background scan", logger.INFO)
                 return True
 
     def _notifyNMJ(self, host=None, force=False):

@@ -4655,7 +4655,7 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/")
 
 
-    def viewlog(self, minLevel=logger.MESSAGE, maxLines=500):
+    def viewlog(self, minLevel=logger.INFO, maxLines=500):
 
         t = PageTemplate(rh=self, file="viewlogs.tmpl")
         t.submenu = self.ErrorLogsMenu()

@@ -369,7 +369,7 @@ def minimax(val, default, low, high):
 ################################################################################
 # Check_setting_int                                                            #
 ################################################################################
-def check_setting_int(config, cfg_name, item_name, def_val):
+def check_setting_int(config, cfg_name, item_name, def_val, silent=True):
     try:
         my_val = int(config[cfg_name][item_name])
         if str(my_val) == str(None):
@@ -381,14 +381,17 @@ def check_setting_int(config, cfg_name, item_name, def_val):
         except:
             config[cfg_name] = {}
             config[cfg_name][item_name] = my_val
-    logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+
+    if not silent:
+        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+
     return my_val
 
 
 ################################################################################
 # Check_setting_float                                                          #
 ################################################################################
-def check_setting_float(config, cfg_name, item_name, def_val):
+def check_setting_float(config, cfg_name, item_name, def_val, silent=True):
     try:
         my_val = float(config[cfg_name][item_name])
         if str(my_val) == str(None):
@@ -401,14 +404,16 @@ def check_setting_float(config, cfg_name, item_name, def_val):
             config[cfg_name] = {}
             config[cfg_name][item_name] = my_val
 
-    logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+    if not silent:
+        logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
+
     return my_val
 
 
 ################################################################################
 # Check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val, log=True, censor_log=False):
+def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_log=False):
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     if bool(item_name.find('password') + 1):
         log = False
@@ -431,10 +436,8 @@ def check_setting_str(config, cfg_name, item_name, def_val, log=True, censor_log
     if censor_log or (cfg_name, item_name) in logger.censoredItems.items():
         logger.censoredItems[cfg_name, item_name] = my_val
 
-    if log:
+    if not silent:
         logger.log(item_name + " -> " + str(my_val), logger.DEBUG)
-    else:
-        logger.log(item_name + " -> ******", logger.DEBUG)
 
     return my_val
 

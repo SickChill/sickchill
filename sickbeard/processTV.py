@@ -95,7 +95,7 @@ def delete_files(processPath, notwantedFiles):
         except OSError, e:
             returnStr += logHelper(u"Unable to delete file " + cur_file + ': ' + str(e.strerror), logger.DEBUG)
 
-def logHelper(logMessage, logLevel=logger.MESSAGE):
+def logHelper(logMessage, logLevel=logger.INFO):
     logger.log(logMessage, logLevel)
     return logMessage + u"\n"
 

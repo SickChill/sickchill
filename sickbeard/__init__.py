@@ -23,10 +23,10 @@ import datetime
 import socket
 import os
 import re
-import sys
 import os.path
 
 from threading import Lock
+import sys
 
 from github import Github
 
@@ -549,11 +549,23 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
+        # debugging
+        DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
+
+        ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
+        LOG_DIR = os.path.normpath(os.path.join(DATA_DIR, ACTUAL_LOG_DIR))
+
+        fileLogging = True
+        if not helpers.makeDir(LOG_DIR):
+            sys.stderr.write("!!! No log folder, logging to screen only!\n")
+            fileLogging=False
+
+        # init logging
+        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debug=DEBUG)
+
         # github api
-        try:
-            gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except:
-            gh = None
+        try:gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)
+        except:gh = None
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
@@ -595,13 +607,6 @@ def initialize(consoleLogging=True):
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
-
-        ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
-        # put the log dir inside the data dir, unless an absolute path
-        LOG_DIR = os.path.normpath(os.path.join(DATA_DIR, ACTUAL_LOG_DIR))
-
-        if not helpers.makeDir(LOG_DIR):
-            logger.log(u"!!! No log folder, logging to screen only!", logger.ERROR)
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
@@ -645,8 +650,6 @@ def initialize(consoleLogging=True):
 
         USE_API = bool(check_setting_int(CFG, 'General', 'use_api', 0))
         API_KEY = check_setting_str(CFG, 'General', 'api_key', '', censor_log=True)
-
-        DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
         ENABLE_HTTPS = bool(check_setting_int(CFG, 'General', 'enable_https', 0))
 
@@ -1098,9 +1101,6 @@ def initialize(consoleLogging=True):
         if not os.path.isfile(CONFIG_FILE):
             logger.log(u"Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
             save_config()
-
-        # start up all the threads
-        logger.sb_log_instance.initLogging(consoleLogging=consoleLogging)
 
         # initialize the main SB database
         myDB = db.DBConnection()

@@ -95,7 +95,7 @@ class ProwlNotifier:
         request_status = response.status
 
         if request_status == 200:
-            logger.log(u"Prowl notifications sent.", logger.MESSAGE)
+            logger.log(u"Prowl notifications sent.", logger.INFO)
             return True
         elif request_status == 401:
             logger.log(u"Prowl auth failed: %s" % response.reason, logger.ERROR)

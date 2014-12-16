@@ -171,9 +171,9 @@ class GenericProvider:
                 logger.log(u"Downloading a result from " + self.name + " at " + url)
 
                 if self.providerType == GenericProvider.TORRENT:
-                    logger.log(u"Saved magnet link to " + filename, logger.MESSAGE)
+                    logger.log(u"Saved magnet link to " + filename, logger.INFO)
                 else:
-                    logger.log(u"Saved result to " + filename, logger.MESSAGE)
+                    logger.log(u"Saved result to " + filename, logger.INFO)
 
                 if self._verify_download(filename):
                     return True

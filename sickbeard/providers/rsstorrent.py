@@ -147,7 +147,7 @@ class TorrentRssProvider(generic.TorrentProvider):
         except IOError, e:
             logger.log("Unable to save the file: " + ex(e), logger.ERROR)
             return False
-        logger.log(u"Saved custom_torrent html dump " + dumpName + " ", logger.MESSAGE)
+        logger.log(u"Saved custom_torrent html dump " + dumpName + " ", logger.INFO)
         return True
 
     def seedRatio(self):

@@ -437,7 +437,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
              common.Quality.UNKNOWN], [])
 
         # update qualities (including templates)
-        logger.log(u"[1/4] Updating pre-defined templates and the quality for each show...", logger.MESSAGE)
+        logger.log(u"[1/4] Updating pre-defined templates and the quality for each show...", logger.INFO)
         cl = []
         shows = self.connection.select("SELECT * FROM tv_shows")
         for cur_show in shows:
@@ -451,7 +451,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         self.connection.mass_action(cl)
 
         # update status that are are within the old hdwebdl (1<<3 which is 8) and better -- exclude unknown (1<<15 which is 32768)
-        logger.log(u"[2/4] Updating the status for the episodes within each show...", logger.MESSAGE)
+        logger.log(u"[2/4] Updating the status for the episodes within each show...", logger.INFO)
         cl = []
         episodes = self.connection.select("SELECT * FROM tv_episodes WHERE status < 3276800 AND status >= 800")
         for cur_episode in episodes:
@@ -462,7 +462,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         # make two seperate passes through the history since snatched and downloaded (action & quality) may not always coordinate together
 
         # update previous history so it shows the correct action
-        logger.log(u"[3/4] Updating history to reflect the correct action...", logger.MESSAGE)
+        logger.log(u"[3/4] Updating history to reflect the correct action...", logger.INFO)
         cl = []
         historyAction = self.connection.select("SELECT * FROM history WHERE action < 3276800 AND action >= 800")
         for cur_entry in historyAction:
@@ -471,7 +471,7 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         self.connection.mass_action(cl)
 
         # update previous history so it shows the correct quality
-        logger.log(u"[4/4] Updating history to reflect the correct quality...", logger.MESSAGE)
+        logger.log(u"[4/4] Updating history to reflect the correct quality...", logger.INFO)
         cl = []
         historyQuality = self.connection.select("SELECT * FROM history WHERE quality < 32768 AND quality >= 8")
         for cur_entry in historyQuality:
@@ -745,7 +745,7 @@ class ConvertIndexerToInteger(AddSceneNumbering):
         backupDatabase(28)
 
         cl = []
-        logger.log(u"Converting Indexer to Integer ...", logger.MESSAGE)
+        logger.log(u"Converting Indexer to Integer ...", logger.INFO)
         cl.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
         cl.append(["UPDATE tv_shows SET indexer = ? WHERE LOWER(indexer) = ?", ["2", "tvrage"]])
         cl.append(["UPDATE tv_episodes SET indexer = ? WHERE LOWER(indexer) = ?", ["1", "tvdb"]])
@@ -791,7 +791,7 @@ class AddSportsOption(AddRequireAndIgnoreWords):
 
         if self.hasColumn("tv_shows", "air_by_date") and self.hasColumn("tv_shows", "sports"):
             # update sports column
-            logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.MESSAGE)
+            logger.log(u"[4/4] Updating tv_shows to reflect the correct sports value...", logger.INFO)
             cl = []
             historyQuality = self.connection.select(
                 "SELECT * FROM tv_shows WHERE LOWER(classification) = 'sports' AND air_by_date = 1 AND sports = 0")

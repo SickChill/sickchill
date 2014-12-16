@@ -126,7 +126,7 @@ class KODINotifier:
 
         result = ''
         for curHost in [x.strip() for x in host.split(",")]:
-            logger.log(u"Sending KODI notification to '" + curHost + "' - " + message, logger.MESSAGE)
+            logger.log(u"Sending KODI notification to '" + curHost + "' - " + message, logger.INFO)
 
             kodiapi = self._get_kodi_version(curHost, username, password)
             if kodiapi:
@@ -168,7 +168,7 @@ class KODINotifier:
 
         """
 
-        logger.log(u"Sending request to update library for KODI host: '" + host + "'", logger.MESSAGE)
+        logger.log(u"Sending request to update library for KODI host: '" + host + "'", logger.INFO)
 
         kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
         if kodiapi:
@@ -329,7 +329,7 @@ class KODINotifier:
                     time.sleep(5)
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.MESSAGE)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.INFO)
             updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video)'}
             request = self._send_to_kodi(updateCommand, host)
 
@@ -424,7 +424,7 @@ class KODINotifier:
             logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
-        logger.log(u"Updating XMBC library via JSON method for host: " + host, logger.MESSAGE)
+        logger.log(u"Updating XMBC library via JSON method for host: " + host, logger.INFO)
 
         # if we're doing per-show
         if showName:
@@ -487,7 +487,7 @@ class KODINotifier:
 
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.MESSAGE)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.INFO)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}'
             request = self._send_to_kodi_json(updateCommand, host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
 

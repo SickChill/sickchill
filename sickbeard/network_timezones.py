@@ -118,7 +118,7 @@ def _update_zoneinfo():
     new_hash = str(helpers.md5_for_file(zonefile_tmp))
 
     if zoneinfo_md5.upper() == new_hash.upper():
-        logger.log(u'Updating timezone info with new one: %s' % new_zoneinfo, logger.MESSAGE)
+        logger.log(u'Updating timezone info with new one: %s' % new_zoneinfo, logger.INFO)
         try:
             # remove the old zoneinfo file
             if cur_zoneinfo is not None:

@@ -493,7 +493,7 @@ def xem_refresh(indexer_id, indexer, force=False):
         try:
             parsedJSON = sickbeard.helpers.getURL(url, json=True)
             if not parsedJSON or parsedJSON == '':
-                logger.log(u'No XEN data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.MESSAGE)
+                logger.log(u'No XEN data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return
 
             if 'success' in parsedJSON['result']:

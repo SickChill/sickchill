@@ -58,7 +58,7 @@ class NMA_Notifier:
             logger.log(u'Could not send notification to NotifyMyAndroid', logger.ERROR)
             return False
         else:
-            logger.log(u"NMA: Notification sent to NotifyMyAndroid", logger.MESSAGE)
+            logger.log(u"NMA: Notification sent to NotifyMyAndroid", logger.INFO)
             return True
 
 
