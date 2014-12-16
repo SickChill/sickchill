@@ -83,7 +83,8 @@ def log(msg, level=INFO, *args, **kwargs):
     message = meThread + u" :: " + msg
 
     logging.log(level, message, *args, **kwargs)
-    classes.ErrorViewer.add(classes.UIError(message)) and level == ERROR
+    if level == ERROR:
+        classes.ErrorViewer.add(classes.UIError(message))
 
 def log_error_and_exit(self, error_msg, *args, **kwargs):
     log(error_msg, ERROR, *args, **kwargs)
