@@ -54,7 +54,11 @@ class CensorFilter(logging.Filter):
                 record.msg = record.msg.replace(v, len(v) * '*')
         return True
 
-def initLogging(logFile=os.path.join(sickbeard.LOG_DIR, 'sickrage.log'), consoleLogging=False, fileLogging=False, debug=False):
+def initLogging(logFile=None, consoleLogging=False, fileLogging=False, debug=False):
+    # set logging filename
+    if not logFile:
+        logFile = os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
+
     # Add a new logging level DB
     logging.addLevelName(DB, 'DB')
 
