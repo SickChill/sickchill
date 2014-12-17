@@ -46,28 +46,17 @@ class NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
-
-class NullFilter(logging.Filter):
-    def filter(self, record):
-        pass
-
-class CensorFilter(logging.Filter):
-    def filter(self, record):
+class CensoredFormatter(logging.Formatter):
+    def format(self, record):
+        msg = super(CensoredFormatter, self).format(record)
         for k, v in censoredItems.items():
-            if v and len(v) > 0 and v in record.msg:
-                record.msg = record.msg.replace(v, len(v) * '*')
-        return True
-
-class CensorLoggingAdapter(logging.LoggerAdapter):
-    def process(self, msg, kwargs):
-        for k, v in self.extra.items():
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
-        return msg, kwargs
+        return msg
 
 class Logger(object):
     def __init__(self):
-        self.logger = CensorLoggingAdapter(logging.getLogger('sickrage'), censoredItems)
+        self.logger = logging.getLogger('sickrage')
 
         self.loggers = [
             logging.getLogger('sickrage'),
@@ -95,9 +84,9 @@ class Logger(object):
 
         # set custom root logger
         for logger in self.loggers:
-            if logger is not self.logger.logger:
-                logger.root = self.logger.logger
-                logger.parent = self.logger.logger
+            if logger is not self.logger:
+                logger.root = self.logger
+                logger.parent = self.logger
 
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
@@ -106,8 +95,7 @@ class Logger(object):
         # console log handler
         if self.consoleLogging:
             console = logging.StreamHandler()
-            console.setFormatter(logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
-            console.addFilter(CensorFilter())
+            console.setFormatter(CensoredFormatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
             console.setLevel(INFO if not self.debugLogging else DEBUG)
 
             for logger in self.loggers:
@@ -116,8 +104,7 @@ class Logger(object):
         # rotating log file handler
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')
-            rfh.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
-            rfh.addFilter(CensorFilter())
+            rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
             rfh.setLevel(DEBUG)
 
             for logger in self.loggers:
