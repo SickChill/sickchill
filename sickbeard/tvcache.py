@@ -36,6 +36,7 @@ from sickbeard import clients
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import encodingKludge as ek
 
+
 class CacheDBConnection(db.DBConnection):
     def __init__(self, providerName):
         db.DBConnection.__init__(self, "cache.db")
@@ -47,7 +48,7 @@ class CacheDBConnection(db.DBConnection):
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
                 sqlResults = self.select(
-                    "SELECT url, COUNT(url) as count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+                    "SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
 
                 for cur_dupe in sqlResults:
                     self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])
@@ -74,6 +75,7 @@ class CacheDBConnection(db.DBConnection):
         except Exception, e:
             if str(e) != "table lastUpdate already exists":
                 raise
+
 
 class TVCache():
     def __init__(self, provider):
@@ -233,7 +235,7 @@ class TVCache():
         if not parse_result:
 
             # create showObj from indexer_id if available
-            showObj=None
+            showObj = None
             if indexer_id:
                 showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
@@ -305,8 +307,8 @@ class TVCache():
         else:
             for epObj in episode:
                 cl.append([
-                    "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ? "
-                    "AND quality IN (" + ",".join([str(x) for x in epObj.wantedQuality]) + ")",
+                    "SELECT * FROM [" + self.providerID + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN (" + ",".join(
+                        [str(x) for x in epObj.wantedQuality]) + ")",
                     [epObj.show.indexerid, epObj.season, "%|" + str(epObj.episode) + "|%"]])
 
             sqlResults = myDB.mass_action(cl, fetchall=True)

@@ -28,20 +28,8 @@ class EncodingTests(unittest.TestCase):
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING in ('ANSI_X3.4-1968', 'US-ASCII', 'ASCII'):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        if not hasattr(sys, "setdefaultencoding"):
-            reload(sys)
-
-        try:
-            # pylint: disable=E1101
-            # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
-            sys.setdefaultencoding(sickbeard.SYS_ENCODING)
-        except:
-            sys.exit("Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n" +
-                     "or find another way to force Python to use " + sickbeard.SYS_ENCODING + " for string encoding.")
-
         for s in strings:
             try:
-                show_name = s.decode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace')
                 show_dir = ek.ek(os.path.join, rootDir, sanitizeFileName(s))
                 self.assertTrue(isinstance(show_dir, unicode))
             except Exception, e:
