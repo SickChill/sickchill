@@ -95,7 +95,7 @@ class PostProcessor(object):
         
         self.version = None
 
-    def _log(self, message, level=logger.MESSAGE):
+    def _log(self, message, level=logger.INFO):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
@@ -1009,8 +1009,8 @@ class PostProcessor(object):
         # send notifications
         notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
-        # do the library update for XBMC
-        notifiers.xbmc_notifier.update_library(ep_obj.show.name)
+        # do the library update for KODI
+        notifiers.kodi_notifier.update_library(ep_obj.show.name)
 
         # do the library update for Plex
         notifiers.plex_notifier.update_library()

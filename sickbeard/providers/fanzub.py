@@ -73,28 +73,18 @@ class Fanzub(generic.NZBProvider):
 
         logger.log(u"Search url: " + search_url, logger.DEBUG)
 
-        data = self.cache.getRSSFeed(search_url)
-        if not data:
-            return []
+        results = []
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries'])['entries'] or []:
+            (title, url) = self._get_title_and_url(curItem)
 
-        if 'entries' in data:
+            if title and url:
+                results.append(curItem)
+            else:
+                logger.log(
+                    u"The data returned from the " + self.name + " is incomplete, this result is unusable",
+                    logger.DEBUG)
 
-            items = data.entries
-            results = []
-
-            for curItem in items:
-                (title, url) = self._get_title_and_url(curItem)
-
-                if title and url:
-                    results.append(curItem)
-                else:
-                    logger.log(
-                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                        logger.DEBUG)
-
-            return results
-
-        return []
+        return results
 
     def findPropers(self, date=None):
 
@@ -139,12 +129,6 @@ class FanzubCache(tvcache.TVCache):
 
         logger.log(self.provider.name + u" cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.getRSSFeed(rss_url)
-
-        if data and 'entries' in data:
-            return data.entries
-        else:
-            return []
-
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
 provider = Fanzub()

@@ -37,22 +37,22 @@ $(document).ready(function(){
             });
     });
 	
-    $('#testXBMC').click(function () {
-        var xbmc_host = $.trim($('#xbmc_host').val());
-        var xbmc_username = $.trim($('#xbmc_username').val());
-        var xbmc_password = $.trim($('#xbmc_password').val());
-        if (!xbmc_host) {
-            $('#testXBMC-result').html('Please fill out the necessary fields above.');
-			$('#xbmc_host').addClass('warning');
+    $('#testKODI').click(function () {
+        var kodi_host = $.trim($('#kodi_host').val());
+        var kodi_username = $.trim($('#kodi_username').val());
+        var kodi_password = $.trim($('#kodi_password').val());
+        if (!kodi_host) {
+            $('#testKODI-result').html('Please fill out the necessary fields above.');
+			$('#kodi_host').addClass('warning');
             return;
         }
-        $('#xbmc_host').removeClass('warning');
+        $('#kodi_host').removeClass('warning');
 		$(this).prop('disabled', true);
-        $('#testXBMC-result').html(loading);
-        $.get(sbRoot + '/home/testXBMC', {'host': xbmc_host, 'username': xbmc_username, 'password': xbmc_password})
+        $('#testKODI-result').html(loading);
+        $.get(sbRoot + '/home/testKODI', {'host': kodi_host, 'username': kodi_username, 'password': kodi_password})
             .done(function (data) {
-                $('#testXBMC-result').html(data);
-                $('#testXBMC').prop('disabled', false);
+                $('#testKODI-result').html(data);
+                $('#testKODI').prop('disabled', false);
             });
     });
 

@@ -205,16 +205,17 @@ class HDBitsCache(tvcache.TVCache):
         self.minTime = 15
 
     def _getRSSData(self):
-        parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(), json=True)
+        results = []
 
-        if not self.provider._checkAuthFromData(parsedJSON):
-            return []
+        try:
+            parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(),
+                                              json=True)
 
-        if parsedJSON and 'data' in parsedJSON:
-            return parsedJSON['data']
-        else:
-            return []
+            if self.provider._checkAuthFromData(parsedJSON):
+                results = parsedJSON['data']
+        except:
+            pass
 
-
+        return {'entries': results}
 
 provider = HDBitsProvider()                                                                                                              

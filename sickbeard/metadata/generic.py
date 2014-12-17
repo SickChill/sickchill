@@ -39,7 +39,7 @@ from lib.tmdb_api.tmdb_api import TMDB
 class GenericMetadata():
     """
     Base class for all metadata providers. Default behavior is meant to mostly
-    follow XBMC 12+ metadata standards. Has support for:
+    follow KODI 12+ metadata standards. Has support for:
     - show metadata file
     - episode metadata file
     - episode thumbnail

@@ -23,6 +23,12 @@ from __future__ import with_statement
 import os.path
 import sys
 
+try:
+    import requests
+except ImportError:
+    print ("You need to install python requests library")
+    sys.exit(1)
+
 # Try importing Python 2 modules using new names
 try:
     import ConfigParser as configparser
@@ -34,20 +40,6 @@ except ImportError:
     import configparser
     import urllib.request as urllib2
     from urllib.parse import urlencode
-
-# workaround for broken urllib2 in python 2.6.5: wrong credentials lead to an infinite recursion
-if sys.version_info >= (2, 6, 5) and sys.version_info < (2, 6, 6):
-    class HTTPBasicAuthHandler(urllib2.HTTPBasicAuthHandler):
-        def retry_http_basic_auth(self, host, req, realm):
-            # don't retry if auth failed
-            if req.get_header(self.auth_header, None) is not None:
-                return None
-
-            return urllib2.HTTPBasicAuthHandler.retry_http_basic_auth(self, host, req, realm)
-
-else:
-    HTTPBasicAuthHandler = urllib2.HTTPBasicAuthHandler
-
 
 def processEpisode(dir_to_process, org_NZB_name=None, status=None):
     # Default values
@@ -125,20 +117,17 @@ def processEpisode(dir_to_process, org_NZB_name=None, status=None):
     else:
         protocol = "http://"
 
-    url = protocol + host + ":" + port + web_root + "home/postprocess/processEpisode?" + urlencode(params)
+    url = protocol + host + ":" + port + web_root + "home/postprocess/processEpisode"
+    login_url = protocol + host + ":" + port + web_root + "login"
 
     print ("Opening URL: " + url)
 
     try:
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        password_mgr.add_password(None, url, username, password)
-        handler = HTTPBasicAuthHandler(password_mgr)
-        opener = urllib2.build_opener(handler)
-        urllib2.install_opener(opener)
+        sess = requests.Session()
+        sess.post(login_url, data={'username': username, 'password': password}, stream=True, verify=False)
+        result = sess.get(url, params=params, stream=True, verify=False)
 
-        result = opener.open(url).readlines()
-
-        for line in result:
+        for line in result.iter_lines():
             if line:
                 print (line.strip())
 

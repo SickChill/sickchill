@@ -74,7 +74,7 @@ class ProperFinder():
 
         # for each provider get a list of the
         origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList() if x.isActive()]
+        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.isActive()]
         for curProvider in providers:
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
@@ -136,7 +136,8 @@ class ProperFinder():
             curProper.indexer = parse_result.show.indexer
 
             # populate our Proper instance
-            curProper.season = parse_result.season_number if parse_result.season_number != None else 1
+            curProper.show = parse_result.show
+            curProper.season = parse_result.season_number if parse_result.season_number is not None else 1
             curProper.episode = parse_result.episode_numbers[0]
             curProper.release_group = parse_result.release_group
             curProper.version = parse_result.version
@@ -158,14 +159,14 @@ class ProperFinder():
                                                                                  parse_result.show.rls_ignore_words):
                 logger.log(
                     u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
-                    logger.MESSAGE)
+                    logger.INFO)
                 continue
 
             if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name,
                                                                                       parse_result.show.rls_require_words):
                 logger.log(
                     u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
-                    logger.MESSAGE)
+                    logger.INFO)
                 continue
 
             # check if we actually want this proper (if it's the right quality)
@@ -252,9 +253,11 @@ class ProperFinder():
 
                 # make the result object
                 result = curProper.provider.getResult([epObj])
+                result.show = curProper.show
                 result.url = curProper.url
                 result.name = curProper.name
                 result.quality = curProper.quality
+                result.release_group = curProper.release_group
                 result.version = curProper.version
 
                 # snatch it

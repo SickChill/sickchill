@@ -22,16 +22,21 @@ import datetime
 
 import sickbeard
 from sickbeard import encodingKludge as ek
+from sickbeard.exceptions import ex
 from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard.common import SKIPPED, WANTED
+
 from lib.trakt import *
+from trakt.exceptions import traktException, traktAuthException, traktServerBusy
 
 
 class TraktChecker():
+
     def __init__(self):
         self.todoWanted = []
+        self.trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
     def run(self, force=False):
         try:
@@ -51,17 +56,24 @@ class TraktChecker():
             logger.log(traceback.format_exc(), logger.DEBUG)
 
     def findShow(self, indexer, indexerid):
-        library = TraktCall("user/library/shows/all.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        traktShow = None
 
-        if not library:
-            logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
-            return
+        try:
+            library = self.trakt_api.traktRequest("user/library/shows/all.json/%APIKEY%/%USER%")
 
-        if not len(library):
-            logger.log(u"No shows found in your library, aborting library update", logger.DEBUG)
-            return
+            if not library:
+                logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
+                return
 
-        return filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
+            if not len(library):
+                logger.log(u"No shows found in your library, aborting library update", logger.DEBUG)
+                return
+
+            traktShow = filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
+        except (traktException, traktAuthException, traktServerBusy) as e:
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
+
+        return traktShow
 
     def syncLibrary(self):
         logger.log(u"Syncing Trakt.tv show library", logger.DEBUG)
@@ -70,17 +82,18 @@ class TraktChecker():
             self.addShowToTraktLibrary(myShow)
 
     def removeShowFromTraktLibrary(self, show_obj):
-        data = {}
         if self.findShow(show_obj.indexer, show_obj.indexerid):
             # URL parameters
-            data['tvdb_id'] = helpers.mapIndexersToShow(show_obj)[1]
-            data['title'] = show_obj.name
-            data['year'] = show_obj.startyear
+            data = {'tvdb_id': helpers.mapIndexersToShow(show_obj)[1], 'title': show_obj.name,
+                    'year': show_obj.startyear}
 
-        if len(data):
+
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
-            TraktCall("show/unlibrary/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD,
-                      data)
+            try:
+                self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
+            except (traktException, traktAuthException, traktServerBusy) as e:
+                logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
+                pass
 
     def addShowToTraktLibrary(self, show_obj):
         """
@@ -99,15 +112,20 @@ class TraktChecker():
 
         if len(data):
             logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
-            TraktCall("show/library/%API%", sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD,
-                      data)
+
+            try:
+                self.trakt_api.traktRequest("show/library/%APIKEY%", data)
+            except (traktException, traktAuthException, traktServerBusy) as e:
+                logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
+                return
 
     def updateShows(self):
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/shows.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
-        if not watchlist:
-            logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
+        try:
+            watchlist = self.trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
+        except (traktException, traktAuthException, traktServerBusy) as e:
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
 
         if not len(watchlist):
@@ -138,10 +156,11 @@ class TraktChecker():
         Sets episodes to wanted that are in trakt watchlist
         """
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
-        watchlist = TraktCall("user/watchlist/episodes.json/%API%/" + sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
-        if not watchlist:
-            logger.log(u"Could not connect to trakt service, aborting watchlist update", logger.ERROR)
+        try:
+            watchlist = self.trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
+        except (traktException, traktAuthException, traktServerBusy) as e:
+            logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
 
         if not len(watchlist):

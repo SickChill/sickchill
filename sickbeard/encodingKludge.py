@@ -18,59 +18,46 @@
 
 import os
 import traceback
-
+import re
 import sickbeard
-from sickbeard import logger
-
 import six
 import chardet
+import unicodedata
+
+from string import ascii_letters, digits
+from sickbeard import logger
+from unidecode import unidecode
 
 
-# This module tries to deal with the apparently random behavior of python when dealing with unicode <-> utf-8
-# encodings. It tries to just use unicode, but if that fails then it tries forcing it to utf-8. Any functions
-# which return something should always return unicode.
-
-def toUnicode(x):
+def _toUnicode(x):
     try:
-        if isinstance(x, unicode):
-            return x
-        else:
-            try:
-                return six.text_type(x)
-            except:
-                try:
-                    if chardet.detect(x).get('encoding') == 'utf-8':
-                        return x.decode('utf-8')
-                    if isinstance(x, str):
-                        try:
-                            return x.decode(sickbeard.SYS_ENCODING)
-                        except UnicodeDecodeError:
-                            raise
-                    return x
-                except:
-                    raise
-    except:
-        logger.log('Unable to decode value "%s..." : %s ' % (repr(x)[:20], traceback.format_exc()), logger.WARNING)
-        ascii_text = str(x).encode('string_escape')
-        return toUnicode(ascii_text)
+        if not isinstance(x, unicode):
+            if chardet.detect(x).get('encoding') == 'utf-8':
+                x = x.decode('utf-8')
+            elif isinstance(x, str):
+                x = x.decode(sickbeard.SYS_ENCODING)
+    finally:
+        return x
 
 def ss(x):
-    u_x = toUnicode(x)
+    x = _toUnicode(x)
 
     try:
-        return u_x.encode(sickbeard.SYS_ENCODING)
-    except Exception as e:
-        logger.log('Failed ss encoding char, force UTF8: %s' % e, logger.WARNING)
         try:
-            return u_x.encode(sickbeard.SYS_ENCODING, 'replace')
+            try:
+                x = x.encode(sickbeard.SYS_ENCODING)
+            except:
+                x = x.encode(sickbeard.SYS_ENCODING, 'ignore')
         except:
-            return u_x.encode('utf-8', 'replace')
+            x = x.encode('utf-8', 'ignore')
+    finally:
+        return x
 
 def fixListEncodings(x):
     if not isinstance(x, (list, tuple)):
         return x
     else:
-        return filter(lambda x: x != None, map(toUnicode, x))
+        return filter(lambda x: x != None, map(_toUnicode, x))
 
 
 def ek(func, *args, **kwargs):
@@ -82,6 +69,6 @@ def ek(func, *args, **kwargs):
     if isinstance(result, (list, tuple)):
         return fixListEncodings(result)
     elif isinstance(result, str):
-        return toUnicode(result)
+        return _toUnicode(result)
     else:
         return result

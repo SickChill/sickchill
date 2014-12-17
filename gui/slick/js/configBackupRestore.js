@@ -5,7 +5,7 @@ $(document).ready(function(){
         $("#Backup").attr("disabled", true);
         $('#Backup-result').html(loading);
         var backupDir = $("#backupDir").val();
-        $.get(sbRoot + "/config/backup", {'backupDir': backupDir})
+        $.get(sbRoot + "/config/backuprestore/backup", {'backupDir': backupDir})
             .done(function (data) {
                 $('#Backup-result').html(data);
                 $("#Backup").attr("disabled", false);
@@ -15,7 +15,7 @@ $(document).ready(function(){
         $("#Restore").attr("disabled", true);
         $('#Restore-result').html(loading);
         var backupFile = $("#backupFile").val();
-        $.get(sbRoot + "/config/restore", {'backupFile': backupFile})
+        $.get(sbRoot + "/config/backuprestore/restore", {'backupFile': backupFile})
             .done(function (data) {
                 $('#Restore-result').html(data);
                 $("#Restore").attr("disabled", false);

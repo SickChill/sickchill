@@ -164,12 +164,7 @@ class TokyoToshokanCache(tvcache.TVCache):
 
         logger.log(u"TokyoToshokan cache update URL: " + url, logger.DEBUG)
 
-        data = self.getRSSFeed(url)
-
-        if data and 'entries' in data:
-            return data.entries
-        else:
-            return []
+        return self.getRSSFeed(url, items=['entries', 'feed'])
 
 
 provider = TokyoToshokanProvider()

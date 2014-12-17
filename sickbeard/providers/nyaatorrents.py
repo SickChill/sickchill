@@ -51,7 +51,7 @@ class NyaaProvider(generic.TorrentProvider):
         return 'nyaatorrents.png'
 
     def getQuality(self, item, anime=False):
-        title = item.title
+        title = item.get('title')
         quality = Quality.sceneQuality(title, anime)
         return quality
 
@@ -79,32 +79,20 @@ class NyaaProvider(generic.TorrentProvider):
 
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
-        data = self.cache.getRSSFeed(searchURL)
-        if not data:
-            return []
+        results = []
+        for curItem in self.cache.getRSSFeed(searchURL, items=['entries'])['entries'] or []:
+            (title, url) = self._get_title_and_url(curItem)
 
-        if 'entries' in data:
-            items = data.entries
+            if title and url:
+                results.append(curItem)
+            else:
+                logger.log(
+                    u"The data returned from the " + self.name + " is incomplete, this result is unusable",
+                    logger.DEBUG)
 
-            results = []
-
-            for curItem in items:
-
-                (title, url) = self._get_title_and_url(curItem)
-
-                if title and url:
-                    results.append(curItem)
-                else:
-                    logger.log(
-                        u"The data returned from the " + self.name + " is incomplete, this result is unusable",
-                        logger.DEBUG)
-
-            return results
-
-        return []
+        return results
 
     def _get_title_and_url(self, item):
-
         return generic.TorrentProvider._get_title_and_url(self, item)
 
     def _extract_name_from_filename(self, filename):
@@ -137,12 +125,6 @@ class NyaaCache(tvcache.TVCache):
 
         logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
 
-        data = self.getRSSFeed(url)
-
-        if data and 'entries' in data:
-            return data.entries
-        else:
-            return []
-
+        return self.getRSSFeed(url, items=['entries', 'feed'])
 
 provider = NyaaProvider()

@@ -171,7 +171,7 @@ class NMJNotifier:
             logger.log(u"Popcorn Hour returned an errorcode: %s" % (result), logger.ERROR)
             return False
         else:
-            logger.log(u"NMJ started background scan", logger.MESSAGE)
+            logger.log(u"NMJ started background scan", logger.INFO)
             return True
 
     def _notifyNMJ(self, host=None, database=None, mount=None, force=False):

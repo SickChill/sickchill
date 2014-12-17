@@ -171,9 +171,9 @@ class GenericProvider:
                 logger.log(u"Downloading a result from " + self.name + " at " + url)
 
                 if self.providerType == GenericProvider.TORRENT:
-                    logger.log(u"Saved magnet link to " + filename, logger.MESSAGE)
+                    logger.log(u"Saved magnet link to " + filename, logger.INFO)
                 else:
-                    logger.log(u"Saved result to " + filename, logger.MESSAGE)
+                    logger.log(u"Saved result to " + filename, logger.INFO)
 
                 if self._verify_download(filename):
                     return True
@@ -214,7 +214,7 @@ class GenericProvider:
         
         Returns a Quality value obtained from the node's data 
         """
-        (title, url) = self._get_title_and_url(item)  # @UnusedVariable
+        (title, url) = self._get_title_and_url(item)
         quality = Quality.sceneQuality(title, anime)
         return quality
 
@@ -236,18 +236,11 @@ class GenericProvider:
         Returns: A tuple containing two strings representing title and URL respectively
         """
 
-        title = None
-        url = None
-
-        if 'title' in item:
-            title = item.title
-
+        title = item.get('title')
         if title:
-            title = title.replace(' ', '.')
+            title = u'' + title.replace(' ', '.')
 
-        if 'link' in item:
-            url = item.link
-
+        url = item.get('link')
         if url:
             url = url.replace('&amp;', '&')
 

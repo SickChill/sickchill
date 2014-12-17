@@ -19,7 +19,6 @@
 import os
 import string
 
-from tornado.httputil import HTTPHeaders
 from tornado.web import RequestHandler
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
@@ -105,14 +104,3 @@ def foldersAtPath(path, includeParent=False, includeFiles=False):
     entries.extend(fileList)
 
     return entries
-
-
-class WebFileBrowser(RequestHandler):
-    def index(self, path='', includeFiles=False, *args, **kwargs):
-        self.set_header("Content-Type", "application/json")
-        return json.dumps(foldersAtPath(path, True, bool(int(includeFiles))))
-
-    def complete(self, term, includeFiles=0):
-        self.set_header("Content-Type", "application/json")
-        paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(term), includeFiles=bool(int(includeFiles))) if 'path' in entry]
-        return json.dumps(paths)

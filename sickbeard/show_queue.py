@@ -294,8 +294,8 @@ class QueueItemAdd(ShowQueueItem):
             self.show.paused = self.paused if self.paused != None else False
 
             # set up default new/missing episode status
-            self.show.default_ep_status = self.default_status
             logger.log(u"Setting all episodes to the specified default status: " + str(self.show.default_ep_status))
+            self.show.default_ep_status = self.default_status
 
             # be smartish about this
             if self.show.genre and "talk show" in self.show.genre.lower():
@@ -520,7 +520,7 @@ class QueueItemUpdate(ShowQueueItem):
         try:
             self.show.saveToDB()
         except Exception, e:
-            logger.log(u"Error saving the episode to the database: " + ex(e), logger.ERROR)
+            logger.log(u"Error saving show info to the database: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # get episode list from DB
@@ -537,7 +537,7 @@ class QueueItemUpdate(ShowQueueItem):
             IndexerEpList = None
 
         foundMissingEps = False
-        if IndexerEpList == None:
+        if IndexerEpList is None:
             logger.log(u"No data returned from " + sickbeard.indexerApi(
                 self.show.indexer).name + ", unable to update this show", logger.ERROR)
         else:
@@ -556,7 +556,7 @@ class QueueItemUpdate(ShowQueueItem):
             for curSeason in DBEpList:
                 for curEpisode in DBEpList[curSeason]:
                     logger.log(u"Permanently deleting episode " + str(curSeason) + "x" + str(
-                        curEpisode) + " from the database", logger.MESSAGE)
+                        curEpisode) + " from the database", logger.INFO)
                     curEp = self.show.getEpisode(curSeason, curEpisode)
                     try:
                         curEp.deleteEpisode()

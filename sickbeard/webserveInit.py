@@ -1,40 +1,16 @@
 import os
-import socket
-import time
 import threading
 import sys
 import sickbeard
-import webserve
-import webapi
 
+from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler
+from sickbeard.webapi import ApiHandler
 from sickbeard import logger
-from sickbeard.helpers import create_https_certificates
-from tornado.web import Application, StaticFileHandler, RedirectHandler, HTTPError
+from sickbeard.helpers import create_https_certificates, generateApiKey
+from tornado.web import Application, StaticFileHandler, HTTPError, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-
-
-class MultiStaticFileHandler(StaticFileHandler):
-    def initialize(self, paths, default_filename=None):
-        self.paths = paths
-        self.default_filename = default_filename
-
-    def get(self, path, include_body=True):
-        for p in self.paths:
-            try:
-                # Initialize the Static file with a path
-                super(MultiStaticFileHandler, self).initialize(p)
-                # Try to get the file
-                return super(MultiStaticFileHandler, self).get(path)
-            except HTTPError as exc:
-                # File not found, carry on
-                if exc.status_code == 404:
-                    continue
-                raise
-
-        # Oops file not found anywhere!
-        raise HTTPError(404)
-
+from tornado.routes import route
 
 class SRWebServer(threading.Thread):
     def __init__(self, options={}, io_loop=None):
@@ -62,8 +38,13 @@ class SRWebServer(threading.Thread):
             self.video_root = None
 
         # web root
-        self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/')) if self.options[
-            'web_root'] else ''
+        if self.options['web_root']:
+            sickbeard.WEB_ROOT = self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/').strip('/'))
+
+        # api root
+        if not sickbeard.API_KEY:
+            sickbeard.API_KEY = generateApiKey()
+        self.options['api_root'] = r'%s/api/%s' % (sickbeard.WEB_ROOT, sickbeard.API_KEY)
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -73,7 +54,7 @@ class SRWebServer(threading.Thread):
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
             if not (self.https_cert and os.path.exists(self.https_cert)) or not (
-                self.https_key and os.path.exists(self.https_key)):
+                        self.https_key and os.path.exists(self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log(u"Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = False
@@ -90,35 +71,56 @@ class SRWebServer(threading.Thread):
                                  autoreload=False,
                                  gzip=True,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
-                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo='
+                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
+                                 login_url='/login/',
         )
 
-        # Main Handler
-        self.app.add_handlers(".*$", [
-            (r'%s/api/(.*)(/?)' % self.options['web_root'], webapi.Api),
-            (r'%s/(.*)(/?)' % self.options['web_root'], webserve.MainHandler),
-            (r'(.*)', webserve.MainHandler)
-        ])
+        # Main Handlers
+        self.app.add_handlers('.*$', [
+            # webapi handler
+            (r'%s(/?.*)' % self.options['api_root'], ApiHandler),
 
-        # Static Path Handler
-        self.app.add_handlers(".*$", [
-            (r'%s/(favicon\.ico)' % self.options['web_root'], MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'images/ico/favicon.ico')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'images'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'images'),
-                        os.path.join(sickbeard.CACHE_DIR, 'images')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'css'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'css')]}),
-            (r'%s/%s/(.*)(/?)' % (self.options['web_root'], 'js'), MultiStaticFileHandler,
-             {'paths': [os.path.join(self.options['data_root'], 'js')]}),
-        ])
+            # webapi key retrieval
+            (r'%s/getkey(/?.*)' % self.options['web_root'], KeyHandler),
 
-        # Static Videos Path
-        if self.video_root:
-            self.app.add_handlers(".*$", [
-                (r'%s/%s/(.*)' % (self.options['web_root'], 'videos'), MultiStaticFileHandler,
-                 {'paths': [self.video_root]}),
-            ])
+            # webapi builder redirect
+            (r'%s/api/builder' % self.options['web_root'], RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
+
+            # webui login/logout handlers
+            (r'%s/login(/?.*)' % self.options['web_root'], LoginHandler),
+            (r'%s/logout(/?.*)' % self.options['web_root'], LogoutHandler),
+
+            # webui redirect
+            (r'/', RedirectHandler, {"url": self.options['web_root'] + '/home/'}),
+
+            # webui handlers
+        ] + route.get_routes(self.options['web_root']))
+
+        # Static File Handlers
+        self.app.add_handlers(".*$", [
+            # favicon
+            (r'%s/(favicon\.ico)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}),
+
+            # images
+            (r'%s/images/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'images')}),
+
+            # cached images
+            (r'%s/cache/images/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}),
+
+            # css
+            (r'%s/css/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'css')}),
+
+            # javascript
+            (r'%s/js/(.*)' % self.options['web_root'], StaticFileHandler,
+             {"path": os.path.join(self.options['data_root'], 'js')}),
+
+            # videos
+        ] + [(r'%s/videos/(.*)' % self.options['web_root'], StaticFileHandler,
+              {"path": self.video_root})])
 
     def run(self):
         if self.enable_https:

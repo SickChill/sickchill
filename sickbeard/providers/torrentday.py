@@ -35,10 +35,10 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentDayProvider(generic.TorrentProvider):
-    urls = {'base_url': 'http://www.torrentday.com',
-            'login': 'http://www.torrentday.com/torrents/',
-            'search': 'http://www.torrentday.com/V3/API/API.php',
-            'download': 'http://www.torrentday.com/download.php/%s/%s'
+    urls = {'base_url': 'http://www.td.af',
+            'login': 'http://www.td.af/torrents/',
+            'search': 'http://www.td.af/V3/API/API.php',
+            'download': 'http://www.td.af/download.php/%s/%s'
     }
 
     def __init__(self):
@@ -83,9 +83,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             return True
 
         if self._uid and self._hash:
-
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-
         else:
 
             login_params = {'username': self.username,
@@ -93,6 +91,9 @@ class TorrentDayProvider(generic.TorrentProvider):
                             'submit.x': 0,
                             'submit.y': 0
             }
+
+            if not self.session:
+                self.session = requests.Session()
 
             try:
                 response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -108,18 +109,20 @@ class TorrentDayProvider(generic.TorrentProvider):
                 logger.log(u'Invalid username or password for ' + self.name + ', Check your settings!', logger.ERROR)
                 return False
 
-            if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            try:
+                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                self.cookies = {'uid': self._uid,
-                                'pass': self._hash
-                }
-                return True
+                    self.cookies = {'uid': self._uid,
+                                    'pass': self._hash
+                    }
+                    return True
+            except:
+                pass
 
-            else:
-                logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
-                return False
+            logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
+            return False
 
 
     def _get_season_search_strings(self, ep_obj):
@@ -179,7 +182,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         freeleech = '&free=on' if self.freeleech else ''
 
         if not self._doLogin():
-            return []
+            return results
 
         for mode in search_params.keys():
             for search_string in search_params[mode]:
@@ -279,8 +282,6 @@ class TorrentDayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params)
-
-
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = TorrentDayProvider()

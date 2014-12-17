@@ -27,7 +27,7 @@ from sickbeard import helpers
 from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -179,25 +179,25 @@ def retrieve_exceptions():
                 logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
                 continue
 
-            else:
-                setLastRefresh(sickbeard.indexerApi(indexer).name)
+            setLastRefresh(sickbeard.indexerApi(indexer).name)
 
-                # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
-                for cur_line in url_data.splitlines():
-                    cur_line = cur_line.decode('utf-8')
-                    indexer_id, sep, aliases = cur_line.partition(':')  # @UnusedVariable
+            # each exception is on one line with the format indexer_id: 'show name 1', 'show name 2', etc
+            for cur_line in url_data.splitlines():
+                indexer_id, sep, aliases = cur_line.partition(':')  # @UnusedVariable
 
-                    if not aliases:
-                        continue
+                if not aliases:
+                    continue
 
-                    indexer_id = int(indexer_id)
+                indexer_id = int(indexer_id)
 
-                    # regex out the list of shows, taking \' into account
-                    # alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
-                    alias_list = [{re.sub(r'\\(.)', r'\1', x): -1} for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
-                    exception_dict[indexer_id] = alias_list
-                    del alias_list
-                del url_data
+                # regex out the list of shows, taking \' into account
+                # alias_list = [re.sub(r'\\(.)', r'\1', x) for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
+                alias_list = [{re.sub(r'\\(.)', r'\1', x): -1} for x in re.findall(r"'(.*?)(?<!\\)',?", aliases)]
+                exception_dict[indexer_id] = alias_list
+                del alias_list
+
+            # cleanup
+            del url_data
 
     # XEM scene exceptions
     _xem_exceptions_fetcher()
@@ -233,9 +233,6 @@ def retrieve_exceptions():
 
             # if this exception isn't already in the DB then add it
             if cur_exception not in existing_exceptions:
-
-                cur_exception = toUnicode(cur_exception)
-
                 myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                             [cur_indexer_id, cur_exception, curSeason])
                 changed_exceptions = True
@@ -259,7 +256,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
     myDB = db.DBConnection('cache.db')
     myDB.action('DELETE FROM scene_exceptions WHERE indexer_id=? and season=?', [indexer_id, season])
 
-    logger.log(u"Updating scene exceptions", logger.MESSAGE)
+    logger.log(u"Updating scene exceptions", logger.INFO)
     
     # A change has been made to the scene exception list. Let's clear the cache, to make this visible
     if indexer_id in exceptionsCache:
@@ -267,8 +264,6 @@ def update_scene_exceptions(indexer_id, scene_exceptions, season=-1):
         exceptionsCache[indexer_id][season] = scene_exceptions
 
     for cur_exception in scene_exceptions:
-        cur_exception = toUnicode(cur_exception)
-
         myDB.action("INSERT INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?)",
                     [indexer_id, cur_exception, season])
 

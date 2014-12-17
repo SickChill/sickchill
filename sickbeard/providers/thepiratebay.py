@@ -230,9 +230,11 @@ class ThePirateBayProvider(generic.TorrentProvider):
 
         for mode in search_params.keys():
             for search_string in search_params[mode]:
+                if isinstance(search_string, unicode):
+                    search_string = unidecode(search_string)
 
                 if mode != 'RSS':
-                    searchURL = self.proxy._buildURL(self.searchurl % (urllib.quote(unidecode(search_string))))
+                    searchURL = self.proxy._buildURL(self.searchurl % (urllib.quote(search_string)))
                 else:
                     searchURL = self.proxy._buildURL(self.url + 'tv/latest/')
 
@@ -340,8 +342,7 @@ class ThePirateBayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['rss']}
-        return self.provider._doSearch(search_params)
-
+        return {'entries': self.provider._doSearch(search_params)}
 
 class ThePirateBayWebproxy:
     def __init__(self):

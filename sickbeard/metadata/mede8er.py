@@ -199,8 +199,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(myShow, '_actors', None) is not None:
             for actor in myShow['_actors']:
-                cur_actor_name_text = actor['name']
-
+                cur_actor_name_text = getattr(actor, 'name', None)
                 if cur_actor_name_text != None and cur_actor_name_text.strip():
                     cur_actor = etree.SubElement(cast, "actor")
                     cur_actor.text = cur_actor_name_text.strip()

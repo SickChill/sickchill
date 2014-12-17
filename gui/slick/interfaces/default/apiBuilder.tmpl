@@ -1,25 +1,28 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"> 
-<head>
-<title>API Builder</title>
-<script type="text/javascript" charset="utf-8">
-<!--
-sbRoot = "$sbRoot";
-//-->
-</script>
-<script type="text/javascript" src="$sbRoot/js/lib/jquery-1.8.3.min.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/apibuilder.js?$sbPID"></script>
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>SickRage - API Builder</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+        <meta name="robots" content="noindex">
 
-<style type="text/css">
-<!--
-#apibuilder select { padding: 2px 2px 2px 6px; display: block; float: left; margin: auto 8px 4px auto;
-}
-#apibuilder select option { padding: 1px 6px; line-height: 1.2em; }
-#apibuilder .disabled { color: #ccc; }
-#apibuilder .action { background-color: #efefef; }
--->
-</style>
+        <script type="text/javascript" charset="utf-8">
+        <!--
+            sbRoot = "$sbRoot";
+        //-->
+        </script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.8.3.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/apibuilder.js?$sbPID"></script>
+
+        <style type="text/css">
+        <!--
+            #apibuilder select { padding: 2px 2px 2px 6px; display: block; float: left; margin: auto 8px 4px auto; }
+            #apibuilder select option { padding: 1px 6px; line-height: 1.2em; }
+            #apibuilder .disabled { color: #ccc; }
+            #apibuilder .action { background-color: #efefef; }
+        -->
+        </style>
 
 <script type="text/javascript">
 var hide_empty_list=true; 
@@ -27,22 +30,20 @@ var disable_empty_list=true;
 
 addListGroup("api", "Command");
 
-addOption("Command", "SickBeard", "?cmd=sb", 1); //make default
-addList("Command", "SickBeard.AddRootDir", "?cmd=sb.addrootdir", "sb.addrootdir", "", "", "action");
-addOption("Command", "SickBeard.CheckScheduler", "?cmd=sb.checkscheduler", "", "", "action");
-addList("Command", "SickBeard.DeleteRootDir", "?cmd=sb.deleterootdir", "sb.deleterootdir", "", "", "action");
-addOption("Command", "SickBeard.ForceSearch", "?cmd=sb.forcesearch", "", "", "action");
-addOption("Command", "SickBeard.GetDefaults", "?cmd=sb.getdefaults", "", "", "action");
-addOption("Command", "SickBeard.GetMessages", "?cmd=sb.getmessages", "", "", "action");
-addOption("Command", "SickBeard.GetRootDirs", "?cmd=sb.getrootdirs", "", "", "action");
-addList("Command", "SickBeard.PauseBacklog", "?cmd=sb.pausebacklog", "sb.pausebacklog", "", "", "action");
-addOption("Command", "SickBeard.Ping", "?cmd=sb.ping", "", "", "action");
-addOption("Command", "SickBeard.Restart", "?cmd=sb.restart", "", "", "action");
-addList("Command", "SickBeard.SearchAllIndexers", "?cmd=sb.searchindexers", "sb.searchindexers", "", "", "action");
-addList("Command", "SickBeard.SearchTVDB", "?cmd=sb.searchtvdb&indexer=1", "sb.searchindexers", "", "", "action");
-addList("Command", "SickBeard.SearchTVRage", "?cmd=sb.searchtvrage&indexer=2", "sb.searchindexers", "", "", "action");
-addList("Command", "SickBeard.SetDefaults", "?cmd=sb.setdefaults", "sb.setdefaults", "", "", "action");
-addOption("Command", "SickBeard.Shutdown", "?cmd=sb.shutdown", "", "", "action");
+addOption("Command", "SickRage", "?cmd=sb", 1); //make default
+addList("Command", "SickRage.AddRootDir", "?cmd=sb.addrootdir", "sb.addrootdir", "", "", "action");
+addOption("Command", "SickRage.CheckScheduler", "?cmd=sb.checkscheduler", "", "", "action");
+addList("Command", "SickRage.DeleteRootDir", "?cmd=sb.deleterootdir", "sb.deleterootdir", "", "", "action");
+addOption("Command", "SickRage.ForceSearch", "?cmd=sb.forcesearch", "", "", "action");
+addOption("Command", "SickRage.GetDefaults", "?cmd=sb.getdefaults", "", "", "action");
+addOption("Command", "SickRage.GetMessages", "?cmd=sb.getmessages", "", "", "action");
+addOption("Command", "SickRage.GetRootDirs", "?cmd=sb.getrootdirs", "", "", "action");
+addList("Command", "SickRage.PauseBacklog", "?cmd=sb.pausebacklog", "sb.pausebacklog", "", "", "action");
+addOption("Command", "SickRage.Ping", "?cmd=sb.ping", "", "", "action");
+addOption("Command", "SickRage.Restart", "?cmd=sb.restart", "", "", "action");
+addList("Command", "SickRage.searchindexers", "?cmd=sb.searchindexers", "sb.searchindexers", "", "", "action");
+addList("Command", "SickRage.SetDefaults", "?cmd=sb.setdefaults", "sb.setdefaults", "", "", "action");
+addOption("Command", "SickRage.Shutdown", "?cmd=sb.shutdown", "", "", "action");
 addList("Command", "Coming Episodes", "?cmd=future", "future");
 addList("Command", "Episode", "?cmd=episode", "episode");
 addList("Command", "Episode.Search", "?cmd=episode.search", "episode.search", "", "", "action");
@@ -51,16 +52,12 @@ addList("Command", "Scene Exceptions", "?cmd=exceptions", "exceptions");
 addList("Command", "History", "?cmd=history", "history");
 addOption("Command", "History.Clear", "?cmd=history.clear", "", "", "action");
 addOption("Command", "History.Trim", "?cmd=history.trim", "", "", "action");
-addList("Command", "Failed", "?cmd=failed", "failed");
-addOption("Command", "Backlog", "?cmd=backlog");
-addList("Command", "PostProcess", "?cmd=postprocess", "postprocess", "", "","action");
-
 addList("Command", "Logs", "?cmd=logs", "logs");
 addList("Command", "Show", "?cmd=show", "indexerid");
 addList("Command", "Show.AddExisting", "?cmd=show.addexisting", "show.addexisting", "", "", "action");
 addList("Command", "Show.AddNew", "?cmd=show.addnew", "show.addnew", "", "", "action");
 addList("Command", "Show.Cache", "?cmd=show.cache", "indexerid", "", "", "action");
-addList("Command", "Show.Delete", "?cmd=show.delete", "indexerid", "", "", "action");
+addList("Command", "Show.Delete", "?cmd=show.delete", "show.delete", "", "", "action");
 addList("Command", "Show.GetBanner", "?cmd=show.getbanner", "indexerid", "", "", "action");
 addList("Command", "Show.GetPoster", "?cmd=show.getposter", "indexerid", "", "", "action");
 addList("Command", "Show.GetQuality", "?cmd=show.getquality", "indexerid", "", "", "action");
@@ -85,14 +82,6 @@ addOption("logs", "Info", "&min_level=info");
 addOption("logs", "Warning", "&min_level=warning");
 addOption("logs", "Error", "&min_level=error");
 
-addOption("postprocess", "Optional Param", "", 1);
-addOption("postprocess", "C:\\PATH\\TO\\DIR", "&path=C:\\Temp");
-addOption("postprocess", "return_data", "&return_data=1");
-addOption("postprocess", "force_replace", "&force_replace=1");
-addOption("postprocess", "is_priority", "&is_priority=1");
-addOption("postprocess", "process_method", "&process_method=copy");
-addOption("postprocess", "type", "&type=manual")
-
 addOption("sb.setdefaults", "Optional Param", "", 1);
 addList("sb.setdefaults", "Exclude Paused Shows on ComingEps", "&future_show_paused=0", "sb.setdefaults-status");
 addList("sb.setdefaults", "Include Paused Shows on ComingEps", "&future_show_paused=1", "sb.setdefaults-status");
@@ -104,14 +93,14 @@ addList("sb.setdefaults-status", "Archived", "&status=archived", "sb.setdefaults
 addList("sb.setdefaults-status", "Ignored", "&status=ignored", "sb.setdefaults-opt");
 
 addOption("sb.setdefaults-opt", "Optional Param", "", 1);
-addList("sb.setdefaults-opt", "No Season Folder", "&season_folder=0", "quality");
-addList("sb.setdefaults-opt", "Use Season Folder", "&season_folder=1", "quality");
+addList("sb.setdefaults-opt", "Flatten (No Season Folder)", "&flatten_folders=1", "quality");
+addList("sb.setdefaults-opt", "Use Season Folder", "&flatten_folders=0", "quality");
 
 addOption("shows", "Optional Param", "", 1);
 addOption("shows", "Show Only Paused", "&paused=1");
 addOption("shows", "Show Only Not Paused", "&paused=0");
 addOption("shows", "Sort by Show Name", "&sort=name");
-addOption("shows", "Sort by TVDB ID", "&sort=id");
+addOption("shows", "Sort by INDEXER ID", "&sort=id");
 
 addList("show.addexisting", "C:\\temp\\show1", "&location=C:\\temp\\show1", "show.addexisting-indexerid");
 addList("show.addexisting", "D:\\Temp\\show2", "&location=D:\\Temp\\show2", "show.addexisting-indexerid");
@@ -122,8 +111,8 @@ addList("show.addexisting-indexerid", "101501 (Ancient Aliens)", "&indexerid=101
 addList("show.addexisting-indexerid", "80348 (Chuck)", "&indexerid=80348", "show.addexisting-opt");
 
 addOption("show.addexisting-opt", "Optional Param", "", 1);
-addList("show.addexisting-opt", "No Season Folder", "&season_folder=0", "quality");
-addList("show.addexisting-opt", "Use Season Folder", "&season_folder=1", "quality");
+addList("show.addexisting-opt", "Flatten (No Season Folder)", "&flatten_folders=1", "quality");
+addList("show.addexisting-opt", "Use Season Folder", "&flatten_folders=0", "quality");
 
 addList("show.addnew", "101501 (Ancient Aliens)", "&indexerid=101501", "show.addnew-loc");
 addList("show.addnew", "80348 (Chuck)", "&indexerid=80348", "show.addnew-loc");
@@ -141,8 +130,8 @@ addList("show.addnew-status", "Archived", "&status=archived", "show.addnew-opt")
 addList("show.addnew-status", "Ignored", "&status=ignored", "show.addnew-opt");
 
 addOption("show.addnew-opt", "Optional Param", "", 1);
-addList("show.addnew-opt", "No Season Folder", "&season_folder=0", "quality");
-addList("show.addnew-opt", "Use Season Folder", "&season_folder=1", "quality");
+addList("show.addnew-opt", "Flatten (No Season Folder)", "&flatten_folders=1", "quality");
+addList("show.addnew-opt", "Use Season Folder", "&flatten_folders=0", "quality");
 
 addOptGroup("sb.searchindexers", "Search by Name");
 addList("sb.searchindexers", "Lost", "&name=Lost", "sb.searchindexers-lang");
@@ -279,14 +268,24 @@ addList("episode.setstatus", "$curShow.name", "&indexerid=$curShow.indexerid", "
 
 // build out each show's season+episode list for episode.setstatus cmd
 #for $curShow in $episodeSQLResults:
+    #set $curSeason = -1
     #for $curShowSeason in $episodeSQLResults[$curShow]:
+        #if $curShowSeason.season != $curSeason and $curShowSeason.season != 0:
+            // insert just the season as the ep number is now optional
+            addList("episode.setstatus-$curShow", "Season $curShowSeason.season", "&season=$curShowSeason.season", "episode-status-$curShow");
+        #end if
+        #set $curSeason = int($curShowSeason.season)
 addList("episode.setstatus-$curShow", "$curShowSeason.season x $curShowSeason.episode", "&season=$curShowSeason.season&episode=$curShowSeason.episode", "episode-status-$curShow");
     #end for
-addOption("episode-status-$curShow", "Wanted", "&status=wanted");
-addOption("episode-status-$curShow", "Skipped", "&status=skipped");
-addOption("episode-status-$curShow", "Archived", "&status=archived");
-addOption("episode-status-$curShow", "Ignored", "&status=ignored");
+addList("episode-status-$curShow", "Wanted", "&status=wanted", "force");
+addList("episode-status-$curShow", "Skipped", "&status=skipped", "force");
+addList("episode-status-$curShow", "Archived", "&status=archived", "force");
+addList("episode-status-$curShow", "Ignored", "&status=ignored", "force");
 #end for
+
+addOption("force", "Optional Param", "", 1);
+addOption("force", "Replace Downloaded EP", "&force=1");
+addOption("force", "Skip Downloaded EP", "&force=0");
 
 addOption("future", "Optional Param", "", 1);
 addList("future", "Sort by Date", "&sort=date", "future-type");
@@ -323,15 +322,6 @@ addOption("history-limit", "Optional Param", "", 1);
 addOption("history-limit", "Show Only Downloaded", "&type=downloaded");
 addOption("history-limit", "Show Only Snatched", "&type=snatched");
 
-addOption("failed", "Optional Param", "", 1);
-//addOptGroup("failed", "Limit Results");
-addList("failed", "Limit Results (2)", "&limit=2", "failed-limit");
-addList("failed", "Limit Results (25)", "&limit=25", "failed-limit");
-addList("failed", "Limit Results (50)", "&limit=50", "failed-limit");
-//endOptGroup("failed");
-
-addOption("failed-limit", "Optional Param", "", 1);
-
 addOption("exceptions", "Optional Param", "", 1);
 #for $curShow in $sortedShowList:
 addOption("exceptions", "$curShow.name", "&indexerid=$curShow.indexerid");
@@ -360,6 +350,12 @@ addOption("show.pause-opt", "Optional Param", "", 1);
 addOption("show.pause-opt", "Unpause", "&pause=0");
 addOption("show.pause-opt", "Pause", "&pause=1");
 
+#for $curShow in $sortedShowList:
+addList("show.delete", "$curShow.name", "&indexerid=$curShow.indexerid", "show.delete-opt");
+#end for
+addOption("show.delete-opt", "Remove Files", "&removefiles=1");
+addOption("show.delete-opt", "Don't Remove Files", "&removefiles=0");
+
 </script>
 </head>
 
@@ -386,8 +382,8 @@ addOption("show.pause-opt", "Pause", "&pause=1");
             <select name="sixthlevel"><option></option></select>
             <select name="seventhlevel"><option></option></select>
             <div style="float: left; ">
-                <input class="btn" type="button" value="Reset" onclick="resetListGroup('api',1)" />
-                <input class="btn" type="button" value="Go" onclick="goListGroup(this.form['apikey'].value, this.form['seventhlevel'].value, this.form['sixthlevel'].value, this.form['fifthlevel'].value, this.form['forthlevel'].value, this.form['thirdlevel'].value, this.form['secondlevel'].value, this.form['firstlevel'].value)" />
+                <input type="button" value="Reset" onclick="resetListGroup('api',1)" />
+                <input type="button" value="Go" onclick="goListGroup(this.form['apikey'].value, this.form['seventhlevel'].value, this.form['sixthlevel'].value, this.form['fifthlevel'].value, this.form['forthlevel'].value, this.form['thirdlevel'].value, this.form['secondlevel'].value, this.form['firstlevel'].value)" />
             </div>
         </td>
     </tr>

@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
+import traceback
 
 import urllib
 import time
@@ -119,14 +120,14 @@ class NewznabProvider(generic.NZBProvider):
             params['apikey'] = self.key
 
         try:
-            categories = self.getURL("%s/api" % (self.url), params=params, timeout=10)
+            xml_categories = self.getURL("%s/api" % (self.url), params=params, timeout=10, json=True)
         except:
             logger.log(u"Error getting html for [%s]" % 
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
             return (False, return_categories, "Error getting html for [%s]" % 
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
         
-        xml_categories = helpers.parse_xml(categories)
+        #xml_categories = helpers.parse_xml(categories)
         
         if not xml_categories:
             logger.log(u"Error parsing xml for [%s]" % (self.name),
@@ -237,25 +238,28 @@ class NewznabProvider(generic.NZBProvider):
 
     def _checkAuthFromData(self, data):
 
-        if data is None:
-            return self._checkAuth()
+        try:
+            data['feed']
+            data['entries']
+        except:return self._checkAuth()
 
-        if 'error' in data.feed:
-            code = data.feed['error']['code']
+        try:
+            err_code = int(data['feed']['error']['code'])
+            err_desc = data['feed']['error']['description']
+            if not err_code or err_desc:
+                raise
+        except:
+            return True
 
-            if code == '100':
-                raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
-            elif code == '101':
-                raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
-            elif code == '102':
-                raise AuthException(
-                    "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
-            else:
-                logger.log(u"Unknown error given from " + self.name + ": " + data.feed['error']['description'],
-                           logger.ERROR)
-                return False
-
-        return True
+        if err_code == 100:
+            raise AuthException("Your API key for " + self.name + " is incorrect, check your config.")
+        elif err_code == 101:
+            raise AuthException("Your account on " + self.name + " has been suspended, contact the administrator.")
+        elif err_code == 102:
+            raise AuthException(
+                "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
+        else:
+            logger.log(u"Unknown error given from " + self.name + ": " + err_desc, logger.ERROR)
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
@@ -282,10 +286,6 @@ class NewznabProvider(generic.NZBProvider):
         if search_params:
             params.update(search_params)
 
-        if 'rid' not in search_params and 'q' not in search_params:
-            logger.log("Error no rid or search term given. Report to forums with a full debug log")
-            return []
-
         if self.needs_auth and self.key:
             params['apikey'] = self.key
 
@@ -295,12 +295,12 @@ class NewznabProvider(generic.NZBProvider):
         while (total >= offset) and (offset < 1000):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
-            data = self.cache.getRSSFeed(search_url)
 
-            if not data or not self._checkAuthFromData(data):
+            data = self.cache.getRSSFeed(search_url, items=['entries', 'feed'])
+            if not self._checkAuthFromData(data):
                 break
 
-            for item in data.entries:
+            for item in data['entries'] or []:
 
                 (title, url) = self._get_title_and_url(item)
 
@@ -314,8 +314,8 @@ class NewznabProvider(generic.NZBProvider):
             # get total and offset attribs
             try:
                 if total == 0:
-                    total = int(data.feed.newznab_response['total'] or 0)
-                offset = int(data.feed.newznab_response['offset'] or 0)
+                    total = int(data['feed'].newznab_response['total'] or 0)
+                offset = int(data['feed'].newznab_response['offset'] or 0)
             except AttributeError:
                 break
 
@@ -380,13 +380,20 @@ class NewznabProvider(generic.NZBProvider):
 
                 (title, url) = self._get_title_and_url(item)
 
-                if item.has_key('published_parsed') and item['published_parsed']:
-                    result_date = item.published_parsed
-                    if result_date:
-                        result_date = datetime.datetime(*result_date[0:6])
-                else:
-                    logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                    continue
+                try:
+                    result_date = datetime.datetime(*item['published_parsed'][0:6])
+                except AttributeError:
+                    try:
+                        result_date = datetime.datetime(*item['updated_parsed'][0:6])
+                    except AttributeError:
+                        try:
+                            result_date = datetime.datetime(*item['created_parsed'][0:6])
+                        except AttributeError:
+                            try:
+                                result_date = datetime.datetime(*item['date'][0:6])
+                            except AttributeError:
+                                logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
+                                continue
 
                 if not search_date or result_date > search_date:
                     search_result = classes.Proper(title, url, result_date, self.show)
@@ -420,57 +427,13 @@ class NewznabCache(tvcache.TVCache):
 
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        return self.getRSSFeed(rss_url)
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
 
-    def updateCache(self):
-
-        if self.shouldUpdate() and self._checkAuth(None):
-            data = self._getRSSData()
-
-            # as long as the http request worked we count this as an update
-            if not data:
-                return []
-
-            self.setLastUpdate()
-
-            # clear cache
-            self._clearCache()
-
-            if self._checkAuth(data):
-                items = data.entries
-                cl = []
-                for item in items:
-                    ci = self._parseItem(item)
-                    if ci is not None:
-                        cl.append(ci)
-
-                if len(cl) > 0:
-                    myDB = self._getDB()
-                    myDB.mass_action(cl)
-
-            else:
-                raise AuthException(
-                    u"Your authentication credentials for " + self.provider.name + " are incorrect, check your config")
-
-        return []
-
-    # overwrite method with that parses the rageid from the newznab feed
     def _parseItem(self, item):
-        title = item.title
-        url = item.link
-
-        attrs = item.newznab_attr
-        if not isinstance(attrs, list):
-            attrs = [item.newznab_attr]
-
-        tvrageid = 0
-        for attr in attrs:
-            if attr['name'] == 'tvrageid':
-                tvrageid = int(attr['value'])
-                break
+        title, url = self._get_title_and_url(item)
 
         self._checkItemAuth(title, url)
 
@@ -480,7 +443,11 @@ class NewznabCache(tvcache.TVCache):
                 logger.DEBUG)
             return None
 
-        url = self._translateLinkURL(url)
+        tvrageid = 0
+        for attr in item['newznab_attr'] if isinstance(item['newznab_attr'], list) else [item['newznab_attr']]:
+            if attr['name'] == 'tvrageid':
+                tvrageid = int(attr['value'] or 0)
+                break
 
         logger.log(u"Attempting to add item from RSS to cache: " + title, logger.DEBUG)
         return self._addCacheEntry(title, url, indexer_id=tvrageid)

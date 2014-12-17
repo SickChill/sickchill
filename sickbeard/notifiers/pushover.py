@@ -104,7 +104,7 @@ class PushoverNotifier:
                 logger.log("Pushover API message limit reached - try a different API key", logger.ERROR)
                 return False
 
-        logger.log("Pushover notification successful.", logger.MESSAGE)
+        logger.log("Pushover notification successful.", logger.INFO)
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):

@@ -158,13 +158,15 @@ class IPTorrentsProvider(generic.TorrentProvider):
         freeleech = '&free=on' if self.freeleech else ''
 
         if not self._doLogin():
-            return []
+            return results
 
         for mode in search_params.keys():
             for search_string in search_params[mode]:
+                if isinstance(search_string, unicode):
+                    search_string = unidecode(search_string)
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
-                searchURL = self.urls['search'] % (self.categorie, freeleech, unidecode(search_string))
+                searchURL = self.urls['search'] % (self.categorie, freeleech, search_string)
                 searchURL += ';o=seeders' if mode != 'RSS' else ''
 
                 logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
@@ -279,7 +281,7 @@ class IPTorrentsCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params)
+        return {'entries': self.provider._doSearch(search_params)}
 
 
 provider = IPTorrentsProvider()

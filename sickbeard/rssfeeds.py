@@ -4,53 +4,56 @@ import os
 import urllib
 import urlparse
 import re
+import collections
+
 import sickbeard
 
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
-from contextlib import closing
 from sickbeard.exceptions import ex
-from lib.feedcache import cache
-from shove import Shove
+
+from feedcache.cache import Cache
+from sqliteshelf import SQLiteShelf
 
 
 class RSSFeeds:
     def __init__(self, db_name):
-        self.db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name + '.db')
-        if not os.path.exists(os.path.dirname(self.db_name)):
-            sickbeard.helpers.makeDir(os.path.dirname(self.db_name))
+        try:
+            db_name = ek.ek(os.path.join, sickbeard.CACHE_DIR, 'rss', db_name) + '.db'
+            if not os.path.exists(os.path.dirname(db_name)):
+                sickbeard.helpers.makeDir(os.path.dirname(db_name))
+
+            self.rssDB = SQLiteShelf(db_name)
+        except Exception as e:
+            logger.log(u"RSS error: " + ex(e), logger.DEBUG)
 
     def clearCache(self, age=None):
         try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
-                fc = cache.Cache(fs)
-                fc.purge(age)
-        except Exception as e:
-            logger.log(u"RSS error clearing cache: " + ex(e), logger.DEBUG)
+            fc = Cache(self.rssDB).purge(age)
+            fc.purge(age)
+        finally:
+            self.rssDB.close()
 
-    def getFeed(self, url, post_data=None, request_headers=None):
+    def getFeed(self, url, post_data=None, request_headers=None, items=[]):
         parsed = list(urlparse.urlparse(url))
         parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
 
         if post_data:
             url += urllib.urlencode(post_data)
 
+        data = dict.fromkeys(items, None)
+
         try:
-            with closing(Shove('sqlite:///' + self.db_name, compress=True)) as fs:
-                fc = cache.Cache(fs)
-                feed = fc.fetch(url, False, False, request_headers)
+            fc = Cache(self.rssDB)
+            resp = fc.fetch(url, False, False, request_headers)
 
-                if feed:
-                    if 'entries' in feed:
-                        return feed
-                    elif 'error' in feed.feed:
-                        err_code = feed.feed['error']['code']
-                        err_desc = feed.feed['error']['description']
+            for item in items:
+                try:
+                    data[item] = resp[item]
+                except:
+                    continue
 
-                        logger.log(
-                            u"RSS ERROR:[%s] CODE:[%s]" % (err_desc, err_code), logger.DEBUG)
-                else:
-                    logger.log(u"RSS error loading url: " + url, logger.DEBUG)
+        finally:
+            self.rssDB.close()
 
-        except Exception as e:
-            logger.log(u"RSS error: " + ex(e), logger.DEBUG)
+        return data

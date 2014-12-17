@@ -30,8 +30,8 @@ from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard.exceptions import ex
 
-db_lock = threading.Lock()
-
+db_cons = {}
+db_locks = {}
 
 def dbFilename(filename="sickbeard.db", suffix=None):
     """
@@ -45,63 +45,60 @@ def dbFilename(filename="sickbeard.db", suffix=None):
         filename = "%s.%s" % (filename, suffix)
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
-
 class DBConnection(object):
     def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
         self.suffix = suffix
         self.row_type = row_type
-        self.connection = None
 
         try:
-            self.reconnect()
+            if self.filename not in db_cons:
+                db_locks[self.filename] = threading.Lock()
+
+                self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
+                self.connection.text_factory = self._unicode_text_factory
+                self.connection.isolation_level = None
+
+                db_cons[self.filename] = self.connection
+            else:
+                self.connection = db_cons[self.filename]
+
+            if self.row_type == "dict":
+                self.connection.row_factory = self._dict_factory
+            else:
+                self.connection.row_factory = sqlite3.Row
         except Exception as e:
             logger.log(u"DB error: " + ex(e), logger.ERROR)
             raise
 
-    def reconnect(self):
-        """Closes the existing database connection and re-opens it."""
-        self.close()
-        self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-        self.connection.isolation_level = None
+    def _execute(self, query, args):
+        def convert(x):
+            if isinstance(x, basestring):
+                try:
+                    x = unicode(x).decode(sickbeard.SYS_ENCODING)
+                except:
+                    pass
+            return x
 
-        if self.row_type == "dict":
-            self.connection.row_factory = self._dict_factory
-        else:
-            self.connection.row_factory = sqlite3.Row
-
-    def __del__(self):
-        self.close()
-
-    def _cursor(self):
-        """Returns the cursor; reconnects if disconnected."""
-        if self.connection is None: self.reconnect()
-        return self.connection.cursor()
+        try:
+            if not args:
+                return self.connection.cursor().execute(query)
+            # args = map(convert, args)
+            return self.connection.cursor().execute(query, args)
+        except Exception as e:
+            raise e
 
     def execute(self, query, args=None, fetchall=False, fetchone=False):
-        """Executes the given query, returning the lastrowid from the query."""
-        cursor = self._cursor()
-
         try:
             if fetchall:
-                return self._execute(cursor, query, args).fetchall()
+                return self._execute(query, args).fetchall()
             elif fetchone:
-                return self._execute(cursor, query, args).fetchone()
+                return self._execute(query, args).fetchone()
             else:
-                return self._execute(cursor, query, args)
-        finally:
-            cursor.close()
-
-    def _execute(self, cursor, query, args):
-        try:
-            if args == None:
-                return cursor.execute(query)
-            return cursor.execute(query, args)
-        except sqlite3.OperationalError as e:
-            logger.log(u"DB error: " + ex(e), logger.ERROR)
-            self.close()
-            raise
+                return self._execute(query, args)
+        except Exception as e:
+            raise e
 
     def checkDBVersion(self):
 
@@ -118,18 +115,14 @@ class DBConnection(object):
         else:
             return 0
 
-    def mass_action(self, querylist, logTransaction=False, fetchall=False):
+    def mass_action(self, querylist=[], logTransaction=False, fetchall=False):
+        # remove None types
+        querylist = [i for i in querylist if i is not None]
 
-        with db_lock:
-            # remove None types
-            querylist = [i for i in querylist if i != None]
+        sqlResult = []
+        attempt = 0
 
-            if querylist == None:
-                return
-
-            sqlResult = []
-            attempt = 0
-
+        with db_locks[self.filename]:
             while attempt < 5:
                 try:
                     for qu in querylist:
@@ -169,15 +162,13 @@ class DBConnection(object):
             return sqlResult
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
+        if query == None:
+            return
 
-        with db_lock:
+        sqlResult = None
+        attempt = 0
 
-            if query == None:
-                return
-
-            sqlResult = None
-            attempt = 0
-
+        with db_locks[self.filename]:
             while attempt < 5:
                 try:
                     if args == None:
@@ -240,15 +231,15 @@ class DBConnection(object):
             self.action(query, valueDict.values() + keyDict.values())
 
     def tableInfo(self, tableName):
-
-        # FIXME ? binding is not supported here, but I cannot find a way to escape a string manually
         sqlResult = self.select("PRAGMA table_info(%s)" % tableName)
         columns = {}
         for column in sqlResult:
             columns[column['name']] = {'type': column['type']}
         return columns
 
-    # http://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
+    def _unicode_text_factory(self, x):
+        return unicode(x, 'utf-8')
+
     def _dict_factory(self, cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
@@ -265,15 +256,8 @@ class DBConnection(object):
         self.action("ALTER TABLE %s ADD %s %s" % (table, column, type))
         self.action("UPDATE %s SET %s = ?" % (table, column), (default,))
 
-    def close(self):
-        """Close database connection"""
-        if getattr(self, "connection", None) is not None:
-            self.connection.close()
-        self.connection = None
-
 def sanityCheckDatabase(connection, sanity_check):
     sanity_check(connection).check()
-
 
 class DBSanityCheck(object):
     def __init__(self, connection):
@@ -288,7 +272,7 @@ class DBSanityCheck(object):
 # ===============
 
 def upgradeDatabase(connection, schema):
-    logger.log(u"Checking database structure...", logger.MESSAGE)
+    logger.log(u"Checking database structure...", logger.INFO)
     _processUpgrade(connection, schema)
 
 
@@ -309,7 +293,7 @@ def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
     logger.log(u"Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
     if not instance.test():
-        logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.MESSAGE)
+        logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.INFO)
         try:
             instance.execute()
         except sqlite3.DatabaseError, e:

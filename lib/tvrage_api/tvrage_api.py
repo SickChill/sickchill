@@ -392,7 +392,7 @@ class TVRage:
 
         return os.path.join(tempfile.gettempdir(), "tvrage_api-%s" % (uid))
 
-    #@retry(tvrage_error)
+    @retry(tvrage_error)
     def _loadUrl(self, url, params=None):
         try:
             log().debug("Retrieving URL %s" % url)
@@ -411,6 +411,7 @@ class TVRage:
             else:
                 resp = requests.get(url.strip(), params=params)
 
+            resp.raise_for_status()
         except requests.exceptions.HTTPError, e:
             raise tvrage_error("HTTP error " + str(e.errno) + " while loading URL " + str(url))
         except requests.exceptions.ConnectionError, e:
@@ -438,6 +439,22 @@ class TVRage:
                 'seasonnum': 'episodenumber'
             }
 
+            status_map = {
+                'returning series': 'Continuing',
+                'canceled/ended': 'Ended',
+                'tbd/on the bubble': 'Continuing',
+                'in development': 'Continuing',
+                'new series': 'Continuing',
+                'never aired': 'Ended',
+                'final season': 'Continuing',
+                'on hiatus': 'Continuing',
+                'pilot ordered': 'Continuing',
+                'pilot rejected': 'Ended',
+                'canceled': 'Ended',
+                'ended': 'Ended',
+                '': 'Unknown',
+            }
+
             try:
                 key = name_map[key.lower()]
             except (ValueError, TypeError, KeyError):
@@ -446,8 +463,17 @@ class TVRage:
             # clean up value and do type changes
             if value:
                 if isinstance(value, dict):
+                    if key == 'status':
+                        try:
+                            value = status_map[str(value).lower()]
+                            if not value:
+                                raise
+                        except:
+                            value = 'Unknown'
+
                     if key == 'network':
                         value = value['#text']
+
                     if key == 'genre':
                         value = value['genre']
                         if not value:
@@ -456,6 +482,7 @@ class TVRage:
                             value = [value]
                         value = filter(None, value)
                         value = '|' + '|'.join(value) + '|'
+
                 try:
                     if key == 'firstaired' and value in "0000-00-00":
                         new_value = str(dt.date.fromordinal(1))
@@ -470,11 +497,10 @@ class TVRage:
 
             return (key, value)
 
-        if resp.ok:
-            try:
-                return xmltodict.parse(resp.content.strip(), postprocessor=remap_keys)
-            except:
-                return dict([(u'data', None)])
+        try:
+            return xmltodict.parse(resp.content.decode('utf-8'), postprocessor=remap_keys)
+        except:
+            return dict([(u'data', None)])
 
     def _getetsrc(self, url, params=None):
         """Loads a URL using caching, returns an ElementTree of the source
@@ -523,7 +549,7 @@ class TVRage:
         - Trailing whitespace
         """
 
-        if not isinstance(data, dict or list):
+        if isinstance(data, basestring):
             data = data.replace(u"&amp;", u"&")
             data = data.strip()
 
@@ -579,7 +605,7 @@ class TVRage:
 
         if not seriesInfoEt:
             log().debug('Series result returned zero')
-            raise tvrage_shownotfound("Show search returned zero results (cannot find show on TVRAGE)")
+            raise tvrage_error("Series result returned zero")
 
         # get series data
         for k, v in seriesInfoEt.items():

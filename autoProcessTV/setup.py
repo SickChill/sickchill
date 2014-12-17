@@ -1,13 +1,15 @@
-from distutils.core import setup
-import py2exe, sys, shutil
+from setuptools import setup
 
-sys.argv.append('py2exe')
-
-setup(
-      options = {'py2exe': {'bundle_files': 1}},
-#      windows = [{'console': "sabToSickbeard.py"}],
-      zipfile = None,
-      console = ['sabToSickbeard.py'],
+setup(name='sickrage',
+      version='3.3.2',
+      description='Automated Video File Manager',
+      url='http://github.com/SiCKRAGETV/SickRage',
+      author='echel0n',
+      author_email='sickrage.tv@gmail.com',
+      license='MIT',
+      packages=['funniest'],
+      install_requires=[
+          'requests',
+      ],
+      zip_safe=False,
 )
-
-shutil.copy('dist/sabToSickbeard.exe', '.')

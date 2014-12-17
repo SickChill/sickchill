@@ -25,15 +25,15 @@ import sickbeard
 from sickbeard import logger
 from sickbeard import common
 from sickbeard.exceptions import ex
-from sickbeard.encodingKludge import toUnicode
+from sickbeard import encodingKludge as ek
 
-from sickbeard.notifiers.xbmc import XBMCNotifier
+from sickbeard.notifiers.kodi import KODINotifier
 
 # TODO: switch over to using ElementTree
 from xml.dom import minidom
 
 
-class PLEXNotifier(XBMCNotifier):
+class PLEXNotifier(KODINotifier):
     def _notify_pmc(self, message, title="SickRage", host=None, username=None, password=None, force=False):
         # fill in omitted parameters
         if not host:
@@ -52,7 +52,7 @@ class PLEXNotifier(XBMCNotifier):
             logger.log("Notification for Plex not enabled, skipping this notification", logger.DEBUG)
             return False
 
-        return self._notify_xbmc(message=message, title=title, host=host, username=username, password=password,
+        return self._notify_kodi(message=message, title=title, host=host, username=username, password=password,
                                  force=True)
 
     def notify_snatch(self, ep_name):
@@ -77,7 +77,7 @@ class PLEXNotifier(XBMCNotifier):
         return self._notify_pmc("Testing Plex notifications from SickRage", "Test Notification", host, username,
                                 password, force=True)
 
-    def update_library(self):
+    def update_library(self, showName=None):
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.
@@ -93,7 +93,7 @@ class PLEXNotifier(XBMCNotifier):
                 return False
 
             logger.log(u"Updating library for the Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST,
-                       logger.MESSAGE)
+                       logger.INFO)
 
             url = "http://%s/library/sections" % sickbeard.PLEX_SERVER_HOST
             try:
@@ -104,7 +104,7 @@ class PLEXNotifier(XBMCNotifier):
 
             sections = xml_sections.getElementsByTagName('Directory')
             if not sections:
-                logger.log(u"Plex Media Server not running on: " + sickbeard.PLEX_SERVER_HOST, logger.MESSAGE)
+                logger.log(u"Plex Media Server not running on: " + sickbeard.PLEX_SERVER_HOST, logger.INFO)
                 return False
 
             for s in sections:

@@ -32,10 +32,11 @@ sys.path.append(os.path.abspath('../lib'))
 import sickbeard
 import shutil
 
-from sickbeard import encodingKludge as ek, providers, tvcache
+from sickbeard import providers, tvcache
 from sickbeard import db
 from sickbeard.databases import mainDB
 from sickbeard.databases import cache_db, failed_db
+from sickbeard.tv import TVEpisode
 
 #=================
 # test globals
@@ -53,9 +54,8 @@ FILEDIR = os.path.join(TESTDIR, SHOWNAME)
 FILEPATH = os.path.join(FILEDIR, FILENAME)
 SHOWDIR = os.path.join(TESTDIR, SHOWNAME + " final")
 
-#sickbeard.logger.sb_log_instance = sickbeard.logger.SBRotatingLogHandler(os.path.join(TESTDIR, 'sickbeard.log'), sickbeard.logger.NUM_LOGS, sickbeard.logger.LOG_SIZE)
-sickbeard.logger.SBRotatingLogHandler.log_file = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log')
-
+sickbeard.logger.logFile = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log')
+sickbeard.logger.initLogging()
 
 #=================
 # prepare env functions
@@ -92,7 +92,7 @@ sickbeard.PROG_DIR = os.path.abspath('..')
 sickbeard.DATA_DIR = sickbeard.PROG_DIR
 sickbeard.LOG_DIR = os.path.join(TESTDIR, 'Logs')
 createTestLogFolder()
-sickbeard.logger.sb_log_instance.initLogging(False)
+sickbeard.logger.initLogging(False)
 
 sickbeard.CACHE_DIR = os.path.join(TESTDIR, 'cache')
 createTestCacheFolder()
@@ -112,8 +112,7 @@ mainDB.sickbeard.save_config = _dummy_saveConfig
 def _fake_specifyEP(self, season, episode):
     pass
 
-sickbeard.tv.TVEpisode.specifyEpisode = _fake_specifyEP
-
+TVEpisode.specifyEpisode = _fake_specifyEP
 
 #=================
 # test classes

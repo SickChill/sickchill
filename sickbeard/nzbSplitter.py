@@ -29,8 +29,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.encodingKludge import toUnicode
-
 
 def getSeasonNZBs(name, urlData, season):
     try:
@@ -85,7 +83,7 @@ def createNZBString(fileElements, xmlns):
     for curFile in fileElements:
         rootElement.append(stripNS(curFile, xmlns))
 
-    return xml.etree.ElementTree.tostring(toUnicode(rootElement))
+    return xml.etree.ElementTree.tostring(ek.ss(rootElement))
 
 
 def saveNZB(nzbName, nzbString):

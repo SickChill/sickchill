@@ -11,16 +11,16 @@ var _disable_empty_list=false;
 var _hide_empty_list=false;
 
 function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
-    var GlobalOptions = "";
+    var html, GlobalOptions = "";
     $('.global').each(function(){
         var checked = $(this).prop('checked');
         if(checked) {
             var globalID = $(this).attr('id');
             // handle jsonp/callback global option differently
             if(globalID == "jsonp") {
-            	GlobalOptions = GlobalOptions + "&" + globalID + "=foo";
+                GlobalOptions = GlobalOptions + "&" + globalID + "=foo";
             } else {
-            	GlobalOptions = GlobalOptions + "&" + globalID + "=1";
+                GlobalOptions = GlobalOptions + "&" + globalID + "=1";
             }
         }
     });
@@ -28,7 +28,7 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
     // handle the show.getposter / show.getbanner differently as they return an image and not json
     if (L1 == "?cmd=show.getposter" || L1 == "?cmd=show.getbanner") {
         var imgcache = sbRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions;
-        var html = imgcache + '<br/><br/><img src="' + sbRoot + '/images/loading16.gif" id="imgcache">';
+        html = imgcache + '<br/><br/><img src="' + sbRoot + '/images/loading16.gif" id="imgcache">';
         $('#apiResponse').html(html);
         $.ajax({
           url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions,
@@ -38,14 +38,14 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
           success: function (img) {
             $('#imgcache').attr('src', imgcache);
           }
-        })
+        });
     }
     else {
-        var html = sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions + "<br/><pre>";
+        html = sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions + "<br/><pre>";
         html += $.ajax({
           url: sbRoot + "/api/" + apikey + "/" + L1 + L2 + L3 + L4 + L5 + L6 + L7 + GlobalOptions,
           async: false,
-          dataType: "html",
+          dataType: "html"
         }).responseText;
 
         html += '</pre>';
@@ -189,13 +189,13 @@ function cs_getCookie(name) {
 
 function cs_optionOBJ(type,text,value,label,css) { this.type=type; this.text=text; this.value=value; this.label=label; this.css=css; }
 function cs_getOptions(menu,list) {
-  var opt=new Array();
+  var opt=[];
   for (var i=0; i<menu.items.length; i++) {
     opt[i]=new cs_optionOBJ(menu.items[i].type, menu.items[i].dis, menu.items[i].link, menu.items[i].label, menu.items[i].css);
   }
   if (opt.length==0 && menu.name!="") {
     cs_getSubList(menu.name,list);
-    opt[0]=new cs_optionOBJ(cs_L, "loading ...", "", "", "");
+    //opt[0]=new cs_optionOBJ(cs_L, "loading ...", "", "", "");
   }
   return opt;
 }

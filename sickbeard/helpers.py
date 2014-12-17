@@ -20,6 +20,7 @@ from __future__ import with_statement
 import getpass
 
 import os
+import random
 import re
 import shutil
 import socket
@@ -41,18 +42,6 @@ import subliminal
 import adba
 import requests
 import requests.exceptions
-
-try:
-    import json
-except ImportError:
-    from lib import simplejson as json
-
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import elementtree.ElementTree as etree
-
-from xml.dom.minidom import Node
 
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
@@ -658,12 +647,11 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
         if not show and indexer_id:
             show = findCertainShow(sickbeard.showList, indexer_id)
 
-        if show:
-            for absolute_number in absolute_numbers:
-                ep = show.getEpisode(None, None, absolute_number=absolute_number)
-                if ep:
-                    episodes.append(ep.episode)
-                    season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
+        for absolute_number in absolute_numbers if show else []:
+            ep = show.getEpisode(None, None, absolute_number=absolute_number)
+            if ep:
+                episodes.append(ep.episode)
+                season = ep.season  # this will always take the last found seson so eps that cross the season border are not handeled well
 
     return (season, episodes)
 
@@ -731,79 +719,6 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     return True
-
-
-if __name__ == '__main__':
-    import doctest
-
-    doctest.testmod()
-
-
-def parse_json(data):
-    """
-    Parse json data into a python object
-
-    data: data string containing json
-
-    Returns: parsed data as json or None
-    """
-
-    try:
-        parsedJSON = json.loads(data)
-    except ValueError, e:
-        logger.log(u"Error trying to decode json data. Error: " + ex(e), logger.DEBUG)
-        return None
-
-    return parsedJSON
-
-
-def parse_xml(data, del_xmlns=False):
-    """
-    Parse data into an xml elementtree.ElementTree
-
-    data: data string containing xml
-    del_xmlns: if True, removes xmlns namesspace from data before parsing
-
-    Returns: parsed data as elementtree or None
-    """
-
-    if del_xmlns:
-        data = re.sub(' xmlns="[^"]+"', '', data)
-
-    try:
-        parsedXML = etree.fromstring(data)
-    except Exception, e:
-        logger.log(u"Error trying to parse xml data. Error: " + ex(e), logger.DEBUG)
-        parsedXML = None
-
-    return parsedXML
-
-
-def get_xml_text(element, mini_dom=False):
-    """
-    Get all text inside a xml element
-
-    element: A xml element either created with elementtree.ElementTree or xml.dom.minidom
-    mini_dom: Default False use elementtree, True use minidom
-
-    Returns: text
-    """
-
-    text = ""
-
-    if mini_dom:
-        node = element
-        for child in node.childNodes:
-            if child.nodeType in (Node.CDATA_SECTION_NODE, Node.TEXT_NODE):
-                text += child.data
-    else:
-        if element is not None:
-            for child in [element] + element.findall('.//*'):
-                if child.text:
-                    text += child.text
-
-    return text.strip()
-
 
 def backupVersionedFile(old_file, version):
     numTries = 0
@@ -1187,7 +1102,7 @@ def mapIndexersToShow(showObj):
 
             try:
                 mapped_show = t[showObj.name]
-            except sickbeard.indexer_shownotfound:
+            except Exception:
                 logger.log(u"Unable to map " + sickbeard.indexerApi(showObj.indexer).name + "->" + sickbeard.indexerApi(
                     indexer).name + " for show: " + showObj.name + ", skipping it", logger.DEBUG)
                 continue
@@ -1396,32 +1311,6 @@ def clearCache(force=False):
                                            logger.WARNING)
                                 break
 
-def human(size):
-    """
-    format a size in bytes into a 'human' file size, e.g. bytes, KB, MB, GB, TB, PB
-    Note that bytes/KB will be reported in whole numbers but MB and above will have greater precision
-    e.g. 1 byte, 43 bytes, 443 KB, 4.3 MB, 4.43 GB, etc
-    """
-    if size == 1:
-        # because I really hate unnecessary plurals
-        return "1 byte"
-
-    suffixes_table = [('bytes', 0), ('KB', 0), ('MB', 1), ('GB', 2),('TB', 2), ('PB', 2)]
-
-    num = float(size)
-    for suffix, precision in suffixes_table:
-        if num < 1024.0:
-            break
-        num /= 1024.0
-
-    if precision == 0:
-        formatted_size = "%d" % num
-    else:
-        formatted_size = str(round(num, ndigits=precision))
-
-    return "%s %s" % (formatted_size, suffix)
-
-
 def get_size(start_path='.'):
 
     total_size = 0
@@ -1431,3 +1320,51 @@ def get_size(start_path='.'):
             total_size += ek.ek(os.path.getsize, fp)
     return total_size
 
+def generateApiKey():
+    """ Return a new randomized API_KEY
+    """
+
+    try:
+        from hashlib import md5
+    except ImportError:
+        from md5 import md5
+
+    # Create some values to seed md5
+    t = str(time.time())
+    r = str(random.random())
+
+    # Create the md5 instance and give it the current time
+    m = md5(t)
+
+    # Update the md5 instance with the random variable
+    m.update(r)
+
+    # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
+    logger.log(u"New API generated")
+    return m.hexdigest()
+
+def pretty_filesize(file_bytes):
+    file_bytes = float(file_bytes)
+    if file_bytes >= 1099511627776:
+        terabytes = file_bytes / 1099511627776
+        size = '%.2f TB' % terabytes
+    elif file_bytes >= 1073741824:
+        gigabytes = file_bytes / 1073741824
+        size = '%.2f GB' % gigabytes
+    elif file_bytes >= 1048576:
+        megabytes = file_bytes / 1048576
+        size = '%.2f MB' % megabytes
+    elif file_bytes >= 1024:
+        kilobytes = file_bytes / 1024
+        size = '%.2f KB' % kilobytes
+    else:
+        size = '%.2f b' % file_bytes
+
+    return size
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+
+def remove_article(text=''):
+    return re.sub(r'(?i)/^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)

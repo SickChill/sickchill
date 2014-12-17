@@ -214,6 +214,10 @@
 			<option value="$sbRoot/setHomeLayout/?layout=banner" #if $sickbeard.HOME_LAYOUT == "banner" then "selected=\"selected\"" else ""#>Banner</option>
 			<option value="$sbRoot/setHomeLayout/?layout=simple" #if $sickbeard.HOME_LAYOUT == "simple" then "selected=\"selected\"" else ""#>Simple</option>
 		</select>
+		#if $layout != 'poster':
+        Search:
+			<input class="search form-control form-control-inline input-sm input200" type="search" data-column="1" placeholder="Search Show Name"> <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
+		#end if
 	</span>
 	
 	#if $layout == 'poster':
@@ -237,12 +241,6 @@
 
 	#end if
 </div>
-
-#if $layout != 'poster':
-<div class="pull-right">
-	<input class="search form-control form-control-inline input-sm input200" type="search" data-column="1" placeholder="Search Show Name"> <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
-</div>
-#end if
 
 #for $curShowlist in $showlists:
 #set $curListType = $curShowlist[0]
@@ -603,7 +601,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		</td>
 	
         <td align="center">
-			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status != "Ended" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
+			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
 		</td>
 		
         <td align="center">

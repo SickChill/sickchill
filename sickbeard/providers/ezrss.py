@@ -55,8 +55,10 @@ class EZRSSProvider(generic.TorrentProvider):
 
     def getQuality(self, item, anime=False):
 
-        filename = item.filename
-        quality = Quality.sceneQuality(filename, anime)
+        try:
+            quality = Quality.sceneQuality(item.filename, anime)
+        except:
+            quality = Quality.UNKNOWN
 
         return quality
 
@@ -120,37 +122,28 @@ class EZRSSProvider(generic.TorrentProvider):
 
         logger.log(u"Search string: " + search_url, logger.DEBUG)
 
-        data = self.cache.getRSSFeed(search_url)
-
-        if not data:
-            return []
-
-        items = data.entries
-
         results = []
-        for curItem in items:
+        for curItem in self.cache.getRSSFeed(search_url, items=['entries'])['entries'] or []:
 
             (title, url) = self._get_title_and_url(curItem)
 
             if title and url:
                 logger.log(u"RSS Feed provider: [" + self.name + "] Attempting to add item to cache: " + title, logger.DEBUG)
                 results.append(curItem)
-            else:
-                logger.log(
-                    u"The XML returned from the " + self.name + " RSS feed is incomplete, this result is unusable",
-                    logger.ERROR)
 
         return results
 
     def _get_title_and_url(self, item):
         (title, url) = generic.TorrentProvider._get_title_and_url(self, item)
 
-        filename = item.filename
-        if filename:
-            new_title = self._extract_name_from_filename(filename)
-            if new_title:
-                title = new_title
-                logger.log(u"Extracted the name " + title + " from the torrent link", logger.DEBUG)
+        try:
+            new_title = self._extract_name_from_filename(item.filename)
+        except:
+            new_title = None
+
+        if new_title:
+            title = new_title
+            logger.log(u"Extracted the name " + title + " from the torrent link", logger.DEBUG)
 
         return (title, url)
 
@@ -179,11 +172,6 @@ class EZRSSCache(tvcache.TVCache):
         rss_url = self.provider.url + 'feed/'
         logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
 
-        data = self.getRSSFeed(rss_url)
-
-        if data and 'entries' in data:
-            return data.entries
-        else:
-            return []
+        return self.getRSSFeed(rss_url, items=['entries', 'feed'])
 
 provider = EZRSSProvider()

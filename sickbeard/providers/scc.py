@@ -164,7 +164,7 @@ class SCCProvider(generic.TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         if not self._doLogin():
-            return []
+            return results
 
         data = []
         searchURLS = []
@@ -305,8 +305,6 @@ class SCCCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params)
-
-
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = SCCProvider()

@@ -1,4 +1,4 @@
-#  SB User Related   #
+#  SR User Related   #
 ######################
 cache/*
 cache.db*
@@ -11,11 +11,13 @@ server.crt
 server.key
 restore/
 
-#  SB Test Related   #
+#  SR Test Related   #
 ######################
 tests/Logs/*
-tests/sickbeard.*
-tests/cache.db
+tests/cache/*
+tests/sickbeard.db*
+tests/cache.db*
+tests/failed.db
 
 #  Compiled source   #
 ######################

@@ -12,7 +12,7 @@
 # Sick Beard is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
@@ -25,6 +25,8 @@ import sickbeard
 import generic
 
 from lib import requests
+from lib.requests import exceptions
+
 from sickbeard.common import USER_AGENT, Quality, cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
@@ -34,32 +36,29 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
+from sickbeard.exceptions import ex
+
 
 class T411Provider(generic.TorrentProvider):
     urls = {'base_url': 'http://www.t411.me/',
-            'search': 'http://www.t411.me/torrents/search/?name=%s&cat=210&subcat=433&search=%s&submit=Recherche',
+            'search': 'http://www.t411.me/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
             'login_page': 'http://www.t411.me/users/login/',
             'download': 'http://www.t411.me/torrents/download/?id=%s',
     }
 
     def __init__(self):
-
         generic.TorrentProvider.__init__(self, "T411")
 
         self.supportsBacklog = True
-
         self.enabled = False
         self.username = None
         self.password = None
         self.ratio = None
 
         self.cache = T411Cache(self)
-
         self.url = self.urls['base_url']
 
-        self.last_login_check = None
-
-        self.login_opener = None
+        self.subcategories = [637, 455, 433]
 
     def isEnabled(self):
         return self.enabled
@@ -68,60 +67,27 @@ class T411Provider(generic.TorrentProvider):
         return 't411.png'
 
     def getQuality(self, item, anime=False):
-
         quality = Quality.sceneQuality(item[0], anime)
         return quality
 
-    def getLoginParams(self):
-        return {
-            'login': self.username,
-            'password': self.password,
-            'remember': '1',
+    def _doLogin(self):
+        login_params = {'login': self.username,
+                        'password': self.password,
         }
 
-    def loginSuccess(self, output):
-        if "<span>Ratio: <strong class" in output.text:
-            return True
-        else:
-            return False
-
-    def _doLogin(self):
-
-        now = time.time()
-
-        if self.login_opener and self.last_login_check < (now - 3600):
-            try:
-                output = self.login_opener.open(self.urls['test'])
-                if self.loginSuccess(output):
-                    self.last_login_check = now
-                    return True
-                else:
-                    self.login_opener = None
-            except:
-                self.login_opener = None
-
-        if self.login_opener:
-            return True
+        self.session = requests.Session()
 
         try:
-            login_params = self.getLoginParams()
-            self.session = requests.Session()
-            self.session.headers.update({'User-Agent': USER_AGENT})
-            data = self.session.get(self.urls['login_page'], verify=False)
-            output = self.session.post(self.urls['login_page'], data=login_params, verify=False)
-            if self.loginSuccess(output):
-                self.last_login_check = now
-                self.login_opener = self.session
-                return True
+            response = self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False)
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
+            return False
 
-            error = 'unknown'
-        except:
-            error = traceback.format_exc()
-            self.login_opener = None
+        if not re.search('/users/logout/', response.text.lower()):
+            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+            return False
 
-        self.login_opener = None
-        logger.log(u'Failed to login:' + str(error), logger.ERROR)
-        return False
+        return True
 
     def _get_season_search_strings(self, ep_obj):
 
@@ -177,7 +143,7 @@ class T411Provider(generic.TorrentProvider):
         items = {'Season': [], 'Episode': [], 'RSS': []}
 
         if not self._doLogin():
-            return []
+            return results
 
         for mode in search_params.keys():
 
@@ -187,54 +153,55 @@ class T411Provider(generic.TorrentProvider):
                     search_string2 = ''
                 else:
                     search_string2 = '%40name+' + search_string + '+'
-                    
-                searchURL = self.urls['search'] % (search_string, search_string2)
-                logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                data = self.getURL(searchURL)
+                for sc in self.subcategories:
+                    searchURL = self.urls['search'] % (search_string, sc, search_string2)
+                    logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                if not data:
-                    continue
+                    data = self.getURL(searchURL)
+                    if not data:
+                        continue
 
-                try:
-                    with BS4Parser(data.decode('iso-8859-1'), features=["html5lib", "permissive"]) as html:
-                        resultsTable = html.find('table', attrs={'class': 'results'})
+                    try:
+                        with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                            resultsTable = html.find('table', attrs={'class': 'results'})
 
-                        if not resultsTable:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
-                            continue
+                            if not resultsTable:
+                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                           logger.DEBUG)
+                                continue
 
-                        entries = resultsTable.find("tbody").findAll("tr")
+                            entries = resultsTable.find("tbody").findAll("tr")
 
-                        if len(entries) > 0:
-                            for result in entries:
+                            if len(entries) > 0:
+                                for result in entries:
 
-                                try:
-                                    link = result.find('a', title=True)
-                                    torrentName = link['title']
-                                    torrent_name = str(torrentName)
-                                    torrentId = result.find_all('td')[2].find_all('a')[0]['href'][1:].replace('torrents/nfo/?id=','')
-                                    torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                except (AttributeError, TypeError):
-                                    continue
+                                    try:
+                                        link = result.find('a', title=True)
+                                        torrentName = link['title']
+                                        torrent_name = str(torrentName)
+                                        torrentId = result.find_all('td')[2].find_all('a')[0]['href'][1:].replace(
+                                            'torrents/nfo/?id=', '')
+                                        torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
+                                    except (AttributeError, TypeError):
+                                        continue
 
-                                if not torrent_name or not torrent_download_url:
-                                    continue
+                                    if not torrent_name or not torrent_download_url:
+                                        continue
 
-                                item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")", logger.DEBUG)
-                                items[mode].append(item)
+                                    item = torrent_name, torrent_download_url
+                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
+                                               logger.DEBUG)
+                                    items[mode].append(item)
 
-                        else:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.WARNING)
-                            continue
+                            else:
+                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                           logger.WARNING)
+                                continue
 
-                except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                               logger.ERROR)
-
+                    except Exception, e:
+                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                                   logger.ERROR)
             results += items[mode]
 
         return results
@@ -286,15 +253,14 @@ class T411Provider(generic.TorrentProvider):
 
 class T411Cache(tvcache.TVCache):
     def __init__(self, provider):
-
         tvcache.TVCache.__init__(self, provider)
 
         # Only poll T411 every 10 minutes max
         self.minTime = 10
 
-    def _getDailyData(self):
+    def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params)
+        return {'entries': self.provider._doSearch(search_params)}
 
 
 provider = T411Provider()

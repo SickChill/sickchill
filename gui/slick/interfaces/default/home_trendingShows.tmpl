@@ -14,6 +14,7 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
+<script type="text/javascript" src="$sbRoot/js/addTrendingShow.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 
@@ -90,7 +91,6 @@
 	<h1 class="title">$title</h1>
 #end if
 
-#if $trending_shows
 <div id="tabs">
     <ul>
         <li><a href="#tabs-1">Manage Directories</a></li>
@@ -119,46 +119,10 @@
 		<option value="desc">Desc</option>
 	</select>
 </div>
-#end if
 
-<div id="container">
-
-#if None is $trending_shows
-	<div class="trakt_show" style="width:100%; margin-top:20px">
-		<p class="red-text">Trakt API did not return results, this can happen from time to time.
-		<br /><br />This view should auto refresh every 10 mins.</p>
-	</div>
-#else
-#for $cur_show in $trending_shows:
-#if not 'ExistsInLibrary' in $cur_show['tvdb_id']:
-
-#set $image = re.sub(r'(?im)(.*)(\..*?)$', r'\1-300\2', $cur_show['images']['poster'], 0)
-
-	<div class="trakt_show" data-name="$cur_show['title']" data-rating="$cur_show['ratings']['percentage']" data-votes="$cur_show['ratings']['votes']">
-		<div class="traktContainer">
-			<div class="trakt-image">
-				<a class="trakt-image" href="<%= anon_url(cur_show['url']) %>" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
-			</div>
-
-			<div class="show-title">
-				<%= (cur_show['title'], '<span>&nbsp;</span>')[ '' == cur_show['title']] %>
-			</div>
-
-		<div class="clearfix">
-			<p>$cur_show['ratings']['percentage']% <img src="$sbRoot/images/heart.png"></p>
-			<i>$cur_show['ratings']['votes'] votes</i>
-
-			<div class="traktShowTitleIcons">
-				<a href="$sbRoot/home/addTraktShow?indexer_id=${cur_show['tvdb_id']}&amp;showName=${cur_show['title']}" class="btn btn-xs">Add Show</a>
-			</div>
-		</div>
-		</div>
-	</div>
-
-#end if
-#end for
-#end if
-</div>
+<br />
+<div id="trendingShows"></div>
+<br />
 
 <script type="text/javascript" charset="utf-8">
 <!--
