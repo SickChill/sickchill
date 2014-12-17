@@ -84,6 +84,9 @@ class Logger(object):
         # add a new logging level DB
         logging.addLevelName(DB, 'DB')
 
+        # nullify root logger
+        logging.getLogger().addHandler(NullHandler())
+
         # set custom root logger
         for logger in self.loggers:
             if logger is not self.logger.logger:
