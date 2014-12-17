@@ -12,7 +12,7 @@
             sbRoot = "$sbRoot";
         //-->
         </script>
-        <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.7.2.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.8.3.min.js?$sbPID"></script>
         <script type="text/javascript" src="$sbRoot/js/apibuilder.js?$sbPID"></script>
 
         <style type="text/css">
@@ -353,7 +353,6 @@ addOption("show.pause-opt", "Pause", "&pause=1");
 #for $curShow in $sortedShowList:
 addList("show.delete", "$curShow.name", "&indexerid=$curShow.indexerid", "show.delete-opt");
 #end for
-addOption("show.delete-opt", "Optional Param", "", 1);
 addOption("show.delete-opt", "Remove Files", "&removefiles=1");
 addOption("show.delete-opt", "Don't Remove Files", "&removefiles=0");
 

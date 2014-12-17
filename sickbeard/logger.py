@@ -59,7 +59,6 @@ class CensorLoggingAdapter(logging.LoggerAdapter):
                 msg = msg.replace(v, len(v) * '*')
         return msg, kwargs
 
-
 class Logger(object):
     def __init__(self):
         self.logger = CensorLoggingAdapter(logging.getLogger('sickrage'), censoredItems)
@@ -68,6 +67,7 @@ class Logger(object):
             logging.getLogger('sickrage'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
+            #logging.getLogger('tornado.access'),
         ]
 
         self.consoleLogging = False
