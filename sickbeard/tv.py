@@ -1677,7 +1677,7 @@ class TVEpisode(object):
         self.description = getattr(myEp, 'overview', "")
 
         firstaired = getattr(myEp, 'firstaired', None)
-        if firstaired is None or firstaired in "0000-00-00":
+        if not firstaired or firstaired == "0000-00-00":
             firstaired = str(datetime.date.fromordinal(1))
         rawAirdate = [int(x) for x in firstaired.split("-")]
 
