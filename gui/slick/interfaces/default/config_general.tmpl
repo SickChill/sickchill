@@ -438,47 +438,13 @@
 
 				<div id="core-component-group3" class="component-group">
 
+				<div class="component-group">
+
 					<div class="component-group-desc">
 						<h3>Advanced Settings</h3>
-
 					</div>
 
 					<fieldset class="component-group-list">
-
-						<div class="field-pair">
-							<label>
-								<span class="component-title">Branch version:</span>
-								<span class="component-desc">
-									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
-										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
-									#end for
-									</select>
-									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-									<div class="clear-left"><p>select branch to use (restart required)</p></div>
-								</span>
-							</label>
-						</div>
-
-						<div class="field-pair">
-							<label for="git_remote">
-								<span class="component-title">Git remote for branch</span>
-								<span class="component-desc">
-									<input type="text" name="git_remote" id="git_remote" value="$sickbeard.GIT_REMOTE" class="form-control input-sm input300" />
-									<div class="clear-left"><p>default:origin. Access repo configured remotes (save then refresh browser)</p></div>
-								</span>
-							</label>
-						</div>
-
-						<div class="field-pair">
-							<label>
-								<span class="component-title">Git executable path</span>
-								<span class="component-desc">
-									<input type="text" name="git_path" value="$sickbeard.GIT_PATH" class="form-control input-sm input300" />
-									<div class="clear-left"><p>only needed if OS is unable to locate git from env</p></div>
-								</span>
-							</label>
-						</div>
 
 						<div class="field-pair">
 							<label>
@@ -548,6 +514,86 @@
 
 						<input type="submit" class="btn config_submitter" value="Save Changes" />
 					</fieldset>
+				</div>
+
+				<div class="component-group">
+
+					<div class="component-group-desc">
+						<h3>GitHub</h3>
+						<p>Options for github related features.</p>
+					</div>
+					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Branch version:</span>
+								<span class="component-desc">
+									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
+									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
+										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+									#end for
+									</select>
+									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+									<div class="clear-left"><p>select branch to use (restart required)</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="git_username">
+								<span class="component-title">GitHub username</span>
+								<span class="component-desc">
+									<input type="text" name="git_username" id="git_username" value="$sickbeard.GIT_USERNAME" class="form-control input-sm input300" />
+									<div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="git_password">
+								<span class="component-title">GitHub password</span>
+								<span class="component-desc">
+									<input type="password" name="git_password" id="git_password" value="$sickbeard.GIT_PASSWORD" class="form-control input-sm input300" />
+									<div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="git_remote">
+								<span class="component-title">GitHub remote for branch</span>
+								<span class="component-desc">
+									<input type="text" name="git_remote" id="git_remote" value="$sickbeard.GIT_REMOTE" class="form-control input-sm input300" />
+									<div class="clear-left"><p>default:origin. Access repo configured remotes (save then refresh browser)</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Git executable path</span>
+								<span class="component-desc">
+									<input type="text" name="git_path" value="$sickbeard.GIT_PATH" class="form-control input-sm input300" />
+									<div class="clear-left"><p>only needed if OS is unable to locate git from env</p></div>
+								</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label for="git_reset">
+								<span class="component-title">Git branch reset</span>
+								<span class="component-desc">
+									<input type="checkbox" name="git_reset" id="git_reset" #if True == $sickbeard.GIT_RESET then 'checked="checked"' else ''#/>
+									<p>reset git branch automatically to help resolve update issues</p>
+								</span>
+							</label>
+						</div>
+
+						<input type="submit" class="btn config_submitter" value="Save Changes" />
+					</fieldset>
+
+				</div>
+
 				</div><!-- /component-group3 //-->
 
 				<br/>

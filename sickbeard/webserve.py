@@ -24,8 +24,11 @@ import time
 import urllib
 import re
 import datetime
+import sys
+import platform
 
 import sickbeard
+from github import Github
 from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import history, notifiers, processTV
@@ -180,9 +183,9 @@ class BaseHandler(RequestHandler):
                                     <p>%s</p>
                                     <h2>Request Info</h2>
                                     <p>%s</p>
+                                    <button onclick="window.location='%s/errorlogs/';">View Log(Errors)</button>
                                  </body>
-                               </html>""" % (error, error,
-                                             trace_info, request_info))
+                               </html>""" % (error, error, trace_info, request_info, sickbeard.WEB_ROOT))
 
     def redirect(self, url, permanent=False, status=None):
         if not url.startswith(sickbeard.WEB_ROOT):
@@ -3437,7 +3440,8 @@ class ConfigGeneral(Config):
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
                     calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, play_videos=None, rootDir=None, theme_name=None):
+                    indexer_timeout=None, play_videos=None, rootDir=None, theme_name=None,
+                    git_reset=None, git_username=None, git_password=None):
 
         results = []
 
@@ -3459,6 +3463,9 @@ class ConfigGeneral(Config):
         sickbeard.ANON_REDIRECT = anon_redirect
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
+        sickbeard.GIT_USERNAME = git_username
+        sickbeard.GIT_PASSWORD = git_password
+        sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
@@ -4637,7 +4644,7 @@ class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self):
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
-            # { 'title': 'View Log',  'path': 'errorlogs/viewlog'  },
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveGitHub},
         ]
 
         return menu
@@ -4649,11 +4656,13 @@ class ErrorLogs(WebRoot):
 
         return t.respond()
 
+    def haveGitHub(self):
+        if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+            return True
 
     def clearerrors(self):
         classes.ErrorViewer.clear()
         return self.redirect("/errorlogs/")
-
 
     def viewlog(self, minLevel=logger.INFO, maxLines=500):
 
@@ -4707,3 +4716,36 @@ class ErrorLogs(WebRoot):
         t.minLevel = minLevel
 
         return t.respond()
+
+    def submit_errors(self):
+        title = "[APP SUBMITTED]: "
+
+        gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
+        gh_repo = 'sickrage-issues'
+
+        self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
+                                user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
+
+        try:
+            for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+                title = title + curError.title
+
+                message = u"### INFO\n"
+                message += u"Python Version: **" + sys.version[:120] + "**\n"
+                message += u"Operating System: **" + platform.platform() + "**\n"
+                message += u"Branch: **" + sickbeard.BRANCH + "**\n"
+                message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
+                message += u"### ERROR\n"
+                message += u"```\n"
+                message += curError.message
+                message += u"```\n"
+                message += u"---\n"
+                message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
+
+                issue = self.gh_issues.create_issue(title, message)
+                if issue:
+                    ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+        except Exception as e:
+            logger.log(ex(e), logger.ERROR)
+
+        return self.redirect("/errorlogs/")

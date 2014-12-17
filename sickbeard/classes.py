@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 import re
+import sys
 
 import sickbeard
 
@@ -261,6 +262,9 @@ class ErrorViewer():
     def clear():
         ErrorViewer.errors = []
 
+    @staticmethod
+    def get():
+        return ErrorViewer.errors
 
 class UIError():
     """
@@ -268,5 +272,7 @@ class UIError():
     """
 
     def __init__(self, message):
+        self.title = sys.exc_info()[1].message or None
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.exc_info = sys.exc_info() or None

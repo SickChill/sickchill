@@ -240,7 +240,7 @@ class TVShow(object):
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
             myDB = db.DBConnection()
-            sql = "SELECT * FROM tv_episodes WHERE showid = ? and absolute_number = ? and season != 0"
+            sql = "SELECT * FROM tv_episodes WHERE showid = ? AND absolute_number = ? AND season != 0"
             sqlResults = myDB.select(sql, [self.indexerid, absolute_number])
 
             if len(sqlResults) == 1:
@@ -282,7 +282,7 @@ class TVShow(object):
     def should_update(self, update_date=datetime.date.today()):
 
         # if show is not 'Ended' always update (status 'Continuing')
-        if 'Unknown' not in self.status and 'Ended' not in self.status:
+        if self.status == 'Continuing':
             return True
 
         # run logic against the current show latest aired and next unaired data to see if we should bypass 'Ended' status
@@ -500,7 +500,7 @@ class TVShow(object):
             try:
                 curEp = self.getEpisode(curSeason, curEpisode)
                 if not curEp:
-                    raise  exceptions.EpisodeNotFoundException
+                    raise exceptions.EpisodeNotFoundException
 
                 # if we found out that the ep is no longer on TVDB then delete it from our database too
                 if deleteEp:
@@ -957,7 +957,7 @@ class TVShow(object):
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
             myDB = db.DBConnection()
             sqlResults = myDB.select(
-                "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status in (?,?) ORDER BY airdate ASC LIMIT 1",
+                "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
             if sqlResults == None or len(sqlResults) == 0:
@@ -1526,7 +1526,7 @@ class TVEpisode(object):
             self.subtitles_lastsearch = sqlResults[0]["subtitles_lastsearch"]
             self.airdate = datetime.date.fromordinal(int(sqlResults[0]["airdate"]))
             # logger.log(u"1 Status changes from " + str(self.status) + " to " + str(sqlResults[0]["status"]), logger.DEBUG)
-            self.status = int(sqlResults[0]["status"])
+            self.status = int(sqlResults[0]["status"] or -1)
 
             # don't overwrite my location
             if sqlResults[0]["location"] and sqlResults[0]["location"]:
@@ -1684,8 +1684,8 @@ class TVEpisode(object):
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except (ValueError, IndexError):
-            logger.log(u"Malformed air date retrieved from " + sickbeard.indexerApi(
-                self.indexer).name + " (" + self.show.name + " - " + str(season) + "x" + str(episode) + ")",
+            logger.log(u"Malformed air date of " + str(firstaired) + " retrieved from " + sickbeard.indexerApi(
+                self.indexer).name + " for (" + self.show.name + " - " + str(season) + "x" + str(episode) + ")",
                        logger.ERROR)
             # if I'm incomplete on TVDB but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
