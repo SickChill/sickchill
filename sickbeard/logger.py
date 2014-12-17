@@ -51,6 +51,12 @@ class NullFilter(logging.Filter):
     def filter(self, record):
         pass
 
+class CensorFilter(logging.Filter):
+    def filter(self, record):
+        for k, v in censoredItems.items():
+            if v and len(v) > 0 and v in record.msg:
+                record.msg = record.msg.replace(v, len(v) * '*')
+        return True
 
 class CensorLoggingAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
@@ -101,6 +107,7 @@ class Logger(object):
         if self.consoleLogging:
             console = logging.StreamHandler()
             console.setFormatter(logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
+            console.addFilter(CensorFilter())
             console.setLevel(INFO if not self.debugLogging else DEBUG)
 
             for logger in self.loggers:
@@ -110,6 +117,7 @@ class Logger(object):
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')
             rfh.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
+            rfh.addFilter(CensorFilter())
             rfh.setLevel(DEBUG)
 
             for logger in self.loggers:
