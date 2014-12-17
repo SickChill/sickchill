@@ -561,7 +561,7 @@ def initialize(consoleLogging=True):
             fileLogging=False
 
         # init logging
-        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debug=DEBUG)
+        logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG)
 
         # github api
         try:gh = Github().get_organization(GIT_ORG).get_repo(GIT_REPO)

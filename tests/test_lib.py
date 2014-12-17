@@ -54,7 +54,8 @@ FILEDIR = os.path.join(TESTDIR, SHOWNAME)
 FILEPATH = os.path.join(FILEDIR, FILENAME)
 SHOWDIR = os.path.join(TESTDIR, SHOWNAME + " final")
 
-sickbeard.logger.initLogging(os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log'))
+sickbeard.logger.logFile = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log')
+sickbeard.logger.initLogging()
 
 #=================
 # prepare env functions
