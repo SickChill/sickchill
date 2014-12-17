@@ -20,6 +20,7 @@ Video File Manager for TV Shows, It watches for new episodes of your favorite sh
  - Importing of existing video files now allows you to choose which indexer you wish to have SickBeard search its show info from.
  - Your tvshow.nfo files are now tagged with a indexer key so that SickBeard can easily tell if the shows info comes from TheTVDB or TVRage.
  - Sports shows are now able to be searched for..
+
 ## Screenshots
 -[Desktop (Full-HD)](http://imgur.com/a/4fpBk)<br>
 -[Mobile](http://imgur.com/a/WPyG6)
