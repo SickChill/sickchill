@@ -63,46 +63,65 @@ class CensorLoggingAdapter(logging.LoggerAdapter):
 class Logger(object):
     def __init__(self):
         self.logger = CensorLoggingAdapter(logging.getLogger('sickrage'), censoredItems)
+
+        self.loggers = [
+            logging.getLogger('sickrage'),
+            logging.getLogger('tornado.general'),
+            logging.getLogger('tornado.application'),
+        ]
+
         self.consoleLogging = False
         self.fileLogging = False
         self.debugLogging = False
         self.logFile = None
 
     def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
-        # set logging filename
-        if not self.logFile:
-            self.logFile = os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
+        self.logFile = self.logFile or os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
+        self.debugLogging = debugLogging
+        self.consoleLogging = consoleLogging
+        self.fileLogging = fileLogging
 
         # add a new logging level DB
         logging.addLevelName(DB, 'DB')
 
-        # don't propergate to root logger
-        logging.getLogger('sickrage').propagate = False
+        # set custom root logger
+        for logger in self.loggers:
+            if logger is not self.logger.logger:
+                logger.root = self.logger.logger
+                logger.parent = self.logger.logger
 
-        # set minimum logging level allowed
-        logging.getLogger('sickrage').setLevel(DB)
+        # set minimum logging level allowed for loggers
+        for logger in self.loggers:
+            logger.setLevel(DB)
 
         # console log handler
-        if consoleLogging:
+        if self.consoleLogging:
             console = logging.StreamHandler()
-            console.setLevel(INFO if not debugLogging else DEBUG)
             console.setFormatter(logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
-            logging.getLogger('sickrage').addHandler(console)
+            console.setLevel(INFO if not self.debugLogging else DEBUG)
+
+            for logger in self.loggers:
+                logger.addHandler(console)
 
         # rotating log file handler
-        if fileLogging:
+        if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')
-            rfh.setLevel(DEBUG)
             rfh.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
-            logging.getLogger('sickrage').addHandler(rfh)
+            rfh.setLevel(DEBUG)
+
+            for logger in self.loggers:
+                logger.addHandler(rfh)
 
     def log(self, msg, level=INFO, *args, **kwargs):
         meThread = threading.currentThread().getName()
         message = meThread + u" :: " + msg
 
-        self.logger.log(level, message, *args, **kwargs)
+        # pass exception information if debugging enabled
         if level == ERROR:
+            kwargs["exc_info"] = 1
             classes.ErrorViewer.add(classes.UIError(message))
+
+        self.logger.log(level, message, *args, **kwargs)
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
