@@ -166,7 +166,7 @@ class Logger(object):
                     message += u"Pastebin Log URL: " + pastebin_url + "\n"
                 message += u"### ERROR\n"
                 message += u"```\n"
-                message += curError.message
+                message += curError.message + "\n"
                 message += u"```\n"
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
