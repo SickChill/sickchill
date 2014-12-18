@@ -23,6 +23,8 @@ from __future__ import with_statement
 import os.path
 import sys
 
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
+
 try:
     import requests
 except ImportError:
