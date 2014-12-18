@@ -433,7 +433,8 @@ class GitUpdateManager(UpdateManager):
 
         branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
         if exit_status == 0 and branches:
-            return re.findall('\S+\Wrefs/heads/(.*)', branches)
+            if branches:
+                return re.findall('\S+\Wrefs/heads/(.*)', branches)
         return []
 
     def update_remote_origin(self):
