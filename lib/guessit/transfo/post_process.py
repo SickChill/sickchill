@@ -33,10 +33,10 @@ def process(mtree):
             continue
 
         def promote_subtitle():
-            # pylint: disable=W0631
-            node.guess.set('subtitleLanguage', node.guess['language'],
-                           confidence=node.guess.confidence('language'))
-            del node.guess['language']
+            if 'language' in node.guess:
+                node.guess.set('subtitleLanguage', node.guess['language'],
+                               confidence=node.guess.confidence('language'))
+                del node.guess['language']
 
         # - if we matched a language in a file with a sub extension and that
         #   the group is the last group of the filename, it is probably the
