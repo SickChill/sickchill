@@ -7,7 +7,7 @@ from sickbeard.webserve import LoginHandler, LogoutHandler, KeyHandler
 from sickbeard.webapi import ApiHandler
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
-from tornado.web import Application, StaticFileHandler, HTTPError, RedirectHandler
+from tornado.web import Application, StaticFileHandler, RedirectHandler
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.routes import route
