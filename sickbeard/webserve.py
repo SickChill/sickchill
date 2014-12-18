@@ -4745,6 +4745,8 @@ class ErrorLogs(WebRoot):
                 issue = self.gh_issues.create_issue(title, message)
                 if issue:
                     ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+                    classes.ErrorViewer.clear()
+
         except Exception as e:
             logger.log(ex(e), logger.ERROR)
 
