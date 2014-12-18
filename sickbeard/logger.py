@@ -18,14 +18,16 @@
 
 from __future__ import with_statement
 import os
-
 import sys
 import logging
 import logging.handlers
 import threading
+import platform
 
 import sickbeard
 from sickbeard import classes
+from github import Github
+from pastebin import PastebinAPI
 
 # log levels
 ERROR = logging.ERROR
@@ -115,11 +117,14 @@ class Logger(object):
         message = meThread + u" :: " + msg
 
         # pass exception information if debugging enabled
-        if level == ERROR:
-            kwargs["exc_info"] = 1
-            classes.ErrorViewer.add(classes.UIError(message))
 
+        kwargs["exc_info"] = 1 if level == ERROR else 0
         self.logger.log(level, message, *args, **kwargs)
+
+        if level == ERROR:
+            classes.ErrorViewer.add(classes.UIError(message))
+            #if sickbeard.GIT_AUTOISSUES:
+            #    self.submit_errors()
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -128,6 +133,52 @@ class Logger(object):
             sys.exit(error_msg.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
         else:
             sys.exit(1)
+
+    def submit_errors(self):
+        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
+            return
+
+        title = "[APP SUBMITTED]: "
+
+        gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
+        gh_repo = 'sickrage-issues'
+
+        self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
+                                user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
+
+        pastebin_url = None
+        try:
+            if os.path.isfile(logger.logFile):
+                with ek.ek(open, logger.logFile) as f:
+                    data = f.readlines(50)
+                    pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', data)
+        except:
+            pass
+
+        try:
+            for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+                message = u"### INFO\n"
+                message += u"Python Version: **" + sys.version[:120] + "**\n"
+                message += u"Operating System: **" + platform.platform() + "**\n"
+                message += u"Branch: **" + sickbeard.BRANCH + "**\n"
+                message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
+                if pastebin_url:
+                    message += u"Pastebin Log URL: " + pastebin_url + "\n"
+                message += u"### ERROR\n"
+                message += u"```\n"
+                message += curError.message
+                message += u"```\n"
+                message += u"---\n"
+                message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
+
+                issue = self.gh_issues.create_issue(title + curError.title, message)
+                if issue:
+                    ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+                    classes.ErrorViewer.clear()
+
+        except Exception as e:
+            self.log(ex(e), logger.ERROR)
+
 
 class Wrapper(object):
     instance = Logger()
