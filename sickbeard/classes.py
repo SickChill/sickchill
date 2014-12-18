@@ -106,6 +106,12 @@ class SearchResult:
         # version
         self.version = -1
 
+        # hash
+        self.hash = ""
+
+        # content
+        self.content = ""
+
     def __str__(self):
 
         if self.provider is None:
@@ -147,10 +153,6 @@ class TorrentSearchResult(SearchResult):
     Torrent result with an URL to the torrent
     """
     resultType = "torrent"
-
-    # torrent hash
-    content = None
-    hash = None
 
 
 class AllShowsListUI:
@@ -266,15 +268,20 @@ class ErrorViewer():
     def get():
         return ErrorViewer.errors
 
+
 class UIError():
     """
     Represents an error to be displayed in the web UI.
     """
 
     def __init__(self, message):
-        try:self.title = sys.exc_info()[1].message
-        except:self.title = None
+        try:
+            self.title = sys.exc_info()[1].message
+        except:
+            self.title = None
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        try:self.exc_info = sys.exc_info()
-        except:self.exc_info = None
+        try:
+            self.exc_info = sys.exc_info()
+        except:
+            self.exc_info = None
