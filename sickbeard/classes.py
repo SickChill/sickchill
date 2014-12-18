@@ -272,7 +272,9 @@ class UIError():
     """
 
     def __init__(self, message):
-        self.title = sys.exc_info()[1].message or None
+        try:self.title = sys.exc_info()[1].message
+        except:self.title = None
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.exc_info = sys.exc_info() or None
+        try:self.exc_info = sys.exc_info()
+        except:self.exc_info = None

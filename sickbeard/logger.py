@@ -157,6 +157,9 @@ class Logger(object):
 
         try:
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+                if not curError.title:
+                    continue
+
                 message = u"### INFO\n"
                 message += u"Python Version: **" + sys.version[:120] + "**\n"
                 message += u"Operating System: **" + platform.platform() + "**\n"
