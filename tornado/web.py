@@ -2017,6 +2017,9 @@ class RedirectHandler(RequestHandler):
             (r"/oldpath", web.RedirectHandler, {"url": "/newpath"}),
         ])
     """
+    def __init__(self, *args, **kwargs):
+        super(RedirectHandler, self).__init__(*args, **kwargs)
+
     def initialize(self, url, permanent=True):
         self._url = url
         self._permanent = permanent

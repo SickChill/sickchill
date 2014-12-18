@@ -155,7 +155,7 @@ class BaseHandler(RequestHandler):
         # handle 404 http errors
         if status_code == 404:
             url = self.request.uri
-            if self.request.uri.startswith(sickbeard.WEB_ROOT):
+            if sickbeard.WEB_ROOT and self.request.uri.startswith(sickbeard.WEB_ROOT):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
 
             if url[:3] != 'api':
@@ -209,8 +209,8 @@ class WebHandler(BaseHandler):
     def get(self, route, *args, **kwargs):
         try:
             # route -> method obj
-            route = route.strip('/').replace('.', '_') or 'index'
-            method = getattr(self, route)
+            route = route.strip('/').replace('.', '_')
+            method = getattr(self, route, self.index)
 
             # process request async
             self.async_call(method, callback=self.async_done)
