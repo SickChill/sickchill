@@ -27,7 +27,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 41
+MAX_DB_VERSION = 42
 
 class MainSanityCheck(db.DBSanityCheck):
     def check(self):
@@ -37,6 +37,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_orphan_episodes()
         self.fix_unaired_episodes()
         self.fix_tvrage_show_statues()
+        self.fix_episode_statuses()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -107,7 +108,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         if not self.connection.select("PRAGMA index_info('idx_tv_episodes_showid_airdate')"):
             logger.log(u"Missing idx_tv_episodes_showid_airdate for TV Episodes table detected!, fixing...")
-            self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
+            self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid, airdate);")
 
         if not self.connection.select("PRAGMA index_info('idx_showid')"):
             logger.log(u"Missing idx_showid for TV Episodes table detected!, fixing...")
@@ -115,15 +116,15 @@ class MainSanityCheck(db.DBSanityCheck):
 
         if not self.connection.select("PRAGMA index_info('idx_status')"):
             logger.log(u"Missing idx_status for TV Episodes table detected!, fixing...")
-            self.connection.action("CREATE INDEX idx_status ON tv_episodes (status,season,episode,airdate)")
+            self.connection.action("CREATE INDEX idx_status ON tv_episodes (status, season, episode, airdate)")
 
         if not self.connection.select("PRAGMA index_info('idx_sta_epi_air')"):
             logger.log(u"Missing idx_sta_epi_air for TV Episodes table detected!, fixing...")
-            self.connection.action("CREATE INDEX idx_sta_epi_air ON tv_episodes (status,episode, airdate)")
+            self.connection.action("CREATE INDEX idx_sta_epi_air ON tv_episodes (status, episode, airdate)")
 
         if not self.connection.select("PRAGMA index_info('idx_sta_epi_sta_air')"):
             logger.log(u"Missing idx_sta_epi_sta_air for TV Episodes table detected!, fixing...")
-            self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season,episode, status, airdate)")
+            self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season, episode, status, airdate)")
 
     def fix_unaired_episodes(self):
 
@@ -163,6 +164,19 @@ class MainSanityCheck(db.DBSanityCheck):
         for old_status, new_status in status_map.items():
             self.connection.action("UPDATE tv_shows SET status = ? WHERE LOWER(status) = ?", [new_status, old_status])
 
+    def fix_episode_statuses(self):
+        sqlResults = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE status IS NULL")
+
+        for cur_ep in sqlResults:
+            logger.log(u"MALFORMED episode status detected! episode_id: " + str(cur_ep["episode_id"]) + " showid: " + str(
+                cur_ep["showid"]), logger.DEBUG)
+            logger.log(u"Fixing malformed episode status with episode_id: " + str(cur_ep["episode_id"]))
+            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
+                                   [common.UNKNOWN, cur_ep["episode_id"]])
+        else:
+            logger.log(u"No MALFORMED episode statuses, check passed")
+
+
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
     if not helpers.backupVersionedFile(db.dbFilename(), version):
@@ -187,7 +201,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)",
                 "CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)",
                 "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER,scene_season INTEGER, scene_episode INTEGER, PRIMARY KEY(indexer_id, season, episode))",
-                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer TEXT, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC);",
+                "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC);",
                 "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC);",
                 "CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id)",
                 "CREATE INDEX idx_showid ON tv_episodes (showid);",
@@ -339,7 +353,7 @@ class RenameSeasonFolders(AddSizeAndSceneNameFields):
         self.connection.action("ALTER TABLE tv_shows RENAME TO tmp_tv_shows")
         self.connection.action(
             "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, location TEXT, show_name TEXT, tvdb_id NUMERIC, network TEXT, genre TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, tvr_id NUMERIC, tvr_name TEXT, air_by_date NUMERIC, lang TEXT)")
-        sql = "INSERT INTO tv_shows(show_id, location, show_name, tvdb_id, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, tvr_id, tvr_name, air_by_date, lang) SELECT show_id, location, show_name, tvdb_id, network, genre, runtime, quality, airs, status, seasonfolders, paused, startyear, tvr_id, tvr_name, air_by_date, lang FROM tmp_tv_shows"
+        sql = "INSERT INTO tv_shows SELECT * FROM tmp_tv_shows"
         self.connection.action(sql)
 
         # flip the values to be opposite of what they were before
@@ -616,10 +630,8 @@ class ConvertTVShowsToIndexerScheme(AddSubtitlesSupport):
             self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.connection.action("ALTER TABLE tv_shows RENAME TO tmp_tv_shows")
-        self.connection.action(
-            "CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC)")
-        self.connection.action(
-            "INSERT INTO tv_shows(show_id, indexer_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_indexer, dvdorder) SELECT show_id, tvdb_id, show_name, location, network, genre, runtime, quality, airs, status, flatten_folders, paused, startyear, air_by_date, lang, subtitles, notify_list, imdb_id, last_update_tvdb, dvdorder FROM tmp_tv_shows")
+        self.connection.action("CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC)")
+        self.connection.action("INSERT INTO tv_shows SELECT * FROM tmp_tv_shows")
         self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.connection.action("CREATE UNIQUE INDEX idx_indexer_id ON tv_shows (indexer_id);")
@@ -647,7 +659,7 @@ class ConvertTVEpisodesToIndexerScheme(ConvertTVShowsToIndexerScheme):
         self.connection.action(
             "CREATE TABLE tv_episodes (episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer NUMERIC, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC)")
         self.connection.action(
-            "INSERT INTO tv_episodes(episode_id, showid, indexerid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper) SELECT episode_id, showid, tvdbid, name, season, episode, description, airdate, hasnfo, hastbn, status, location, file_size, release_name, subtitles, subtitles_searchcount, subtitles_lastsearch, is_proper FROM tmp_tv_episodes")
+            "INSERT INTO tv_episodes SELECT * FROM tmp_tv_episodes")
         self.connection.action("DROP TABLE tmp_tv_episodes")
 
         self.connection.action("CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid,airdate);")
@@ -678,7 +690,7 @@ class ConvertIMDBInfoToIndexerScheme(ConvertTVEpisodesToIndexerScheme):
         self.connection.action(
             "CREATE TABLE imdb_info (indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC)")
         self.connection.action(
-            "INSERT INTO imdb_info(indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update) SELECT tvdb_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update FROM tmp_imdb_info")
+            "INSERT INTO imdb_info SELECT * FROM tmp_imdb_info")
         self.connection.action("DROP TABLE tmp_imdb_info")
 
         self.incDBVersion()
@@ -701,7 +713,7 @@ class ConvertInfoToIndexerScheme(ConvertIMDBInfoToIndexerScheme):
         self.connection.action(
             "CREATE TABLE info (last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC)")
         self.connection.action(
-            "INSERT INTO info(last_backlog, last_indexer, last_proper_search) SELECT last_backlog, last_tvdb, last_proper_search FROM tmp_info")
+            "INSERT INTO info SELECT * FROM tmp_info")
         self.connection.action("DROP TABLE tmp_info")
 
         self.incDBVersion()
@@ -944,6 +956,21 @@ class AddDefaultEpStatusToTvShows(AddVersionToTvEpisodes):
         backupDatabase(41)
 
         logger.log(u"Adding column default_ep_status to tv_shows")
-        self.addColumn("tv_shows", "default_ep_status", "TEXT", "")
+        self.addColumn("tv_shows", "default_ep_status", "NUMERIC", "-1")
+
+        self.incDBVersion()
+
+class AlterTVShowsFieldTypes(AddDefaultEpStatusToTvShows):
+    def test(self):
+        return self.checkDBVersion() >= 42
+
+    def execute(self):
+        backupDatabase(42)
+
+        logger.log(u"Converting column indexer and default_ep_status field types to numeric")
+        self.connection.action("ALTER TABLE tv_shows RENAME TO tmp_tv_shows")
+        self.connection.action("CREATE TABLE tv_shows (show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC)")
+        self.connection.action("INSERT INTO tv_shows SELECT * FROM tmp_tv_shows")
+        self.connection.action("DROP TABLE tmp_tv_shows")
 
         self.incDBVersion()
