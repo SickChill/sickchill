@@ -68,7 +68,10 @@ class EmailNotifier:
                             1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name)
+                    try:
+                        msg = MIMEText(ep_name)
+                    except:
+                        msg = MIMEText("Episode Snatched")
 
                 msg['Subject'] = 'Snatched: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
@@ -103,7 +106,10 @@ class EmailNotifier:
                             1) + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name)
+                    try:
+                        msg = MIMEText(ep_name)
+                    except:
+                        mag = 'Episode Downloaded'
 
                 msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
@@ -138,7 +144,10 @@ class EmailNotifier:
                             1) + "</b></p>\n<p>Language: <b>" + lang + "</b></p>\n\n<footer style='margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;'>Powered by SickRage.</footer></body>",
                         'html'))
                 except:
-                    msg = MIMEText(ep_name + ": " + lang)
+                    try:
+                        msg = MIMEText(ep_name + ": " + lang)
+                    except:
+                        msg = "Episode Subtitle Downloaded"
 
                 msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
