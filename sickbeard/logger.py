@@ -26,7 +26,6 @@ import platform
 
 import sickbeard
 from sickbeard import classes
-from sickbeard.exceptions import ex
 from github import Github
 from pastebin import PastebinAPI
 
@@ -181,7 +180,7 @@ class Logger(object):
                     classes.ErrorViewer.clear()
 
         except Exception as e:
-            self.log(ex(e), logger.ERROR)
+            self.log(sickbeard.exceptions.ex(e), logger.ERROR)
 
 
 class Wrapper(object):
