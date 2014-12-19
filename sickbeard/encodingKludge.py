@@ -17,17 +17,8 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import traceback
-import re
-import sickbeard
-import six
 import chardet
-import unicodedata
-
-from string import ascii_letters, digits
-from sickbeard import logger
-from unidecode import unidecode
-
+import sickbeard
 
 def _toUnicode(x):
     try:
