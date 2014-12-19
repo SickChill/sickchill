@@ -201,7 +201,8 @@ class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
         super(WebHandler, self).__init__(*args, **kwargs)
         self.io_loop = IOLoop.current()
-        self.executor = ThreadPoolExecutor(50)
+
+    executor = ThreadPoolExecutor(50)
 
     @coroutine
     @asynchronous
