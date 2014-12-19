@@ -18,6 +18,7 @@
 
 from __future__ import with_statement
 import os
+import re
 import sys
 import logging
 import logging.handlers
@@ -25,8 +26,7 @@ import threading
 import platform
 
 import sickbeard
-from sickbeard import classes
-from sickbeard.encodingKludge import ek
+from sickbeard import classes, encodingKludge as ek
 from github import Github
 from pastebin import PastebinAPI
 
@@ -147,13 +147,10 @@ class Logger(object):
         self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
                                 user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
 
-        pastebin_url = None
         try:
             if self.logFile and os.path.isfile(self.logFile):
-                with ek(open, self.logFile) as f:
-                    data = f.readlines()
-                    data = "".join(data[len(data) - 100:])
-                    pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', data)
+                with ek.ek(open, self.logFile) as f:
+                    log_data = f.readlines()
         except Exception as e:
             pass
 
@@ -161,6 +158,19 @@ class Logger(object):
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 if not curError.title:
                     continue
+
+                regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
+
+                pastebin_url = None
+                for i, x in enumerate(reversed(log_data)):
+                    x = ek.ss(x)
+                    match = re.match(regex, x)
+                    if match:
+                        level = match.group(2)
+                        if reverseNames[level] >= ERROR:
+                            paste_data = "".join(log_data[len(log_data) - i - 50:])
+                            pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', paste_data)
+                            break
 
                 message = u"### INFO\n"
                 message += u"Python Version: **" + sys.version[:120] + "**\n"
@@ -178,11 +188,14 @@ class Logger(object):
 
                 issue = self.gh_issues.create_issue(title + curError.title, message)
                 if issue:
-                    ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-                    classes.ErrorViewer.clear()
+                    self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
+                    if not sickbeard.GIT_AUTOISSUES:
+                        ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+
+                    classes.ErrorViewer.clear()
         except Exception as e:
-            self.log(sickbeard.exceptions.ex(e), logger.ERROR)
+            pass
 
 
 class Wrapper(object):

@@ -159,7 +159,7 @@ class BaseHandler(RequestHandler):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
 
             if url[:3] != 'api':
-                return self.redirect(url)
+                return self.redirect('/')
             else:
                 self.finish('Wrong API key used')
 
@@ -201,7 +201,8 @@ class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
         super(WebHandler, self).__init__(*args, **kwargs)
         self.io_loop = IOLoop.current()
-        self.executor = ThreadPoolExecutor(50)
+
+    executor = ThreadPoolExecutor(50)
 
     @coroutine
     @asynchronous
@@ -209,13 +210,13 @@ class WebHandler(BaseHandler):
     def get(self, route, *args, **kwargs):
         try:
             # route -> method obj
-            route = route.strip('/').replace('.', '_')
-            method = getattr(self, route, self.index)
+            route = route.strip('/').replace('.', '_') or 'index'
+            method = getattr(self, route)
 
             # process request async
             self.async_call(method, callback=self.async_done)
         except:
-            logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.ERROR)
+            logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.DEBUG)
             raise HTTPError(404)
 
     @run_on_executor
@@ -242,14 +243,12 @@ class WebHandler(BaseHandler):
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
             raise
 
+
     # post uses get method
     post = get
 
 
 class LoginHandler(BaseHandler):
-    def __init__(self, *args, **kwargs):
-        super(LoginHandler, self).__init__(*args, **kwargs)
-
     def get(self, *args, **kwargs):
         if self.get_current_user():
             self.redirect('/home/')
@@ -276,15 +275,11 @@ class LoginHandler(BaseHandler):
 
 
 class LogoutHandler(BaseHandler):
-    def __init__(self, *args, **kwargs):
-        super(LogoutHandler, self).__init__(*args, **kwargs)
-
     def get(self, *args, **kwargs):
         self.clear_cookie("user")
         self.redirect('/login/')
 
-
-class KeyHandler(BaseHandler):
+class KeyHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(KeyHandler, self).__init__(*args, **kwargs)
 
@@ -1818,7 +1813,7 @@ class Home(WebRoot):
         # Finished Searches
         searchstatus = 'finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
-            if not int(searchThread.show.indexerid) == int(show or 0):
+            if not str(searchThread.show.indexerid) == show:
                 continue
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
