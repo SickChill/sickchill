@@ -178,11 +178,14 @@ class Logger(object):
 
                 issue = self.gh_issues.create_issue(title + curError.title, message)
                 if issue:
-                    ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-                    classes.ErrorViewer.clear()
+                    self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
+                    if not sickbeard.GIT_AUTOISSUES:
+                        ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+
+                    classes.ErrorViewer.clear()
         except Exception as e:
-            self.log(sickbeard.exceptions.ex(e), logger.ERROR)
+            pass
 
 
 class Wrapper(object):
