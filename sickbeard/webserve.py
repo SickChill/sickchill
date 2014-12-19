@@ -1777,9 +1777,6 @@ class Home(WebRoot):
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
     def getManualSearchStatus(self, show=None, season=None):
-
-        episodes = []
-
         def getEpisodes(searchThread, searchstatus):
             results = []
 
@@ -1801,33 +1798,36 @@ class Home(WebRoot):
 
             return results
 
+        episodes = []
+
         # Queued Searches
+        searchstatus = 'queued'
         for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
-            episodes += getEpisodes(searchThread, 'queued')
+            episodes += getEpisodes(searchThread, searchstatus)
 
         # Running Searches
+        searchstatus = 'searching'
         if (sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress()):
             searchThread = sickbeard.searchQueueScheduler.action.currentItem
+
             if searchThread.success:
                 searchstatus = 'finished'
-            else:
-                searchstatus = 'searching'
+
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Finished Searches
+        searchstatus = 'finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
+            if not int(searchThread.show.indexerid) == int(show or 0):
+                continue
+
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
-                if str(searchThread.show.indexerid) == show and not [x for x in episodes if x[
-                    'episodeindexid'] == searchThread.segment.indexerid]:
-                    searchstatus = 'finished'
+                if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
                 ### These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segement/episodes
-                if str(searchThread.show.indexerid) == show:
-                    for epObj in searchThread.segment:
-                        if not [x for x in episodes if x['episodeindexid'] == epObj.indexerid]:
-                            searchstatus = 'finished'
-                            episodes += getEpisodes(searchThread, searchstatus)
+                if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
+                    episodes += getEpisodes(searchThread, searchstatus)
 
         return json.dumps({'show': show, 'episodes': episodes})
 
