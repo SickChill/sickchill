@@ -118,6 +118,7 @@ GIT_REPO = 'SickRage'
 GIT_USERNAME = None
 GIT_PASSWORD = None
 GIT_PATH = None
+GIT_AUTOISSUES = False
 
 INIT_LOCK = Lock()
 started = False
@@ -524,7 +525,8 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, gh
+            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
+            GIT_AUTOISSUES, gh
 
         if __INITIALIZED__:
             return False
@@ -551,6 +553,16 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
+        GIT_AUTOISSUES = bool(check_setting_int(CFG, 'General', 'git_autoissues', 0))
+
+        # git login info
+        GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
+        GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', '', censor_log=True)
+
+        # github api
+        try:gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+        except:gh = None
+
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
@@ -564,16 +576,6 @@ def initialize(consoleLogging=True):
 
         # init logging
         logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG)
-
-        # git login info
-        GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
-        GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', '', censor_log=True)
-
-        # github api
-        try:
-            gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except:
-            gh = None
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
@@ -1409,6 +1411,7 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     new_config['General'] = {}
+    new_config['General']['git_autoissues'] = int(GIT_AUTOISSUES)
     new_config['General']['git_username'] = GIT_USERNAME
     new_config['General']['git_password'] = GIT_PASSWORD
     new_config['General']['git_reset'] = int(GIT_RESET)

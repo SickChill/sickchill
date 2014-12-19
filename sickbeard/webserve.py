@@ -24,11 +24,8 @@ import time
 import urllib
 import re
 import datetime
-import sys
-import platform
 
 import sickbeard
-from github import Github
 from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import history, notifiers, processTV
@@ -158,7 +155,7 @@ class BaseHandler(RequestHandler):
         # handle 404 http errors
         if status_code == 404:
             url = self.request.uri
-            if self.request.uri.startswith(sickbeard.WEB_ROOT):
+            if sickbeard.WEB_ROOT and self.request.uri.startswith(sickbeard.WEB_ROOT):
                 url = url[len(sickbeard.WEB_ROOT) + 1:]
 
             if url[:3] != 'api':
@@ -212,8 +209,8 @@ class WebHandler(BaseHandler):
     def get(self, route, *args, **kwargs):
         try:
             # route -> method obj
-            route = route.strip('/').replace('.', '_') or 'index'
-            method = getattr(self, route)
+            route = route.strip('/').replace('.', '_')
+            method = getattr(self, route, self.index)
 
             # process request async
             self.async_call(method, callback=self.async_done)
@@ -3440,7 +3437,7 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None,
                     fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, play_videos=None, rootDir=None, theme_name=None,
-                    git_reset=None, git_username=None, git_password=None):
+                    git_reset=None, git_username=None, git_password=None, git_autoissues=None):
 
         results = []
 
@@ -3465,6 +3462,7 @@ class ConfigGeneral(Config):
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
         sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        sickbeard.GIT_AUTOISSUES = config.checkbox_to_value(git_autoissues)
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
         sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
@@ -4643,7 +4641,7 @@ class ErrorLogs(WebRoot):
     def ErrorLogsMenu(self):
         menu = [
             {'title': 'Clear Errors', 'path': 'errorlogs/clearerrors/'},
-            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveGitHub},
+            {'title': 'Submit Errors', 'path': 'errorlogs/submit_errors/', 'requires': self.haveErrors},
         ]
 
         return menu
@@ -4655,8 +4653,8 @@ class ErrorLogs(WebRoot):
 
         return t.respond()
 
-    def haveGitHub(self):
-        if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+    def haveErrors(self):
+        if len(classes.ErrorViewer.errors) > 0:
             return True
 
     def clearerrors(self):
@@ -4717,36 +4715,9 @@ class ErrorLogs(WebRoot):
         return t.respond()
 
     def submit_errors(self):
-        title = "[APP SUBMITTED]: "
-
-        gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
-        gh_repo = 'sickrage-issues'
-
-        self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
-                                user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
-
-        try:
-            for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
-                title = title + curError.title
-
-                message = u"### INFO\n"
-                message += u"Python Version: **" + sys.version[:120] + "**\n"
-                message += u"Operating System: **" + platform.platform() + "**\n"
-                message += u"Branch: **" + sickbeard.BRANCH + "**\n"
-                message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
-                message += u"### ERROR\n"
-                message += u"```\n"
-                message += curError.message
-                message += u"```\n"
-                message += u"---\n"
-                message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
-
-                issue = self.gh_issues.create_issue(title, message)
-                if issue:
-                    ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-                    classes.ErrorViewer.clear()
-
-        except Exception as e:
-            logger.log(ex(e), logger.ERROR)
+        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
+            logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
+        else:
+            logger.submit_errors()
 
         return self.redirect("/errorlogs/")

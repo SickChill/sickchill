@@ -178,7 +178,7 @@ class GenericProvider:
                 if self._verify_download(filename):
                     return True
 
-        logger.log(u"Failed to download result", logger.ERROR)
+        logger.log(u"Failed to download result", logger.WARNING)
         return False
 
     def _verify_download(self, file_name=None):

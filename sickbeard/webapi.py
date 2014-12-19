@@ -335,7 +335,7 @@ class ApiCall(ApiHandler):
         if required:
             try:
                 self._missing
-                self._requiredParams += [key]
+                self._requiredParams.append(key)
             except AttributeError:
                 self._missing = []
                 self._requiredParams = {key: {"allowedValues": allowedValues,

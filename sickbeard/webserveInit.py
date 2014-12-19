@@ -26,7 +26,7 @@ class SRWebServer(threading.Thread):
         self.options.setdefault('log_dir', None)
         self.options.setdefault('username', '')
         self.options.setdefault('password', '')
-        self.options.setdefault('web_root', None)
+        self.options.setdefault('web_root', '/')
         assert isinstance(self.options['port'], int)
         assert 'data_root' in self.options
 
