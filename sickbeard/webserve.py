@@ -231,7 +231,8 @@ class WebHandler(BaseHandler):
                 callback(result)
             return result
         except:
-            logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.DEBUG)
+            logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
+            raise
 
     def async_done(self, results):
         try:
@@ -240,6 +241,7 @@ class WebHandler(BaseHandler):
         except:
             logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
             raise
+
 
     # post uses get method
     post = get
