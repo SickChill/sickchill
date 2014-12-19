@@ -1812,7 +1812,7 @@ class Home(WebRoot):
         # Finished Searches
         searchstatus = 'finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
-            if not int(searchThread.show.indexerid) == int(show or 0):
+            if not str(searchThread.show.indexerid) == show:
                 continue
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
