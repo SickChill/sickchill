@@ -148,8 +148,8 @@ class Logger(object):
 
         pastebin_url = None
         try:
-            if os.path.isfile(logger.logFile):
-                with ek.ek(open, logger.logFile) as f:
+            if self.logFile and os.path.isfile(self.logFile):
+                with ek.ek(open, self.logFile) as f:
                     data = f.readlines(50)
                     pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', data)
         except:
