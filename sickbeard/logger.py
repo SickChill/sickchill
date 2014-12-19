@@ -26,6 +26,7 @@ import platform
 
 import sickbeard
 from sickbeard import classes
+from sickbeard.encodingKludge import ek
 from github import Github
 from pastebin import PastebinAPI
 
@@ -149,10 +150,11 @@ class Logger(object):
         pastebin_url = None
         try:
             if self.logFile and os.path.isfile(self.logFile):
-                with ek.ek(open, self.logFile) as f:
-                    data = f.readlines(50)
+                with ek(open, self.logFile) as f:
+                    data = f.readlines()
+                    data = "".join(data[len(data) - 100:])
                     pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', data)
-        except:
+        except Exception as e:
             pass
 
         try:
