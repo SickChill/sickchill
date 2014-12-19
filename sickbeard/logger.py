@@ -26,6 +26,7 @@ import platform
 
 import sickbeard
 from sickbeard import classes
+from sickbeard.exceptions import ex
 from github import Github
 from pastebin import PastebinAPI
 
