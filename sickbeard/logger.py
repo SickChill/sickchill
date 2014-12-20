@@ -161,13 +161,14 @@ class Logger(object):
 
                 regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
 
+                maxlines = 50
                 pastebin_url = None
                 for i, x in enumerate(reversed(log_data)):
                     x = ek.ss(x)
                     match = re.match(regex, x)
                     if match:
                         level = match.group(2)
-                        if reverseNames[level] >= ERROR:
+                        if reverseNames[level] == ERROR:
                             paste_data = "".join(log_data[len(log_data) - i - 50:])
                             pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', paste_data)
                             break
@@ -192,10 +193,8 @@ class Logger(object):
 
                     if not sickbeard.GIT_AUTOISSUES:
                         ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-
-                    classes.ErrorViewer.clear()
-        except Exception as e:
-            pass
+        finally:
+            classes.ErrorViewer.clear()
 
 
 class Wrapper(object):
