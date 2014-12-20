@@ -1,35 +1,28 @@
 # This file is part of SickRage.
-#                                                                                                                                        
+#
 # SickRage is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by                                                                   
-# the Free Software Foundation, either version 3 of the License, or                                                                      
-# (at your option) any later version.                                                                                                    
-#                                                                                                                                        
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
 # SickRage is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of                                                                         
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                                                          
-#  GNU General Public License for more details.                                                                                          
-#                                                                                                                                        
-# You should have received a copy of the GNU General Public License                                                                      
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
-import time
 import datetime
 import urllib
-import urlparse
-import sys
-import generic
-import sickbeard
 
-from lib import requests
-from lib.requests import exceptions
+import sickbeard
+import generic
+
 from sickbeard import classes
-from sickbeard import logger, tvcache, exceptions
-from sickbeard import helpers
-from sickbeard import clients
-from sickbeard.common import cpu_presets
-from sickbeard.exceptions import ex, AuthException
+from sickbeard import logger, tvcache
+from sickbeard.exceptions import AuthException
+
 try:
     import json
 except ImportError:
@@ -50,10 +43,13 @@ class HDBitsProvider(generic.TorrentProvider):
 
         self.cache = HDBitsCache(self)
 
-        self.url = 'https://hdbits.org'
-        self.search_url = 'https://hdbits.org/api/torrents'
-        self.rss_url = 'https://hdbits.org/api/torrents'
-        self.download_url = 'https://hdbits.org/download.php?'
+        self.urls = {'base_url': 'https://hdbits.org',
+                     'search': 'https://hdbits.org/api/torrents',
+                     'rss': 'https://hdbits.org/api/torrents',
+                     'download': 'https://hdbits.org/download.php?'
+        }
+
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled
@@ -91,7 +87,7 @@ class HDBitsProvider(generic.TorrentProvider):
             title = u'' + title
             title = title.replace(' ', '.')
 
-        url = self.download_url + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return (title, url)
 
@@ -100,9 +96,10 @@ class HDBitsProvider(generic.TorrentProvider):
 
         self._checkAuth()
 
-        logger.log(u"Search url: " + self.search_url + " search_params: " + search_params, logger.DEBUG)
+        logger.log(u"Search url: " + self.urls['search'] + " search_params: " + search_params,
+                   logger.DEBUG)
 
-        parsedJSON = self.getURL(self.search_url, post_data=search_params, json=True)
+        parsedJSON = self.getURL(self.urls['search'], post_data=search_params, json=True)
         if not parsedJSON:
             return []
 
@@ -201,15 +198,14 @@ class HDBitsCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll HDBits every 15 minutes max                                                                                          
+        # only poll HDBits every 15 minutes max
         self.minTime = 15
 
     def _getRSSData(self):
         results = []
 
         try:
-            parsedJSON = self.provider.getURL(self.provider.rss_url, post_data=self.provider._make_post_data_JSON(),
-                                              json=True)
+            parsedJSON = self.provider.getURL(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), json=True)
 
             if self.provider._checkAuthFromData(parsedJSON):
                 results = parsedJSON['data']
@@ -218,4 +214,5 @@ class HDBitsCache(tvcache.TVCache):
 
         return {'entries': results}
 
-provider = HDBitsProvider()                                                                                                              
+
+provider = HDBitsProvider()

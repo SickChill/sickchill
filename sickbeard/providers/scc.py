@@ -40,15 +40,6 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class SCCProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://sceneaccess.eu',
-            'login': 'https://sceneaccess.eu/login',
-            'detail': 'https://www.sceneaccess.eu/details?id=%s',
-            'search': 'https://sceneaccess.eu/browse?search=%s&method=1&%s',
-            'nonscene': 'https://sceneaccess.eu/nonscene?search=%s&method=1&c44=44&c45=44',
-            'foreign': 'https://sceneaccess.eu/foreign?search=%s&method=1&c34=34&c33=33',
-            'archive': 'https://sceneaccess.eu/archive?search=%s&method=1&c26=26',
-            'download': 'https://www.sceneaccess.eu/%s',
-    }
 
     def __init__(self):
 
@@ -64,6 +55,16 @@ class SCCProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = SCCCache(self)
+
+        self.urls = {'base_url': 'https://sceneaccess.eu',
+                'login': 'https://sceneaccess.eu/login',
+                'detail': 'https://www.sceneaccess.eu/details?id=%s',
+                'search': 'https://sceneaccess.eu/browse?search=%s&method=1&%s',
+                'nonscene': 'https://sceneaccess.eu/nonscene?search=%s&method=1&c44=44&c45=44',
+                'foreign': 'https://sceneaccess.eu/foreign?search=%s&method=1&c34=34&c33=33',
+                'archive': 'https://sceneaccess.eu/archive?search=%s&method=1&c26=26',
+                'download': 'https://www.sceneaccess.eu/%s',
+                }
 
         self.url = self.urls['base_url']
 

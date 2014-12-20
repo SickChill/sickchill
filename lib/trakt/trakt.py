@@ -13,17 +13,15 @@ class TraktAPI():
         self.timeout = timeout
 
     def validateAccount(self):
-        return self.traktRequest("account/test/%APIKEY%")
+        return self.traktRequest("account/test/%APIKEY%", method='POST')
 
-    def traktRequest(self, url, data=None):
+    def traktRequest(self, url, data=None, method='GET'):
         base_url = self.protocol + 'api.trakt.tv/%s' % url.replace('%APIKEY%', self.apikey).replace('%USER%',
                                                                                                     self.username)
 
         # request the URL from trakt and parse the result as json
         try:
-            resp = requests.get(base_url,
-                                auth=HTTPBasicAuth(self.username, self.password),
-                                data=data if data else [])
+            resp = requests.request(method, base_url, auth=HTTPBasicAuth(self.username, self.password), data=data if data else [])
 
             # check for http errors and raise if any are present
             resp.raise_for_status()

@@ -65,11 +65,11 @@ class TraktNotifier:
                     data[trakt_id] = ep_obj.show.indexerid
 
                 # update library
-                trakt_api.traktRequest("show/episode/library/%APIKEY%", data)
+                trakt_api.traktRequest("show/episode/library/%APIKEY%", data, method='POST')
 
                 # remove from watchlist
                 if sickbeard.TRAKT_REMOVE_WATCHLIST:
-                    trakt_api.traktRequest("show/episode/unwatchlist/%APIKEY%", data)
+                    trakt_api.traktRequest("show/episode/unwatchlist/%APIKEY%", data, method='POST')
 
                 if sickbeard.TRAKT_REMOVE_SERIESLIST:
                     data = {
@@ -84,7 +84,7 @@ class TraktNotifier:
                     if trakt_id == 'tvdb_id':
                         data['shows'][0][trakt_id] = ep_obj.show.indexerid
 
-                    trakt_api.traktRequest("show/unwatchlist/%APIKEY%", data)
+                    trakt_api.traktRequest("show/unwatchlist/%APIKEY%", data, method='POST')
 
                     # Remove all episodes from episode watchlist
                     # Start by getting all episodes in the watchlist
@@ -105,7 +105,7 @@ class TraktNotifier:
                                     ep = {'season': episodes['season'], 'episode': episodes['number']}
                                     data_show['episodes'].append(ep)
 
-                                trakt_api.traktRequest("show/episode/unwatchlist/%APIKEY%", data_show)
+                                trakt_api.traktRequest("show/episode/unwatchlist/%APIKEY%", data_show, method='POST')
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 

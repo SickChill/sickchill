@@ -45,7 +45,7 @@ class RSSFeeds:
 
         try:
             fc = Cache(self.rssDB)
-            resp = fc.fetch(url, False, False, request_headers)
+            resp = fc.fetch(url, False, False, request_headers=request_headers)
 
             for item in items:
                 try:

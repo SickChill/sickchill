@@ -818,42 +818,8 @@ def md5_for_file(filename, block_size=2 ** 16):
 
 
 def get_lan_ip():
-    """
-    Simple function to get LAN localhost_ip
-    http://stackoverflow.com/questions/11735821/python-get-localhost-ip
-    """
-
-    if os.name != "nt":
-        import fcntl
-        import struct
-
-        def get_interface_ip(ifname):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s',
-                                                                                ifname[:15]))[20:24])
-
-    ip = socket.gethostbyname(socket.gethostname())
-    if ip.startswith("127.") and os.name != "nt":
-        interfaces = [
-            "eth0",
-            "eth1",
-            "eth2",
-            "wlan0",
-            "wlan1",
-            "wifi0",
-            "ath0",
-            "ath1",
-            "ppp0",
-        ]
-        for ifname in interfaces:
-            try:
-                ip = get_interface_ip(ifname)
-                print ifname, ip
-                break
-            except IOError:
-                pass
-    return ip
-
+    try:return [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][0]
+    except:return socket.gethostname()
 
 def check_url(url):
     """
@@ -1154,7 +1120,7 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
+def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1164,10 +1130,8 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
 
     # request session headers
-    req_headers = {'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'}
-    if headers:
-        req_headers.update(headers)
-    session.headers.update(req_headers)
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session.headers.update(headers)
 
     # request session ssl verify
     session.verify = False
@@ -1176,11 +1140,6 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     session.params = params
 
     try:
-        # Remove double-slashes from url
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-        url = urlparse.urlunparse(parsed)
-
         # request session proxies
         if sickbeard.PROXY_SETTING:
             logger.log("Using proxy for url: " + url, logger.DEBUG)

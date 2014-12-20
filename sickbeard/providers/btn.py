@@ -47,7 +47,10 @@ class BTNProvider(generic.TorrentProvider):
 
         self.cache = BTNCache(self)
 
-        self.url = "http://api.btnapps.net"
+        self.urls = {'base_url': "http://api.btnapps.net"}
+
+
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled

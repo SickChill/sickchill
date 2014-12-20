@@ -39,12 +39,6 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentBytesProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://www.torrentbytes.net',
-            'login': 'https://www.torrentbytes.net/takelogin.php',
-            'detail': 'https://www.torrentbytes.net/details.php?id=%s',
-            'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
-            'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s',
-    }
 
     def __init__(self):
 
@@ -60,6 +54,13 @@ class TorrentBytesProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = TorrentBytesCache(self)
+
+        self.urls = {'base_url': 'https://www.torrentbytes.net',
+                'login': 'https://www.torrentbytes.net/takelogin.php',
+                'detail': 'https://www.torrentbytes.net/details.php?id=%s',
+                'search': 'https://www.torrentbytes.net/browse.php?search=%s%s',
+                'download': 'https://www.torrentbytes.net/download.php?id=%s&name=%s',
+                }
 
         self.url = self.urls['base_url']
 

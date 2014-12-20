@@ -40,11 +40,6 @@ from sickbeard.exceptions import ex
 
 
 class T411Provider(generic.TorrentProvider):
-    urls = {'base_url': 'http://www.t411.me/',
-            'search': 'http://www.t411.me/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
-            'login_page': 'http://www.t411.me/users/login/',
-            'download': 'http://www.t411.me/torrents/download/?id=%s',
-    }
 
     def __init__(self):
         generic.TorrentProvider.__init__(self, "T411")
@@ -56,6 +51,13 @@ class T411Provider(generic.TorrentProvider):
         self.ratio = None
 
         self.cache = T411Cache(self)
+
+        self.urls = {'base_url': 'http://www.t411.me/',
+                'search': 'http://www.t411.me/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
+                'login_page': 'http://www.t411.me/users/login/',
+                'download': 'http://www.t411.me/torrents/download/?id=%s',
+                }
+
         self.url = self.urls['base_url']
 
         self.subcategories = [637, 455, 433]

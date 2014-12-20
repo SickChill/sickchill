@@ -17,8 +17,9 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import generic
+
 import sickbeard
+import generic
 
 from sickbeard import tvcache
 from sickbeard import helpers
@@ -46,7 +47,10 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
         self.username = None
         self.api_key = None
         self.cache = OmgwtfnzbsCache(self)
-        self.url = 'https://omgwtfnzbs.org/'
+
+        self.urls = {'base_url': 'https://omgwtfnzbs.org/'}
+        self.url = self.urls['base_url']
+
         self.supportsBacklog = True
 
     def isEnabled(self):

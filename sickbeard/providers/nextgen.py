@@ -42,13 +42,6 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class NextGenProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://nxtgn.org/',
-            'search': 'https://nxtgn.org/browse.php?search=%s&cat=0&incldead=0&modes=%s',
-            'login_page': 'https://nxtgn.org/login.php',
-            'detail': 'https://nxtgn.org/details.php?id=%s',
-            'download': 'https://nxtgn.org/download.php?id=%s',
-            'takelogin': 'https://nxtgn.org/takelogin.php?csrf=',
-    }
 
     def __init__(self):
 
@@ -62,6 +55,14 @@ class NextGenProvider(generic.TorrentProvider):
         self.ratio = None
 
         self.cache = NextGenCache(self)
+
+        self.urls = {'base_url': 'https://nxtgn.org/',
+                'search': 'https://nxtgn.org/browse.php?search=%s&cat=0&incldead=0&modes=%s',
+                'login_page': 'https://nxtgn.org/login.php',
+                'detail': 'https://nxtgn.org/details.php?id=%s',
+                'download': 'https://nxtgn.org/download.php?id=%s',
+                'takelogin': 'https://nxtgn.org/takelogin.php?csrf=',
+                }
 
         self.url = self.urls['base_url']
 

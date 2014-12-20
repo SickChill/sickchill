@@ -90,7 +90,7 @@ class TraktChecker():
 
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
             try:
-                self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data)
+                self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data, method='POST')
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 pass
@@ -114,7 +114,7 @@ class TraktChecker():
             logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
 
             try:
-                self.trakt_api.traktRequest("show/library/%APIKEY%", data)
+                self.trakt_api.traktRequest("show/library/%APIKEY%", data, method='POST')
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 return

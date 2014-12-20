@@ -30,46 +30,55 @@ __all__ = ['Guess', 'Language',
 # it will then always be available
 # with code from http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/
 import sys
+
 if sys.version_info[0] >= 3:
     PY3 = True
     unicode_text_type = str
     native_text_type = str
     base_text_type = str
+
     def u(x):
         return str(x)
+
     def s(x):
         return x
+
     class UnicodeMixin(object):
         __str__ = lambda x: x.__unicode__()
+
     import binascii
+
     def to_hex(x):
         return binascii.hexlify(x).decode('utf-8')
 
 else:
     PY3 = False
-    __all__ = [ str(s) for s in __all__ ] # fix imports for python2
+    __all__ = [str(s) for s in __all__]  # fix imports for python2
     unicode_text_type = unicode
     native_text_type = str
     base_text_type = basestring
+
     def u(x):
         if isinstance(x, str):
             return x.decode('utf-8')
         return unicode(x)
+
     def s(x):
         if isinstance(x, unicode):
             return x.encode('utf-8')
         if isinstance(x, list):
-            return [ s(y) for y in x ]
+            return [s(y) for y in x]
         if isinstance(x, tuple):
             return tuple(s(y) for y in x)
         if isinstance(x, dict):
             return dict((s(key), s(value)) for key, value in x.items())
         return x
+
     class UnicodeMixin(object):
         __str__ = lambda x: unicode(x).encode('utf-8')
+
     def to_hex(x):
         return x.encode('hex')
-
 
 from guessit.guess import Guess, merge_all
 from guessit.language import Language
@@ -78,7 +87,6 @@ from guessit.textutils import clean_string
 import logging
 
 log = logging.getLogger(__name__)
-
 
 
 class NullHandler(logging.Handler):
@@ -112,7 +120,6 @@ def _guess_filename(filename, filetype):
         mtree = IterativeMatcher(filename, filetype=filetype,
                                  opts=['skip_first_year'])
 
-
     m = mtree.matched()
 
     if 'language' not in m and 'subtitleLanguage' not in m:
@@ -122,7 +129,6 @@ def _guess_filename(filename, filetype):
     mtree2 = IterativeMatcher(filename, filetype=filetype,
                               opts=['nolanguage', 'nocountry'])
     m2 = mtree2.matched()
-
 
     if m.get('title') is None:
         return m
@@ -156,9 +162,9 @@ def _guess_filename(filename, filetype):
         # if filetype is subtitle and the language appears last, just before
         # the extension, then it is likely a subtitle language
         parts = clean_string(title.root.value).split()
-        if (m['type'] in ['moviesubtitle', 'episodesubtitle'] and
-            parts.index(lang.value) == len(parts) - 2):
-            return m
+        if (m['type'] in ['moviesubtitle', 'episodesubtitle']):
+            if lang.value in parts and (parts.index(lang.value) == len(parts) - 2):
+                return m
 
         # if the language was in the middle of the other potential title,
         # keep the other title (eg: The Italian Job), except if it is at the
@@ -176,7 +182,6 @@ def _guess_filename(filename, filetype):
             return m
 
         return warning('Not sure of the title because of the language position')
-
 
     return m
 
@@ -206,6 +211,7 @@ def guess_file_info(filename, filetype, info=None):
 
         elif infotype == 'hash_mpc':
             from guessit.hash_mpc import hash_file
+
             try:
                 result.append(Guess({'hash_mpc': hash_file(filename)},
                                     confidence=1.0))
@@ -214,6 +220,7 @@ def guess_file_info(filename, filetype, info=None):
 
         elif infotype == 'hash_ed2k':
             from guessit.hash_ed2k import hash_file
+
             try:
                 result.append(Guess({'hash_ed2k': hash_file(filename)},
                                     confidence=1.0))
@@ -222,6 +229,7 @@ def guess_file_info(filename, filetype, info=None):
 
         elif infotype.startswith('hash_'):
             import hashlib
+
             hashname = infotype[5:]
             try:
                 hasher = getattr(hashlib, hashname)()
@@ -258,7 +266,6 @@ def guess_file_info(filename, filetype, info=None):
     # if country is in the guessed properties, make it part of the filename
     if 'series' in result and 'country' in result:
         result['series'] += ' (%s)' % result['country'].alpha2.upper()
-
 
     return result
 

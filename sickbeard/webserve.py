@@ -2204,7 +2204,7 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
-            recommendedlist = trakt_api.traktRequest("recommendations/shows.json/%APIKEY%")
+            recommendedlist = trakt_api.traktRequest("recommendations/shows.json/%APIKEY%", method='POST')
 
             if recommendedlist:
                 indexers = ['tvdb_id', 'tvrage_id']

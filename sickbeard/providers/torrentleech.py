@@ -20,8 +20,10 @@ import re
 import traceback
 import datetime
 import urlparse
+
 import sickbeard
 import generic
+
 from sickbeard.common import Quality, cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
@@ -40,13 +42,6 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentLeechProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://torrentleech.org/',
-            'login': 'https://torrentleech.org/user/account/login/',
-            'detail': 'https://torrentleech.org/torrent/%s',
-            'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
-            'download': 'https://torrentleech.org%s',
-            'index': 'https://torrentleech.org/torrents/browse/index/categories/%s',
-    }
 
     def __init__(self):
 
@@ -62,6 +57,14 @@ class TorrentLeechProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = TorrentLeechCache(self)
+
+        self.urls = {'base_url': 'https://torrentleech.org/',
+                'login': 'https://torrentleech.org/user/account/login/',
+                'detail': 'https://torrentleech.org/torrent/%s',
+                'search': 'https://torrentleech.org/torrents/browse/index/query/%s/categories/%s',
+                'download': 'https://torrentleech.org%s',
+                'index': 'https://torrentleech.org/torrents/browse/index/categories/%s',
+                }
 
         self.url = self.urls['base_url']
 
@@ -84,7 +87,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                         'password': self.password,
                         'remember_me': 'on',
                         'login': 'submit',
-        }
+                        }
 
         self.session = requests.Session()
 

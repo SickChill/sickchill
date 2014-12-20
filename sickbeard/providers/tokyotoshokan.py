@@ -44,7 +44,8 @@ class TokyoToshokanProvider(generic.TorrentProvider):
 
         self.cache = TokyoToshokanCache(self)
 
-        self.url = 'http://tokyotosho.info/'
+        self.urls = {'base_url': 'http://tokyotosho.info/'}
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled

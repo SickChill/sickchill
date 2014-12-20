@@ -79,7 +79,6 @@ class CacheDBConnection(db.DBConnection):
 
 class TVCache():
     def __init__(self, provider):
-
         self.provider = provider
         self.providerID = self.provider.getID()
         self.providerDB = None
@@ -139,8 +138,9 @@ class TVCache():
             logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
-    def getRSSFeed(self, url, post_data=None, request_headers=None, items=[]):
-        return RSSFeeds(self.providerID).getFeed(url, post_data, request_headers, items)
+    def getRSSFeed(self, url, post_data=None, items=[]):
+        self.provider.headers.update({'Referer': self.provider.proxy.getProxyURL()})
+        return RSSFeeds(self.providerID).getFeed(self.provider.proxy._buildURL(url), post_data, self.provider.headers, items)
 
     def _translateTitle(self, title):
         return u'' + title.replace(' ', '.')
