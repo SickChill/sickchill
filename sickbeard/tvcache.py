@@ -139,8 +139,8 @@ class TVCache():
             logger.log(traceback.format_exc(), logger.DEBUG)
 
     def getRSSFeed(self, url, post_data=None, items=[]):
-        referrer = self.provider.proxy.getProxyURL()
-        return RSSFeeds(self.providerID).getFeed(self.provider.proxy._buildURL(url), post_data, self.provider.headers, referrer, items)
+        self.provider.headers.update({'Referer': self.provider.proxy.getProxyURL()})
+        return RSSFeeds(self.providerID).getFeed(self.provider.proxy._buildURL(url), post_data, self.provider.headers, items)
 
     def _translateTitle(self, title):
         return u'' + title.replace(' ', '.')
