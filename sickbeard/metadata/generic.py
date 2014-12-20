@@ -991,7 +991,7 @@ class GenericMetadata():
             search = tmdb.Search()
             for show_name in set(allPossibleShowNames(show)):
                 for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})['results']:
-                    if result[types[type]]:
+                    if types[type] and getattr(result, types[type]):
                         return "{0}{1}{2}".format(base_url, max_size, result[types[type]])
 
         except Exception as e:
