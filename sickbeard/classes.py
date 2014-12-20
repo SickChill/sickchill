@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
+import traceback
 
 import sickbeard
 
@@ -275,13 +276,6 @@ class UIError():
     """
 
     def __init__(self, message):
-        try:
-            self.title = sys.exc_info()[1].message
-        except:
-            self.title = None
+        self.title = sys.exc_info()[-2]
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        try:
-            self.exc_info = sys.exc_info()
-        except:
-            self.exc_info = None

@@ -25,6 +25,7 @@ import sqlite3
 
 import sys
 import os.path
+from configobj import ConfigObj
 
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
@@ -54,9 +55,6 @@ FILEDIR = os.path.join(TESTDIR, SHOWNAME)
 FILEPATH = os.path.join(FILEDIR, FILENAME)
 SHOWDIR = os.path.join(TESTDIR, SHOWNAME + " final")
 
-sickbeard.logger.logFile = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickbeard.log')
-sickbeard.logger.initLogging()
-
 #=================
 # prepare env functions
 #=================
@@ -74,6 +72,7 @@ def createTestCacheFolder():
 # sickbeard globals
 #=================
 sickbeard.SYS_ENCODING = 'UTF-8'
+
 sickbeard.showList = []
 sickbeard.QUALITY_DEFAULT = 4  # hdtv
 sickbeard.FLATTEN_FOLDERS_DEFAULT = 0
@@ -90,12 +89,22 @@ sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath('..')
 sickbeard.DATA_DIR = sickbeard.PROG_DIR
+sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
+sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE)
+
+sickbeard.BRANCG = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch', '')
+sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash', '')
+sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_username', '')
+sickbeard.GIT_PASSWORD = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_password', '', censor_log=True)
+
 sickbeard.LOG_DIR = os.path.join(TESTDIR, 'Logs')
+sickbeard.logger.logFile = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
 createTestLogFolder()
-sickbeard.logger.initLogging(False)
 
 sickbeard.CACHE_DIR = os.path.join(TESTDIR, 'cache')
 createTestCacheFolder()
+
+sickbeard.logger.initLogging(False, True)
 
 #=================
 # dummy functions
