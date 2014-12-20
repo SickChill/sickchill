@@ -188,15 +188,18 @@ class GenericProvider:
 
         # primitive verification of torrents, just make sure we didn't get a text file or something
         if self.providerType == GenericProvider.TORRENT:
-            parser = createParser(file_name)
-            if parser:
-                mime_type = parser._getMimeType()
-                try:
-                    parser.stream._input.close()
-                except:
-                    pass
-                if mime_type == 'application/x-bittorrent':
-                    return True
+            try:
+                parser = createParser(file_name)
+                if parser:
+                    mime_type = parser._getMimeType()
+                    try:
+                        parser.stream._input.close()
+                    except:
+                        pass
+                    if mime_type == 'application/x-bittorrent':
+                        return True
+            except Exception as e:
+                logger.log(u"Failed to validate torrent file: " + ex(e), logger.DEBUG)
 
             logger.log(u"Result is not a valid torrent file", logger.WARNING)
             return False
