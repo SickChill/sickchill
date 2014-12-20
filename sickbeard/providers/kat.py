@@ -19,16 +19,15 @@
 
 from __future__ import with_statement
 
-import sys
 import os
 import traceback
 import urllib
 import re
 import datetime
-import urlparse
 
 import sickbeard
 import generic
+
 from sickbeard.common import Quality
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import logger
@@ -37,12 +36,7 @@ from sickbeard import helpers
 from sickbeard import db
 from sickbeard import classes
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
-from sickbeard.exceptions import ex
-from sickbeard import encodingKludge as ek
-from sickbeard import clients
 from sickbeard.bs4_parser import BS4Parser
-from lib import requests
-from lib.requests import exceptions
 from lib.unidecode import unidecode
 
 
@@ -61,8 +55,9 @@ class KATProvider(generic.TorrentProvider):
 
         self.cache = KATCache(self)
 
-        self.urls = ['http://kickass.so/', 'http://katproxy.com/', 'http://www.kickass.to/']
-        self.url = self.urls[0]        
+        self.urls = {'base_url': 'http://kickass.so/'}
+
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled
@@ -229,20 +224,15 @@ class KATProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                entries = []
-                for url in self.urls:
-                    if mode != 'RSS':
-                        searchURL = url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote(search_string)
-                    else:
-                        searchURL = url + 'tv/?field=time_add&sorder=desc&rss=1'
+                if mode != 'RSS':
+                    searchURL = self.url + 'usearch/%s/?field=seeders&sorder=desc&rss=1' % urllib.quote_plus(search_string)
+                else:
+                    searchURL = self.url + 'tv/?field=time_add&sorder=desc&rss=1'
 
-                    logger.log(u"Search string: " + searchURL, logger.DEBUG)
-
-                    entries = self.cache.getRSSFeed(searchURL, items=['entries', 'feed'])['entries']
-                    if entries:
-                        break
+                logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 try:
+                    entries = self.cache.getRSSFeed(searchURL, items=['entries', 'feed'])['entries']
                     for item in entries or []:
                         try:
                             link = item['link']

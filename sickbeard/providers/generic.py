@@ -23,6 +23,7 @@ import datetime
 import os
 import re
 import itertools
+import urllib
 import sickbeard
 import requests
 
@@ -33,7 +34,6 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
-from sickbeard import clients
 
 from hachoir_parser import createParser
 from base64 import b16encode, b32decode
@@ -46,6 +46,9 @@ class GenericProvider:
         # these need to be set in the subclass
         self.providerType = None
         self.name = name
+
+        self.proxy = ProviderProxy()
+        self.urls = {}
         self.url = ''
 
         self.show = None
@@ -63,11 +66,7 @@ class GenericProvider:
 
         self.session = requests.session()
 
-        self.headers = {
-            # Using USER_AGENT instead of Mozilla to keep same user agent along authentication and download phases,
-            #otherwise session might be broken and download fail, asking again for authentication
-            #'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36'}
-            'User-Agent': USER_AGENT}
+        self.headers = {'User-Agent': USER_AGENT}
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -125,7 +124,8 @@ class GenericProvider:
         if not self._doLogin():
             return
 
-        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+        self.headers.update({'Referer': self.proxy.getProxyURL()})
+        return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json)
 
     def downloadResult(self, result):
@@ -471,3 +471,44 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.TORRENT
+
+class ProviderProxy:
+    def __init__(self):
+        self.Type = 'GlypeProxy'
+        self.param = 'browse.php?u='
+        self.option = '&b=32&f=norefer'
+        self.enabled = False
+        self.url = None
+
+        self.urls = {
+            'getprivate.eu (NL)': 'http://getprivate.eu/',
+            'hideme.nl (NL)': 'http://hideme.nl/',
+            'proxite.eu (DE)': 'http://proxite.eu/',
+            'interproxy.net (EU)': 'http://interproxy.net/',
+        }
+
+    def isEnabled(self):
+        """ Return True if we Choose to call TPB via Proxy """
+        return self.enabled
+
+    def getProxyURL(self):
+        """ Return the Proxy URL Choosen via Provider Setting """
+        return str(self.url)
+
+    def _buildURL(self, url):
+        """ Return the Proxyfied URL of the page """
+        if self.isEnabled():
+            url = self.getProxyURL() + self.param + urllib.quote_plus(url) + self.option
+            logger.log(u"Proxified URL: " + url, logger.DEBUG)
+
+        return url
+
+    def _buildRE(self, regx):
+        """ Return the Proxyfied RE string """
+        if self.isEnabled():
+            regx = re.sub('//1', self.option, regx).replace('&', '&amp;')
+            logger.log(u"Proxified REGEX: " + regx, logger.DEBUG)
+        else:
+            regx = re.sub('//1', '', regx)
+
+        return regx

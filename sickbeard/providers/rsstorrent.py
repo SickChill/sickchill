@@ -18,7 +18,6 @@
 
 import os
 import re
-import urlparse
 
 import sickbeard
 import generic
@@ -27,11 +26,9 @@ from sickbeard import helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import tvcache
-from sickbeard import clients
 from sickbeard.exceptions import ex
 
 from lib import requests
-from lib.requests import exceptions
 from lib.bencode import bdecode
 
 
@@ -40,8 +37,11 @@ class TorrentRssProvider(generic.TorrentProvider):
                  enable_backlog=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
-        self.url = re.sub('\/$', '', url)
-        self.url = url
+
+        self.urls = {'base_url': re.sub('\/$', '', url)}
+
+        self.url = self.urls['base_url']
+
         self.enabled = True
         self.ratio = None
         self.supportsBacklog = False
@@ -162,8 +162,7 @@ class TorrentRssCache(tvcache.TVCache):
     def _getRSSData(self):
         logger.log(u"TorrentRssCache cache update URL: " + self.provider.url, logger.DEBUG)
 
-        request_headers = None
         if self.provider.cookies:
-            request_headers = {'Cookie': self.provider.cookies}
+            self.provider.headers.update({'Cookie': self.provider.cookies})
 
-        return self.getRSSFeed(self.provider.url, request_headers=request_headers, items=['entries', 'feed'])
+        return self.getRSSFeed(self.provider.url, items=['entries', 'feed'])

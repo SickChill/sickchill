@@ -1154,7 +1154,7 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
-def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=None, json=False):
+def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1164,10 +1164,8 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
 
     # request session headers
-    req_headers = {'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'}
-    if headers:
-        req_headers.update(headers)
-    session.headers.update(req_headers)
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session.headers.update(headers)
 
     # request session ssl verify
     session.verify = False
@@ -1176,11 +1174,6 @@ def getURL(url, post_data=None, params=None, headers=None, timeout=30, session=N
     session.params = params
 
     try:
-        # Remove double-slashes from url
-        parsed = list(urlparse.urlparse(url))
-        parsed[2] = re.sub("/{2,}", "/", parsed[2])  # replace two or more / with one
-        url = urlparse.urlunparse(parsed)
-
         # request session proxies
         if sickbeard.PROXY_SETTING:
             logger.log("Using proxy for url: " + url, logger.DEBUG)

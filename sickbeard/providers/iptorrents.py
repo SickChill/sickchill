@@ -40,11 +40,6 @@ from sickbeard.show_name_helpers import allPossibleShowNames
 
 
 class IPTorrentsProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://www.iptorrents.com',
-            'login': 'https://www.iptorrents.com/torrents/',
-            'search': 'https://www.iptorrents.com/torrents/?%s%s&q=%s&qf=ti',
-    }
-
     def __init__(self):
 
         generic.TorrentProvider.__init__(self, "IPTorrents")
@@ -58,6 +53,11 @@ class IPTorrentsProvider(generic.TorrentProvider):
         self.freeleech = False
 
         self.cache = IPTorrentsCache(self)
+
+        self.urls = {'base_url': 'https://www.iptorrents.com',
+                'login': 'https://www.iptorrents.com/torrents/',
+                'search': 'https://www.iptorrents.com/torrents/?%s%s&q=%s&qf=ti',
+        }
 
         self.url = self.urls['base_url']
 

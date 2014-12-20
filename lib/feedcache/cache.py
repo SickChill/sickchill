@@ -98,7 +98,7 @@ class Cache:
                     del self.storage[url]
         return
 
-    def fetch(self, url, force_update=False, offline=False, request_headers=None):
+    def fetch(self, url, force_update=False, offline=False, request_headers=None, referrer=None):
         """Return the feed at url.
 
         url - The URL of the feed.
@@ -111,6 +111,10 @@ class Cache:
         offline=False - When True, only return data from the local
                                  cache and never access the remote
                                  URL.
+
+        request_headers=None - Add addition request headers to request
+
+        referrer=None - Added a referrer to request
 
         If there is data for that feed in the cache already, check
         the expiration date before accessing the server.  If the
@@ -175,6 +179,7 @@ class Cache:
                                          agent=self.user_agent,
                                          modified=modified,
                                          etag=etag,
+                                         referrer=referrer,
                                          request_headers=request_headers)
 
         status = parsed_result.get('status', None)

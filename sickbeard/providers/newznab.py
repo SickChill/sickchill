@@ -50,7 +50,9 @@ class NewznabProvider(generic.NZBProvider):
 
         self.cache = NewznabCache(self)
 
-        self.url = url
+        self.urls = {'base_url': url}
+
+        self.url = self.urls['base_url']
 
         self.key = key
 
@@ -91,18 +93,7 @@ class NewznabProvider(generic.NZBProvider):
         return self.enabled
 
     def _getURL(self, url, post_data=None, params=None, timeout=30, json=False):
-        """
-        By default this is just a simple urlopen call but this method should be overridden
-        for providers with special URL requirements (like cookies)
-        Not really changed much from the superclass, can be used in future.
-        """
-
-        # check for auth
-        if not self._doLogin():
-            return
-
-        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json)
+        return self.getURL(url, post_data=post_data, params=params, timeout=timeout, json=json)
     
     def get_newznab_categories(self):
         """

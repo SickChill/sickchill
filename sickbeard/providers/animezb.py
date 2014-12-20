@@ -27,14 +27,14 @@ from sickbeard import classes, show_name_helpers, helpers
 from sickbeard import exceptions, logger
 from sickbeard.common import *
 from sickbeard import tvcache
-from lib.dateutil.parser import parse as parseDate
-
 
 class Animezb(generic.NZBProvider):
 
     def __init__(self):
-
         generic.NZBProvider.__init__(self, "Animezb")
+
+        self.urls = {'base_url': 'https://animezb.com/'}
+        self.url = self.urls['base_url']
 
         self.supportsBacklog = False
         self.supportsAbsoluteNumbering = True
@@ -43,8 +43,6 @@ class Animezb(generic.NZBProvider):
         self.enabled = False
 
         self.cache = AnimezbCache(self)
-
-        self.url = 'https://animezb.com/'
 
     def isEnabled(self):
         return self.enabled

@@ -77,6 +77,9 @@ class ApiHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(ApiHandler, self).__init__(*args, **kwargs)
 
+    def set_default_headers(self):
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
         for arg, value in kwargs.items():
@@ -1635,7 +1638,6 @@ class CMD_SickBeardPing(ApiCall):
 
     def run(self):
         """ check to see if sickrage is running """
-        self.set_header('Cache-Control', "max-age=0,no-cache,no-store")
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:

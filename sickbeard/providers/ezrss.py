@@ -36,16 +36,17 @@ from sickbeard import helpers
 class EZRSSProvider(generic.TorrentProvider):
     def __init__(self):
 
+        self.urls = {'base_url': 'https://www.ezrss.it/'}
+
+        self.url = self.urls['base_url']
+
         generic.TorrentProvider.__init__(self, "EZRSS")
 
         self.supportsBacklog = True
-
         self.enabled = False
         self.ratio = None
 
         self.cache = EZRSSCache(self)
-
-        self.url = 'https://www.ezrss.it/'
 
     def isEnabled(self):
         return self.enabled

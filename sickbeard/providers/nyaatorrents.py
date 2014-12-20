@@ -42,7 +42,9 @@ class NyaaProvider(generic.TorrentProvider):
 
         self.cache = NyaaCache(self)
 
-        self.url = 'http://www.nyaa.se/'
+        self.urls = {'base_url': 'http://www.nyaa.se/'}
+
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled

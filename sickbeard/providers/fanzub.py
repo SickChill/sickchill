@@ -44,7 +44,9 @@ class Fanzub(generic.NZBProvider):
 
         self.cache = FanzubCache(self)
 
-        self.url = 'https://fanzub.com/'
+        self.urls = {'base_url': 'https://fanzub.com/'}
+
+        self.url = self.urls['base_url']
 
     def isEnabled(self):
         return self.enabled
