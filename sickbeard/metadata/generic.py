@@ -1011,17 +1011,18 @@ class GenericMetadata():
 
         try:
             indexerid = helpers.mapIndexersToShow(show)[1]
-            request = Request(
-                apikey=sickbeard.FANART_API_KEY,
-                id=indexerid,
-                ws=fanart.WS.TV,
-                type=types[type],
-                sort=fanart.SORT.POPULAR,
-                limit=fanart.LIMIT.ONE,
-            )
+            if indexerid:
+                request = Request(
+                    apikey=sickbeard.FANART_API_KEY,
+                    id=indexerid,
+                    ws=fanart.WS.TV,
+                    type=types[type],
+                    sort=fanart.SORT.POPULAR,
+                    limit=fanart.LIMIT.ONE,
+                )
 
-            resp = request.response()
-            return resp.values()[-1].values()[-2][-1]['url']
+                resp = request.response()
+                return resp.values()[-1].values()[-2][-1]['url']
         except Exception as e:
             pass
 
