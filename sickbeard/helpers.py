@@ -818,47 +818,8 @@ def md5_for_file(filename, block_size=2 ** 16):
 
 
 def get_lan_ip():
-    """
-    Simple function to get LAN localhost_ip
-    http://stackoverflow.com/questions/11735821/python-get-localhost-ip
-    """
-
-    ip = socket.gethostbyname(socket.gethostname())
-    if os.name != "nt":
-        import fcntl
-        import struct
-
-        def get_interface_ip(ifname):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
-
-        interfaces = []
-        if ip.startswith("127."):
-            interfaces += [
-                "eth0",
-                "eth1",
-                "eth2",
-                "wlan0",
-                "wlan1",
-                "wifi0",
-                "ath0",
-                "ath1",
-                "ppp0",
-                "rge0",
-                "rge1",
-                "rge2",
-            ]
-
-        for ifname in interfaces:
-            try:
-                ip = get_interface_ip(ifname)
-                print ifname, ip
-                break
-            except IOError:
-                pass
-
-    return ip
-
+    try:return [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][0]
+    except:return socket.gethostname()
 
 def check_url(url):
     """
