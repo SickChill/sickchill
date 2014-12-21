@@ -458,7 +458,7 @@ class ConfigMigrator():
                                 3: 'Rename omgwtfnzb variables',
                                 4: 'Add newznab catIDs',
                                 5: 'Metadata update',
-                                6: 'Convert from XBMC to XBMC variables'
+                                6: 'Convert from XBMC to new KODI variables'
         }
 
     def migrate_config(self):
