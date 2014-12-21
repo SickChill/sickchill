@@ -1207,7 +1207,7 @@ def download_file(url, filename, session=None):
             return False
 
         with open(filename, 'wb') as fp:
-            for chunk in resp.iter_content(chunk_size=1024, decode_unicode=True):
+            for chunk in resp.iter_content(chunk_size=1024):
                 if chunk:
                     fp.write(chunk)
                     fp.flush()
