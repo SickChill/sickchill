@@ -271,7 +271,7 @@ class KODINotifier:
             logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
-        logger.log(u"Updating XMBC library via HTTP method for host: " + host, logger.DEBUG)
+        logger.log(u"Updating KODI library via HTTP method for host: " + host, logger.DEBUG)
 
         # if we're doing per-show
         if showName:
@@ -424,7 +424,7 @@ class KODINotifier:
             logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
             return False
 
-        logger.log(u"Updating XMBC library via JSON method for host: " + host, logger.INFO)
+        logger.log(u"Updating KODI library via JSON method for host: " + host, logger.INFO)
 
         # if we're doing per-show
         if showName:
