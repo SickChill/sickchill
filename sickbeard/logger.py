@@ -26,6 +26,7 @@ import threading
 import platform
 
 import sickbeard
+from sickbeard import ui
 from sickbeard import classes, encodingKludge as ek
 from github import Github
 from pastebin import PastebinAPI
