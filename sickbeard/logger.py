@@ -51,8 +51,11 @@ class NullHandler(logging.Handler):
         pass
 
 class CensoredFormatter(logging.Formatter):
+    def __init__(self, *args, **kwargs):
+        super(CensoredFormatter, self).__init__(*args, **kwargs)
+
     def format(self, record):
-        msg = record.getMessage()
+        msg = super(CensoredFormatter, self).format(record)
         for k, v in censoredItems.items():
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
