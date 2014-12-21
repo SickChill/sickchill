@@ -125,7 +125,9 @@ class GenericProvider:
         if not self._doLogin():
             return
 
-        self.headers.update({'Referer': self.proxy.getProxyURL()})
+        if self.proxy.isEnabled():
+            self.headers.update({'Referer': self.proxy.getProxyURL()})
+
         return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json)
 
