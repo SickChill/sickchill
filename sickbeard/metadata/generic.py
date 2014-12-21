@@ -26,7 +26,7 @@ import re
 
 import sickbeard
 
-from sickbeard import exceptions, helpers
+from sickbeard import helpers
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
@@ -34,6 +34,9 @@ from sickbeard.exceptions import ex
 from sickbeard.show_name_helpers import allPossibleShowNames
 
 from lib.tmdb_api.tmdb_api import TMDB
+
+import fanart
+from fanart.core import Request as fanartRequest
 
 class GenericMetadata():
     """
@@ -615,6 +618,7 @@ class GenericMetadata():
                 continue
 
             result = result + [self._write_image(seasonData, season_poster_file_path)]
+
         if result:
             return all(result)
         else:
@@ -663,6 +667,7 @@ class GenericMetadata():
                 continue
 
             result = result + [self._write_image(seasonData, season_banner_file_path)]
+
         if result:
             return all(result)
         else:
@@ -997,22 +1002,20 @@ class GenericMetadata():
         except Exception as e:
             pass
 
-        logger.log(u"Could not find any images on TMDB for " + show.name, logger.DEBUG)
+        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.DEBUG)
 
-    def _retrieve_show_images_from_fanart(self, show, type):
-        from fanart.core import Request
-        import fanart
-
+    def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
         types = {'poster': fanart.TYPE.TV.POSTER,
                  'banner': fanart.TYPE.TV.BANNER,
-                 'fanart': fanart.TYPE.TV.ART,
-                 'poster_thumb': fanart.TYPE.TV.THUMB,
-                 'banner_thumb': fanart.TYPE.TV.BANNER}
+                 'poster_thumb': fanart.TYPE.TV.POSTER,
+                 'banner_thumb': fanart.TYPE.TV.BANNER,
+                 'fanart': fanart.TYPE.TV.BACKGROUND,
+        }
 
         try:
             indexerid = helpers.mapIndexersToShow(show)[1]
             if indexerid:
-                request = Request(
+                request = fanartRequest(
                     apikey=sickbeard.FANART_API_KEY,
                     id=indexerid,
                     ws=fanart.WS.TV,
@@ -1022,8 +1025,11 @@ class GenericMetadata():
                 )
 
                 resp = request.response()
-                return resp.values()[-1].values()[-2][-1]['url']
+                url = resp[types[type]][0]['url']
+                if thumb:
+                    url = re.sub('/fanart/', '/preview/', url)
+                return url
         except Exception as e:
             pass
 
-        logger.log(u"Could not find any images on Fanart.tv for " + show.name, logger.DEBUG)
+        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.DEBUG)

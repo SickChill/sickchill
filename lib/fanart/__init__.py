@@ -41,8 +41,7 @@ __doc__ = """
 def values(obj):
     return [v for k, v in obj.__dict__.iteritems() if not k.startswith('_')]
 
-BASEURL = 'http://api.fanart.tv/webservice'
-
+BASEURL = 'http://webservice.fanart.tv/v3/%s/%s?api_key=%s'
 
 class FORMAT(object):
     JSON = 'JSON'
@@ -51,25 +50,27 @@ class FORMAT(object):
 
 
 class WS(object):
-    MUSIC = 'artist'
-    MOVIE = 'movie'
-    TV = 'series'
+    MUSIC = 'music'
+    MOVIE = 'movies'
+    TV = 'tv'
 
 
 class TYPE(object):
     ALL = 'all'
 
     class TV(object):
-        ART = 'clearart'
         LOGO = 'clearlogo'
         CHARACTER = 'characterart'
-        THUMB = 'tvthumb'
-        SEASONTHUMB = 'seasonthumb'
         BACKGROUND = 'showbackground'
         HDLOGO = 'hdtvlogo'
         HDART = 'hdclearart'
+        ART = 'clearart'
+        THUMB = 'tvthumb'
         POSTER = 'tvposter'
         BANNER = 'tvbanner'
+        SEASONTHUMB = 'seasonthumb'
+        SEASONPOSTER = 'seasonposter'
+        SEASONBANNER = 'seasonbanner'
 
     class MUSIC(object):
         DISC = 'cdart'

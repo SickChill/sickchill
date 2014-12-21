@@ -22,16 +22,7 @@ class Request(object):
                 raise RequestFanartError('Not allowed {0}: {1} [{2}]'.format(attribute_name, attribute, ', '.join(choices)))
 
     def __str__(self):
-        return '/'.join(map(str, [
-            fanart.BASEURL,
-            self._ws,
-            self._apikey,
-            self._id,
-            fanart.FORMAT.JSON,
-            self._type,
-            self._sort,
-            self._limit,
-        ]))
+        return fanart.BASEURL % (self._ws, self._id, self._apikey)
 
     def response(self):
         try:
