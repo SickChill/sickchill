@@ -26,7 +26,6 @@ import threading
 import platform
 
 import sickbeard
-from sickbeard import ui
 from sickbeard import classes, encodingKludge as ek
 from github import Github
 from pastebin import PastebinAPI
@@ -46,9 +45,11 @@ reverseNames = {u'ERROR': ERROR,
 
 censoredItems = {}
 
+
 class NullHandler(logging.Handler):
     def emit(self, record):
         pass
+
 
 class CensoredFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
@@ -61,6 +62,7 @@ class CensoredFormatter(logging.Formatter):
                 msg = msg.replace(v, len(v) * '*')
         return msg
 
+
 class Logger(object):
     def __init__(self):
         self.logger = logging.getLogger('sickrage')
@@ -69,7 +71,7 @@ class Logger(object):
             logging.getLogger('sickrage'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
-            #logging.getLogger('tornado.access'),
+            # logging.getLogger('tornado.access'),
         ]
 
         self.consoleLogging = False
@@ -127,7 +129,7 @@ class Logger(object):
             self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
 
-            #if sickbeard.GIT_AUTOISSUES:
+            # if sickbeard.GIT_AUTOISSUES:
             #    self.submit_errors()
         else:
             self.logger.log(level, message, *args, **kwargs)
@@ -147,8 +149,8 @@ class Logger(object):
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
         gh_repo = 'sickrage-issues'
 
-        self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
-                                user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
+        gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
+                           user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
 
         try:
             # read log file
@@ -188,15 +190,14 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = self.gh_issues.create_issue("[APP SUBMITTED]: " + curError.title, message)
+                issue = gh_issues.create_issue("[APP SUBMITTED]: " + curError.title, message)
                 if issue:
                     self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
-                    if not sickbeard.GIT_AUTOISSUES:
-                        ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-
                 # clear error from error list
                 classes.ErrorViewer.errors.remove(curError)
+
+                return issue
         except Exception as e:
             self.log(sickbeard.exceptions.ex(e), ERROR)
 
@@ -212,6 +213,7 @@ class Wrapper(object):
             return getattr(self.wrapped, name)
         except AttributeError:
             return getattr(self.instance, name)
+
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
 

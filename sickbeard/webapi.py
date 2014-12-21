@@ -94,13 +94,8 @@ class ApiHandler(RequestHandler):
                               'image': lambda x: x['image'],
         }
 
-        if sickbeard.USE_API is not True:
-            accessMsg = u"API :: " + self.request.remote_ip + " - SB API Disabled. ACCESS DENIED"
-            logger.log(accessMsg, logger.WARNING)
-            return self.finish(outputCallbackDict['default'](_responds(RESULT_DENIED, msg=accessMsg)))
-        else:
-            accessMsg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
-            logger.log(accessMsg, logger.DEBUG)
+        accessMsg = u"API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
+        logger.log(accessMsg, logger.DEBUG)
 
         # set the original call_dispatcher as the local _call_dispatcher
         _call_dispatcher = self.call_dispatcher

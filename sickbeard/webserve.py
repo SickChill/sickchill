@@ -3425,7 +3425,7 @@ class ConfigGeneral(Config):
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
                     launch_browser=None, web_username=None,
-                    use_api=None, api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
+                    api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
@@ -3492,7 +3492,6 @@ class ConfigGeneral(Config):
         if not config.change_LOG_DIR(log_dir, web_log):
             results += ["Unable to create directory " + os.path.normpath(log_dir) + ", log directory not changed."]
 
-        sickbeard.USE_API = config.checkbox_to_value(use_api)
         sickbeard.API_KEY = api_key
 
         sickbeard.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
@@ -4713,6 +4712,8 @@ class ErrorLogs(WebRoot):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
-            logger.submit_errors()
+            issue = logger.submit_errors()
+            if issue:
+                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
 
         return self.redirect("/errorlogs/")
