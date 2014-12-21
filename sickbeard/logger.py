@@ -51,7 +51,7 @@ class NullHandler(logging.Handler):
         pass
 
 
-class CensoredFormatter(logging.Formatter):
+class CensoredFormatter(logging.Formatter, object):
     def __init__(self, *args, **kwargs):
         super(CensoredFormatter, self).__init__(*args, **kwargs)
 
