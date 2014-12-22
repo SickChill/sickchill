@@ -20,13 +20,14 @@ import datetime
 import operator
 import threading
 import traceback
+from search import pickBestResult
 
 import sickbeard
 
 from sickbeard import db
 from sickbeard import exceptions
 from sickbeard.exceptions import ex
-from sickbeard import helpers, logger, show_name_helpers
+from sickbeard import helpers, logger
 from sickbeard import search
 from sickbeard import history
 
@@ -143,31 +144,17 @@ class ProperFinder():
             curProper.version = parse_result.version
             curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
 
+            # filter release
+            if not pickBestResult(curProper):
+                logger.log(u"Proper " + curProper.name + " were rejected by our release filters.", logger.DEBUG)
+                continue
+
             # only get anime proper if it has release group and version
             if parse_result.is_anime:
                 if not curProper.release_group and curProper.version == -1:
                     logger.log(u"Proper " + curProper.name + " doesn't have a release group and version, ignoring it",
                                logger.DEBUG)
                     continue
-
-            if not show_name_helpers.filterBadReleases(curProper.name, parse=False):
-                logger.log(u"Proper " + curProper.name + " isn't a valid scene release that we want, ignoring it",
-                           logger.DEBUG)
-                continue
-
-            if parse_result.show.rls_ignore_words and search.filter_release_name(curProper.name,
-                                                                                 parse_result.show.rls_ignore_words):
-                logger.log(
-                    u"Ignoring " + curProper.name + " based on ignored words filter: " + parse_result.show.rls_ignore_words,
-                    logger.INFO)
-                continue
-
-            if parse_result.show.rls_require_words and not search.filter_release_name(curProper.name,
-                                                                                      parse_result.show.rls_require_words):
-                logger.log(
-                    u"Ignoring " + curProper.name + " based on required words filter: " + parse_result.show.rls_require_words,
-                    logger.INFO)
-                continue
 
             # check if we actually want this proper (if it's the right quality)
             myDB = db.DBConnection()
@@ -217,8 +204,8 @@ class ProperFinder():
             # make sure the episode has been downloaded before
             myDB = db.DBConnection()
             historyResults = myDB.select(
-                "SELECT resource FROM history "
-                "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
+                "SELECT resource FROM history " +
+                "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? " +
                 "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED]) + ")",
                 [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
                  historyLimit.strftime(history.dateFormat)])

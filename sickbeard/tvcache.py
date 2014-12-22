@@ -317,11 +317,6 @@ class TVCache():
 
         # for each cache entry
         for curResult in sqlResults:
-
-            # skip non-tv crap
-            if not show_name_helpers.filterBadReleases(curResult["name"], parse=False):
-                continue
-
             # get the show object, or if it's not one of our shows then ignore it
             showObj = helpers.findCertainShow(sickbeard.showList, int(curResult["indexerid"]))
             if not showObj:
