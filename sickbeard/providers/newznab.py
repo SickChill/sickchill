@@ -38,10 +38,6 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex, AuthException
 
-from lib import requests
-from lib.requests import exceptions
-from lib.bencode import bdecode
-
 class NewznabProvider(generic.NZBProvider):
     def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
                  enable_daily=False, enable_backlog=False):
@@ -117,8 +113,6 @@ class NewznabProvider(generic.NZBProvider):
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
             return (False, return_categories, "Error getting html for [%s]" % 
                     ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
-        
-        #xml_categories = helpers.parse_xml(categories)
         
         if not xml_categories:
             logger.log(u"Error parsing xml for [%s]" % (self.name),

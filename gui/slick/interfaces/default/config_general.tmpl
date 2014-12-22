@@ -318,16 +318,6 @@
 					<fieldset class="component-group-list">
 
 						<div class="field-pair">
-							<label for="use_api">
-								<span class="component-title">Enable API</span>
-								<span class="component-desc">
-									<input type="checkbox" name="use_api" class="enabler" id="use_api" #if $sickbeard.USE_API then 'checked="checked"' else ''#/>
-									<p>allow the use of the SickRage API</p>
-								</span>
-							</label>
-						</div>
-						<div id="content_use_api">
-						<div class="field-pair">
 							<label for="api_key">
 								<span class="component-title">API key</span>
 								<span class="component-desc">
@@ -336,7 +326,6 @@
 									<div class="clear-left"><p>used to give 3rd party programs limited access to SickRage</p></div>
 								</span>
 							</label>
-						</div>
 						</div>
 
 						<div class="field-pair">
@@ -581,10 +570,10 @@
 
 						<div class="field-pair">
 							<label for="git_reset">
-								<span class="component-title">Git branch reset</span>
+								<span class="component-title">Git reset</span>
 								<span class="component-desc">
 									<input type="checkbox" name="git_reset" id="git_reset" #if True == $sickbeard.GIT_RESET then 'checked="checked"' else ''#/>
-									<p>reset git branch automatically to help resolve update issues</p>
+									<p>removes untracked files and performs a hard reset on git branch automatically to help resolve update issues</p>
 								</span>
 							</label>
 						</div>

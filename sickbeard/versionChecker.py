@@ -395,6 +395,11 @@ class GitUpdateManager(UpdateManager):
         # update remote origin url
         self.update_remote_origin()
 
+        # remove untracked files and performs a hard reset on git branch to avoid update issues
+        if sickbeard.GIT_RESET:
+            self.clean()
+            self.reset()
+
         if self.branch == self._find_installed_branch():
             output, err, exit_status = self._run_git(self._git_path, 'pull -f %s %s' % (sickbeard.GIT_REMOTE, self.branch))  # @UnusedVariable
         else:
@@ -406,26 +411,26 @@ class GitUpdateManager(UpdateManager):
             # Notify update successful
             if sickbeard.NOTIFY_ON_UPDATE:
                 notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
-            return True
-        else:
-            # perform a hard reset to try and resolve the issue
-            if self.reset() and self.update():
-                return True
 
-        return False
+            return True
+
+    def clean(self):
+        """
+        Calls git clean to remove all untracked files. Returns a bool depending
+        on the call's success.
+        """
+        output, err, exit_status = self._run_git(self._git_path, 'clean -d -fx ""')  # @UnusedVariable
+        if exit_status == 0:
+            return True
 
     def reset(self):
         """
         Calls git reset --hard to perform a hard reset. Returns a bool depending
         on the call's success.
         """
-        if sickbeard.GIT_RESET:
-            output, err, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
-
-            if exit_status == 0:
-                return True
-
-        return False
+        output, err, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
+        if exit_status == 0:
+            return True
 
     def list_remote_branches(self):
         # update remote origin url

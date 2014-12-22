@@ -45,17 +45,23 @@ reverseNames = {u'ERROR': ERROR,
 
 censoredItems = {}
 
+
 class NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
-class CensoredFormatter(logging.Formatter):
+
+class CensoredFormatter(logging.Formatter, object):
+    def __init__(self, *args, **kwargs):
+        super(CensoredFormatter, self).__init__(*args, **kwargs)
+
     def format(self, record):
         msg = super(CensoredFormatter, self).format(record)
         for k, v in censoredItems.items():
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
         return msg
+
 
 class Logger(object):
     def __init__(self):
@@ -65,7 +71,7 @@ class Logger(object):
             logging.getLogger('sickrage'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
-            #logging.getLogger('tornado.access'),
+            # logging.getLogger('tornado.access'),
         ]
 
         self.consoleLogging = False
@@ -119,13 +125,14 @@ class Logger(object):
 
         # pass exception information if debugging enabled
 
-        kwargs["exc_info"] = 1 if level == ERROR else 0
-        self.logger.log(level, message, *args, **kwargs)
-
         if level == ERROR:
+            self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
-            #if sickbeard.GIT_AUTOISSUES:
+
+            # if sickbeard.GIT_AUTOISSUES:
             #    self.submit_errors()
+        else:
+            self.logger.log(level, message, *args, **kwargs)
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -139,37 +146,33 @@ class Logger(object):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
             return
 
-        title = "[APP SUBMITTED]: "
-
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
         gh_repo = 'sickrage-issues'
 
-        self.gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
-                                user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
+        gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
+                           user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
 
         try:
+            # read log file
             if self.logFile and os.path.isfile(self.logFile):
                 with ek.ek(open, self.logFile) as f:
                     log_data = f.readlines()
-        except Exception as e:
-            pass
+                log_data = [line for line in reversed(log_data)]
 
-        try:
+            # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 if not curError.title:
                     continue
 
-                regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
-
-                maxlines = 50
                 pastebin_url = None
-                for i, x in enumerate(reversed(log_data)):
+                regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
+                for i, x in enumerate(log_data):
                     x = ek.ss(x)
                     match = re.match(regex, x)
                     if match:
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
-                            paste_data = "".join(log_data[len(log_data) - i - 50:])
+                            paste_data = "".join(log_data[i:50])
                             pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', paste_data)
                             break
 
@@ -187,14 +190,16 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = self.gh_issues.create_issue(title + curError.title, message)
+                issue = gh_issues.create_issue("[APP SUBMITTED]: " + curError.title, message)
                 if issue:
                     self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
-                    if not sickbeard.GIT_AUTOISSUES:
-                        ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
-        finally:
-            classes.ErrorViewer.clear()
+                # clear error from error list
+                classes.ErrorViewer.errors.remove(curError)
+
+                return issue
+        except Exception as e:
+            self.log(sickbeard.exceptions.ex(e), ERROR)
 
 
 class Wrapper(object):
@@ -208,6 +213,7 @@ class Wrapper(object):
             return getattr(self.wrapped, name)
         except AttributeError:
             return getattr(self.instance, name)
+
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
 

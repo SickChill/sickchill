@@ -73,18 +73,9 @@ class DBConnection(object):
             raise
 
     def _execute(self, query, args):
-        def convert(x):
-            if isinstance(x, basestring):
-                try:
-                    x = unicode(x).decode(sickbeard.SYS_ENCODING)
-                except:
-                    pass
-            return x
-
         try:
             if not args:
                 return self.connection.cursor().execute(query)
-            # args = map(convert, args)
             return self.connection.cursor().execute(query, args)
         except Exception as e:
             raise e
@@ -238,7 +229,10 @@ class DBConnection(object):
         return columns
 
     def _unicode_text_factory(self, x):
-        return unicode(x, 'utf-8')
+        try:
+            return unicode(x, 'utf-8')
+        except:
+            return unicode(x, sickbeard.SYS_ENCODING)
 
     def _dict_factory(self, cursor, row):
         d = {}

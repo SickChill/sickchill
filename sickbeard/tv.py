@@ -1686,8 +1686,8 @@ class TVEpisode(object):
         except (ValueError, IndexError):
             logger.log(u"Malformed air date of " + str(firstaired) + " retrieved from " + sickbeard.indexerApi(
                 self.indexer).name + " for (" + self.show.name + " - " + str(season) + "x" + str(episode) + ")",
-                       logger.ERROR)
-            # if I'm incomplete on TVDB but I once was complete then just delete myself from the DB for now
+                       logger.WARNING)
+            # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False

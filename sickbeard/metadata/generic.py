@@ -26,7 +26,7 @@ import re
 
 import sickbeard
 
-from sickbeard import exceptions, helpers
+from sickbeard import helpers
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
@@ -35,6 +35,8 @@ from sickbeard.show_name_helpers import allPossibleShowNames
 
 from lib.tmdb_api.tmdb_api import TMDB
 
+import fanart
+from fanart.core import Request as fanartRequest
 
 class GenericMetadata():
     """
@@ -616,6 +618,7 @@ class GenericMetadata():
                 continue
 
             result = result + [self._write_image(seasonData, season_poster_file_path)]
+
         if result:
             return all(result)
         else:
@@ -664,6 +667,7 @@ class GenericMetadata():
                 continue
 
             result = result + [self._write_image(seasonData, season_banner_file_path)]
+
         if result:
             return all(result)
         else:
@@ -774,19 +778,27 @@ class GenericMetadata():
         if image_type == 'poster_thumb':
             if getattr(indexer_show_obj, 'poster', None) is not None:
                 image_url = re.sub('posters', '_cache/posters', indexer_show_obj['poster'])
+            if not image_url:
+                # Try and get images from Fanart.TV
+                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
+            if not image_url:
+                # Try and get images from TMDB
+                image_url = self._retrieve_show_images_from_tmdb(show_obj, image_type)
         elif image_type == 'banner_thumb':
             if getattr(indexer_show_obj, 'banner', None) is not None:
                 image_url = re.sub('graphical', '_cache/graphical', indexer_show_obj['banner'])
+            if not image_url:
+                # Try and get images from Fanart.TV
+                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
         else:
             if getattr(indexer_show_obj, image_type, None) is not None:
                 image_url = indexer_show_obj[image_type]
-
-        # Try and get posters and fanart from TMDB
-        if image_url is None:
-            if image_type in ('poster', 'poster_thumb'):
-                image_url = self._retrieve_show_images_from_tmdb(show_obj, poster=True)
-            elif image_type == 'fanart':
-                image_url = self._retrieve_show_images_from_tmdb(show_obj, backdrop=True)
+            if not image_url:
+                # Try and get images from Fanart.TV
+                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
+            if not image_url:
+                # Try and get images from TMDB
+                image_url = self._retrieve_show_images_from_tmdb(show_obj, image_type)
 
         if image_url:
             image_data = metadata_helpers.getShowImage(image_url, which)
@@ -961,7 +973,13 @@ class GenericMetadata():
 
         return (indexer_id, name, indexer)
 
-    def _retrieve_show_images_from_tmdb(self, show, backdrop=False, poster=False):
+    def _retrieve_show_images_from_tmdb(self, show, type):
+        types = {'poster': 'poster_path',
+                 'banner': None,
+                 'fanart': 'backdrop_path',
+                 'poster_thumb': 'poster_path',
+                 'banner_thumb': None}
+
         # get TMDB configuration info
         tmdb = TMDB(sickbeard.TMDB_API_KEY)
         config = tmdb.Configuration()
@@ -977,14 +995,41 @@ class GenericMetadata():
         try:
             search = tmdb.Search()
             for show_name in set(allPossibleShowNames(show)):
-                for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})[
-                    'results']:
-                    if backdrop and result['backdrop_path']:
-                        return "{0}{1}{2}".format(base_url, max_size, result['backdrop_path'])
-                    elif poster and result['poster_path']:
-                        return "{0}{1}{2}".format(base_url, max_size, result['poster_path'])
+                for result in search.collection({'query': show_name})['results'] + search.tv({'query': show_name})['results']:
+                    if types[type] and getattr(result, types[type]):
+                        return "{0}{1}{2}".format(base_url, max_size, result[types[type]])
 
-        except Exception, e:
+        except Exception as e:
             pass
 
-        logger.log(u"Could not find any posters or background for " + show.name, logger.DEBUG)
+        logger.log(u"Could not find any " + type + " images on TMDB for " + show.name, logger.DEBUG)
+
+    def _retrieve_show_images_from_fanart(self, show, type, thumb=False):
+        types = {'poster': fanart.TYPE.TV.POSTER,
+                 'banner': fanart.TYPE.TV.BANNER,
+                 'poster_thumb': fanart.TYPE.TV.POSTER,
+                 'banner_thumb': fanart.TYPE.TV.BANNER,
+                 'fanart': fanart.TYPE.TV.BACKGROUND,
+        }
+
+        try:
+            indexerid = helpers.mapIndexersToShow(show)[1]
+            if indexerid:
+                request = fanartRequest(
+                    apikey=sickbeard.FANART_API_KEY,
+                    id=indexerid,
+                    ws=fanart.WS.TV,
+                    type=types[type],
+                    sort=fanart.SORT.POPULAR,
+                    limit=fanart.LIMIT.ONE,
+                )
+
+                resp = request.response()
+                url = resp[types[type]][0]['url']
+                if thumb:
+                    url = re.sub('/fanart/', '/preview/', url)
+                return url
+        except Exception as e:
+            pass
+
+        logger.log(u"Could not find any " + type + " images on Fanart.tv for " + show.name, logger.DEBUG)

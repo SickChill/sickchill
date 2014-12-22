@@ -457,7 +457,8 @@ class ConfigMigrator():
                                 2: 'Sync backup number with version number',
                                 3: 'Rename omgwtfnzb variables',
                                 4: 'Add newznab catIDs',
-                                5: 'Metadata update'
+                                5: 'Metadata update',
+                                6: 'Convert from XBMC to new KODI variables'
         }
 
     def migrate_config(self):
@@ -673,11 +674,11 @@ class ConfigMigrator():
         new format: 0|0|0|0|0|0|0|0|0|0 -- 10 places
 
         Drop the use of use_banner option.
-        Migrate the poster override to just using the banner option (applies to kodi only).
+        Migrate the poster override to just using the banner option (applies to xbmc only).
         """
 
-        metadata_kodi = check_setting_str(self.config_obj, 'General', 'metadata_kodi', '0|0|0|0|0|0')
-        metadata_kodi_12plus = check_setting_str(self.config_obj, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0')
+        metadata_xbmc = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0')
+        metadata_xbmc_12plus = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0')
         metadata_mediabrowser = check_setting_str(self.config_obj, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0')
         metadata_ps3 = check_setting_str(self.config_obj, 'General', 'metadata_ps3', '0|0|0|0|0|0')
         metadata_wdtv = check_setting_str(self.config_obj, 'General', 'metadata_wdtv', '0|0|0|0|0|0')
@@ -698,7 +699,7 @@ class ConfigMigrator():
                 # swap show fanart, show poster
                 cur_metadata[3], cur_metadata[2] = cur_metadata[2], cur_metadata[3]
                 # if user was using use_banner to override the poster, instead enable the banner option and deactivate poster
-                if metadata_name == 'KODI' and use_banner:
+                if metadata_name == 'XBMC' and use_banner:
                     cur_metadata[4], cur_metadata[3] = cur_metadata[3], '0'
                 # write new format
                 metadata = '|'.join(cur_metadata)
@@ -717,10 +718,27 @@ class ConfigMigrator():
 
             return metadata
 
-        sickbeard.METADATA_KODI = _migrate_metadata(metadata_kodi, 'KODI', use_banner)
-        sickbeard.METADATA_KODI_12PLUS = _migrate_metadata(metadata_kodi_12plus, 'KODI 12+', use_banner)
+        sickbeard.METADATA_XBMC = _migrate_metadata(metadata_xbmc, 'XBMC', use_banner)
+        sickbeard.METADATA_XBMC_12PLUS = _migrate_metadata(metadata_xbmc_12plus, 'XBMC 12+', use_banner)
         sickbeard.METADATA_MEDIABROWSER = _migrate_metadata(metadata_mediabrowser, 'MediaBrowser', use_banner)
         sickbeard.METADATA_PS3 = _migrate_metadata(metadata_ps3, 'PS3', use_banner)
         sickbeard.METADATA_WDTV = _migrate_metadata(metadata_wdtv, 'WDTV', use_banner)
         sickbeard.METADATA_TIVO = _migrate_metadata(metadata_tivo, 'TIVO', use_banner)
         sickbeard.METADATA_MEDE8ER = _migrate_metadata(metadata_mede8er, 'Mede8er', use_banner)
+
+    # Migration v6: Convert from XBMC to KODI variables
+    def _migrate_v6(self):
+        sickbeard.USE_KODI = bool(check_setting_int(self.config_obj, 'XBMC', 'use_xbmc', 0))
+        sickbeard.KODI_ALWAYS_ON = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_always_on', 1))
+        sickbeard.KODI_NOTIFY_ONSNATCH = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch', 0))
+        sickbeard.KODI_NOTIFY_ONDOWNLOAD = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_ondownload', 0))
+        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload', 0))
+        sickbeard.KODI_UPDATE_LIBRARY = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_library', 0))
+        sickbeard.KODI_UPDATE_FULL = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_full', 0))
+        sickbeard.KODI_UPDATE_ONLYFIRST = bool(check_setting_int(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst', 0))
+        sickbeard.KODI_HOST = check_setting_str(self.config_obj, 'XBMC', 'xbmc_host', '')
+        sickbeard.KODI_USERNAME = check_setting_str(self.config_obj, 'XBMC', 'xbmc_username', '', censor_log=True)
+        sickbeard.KODI_PASSWORD = check_setting_str(self.config_obj, 'XBMC', 'xbmc_password', '', censor_log=True)
+        sickbeard.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
+        sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
+
