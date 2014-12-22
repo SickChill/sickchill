@@ -624,6 +624,8 @@ class PostProcessor(object):
             # now that we've figured out which episode this file is just load it manually
             try:
                 curEp = show.getEpisode(season, cur_episode)
+                if not curEp:
+                    raise exceptions.EpisodeNotFoundException()
             except exceptions.EpisodeNotFoundException, e:
                 self._log(u"Unable to create episode: " + ex(e), logger.DEBUG)
                 raise exceptions.PostProcessingFailed()
