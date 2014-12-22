@@ -3,7 +3,7 @@ SickRage
 Video File Manager for TV Shows, It watches for new episodes of your favorite shows and when they are posted it does its magic.
 
 ## Branch Build Status
-[![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=nightly)](https://travis-ci.org/SiCKRAGETV/SickRage)
+[![Build Status](https://travis-ci.org/SiCKRAGETV/SickRage.svg?branch=develop)](https://travis-ci.org/SiCKRAGETV/SickRage)
 
 ## Features
  - XBMC library updates, poster/fanart downloads, and NFO/TBN generation
