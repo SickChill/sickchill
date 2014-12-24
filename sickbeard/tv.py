@@ -1585,7 +1585,12 @@ class TVEpisode(object):
             self.dirty = False
             return True
 
-    def loadFromIndexer(self, season, episode, cache=True, tvapi=None, cachedSeason=None):
+    def loadFromIndexer(self, season=None, episode=None, cache=True, tvapi=None, cachedSeason=None):
+
+        if season is None:
+            season = self.season
+        if episode is None:
+            episode = self.episode
 
         logger.log(str(self.show.indexerid) + u": Loading episode details from " + sickbeard.indexerApi(
             self.show.indexer).name + " for episode " + str(season) + "x" + str(episode), logger.DEBUG)
