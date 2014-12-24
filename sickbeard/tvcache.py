@@ -28,11 +28,10 @@ import sickbeard
 from sickbeard import db
 from sickbeard import logger
 from sickbeard.common import Quality
-from sickbeard import helpers, show_name_helpers
-from sickbeard.exceptions import MultipleShowObjectsException, ex
+from sickbeard import helpers
+from sickbeard.exceptions import ex
 from sickbeard.exceptions import AuthException
 from sickbeard.rssfeeds import RSSFeeds
-from sickbeard import clients
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard import encodingKludge as ek
 
@@ -47,8 +46,7 @@ class CacheDBConnection(db.DBConnection):
                 self.action(
                     "CREATE TABLE [" + providerName + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
-                sqlResults = self.select(
-                    "SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
+                sqlResults = self.select("SELECT url, COUNT(url) AS count FROM [" + providerName + "] GROUP BY url HAVING count > 1")
 
                 for cur_dupe in sqlResults:
                     self.action("DELETE FROM [" + providerName + "] WHERE url = ?", [cur_dupe["url"]])

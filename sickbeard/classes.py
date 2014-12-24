@@ -108,10 +108,10 @@ class SearchResult:
         self.version = -1
 
         # hash
-        self.hash = ""
+        self.hash = None
 
         # content
-        self.content = ""
+        self.content = None
 
     def __str__(self):
 

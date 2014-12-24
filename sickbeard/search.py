@@ -130,15 +130,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
-            # make sure we have the torrent file content
-            if not result.content:
-                if not result.url.startswith('magnet'):
-                    result.content = result.provider.getURL(result.url)
-                    if not result.content:
-                        logger.log(
-                            u"Torrent content failed to download from " + result.url, logger.ERROR
-                        )
-            # Snatches torrent with client
+            #result.content = result.provider.getURL(result.url) if not result.url.startswith('magnet') else None
             client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
             dlResult = client.sendTORRENT(result)
     else:
@@ -207,6 +199,13 @@ def pickBestResult(results, show=None, quality_list=None):
     for cur_result in results:
         if show and cur_result.show is not show:
             continue
+
+        # filter out possible bad torrents from providers such as ezrss
+        if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+            if not cur_result.url.startswith('magnet'):
+                cur_result.content = cur_result.provider.getURL(cur_result.url)
+                if not cur_result.content:
+                    continue
 
         # build the black And white list
         if not bwl and cur_result.show.is_anime:
@@ -397,12 +396,6 @@ def searchForNeededEpisodes():
 
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
-            # find the best result for the current episode
-            bestResult = None
-            for curResult in curFoundResults[curEp]:
-                if not bestResult or bestResult.quality < curResult.quality:
-                    bestResult = curResult
-
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
             # if all results were rejected move on to the next episode
@@ -414,14 +407,6 @@ def searchForNeededEpisodes():
             if curEp in foundResults and bestResult.quality <= foundResults[curEp].quality:
                 continue
 
-            # filter out possible bad torrents from providers such as ezrss
-            if bestResult.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-                bestResult.content = None
-                if not bestResult.url.startswith('magnet'):
-                    bestResult.content = bestResult.provider.getURL(bestResult.url)
-                    if not bestResult.content:
-                        continue
-            
             foundResults[curEp] = bestResult
 
     threading.currentThread().name = origThreadName
@@ -534,8 +519,8 @@ def searchProviders(show, episodes, manualSearch=False):
 
         # see if every episode is wanted
         if bestSeasonResult:
-            searchedSeasons = []
             searchedSeasons = [str(x.season) for x in episodes]
+
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
             logger.log(
@@ -543,10 +528,10 @@ def searchProviders(show, episodes, manualSearch=False):
                     seasonQual], logger.DEBUG)
 
             myDB = db.DBConnection()
-            allEps = [int(x["episode"]) 
-                      for x in myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )", 
+            allEps = [int(x["episode"])
+                      for x in myDB.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
                                            [show.indexerid])]
-            
+
             logger.log(u"Executed query: [SELECT episode FROM tv_episodes WHERE showid = %s AND season in  %s]" % (show.indexerid, ','.join(searchedSeasons)))
             logger.log(u"Episode list: " + str(allEps), logger.DEBUG)
 
@@ -565,7 +550,8 @@ def searchProviders(show, episodes, manualSearch=False):
                     u"Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.providerType + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
-                    epObjs.append(show.getEpisode(season, curEpNum))
+                    for season in set([x.season for x in episodes]):
+                        epObjs.append(show.getEpisode(season, curEpNum))
                 bestSeasonResult.episodes = epObjs
 
                 return [bestSeasonResult]
@@ -681,23 +667,14 @@ def searchProviders(show, episodes, manualSearch=False):
             if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
 
-            if len(foundResults[curProvider.name][curEp]) == 0:
+            if not len(foundResults[curProvider.name][curEp]) > 0:
                 continue
 
-            bestResult = pickBestResult(foundResults[curProvider.name][curEp], show)
-
             # if all results were rejected move on to the next episode
+            bestResult = pickBestResult(foundResults[curProvider.name][curEp], show)
             if not bestResult:
                 continue
 
-            # filter out possible bad torrents from providers such as ezrss
-            if bestResult.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-                bestResult.content = None
-                if not bestResult.url.startswith('magnet'):
-                    bestResult.content = bestResult.provider.getURL(bestResult.url)
-                    if not bestResult.content:
-                        continue
-                    
             # add result if its not a duplicate and
             found = False
             for i, result in enumerate(finalResults):

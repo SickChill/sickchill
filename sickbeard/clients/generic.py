@@ -147,7 +147,6 @@ class GenericClient(object):
             if len(result.hash) == 32:
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
-            result.content = result.provider.getURL(result.url)
             info = bdecode(result.content)["info"]
             result.hash = sha1(bencode(info)).hexdigest()
 
@@ -198,7 +197,7 @@ class GenericClient(object):
                 logger.log(self.name + u': Unable to set priority for Torrent', logger.ERROR)
 
         except Exception, e:
-            logger.log(self.name + u': Failed Sending Torrent: ' + str(result.name) + ' - ' + str(result.hash), logger.ERROR)
+            logger.log(self.name + u': Failed Sending Torrent', logger.ERROR)
             logger.log(self.name + u': Exception raised when sending torrent: ' + ex(e), logger.DEBUG)
             return r_code
 

@@ -424,8 +424,8 @@ class GenericProvider:
             result.name = title
             result.quality = quality
             result.release_group = release_group
-            result.content = None
             result.version = version
+            result.content = None
 
             if len(epObj) == 1:
                 epNum = epObj[0].episode
