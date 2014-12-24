@@ -67,7 +67,7 @@ class GenericProvider:
 
         self.session = requests.session()
 
-        self.headers = {'User-Agent': USER_AGENT}
+        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT}
 
     def getID(self):
         return GenericProvider.makeID(self.name)
