@@ -36,7 +36,7 @@ class TraktChecker():
 
     def __init__(self):
         self.todoWanted = []
-        self.trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        self.trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
     def run(self, force=False):
         try:

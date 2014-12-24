@@ -47,7 +47,7 @@ class TraktNotifier:
         """
 
         trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
-        trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         if sickbeard.USE_TRAKT:
             try:
