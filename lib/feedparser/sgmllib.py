@@ -481,9 +481,9 @@ class TestSGMLParser(SGMLParser):
         if not attrs:
             print('start tag: <' + tag + '>')
         else:
-            print('start tag: <' + tag, end=' ')
+            print('start tag: <' + tag)
             for name, value in attrs:
-                print(name + '=' + '"' + value + '"', end=' ')
+                print(name + '=' + '"' + value + '"')
             print('>')
 
     def unknown_endtag(self, tag):

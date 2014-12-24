@@ -61,12 +61,6 @@ function resetFilters(text) {
     }
 }
 
-function preventDefault() {
-    $("a[href='#']").live('click', function () {
-        return false;
-    });
-}
-
 function initFancybox() {
     if ($("a[rel=dialog]").length > 0) {
         $.getScript(sbRoot + '/js/fancybox/jquery.fancybox.js', function () {
@@ -135,7 +129,6 @@ function initTabs() {
 
 function init() {
     initHeader();
-    preventDefault();
     initFancybox();
     initTabs();
 }

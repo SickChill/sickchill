@@ -232,7 +232,7 @@ class KATProvider(generic.TorrentProvider):
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 try:
-                    entries = self.cache.getRSSFeed(searchURL, items=['entries', 'feed'])['entries']
+                    entries = self.cache.getRSSFeed(searchURL)['entries']
                     for item in entries or []:
                         try:
                             link = item['link']

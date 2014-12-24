@@ -39,10 +39,10 @@ $(document).ready(function(){
     	
     	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
                 function(data){
-                    updateNewznabCaps( data, selectedProvider );
+                    $(this).updateNewznabCaps( data, selectedProvider );
                     console.debug(data.tv_categories);
             });
-    }
+    };
     
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
 
@@ -229,7 +229,7 @@ $(document).ready(function(){
      * @param {Array} selectedProvider
      * @return no return data. The multiselect input $("#newznab_cap") is updated, as a result.
      */
-    updateNewznabCaps = function( newzNabCaps, selectedProvider ) {
+    $.fn.updateNewznabCaps = function( newzNabCaps, selectedProvider ) {
     	
     	if (newzNabCaps && !ifExists($.fn.newznabProvidersCapabilities, selectedProvider[0])) {
     		$.fn.newznabProvidersCapabilities.push({'name' : selectedProvider[0], 'categories' : newzNabCaps.tv_categories});
@@ -245,13 +245,13 @@ $(document).ready(function(){
             			newzNabCap.categories.forEach(function(category_set) {
         					if (category_set.id && category_set.name) { 
         						newCapOptions.push({value : category_set.id, text : category_set.name + "(" + category_set.id + ")"});
-        					};
+        					}
         				});
         				$("#newznab_cap").replaceOptions(newCapOptions);
             	}
             });
-        };
-    }
+        }
+    };
     
     $.fn.makeNewznabProviderString = function() {
 
@@ -383,31 +383,27 @@ $(document).ready(function(){
         $(this).refreshProviderList();
     });
 
-    $(this).on('click', '#newznab_cat_update', function(){
+    $('#newznab_cat_update').click(function(){
         console.debug('Clicked Button');
         
-        //Maybe check if there is anything selected?
+        // Maybe check if there is anything selected?
         $("#newznab_cat option").each(function() {
         	$(this).remove();
-        	return;
         });
         
         var newOptions = [];
         
         // When the update botton is clicked, loop through the capabilities list 
         // and copy the selected category id's to the category list on the right.
-        $("#newznab_cap option").each(function(){
-            if($(this).attr('selected') == 'selected')
-            {
-            	var selected_cat = $(this).val();
-            	console.debug(selected_cat);
-            	newOptions.push({text: selected_cat, value: selected_cat})
-             };
+        $("#newznab_cap option:selected").each(function(){
+            var selected_cat = $(this).val();
+            console.debug(selected_cat);
+            newOptions.push({text: selected_cat, value: selected_cat})
         });
         
         $("#newznab_cat").replaceOptions(newOptions);
         
-        var selectedProvider = $('#editANewznabProvider :selected').val();
+        var selectedProvider = $("#editANewznabProvider :selected").val();
         if (selectedProvider == "addNewznab")
             return;
           
