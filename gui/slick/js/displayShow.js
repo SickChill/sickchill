@@ -38,7 +38,7 @@ $(document).ready(function () {
         if (epArr.length == 0)
             return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').attr('value');
+        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
         window.location.href = url
 
     });
