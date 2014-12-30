@@ -105,7 +105,7 @@ $(document).ready(function () {
     // handle the show selection dropbox
     $('#pickShow').change(function () {
         var sbRoot = $('#sbRoot').val();
-        var val = $(this).attr('value');
+        var val = $(this).val();
         if (val == 0)
             return;
         url = sbRoot + '/home/displayShow?show=' + val;
