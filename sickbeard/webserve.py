@@ -3539,6 +3539,10 @@ class ConfigBackupRestore(Config):
             source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
             target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
+            for (dir, _, files) in os.walk(sickbeard.CACHE_DIR):
+                for f in files:
+                    source.append(os.path.join(dir, f))
+
             if helpers.makeZip(source, target):
                 finalResult += "Successful backup to " + target
             else:
