@@ -364,7 +364,10 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 					}
 					if (classvalue>80) {
 						classtoadd = "progress-80"
-					}		
+					}
+					if (classvalue==100) {
+						classtoadd = "progress-100"
+					}
 					\$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
 				});
 			//-->
@@ -594,6 +597,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 					}
 					if (classvalue>80) {
 						classtoadd = "progress-80"
+					}
+					if (classvalue==100) {
+						classtoadd = "progress-100"
 					}
 					\$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
 				});
