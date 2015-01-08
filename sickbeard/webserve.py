@@ -941,6 +941,16 @@ class Home(WebRoot):
         return json.dumps(data)
 
 
+    def saveShowNotifyList(self, show=None, emails=None):
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+
+        myDB = db.DBConnection()
+        if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
+	    return 'OK'
+	else:
+	    return 'ERROR: %s' % myDB.last_err
+
+
     def testEmail(self, host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 

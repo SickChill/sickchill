@@ -466,6 +466,13 @@ $(document).ready(function(){
     // Load the per show notify lists everytime this page is loaded
     load_show_notify_lists();
 
+    $('#email_show_save').click(function() {
+	$.post(sbRoot + "/home/saveShowNotifyList", { show: $('#email_show').val(), emails: $('#email_show_list').val()}, function (data) {
+	    // Reload the per show notify lists to reflect changes
+	    load_show_notify_lists();
+	});
+    });
+
     // show instructions for plex when enabled
     $('#use_plex').click(function() {
         if ( $(this).is(':checked') ) {
