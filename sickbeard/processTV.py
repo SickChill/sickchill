@@ -336,7 +336,11 @@ def unRAR(path, rarFiles, force):
                     continue
 
                 rar_handle.extract(path=path, withSubpath=False, overwrite=False)
-                unpacked_files += [os.path.basename(x.filename) for x in rar_handle.infolist() if not x.isdir]
+                for x in rar_handle.infolist():
+                    if not x.isdir:
+                        basename = os.path.basename(x.filename)
+                        if basename not in unpacked_files:
+                            unpacked_files.append(basename)
                 del rar_handle
             except Exception, e:
                 returnStr += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
