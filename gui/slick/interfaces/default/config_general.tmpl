@@ -96,6 +96,26 @@
 								</span>
 							</label>
 						</div>
+						
+						<div class="field-pair">
+							<label for="log_nr">
+								<span class="component-title">Number of Log files saved</span>
+								<span class="component-desc">
+									<input type="text" name="log_nr" id="log_nr" value="$sickbeard.LOG_NR" class="form-control input-sm input75" />
+									<p>number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)</p>
+								</span>
+							</label>
+						</div>
+						
+						<div class="field-pair">
+							<label for="log_size">
+								<span class="component-title">Size of Log files saved</span>
+								<span class="component-desc">
+									<input type="text" name="log_size" id="log_size" value="$sickbeard.LOG_SIZE" class="form-control input-sm input75" />
+									<p>maximum size of a log file saved (default: 1048576 (1MB)) (REQUIRES RESTART)</p>
+								</span>
+							</label>
+						</div>
 
 						<div class="field-pair">
 							<label for="indexer_default">
