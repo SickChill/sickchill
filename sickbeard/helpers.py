@@ -127,7 +127,7 @@ def replaceExtension(filename, newExt):
 
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
-    if extension == '!sync' or extension == 'lftp-pget-status':
+    if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part':
         return True
     else:
         return False
