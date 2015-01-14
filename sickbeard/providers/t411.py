@@ -79,7 +79,7 @@ class T411Provider(generic.TorrentProvider):
         self.session = requests.Session()
 
         try:
-            response = self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False)
+            response = self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False, headers=self.headers)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
