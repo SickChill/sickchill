@@ -268,6 +268,33 @@ $(document).ready(function(){
                 $('#testNMJv2').prop('disabled', false);
             });
     });
+    
+    $('#testFreeMobile').click(function () {
+        var freemobile_id = $.trim($('#freemobile_id').val());
+        var freemobile_apikey = $.trim($('#freemobile_apikey').val());
+        if (!freemobile_id || !freemobile_apikey) {
+            $('#testFreeMobile-result').html('Please fill out the necessary fields above.');
+			if (!freemobile_id) {
+				$('#freemobile_id').addClass('warning');
+			} else {
+				$('#freemobile_id').removeClass('warning');
+			}
+			if (!freemobile_apikey) {
+				$('#freemobile_apikey').addClass('warning');
+			} else {
+				$('#freemobile_apikey').removeClass('warning');
+			}
+            return;
+        }
+		$('#freemobile_id,#freemobile_apikey').removeClass('warning');
+        $(this).prop('disabled', true);
+        $('#testFreeMobile-result').html(loading);
+        $.get(sbRoot + '/home/testFreeMobile', {'freemobile_id': freemobile_id, 'freemobile_apikey': freemobile_apikey})
+            .done(function (data) {
+                $('#testFreeMobile-result').html(data);
+                $('#testFreeMobile').prop('disabled', false);
+            });
+    });
 	
     $('#testTrakt').click(function () {
         var trakt_api = $.trim($('#trakt_api').val());

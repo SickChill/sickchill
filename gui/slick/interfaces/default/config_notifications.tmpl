@@ -1192,6 +1192,78 @@
 
                     </fieldset>
                 </div><!-- /pushbullet component-group //-->
+                <div class="component-group">
+                    <div class="component-group-desc">
+                        <img class="notifier-icon" src="$sbRoot/images/notifiers/freemobile.png" alt="" title="Free Mobile" />
+                        <h3><a href="<%= anon_url('http://mobile.free.fr/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
+                        <p>Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API.</p>
+                    </div>
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label for="use_freemobile">
+                                <span class="component-title">Enable</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" #if $sickbeard.USE_FREEMOBILE then "checked=\"checked\"" else ""# /> 
+                                    <p>should SickRage send SMS notifications ?</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="content_use_freemobile">
+                            <div class="field-pair">
+                                <label for="freemobile_notify_onsnatch">
+                                    <span class="component-title">Notify on snatch</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" #if $sickbeard.FREEMOBILE_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# /> 
+                                        <p>send a SMS when a download starts ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_notify_ondownload">
+                                    <span class="component-title">Notify on download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <p>send a SMS when a download finishes ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_notify_onsubtitledownload">
+                                    <span class="component-title">Notify on subtitle download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <p>send a SMS when subtitles are downloaded ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_id">
+                                    <span class="component-title">Free Mobile customer ID</span>
+                                    <input type="text" name="freemobile_id" id="freemobile_id" value="$sickbeard.FREEMOBILE_ID" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">It's your Free Mobile customer ID (8 digits)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_password">
+                                    <span class="component-title">Free Mobile API Key</span>
+                                    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="$sickbeard.FREEMOBILE_APIKEY" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Find your API Key in your customer portal.</span>
+                                </label>
+                            </div>
+                            <div class="testNotification" id="testFreeMobile-result">Click below to test your settings.</div>
+                            <input  class="btn" type="button" value="Test SMS" id="testFreeMobile" />
+                            <input type="submit" class="config_submitter btn" value="Save Changes" />
+                        </div><!-- /content_use_freemobile //-->
+
+                    </fieldset>
+                </div><!-- /freemobile component-group //-->
 
             </div>
             
