@@ -38,7 +38,7 @@ $(document).ready(function () {
         if (epArr.length == 0)
             return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').attr('value');
+        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
         window.location.href = url
 
     });
@@ -105,7 +105,7 @@ $(document).ready(function () {
     // handle the show selection dropbox
     $('#pickShow').change(function () {
         var sbRoot = $('#sbRoot').val();
-        var val = $(this).attr('value');
+        var val = $(this).val();
         if (val == 0)
             return;
         url = sbRoot + '/home/displayShow?show=' + val;
