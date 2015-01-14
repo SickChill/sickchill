@@ -1943,6 +1943,7 @@ class CMD_Show(ApiCall):
         showDict["tvdbid"] = helpers.mapIndexersToShow(showObj)[1]
         showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)[2]
         showDict["tvrage_name"] = showObj.name
+        showDict["imdbid"] = showObj.imdbid
 
         showDict["network"] = showObj.network
         if not showDict["network"]:
