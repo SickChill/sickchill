@@ -6,6 +6,7 @@
 #from lib import subliminal
 #import os.path, os
 #import datetime
+#import urllib
 
 #set global $title=$show.name
 ##set global $header = '<a></a>' % 
@@ -376,6 +377,7 @@
 			#end if
 				<th class="col-name">Name</th>
 				<th class="col-airdate">Airdate</th>
+				<th class="col-ep">Download</th>
 			#if $sickbeard.USE_SUBTITLES and $show.subtitles:
 				<th class="col-subtitles">Subtitles</th>
 			#end if
@@ -469,6 +471,25 @@
 		
 		<td class="col-airdate">
 			<span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
+		</td>
+
+		<td>
+		#if len($sickbeard.DOWNLOAD_URL) > 0 and len($epResult['location']) > 0
+			#set $filename = $epResult['location']
+		  	#for $rootDir in $sickbeard.ROOT_DIRS.split('|')
+		   		#if $rootDir.startswith('/')
+		   			#set $filename = $filename.replace($rootDir, "")
+		   		#end if
+		   	#end for
+			#set $filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
+			<center><a href="$filename">Download</a></center>
+		#else
+			#if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
+				$epLoc[len($show._location)+1:]
+			#elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
+		        	$epLoc
+			#end if
+		#end if
 		</td>
 		
 		#if $sickbeard.USE_SUBTITLES and $show.subtitles:
