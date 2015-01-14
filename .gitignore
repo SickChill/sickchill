@@ -1,6 +1,7 @@
 #  SR User Related   #
 ######################
 cache/*
+cache/
 cache.db*
 config.ini*
 Logs/*
