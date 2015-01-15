@@ -221,6 +221,20 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <label for="plex_server_token">
+                                    <span class="component-title">Plex Media Server Auth Token</span>
+                                    <input type="text" name="plex_server_token" id="plex_server_token" value="$sickbeard.PLEX_SERVER_TOKEN" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Auth Token used by plex</span>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">(<a href="<%= anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
                                 <label for="plex_host">
                                     <span class="component-title">Plex Client IP:Port</span>
                                     <input type="text" name="plex_host" id="plex_host" value="$sickbeard.PLEX_HOST" class="form-control input-sm input350" />
