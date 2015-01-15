@@ -208,8 +208,9 @@ def pickBestResult(results, show=None, quality_list=None):
                     continue
 
         # build the black And white list
-        if not bwl and cur_result.show.is_anime:
-            bwl = BlackAndWhiteList(cur_result.show.indexerid)
+        if cur_result.show.is_anime:
+            if not bwl:
+                bwl = BlackAndWhiteList(cur_result.show.indexerid)
             if not bwl.is_valid(cur_result):
                 logger.log(cur_result.name+" does not match the blacklist or the whitelist, rejecting it. Result: " + bwl.get_last_result_msg(), logger.INFO)
                 continue
