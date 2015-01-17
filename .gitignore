@@ -50,3 +50,7 @@ Thumbs.db
 *~
 /.idea/
 *.torrent
+
+# Unrar Executable   #
+######################
+lib/unrar2/UnRAR.exe
