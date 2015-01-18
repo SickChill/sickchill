@@ -265,22 +265,22 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
     });
 
     \$('#addToWhite').click(function() {
-        var group = \$('#addToPoolText').attr("value")
+        var group = \$('#addToPoolText').val()
         if(group == "")
             return
-        \$('#addToPoolText').attr("value", "")
+        \$('#addToPoolText').val("")
         var option = \$("<option>")
-        option.attr("value",group)
+        option.prop("value",group)
         option.html(group)
         return option.appendTo('#white');
     });
     \$('#addToBlack').click(function() {
-        var group = \$('#addToPoolText').attr("value")
+        var group = \$('#addToPoolText').val()
         if(group == "")
             return
-        \$('#addToPoolText').attr("value", "")
+        \$('#addToPoolText').val("")
         var option = \$("<option>")
-        option.attr("value",group)
+        option.prop("value",group)
         option.html(group)
         return option.appendTo('#black');
     });
