@@ -33,7 +33,6 @@ function check_manual_searches() {
 
 function updateImages(data) {
 	$.each(data.episodes, function (name, ep) {
-		console.debug(ep.searchstatus);
 		// Get td element for current ep
 		var loadingImage = 'loading16.gif';
         var queuedImage = 'queued.png';
@@ -123,7 +122,6 @@ function disableLink(el) {
 	        
 	    	// Check if we have disabled the click
 	    	if ( $(this).attr('enableClick') == '0' ) {
-	    		console.debug("Already queued, not downloading!");
 	    		return false;
 	    	}
 	    	
@@ -180,4 +178,3 @@ function disableLink(el) {
 	    });
 	}
 })();
-
