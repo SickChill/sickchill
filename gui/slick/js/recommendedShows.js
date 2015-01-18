@@ -139,6 +139,6 @@ $(document).ready(function () {
     }
 
     $('#rootDirText').change(updateSampleText);
-    $('#whichSeries').live('change', updateSampleText);
+    $('#searchResults').on('change', '#whichSeries', updateSampleText);
 
 });

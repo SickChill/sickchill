@@ -216,7 +216,7 @@ $(document).ready(function () {
     }
 
     $('#rootDirText').change(updateSampleText);
-    $('#whichSeries').live('change', updateSampleText);
+    $('#searchResults').on('change', '#whichSeries', updateSampleText);
 
     $('#nameToSearch').keyup(function (event) {
         if (event.keyCode == 13) {
