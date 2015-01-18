@@ -203,7 +203,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
             #Don't Link media when the media is extracted from a rar in the same path
             if process_method in ('hardlink', 'symlink') and videoInRar:
-                process_media(processPath, videoInRar, nzbName, 'move', force, is_priority)
+                process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, result)
                 process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
                               is_priority, result)
                 delete_files(processPath, rarContent, result)
