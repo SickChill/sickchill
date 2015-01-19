@@ -1381,7 +1381,7 @@ class Home(WebRoot):
                 showObj.dvdorder = dvdorder
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
-                showObj.default_ep_status = defaultEpStatus
+                showObj.default_ep_status = int(defaultEpStatus)
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
