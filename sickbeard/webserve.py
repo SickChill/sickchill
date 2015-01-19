@@ -1375,13 +1375,13 @@ class Home(WebRoot):
             showObj.sports = sports
             showObj.subtitles = subtitles
             showObj.air_by_date = air_by_date
+            showObj.default_ep_status = int(defaultEpStatus)
 
             if not directCall:
                 showObj.lang = indexer_lang
                 showObj.dvdorder = dvdorder
                 showObj.rls_ignore_words = rls_ignore_words.strip()
                 showObj.rls_require_words = rls_require_words.strip()
-                showObj.default_ep_status = int(defaultEpStatus)
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
@@ -2841,6 +2841,9 @@ class Manage(Home, WebRoot):
         paused_all_same = True
         last_paused = None
 
+        default_ep_status_all_same = True
+        last_default_ep_status = None
+
         anime_all_same = True
         last_anime = None
 
@@ -2881,6 +2884,12 @@ class Manage(Home, WebRoot):
                     paused_all_same = False
                 else:
                     last_paused = curShow.paused
+
+            if default_ep_status_all_same:
+                if last_default_ep_status not in (None, curShow.default_ep_status):
+                    default_ep_status_all_same = False
+                else:
+                    last_default_ep_status = curShow.default_ep_status
 
             if anime_all_same:
                 # if we had a value already and this value is different then they're not all the same
@@ -2927,6 +2936,7 @@ class Manage(Home, WebRoot):
 
         t.showList = toEdit
         t.archive_firstmatch_value = last_archive_firstmatch if archive_firstmatch_all_same else None
+        t.default_ep_status_value = last_default_ep_status if default_ep_status_all_same else None
         t.paused_value = last_paused if paused_all_same else None
         t.anime_value = last_anime if anime_all_same else None
         t.flatten_folders_value = last_flatten_folders if flatten_folders_all_same else None
@@ -2940,9 +2950,8 @@ class Manage(Home, WebRoot):
         return t.respond()
 
 
-    def massEditSubmit(self, archive_firstmatch=None, paused=None, anime=None, sports=None, scene=None,
-                       flatten_folders=None,
-                       quality_preset=False,
+    def massEditSubmit(self, archive_firstmatch=None, paused=None, default_ep_status=None,
+                       anime=None, sports=None, scene=None, flatten_folders=None, quality_preset=False,
                        subtitles=None, air_by_date=None, anyQualities=[], bestQualities=[], toEdit=None, *args,
                        **kwargs):
 
@@ -2982,6 +2991,11 @@ class Manage(Home, WebRoot):
             else:
                 new_paused = True if paused == 'enable' else False
             new_paused = 'on' if new_paused else 'off'
+
+            if default_ep_status == 'keep':
+                new_default_ep_status = showObj.default_ep_status
+            else:
+                new_default_ep_status = default_ep_status
 
             if anime == 'keep':
                 new_anime = showObj.anime
@@ -3027,6 +3041,7 @@ class Manage(Home, WebRoot):
 
             curErrors += self.editShow(curShow, new_show_dir, anyQualities,
                                        bestQualities, exceptions_list,
+                                       defaultEpStatus=new_default_ep_status,
                                        archive_firstmatch=new_archive_firstmatch,
                                        flatten_folders=new_flatten_folders,
                                        paused=new_paused, sports=new_sports,
@@ -4425,7 +4440,7 @@ class ConfigNotifications(Config):
         sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
         sickbeard.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
         sickbeard.GROWL_PASSWORD = growl_password
-        
+
         sickbeard.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
         sickbeard.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
         sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
