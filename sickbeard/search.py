@@ -200,10 +200,18 @@ def pickBestResult(results, show, quality_list=None):
         if show and cur_result.show is not show:
             continue
 
-        if not cur_result.url.startswith('magnet'):
-            cur_result.content = cur_result.provider.getURL(cur_result.url)
-            if not cur_result.content:
-                continue
+        # filter out possible bad torrents from providers such as ezrss
+        if isinstance(cur_result, sickbeard.classes.SearchResult):
+            if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+                if not cur_result.url.startswith('magnet'):
+                    cur_result.content = cur_result.provider.getURL(cur_result.url)
+                    if not cur_result.content:
+                        continue
+        else:
+            if not cur_result.url.startswith('magnet'):
+                cur_result.content = cur_result.provider.getURL(cur_result.url)
+                if not cur_result.content:
+                    continue
 
         # build the black And white list
         if cur_result.show.is_anime:
