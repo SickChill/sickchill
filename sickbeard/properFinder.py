@@ -146,7 +146,7 @@ class ProperFinder():
             curProper.content = None
 
             # filter release
-            bestResult = pickBestResult(curProper)
+            bestResult = pickBestResult(curProper, parse_result.show)
             if not bestResult:
                 logger.log(u"Proper " + curProper.name + " were rejected by our release filters.", logger.DEBUG)
                 continue
