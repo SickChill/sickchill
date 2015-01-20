@@ -54,10 +54,10 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         self.cache = TorrentDayCache(self)
 
-        self.urls = {'base_url': 'https://www.torrentday.eu',
-                'login': 'https://www.torrentday.eu/torrents/',
-                'search': 'https://www.torrentday.eu/V3/API/API.php',
-                'download': 'https://www.torrentday.eu/download.php/%s/%s'
+        self.urls = {'base_url': 'https://torrentday.eu',
+                'login': 'https://torrentday.eu/torrents/',
+                'search': 'https://torrentday.eu/V3/API/API.php',
+                'download': 'https://torrentday.eu/download.php/%s/%s'
         }
 
         self.url = self.urls['base_url']
