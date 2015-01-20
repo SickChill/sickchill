@@ -40,6 +40,7 @@ class CheckVersion():
 
     def __init__(self):
         self.updater = None
+        self.install_type = None        
 
         if sickbeard.gh:
             self.install_type = self.find_install_type()
