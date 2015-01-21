@@ -68,7 +68,7 @@ class GrowlNotifier:
             notice.add_header('Notification-Priority', options['priority'])
         if options['icon']:
             notice.add_header('Notification-Icon',
-                              'https://raw.github.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage.png')
+                              'https://raw.github.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png')
 
         if message:
             notice.add_header('Notification-Text', message)
