@@ -5,9 +5,9 @@ $(document).ready(function () {
     $('#sbRoot').ajaxEpSubtitlesSearch();
 
     $('#seasonJump').change(function () {
-        var id = $(this).val();
+        var id = $('#seasonJump option:selected').val();
         if (id && id != 'jump') {
-            $('html,body').animate({scrollTop: $(id).offset().top}, 'slow');
+        	$('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
             location.hash = id;
         }
         $(this).val('jump');
