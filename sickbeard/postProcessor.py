@@ -19,6 +19,7 @@
 from __future__ import with_statement
 
 import glob
+import fnmatch
 import os
 import re
 import subprocess
@@ -154,13 +155,19 @@ class PostProcessor(object):
 
         Returns: A list containing all files which are associated to the given file
         """
+        def recursive_glob(treeroot, pattern):
+            results = []
+            for base, dirs, files in os.walk(treeroot):
+                goodfiles = fnmatch.filter(files, pattern)
+                results.extend(os.path.join(base, f) for f in goodfiles)
+            return results
 
         if not file_path:
             return []
 
         file_path_list = []
 
-        base_name = file_path.rpartition('.')[0]
+        base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
 
         if not base_name_only:
             base_name = base_name + '.'
@@ -171,8 +178,8 @@ class PostProcessor(object):
 
         # don't confuse glob with chars we didn't mean to use
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
-
-        for associated_file_path in ek.ek(glob.glob, base_name + '*'):
+        
+        for associated_file_path in ek.ek(recursive_glob, self.folder_path,  base_name + '*'):
             # only add associated to list
             if associated_file_path == file_path:
                 continue
