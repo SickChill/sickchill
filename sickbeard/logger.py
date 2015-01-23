@@ -171,7 +171,7 @@ class Logger(object):
                     if match:
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
-                            paste_data = "".join(log_data[i:50])
+                            paste_data = "".join(log_data[i:i+50])
                             if paste_data:
                                 gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
