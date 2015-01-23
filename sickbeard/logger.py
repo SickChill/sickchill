@@ -172,7 +172,8 @@ class Logger(object):
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
                             paste_data = "".join(log_data[i:50])
-                            gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
+                            if paste_data:
+                                gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
 
                 message = u"### INFO\n"
@@ -189,7 +190,7 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + curError.title, message)
+                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + str(curError.title), message)
                 if issue:
                     self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
