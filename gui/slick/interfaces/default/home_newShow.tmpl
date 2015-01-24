@@ -61,7 +61,7 @@
 					<option value="0" #if $provided_indexer == 0 then "selected=\"selected\"" else ""#>All Indexers</option>
 					#for $indexer in $indexers
 						<option value="$indexer" #if $provided_indexer == $indexer then "selected=\"selected\"" else ""#>
-						#if $indexers[$indexer] == 'TVRage' then ''.join(($indexers[$indexer], '**')) else $indexers[$indexer]#</option>
+						#if $indexers[$indexer] == 'TVRage' then ''.join(($indexers[$indexer], ' **')) else $indexers[$indexer]#</option>
 					#end for
 				</select>
 				&nbsp;
