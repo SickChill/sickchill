@@ -95,7 +95,7 @@ class SRWebServer(threading.Thread):
 
         # Web calendar handler (Needed because option Unprotected calendar)
         self.app.add_handlers('.*$', [
-            (r'%s/calendar(/?.*)' % self.options['web_root'], CalendarHandler),
+            (r'%s/calendar' % self.options['web_root'], CalendarHandler),
         ])
 
         # Static File Handlers
