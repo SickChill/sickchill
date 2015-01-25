@@ -928,9 +928,9 @@ class Home(WebRoot):
                 "dbloc": dbloc}
 
 
-    def testTrakt(self, api=None, username=None, password=None):
+    def testTrakt(self, username=None, password=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-        return notifiers.trakt_notifier.test_notify(api, username, password)
+        return notifiers.trakt_notifier.test_notify(username, password)
 
 
     def loadShowNotifyLists(self):
@@ -2221,16 +2221,17 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
-            recommendedlist = trakt_api.traktRequest("recommendations/shows.json/%APIKEY%", method='POST')
+            recommendedlist = trakt_api.traktRequest("recommendations/shows?extended=full,images")
 
             if recommendedlist:
-                indexers = ['tvdb_id', 'tvrage_id']
+                indexers = ['tvdb', 'tvrage']
                 map(final_results.append, (
-                    [int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]), show['url'], show['title'],
-                     show['overview'],
-                     datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')]
+                    [int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
+                     'http://www.trakt.tv/shows/%s' % show['show']['ids']['slug'], show['show']['title'],
+                     show['show']['overview'],
+                     datetime.date.fromtimestamp(int(show['show']['first_aired']) / 1000.0).strftime('%Y%m%d')]
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                    int(show[indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+                    int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
@@ -2276,11 +2277,13 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
         try:
-            shows = trakt_api.traktRequest("shows/trending.json/%APIKEY%") or []
+            shows = trakt_api.traktRequest("shows/trending?limit=50&extended=full,images") or []
             for show in shows:
                 try:
+                    tvdb_id = int(show['show']['ids']['tvdb'])
+                    tvrage_id = int(show['show']['ids']['tvrage'] or 0)
                     if not helpers.findCertainShow(sickbeard.showList,
-                                                   [int(show['tvdb_id']), int(show['tvrage_id'])]):
+                                                   [tvdb_id, tvrage_id]):
                         t.trending_shows += [show]
                 except exceptions.MultipleShowObjectsException:
                     continue
@@ -4374,7 +4377,7 @@ class ConfigNotifications(Config):
                           libnotify_notify_onsubtitledownload=None,
                           use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
-                          use_trakt=None, trakt_username=None, trakt_password=None, trakt_api=None,
+                          use_trakt=None, trakt_username=None, trakt_password=None,
                           trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None,
@@ -4425,7 +4428,7 @@ class ConfigNotifications(Config):
         sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
         sickbeard.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
         sickbeard.GROWL_PASSWORD = growl_password
-        
+
         sickbeard.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
         sickbeard.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
         sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
@@ -4490,7 +4493,6 @@ class ConfigNotifications(Config):
         sickbeard.USE_TRAKT = config.checkbox_to_value(use_trakt)
         sickbeard.TRAKT_USERNAME = trakt_username
         sickbeard.TRAKT_PASSWORD = trakt_password
-        sickbeard.TRAKT_API = trakt_api
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
         sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
