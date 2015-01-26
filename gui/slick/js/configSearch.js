@@ -47,6 +47,7 @@ $(document).ready(function(){
             directory = ' directory',
             client = '',
             option_panel = '#options_torrent_blackhole';
+            rpcurl = ' RPC URL'
 
         if ('blackhole' != selectedProvider) {
             var label_warning_deluge = '#label_warning_deluge',
@@ -115,6 +116,7 @@ $(document).ready(function(){
             $('#username_title').text(client + username);
             $('#password_title').text(client + password);
             $('#torrent_client').text(client);
+            $('#rpcurl_title').text(client + rpcurl);
             option_panel = '#options_torrent_clients';
         }
         $(option_panel).show();

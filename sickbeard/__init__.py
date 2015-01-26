@@ -286,7 +286,7 @@ TORRENT_HIGH_BANDWIDTH = False
 TORRENT_LABEL = ''
 TORRENT_LABEL_ANIME = ''
 TORRENT_VERIFY_CERT = False
-TORRENT_RPCURL = '/transmission'
+TORRENT_RPCURL = 'transmission'
 
 USE_KODI = False
 KODI_ALWAYS_ON = True
@@ -809,7 +809,7 @@ def initialize(consoleLogging=True):
         TORRENT_LABEL = check_setting_str(CFG, 'TORRENT', 'torrent_label', '')
         TORRENT_LABEL_ANIME = check_setting_str(CFG, 'TORRENT', 'torrent_label_anime', '')
         TORRENT_VERIFY_CERT = bool(check_setting_int(CFG, 'TORRENT', 'torrent_verify_cert', 0))
-        TORRENT_RPCURL = check_setting_str(CFG, 'TORRENT', 'torrent_rpcurl', '/transmission')
+        TORRENT_RPCURL = check_setting_str(CFG, 'TORRENT', 'torrent_rpcurl', 'transmission')
 
         USE_KODI = bool(check_setting_int(CFG, 'KODI', 'use_kodi', 0))
         KODI_ALWAYS_ON = bool(check_setting_int(CFG, 'KODI', 'kodi_always_on', 1))
