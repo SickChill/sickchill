@@ -29,7 +29,11 @@ class TraktAPI():
             resp.raise_for_status()
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
-            if e.response.status_code == 401:
+            if e.response.status_code == 502:
+                # Retry the request, cloudflare had a proxying issue
+                logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
+                return self.validateAccount()
+            elif e.response.status_code == 401:
                 raise traktAuthException(e)
         if 'token' in resp:
             self.token = resp['token']
@@ -57,7 +61,7 @@ class TraktAPI():
             if e.response.status_code == 502:
                 # Retry the request, cloudflare had a proxying issue
                 logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
-                self.traktRequest(path, data, method)
+                return self.traktRequest(path, data, method)
             elif e.response.status_code == 401:
                 raise traktAuthException(e)
             elif e.response.status_code == 503:
