@@ -70,7 +70,7 @@ class TraktChecker():
                 logger.log(u"No shows found in your library, aborting library update", logger.DEBUG)
                 return
 
-            traktShow = filter(lambda x: int(indexerid) in [int(x['show']['ids']['tvdb']) or 0, int(x['show']['ids']['tvrage'])] or 0, library)
+            traktShow = filter(lambda x: int(indexerid) in [int(x['show']['ids']['tvdb'] or 0), int(x['show']['ids']['tvrage'] or 0)], library)
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
