@@ -76,6 +76,7 @@ $(document).ready(function(){
             $(torrent_label_anime_option).show();
             $(path_synology).hide();
             $(torrent_paused_option).show();
+            $(torrent_rpcurl_option).hide();
 
             if ('utorrent' == selectedProvider) {
                 client = 'uTorrent';
@@ -87,6 +88,7 @@ $(document).ready(function(){
                 $(torrent_high_bandwidth_option).show();
                 $(torrent_label_option).hide();
                 $(torrent_label_anime_option).hide();
+                $(torrent_rpcurl_option).show();
                 //$('#directory_title').text(client + directory);
             } else if ('deluge' == selectedProvider){
                 client = 'Deluge';
