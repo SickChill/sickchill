@@ -58,11 +58,11 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
         self.cache = FreshOnTVCache(self)
 
-        self.urls = {'base_url': 'http://freshon.tv/',
-                'login': 'http://freshon.tv/login.php?action=makelogin',
-                'detail': 'http://freshon.tv/details.php?id=%s',
-                'search': 'http://freshon.tv/browse.php?incldead=%s&words=0&cat=0&search=%s',
-                'download': 'http://freshon.tv/download.php?id=%s&type=torrent',
+        self.urls = {'base_url': 'https://freshon.tv/',
+                'login': 'https://freshon.tv/login.php?action=makelogin',
+                'detail': 'https://freshon.tv/details.php?id=%s',
+                'search': 'https://freshon.tv/browse.php?incldead=%s&words=0&cat=0&search=%s',
+                'download': 'https://freshon.tv/download.php?id=%s&type=torrent',
                 }
 
         self.url = self.urls['base_url']
