@@ -18,6 +18,7 @@ class GenericClient(object):
         self.username = sickbeard.TORRENT_USERNAME if username is None else username
         self.password = sickbeard.TORRENT_PASSWORD if password is None else password
         self.host = sickbeard.TORRENT_HOST if host is None else host
+        self.rpcurl = sickbeard.TORRENT_RPCURL
 
         self.url = None
         self.response = None
