@@ -88,9 +88,8 @@
             </div>
 
         <div class="clearfix">
-            <p>$cur_show['show']['rating'] <img src="$sbRoot/images/heart.png"></p>
+            <p><%= int(cur_show['show']['rating']*10) %>% <img src="$sbRoot/images/heart.png"></p>
             <i>$cur_show['show']['votes'] votes</i>
-            <i>$cur_show['watchers'] watchers</i>
             <div class="traktShowTitleIcons">
                 <a href="$sbRoot/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
             </div>
