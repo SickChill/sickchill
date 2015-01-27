@@ -47,7 +47,7 @@ class TraktNotifier:
         """
 
         trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, TRAKT_DISABLE_SSL_VERIFY)
 
         if sickbeard.USE_TRAKT:
             try:
@@ -105,7 +105,7 @@ class TraktNotifier:
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-    def test_notify(self, username, password):
+    def test_notify(self, username, password, disable_ssl):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.
@@ -117,7 +117,7 @@ class TraktNotifier:
         Returns: True if the request succeeded, False otherwise
         """
         try:
-            trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password)
+            trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password, disable_ssl)
             trakt_api.validateAccount()
             return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:

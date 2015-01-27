@@ -12,9 +12,9 @@
 <script type="text/javascript" src="$sbRoot/js/configNotifications.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -30,7 +30,7 @@
 
                 <div id="tabs-1">
                 <div class="component-group">
-                
+
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="$sbRoot/images/notifiers/kodi.png" alt="" title="KODI" />
                         <h3><a href="<%= anon_url('http://kodi.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
@@ -110,7 +110,7 @@
                                         <p>only send library updates to the first active host ?</p>
                                     </span>
                                 </label>
-                            </div>                            
+                            </div>
                             <div class="field-pair">
                                 <label for="kodi_host">
                                     <span class="component-title">KODI IP:Port</span>
@@ -123,7 +123,7 @@
                                 <label>
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">(multiple host strings must be separated by commas)</span>
-                                </label>                         
+                                </label>
                             </div>
                             <div class="field-pair">
                                 <label for="kodi_username">
@@ -151,7 +151,7 @@
                         </div><!-- /content_use_kodi //-->
 
                     </fieldset>
-                    
+
                 </div><!-- /kodi component-group //-->
 
 
@@ -232,7 +232,7 @@
                                 <label>
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">(multiple host strings must be separated by commas)</span>
-                                </label>                                
+                                </label>
                             </div>
                             <div class="field-pair">
                                 <label for="plex_username">
@@ -365,9 +365,9 @@
                                     </label>
                                     <label for="NMJV2_DBLOC_B">
                                         <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" #if $sickbeard.NMJv2_DBLOC=="network" then "checked=\"checked\"" else ""#/>PCH Network Media
-                                    </label>                            
+                                    </label>
                                 </span>
-                            </div>    
+                            </div>
                             <div class="field-pair">
                                 <label for="NMJv2db_instance">
                                     <span class="component-title">Database instance</span>
@@ -415,7 +415,7 @@
 
                     </fieldset>
                 </div><!-- /nmjv2 component-group //-->
-                
+
 
                 <div class="component-group">
                     <div class="component-group-desc">
@@ -430,7 +430,7 @@
                             <label for="use_synoindex">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" #if $sickbeard.USE_SYNOINDEX then "checked=\"checked\"" else ""# /> 
+                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" #if $sickbeard.USE_SYNOINDEX then "checked=\"checked\"" else ""# />
                                     <p>should SickRage send Synology notifications ?</p>
                                 </span>
                             </label>
@@ -446,8 +446,8 @@
 
                     </fieldset>
                 </div><!-- /synoindex component-group //-->
-                
-                
+
+
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="$sbRoot/images/notifiers/synologynotifier.png" alt="" title="Synology Indexer" />
@@ -563,7 +563,7 @@
 
             </div>
 
-            
+
             <div id="tabs-2">
                 <div class="component-group">
                     <div class="component-group-desc">
@@ -576,7 +576,7 @@
                             <label for="use_growl">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" #if $sickbeard.USE_GROWL then "checked=\"checked\"" else ""# /> 
+                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" #if $sickbeard.USE_GROWL then "checked=\"checked\"" else ""# />
                                     <p>should SickRage send Growl notifications ?</p>
                                 </span>
                             </label>
@@ -587,7 +587,7 @@
                                 <label for="growl_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" #if $sickbeard.GROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# /> 
+                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" #if $sickbeard.GROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1203,7 +1203,7 @@
                             <label for="use_freemobile">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" #if $sickbeard.USE_FREEMOBILE then "checked=\"checked\"" else ""# /> 
+                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" #if $sickbeard.USE_FREEMOBILE then "checked=\"checked\"" else ""# />
                                     <p>should SickRage send SMS notifications ?</p>
                                 </span>
                             </label>
@@ -1214,7 +1214,7 @@
                                 <label for="freemobile_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" #if $sickbeard.FREEMOBILE_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# /> 
+                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" #if $sickbeard.FREEMOBILE_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
                                         <p>send a SMS when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1266,7 +1266,7 @@
                 </div><!-- /freemobile component-group //-->
 
             </div>
-            
+
             <div id="tabs-3">
                 <div class="component-group">
                        <div class="component-group-desc">
@@ -1391,6 +1391,15 @@
                                 </label>
                             </div>
                             <div class="field-pair">
+                                <label for="trakt_disable_ssl_verify">
+                                    <span class="component-title">Disable SSL Verification:</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" class="enabler" name="trakt_disable_ssl_verify" id="trakt_disable_ssl_verify" #if $sickbeard.TRAKT_DISABLE_SSL_VERIFY then "checked=\"checked\"" else ""# />
+                                        <p>Disable SSL certificate verification on systems with broken SSL implementations, like the QNAP NAS.</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
                                 <label for="trakt_default_indexer">
                                     <span class="component-title">Default indexer:</span>
                                     <span class="component-desc">
@@ -1434,7 +1443,7 @@
                                         <span class="component-title">&nbsp;</span>
                                         <span class="component-desc">method in which to download episodes for new show's.</span>
                                     </label>
-                                </div>                            
+                                </div>
                                 <div class="field-pair">
                                     <label for="trakt_remove_watchlist">
                                         <span class="component-title">Remove episode:</span>
@@ -1443,8 +1452,8 @@
                                             <p>remove an episode from your watchlist after it is downloaded.</p>
                                         </span>
                                     </label>
-                                 </div>                            
-                                <div class="field-pair">                                   
+                                 </div>
+                                <div class="field-pair">
                                     <label for="trakt_remove_serieslist">
                                         <span class="component-title">Remove series:</span>
                                         <span class="component-desc">

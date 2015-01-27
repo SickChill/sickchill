@@ -5,9 +5,10 @@ from sickbeard import logger
 from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
-    def __init__(self, apikey, username=None, password=None, timeout=5):
+    def __init__(self, apikey, username=None, password=None, disable_ssl_verify=False, timeout=30):
         self.username = username
         self.password = password
+        self.verify = not disable_ssl_verify
         self.timeout = timeout
         self.api_url = 'https://api.trakt.tv/'
         self.headers = {
@@ -24,8 +25,8 @@ class TraktAPI():
             'password': self.password
         }
         try:
-            resp = requests.request('POST', self.api_url+"auth/login",
-                headers=self.headers, data=json.dumps(data))
+            resp = requests.request('POST', self.api_url+"auth/login", headers=self.headers,
+                data=json.dumps(data), timeout=self.timeout, verify=self.verify)
             resp.raise_for_status()
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
@@ -59,7 +60,8 @@ class TraktAPI():
 
         # request the URL from trakt and parse the result as json
         try:
-            resp = requests.request(method, url, headers=headers, data=json.dumps(data) if data else [])
+            resp = requests.request(method, url, headers=headers, timeout=self.timeout,
+                data=json.dumps(data) if data else [], verify=self.verify)
 
             # check for http errors and raise if any are present
             resp.raise_for_status()
