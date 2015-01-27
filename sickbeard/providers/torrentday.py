@@ -1,19 +1,19 @@
 # Author: Mr_Orange <mr_orange@hotmail.it>
 #
-# This file is part of SickGear.
+# This file is part of SickRage.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickRage is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickRage is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
 import datetime
@@ -35,11 +35,6 @@ from sickbeard.helpers import sanitizeSceneName
 
 
 class TorrentDayProvider(generic.TorrentProvider):
-    urls = {'base_url': 'https://torrentday.eu',
-            'login': 'https://torrentday.eu/torrents/',
-            'search': 'https://torrentday.eu/V3/API/API.php',
-            'download': 'https://torrentday.eu/download.php/%s/%s'
-    }
 
     def __init__(self):
 
@@ -58,6 +53,12 @@ class TorrentDayProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.cache = TorrentDayCache(self)
+
+        self.urls = {'base_url': 'http://www.td.af',
+                'login': 'http://www.td.af/torrents/',
+                'search': 'http://www.td.af/V3/API/API.php',
+                'download': 'http://www.td.af/download.php/%s/%s'
+        }
 
         self.url = self.urls['base_url']
 
@@ -83,9 +84,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             return True
 
         if self._uid and self._hash:
-
             requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-
         else:
 
             login_params = {'username': self.username,
@@ -93,6 +92,9 @@ class TorrentDayProvider(generic.TorrentProvider):
                             'submit.x': 0,
                             'submit.y': 0
             }
+
+            if not self.session:
+                self.session = requests.Session()
 
             try:
                 response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
@@ -108,18 +110,20 @@ class TorrentDayProvider(generic.TorrentProvider):
                 logger.log(u'Invalid username or password for ' + self.name + ', Check your settings!', logger.ERROR)
                 return False
 
-            if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+            try:
+                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                self.cookies = {'uid': self._uid,
-                                'pass': self._hash
-                }
-                return True
+                    self.cookies = {'uid': self._uid,
+                                    'pass': self._hash
+                    }
+                    return True
+            except:
+                pass
 
-            else:
-                logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
-                return False
+            logger.log(u'Unable to obtain cookie for TorrentDay', logger.ERROR)
+            return False
 
 
     def _get_season_search_strings(self, ep_obj):
@@ -165,7 +169,7 @@ class TorrentDayProvider(generic.TorrentProvider):
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode}
+                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
 
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
@@ -179,7 +183,7 @@ class TorrentDayProvider(generic.TorrentProvider):
         freeleech = '&free=on' if self.freeleech else ''
 
         if not self._doLogin():
-            return []
+            return results
 
         for mode in search_params.keys():
             for search_string in search_params[mode]:
@@ -279,8 +283,6 @@ class TorrentDayCache(tvcache.TVCache):
 
     def _getRSSData(self):
         search_params = {'RSS': ['']}
-        return self.provider._doSearch(search_params)
-
-
+        return {'entries': self.provider._doSearch(search_params)}
 
 provider = TorrentDayProvider()
