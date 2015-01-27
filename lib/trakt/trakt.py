@@ -29,12 +29,21 @@ class TraktAPI():
             resp.raise_for_status()
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
-            if e.response.status_code == 502:
+            code = getattr(e.response, 'status_code', None)
+            if not code:
+                # This is pretty much a fatal error if there is no status_code
+                # It means there basically was no response at all
+                raise traktException(e)
+            elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
                 logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
                 return self.validateAccount()
-            elif e.response.status_code == 401:
+            elif code == 401:
                 raise traktAuthException(e)
+            elif code == 503:
+                raise traktServerBusy(e)
+            else:
+                raise traktException(e)
         if 'token' in resp:
             self.token = resp['token']
             return True
@@ -58,13 +67,18 @@ class TraktAPI():
             # convert response to json
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
-            if e.response.status_code == 502:
+            code = getattr(e.response, 'status_code', None)
+            if not code:
+                # This is pretty much a fatal error if there is no status_code
+                # It means there basically was no response at all
+                raise traktException(e)
+            elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
                 logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
                 return self.traktRequest(path, data, method)
-            elif e.response.status_code == 401:
+            elif code == 401:
                 raise traktAuthException(e)
-            elif e.response.status_code == 503:
+            elif code == 503:
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)
