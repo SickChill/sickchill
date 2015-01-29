@@ -130,7 +130,7 @@ class ApiHandler(RequestHandler):
         except:pass
 
     def _out_as_json(self, dict):
-        self.set_header("Content-Type", "application/json;charset=UTF-8'")
+        self.set_header("Content-Type", "application/json;charset=UTF-8")
         try:
             out = json.dumps(dict, indent=self.intent, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
