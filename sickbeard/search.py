@@ -187,7 +187,7 @@ def filter_release_name(name, filter_words):
     return False
 
 
-def pickBestResult(results, show=None, quality_list=None):
+def pickBestResult(results, show, quality_list=None):
     results = results if isinstance(results, list) else [results]
 
     logger.log(u"Picking the best result out of " + str([x.name for x in results]), logger.DEBUG)
@@ -201,7 +201,13 @@ def pickBestResult(results, show=None, quality_list=None):
             continue
 
         # filter out possible bad torrents from providers such as ezrss
-        if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+        if isinstance(cur_result, sickbeard.classes.SearchResult):
+            if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+                if not cur_result.url.startswith('magnet'):
+                    cur_result.content = cur_result.provider.getURL(cur_result.url)
+                    if not cur_result.content:
+                        continue
+        else:
             if not cur_result.url.startswith('magnet'):
                 cur_result.content = cur_result.provider.getURL(cur_result.url)
                 if not cur_result.content:
