@@ -14,12 +14,12 @@ $(document).ready(function () {
     });
 
     $("#prevShow").click(function () {
-        $('#pickShow option:selected').prev('option').attr('selected', 'selected');
+        $('#pickShow option:selected').prev('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
     $("#nextShow").click(function () {
-        $('#pickShow option:selected').next('option').attr('selected', 'selected');
+        $('#pickShow option:selected').next('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
