@@ -1335,4 +1335,4 @@ if __name__ == '__main__':
     doctest.testmod()
 
 def remove_article(text=''):
-    return re.sub(r'(?i)/^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
+    return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
