@@ -1,7 +1,10 @@
-import os, sys
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
 
-import UnRAR2
-from UnRAR2.rar_exceptions import *
+import unrar2 as UnRAR2
+from unrar2.rar_exceptions import *
 
 
 def cleanup(dir='test'):
@@ -15,6 +18,7 @@ def cleanup(dir='test'):
 # basic test
 cleanup()
 rarc = UnRAR2.RarFile('test.rar')
+assert rarc.get_volume() == None
 rarc.infolist()
 assert rarc.comment == "This is a test."
 for info in rarc.infoiter():
@@ -27,6 +31,21 @@ assert os.path.exists('test'+os.sep+'this.py')
 del rarc
 assert (str(saveinfo)=="""<RarInfo "test" in "[ARCHIVE_NO_LONGER_LOADED]">""")
 cleanup()
+
+# shell-unsafe-name test
+cleanup()
+rarc = UnRAR2.RarFile('[test].rar')
+rarc.infolist()
+for info in rarc.infoiter():
+    saveinfo = info
+    assert (str(info)=="""<RarInfo "[test].txt" in "[test].rar">""")
+    break
+rarc.extract()
+assert os.path.exists('[test].txt')
+del rarc
+assert (str(saveinfo)=="""<RarInfo "[test].txt" in "[ARCHIVE_NO_LONGER_LOADED]">""")
+cleanup()
+
 
 # extract all the files in test.rar
 cleanup()
@@ -108,6 +127,15 @@ except IncorrectRARPassword:
 assert not os.path.exists('test'+os.sep+'top_secret_xxx_file.txt')
 assert errored
 cleanup()
+errored = False
+try:
+    UnRAR2.RarFile('test_protected_files.rar').extract()
+except IncorrectRARPassword:
+    errored = True
+assert not os.path.exists('test'+os.sep+'top_secret_xxx_file.txt')
+assert errored
+cleanup()
+
 
 # extract files from an archive with protected headers
 cleanup()
@@ -121,6 +149,27 @@ except IncorrectRARPassword:
     errored = True
 assert not os.path.exists('test'+os.sep+'top_secret_xxx_file.txt')
 assert errored
+cleanup()
+errored = False
+try:
+    UnRAR2.RarFile('test_protected_headers.rar').extract()
+except IncorrectRARPassword:
+    errored = True
+assert not os.path.exists('test'+os.sep+'top_secret_xxx_file.txt')
+assert errored
+cleanup()
+
+# check volume number
+cleanup()
+rarc1 = UnRAR2.RarFile('test_volumes.part1.rar')
+assert rarc1.get_volume() == 0
+rarc2 = UnRAR2.RarFile('test_volumes.part2.rar')
+assert rarc2.get_volume() == 1
+cleanup()
+rarc1 = UnRAR2.RarFile('test_volumes_old.rar')
+assert rarc1.get_volume() == 0
+rarc2 = UnRAR2.RarFile('test_volumes_old.r00')
+assert rarc2.get_volume() == 1
 cleanup()
 
 # make sure docstring examples are working
