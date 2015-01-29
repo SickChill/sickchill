@@ -36,7 +36,7 @@ $(document).ready(function(){
                 $('#testProwl').prop('disabled', false);
             });
     });
-	
+
     $('#testKODI').click(function () {
         var kodi_host = $.trim($('#kodi_host').val());
         var kodi_username = $.trim($('#kodi_username').val());
@@ -91,7 +91,7 @@ $(document).ready(function(){
                 $('#testBoxcar').prop('disabled', false);
             });
     });
-	
+
     $('#testBoxcar2').click(function () {
         var boxcar2_accesstoken = $.trim($('#boxcar2_accesstoken').val());
         if (!boxcar2_accesstoken) {
@@ -141,7 +141,7 @@ $(document).ready(function(){
         $.get(sbRoot + '/home/testLibnotify',
             function (data) { $('#testLibnotify-result').html(data); });
     });
-  
+
     $('#twitterStep1').click(function() {
         $('#testTwitter-result').html(loading);
         $.get(sbRoot + '/home/twitterStep1', function (data) {window.open(data); })
@@ -174,7 +174,7 @@ $(document).ready(function(){
         }
         $('#testNMJ-result').html(loading);
         var nmj_host = $('#nmj_host').val();
-        
+
         $.get(sbRoot + '/home/settingsNMJ', {'host': nmj_host},
             function (data) {
                 if (data === null) {
@@ -236,7 +236,7 @@ $(document).ready(function(){
 		}
 
         var nmjv2_dbinstance=$('#NMJv2db_instance').val();
-        $.get(sbRoot + '/home/settingsNMJv2', {'host': nmjv2_host,'dbloc': nmjv2_dbloc,'instance': nmjv2_dbinstance}, 
+        $.get(sbRoot + '/home/settingsNMJv2', {'host': nmjv2_host,'dbloc': nmjv2_dbloc,'instance': nmjv2_dbinstance},
         function (data){
             if (data == null) {
                 $('#nmjv2_database').removeAttr('readonly');
@@ -244,7 +244,7 @@ $(document).ready(function(){
             var JSONData = $.parseJSON(data);
             $('#testNMJv2-result').html(JSONData.message);
             $('#nmjv2_database').val(JSONData.database);
-            
+
             if (JSONData.database)
                 $('#nmjv2_database').attr('readonly', true);
             else
@@ -268,7 +268,7 @@ $(document).ready(function(){
                 $('#testNMJv2').prop('disabled', false);
             });
     });
-    
+
     $('#testFreeMobile').click(function () {
         var freemobile_id = $.trim($('#freemobile_id').val());
         var freemobile_apikey = $.trim($('#freemobile_apikey').val());
@@ -295,18 +295,13 @@ $(document).ready(function(){
                 $('#testFreeMobile').prop('disabled', false);
             });
     });
-	
+
     $('#testTrakt').click(function () {
-        var trakt_api = $.trim($('#trakt_api').val());
         var trakt_username = $.trim($('#trakt_username').val());
         var trakt_password = $.trim($('#trakt_password').val());
-        if (!trakt_api || !trakt_username || !trakt_password) {
+        var trakt_disable_ssl_verify = $('#trakt_disable_ssl_verify').is(':checked');
+        if (!trakt_username || !trakt_password) {
             $('#testTrakt-result').html('Please fill out the necessary fields above.');
-			if (!trakt_api) {
-				$('#trakt_api').addClass('warning');
-			} else {
-				$('#trakt_api').removeClass('warning');
-			}
 			if (!trakt_username) {
 				$('#trakt_username').addClass('warning');
 			} else {
@@ -319,10 +314,10 @@ $(document).ready(function(){
 			}
             return;
         }
-		$('#trakt_api,#trakt_username,#trakt_password').removeClass('warning');
+		$('#trakt_username,#trakt_password').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testTrakt-result').html(loading);
-        $.get(sbRoot + '/home/testTrakt', {'api': trakt_api, 'username': trakt_username, 'password': trakt_password})
+        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify})
             .done(function (data) {
                 $('#testTrakt-result').html(data);
                 $('#testTrakt').prop('disabled', false);
@@ -422,7 +417,7 @@ $(document).ready(function(){
         if(msg){
             $('#testPushbullet-result').html(loading);
         }
-        
+
         var pushbullet_api = $("#pushbullet_api").val();
 
         if(!pushbullet_api) {
@@ -460,7 +455,7 @@ $(document).ready(function(){
     $('#getPushbulletDevices').click(function(){
         get_pushbullet_devices("Device list updated. Please choose a device to push to.");
     });
-    
+
     // we have to call this function on dom ready to create the devices select
     get_pushbullet_devices();
 
