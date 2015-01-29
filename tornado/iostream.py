@@ -934,8 +934,9 @@ class IOStream(BaseIOStream):
         return self.socket
 
     def close_fd(self):
-        self.socket.close()
-        self.socket = None
+        if self.socket is not None:
+            self.socket.close()
+            self.socket = None
 
     def get_fd_error(self):
         errno = self.socket.getsockopt(socket.SOL_SOCKET,
