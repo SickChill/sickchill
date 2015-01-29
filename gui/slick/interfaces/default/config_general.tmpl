@@ -550,9 +550,11 @@
 								<span class="component-title">Branch version:</span>
 								<span class="component-desc">
 									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
+									#if $sickbeard.versionCheckScheduler.action.list_remote_branches() 
 									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
 										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
 									#end for
+									#end if
 									</select>
 									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
 									<div class="clear-left"><p>select branch to use (restart required)</p></div>
