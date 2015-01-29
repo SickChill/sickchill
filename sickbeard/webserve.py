@@ -521,6 +521,18 @@ class WebRoot(WebHandler):
 
         return t.respond()
 
+
+class CalendarHandler(BaseHandler):
+    def get(self, *args, **kwargs):
+        if sickbeard.CALENDAR_UNPROTECTED:
+            self.write(self.calendar())
+        else:
+            self.calendar_auth()
+
+    @authenticated
+    def calendar_auth(self):
+        self.write(self.calendar())
+
     # Raw iCalendar implementation by Pedro Jose Pereira Vieito (@pvieito).
     #
     # iCalendar (iCal) - Standard RFC 5545 <http://tools.ietf.org/html/rfc5546>
