@@ -1240,6 +1240,10 @@ class TVShow(object):
             logger.log(u"Episode already exists but the found episode has better quality, getting found episode",
                        logger.DEBUG)
             return True
+        elif curStatus == Quality.UNKNOWN and manualSearch:
+            logger.log(u"Episode already exists but quality is Unknown, getting found episode",
+                       logger.DEBUG)
+            return True
         else:
             logger.log(u"Episode already exists and the found episode has same/lower quality, ignoring found episode",
                        logger.DEBUG)
