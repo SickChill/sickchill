@@ -1,5 +1,6 @@
 #import sickbeard
 #from sickbeard import common
+#from sickbeard.common import *
 #from sickbeard import exceptions
 #set global $title="Mass Edit"
 #set global $header="Mass Edit"
@@ -108,6 +109,18 @@
             <option value="enable" #if $paused_value then "selected=\"selected\"" else ""#>enable</option>
             <option value="disable" #if $paused_value == False then "selected=\"selected\"" else ""#>disable</option>
         </select>
+    </div><br />
+</div>
+
+<div class="optionWrapper">
+    <span class="selectTitle">Default Episode Status:</span>
+    <div class="selectChoices">
+      <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
+          <option value="keep">&lt; keep &gt;</option>
+          #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED]:
+          <option value="$curStatus" #if $curStatus == $default_ep_status_value then 'selected="selected"' else ''#>$statusStrings[$curStatus]</option>
+          #end for
+      </select>
     </div><br />
 </div>
 
