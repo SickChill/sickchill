@@ -466,12 +466,29 @@
 								</label>
 							</div>
 
+							<div class="field-pair" id="torrent_auth_type">
+								<label>
+									<span class="component-title">Http Authentication</span>
+									<span class="component-desc">
+										<select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
+										#set $http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"}
+										#for $authvalue,$authname in $http_authtype.items():
+    									#set $selected = $html_selected if $sickbeard.TORRENT_AUTH_TYPE == $authvalue else ''
+										    <option value="$authvalue"$selected>$authname</option>
+										#end for
+										</select>
+										<p></p>
+									</span>
+								</label>
+							</div>
+
 							<div class="field-pair" id="torrent_verify_cert_option">
 								<label for="torrent_verify_cert">
 									<span class="component-title">Verify certificate</span>
 									<span class="component-desc">
 										<input type="checkbox" name="torrent_verify_cert" class="enabler" id="torrent_verify_cert" <%= html_checked if sickbeard.TORRENT_VERIFY_CERT == True else '' %>/>
-										<p>disable if you get "Deluge: Authentication Error" in your log</p>
+										<p id="torrent_verify_deluge">disable if you get "Deluge: Authentication Error" in your log</p>
+										<p id="torrent_verify_rtorrent">Verify SSL certificates for HTTPS requests</p>
 									</span>
 								</label>
 							</div>

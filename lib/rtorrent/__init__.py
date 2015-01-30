@@ -22,15 +22,16 @@ import os.path
 import time
 import xmlrpclib
 
-from rtorrent.common import find_torrent, \
-    is_valid_port, convert_version_tuple_to_str
-from rtorrent.lib.torrentparser import TorrentParser
-from rtorrent.lib.xmlrpc.http import HTTPServerProxy
-from rtorrent.lib.xmlrpc.scgi import SCGIServerProxy
-from rtorrent.rpc import Method
-from rtorrent.lib.xmlrpc.basic_auth import BasicAuthTransport
-from rtorrent.torrent import Torrent
-from rtorrent.group import Group
+from rtorrent.common import (find_torrent,  # @UnresolvedImport
+                             is_valid_port,  # @UnresolvedImport
+                             convert_version_tuple_to_str)  # @UnresolvedImport
+from rtorrent.lib.torrentparser import TorrentParser  # @UnresolvedImport
+from rtorrent.lib.xmlrpc.http import HTTPServerProxy  # @UnresolvedImport
+from rtorrent.lib.xmlrpc.scgi import SCGIServerProxy  # @UnresolvedImport
+from rtorrent.rpc import Method  # @UnresolvedImport
+from rtorrent.lib.xmlrpc.requests_transport import RequestsTransport  # @UnresolvedImport @IgnorePep8
+from rtorrent.torrent import Torrent  # @UnresolvedImport
+from rtorrent.group import Group  # @UnresolvedImport
 import rtorrent.rpc  # @UnresolvedImport
 
 __version__ = "0.2.9"
@@ -43,11 +44,12 @@ MIN_RTORRENT_VERSION_STR = convert_version_tuple_to_str(MIN_RTORRENT_VERSION)
 
 
 class RTorrent:
+
     """ Create a new rTorrent connection """
     rpc_prefix = None
 
     def __init__(self, uri, username=None, password=None,
-                 verify=False, sp=None, sp_kwargs=None):
+                 verify=False, sp=None, sp_kwargs=None, tp_kwargs=None):
         self.uri = uri  # : From X{__init__(self, url)}
 
         self.username = username
@@ -59,12 +61,18 @@ class RTorrent:
             self.sp = sp
         elif self.schema in ['http', 'https']:
             self.sp = HTTPServerProxy
+            if self.schema == 'https':
+                self.isHttps = True
+            else:
+                self.isHttps = False
         elif self.schema == 'scgi':
             self.sp = SCGIServerProxy
         else:
             raise NotImplementedError()
 
         self.sp_kwargs = sp_kwargs or {}
+
+        self.tp_kwargs = tp_kwargs or {}
 
         self.torrents = []  # : List of L{Torrent} instances
         self._rpc_methods = []  # : List of rTorrent RPC methods
@@ -80,9 +88,30 @@ class RTorrent:
             if self.schema == 'scgi':
                 raise NotImplementedError()
 
+            if 'authtype' not in self.tp_kwargs:
+                authtype = None
+            else:
+                authtype = self.tp_kwargs['authtype']
+
+            if 'check_ssl_cert' not in self.tp_kwargs:
+                check_ssl_cert = True
+            else:
+                check_ssl_cert = self.tp_kwargs['check_ssl_cert']
+
+            if 'proxies' not in self.tp_kwargs:
+                proxies = None
+            else:
+                proxies = self.tp_kwargs['proxies']
+
             return self.sp(
                 self.uri,
-                transport=BasicAuthTransport(self.username, self.password),
+                transport=RequestsTransport(
+                    use_https=self.isHttps,
+                    authtype=authtype,
+                    username=self.username,
+                    password=self.password,
+                    check_ssl_cert=check_ssl_cert,
+                    proxies=proxies),
                 **self.sp_kwargs
             )
 
@@ -90,8 +119,10 @@ class RTorrent:
 
     def _verify_conn(self):
         # check for rpc methods that should be available
-        assert "system.client_version" in self._get_rpc_methods(), "Required RPC method not available."
-        assert "system.library_version" in self._get_rpc_methods(), "Required RPC method not available."
+        assert "system.client_version" in self._get_rpc_methods(
+        ), "Required RPC method not available."
+        assert "system.library_version" in self._get_rpc_methods(
+        ), "Required RPC method not available."
 
         # minimum rTorrent version check
         assert self._meets_version_requirement() is True,\
@@ -152,7 +183,8 @@ class RTorrent:
         for result in results:
             results_dict = {}
             # build results_dict
-            for m, r in zip(retriever_methods, result[1:]):  # result[0] is the info_hash
+            # result[0] is the info_hash
+            for m, r in zip(retriever_methods, result[1:]):
                 results_dict[m.varname] = rtorrent.rpc.process_result(m, r)
 
             self.torrents.append(
@@ -199,7 +231,7 @@ class RTorrent:
 
         return(func_name)
 
-    def load_magnet(self, magneturl, info_hash, start=False, verbose=False, verify_load=True):
+    def load_magnet(self, magneturl, info_hash, start=False, verbose=False, verify_load=True):  # @IgnorePep8
 
         p = self._get_conn()
 
@@ -231,13 +263,13 @@ class RTorrent:
             while i < MAX_RETRIES:
                 for torrent in self.get_torrents():
                     if torrent.info_hash == info_hash:
-                        if str(info_hash) not in str(torrent.name) :
+                        if str(info_hash) not in str(torrent.name):
                             time.sleep(1)
                             i += 1
 
         return(torrent)
 
-    def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):
+    def load_torrent(self, torrent, start=False, verbose=False, verify_load=True):  # @IgnorePep8
         """
         Loads torrent into rTorrent (with various enhancements)
 
@@ -354,7 +386,7 @@ class RTorrent:
         if persistent is True:
             p.group.insert_persistent_view('', name)
         else:
-            assert view is not None, "view parameter required on non-persistent groups"
+            assert view is not None, "view parameter required on non-persistent groups"  # @IgnorePep8
             p.group.insert('', name, view)
 
         self._update_rpc_methods()

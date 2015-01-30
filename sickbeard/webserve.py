@@ -3656,7 +3656,7 @@ class ConfigSearch(Config):
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
-                   torrent_rpcurl=None, ignore_words=None, require_words=None):
+                   torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
 
         results = []
 
@@ -3717,6 +3717,7 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
         sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
         sickbeard.TORRENT_RPCURL = torrent_rpcurl
+        sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
 
         sickbeard.save_config()
 
