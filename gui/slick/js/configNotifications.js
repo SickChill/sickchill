@@ -102,7 +102,7 @@ $(document).ready(function(){
         $('#boxcar2_accesstoken').removeClass('warning');
 		$(this).prop('disabled', true);
         $('#testBoxcar2-result').html(loading);
-        $.get(sbRoot + '/home/testBoxcar2', {'accessToken': boxcar2_accesstoken})
+        $.get(sbRoot + '/home/testBoxcar2', {'accesstoken': boxcar2_accesstoken})
             .done(function (data) {
                 $('#testBoxcar2-result').html(data);
                 $('#testBoxcar2').prop('disabled', false);
