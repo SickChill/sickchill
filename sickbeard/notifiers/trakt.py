@@ -47,7 +47,7 @@ class TraktNotifier:
         """
 
         trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
             try:
@@ -117,7 +117,7 @@ class TraktNotifier:
         Returns: True if the request succeeded, False otherwise
         """
         try:
-            trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password, disable_ssl)
+            trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password, disable_ssl, sickbeard.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
             return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
