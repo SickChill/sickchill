@@ -231,7 +231,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 else:
                     searchURL = self.url + 'tv/latest/'
 
-                print searchURL
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
