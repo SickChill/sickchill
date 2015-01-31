@@ -104,7 +104,8 @@
             filter_columnFilters: false,
 			filter_reset: '.resetshows'
 		},
-        sortStable: true
+        sortStable: true,
+        sortAppend: [[1,0]]
     });
 	
 	\$("#showListTableAnime:has(tbody tr)").tablesorter({
@@ -126,7 +127,8 @@
             filter_columnFilters: false,
 			filter_reset: '.resetanime'
 		},
-        sortStable: true
+        sortStable: true,
+        sortAppend: [[1,0]]
     });
 
 	\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
