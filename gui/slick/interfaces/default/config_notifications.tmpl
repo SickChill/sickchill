@@ -1375,38 +1375,38 @@
                                     <span class="component-title">Trakt username</span>
                                     <input type="text" name="trakt_username" id="trakt_username" value="$sickbeard.TRAKT_USERNAME" class="form-control input-sm input250" />
                                 </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
+                                <p>
                                     <span class="component-desc">username of your Trakt account.</span>
-                                </label>
+                                </p>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_password">
                                     <span class="component-title">Trakt password</span>
                                     <input type="password" name="trakt_password" id="trakt_password" value="$sickbeard.TRAKT_PASSWORD" class="form-control input-sm input250" />
                                 </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
+                                <p>
                                     <span class="component-desc">password of your Trakt account.</span>
-                                </label>
+                                </p>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_disable_ssl_verify">
                                     <span class="component-title">Disable SSL Verification:</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_disable_ssl_verify" id="trakt_disable_ssl_verify" #if $sickbeard.TRAKT_DISABLE_SSL_VERIFY then "checked=\"checked\"" else ""# />
-                                        <p>Disable SSL certificate verification on systems with broken SSL implementations, like the QNAP NAS.</p>
+                                        <p>Disable SSL certificate verification for broken SSL installs (like QNAP NAS)</p>
                                     </span>
                                 </label>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_timeout">
                                     <span class="component-title">API Timeout:</span>
-                                    <span class="component-desc">
-                                        <input type="text" name="trakt_timeout" id="trakt_timeout" value="$sickbeard.TRAKT_TIMEOUT" class="form-control input-sm input75" />
-                                        <p>Seconds to wait for Trakt API to respond (0 to wait forever)</p>
-                                    </span>
+                                    <input type="text" name="trakt_timeout" id="trakt_timeout" value="$sickbeard.TRAKT_TIMEOUT" class="form-control input-sm input75" />
                                 </label>
+                                <p>
+                                    <span class="component-desc">
+                                        Seconds to wait for Trakt API to respond. (Use 0 to wait forever)
+                                    </span>
+                                </p>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_default_indexer">
