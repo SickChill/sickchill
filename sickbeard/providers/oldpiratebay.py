@@ -44,10 +44,10 @@ from lib.requests import exceptions
 from lib.unidecode import unidecode
 
 
-class ThePirateBayProvider(generic.TorrentProvider):
+class OldPirateBayProvider(generic.TorrentProvider):
     def __init__(self):
 
-        generic.TorrentProvider.__init__(self, "ThePirateBay")
+        generic.TorrentProvider.__init__(self, "OldPirateBay")
 
         self.supportsBacklog = True
 
@@ -57,13 +57,13 @@ class ThePirateBayProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.cache = ThePirateBayCache(self)
+        self.cache = OldPirateBayCache(self)
 
-        self.urls = {'base_url': 'https://thepiratebay.se/'}
+        self.urls = {'base_url': 'https://oldpiratebay.org/'}
 
         self.url = self.urls['base_url']
 
-        self.searchurl = self.url + 'search/%s/0/7/200' # order by seed
+        self.searchurl = self.url + 'search.php?q=%s&Torrent_sort=seeders.desc' # order by seed
 
         self.re_title_url = '/torrent/(?P<id>\d+)/(?P<title>.*?)//1".+?(?P<url>magnet.*?)//1".+?(?P<seeders>\d+)</td>.+?(?P<leechers>\d+)</td>'
 
@@ -71,7 +71,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
         return self.enabled
 
     def imageName(self):
-        return 'thepiratebay.png'
+        return 'oldpiratebay.png'
 
     def getQuality(self, item, anime=False):
 
@@ -231,7 +231,6 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 else:
                     searchURL = self.url + 'tv/latest/'
 
-                print searchURL
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
@@ -239,21 +238,25 @@ class ThePirateBayProvider(generic.TorrentProvider):
                     continue
 
                 re_title_url = self.proxy._buildRE(self.re_title_url)
-                matches = re.compile(re_title_url, re.DOTALL).finditer(urllib.unquote(data))
-                for torrent in matches:
+                
+                match = re.compile(re_title_url, re.DOTALL).finditer(urllib.unquote(data))
+
+                for torrent in match:
                     title = torrent.group('title').replace('_',
                                                            '.')  #Do not know why but SickBeard skip release with '_' in name
                     url = torrent.group('url')
+                    print 'torrent url: ' + url
                     id = int(torrent.group('id'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))
+
                     #Filter unseeded torrent
                     if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
                         continue
 
                         #Accept Torrent only from Good People for every Episode Search
                     if self.confirmed and re.search('(VIP|Trusted|Helper|Moderator)', torrent.group(0)) is None:
-                        logger.log(u"ThePirateBay Provider found result " + torrent.group(
+                        logger.log(u"OldPirateBay Provider found result " + torrent.group(
                             'title') + " but that doesn't seem like a trusted result so I'm ignoring it", logger.DEBUG)
                         continue
 
@@ -322,16 +325,16 @@ class ThePirateBayProvider(generic.TorrentProvider):
         return self.ratio
 
 
-class ThePirateBayCache(tvcache.TVCache):
+class OldPirateBayCache(tvcache.TVCache):
     def __init__(self, provider):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll ThePirateBay every 10 minutes max
+        # only poll OldPirateBay every 10 minutes max
         self.minTime = 20
 
     def _getRSSData(self):
         search_params = {'RSS': ['rss']}
         return {'entries': self.provider._doSearch(search_params)}
 
-provider = ThePirateBayProvider()
+provider = OldPirateBayProvider()
