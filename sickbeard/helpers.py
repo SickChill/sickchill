@@ -43,6 +43,8 @@ import requests
 import requests.exceptions
 import xmltodict
 
+import subprocess
+
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions
@@ -343,7 +345,7 @@ def listMediaFiles(path):
 
 def copyFile(srcFile, destFile):
     if isPosix():
-        os.system('cp "%s" "%s"' % (srcFile, destFile))
+        subprocess.call(['cp', srcFile, destFile])
     else:
         ek.ek(shutil.copyfile, srcFile, destFile)
         
