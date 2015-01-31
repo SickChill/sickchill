@@ -2242,12 +2242,12 @@ class HomeAddShows(Home):
             if recommendedlist:
                 indexers = ['tvdb', 'tvrage']
                 map(final_results.append, (
-                    [int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
-                     'http://www.trakt.tv/shows/%s' % show['show']['ids']['slug'], show['show']['title'],
-                     show['show']['overview'],
-                     datetime.date.fromtimestamp(int(show['show']['first_aired']) / 1000.0).strftime('%Y%m%d')]
+                    [int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
+                     'http://www.trakt.tv/shows/%s' % show['ids']['slug'], show['title'],
+                     show['overview'],
+                     datetime.date.fromtimestamp(int(show['first_aired']) / 1000.0).strftime('%Y%m%d')]
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                    int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+                    int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
