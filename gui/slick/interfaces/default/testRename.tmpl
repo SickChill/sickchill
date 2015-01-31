@@ -32,6 +32,26 @@
 
 #set $curSeason = -1
 #set $odd = False
+
+
+<table id="SelectAllTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+	<thead>
+		<tr class="seasonheader" id="season-all">
+            <td colspan="4">
+                <h2>All Seasons</h2>
+            </td>
+        </tr>
+		<tr class="seasoncols" id="selectall">
+    	    <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll" /></th>
+        	<th align="left" valign="top" class="nowrap">Select All</th>
+        	<th width="100%" class="col-name" style="visibility:hidden;"></th>
+		</tr>
+	</thead>
+</table>
+
+<br/>
+<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="/home/displayShow?show=$show.indexerid" class="btn btn-danger">Cancel Rename</a>
+
 <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
 
 #for $cur_ep_obj in $ep_obj_list:
@@ -43,7 +63,7 @@
     <thead>
         <tr class="seasonheader" id="season-$cur_ep_obj.season">
             <td colspan="4">
-                <br/>
+            	 <br/>
                 <h2>#if int($cur_ep_obj.season) == 0 then "Specials" else "Season "+str($cur_ep_obj.season)#</h2>
             </td>
         </tr>

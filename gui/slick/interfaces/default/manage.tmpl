@@ -58,14 +58,15 @@
             5: { sorter: 'anime'},              
             6: { sorter: 'flatfold'},
             7: { sorter: 'paused'},
-            8: { sorter: 'status'},
-            9: { sorter: false},
+            8: { sorter: 'default_ep_status'},
+            9: { sorter: 'status'},
            10: { sorter: false},
            11: { sorter: false},
            12: { sorter: false},
-		   13: { sorter: false},
+           13: { sorter: false},
 		   14: { sorter: false},
-		   15: { sorter: false}
+		   15: { sorter: false},
+		   16: { sorter: false}
         }
     }); 
 });
@@ -90,6 +91,7 @@
 			<th class="col-legend">Anime</th>
 			<th class="col-legend">Flat Folders</th>
 			<th class="col-legend">Paused</th>
+			<th class="col-legend">Default Ep<br>Status</th>
 			<th class="col-legend">Status</th>
 			<th width="1%">Update<br/><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
 			<th width="1%">Rescan<br/><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
@@ -172,6 +174,7 @@
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center">$statusStrings[$curShow.default_ep_status]</td>
 			<td align="center">$curShow.status</td>
 			<td align="center">$curUpdate</td>
 			<td align="center">$curRefresh</td>

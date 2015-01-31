@@ -1224,11 +1224,11 @@ class TVShow(object):
             if epStatus in (WANTED, UNAIRED, SKIPPED):
                 logger.log(u"Existing episode status is wanted/unaired/skipped, getting found episode", logger.DEBUG)
                 return True
-            elif manualSearch:
-                logger.log(
-                    u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
-                    logger.DEBUG)
-                return True
+            #elif manualSearch:
+            #    logger.log(
+            #        u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
+            #        logger.DEBUG)
+            #    return True
             else:
                 logger.log(u"Quality is on wanted list, need to check if it's better than existing quality",
                            logger.DEBUG)
@@ -1238,6 +1238,10 @@ class TVShow(object):
         # if we are re-downloading then we only want it if it's in our bestQualities list and better than what we have
         if curStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST and quality in bestQualities and quality > curQuality:
             logger.log(u"Episode already exists but the found episode has better quality, getting found episode",
+                       logger.DEBUG)
+            return True
+        elif curStatus == Quality.UNKNOWN and manualSearch:
+            logger.log(u"Episode already exists but quality is Unknown, getting found episode",
                        logger.DEBUG)
             return True
         else:
@@ -1269,7 +1273,9 @@ class TVShow(object):
 
             if epStatus == FAILED:
                 return Overview.WANTED
-            elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
+            if curQuality == Quality.UNKNOWN:
+                return Overview.QUAL
+            elif epStatus in (SNATCHED_BEST, SNATCHED, SNATCHED_PROPER ) and curQuality == maxBestQuality:
                 return Overview.SNATCHED
             # if they don't want re-downloads then we call it good if they have anything
             elif maxBestQuality == None:
@@ -2187,8 +2193,11 @@ class TVEpisode(object):
         if multi == None:
             multi = sickbeard.NAMING_MULTI_EP
 
-        if anime_type == None:
-            anime_type = sickbeard.NAMING_ANIME
+        if sickbeard.NAMING_CUSTOM_ANIME:
+            if anime_type == None:
+                anime_type = sickbeard.NAMING_ANIME
+        else:
+            anime_type = 3
 
         replace_map = self._replace_map()
 

@@ -47,6 +47,7 @@ $(document).ready(function(){
             directory = ' directory',
             client = '',
             option_panel = '#options_torrent_blackhole';
+            rpcurl = ' RPC URL'
 
         if ('blackhole' != selectedProvider) {
             var label_warning_deluge = '#label_warning_deluge',
@@ -76,6 +77,7 @@ $(document).ready(function(){
             $(torrent_label_anime_option).show();
             $(path_synology).hide();
             $(torrent_paused_option).show();
+            $(torrent_rpcurl_option).hide();
 
             if ('utorrent' == selectedProvider) {
                 client = 'uTorrent';
@@ -87,6 +89,7 @@ $(document).ready(function(){
                 $(torrent_high_bandwidth_option).show();
                 $(torrent_label_option).hide();
                 $(torrent_label_anime_option).hide();
+                $(torrent_rpcurl_option).show();
                 //$('#directory_title').text(client + directory);
             } else if ('deluge' == selectedProvider){
                 client = 'Deluge';
@@ -113,6 +116,7 @@ $(document).ready(function(){
             $('#username_title').text(client + username);
             $('#password_title').text(client + password);
             $('#torrent_client').text(client);
+            $('#rpcurl_title').text(client + rpcurl);
             option_panel = '#options_torrent_clients';
         }
         $(option_panel).show();

@@ -1,27 +1,67 @@
 import requests
+import json
+from sickbeard import logger
 
-from requests.auth import HTTPBasicAuth
 from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
-    def __init__(self, apikey, username=None, password=None, use_https=False, timeout=5):
-        self.apikey = apikey
+    def __init__(self, apikey, username=None, password=None, disable_ssl_verify=False, timeout=30):
         self.username = username
         self.password = password
-
-        self.protocol = 'https://' if use_https else 'http://'
+        self.verify = not disable_ssl_verify
         self.timeout = timeout
+        self.api_url = 'https://api.trakt.tv/'
+        self.headers = {
+          'Content-Type': 'application/json',
+          'trakt-api-version': '2',
+          'trakt-api-key': apikey,
+        }
 
     def validateAccount(self):
-        return self.traktRequest("account/test/%APIKEY%", method='POST')
+        if hasattr(self, 'token'):
+            del(self.token)
+        data = {
+            'login': self.username,
+            'password': self.password
+        }
+        try:
+            resp = requests.request('POST', self.api_url+"auth/login", headers=self.headers,
+                data=json.dumps(data), timeout=self.timeout, verify=self.verify)
+            resp.raise_for_status()
+            resp = resp.json()
+        except (requests.HTTPError, requests.ConnectionError) as e:
+            code = getattr(e.response, 'status_code', None)
+            if not code:
+                # This is pretty much a fatal error if there is no status_code
+                # It means there basically was no response at all
+                raise traktException(e)
+            elif code == 502:
+                # Retry the request, cloudflare had a proxying issue
+                logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
+                return self.validateAccount()
+            elif code == 401:
+                raise traktAuthException(e)
+            elif code == 503:
+                raise traktServerBusy(e)
+            else:
+                raise traktException(e)
+        if 'token' in resp:
+            self.token = resp['token']
+            return True
+        return False
 
-    def traktRequest(self, url, data=None, method='GET'):
-        base_url = self.protocol + 'api.trakt.tv/%s' % url.replace('%APIKEY%', self.apikey).replace('%USER%',
-                                                                                                    self.username)
+    def traktRequest(self, path, data=None, method='GET'):
+        url = self.api_url + path
+        headers = self.headers
+        if not getattr(self, 'token', None):
+            self.validateAccount()
+        headers['trakt-user-login'] = self.username
+        headers['trakt-user-token'] = self.token
 
         # request the URL from trakt and parse the result as json
         try:
-            resp = requests.request(method, base_url, auth=HTTPBasicAuth(self.username, self.password), data=data if data else [])
+            resp = requests.request(method, url, headers=headers, timeout=self.timeout,
+                data=json.dumps(data) if data else [], verify=self.verify)
 
             # check for http errors and raise if any are present
             resp.raise_for_status()
@@ -29,9 +69,18 @@ class TraktAPI():
             # convert response to json
             resp = resp.json()
         except (requests.HTTPError, requests.ConnectionError) as e:
-            if e.response.status_code == 401:
+            code = getattr(e.response, 'status_code', None)
+            if not code:
+                # This is pretty much a fatal error if there is no status_code
+                # It means there basically was no response at all
+                raise traktException(e)
+            elif code == 502:
+                # Retry the request, cloudflare had a proxying issue
+                logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
+                return self.traktRequest(path, data, method)
+            elif code == 401:
                 raise traktAuthException(e)
-            elif e.response.status_code == 503:
+            elif code == 503:
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)

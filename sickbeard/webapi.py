@@ -130,7 +130,7 @@ class ApiHandler(RequestHandler):
         except:pass
 
     def _out_as_json(self, dict):
-        self.set_header("Content-Type", "application/json;charset=UTF-8'")
+        self.set_header("Content-Type", "application/json;charset=UTF-8")
         try:
             out = json.dumps(dict, indent=self.intent, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
@@ -1943,6 +1943,7 @@ class CMD_Show(ApiCall):
         showDict["tvdbid"] = helpers.mapIndexersToShow(showObj)[1]
         showDict["tvrage_id"] = helpers.mapIndexersToShow(showObj)[2]
         showDict["tvrage_name"] = showObj.name
+        showDict["imdbid"] = showObj.imdbid
 
         showDict["network"] = showObj.network
         if not showDict["network"]:

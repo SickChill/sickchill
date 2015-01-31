@@ -6,6 +6,7 @@
 #from lib import subliminal
 #import os.path, os
 #import datetime
+#import urllib
 
 #set global $title=$show.name
 ##set global $header = '<a></a>' % 
@@ -165,7 +166,7 @@
 #else
     #if 'country_codes' in $show.imdb_info:
         #for $country in $show.imdb_info['country_codes'].split('|')
-				<img src="$sbRoot/images/flags/${$country}.png" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+				<img src="$sbRoot/images/blank.png" class="country-flag flag-${$country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
         #end for
     #end if
     #if 'year' in $show.imdb_info:
@@ -374,8 +375,18 @@
 			#if $scene_anime:
 				<th class="col-ep">Scene Absolute</th>
 			#end if
-				<th class="col-name">Name</th>
+				<th class="col-name"
+			#if ($sickbeard.DISPLAY_FILESIZE == True):
+			style="min-width: 190px"
+			#end if
+			>>Name</th>
+			#if ($sickbeard.DISPLAY_FILESIZE == True):
+				<th class="col-ep">Filesize</th>
+			#end if
 				<th class="col-airdate">Airdate</th>
+			#if $sickbeard.DOWNLOAD_URL
+				<th class="col-ep">Download</th>
+			#end if
 			#if $sickbeard.USE_SUBTITLES and $show.subtitles:
 				<th class="col-subtitles">Subtitles</th>
 			#end if
@@ -467,9 +478,32 @@
 			$epResult["name"]
 		</td>
 		
+		#if ($sickbeard.DISPLAY_FILESIZE == True):
+		<td class="col-ep">
+			#if $epResult["file_size"]:
+				#set $file_size = $epResult["file_size"]  / 1024 / 1024 
+				$file_size MB
+			#end if
+		</td>
+		#end if
 		<td class="col-airdate">
 			<span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
 		</td>
+
+		#if $sickbeard.DOWNLOAD_URL and $epResult['location']
+		<td>
+			#set $filename = $epResult['location']
+		  	#for $rootDir in $sickbeard.ROOT_DIRS.split('|')
+		   		#if $rootDir.startswith('/')
+		   			#set $filename = $filename.replace($rootDir, "")
+		   		#end if
+		   	#end for
+			#set $filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
+			<center><a href="$filename">Download</a></center>
+		</td>
+		#elif $sickbeard.DOWNLOAD_URL
+			<td></td>
+		#end if
 		
 		#if $sickbeard.USE_SUBTITLES and $show.subtitles:
 			<td class="col-subtitles" align="center">

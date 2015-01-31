@@ -163,6 +163,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     year.text = year_text
             except:
                 pass
+        plot = etree.SubElement(tv_node, "plot")
+        if getattr(myShow, 'overview', None) is not None:
+            plot.text = myShow["overview"]
 
         if myShow['rating'] != None:
             try:

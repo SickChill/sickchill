@@ -40,6 +40,7 @@ class CheckVersion():
 
     def __init__(self):
         self.updater = None
+        self.install_type = None        
 
         if sickbeard.gh:
             self.install_type = self.find_install_type()
@@ -419,7 +420,7 @@ class GitUpdateManager(UpdateManager):
         Calls git clean to remove all untracked files. Returns a bool depending
         on the call's success.
         """
-        output, err, exit_status = self._run_git(self._git_path, 'clean -d -fx ""')  # @UnusedVariable
+        output, err, exit_status = self._run_git(self._git_path, 'clean -df ""')  # @UnusedVariable
         if exit_status == 0:
             return True
 

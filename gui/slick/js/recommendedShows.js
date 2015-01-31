@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#searchResults').html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> loading recommended shows...');
     function getRecommendedShows() {
         $.getJSON(sbRoot + '/home/addShows/getRecommendedShows', {}, function (data) {
             var firstResult = true;
@@ -139,6 +140,6 @@ $(document).ready(function () {
     }
 
     $('#rootDirText').change(updateSampleText);
-    $('#whichSeries').live('change', updateSampleText);
+    $('#searchResults').on('change', '#whichSeries', updateSampleText);
 
 });

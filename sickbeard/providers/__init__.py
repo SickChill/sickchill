@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 __all__ = ['ezrss',
-           'tvtorrents',
            'womble',
            'btn',
            'thepiratebay',
@@ -27,6 +26,7 @@ __all__ = ['ezrss',
            'hdtorrents',
            'torrentday',
            'hdbits',
+		   'hounddawgs',
            'iptorrents',
            'omgwtfnzbs',
            'nextgen',
