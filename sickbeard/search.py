@@ -242,10 +242,11 @@ def pickBestResult(results, show, quality_list=None):
                        logger.INFO)
             continue
 
-        if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
-                                                                       cur_result.provider.name):
-            logger.log(cur_result.name + u" has previously failed, rejecting it")
-            continue
+        if hasattr(cur_result, 'size'):
+            if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
+                                                                           cur_result.provider.name):
+                logger.log(cur_result.name + u" has previously failed, rejecting it")
+                continue
 
         if not bestResult or bestResult.quality < cur_result.quality and cur_result.quality != Quality.UNKNOWN:
             bestResult = cur_result
