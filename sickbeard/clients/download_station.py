@@ -36,7 +36,7 @@ class DownloadStationAPI(GenericClient):
         auth_url = self.host + 'webapi/auth.cgi?api=SYNO.API.Auth&version=2&method=login&account=' + self.username + '&passwd=' + self.password + '&session=DownloadStation&format=sid'
 
         try:
-            self.response = self.session.get(auth_url)
+            self.response = self.session.get(auth_url, verify=False)
             self.auth = self.response.json()['data']['sid']
         except:
             return None
