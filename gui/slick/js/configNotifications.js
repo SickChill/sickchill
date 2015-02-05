@@ -426,19 +426,24 @@ $(document).ready(function(){
             return false;
         }
 
-        var current_pushbullet_device = $("#pushbullet_device").val();
         $.get(sbRoot + "/home/getPushbulletDevices", {'api': pushbullet_api},
             function (data) {
                 var devices = jQuery.parseJSON(data).devices;
+                var current_pushbullet_device = $("#pushbullet_device").val();
                 $("#pushbullet_device_list").html('');
                 for (var i = 0; i < devices.length; i++) {
                     if(devices[i].active == true) {
                         if(current_pushbullet_device == devices[i].iden) {
-                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'" selected>' + devices[i].nickname + '</option>')
+                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'" selected>' + devices[i].nickname + '</option>');
                         } else {
-                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'">' + devices[i].nickname + '</option>')
+                            $("#pushbullet_device_list").append('<option value="'+devices[i].iden+'">' + devices[i].nickname + '</option>');
                         }
                     }
+                }
+                if (current_pushbullet_device == "") {
+                    $("#pushbullet_device_list").prepend('<option value="" selected>All devices</option>');
+                } else {
+                    $("#pushbullet_device_list").prepend('<option value="">All devices</option>');
                 }
                 if(msg) {
                     $('#testPushbullet-result').html(msg);
