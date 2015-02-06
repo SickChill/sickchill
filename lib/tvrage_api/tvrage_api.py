@@ -626,6 +626,9 @@ class TVRage:
                 raise tvrage_showincomplete(
                     "Show search returned incomplete results (cannot find complete show on TVRAGE)")
 
+            if 'episodelist' not in epsEt:
+                return False
+
             seasons = epsEt['episodelist']['season']
             if not isinstance(seasons, list):
                 seasons = [seasons]
