@@ -220,6 +220,7 @@ UPDATE_FREQUENCY = None
 DAILYSEARCH_STARTUP = False
 BACKLOG_FREQUENCY = None
 BACKLOG_STARTUP = False
+SHOWUPDATE_HOUR = 3
 
 DEFAULT_AUTOPOSTPROCESSER_FREQUENCY = 10
 DEFAULT_DAILYSEARCH_FREQUENCY = 40
@@ -536,7 +537,7 @@ def initialize(consoleLogging=True):
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
-            AUTOPOSTPROCESSER_FREQUENCY, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
+            AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
             GIT_AUTOISSUES, gh
@@ -758,7 +759,11 @@ def initialize(consoleLogging=True):
         UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
         if UPDATE_FREQUENCY < MIN_UPDATE_FREQUENCY:
             UPDATE_FREQUENCY = MIN_UPDATE_FREQUENCY
-
+            
+        SHOWUPDATE_HOUR = check_setting_int(CFG, 'General', 'showupdate_hour', 3)
+        if SHOWUPDATE_HOUR > 23: SHOWUPDATE_HOUR = 0;
+        elif SHOWUPDATE_HOUR < 0: SHOWUPDATE_HOUR = 0;
+        
         BACKLOG_DAYS = check_setting_int(CFG, 'General', 'backlog_days', 7)
 
         NZB_DIR = check_setting_str(CFG, 'Blackhole', 'nzb_dir', '')
@@ -1186,7 +1191,7 @@ def initialize(consoleLogging=True):
         showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
                                                   cycleTime=datetime.timedelta(hours=1),
                                                   threadName="SHOWUPDATER",
-                                                  start_time=datetime.time(hour=3))  # 3 AM
+                                                  start_time=datetime.time(hour=SHOWUPDATE_HOUR))  # 3 AM
 
         # searchers
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
@@ -1477,6 +1482,7 @@ def save_config():
     new_config['General']['dailysearch_frequency'] = int(DAILYSEARCH_FREQUENCY)
     new_config['General']['backlog_frequency'] = int(BACKLOG_FREQUENCY)
     new_config['General']['update_frequency'] = int(UPDATE_FREQUENCY)
+    new_config['General']['showupdate_hour'] = int(SHOWUPDATE_HOUR)
     new_config['General']['download_propers'] = int(DOWNLOAD_PROPERS)
     new_config['General']['randomize_providers'] = int(RANDOMIZE_PROVIDERS)
     new_config['General']['check_propers_interval'] = CHECK_PROPERS_INTERVAL
