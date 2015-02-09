@@ -1336,3 +1336,7 @@ if __name__ == '__main__':
 
 def remove_article(text=''):
     return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
+
+def generateCookieSecret():
+
+    return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)

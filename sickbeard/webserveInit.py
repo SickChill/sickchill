@@ -71,7 +71,7 @@ class SRWebServer(threading.Thread):
                                  autoreload=False,
                                  gzip=True,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
-                                 cookie_secret='61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=',
+                                 cookie_secret=sickbeard.WEB_COOKIE_SECRET,
                                  login_url='%s/login/' % self.options['web_root'],
         )
 
