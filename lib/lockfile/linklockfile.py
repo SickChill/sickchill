@@ -5,6 +5,7 @@ import os
 
 from . import (LockBase, LockFailed, NotLocked, NotMyLock, LockTimeout,
                AlreadyLocked)
+import errno
 
 class LinkLockFile(LockBase):
     """Lock access to a file using atomic property of link(2).
@@ -29,7 +30,7 @@ class LinkLockFile(LockBase):
             try:
                 os.link(self.unique_name, self.lock_file)
             except OSError as e:
-                if e.errno == 38:
+                if e.errno == errno.ENOSYS:
                     raise LockFailed("%s" % e.strerror)
                 # Link creation failed.  Maybe we've double-locked?
                 nlinks = os.stat(self.unique_name).st_nlink
