@@ -28,7 +28,9 @@ class LinkLockFile(LockBase):
             # Try and create a hard link to it.
             try:
                 os.link(self.unique_name, self.lock_file)
-            except OSError:
+            except OSError as e:
+                if e.errno == 38:
+                    raise LockFailed("%s" % e.strerror)
                 # Link creation failed.  Maybe we've double-locked?
                 nlinks = os.stat(self.unique_name).st_nlink
                 if nlinks == 2:
