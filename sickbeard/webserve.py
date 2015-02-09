@@ -192,7 +192,7 @@ class BaseHandler(RequestHandler):
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
-            return self.get_secure_cookie('sickrage')
+            return self.get_secure_cookie('sickrage_user')
         else:
             return True
 
@@ -269,14 +269,14 @@ class LoginHandler(BaseHandler):
 
         if api_key:
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
-            self.set_secure_cookie('sickrage', api_key, expires_days=30 if remember_me > 0 else None)
+            self.set_secure_cookie('sickrage_user', api_key, expires_days=30 if remember_me > 0 else None)
 
         self.redirect('/home/')
 
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        self.clear_cookie("sickrage")
+        self.clear_cookie("sickrage_user")
         self.redirect('/login/')
 
 class KeyHandler(RequestHandler):
