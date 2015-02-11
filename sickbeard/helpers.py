@@ -35,6 +35,7 @@ import uuid
 import base64
 import zipfile
 import datetime
+import errno
 
 import sickbeard
 import subliminal
@@ -1108,8 +1109,13 @@ def touchFile(fname, atime=None):
             with file(fname, 'a'):
                 os.utime(fname, (atime, atime))
                 return True
-        except:
-            logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
+        except Exception as e:
+            if e.errno == errno.ENOSYS:
+                logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
+            elif e.errno == errno.EACCES:
+                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: {0}".format(fname), logger.ERROR)
+            else:
+                logger.log(u"File air date stamping failed. The error is: {0} and the message is: {1}.".format(e.errno, e.strerror), logger.ERROR)
             pass
 
     return False
