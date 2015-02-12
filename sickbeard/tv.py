@@ -1273,8 +1273,6 @@ class TVShow(object):
 
             if epStatus == FAILED:
                 return Overview.WANTED
-            if curQuality == Quality.UNKNOWN:
-                return Overview.QUAL
             elif epStatus in (SNATCHED_BEST, SNATCHED, SNATCHED_PROPER ) and curQuality == maxBestQuality:
                 return Overview.SNATCHED
             # if they don't want re-downloads then we call it good if they have anything
