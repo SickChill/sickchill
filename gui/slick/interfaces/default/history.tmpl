@@ -131,7 +131,11 @@
 				<td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
 				<td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
 				#if $curStatus == SUBTITLED:
-					<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>">
+				    #if $sickbeard.SUBTITLES_MULTI:
+					    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
+					#else
+					    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/unknown.png">
+					#end if
 				#end if    
 					<span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem["resource"])">$statusStrings[$curStatus]</span>
 				</td>
