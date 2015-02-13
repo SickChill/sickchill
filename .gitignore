@@ -37,6 +37,7 @@ tests/failed.db
 *.sw?
 Session.vim
 .ropeproject/*
+.settings/*
 
 # OS generated files #
 ######################
