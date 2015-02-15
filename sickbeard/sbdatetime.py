@@ -130,7 +130,7 @@ class sbdatetime(datetime.datetime):
 
         try:
             if sbdatetime.has_locale:
-                locale.setlocale(locale.LC_TIME, 'us_US')
+                locale.setlocale(locale.LC_TIME, 'en_US')
         except:
             sbdatetime.has_locale = False
 

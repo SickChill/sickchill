@@ -51,7 +51,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 var firstResult = true;
-                var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
+                var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
                 var checked = '';
 
                 if (data.results.length === 0) {
