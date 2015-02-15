@@ -49,7 +49,7 @@ class DailySearcher():
         if network_timezones.network_dict:
             curDate = (datetime.date.today() + datetime.timedelta(days=1)).toordinal()
         else:
-            curDate = (datetime.date.today() - datetime.timedelta(days=2)).toordinal()
+            curDate = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
 
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
 
