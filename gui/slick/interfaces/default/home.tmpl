@@ -131,10 +131,12 @@
         sortAppend: [[1,0]]
     });
 
-	\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
+	if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
+		\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
 	
 	#if $sickbeard.ANIME_SPLIT_HOME:
-	\$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
+		if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
+			\$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
 	#end if
 	
     #set $fuzzydate = 'airdate'
