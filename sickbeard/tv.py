@@ -1273,9 +1273,9 @@ class TVShow(object):
 
             if epStatus == FAILED:
                 return Overview.WANTED
-            if curQuality == Quality.UNKNOWN:
+            if epStatus == DOWNLOADED and curQuality == Quality.UNKNOWN:
                 return Overview.QUAL
-            elif epStatus in (SNATCHED_BEST, SNATCHED, SNATCHED_PROPER ) and curQuality == maxBestQuality:
+            elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
                 return Overview.SNATCHED
             # if they don't want re-downloads then we call it good if they have anything
             elif maxBestQuality == None:
