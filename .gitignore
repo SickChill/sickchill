@@ -37,6 +37,9 @@ tests/failed.db
 *.sw?
 Session.vim
 .ropeproject/*
+*.iml
+.idea
+*.ipr
 
 # OS generated files #
 ######################
@@ -48,7 +51,6 @@ ehthumbs.db
 Thumbs.db
 .directory
 *~
-/.idea/
 *.torrent
 
 # Unrar Executable   #
