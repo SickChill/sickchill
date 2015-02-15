@@ -875,6 +875,9 @@ class Tvdb:
                 log().debug('Series results incomplete')
                 raise tvdb_showincomplete("Show search returned incomplete results (cannot find complete show on TVDB)")
 
+            if 'episode' not in epsEt:
+                return False
+
             episodes = epsEt["episode"]
             if not isinstance(episodes, list):
                 episodes = [episodes]
