@@ -239,7 +239,7 @@ class KATProvider(generic.TorrentProvider):
                             id = item['guid']
                             title = item['title']
                             url = item['torrent_magneturi']
-                            verified = bool(item['torrent_verified'] or 0)
+                            verified = bool(int(item['torrent_verified']) or 0)
                             seeders = int(item['torrent_seeds'])
                             leechers = int(item['torrent_peers'])
                             size = int(item['torrent_contentlength'])
