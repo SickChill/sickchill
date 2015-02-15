@@ -144,7 +144,7 @@ case "$1" in
         stop_sickbeard
         sleep 2
         start_sickbeard
-        return $?
+        exit $?
         ;;
     status)
         status_of_proc -p "$PID_FILE" "$DAEMON" "$DESC"
