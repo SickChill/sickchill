@@ -9,7 +9,7 @@ class TraktAPI():
         self.username = username
         self.password = password
         self.verify = not disable_ssl_verify
-        self.timeout = timeout
+        self.timeout = timeout if timeout else None
         self.api_url = 'https://api.trakt.tv/'
         self.headers = {
           'Content-Type': 'application/json',
