@@ -204,7 +204,7 @@ $(document).ready(function(){
                 	$(this).getCategories(isDefault, data);
                 }
                 else {
-                	updateNewznabCaps( null, data );
+                	$(this).updateNewznabCaps( null, data );
                 }
             }
         }
