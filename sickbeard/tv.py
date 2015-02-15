@@ -2437,7 +2437,7 @@ class TVEpisode(object):
             return
 
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location)
+            self.location, base_name_only=True)
 
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
@@ -2451,8 +2451,17 @@ class TVEpisode(object):
 
         # move related files
         for cur_related_file in related_files:
-            cur_result = helpers.rename_ep_file(cur_related_file, absolute_proper_path,
-                                                absolute_current_path_no_ext_length)
+            #We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
+            cur_related_dir = ek.ek(os.path.dirname, ek.ek(os.path.abspath, cur_related_file))
+            subfolder = cur_related_dir.replace(ek.ek(os.path.dirname, ek.ek(os.path.abspath, self.location)), '')
+            #We now have a subfolder. We need to add that to the absolute_proper_path.
+            #First get the absolute proper-path dir
+            proper_related_dir = ek.ek(os.path.dirname, ek.ek(os.path.abspath, absolute_proper_path + file_ext))
+            proper_related_path = absolute_proper_path.replace(proper_related_dir, proper_related_dir + subfolder)
+            
+            
+            cur_result = helpers.rename_ep_file(cur_related_file, proper_related_path,
+                                                absolute_current_path_no_ext_length + len(subfolder))
             if not cur_result:
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_file, logger.ERROR)
 
