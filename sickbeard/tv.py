@@ -1390,6 +1390,7 @@ class TVEpisode(object):
             self.episode), logger.DEBUG)
 
         previous_subtitles = self.subtitles
+        added_subtitles = []
 
         try:
             need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
@@ -1407,19 +1408,25 @@ class TVEpisode(object):
                         helpers.chmodAsParent(subs_new_path)
 
                     for subtitle in subtitles.get(video):
+                        added_subtitles.append(subtitle.language.alpha2)
                         new_file_path = ek.ek(os.path.join, subs_new_path, os.path.basename(subtitle.path))
                         helpers.moveFile(subtitle.path, new_file_path)
                         helpers.chmodAsParent(new_file_path)
             else:
                 for video in subtitles:
                     for subtitle in subtitles.get(video):
+                        added_subtitles.append(subtitle.language.alpha2)
                         helpers.chmodAsParent(subtitle.path)
 
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
             return
 
-        self.refreshSubtitles()
+        if sickbeard.SUBTITLES_MULTI:
+            self.refreshSubtitles()
+        else:
+            self.subtitles = added_subtitles
+
         self.subtitles_searchcount = self.subtitles_searchcount + 1 if self.subtitles_searchcount else 1  # added the if because sometime it raise an error
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
@@ -1931,7 +1938,7 @@ class TVEpisode(object):
 
         myDB = db.DBConnection()
         rows = myDB.select(
-            'SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
+            'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
             [self.show.indexerid, self.season, self.episode])
 
         epID = None
@@ -1940,16 +1947,30 @@ class TVEpisode(object):
 
         if epID:
             # use a custom update method to get the data into the DB for existing records.
-            return [
-                "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
-                 self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                 self.hastbn,
-                 self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                 self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+            # Multi or added subtitle or removed subtitles
+            if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
+                return [
+                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
+                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                     self.hastbn,
+                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+            else:
+                # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                return [
+                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    [self.indexerid, self.indexer, self.name, self.description,
+                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                     self.hastbn,
+                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
         else:
             # use a custom insert method to get the data into the DB.
             return [
