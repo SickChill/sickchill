@@ -19,6 +19,7 @@
 from __future__ import with_statement
 
 import os
+import ctypes
 import random
 import re
 import shutil
@@ -951,8 +952,21 @@ def is_hidden_folder(folder):
     On Linux based systems hidden folders start with . (dot)
     folder: Full path of folder to check
     """
+    def is_hidden(filepath):
+        name = os.path.basename(os.path.abspath(filepath))
+        return name.startswith('.') or has_hidden_attribute(filepath)
+
+    def has_hidden_attribute(filepath):
+        try:
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(filepath))
+            assert attrs != -1
+            result = bool(attrs & 2)
+        except (AttributeError, AssertionError):
+            result = False
+        return result
+    
     if ek.ek(os.path.isdir, folder):
-        if ek.ek(os.path.basename, folder).startswith('.'):
+        if is_hidden(folder):
             return True
 
     return False
