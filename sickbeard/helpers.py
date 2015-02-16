@@ -17,7 +17,6 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import getpass
 
 import os
 import random
@@ -36,12 +35,16 @@ import uuid
 import base64
 import zipfile
 import datetime
+import errno
 
 import sickbeard
 import subliminal
 import adba
 import requests
 import requests.exceptions
+import xmltodict
+
+import subprocess
 
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
@@ -127,7 +130,7 @@ def replaceExtension(filename, newExt):
 
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
-    if extension == '!sync' or extension == 'lftp-pget-status':
+    if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
         return True
     else:
         return False
@@ -342,7 +345,11 @@ def listMediaFiles(path):
 
 
 def copyFile(srcFile, destFile):
-    ek.ek(shutil.copyfile, srcFile, destFile)
+    if isPosix():
+        subprocess.call(['cp', srcFile, destFile])
+    else:
+        ek.ek(shutil.copyfile, srcFile, destFile)
+        
     try:
         ek.ek(shutil.copymode, srcFile, destFile)
     except OSError:
@@ -351,7 +358,7 @@ def copyFile(srcFile, destFile):
 
 def moveFile(srcFile, destFile):
     try:
-        ek.ek(os.rename, srcFile, destFile)
+        ek.ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
     except OSError:
         copyFile(srcFile, destFile)
@@ -365,6 +372,12 @@ def link(src, dst):
         if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0: raise ctypes.WinError()
     else:
         os.link(src, dst)
+
+def isPosix(): 
+    if os.name.startswith('posix'):
+        return True
+    else:
+        return False
 
 
 def hardlinkFile(srcFile, destFile):
@@ -389,7 +402,7 @@ def symlink(src, dst):
 
 def moveAndSymlinkFile(srcFile, destFile):
     try:
-        ek.ek(os.rename, srcFile, destFile)
+        ek.ek(shutil.move, srcFile, destFile)
         fixSetGroupID(destFile)
         ek.ek(symlink, destFile, srcFile)
     except:
@@ -481,7 +494,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     # move the file
     try:
         logger.log(u"Renaming file from " + cur_path + " to " + new_path)
-        ek.ek(os.rename, cur_path, new_path)
+        ek.ek(shutil.move, cur_path, new_path)
     except (OSError, IOError), e:
         logger.log(u"Failed renaming " + cur_path + " to " + new_path + ": " + ex(e), logger.ERROR)
         return False
@@ -656,21 +669,26 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
     return (season, episodes)
 
 
-def sanitizeSceneName(name, ezrss=False):
+def sanitizeSceneName(name, ezrss=False, anime=False):
     """
     Takes a show name and returns the "scenified" version of it.
 
     ezrss: If true the scenified version will follow EZRSS's cracksmoker rules as best as possible
+    
+    anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
 
     Returns: A string containing the scene version of the show name given.
     """
 
     if name:
-        if not ezrss:
-            bad_chars = u",:()'!?\u2019"
+        # anime: removed ' for Kuroko's Basketball
+        if anime:
+            bad_chars = u",:()!?\u2019"
         # ezrss leaves : and ! in their show names as far as I can tell
-        else:
+        elif ezrss:
             bad_chars = u",()'?\u2019"
+        else:
+            bad_chars = u",:()'!?\u2019"
 
         # strip out any bad chars
         for x in bad_chars:
@@ -1098,14 +1116,21 @@ def touchFile(fname, atime=None):
             with file(fname, 'a'):
                 os.utime(fname, (atime, atime))
                 return True
-        except:
-            logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
+        except Exception as e:
+            if e.errno == errno.ENOSYS:
+                logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
+            elif e.errno == errno.EACCES:
+                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: {0}".format(fname), logger.ERROR)
+            else:
+                logger.log(u"File air date stamping failed. The error is: {0} and the message is: {1}.".format(e.errno, e.strerror), logger.ERROR)
             pass
 
     return False
 
 
 def _getTempDir():
+    import getpass
+
     """Returns the [system temp dir]/tvdb_api-u501 (or
     tvdb_api-myuser)
     """
@@ -1172,10 +1197,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return
 
-    if json:
-        return resp.json()
-
-    return resp.content
+    return resp.content if not json else resp.json()
 
 def download_file(url, filename, session=None):
     # create session
@@ -1326,4 +1348,8 @@ if __name__ == '__main__':
     doctest.testmod()
 
 def remove_article(text=''):
-    return re.sub(r'(?i)/^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
+    return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
+
+def generateCookieSecret():
+
+    return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)

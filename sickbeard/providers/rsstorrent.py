@@ -165,4 +165,4 @@ class TorrentRssCache(tvcache.TVCache):
         if self.provider.cookies:
             self.provider.headers.update({'Cookie': self.provider.cookies})
 
-        return self.getRSSFeed(self.provider.url, items=['entries', 'feed'])
+        return self.getRSSFeed(self.provider.url)

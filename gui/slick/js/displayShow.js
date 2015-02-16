@@ -5,21 +5,21 @@ $(document).ready(function () {
     $('#sbRoot').ajaxEpSubtitlesSearch();
 
     $('#seasonJump').change(function () {
-        var id = $(this).val();
+        var id = $('#seasonJump option:selected').val();
         if (id && id != 'jump') {
-            $('html,body').animate({scrollTop: $(id).offset().top}, 'slow');
+        	$('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
             location.hash = id;
         }
         $(this).val('jump');
     });
 
     $("#prevShow").click(function () {
-        $('#pickShow option:selected').prev('option').attr('selected', 'selected');
+        $('#pickShow option:selected').prev('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
     $("#nextShow").click(function () {
-        $('#pickShow option:selected').next('option').attr('selected', 'selected');
+        $('#pickShow option:selected').next('option').prop('selected', 'selected');
         $("#pickShow").change();
     });
 
@@ -38,7 +38,7 @@ $(document).ready(function () {
         if (epArr.length == 0)
             return false;
 
-        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').attr('value');
+        url = sbRoot + '/home/setStatus?show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
         window.location.href = url
 
     });
@@ -105,7 +105,7 @@ $(document).ready(function () {
     // handle the show selection dropbox
     $('#pickShow').change(function () {
         var sbRoot = $('#sbRoot').val();
-        var val = $(this).attr('value');
+        var val = $(this).val();
         if (val == 0)
             return;
         url = sbRoot + '/home/displayShow?show=' + val;

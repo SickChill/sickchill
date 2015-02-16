@@ -30,7 +30,16 @@ class TransmissionAPI(GenericClient):
 
         super(TransmissionAPI, self).__init__('Transmission', host, username, password)
 
-        self.url = self.host + 'transmission/rpc'
+        if not self.host.endswith('/'):
+            self.host = self.host + '/'
+
+        if self.rpcurl.startswith('/'):
+            self.rpcurl = self.rpcurl[1:]
+
+        if self.rpcurl.endswith('/'):
+            self.rpcurl = self.rpcurl[:-1]
+
+        self.url = self.host + self.rpcurl + '/rpc'
 
     def _get_auth(self):
 

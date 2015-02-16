@@ -61,7 +61,7 @@ class NyaaProvider(generic.TorrentProvider):
         return generic.TorrentProvider.findSearchResults(self, show, episodes, search_mode, manualSearch)
 
     def _get_season_search_strings(self, ep_obj):
-        return show_name_helpers.makeSceneShowSearchStrings(self.show)
+        return show_name_helpers.makeSceneShowSearchStrings(self.show, anime=True)
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return self._get_season_search_strings(ep_obj)
@@ -127,6 +127,6 @@ class NyaaCache(tvcache.TVCache):
 
         logger.log(u"NyaaTorrents cache update URL: " + url, logger.DEBUG)
 
-        return self.getRSSFeed(url, items=['entries', 'feed'])
+        return self.getRSSFeed(url)
 
 provider = NyaaProvider()

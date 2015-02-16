@@ -1,4 +1,18 @@
 $(document).ready(function(){
+	$('.seriesCheck').click(function(){
+		var serCheck = this;
+				
+		$('.seasonCheck:visible').each(function(){
+						
+			this.checked = serCheck.checked
+		});
+		
+		$('.epCheck:visible').each(function(){
+						
+			this.checked = serCheck.checked
+		});
+	});
+	
     $('.seasonCheck').click(function(){
         var seasCheck = this;
         var seasNo = $(seasCheck).attr('id');

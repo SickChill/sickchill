@@ -75,24 +75,23 @@
 	</div>
 #else
 #for $cur_show in $trending_shows:
-    #set $image = re.sub(r'(?im)(.*)(\..*?)$', r'\1-300\2', $cur_show['images']['poster'], 0)
+    #set $show_url = 'http://www.trakt.tv/shows/%s' % $cur_show['show']['ids']['slug']
 
-    <div class="trakt_show" data-name="$cur_show['title']" data-rating="$cur_show['ratings']['percentage']" data-votes="$cur_show['ratings']['votes']">
+    <div class="trakt_show" data-name="$cur_show['show']['title']" data-rating="$cur_show['show']['rating']" data-votes="$cur_show['show']['votes']">
         <div class="traktContainer">
             <div class="trakt-image">
-                <a class="trakt-image" href="<%= anon_url(cur_show['url']) %>" target="_blank"><img alt="" class="trakt-image" src="${image}" /></a>
+                <a class="trakt-image" href="<%= anon_url(show_url) %>" target="_blank"><img alt="" class="trakt-image" src="$cur_show['show']['images']['poster']['thumb']" /></a>
             </div>
 
             <div class="show-title">
-                <%= (cur_show['title'], '<span>&nbsp;</span>')[ '' == cur_show['title']] %>
+                <%= (cur_show['show']['title'], '<span>&nbsp;</span>')[ '' == cur_show['show']['title']] %>
             </div>
 
         <div class="clearfix">
-            <p>$cur_show['ratings']['percentage']% <img src="$sbRoot/images/heart.png"></p>
-            <i>$cur_show['ratings']['votes'] votes</i>
-
+            <p><%= int(cur_show['show']['rating']*10) %>% <img src="$sbRoot/images/heart.png"></p>
+            <i>$cur_show['show']['votes'] votes</i>
             <div class="traktShowTitleIcons">
-                <a href="$sbRoot/home/addShows/addTraktShow?indexer_id=${cur_show['tvdb_id'] or cur_show['tvrage_id']}&amp;showName=${cur_show['title']}" class="btn btn-xs">Add Show</a>
+                <a href="$sbRoot/home/addShows/addTraktShow?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}&amp;showName=${cur_show['show']['title']}" class="btn btn-xs">Add Show</a>
             </div>
         </div>
         </div>

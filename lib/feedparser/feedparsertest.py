@@ -2,7 +2,7 @@
 
 __author__ = "Mark Pilgrim <http://diveintomark.org/>"
 __license__ = """
-Copyright (c) 2010-2012 Kurt McKee <contactme@kurtmckee.org>
+Copyright (c) 2010-2013 Kurt McKee <contactme@kurtmckee.org>
 Copyright (c) 2004-2008 Mark Pilgrim
 All rights reserved.
 
@@ -514,9 +514,6 @@ class TestHTTPStatus(unittest.TestCase):
     def test_404(self):
         f = feedparser.parse('http://localhost:8097/tests/http/http_status_404.xml')
         self.assertEqual(f.status, 404)
-    def test_9001(self):
-        f = feedparser.parse('http://localhost:8097/tests/http/http_status_9001.xml')
-        self.assertEqual(f.bozo, 1)
     def test_redirect_to_304(self):
         # ensure that an http redirect to an http 304 doesn't
         # trigger a bozo_exception
@@ -530,13 +527,13 @@ class TestDateParsers(unittest.TestCase):
     "dynamically based on the contents of the `date_tests` dict, below"
     def test_None(self):
         self.assertTrue(feedparser._parse_date(None) is None)
-    def _check_date(self, func, dtstring, dttuple):
+    def _check_date(self, func, dtstring, expected_value):
         try:
-            tup = func(dtstring)
+            parsed_value = func(dtstring)
         except (OverflowError, ValueError):
-            tup = None
-        self.assertEqual(tup, dttuple)
-        self.assertEqual(tup, feedparser._parse_date(dtstring))
+            parsed_value = None
+        self.assertEqual(parsed_value, expected_value)
+        # self.assertEqual(parsed_value, feedparser._parse_date(dtstring))
     def test_year_10000_date(self):
         # On some systems this date string will trigger an OverflowError.
         # On Jython and x64 systems, however, it's interpreted just fine.
@@ -595,9 +592,15 @@ date_tests = {
         (u'Mon, 26 January 2004 16:31:00 CT', (2004, 1, 26, 22, 31, 0, 0, 26, 0)),
         (u'Mon, 26 January 2004 16:31:00 MT', (2004, 1, 26, 23, 31, 0, 0, 26, 0)),
         (u'Mon, 26 January 2004 16:31:00 PT', (2004, 1, 27, 0, 31, 0, 1, 27, 0)),
-    ),
-    feedparser._parse_date_rfc822_grubby: (
+        # Swapped month and day
         (u'Thu Aug 30 2012 17:26:16 +0200', (2012, 8, 30, 15, 26, 16, 3, 243, 0)),
+        (u'Sun, 16 Dec 2012 1:2:3:4 GMT', None), # invalid time
+        (u'Sun, 16 zzz 2012 11:47:32 GMT', None), # invalid month
+        (u'Sun, Dec x 2012 11:47:32 GMT', None), # invalid day (swapped day/month)
+        ('Sun, 16 Dec zz 11:47:32 GMT', None), # invalid year
+        ('Sun, 16 Dec 2012 11:47:32 +zz:00', None), # invalid timezone hour
+        ('Sun, 16 Dec 2012 11:47:32 +00:zz', None), # invalid timezone minute
+        ('Sun, 99 Jun 2009 12:00:00 GMT', None), # out-of-range day
     ),
     feedparser._parse_date_asctime: (
         (u'Sun Jan  4 16:29:06 2004', (2004, 1, 4, 16, 29, 6, 6, 4, 0)),
@@ -609,21 +612,30 @@ date_tests = {
         (u'2003-12-31T18:14:55+08:00', (2003, 12, 31, 10, 14, 55, 2, 365, 0)), # Tokyo timezone
         (u'2007-04-23T23:25:47.538+10:00', (2007, 4, 23, 13, 25, 47, 0, 113, 0)), # fractional seconds
         (u'2003-12-31', (2003, 12, 31, 0, 0, 0, 2, 365, 0)), # year/month/day only
-        (u'20031231', (2003, 12, 31, 0, 0, 0, 2, 365, 0)), # year/month/day only, no hyphens
         (u'2003-12', (2003, 12, 1, 0, 0, 0, 0, 335, 0)), # year/month only
         (u'2003', (2003, 1, 1, 0, 0, 0, 2, 1, 0)), # year only
-        # MSSQL-style dates
-        (u'2004-07-08 23:56:58 -00:20', (2004, 7, 9, 0, 16, 58, 4, 191, 0)), # with timezone
-        (u'2004-07-08 23:56:58', (2004, 7, 8, 23, 56, 58, 3, 190, 0)), # without timezone
-        (u'2004-07-08 23:56:58.0', (2004, 7, 8, 23, 56, 58, 3, 190, 0)), # with fractional second
-        # Special cases for out-of-range times
-        (u'2003-12-31T25:14:55Z', (2004, 1, 1, 1, 14, 55, 3, 1, 0)), # invalid (25 hours)
-        (u'2003-12-31T10:61:55Z', (2003, 12, 31, 11, 1, 55, 2, 365, 0)), # invalid (61 minutes)
-        (u'2003-12-31T10:14:61Z', (2003, 12, 31, 10, 15, 1, 2, 365, 0)), # invalid (61 seconds)
         # Special cases for rollovers in leap years
         (u'2004-02-28T18:14:55-08:00', (2004, 2, 29, 2, 14, 55, 6, 60, 0)), # feb 28 in leap year
         (u'2003-02-28T18:14:55-08:00', (2003, 3, 1, 2, 14, 55, 5, 60, 0)), # feb 28 in non-leap year
         (u'2000-02-28T18:14:55-08:00', (2000, 2, 29, 2, 14, 55, 1, 60, 0)), # feb 28 in leap year on century divisible by 400
+        # Out-of-range times
+        (u'9999-12-31T23:59:59-99:99', None), # Date is out-of-range
+        (u'2003-12-31T25:14:55Z', None), # invalid (25 hours)
+        (u'2003-12-31T10:61:55Z', None), # invalid (61 minutes)
+        (u'2003-12-31T10:14:61Z', None), # invalid (61 seconds)
+        # Invalid formats
+        (u'22013', None), # Year is too long
+        (u'013', None), # Year is too short
+        (u'2013-01-27-01', None), # Date has to many parts
+        (u'2013-01-28T11:30:00-06:00Textra', None), # Too many 't's
+        # Non-integer values
+        (u'2013-xx-27', None), # Date
+        (u'2013-01-28T09:xx:00Z', None), # Time
+        (u'2013-01-28T09:00:00+00:xx', None), # Timezone
+        # MSSQL-style dates
+        (u'2004-07-08 23:56:58 -00:20', (2004, 7, 9, 0, 16, 58, 4, 191, 0)), # with timezone
+        (u'2004-07-08 23:56:58', (2004, 7, 8, 23, 56, 58, 3, 190, 0)), # without timezone
+        (u'2004-07-08 23:56:58.0', (2004, 7, 8, 23, 56, 58, 3, 190, 0)), # with fractional second
     )
 }
 
@@ -758,6 +770,7 @@ def runtests():
     "TestCases above, spawn the HTTP server, and run the test suite"
     if sys.argv[1:]:
         allfiles = filter(lambda s: s.endswith('.xml'), reduce(operator.add, map(glob.glob, sys.argv[1:]), []))
+        wellformedfiles = illformedfiles = encodingfiles = entitiesfiles = microformatfiles = []
         sys.argv = [sys.argv[0]] #+ sys.argv[2:]
     else:
         allfiles = glob.glob(os.path.join('.', 'tests', '**', '**', '*.xml'))
@@ -770,7 +783,7 @@ def runtests():
     # there are several compression test cases that must be accounted for
     # as well as a number of http status tests that redirect to a target
     # and a few `_open_resource`-related tests
-    httpcount = 6 + 17 + 2
+    httpcount = 6 + 16 + 2
     httpcount += len([f for f in allfiles if 'http' in f])
     httpcount += len([f for f in wellformedfiles if 'http' in f])
     httpcount += len([f for f in illformedfiles if 'http' in f])
@@ -786,7 +799,9 @@ def runtests():
                 addTo = TestMicroformats
             elif xmlfile in wellformedfiles:
                 addTo = (TestStrictParser, TestLooseParser)
-            data = open(xmlfile, 'rb').read()
+            f = open(xmlfile, 'rb')
+            data = f.read()
+            f.close()
             if 'encoding' in xmlfile:
                 data = convert_to_utf8(data)
                 if data is None:
@@ -812,9 +827,6 @@ def runtests():
                 setattr(addTo[1], testName, testFunc)
             else:
                 setattr(addTo, testName, testFunc)
-        if feedparser.TIDY_MARKUP and feedparser._mxtidy:
-            sys.stderr.write('\nWarning: feedparser.TIDY_MARKUP invalidates tests, turning it off temporarily\n\n')
-            feedparser.TIDY_MARKUP = 0
         if httpcount:
             httpd = FeedParserTestServer(httpcount)
             httpd.daemon = True

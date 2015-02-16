@@ -12,9 +12,9 @@
 <script type="text/javascript" src="$sbRoot/js/configNotifications.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -30,7 +30,7 @@
 
                 <div id="tabs-1">
                 <div class="component-group">
-                
+
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="$sbRoot/images/notifiers/kodi.png" alt="" title="KODI" />
                         <h3><a href="<%= anon_url('http://kodi.tv/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
@@ -110,7 +110,7 @@
                                         <p>only send library updates to the first active host ?</p>
                                     </span>
                                 </label>
-                            </div>                            
+                            </div>
                             <div class="field-pair">
                                 <label for="kodi_host">
                                     <span class="component-title">KODI IP:Port</span>
@@ -123,7 +123,7 @@
                                 <label>
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">(multiple host strings must be separated by commas)</span>
-                                </label>                         
+                                </label>
                             </div>
                             <div class="field-pair">
                                 <label for="kodi_username">
@@ -151,7 +151,7 @@
                         </div><!-- /content_use_kodi //-->
 
                     </fieldset>
-                    
+
                 </div><!-- /kodi component-group //-->
 
 
@@ -246,7 +246,7 @@
                                 <label>
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">(multiple host strings must be separated by commas)</span>
-                                </label>                                
+                                </label>
                             </div>
                             <div class="field-pair">
                                 <label for="plex_username">
@@ -379,9 +379,9 @@
                                     </label>
                                     <label for="NMJV2_DBLOC_B">
                                         <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" #if $sickbeard.NMJv2_DBLOC=="network" then "checked=\"checked\"" else ""#/>PCH Network Media
-                                    </label>                            
+                                    </label>
                                 </span>
-                            </div>    
+                            </div>
                             <div class="field-pair">
                                 <label for="NMJv2db_instance">
                                     <span class="component-title">Database instance</span>
@@ -429,7 +429,7 @@
 
                     </fieldset>
                 </div><!-- /nmjv2 component-group //-->
-                
+
 
                 <div class="component-group">
                     <div class="component-group-desc">
@@ -444,7 +444,7 @@
                             <label for="use_synoindex">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" #if $sickbeard.USE_SYNOINDEX then "checked=\"checked\"" else ""# /> 
+                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" #if $sickbeard.USE_SYNOINDEX then "checked=\"checked\"" else ""# />
                                     <p>should SickRage send Synology notifications ?</p>
                                 </span>
                             </label>
@@ -460,8 +460,8 @@
 
                     </fieldset>
                 </div><!-- /synoindex component-group //-->
-                
-                
+
+
                 <div class="component-group">
                     <div class="component-group-desc">
                         <img class="notifier-icon" src="$sbRoot/images/notifiers/synologynotifier.png" alt="" title="Synology Indexer" />
@@ -577,7 +577,7 @@
 
             </div>
 
-            
+
             <div id="tabs-2">
                 <div class="component-group">
                     <div class="component-group-desc">
@@ -590,7 +590,7 @@
                             <label for="use_growl">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" #if $sickbeard.USE_GROWL then "checked=\"checked\"" else ""# /> 
+                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" #if $sickbeard.USE_GROWL then "checked=\"checked\"" else ""# />
                                     <p>should SickRage send Growl notifications ?</p>
                                 </span>
                             </label>
@@ -601,7 +601,7 @@
                                 <label for="growl_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" #if $sickbeard.GROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# /> 
+                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" #if $sickbeard.GROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -1206,9 +1206,81 @@
 
                     </fieldset>
                 </div><!-- /pushbullet component-group //-->
+                <div class="component-group">
+                    <div class="component-group-desc">
+                        <img class="notifier-icon" src="$sbRoot/images/notifiers/freemobile.png" alt="" title="Free Mobile" />
+                        <h3><a href="<%= anon_url('http://mobile.free.fr/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
+                        <p>Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API.</p>
+                    </div>
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label for="use_freemobile">
+                                <span class="component-title">Enable</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" #if $sickbeard.USE_FREEMOBILE then "checked=\"checked\"" else ""# />
+                                    <p>should SickRage send SMS notifications ?</p>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="content_use_freemobile">
+                            <div class="field-pair">
+                                <label for="freemobile_notify_onsnatch">
+                                    <span class="component-title">Notify on snatch</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" #if $sickbeard.FREEMOBILE_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <p>send a SMS when a download starts ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_notify_ondownload">
+                                    <span class="component-title">Notify on download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <p>send a SMS when a download finishes ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_notify_onsubtitledownload">
+                                    <span class="component-title">Notify on subtitle download</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" #if $sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <p>send a SMS when subtitles are downloaded ?</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_id">
+                                    <span class="component-title">Free Mobile customer ID</span>
+                                    <input type="text" name="freemobile_id" id="freemobile_id" value="$sickbeard.FREEMOBILE_ID" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">It's your Free Mobile customer ID (8 digits)</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="freemobile_password">
+                                    <span class="component-title">Free Mobile API Key</span>
+                                    <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="$sickbeard.FREEMOBILE_APIKEY" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Find your API Key in your customer portal.</span>
+                                </label>
+                            </div>
+                            <div class="testNotification" id="testFreeMobile-result">Click below to test your settings.</div>
+                            <input  class="btn" type="button" value="Test SMS" id="testFreeMobile" />
+                            <input type="submit" class="config_submitter btn" value="Save Changes" />
+                        </div><!-- /content_use_freemobile //-->
+
+                    </fieldset>
+                </div><!-- /freemobile component-group //-->
 
             </div>
-            
+
             <div id="tabs-3">
                 <div class="component-group">
                        <div class="component-group-desc">
@@ -1317,30 +1389,38 @@
                                     <span class="component-title">Trakt username</span>
                                     <input type="text" name="trakt_username" id="trakt_username" value="$sickbeard.TRAKT_USERNAME" class="form-control input-sm input250" />
                                 </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
+                                <p>
                                     <span class="component-desc">username of your Trakt account.</span>
-                                </label>
+                                </p>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_password">
                                     <span class="component-title">Trakt password</span>
                                     <input type="password" name="trakt_password" id="trakt_password" value="$sickbeard.TRAKT_PASSWORD" class="form-control input-sm input250" />
                                 </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
+                                <p>
                                     <span class="component-desc">password of your Trakt account.</span>
+                                </p>
+                            </div>
+                            <div class="field-pair">
+                                <label for="trakt_disable_ssl_verify">
+                                    <span class="component-title">Disable SSL Verification:</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" class="enabler" name="trakt_disable_ssl_verify" id="trakt_disable_ssl_verify" #if $sickbeard.TRAKT_DISABLE_SSL_VERIFY then "checked=\"checked\"" else ""# />
+                                        <p>Disable SSL certificate verification for broken SSL installs (like QNAP NAS)</p>
+                                    </span>
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="trakt_api">
-                                    <span class="component-title">Trakt API key:</span>
-                                    <input type="text" name="trakt_api" id="trakt_api" value="$sickbeard.TRAKT_API" class="form-control input-sm input250" />
+                                <label for="trakt_timeout">
+                                    <span class="component-title">API Timeout:</span>
+                                    <input type="text" name="trakt_timeout" id="trakt_timeout" value="$sickbeard.TRAKT_TIMEOUT" class="form-control input-sm input75" />
                                 </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">get your key at: <a href="<%= anon_url('http://trakt.tv/settings/api') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>http://trakt.tv/settings/api</b></a></span>
-                                </label>
+                                <p>
+                                    <span class="component-desc">
+                                        Seconds to wait for Trakt API to respond. (Use 0 to wait forever)
+                                    </span>
+                                </p>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_default_indexer">
@@ -1386,7 +1466,7 @@
                                         <span class="component-title">&nbsp;</span>
                                         <span class="component-desc">method in which to download episodes for new show's.</span>
                                     </label>
-                                </div>                            
+                                </div>
                                 <div class="field-pair">
                                     <label for="trakt_remove_watchlist">
                                         <span class="component-title">Remove episode:</span>
@@ -1395,8 +1475,8 @@
                                             <p>remove an episode from your watchlist after it is downloaded.</p>
                                         </span>
                                     </label>
-                                 </div>                            
-                                <div class="field-pair">                                   
+                                 </div>
+                                <div class="field-pair">
                                     <label for="trakt_remove_serieslist">
                                         <span class="component-title">Remove series:</span>
                                         <span class="component-desc">
@@ -1550,6 +1630,10 @@
                                 <label>
                                     <span class="component-title">&nbsp;</span>
                                     <span class="component-desc">configure per show notifications here.</span>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <input id="email_show_save" class="btn" type="button" value="Save for this show" />
                                 </label>
                             </div>
 

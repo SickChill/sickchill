@@ -561,6 +561,16 @@ home.tmpl
 	color: #fff;
 }
 
+.progress-100 {
+	background-image: -moz-linear-gradient(#395f07, #2a4705) !important;
+	background-image: linear-gradient(#395f07, #2a4705) !important;
+	background-image: -webkit-linear-gradient(#395f07, #2a4705) !important;
+	background-image: -o-linear-gradient(#395f07, #2a4705) !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
 .progress-80 {
 	background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
 	background-image: linear-gradient(#a6cf41, #5b990d) !important;

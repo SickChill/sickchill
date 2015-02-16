@@ -143,55 +143,57 @@ class ProperFinder():
             curProper.release_group = parse_result.release_group
             curProper.version = parse_result.version
             curProper.quality = Quality.nameQuality(curProper.name, parse_result.is_anime)
+            curProper.content = None
 
             # filter release
-            if not pickBestResult(curProper):
+            bestResult = pickBestResult(curProper, parse_result.show)
+            if not bestResult:
                 logger.log(u"Proper " + curProper.name + " were rejected by our release filters.", logger.DEBUG)
                 continue
 
             # only get anime proper if it has release group and version
-            if parse_result.is_anime:
-                if not curProper.release_group and curProper.version == -1:
-                    logger.log(u"Proper " + curProper.name + " doesn't have a release group and version, ignoring it",
+            if bestResult.show.is_anime:
+                if not bestResult.release_group and bestResult.version == -1:
+                    logger.log(u"Proper " + bestResult.name + " doesn't have a release group and version, ignoring it",
                                logger.DEBUG)
                     continue
 
             # check if we actually want this proper (if it's the right quality)
             myDB = db.DBConnection()
             sqlResults = myDB.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                                     [curProper.indexerid, curProper.season, curProper.episode])
+                                     [bestResult.indexerid, bestResult.season, bestResult.episode])
             if not sqlResults:
                 continue
 
             # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
             oldStatus, oldQuality = Quality.splitCompositeStatus(int(sqlResults[0]["status"]))
-            if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != curProper.quality:
+            if oldStatus not in (DOWNLOADED, SNATCHED) or oldQuality != bestResult.quality:
                 continue
 
             # check if we actually want this proper (if it's the right release group and a higher version)
-            if parse_result.is_anime:
+            if bestResult.show.is_anime:
                 myDB = db.DBConnection()
                 sqlResults = myDB.select(
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                    [curProper.indexerid, curProper.season, curProper.episode])
+                    [bestResult.indexerid, bestResult.season, bestResult.episode])
 
                 oldVersion = int(sqlResults[0]["version"])
                 oldRelease_group = (sqlResults[0]["release_group"])
 
-                if oldVersion > -1 and oldVersion < curProper.version:
-                    logger.log("Found new anime v" + str(curProper.version) + " to replace existing v" + str(oldVersion))
+                if oldVersion > -1 and oldVersion < bestResult.version:
+                    logger.log("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
                 else:
                     continue
 
-                if oldRelease_group != curProper.release_group:
-                    logger.log("Skipping proper from release group: " + curProper.release_group + ", does not match existing release group: " + oldRelease_group)
+                if oldRelease_group != bestResult.release_group:
+                    logger.log("Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
-            if curProper.indexerid != -1 and (curProper.indexerid, curProper.season, curProper.episode) not in map(
+            if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in map(
                     operator.attrgetter('indexerid', 'season', 'episode'), finalPropers):
-                logger.log(u"Found a proper that we need: " + str(curProper.name))
-                finalPropers.append(curProper)
+                logger.log(u"Found a proper that we need: " + str(bestResult.name))
+                finalPropers.append(bestResult)
 
         return finalPropers
 
@@ -231,12 +233,7 @@ class ProperFinder():
                     continue
 
                 # get the episode object
-                showObj = helpers.findCertainShow(sickbeard.showList, curProper.indexerid)
-                if showObj == None:
-                    logger.log(u"Unable to find the show with indexerid " + str(
-                        curProper.indexerid) + " so unable to download the proper", logger.ERROR)
-                    continue
-                epObj = showObj.getEpisode(curProper.season, curProper.episode)
+                epObj = curProper.show.getEpisode(curProper.season, curProper.episode)
 
                 # make the result object
                 result = curProper.provider.getResult([epObj])

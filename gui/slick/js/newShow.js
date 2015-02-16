@@ -51,7 +51,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 var firstResult = true;
-                var resultStr = '<fieldset>\n<legend>Search Results:</legend>\n';
+                var resultStr = '<fieldset>\n<legend class="legendStep">Search Results:</legend>\n';
                 var checked = '';
 
                 if (data.results.length === 0) {
@@ -216,7 +216,7 @@ $(document).ready(function () {
     }
 
     $('#rootDirText').change(updateSampleText);
-    $('#whichSeries').live('change', updateSampleText);
+    $('#searchResults').on('change', '#whichSeries', updateSampleText);
 
     $('#nameToSearch').keyup(function (event) {
         if (event.keyCode == 13) {

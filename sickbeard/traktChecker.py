@@ -19,6 +19,7 @@
 import os
 import traceback
 import datetime
+import json
 
 import sickbeard
 from sickbeard import encodingKludge as ek
@@ -36,7 +37,7 @@ class TraktChecker():
 
     def __init__(self):
         self.todoWanted = []
-        self.trakt_api = TraktAPI(sickbeard.TRAKT_API, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        self.trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
     def run(self, force=False):
         try:
@@ -59,7 +60,7 @@ class TraktChecker():
         traktShow = None
 
         try:
-            library = self.trakt_api.traktRequest("user/library/shows/all.json/%APIKEY%/%USER%")
+            library = self.trakt_api.traktRequest("sync/collection/shows") or []
 
             if not library:
                 logger.log(u"Could not connect to trakt service, aborting library check", logger.ERROR)
@@ -69,7 +70,7 @@ class TraktChecker():
                 logger.log(u"No shows found in your library, aborting library update", logger.DEBUG)
                 return
 
-            traktShow = filter(lambda x: int(indexerid) in [int(x['tvdb_id']) or 0, int(x['tvrage_id'])] or 0, library)
+            traktShow = filter(lambda x: int(indexerid) in [int(x['show']['ids']['tvdb'] or 0), int(x['show']['ids']['tvrage'] or 0)], library)
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
@@ -83,14 +84,26 @@ class TraktChecker():
 
     def removeShowFromTraktLibrary(self, show_obj):
         if self.findShow(show_obj.indexer, show_obj.indexerid):
-            # URL parameters
-            data = {'tvdb_id': helpers.mapIndexersToShow(show_obj)[1], 'title': show_obj.name,
-                    'year': show_obj.startyear}
+            trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
 
+            # URL parameters
+            data = {
+                'shows': [
+                    {
+                        'title': show_obj.name,
+                        'year': show_obj.startyear,
+                        'ids': {}
+                    }
+                ]
+            }
+            if trakt_id == 'tvdb_id':
+                data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
+            else:
+                data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
 
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
             try:
-                self.trakt_api.traktRequest("show/unlibrary/%APIKEY%", data, method='POST')
+                self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 pass
@@ -105,16 +118,27 @@ class TraktChecker():
         data = {}
 
         if not self.findShow(show_obj.indexer, show_obj.indexerid):
+            trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
             # URL parameters
-            data['tvdb_id'] = helpers.mapIndexersToShow(show_obj)[1]
-            data['title'] = show_obj.name
-            data['year'] = show_obj.startyear
+            data = {
+                'shows': [
+                    {
+                        'title': show_obj.name,
+                        'year': show_obj.startyear,
+                        'ids': {}
+                    }
+                ]
+            }
+            if trakt_id == 'tvdb_id':
+                data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
+            else:
+                data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
 
         if len(data):
             logger.log(u"Adding " + show_obj.name + " to trakt.tv library", logger.DEBUG)
 
             try:
-                self.trakt_api.traktRequest("show/library/%APIKEY%", data, method='POST')
+                self.trakt_api.traktRequest("sync/collection", data, method='POST')
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 return
@@ -123,7 +147,7 @@ class TraktChecker():
         logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
 
         try:
-            watchlist = self.trakt_api.traktRequest("user/watchlist/shows.json/%APIKEY%/%USER%")
+            watchlist = self.trakt_api.traktRequest("sync/watchlist/shows")
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
@@ -135,14 +159,14 @@ class TraktChecker():
         for show in watchlist:
             indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
             if indexer == 2:
-                indexer_id = int(show["tvrage_id"])
+                indexer_id = int(show["show"]["ids"]["tvrage"])
             else:
-                indexer_id = int(show["tvdb_id"])
+                indexer_id = int(show["show"]["ids"]["tvdb"])
 
             if int(sickbeard.TRAKT_METHOD_ADD) != 2:
-                self.addDefaultShow(indexer, indexer_id, show["title"], SKIPPED)
+                self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
             else:
-                self.addDefaultShow(indexer, indexer_id, show["title"], WANTED)
+                self.addDefaultShow(indexer, indexer_id, show["show"]["title"], WANTED)
 
             if int(sickbeard.TRAKT_METHOD_ADD) == 1:
                 newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
@@ -158,7 +182,7 @@ class TraktChecker():
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
 
         try:
-            watchlist = self.trakt_api.traktRequest("user/watchlist/episodes.json/%APIKEY%/%USER%")
+            watchlist = self.trakt_api.traktRequest("sync/watchlist/episodes")
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return
@@ -170,22 +194,22 @@ class TraktChecker():
         for show in watchlist:
             indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
             if indexer == 2:
-                indexer_id = int(show["tvrage_id"])
+                indexer_id = int(show["show"]["ids"]["tvrage"])
             else:
-                indexer_id = int(show["tvdb_id"])
+                indexer_id = int(show["show"]["ids"]["tvdb"])
 
-            self.addDefaultShow(indexer, indexer_id, show["title"], SKIPPED)
+            self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
             newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
             try:
                 if newShow and newShow.indexer == indexer:
-                    for episode in show["episodes"]:
+                    for episode in show["episode"]:
                         if newShow is not None:
                             self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
                         else:
                             self.todoWanted.append((indexer_id, episode["season"], episode["number"]))
             except TypeError:
-                logger.log(u"Could not parse the output from trakt for " + show["title"], logger.DEBUG)
+                logger.log(u"Could not parse the output from trakt for " + show["show"]["title"], logger.DEBUG)
 
     def addDefaultShow(self, indexer, indexer_id, name, status):
         """

@@ -1,6 +1,7 @@
 #  SR User Related   #
 ######################
 cache/*
+cache/
 cache.db*
 config.ini*
 Logs/*
@@ -36,6 +37,10 @@ tests/failed.db
 *.sw?
 Session.vim
 .ropeproject/*
+*.iml
+.idea
+*.ipr
+.settings/*
 
 # OS generated files #
 ######################
@@ -47,5 +52,8 @@ ehthumbs.db
 Thumbs.db
 .directory
 *~
-/.idea/
 *.torrent
+
+# Unrar Executable   #
+######################
+lib/unrar2/UnRAR.exe

@@ -1224,11 +1224,11 @@ class TVShow(object):
             if epStatus in (WANTED, UNAIRED, SKIPPED):
                 logger.log(u"Existing episode status is wanted/unaired/skipped, getting found episode", logger.DEBUG)
                 return True
-            elif manualSearch:
-                logger.log(
-                    u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
-                    logger.DEBUG)
-                return True
+            #elif manualSearch:
+            #    logger.log(
+            #        u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
+            #        logger.DEBUG)
+            #    return True
             else:
                 logger.log(u"Quality is on wanted list, need to check if it's better than existing quality",
                            logger.DEBUG)
@@ -1238,6 +1238,10 @@ class TVShow(object):
         # if we are re-downloading then we only want it if it's in our bestQualities list and better than what we have
         if curStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST and quality in bestQualities and quality > curQuality:
             logger.log(u"Episode already exists but the found episode has better quality, getting found episode",
+                       logger.DEBUG)
+            return True
+        elif curStatus == Quality.UNKNOWN and manualSearch:
+            logger.log(u"Episode already exists but quality is Unknown, getting found episode",
                        logger.DEBUG)
             return True
         else:
@@ -1269,6 +1273,8 @@ class TVShow(object):
 
             if epStatus == FAILED:
                 return Overview.WANTED
+            if epStatus == DOWNLOADED and curQuality == Quality.UNKNOWN:
+                return Overview.QUAL
             elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
                 return Overview.SNATCHED
             # if they don't want re-downloads then we call it good if they have anything
@@ -1384,6 +1390,7 @@ class TVEpisode(object):
             self.episode), logger.DEBUG)
 
         previous_subtitles = self.subtitles
+        added_subtitles = []
 
         try:
             need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
@@ -1401,19 +1408,25 @@ class TVEpisode(object):
                         helpers.chmodAsParent(subs_new_path)
 
                     for subtitle in subtitles.get(video):
+                        added_subtitles.append(subtitle.language.alpha2)
                         new_file_path = ek.ek(os.path.join, subs_new_path, os.path.basename(subtitle.path))
                         helpers.moveFile(subtitle.path, new_file_path)
                         helpers.chmodAsParent(new_file_path)
             else:
                 for video in subtitles:
                     for subtitle in subtitles.get(video):
+                        added_subtitles.append(subtitle.language.alpha2)
                         helpers.chmodAsParent(subtitle.path)
 
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
             return
 
-        self.refreshSubtitles()
+        if sickbeard.SUBTITLES_MULTI:
+            self.refreshSubtitles()
+        else:
+            self.subtitles = added_subtitles
+
         self.subtitles_searchcount = self.subtitles_searchcount + 1 if self.subtitles_searchcount else 1  # added the if because sometime it raise an error
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
@@ -1925,7 +1938,7 @@ class TVEpisode(object):
 
         myDB = db.DBConnection()
         rows = myDB.select(
-            'SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
+            'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
             [self.show.indexerid, self.season, self.episode])
 
         epID = None
@@ -1934,16 +1947,30 @@ class TVEpisode(object):
 
         if epID:
             # use a custom update method to get the data into the DB for existing records.
-            return [
-                "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
-                 self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                 self.hastbn,
-                 self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                 self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+            # Multi or added subtitle or removed subtitles
+            if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
+                return [
+                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
+                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                     self.hastbn,
+                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+            else:
+                # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                return [
+                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    [self.indexerid, self.indexer, self.name, self.description,
+                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                     self.hastbn,
+                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
         else:
             # use a custom insert method to get the data into the DB.
             return [
@@ -2187,8 +2214,11 @@ class TVEpisode(object):
         if multi == None:
             multi = sickbeard.NAMING_MULTI_EP
 
-        if anime_type == None:
-            anime_type = sickbeard.NAMING_ANIME
+        if sickbeard.NAMING_CUSTOM_ANIME:
+            if anime_type == None:
+                anime_type = sickbeard.NAMING_ANIME
+        else:
+            anime_type = 3
 
         replace_map = self._replace_map()
 
@@ -2428,7 +2458,7 @@ class TVEpisode(object):
             return
 
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
-            self.location)
+            self.location, base_name_only=True)
 
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
@@ -2442,8 +2472,17 @@ class TVEpisode(object):
 
         # move related files
         for cur_related_file in related_files:
-            cur_result = helpers.rename_ep_file(cur_related_file, absolute_proper_path,
-                                                absolute_current_path_no_ext_length)
+            #We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
+            cur_related_dir = ek.ek(os.path.dirname, ek.ek(os.path.abspath, cur_related_file))
+            subfolder = cur_related_dir.replace(ek.ek(os.path.dirname, ek.ek(os.path.abspath, self.location)), '')
+            #We now have a subfolder. We need to add that to the absolute_proper_path.
+            #First get the absolute proper-path dir
+            proper_related_dir = ek.ek(os.path.dirname, ek.ek(os.path.abspath, absolute_proper_path + file_ext))
+            proper_related_path = absolute_proper_path.replace(proper_related_dir, proper_related_dir + subfolder)
+            
+            
+            cur_result = helpers.rename_ep_file(cur_related_file, proper_related_path,
+                                                absolute_current_path_no_ext_length + len(subfolder))
             if not cur_result:
                 logger.log(str(self.indexerid) + u": Unable to rename file " + cur_related_file, logger.ERROR)
 

@@ -27,8 +27,7 @@ import platform
 
 import sickbeard
 from sickbeard import classes, encodingKludge as ek
-from github import Github
-from pastebin import PastebinAPI
+from github import Github, InputFileContent
 
 # log levels
 ERROR = logging.ERROR
@@ -112,7 +111,7 @@ class Logger(object):
 
         # rotating log file handler
         if self.fileLogging:
-            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=1024 * 1024, backupCount=5, encoding='utf-8')
+            rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=sickbeard.LOG_SIZE, backupCount=sickbeard.LOG_NR, encoding='utf-8')
             rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
             rfh.setLevel(DEBUG)
 
@@ -149,11 +148,11 @@ class Logger(object):
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
         gh_repo = 'sickrage-issues'
 
-        gh_issues = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD,
-                           user_agent="SiCKRAGE").get_organization(gh_org).get_repo(gh_repo)
+        gh = Github(login_or_token=sickbeard.GIT_USERNAME, password=sickbeard.GIT_PASSWORD, user_agent="SiCKRAGE")
 
         try:
             # read log file
+            log_data = None
             if self.logFile and os.path.isfile(self.logFile):
                 with ek.ek(open, self.logFile) as f:
                     log_data = f.readlines()
@@ -164,7 +163,7 @@ class Logger(object):
                 if not curError.title:
                     continue
 
-                pastebin_url = None
+                gist = None
                 regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
                     x = ek.ss(x)
@@ -172,8 +171,9 @@ class Logger(object):
                     if match:
                         level = match.group(2)
                         if reverseNames[level] == ERROR:
-                            paste_data = "".join(log_data[i:50])
-                            pastebin_url = PastebinAPI().paste('f59b8e9fa1fc2d033e399e6c7fb09d19', paste_data)
+                            paste_data = "".join(log_data[i:i+50])
+                            if paste_data:
+                                gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
 
                 message = u"### INFO\n"
@@ -181,8 +181,8 @@ class Logger(object):
                 message += u"Operating System: **" + platform.platform() + "**\n"
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
                 message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
-                if pastebin_url:
-                    message += u"Pastebin Log URL: " + pastebin_url + "\n"
+                if gist:
+                    message += u"Link to Log: " + gist.html_url + "\n"
                 message += u"### ERROR\n"
                 message += u"```\n"
                 message += curError.message + "\n"
@@ -190,7 +190,7 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = gh_issues.create_issue("[APP SUBMITTED]: " + curError.title, message)
+                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + str(curError.title), message)
                 if issue:
                     self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
