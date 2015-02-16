@@ -176,6 +176,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
         delete_files(path, rarContent, result)
         for video in set(videoFiles) - set(videoInRar):
             result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
+    elif sickbeard.DELRARCONTENTS and videoInRar:
+        result.result = process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
+        delete_files(path, rarContent, result)
+        for video in set(videoFiles) - set(videoInRar):
+            result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
     else:
         for video in videoFiles:
             result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
@@ -204,6 +209,11 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             #Don't Link media when the media is extracted from a rar in the same path
             if process_method in ('hardlink', 'symlink') and videoInRar:
                 process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, result)
+                process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
+                              is_priority, result)
+                delete_files(processPath, rarContent, result)
+            elif sickbeard.DELRARCONTENTS and videoInRar:
+                process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result)
                 process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
                               is_priority, result)
                 delete_files(processPath, rarContent, result)
