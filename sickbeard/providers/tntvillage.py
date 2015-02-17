@@ -84,6 +84,17 @@ class TNTVillageProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
+        self.hdtext = {
+                       ' Versione 720p',
+                       ' V 720p',
+                       ' V HEVC',
+                       ' V  HEVC',
+                       ' Versione 1080p',
+                       ' 720p HEVC',
+                       ' Ver 720',
+                       ' 720p HEVC',
+                      }
+
         self.category_dict = {
                               'Serie TV' : 29,
                               'Cartoni' : 8,
@@ -248,30 +259,36 @@ class TNTVillageProvider(generic.TorrentProvider):
         releaser=''
 
         img_all = (torrent_rows.find_all('td'))[1].find_all('img')
+        
+        if len(img_all) > 0:
+            for type in img_all:
+                try:
+    
+                    file_quality = file_quality + " " + type['src'].replace("style_images/mkportal-636/","").replace(".gif","").replace(".png","")
+    
+                except Exception, e:
+                    logger.log(u"Failed parsing " + self.name + " Traceback: "  + traceback.format_exc(), logger.ERROR)
 
-        for type in img_all:
-            try:
-
-                file_quality = file_quality + " " + type['src'].replace("style_images/mkportal-636/","").replace(".gif","").replace(".png","")
-
-            except Exception, e:
-                logger.log(u"Failed parsing " + self.name + " Traceback: "  + traceback.format_exc(), logger.ERROR)
+        else:
+            file_quality = (torrent_rows.find_all('td'))[1].get_text()
+            logger.log(u"file_quality: " + str(file_quality), logger.DEBUG)
 
         checkName = lambda list, func: func([re.search(x, file_quality, re.I) for x in list])
 
-        dvdOptions = checkName(["dvd", "dvdrip", "dvdmux"], any)
+        dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
         blueRayOptions = checkName(["BD","BDmux", "BDrip", "Bluray"], any)
-        sdOptions = checkName(["h264", "divx", "XviD", "tv"], any)
+        sdOptions = checkName(["h264", "divx", "XviD", "tv", "SATRip"], any)
         hdOptions = checkName(["720p"], any)
         fullHD = checkName(["1080p", "fullHD"], any)
 
-        file_quality = (torrent_rows.find_all('td'))[1].get_text()
+        if len(img_all) > 0:
+            file_quality = (torrent_rows.find_all('td'))[1].get_text()
 
         webdl = checkName(["webdl", "webmux", "webrip", "dl-webmux", "web-dlmux", "webdl-mux", "web-dl", "webdlmux", "dlmux"], any)
 
         logger.log(u"dvdOptions: " + str(dvdOptions) + ", blueRayOptions: " + str(blueRayOptions) + ", sdOptions: " + str(sdOptions) + ", hdOptions: " + str(hdOptions) + ", fullHD: " + str(fullHD) + ", webdl: " + str(webdl), logger.DEBUG)
 
-        if sdOptions and not blueRayOptions and not dvdOptions and not fullHD and not hdOptions:
+        if sdOptions and not dvdOptions and not fullHD and not hdOptions:
             return Quality.SDTV
         elif dvdOptions:
             return Quality.SDDVD
@@ -390,7 +407,10 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                                 logger.log(u"name: " + title + "", logger.DEBUG)
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
-                                title = title.replace(" Versione 720p",filename_qt).replace(" V 720p",filename_qt).replace(" V HEVC",filename_qt).replace(" Versione 1080p",filename_qt).replace(" 720p HEVC",filename_qt)
+                                for text in self.hdtext:
+                                    title = title.replace(text,filename_qt)
+
+#title = title.replace(" Versione 720p",filename_qt).replace(" V 720p",filename_qt).replace(" V HEVC",filename_qt).replace(" Versione 1080p",filename_qt).replace(" 720p HEVC",filename_qt).replace(" Ver 720",filename_qt)
 
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt 
