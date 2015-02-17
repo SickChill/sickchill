@@ -34,7 +34,7 @@ from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, btn, newznab, womble, thepiratebay, oldpiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, fanzub, torrentbytes, animezb, \
-    freshontv, bitsoup, t411, tokyotoshokan, shazbat
+    freshontv, bitsoup, t411, tokyotoshokan, shazbat, alpharatio
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -765,11 +765,11 @@ def initialize(consoleLogging=True):
         UPDATE_FREQUENCY = check_setting_int(CFG, 'General', 'update_frequency', DEFAULT_UPDATE_FREQUENCY)
         if UPDATE_FREQUENCY < MIN_UPDATE_FREQUENCY:
             UPDATE_FREQUENCY = MIN_UPDATE_FREQUENCY
-            
+
         SHOWUPDATE_HOUR = check_setting_int(CFG, 'General', 'showupdate_hour', 3)
         if SHOWUPDATE_HOUR > 23: SHOWUPDATE_HOUR = 0;
         elif SHOWUPDATE_HOUR < 0: SHOWUPDATE_HOUR = 0;
-        
+
         BACKLOG_DAYS = check_setting_int(CFG, 'General', 'backlog_days', 7)
 
         NZB_DIR = check_setting_str(CFG, 'Blackhole', 'nzb_dir', '')
