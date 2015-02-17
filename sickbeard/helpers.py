@@ -1008,13 +1008,17 @@ def set_up_anidb_connection():
 
     if not sickbeard.ADBA_CONNECTION:
         anidb_logger = lambda x: logger.log("ANIDB: " + str(x), logger.DEBUG)
-        sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
+        try:
+            sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
+        except Exception as e:
+            logger.log(u"anidb exception msg: " + str(e))
+            return False
 
     if not sickbeard.ADBA_CONNECTION.authed():
         try:
             sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
         except Exception, e:
-            logger.log(u"exception msg: " + str(e))
+            logger.log(u"anidb exception msg: " + str(e))
             return False
     else:
         return True
