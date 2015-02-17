@@ -76,7 +76,7 @@ class TorrentRssProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item.get(titleTAG)
+        title = item.get(self.titleTAG)
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
