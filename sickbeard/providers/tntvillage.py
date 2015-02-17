@@ -276,8 +276,8 @@ class TNTVillageProvider(generic.TorrentProvider):
         checkName = lambda list, func: func([re.search(x, file_quality, re.I) for x in list])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
-        blueRayOptions = checkName(["BD","BDmux", "BDrip", "Bluray"], any)
-        sdOptions = checkName(["h264", "divx", "XviD", "tv", "SATRip"], any)
+        blueRayOptions = checkName(["BD","BDmux", "BDrip", "BRrip", "Bluray"], any)
+        sdOptions = checkName(["h264", "divx", "XviD", "tv", "TVrip", "SATRip", "DTTrip", "Mpeg2"], any)
         hdOptions = checkName(["720p"], any)
         fullHD = checkName(["1080p", "fullHD"], any)
 

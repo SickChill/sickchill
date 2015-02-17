@@ -530,7 +530,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'page'):
+                        #if $hasattr($curTorrentProvider, 'page') and $curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_page">
                                 <span class="component-title">Page Number:</span>
@@ -542,7 +542,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'cat'):
+                        #if $hasattr($curTorrentProvider, 'cat') and $curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_cat">
                                 <span class="component-title">Category:</span>
@@ -557,7 +557,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'subtitle'):
+                        #if $hasattr($curTorrentProvider, 'subtitle') and $curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_subtitle">
                                 <span class="component-title">Subtitled</span>
