@@ -140,15 +140,6 @@ class TNTVillageProvider(generic.TorrentProvider):
 
     def _doLogin(self):
 
-#        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
-#            return True
-#
-#        if self._uid and self._hash:
-#
-#            requests.utils.add_dict_to_cookiejar(self.session.cookies, self.cookies)
-#
-#        else:
-#
         login_params = {'UserName': self.username,
                         'PassWord': self.password,
                         'CookieDate': 1,
@@ -166,13 +157,6 @@ class TNTVillageProvider(generic.TorrentProvider):
         or response.status_code == 401:
             logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
-
-#            self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['member_id']
-#            self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass_hash']
-#
-#            self.cookies = {'uid': self._uid,
-#                            'pass': self._hash
-#            }
 
         return True
 
@@ -409,8 +393,6 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
                                 for text in self.hdtext:
                                     title = title.replace(text,filename_qt)
-
-#title = title.replace(" Versione 720p",filename_qt).replace(" V 720p",filename_qt).replace(" V HEVC",filename_qt).replace(" Versione 1080p",filename_qt).replace(" 720p HEVC",filename_qt).replace(" Ver 720",filename_qt)
 
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt 
