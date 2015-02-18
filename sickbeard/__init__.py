@@ -52,6 +52,9 @@ from sickbeard.databases import mainDB, cache_db, failed_db
 
 from lib.configobj import ConfigObj
 
+from lib import requests
+requests.packages.urllib3.disable_warnings()
+
 PID = None
 
 CFG = None
