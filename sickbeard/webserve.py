@@ -1333,11 +1333,16 @@ class Home(WebRoot):
                     shortWhiteList = []
                     if helpers.set_up_anidb_connection():
                         for groupName in whitelist:
-                            group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                            for line in group.datalines:
-                                if line["shortname"]:
-                                    shortWhiteList.append(line["shortname"])
-                            else:
+                            try:
+                                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                                for line in group.datalines:
+                                    if line["shortname"]:
+                                        shortWhiteList.append(line["shortname"])
+                                else:
+                                    if not groupName in shortWhiteList:
+                                        shortWhiteList.append(groupName)
+                            except Exception as e:
+                                ui.notifications.error('Unable to retreive whitelist short name from AniDB.')
                                 if not groupName in shortWhiteList:
                                     shortWhiteList.append(groupName)
                     else:
@@ -1351,11 +1356,16 @@ class Home(WebRoot):
                     shortBlacklist = []
                     if helpers.set_up_anidb_connection():
                         for groupName in blacklist:
-                            group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                            for line in group.datalines:
-                                if line["shortname"]:
-                                    shortBlacklist.append(line["shortname"])
-                            else:
+                            try:
+                                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                                for line in group.datalines:
+                                    if line["shortname"]:
+                                        shortBlacklist.append(line["shortname"])
+                                else:
+                                    if not groupName in shortBlacklist:
+                                        shortBlacklist.append(groupName)
+                            except Exception as e:
+                                ui.notifications.error('Unable to retreive blacklist short name from AniDB.')
                                 if not groupName in shortBlacklist:
                                     shortBlacklist.append(groupName)
                     else:
