@@ -324,7 +324,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                if mode = 'RSS':
+                if mode == 'RSS':
                     self.page = 2
 
                 last_page=0
