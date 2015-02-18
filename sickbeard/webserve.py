@@ -4395,7 +4395,7 @@ class ConfigNotifications(Config):
                           kodi_password=None,
                           use_plex=None, plex_notify_onsnatch=None, plex_notify_ondownload=None,
                           plex_notify_onsubtitledownload=None, plex_update_library=None,
-                          plex_server_host=None, plex_host=None, plex_username=None, plex_password=None,
+                          plex_server_host=None, plex_server_token=None, plex_host=None, plex_username=None, plex_password=None,
                           use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None,
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
@@ -4456,6 +4456,7 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
         sickbeard.PLEX_HOST = config.clean_hosts(plex_host)
         sickbeard.PLEX_SERVER_HOST = config.clean_host(plex_server_host)
+        sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_USERNAME = plex_username
         sickbeard.PLEX_PASSWORD = plex_password
 
