@@ -1014,14 +1014,14 @@ def set_up_anidb_connection():
             logger.log(u"anidb exception msg: " + str(e))
             return False
 
-    if not sickbeard.ADBA_CONNECTION.authed():
-        try:
+    try:
+        if not sickbeard.ADBA_CONNECTION.authed():
             sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
-        except Exception, e:
-            logger.log(u"anidb exception msg: " + str(e))
-            return False
-    else:
-        return True
+        else:
+            return True
+    except Exception as e:
+        logger.log(u"anidb exception msg: " + str(e))
+        return False
 
     return sickbeard.ADBA_CONNECTION.authed()
 
