@@ -1289,9 +1289,8 @@ class TVShow(object):
             if epStatus == DOWNLOADED and curQuality == Quality.UNKNOWN:
                 return Overview.QUAL
             elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
-                if curQuality < maxBestQuality:
-                    return Overview.QUAL
                 return Overview.SNATCHED
+            # if they don't want re-downloads then we call it good if they have anything
             elif maxBestQuality == None:
                 return Overview.GOOD
             # if the want only first match and already have one call it good
