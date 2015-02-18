@@ -104,7 +104,8 @@
             filter_columnFilters: false,
 			filter_reset: '.resetshows'
 		},
-        sortStable: true
+        sortStable: true,
+        sortAppend: [[1,0]]
     });
 	
 	\$("#showListTableAnime:has(tbody tr)").tablesorter({
@@ -126,13 +127,16 @@
             filter_columnFilters: false,
 			filter_reset: '.resetanime'
 		},
-        sortStable: true
+        sortStable: true,
+        sortAppend: [[1,0]]
     });
 
-	\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
+	if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
+		\$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
 	
 	#if $sickbeard.ANIME_SPLIT_HOME:
-	\$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
+		if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
+			\$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
 	#end if
 	
     #set $fuzzydate = 'airdate'
@@ -403,7 +407,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 				<td class="show-table">
 				    #if $layout != 'simple':	
 						#if $curShow.network:
-							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
+							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
 						#else:
 							<img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
 						#end if
@@ -561,7 +565,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #if $layout != 'simple':	
 		<td align="center">
         #if $curShow.network:
-        	<img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
+        	<img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
     	#else:
     		<img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
 		#end if

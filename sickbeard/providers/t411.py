@@ -59,7 +59,7 @@ class T411Provider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.subcategories = [637, 455, 433]
+        self.subcategories = [433, 637, 455]
 
     def isEnabled(self):
         return self.enabled

@@ -67,7 +67,7 @@ class FailedProcessor(object):
         for episode in parsed.episode_numbers:
             segment = parsed.show.getEpisode(parsed.season_number, episode)
 
-            cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, segment)
+            cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, [segment])
             sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True

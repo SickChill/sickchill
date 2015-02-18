@@ -51,7 +51,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
 
-from lib.dateutil import tz
+from lib.dateutil import tz, parser as dateutil_parser
 from lib.unrar2 import RarFile
 from lib import adba, subliminal
 from lib.trakt import TraktAPI
@@ -192,7 +192,7 @@ class BaseHandler(RequestHandler):
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
-            return self.get_secure_cookie('user')
+            return self.get_secure_cookie('sickrage_user')
         else:
             return True
 
@@ -269,14 +269,14 @@ class LoginHandler(BaseHandler):
 
         if api_key:
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
-            self.set_secure_cookie('user', api_key, expires_days=30 if remember_me > 0 else None)
+            self.set_secure_cookie('sickrage_user', api_key, expires_days=30 if remember_me > 0 else None)
 
         self.redirect('/home/')
 
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        self.clear_cookie("user")
+        self.clear_cookie("sickrage_user")
         self.redirect('/login/')
 
 class KeyHandler(RequestHandler):
@@ -585,9 +585,11 @@ class CalendarHandler(BaseHandler):
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
                     'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
                     episode['season']) + '\r\n'
-                if (episode['description'] is not None and episode['description'] != ''):
-                    ical = ical + 'DESCRIPTION:' + show['airs'] + ' on ' + show['network'] + '\\n\\n' + \
-                           episode['description'].splitlines()[0] + '\r\n'
+                if episode['description']:
+                    ical = ical + 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
+                        (show['airs'] or '(Unknown airs)'),
+                        (show['network'] or 'Unknown network'),
+                        episode['description'].splitlines()[0])
                 else:
                     ical = ical + 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
                         show['network'] or 'Unknown network') + '\r\n'
@@ -2234,7 +2236,7 @@ class HomeAddShows(Home):
 
         logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
             recommendedlist = trakt_api.traktRequest("recommendations/shows?extended=full,images")
@@ -2242,12 +2244,12 @@ class HomeAddShows(Home):
             if recommendedlist:
                 indexers = ['tvdb', 'tvrage']
                 map(final_results.append, (
-                    [int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
-                     'http://www.trakt.tv/shows/%s' % show['show']['ids']['slug'], show['show']['title'],
-                     show['show']['overview'],
-                     datetime.date.fromtimestamp(int(show['show']['first_aired']) / 1000.0).strftime('%Y%m%d')]
+                    [int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
+                     'http://www.trakt.tv/shows/%s' % show['ids']['slug'], show['title'],
+                     show['overview'],
+                     None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime('%Y%m%d')]
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                    int(show['show']['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+                    int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
@@ -2290,7 +2292,7 @@ class HomeAddShows(Home):
 
         t.trending_shows = []
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY)
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
             shows = trakt_api.traktRequest("shows/trending?limit=50&extended=full,images") or []
@@ -3478,7 +3480,7 @@ class ConfigGeneral(Config):
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
-                    launch_browser=None, web_username=None,
+                    launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
@@ -3494,6 +3496,7 @@ class ConfigGeneral(Config):
         sickbeard.PLAY_VIDEOS = config.checkbox_to_value(play_videos)
         sickbeard.DOWNLOAD_URL = download_url
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        sickbeard.SHOWUPDATE_HOUR = config.to_int(showupdate_hour)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
@@ -3525,7 +3528,7 @@ class ConfigGeneral(Config):
         sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version)
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = web_password
-        
+
         sickbeard.DISPLAY_FILESIZE = config.checkbox_to_value(display_filesize)
         sickbeard.FUZZY_DATING = config.checkbox_to_value(fuzzy_dating)
         sickbeard.TRIM_ZERO = config.checkbox_to_value(trim_zero)
@@ -3654,7 +3657,7 @@ class ConfigSearch(Config):
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
-                   torrent_rpcurl=None, ignore_words=None, require_words=None):
+                   torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
 
         results = []
 
@@ -3715,6 +3718,7 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
         sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
         sickbeard.TORRENT_RPCURL = torrent_rpcurl
+        sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
 
         sickbeard.save_config()
 
@@ -4426,7 +4430,7 @@ class ConfigNotifications(Config):
                           use_trakt=None, trakt_username=None, trakt_password=None,
                           trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
-                          trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None,
+                          trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -4548,6 +4552,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_SYNC = config.checkbox_to_value(trakt_sync)
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_DISABLE_SSL_VERIFY = config.checkbox_to_value(trakt_disable_ssl_verify)
+        sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
 
         if sickbeard.USE_TRAKT:
             sickbeard.traktCheckerScheduler.silent = False

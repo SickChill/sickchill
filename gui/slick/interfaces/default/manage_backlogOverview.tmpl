@@ -46,22 +46,25 @@
 #end if
 #set $totalWanted = 0
 #set $totalQual = 0
+#set $totalSnatched = 0
 
 #for $curShow in $sickbeard.showList:
 #set $totalWanted = $totalWanted + $showCounts[$curShow.indexerid][$Overview.WANTED]
 #set $totalQual = $totalQual + $showCounts[$curShow.indexerid][$Overview.QUAL]
+#set $totalSnatched = $totalSnatched + $showCounts[$curShow.indexerid][$Overview.SNATCHED]
 #end for
 
 <div class="h2footer pull-right">
     <span class="listing-key wanted">Wanted: <b>$totalWanted</b></span>
     <span class="listing-key qual">Low Quality: <b>$totalQual</b></span>
+    <span class="listing-key snatched">Snatched: <b>$totalSnatched</b></span>
 </div><br/>
 
 <div class="float-left">
 Jump to Show
 	<select id="pickShow" class="form-control form-control-inline input-sm">
 	#for $curShow in sorted($sickbeard.showList, key = operator.attrgetter('name')):
-	#if $showCounts[$curShow.indexerid][$Overview.QUAL] + $showCounts[$curShow.indexerid][$Overview.WANTED] != 0:
+	#if $showCounts[$curShow.indexerid][$Overview.QUAL] + $showCounts[$curShow.indexerid][$Overview.WANTED] + $showCounts[$curShow.indexerid][$Overview.SNATCHED] != 0:
 	<option value="$curShow.indexerid">$curShow.name</option>
 	#end if
 	#end for
@@ -72,7 +75,7 @@ Jump to Show
 
 #for $curShow in sorted($sickbeard.showList, key = operator.attrgetter('name')):
 
-#if $showCounts[$curShow.indexerid][$Overview.QUAL] + $showCounts[$curShow.indexerid][$Overview.WANTED] == 0:
+#if $showCounts[$curShow.indexerid][$Overview.QUAL] + $showCounts[$curShow.indexerid][$Overview.WANTED] + $showCounts[$curShow.indexerid][$Overview.SNATCHED] == 0:
 #continue
 #end if
 
@@ -82,6 +85,7 @@ Jump to Show
 			<div class="pull-right">
 				<span class="listing-key wanted">Wanted: <b>$showCounts[$curShow.indexerid][$Overview.WANTED]</b></span>
 				<span class="listing-key qual">Low Quality: <b>$showCounts[$curShow.indexerid][$Overview.QUAL]</b></span>
+				<span class="listing-key snatched">Snatched: <b>$showCounts[$curShow.indexerid][$Overview.SNATCHED]</b></span>
 				<a class="btn btn-inline forceBacklog" href="$sbRoot/manage/backlogShow?indexer_id=$curShow.indexerid"><i class="icon-play-circle icon-white"></i> Force Backlog</a>
 			</div>
 		</td>
@@ -97,7 +101,7 @@ Jump to Show
         #continue
     #end try
 
-    #if $overview not in ($Overview.QUAL, $Overview.WANTED):
+    #if $overview not in ($Overview.QUAL, $Overview.WANTED, $Overview.SNATCHED):
         #continue
     #end if
 

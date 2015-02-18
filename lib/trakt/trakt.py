@@ -9,7 +9,7 @@ class TraktAPI():
         self.username = username
         self.password = password
         self.verify = not disable_ssl_verify
-        self.timeout = timeout
+        self.timeout = timeout if timeout else None
         self.api_url = 'https://api.trakt.tv/'
         self.headers = {
           'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ class TraktAPI():
                 data=json.dumps(data), timeout=self.timeout, verify=self.verify)
             resp.raise_for_status()
             resp = resp.json()
-        except (requests.HTTPError, requests.ConnectionError) as e:
+        except requests.RequestException as e:
             code = getattr(e.response, 'status_code', None)
             if not code:
                 # This is pretty much a fatal error if there is no status_code
@@ -68,7 +68,7 @@ class TraktAPI():
 
             # convert response to json
             resp = resp.json()
-        except (requests.HTTPError, requests.ConnectionError) as e:
+        except requests.RequestException as e:
             code = getattr(e.response, 'status_code', None)
             if not code:
                 # This is pretty much a fatal error if there is no status_code
