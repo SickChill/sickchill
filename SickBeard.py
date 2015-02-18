@@ -449,7 +449,7 @@ class SickRage(object):
 
     def restoreDB(self, srcDir, dstDir):
         try:
-            filesList = ['sickbeard.db', 'config.ini']
+            filesList = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in filesList:
                 srcFile = os.path.join(srcDir, filename)

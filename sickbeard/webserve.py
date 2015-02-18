@@ -3597,6 +3597,8 @@ class ConfigBackupRestore(Config):
 
         if backupDir:
             source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
+            source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
+            source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
             target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
             for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
