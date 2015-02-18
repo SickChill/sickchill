@@ -198,7 +198,7 @@ class RarbgProvider(generic.TorrentProvider):
                                         torrent_name = str(torrentName)
                                         torrentId = result.find_all('td')[1].find_all('a')[0]['href'][1:].replace(
                                             'torrent/', '')
-                                        torrent_download_url = (self.urls['download'] % (torrentId, torrent_name + '-[rarbg.com].torrent')).encode('utf8')
+                                        torrent_download_url = (self.urls['download'] % (torrentId, urllib.quote(torrent_name) + '-[rarbg.com].torrent')).encode('utf8')
                                     except (AttributeError, TypeError):
                                         continue
 
