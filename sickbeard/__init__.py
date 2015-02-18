@@ -631,6 +631,31 @@ def initialize(consoleLogging=True):
             logger.log(u"!!! Creating local cache dir failed, using system default", logger.ERROR)
             CACHE_DIR = None
 
+        # Check if we need to perform a restore of the cache folder
+        restoreDir = os.path.join(DATA_DIR, 'restore')
+        if os.path.exists(restoreDir):
+            def restoreCache(srcDir, dstDir):
+                import ntpath
+                import shutil
+
+                def path_leaf(path):
+                    head, tail = ntpath.split(path)
+                    return tail or ntpath.basename(head)
+
+                try:
+                    if os.path.isdir(dstDir):
+                        bakFilename = '{0}-{1}'.format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+                        shutil.move(dstDir, os.path.join(ntpath.dirname(dstDir), bakFilename))
+
+                    shutil.move(srcDir, dstDir)
+                    logger.log(u"Restore: restoring cache successful", logger.INFO)
+                except Exception as e:
+                    logger.log(u"Restore: restoring cache failed", logger.ERROR)
+                finally:
+                    os.rmdir(restoreDir)
+
+            restoreCache(os.path.join(restoreDir, 'cache'), CACHE_DIR)
+
         # clean cache folders
         if CACHE_DIR:
             helpers.clearCache()

@@ -1067,6 +1067,34 @@ def extractZip(archive, targetDir):
         return False
 
 
+def backupConfigZip(fileList, archive, arcname = None):
+    try:
+        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
+        for f in fileList:
+            a.write(f, os.path.relpath(f, arcname))
+        a.close()
+        return True
+    except Exception as e:
+        logger.log(u"Zip creation error: " + str(e), logger.ERROR)
+        return False
+
+
+def restoreConfigZip(archive, targetDir):
+    try:
+        if not os.path.exists(targetDir):
+            os.mkdir(targetDir)
+
+        zip_file = zipfile.ZipFile(archive, 'r')
+        for member in zip_file.namelist():
+            zip_file.extract(member, targetDir)
+        zip_file.close()
+        return True
+    except Exception as e:
+        logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
+        shutil.rmtree(targetDir)
+        return False
+
+
 def mapIndexersToShow(showObj):
     mapped = {}
 

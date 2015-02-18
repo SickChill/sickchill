@@ -264,10 +264,10 @@ class SickRage(object):
         # Check if we need to perform a restore first
         restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
         if self.consoleLogging and os.path.exists(restoreDir):
-            if self.restore(restoreDir, sickbeard.DATA_DIR):
-                sys.stdout.write("Restore successful...\n")
+            if self.restoreDB(restoreDir, sickbeard.DATA_DIR):
+                sys.stdout.write("Restore: restoring DB and config.ini successful...\n")
             else:
-                sys.stdout.write("Restore FAILED!\n")
+                sys.stdout.write("Restore: restoring DB and config.ini FAILED!\n")
 
         # Load the config and publish it to the sickbeard package
         if self.consoleLogging and not os.path.isfile(sickbeard.CONFIG_FILE):
@@ -447,16 +447,17 @@ class SickRage(object):
                     logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
 
-    def restore(self, srcDir, dstDir):
+    def restoreDB(self, srcDir, dstDir):
         try:
-            for file in os.listdir(srcDir):
-                srcFile = os.path.join(srcDir, file)
-                dstFile = os.path.join(dstDir, file)
-                bakFile = os.path.join(dstDir, file + '.bak')
-                shutil.move(dstFile, bakFile)
-                shutil.move(srcFile, dstFile)
+            filesList = ['sickbeard.db', 'config.ini']
 
-            os.rmdir(srcDir)
+            for filename in filesList:
+                srcFile = os.path.join(srcDir, filename)
+                dstFile = os.path.join(dstDir, filename)
+                bakFile = os.path.join(dstDir, '{0}.bak-{1}'.format(filename, datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')))
+                if os.path.isfile(dstFile):
+                    shutil.move(dstFile, bakFile)
+                shutil.move(srcFile, dstFile)
             return True
         except:
             return False
