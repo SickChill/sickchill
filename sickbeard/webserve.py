@@ -1270,8 +1270,11 @@ class Home(WebRoot):
 
                 t.groups = []
                 if helpers.set_up_anidb_connection():
-                    anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
-                    t.groups = anime.get_groups()
+                    try:
+                        anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
+                        t.groups = anime.get_groups()
+                    except Exception as e:
+                        ui.notifications.error('Unable to retreive Fansub Groups from AniDB.')
 
             with showObj.lock:
                 t.show = showObj
