@@ -1420,7 +1420,7 @@ class TVEpisode(object):
                         helpers.chmodAsParent(subtitle.path)
 
         except Exception as e:
-            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
+            logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
             return
 
         if sickbeard.SUBTITLES_MULTI:
