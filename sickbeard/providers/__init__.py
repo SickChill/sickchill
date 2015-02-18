@@ -43,6 +43,7 @@ __all__ = ['ezrss',
            'alpharatio',
            'shazbat',
            'rarbg',
+           'tntvillage',
 ]
 
 import sickbeard

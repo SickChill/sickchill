@@ -34,7 +34,7 @@ from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, btn, newznab, womble, thepiratebay, oldpiratebay, torrentleech, kat, iptorrents, \
     omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, fanzub, torrentbytes, animezb, \
-    freshontv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio
+    freshontv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
 from sickbeard import searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser, \
@@ -1122,6 +1122,13 @@ def initialize(consoleLogging=True):
                                                                            curTorrentProvider.getID() + '_enable_backlog',
                                                                            1))
 
+            if hasattr(curTorrentProvider, 'cat'):
+                curTorrentProvider.cat = check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                         curTorrentProvider.getID() + '_cat', 0)
+            if hasattr(curTorrentProvider, 'subtitle'):
+                curTorrentProvider.subtitle = bool(check_setting_int(CFG, curTorrentProvider.getID().upper(),
+                                                                         curTorrentProvider.getID() + '_subtitle', 0))
+
         for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                                curProvider.providerType == GenericProvider.NZB]:
             curNzbProvider.enabled = bool(
@@ -1629,6 +1636,12 @@ def save_config():
         if hasattr(curTorrentProvider, 'enable_backlog'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_enable_backlog'] = int(
                 curTorrentProvider.enable_backlog)
+        if hasattr(curTorrentProvider, 'cat'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_cat'] = int(
+                curTorrentProvider.cat)
+        if hasattr(curTorrentProvider, 'subtitle'):
+            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_subtitle'] = int(
+                curTorrentProvider.subtitle)
 
     for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if
                            curProvider.providerType == GenericProvider.NZB]:
