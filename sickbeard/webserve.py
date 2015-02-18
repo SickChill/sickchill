@@ -4724,7 +4724,7 @@ class ErrorLogs(WebRoot):
         return t.respond()
 
     def haveErrors(self):
-        if len(classes.ErrorViewer.errors) > 0:
+        if len(classes.ErrorViewer.errors) > 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.GIT_AUTOISSUES == 1:
             return True
 
     def clearerrors(self):
