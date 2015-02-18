@@ -1104,9 +1104,6 @@ def initialize(consoleLogging=True):
                                                                            curTorrentProvider.getID() + '_enable_backlog',
                                                                            1))
 
-            if hasattr(curTorrentProvider, 'page'):
-                curTorrentProvider.page = check_setting_int(CFG, curTorrentProvider.getID().upper(),
-                                                                         curTorrentProvider.getID() + '_page', 1)
             if hasattr(curTorrentProvider, 'cat'):
                 curTorrentProvider.cat = check_setting_int(CFG, curTorrentProvider.getID().upper(),
                                                                          curTorrentProvider.getID() + '_cat', 0)
@@ -1619,9 +1616,6 @@ def save_config():
         if hasattr(curTorrentProvider, 'enable_backlog'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_enable_backlog'] = int(
                 curTorrentProvider.enable_backlog)
-        if hasattr(curTorrentProvider, 'page'):
-            new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_page'] = int(
-                curTorrentProvider.page)
         if hasattr(curTorrentProvider, 'cat'):
             new_config[curTorrentProvider.getID().upper()][curTorrentProvider.getID() + '_cat'] = int(
                 curTorrentProvider.cat)

@@ -530,18 +530,6 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
-                        #if $hasattr($curTorrentProvider, 'page') and $curTorrentProvider.getID() == 'tntvillage':
-                        <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_page">
-                                <span class="component-title">Page Number:</span>
-                                <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_page" id="${curTorrentProvider.getID()}_page" value="$curTorrentProvider.page" class="form-control input-sm input75"/>
-                                    <p>number of torrent result page to donwload for each query</p>
-                                </span>
-                            </label>
-                        </div>
-                        #end if
-
                         #if $hasattr($curTorrentProvider, 'cat') and $curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_cat">
@@ -563,7 +551,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-title">Subtitled</span>
                                 <span class="component-desc">
                                     <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" #if $curTorrentProvider.subtitle then "checked=\"checked\"" else ""#/>
-                                    <p>select torrent also without italian language</p>
+                                    <p>select torrent with Italian subtitle</p>
                                 </span>
                             </label>
                         </div>

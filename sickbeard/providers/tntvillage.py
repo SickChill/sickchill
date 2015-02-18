@@ -79,7 +79,7 @@ class TNTVillageProvider(generic.TorrentProvider):
         self.password = None
         self.ratio = None
         self.cat = None
-        self.page = None
+        self.page = 10
         self.subtitle = None
         self.minseed = None
         self.minleech = None
@@ -323,6 +323,9 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
+
+                if mode = 'RSS':
+                    self.page = 2
 
                 last_page=0
                 y=int(self.page)

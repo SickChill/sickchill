@@ -4315,12 +4315,6 @@ class ConfigProviders(Config):
                 except:
                     curTorrentProvider.enable_backlog = 0  # these exceptions are actually catching unselected checkboxes
 
-            if hasattr(curTorrentProvider, 'page'):
-                try:
-                    curTorrentProvider.page = int(str(kwargs[curTorrentProvider.getID() + '_page']).strip())
-                except:
-                    curTorrentProvider.page = 1
-
             if hasattr(curTorrentProvider, 'cat'):
                 try:
                     curTorrentProvider.cat = int(str(kwargs[curTorrentProvider.getID() + '_cat']).strip())
