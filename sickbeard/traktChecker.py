@@ -53,7 +53,7 @@ class TraktChecker():
             # sync trakt.tv library with sickrage library
             if sickbeard.TRAKT_SYNC:
                 self.syncLibrary()
-        xcept Exception as e:
+        except Exception as e:
             logger.log('Trakt: Error Syncing library. Reason: {0}'.format(str(e)), logger.DEBUG)
 
     def findShow(self, indexer, indexerid):
