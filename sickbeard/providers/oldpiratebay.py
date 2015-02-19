@@ -229,7 +229,7 @@ class OldPirateBayProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     searchURL = self.searchurl % (urllib.quote(search_string))
                 else:
-                    searchURL = self.url + 'tv/latest/'
+                    searchURL = self.url + 'search?iht=8&sort=-created_at'
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
