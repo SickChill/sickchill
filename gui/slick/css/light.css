@@ -544,20 +544,20 @@ home.tmpl
 }
 
 .progress-100 {
-	background-image: -moz-linear-gradient(#55aef1, #9cd0f7) !important;
-	background-image: linear-gradient(#55aef1, #9cd0f7) !important;
-	background-image: -webkit-linear-gradient(#55aef1, #9cd0f7) !important;
-	background-image: -o-linear-gradient(#55aef1, #9cd0f7) !important;
+	background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
+	background-image: linear-gradient(#a6cf41, #5b990d) !important;
+	background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
+	background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
 
 .progress-80 {
-	background-image: -moz-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -webkit-linear-gradient(#a6cf41, #5b990d) !important;
-	background-image: -o-linear-gradient(#a6cf41, #5b990d) !important;
+	background-image: -moz-linear-gradient(#e1ff97, #9db269) !important;
+	background-image: linear-gradient(#e1ff97, #9db269) !important;
+	background-image: -webkit-linear-gradient(#e1ff97, #9db269) !important;
+	background-image: -o-linear-gradient(#e1ff97, #9db269) !important;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
