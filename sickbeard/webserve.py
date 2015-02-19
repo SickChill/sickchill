@@ -1227,6 +1227,7 @@ class Home(WebRoot):
                  rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None,
                  scene=None, defaultEpStatus=None):
 
+        anidb_failed = False
         if show is None:
             errString = "Invalid show ID: " + str(show)
             if directCall:
@@ -1269,11 +1270,12 @@ class Home(WebRoot):
                     t.blacklist = bwl.blackDict["release_group"]
 
                 t.groups = []
-                if helpers.set_up_anidb_connection():
+                if helpers.set_up_anidb_connection() and not anidb_failed:
                     try:
                         anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=showObj.name)
                         t.groups = anime.get_groups()
                     except Exception as e:
+                        anidb_failed = True
                         ui.notifications.error('Unable to retreive Fansub Groups from AniDB.')
 
             with showObj.lock:
@@ -1331,9 +1333,9 @@ class Home(WebRoot):
                 if whitelist:
                     whitelist = whitelist.split(",")
                     shortWhiteList = []
-                    if helpers.set_up_anidb_connection():
-                        for groupName in whitelist:
-                            try:
+                    if helpers.set_up_anidb_connection() and not anidb_failed:
+                        try:
+                            for groupName in whitelist:
                                 group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
                                 for line in group.datalines:
                                     if line["shortname"]:
@@ -1341,10 +1343,10 @@ class Home(WebRoot):
                                 else:
                                     if not groupName in shortWhiteList:
                                         shortWhiteList.append(groupName)
-                            except Exception as e:
-                                ui.notifications.error('Unable to retreive whitelist short name from AniDB.')
-                                if not groupName in shortWhiteList:
-                                    shortWhiteList.append(groupName)
+                        except Exception as e:
+                            anidb_failed = True
+                            ui.notifications.error('Unable to retreive data from AniDB.')
+                            shortWhiteList = whitelist
                     else:
                         shortWhiteList = whitelist
                     bwl.set_white_keywords_for("release_group", shortWhiteList)
@@ -1354,9 +1356,9 @@ class Home(WebRoot):
                 if blacklist:
                     blacklist = blacklist.split(",")
                     shortBlacklist = []
-                    if helpers.set_up_anidb_connection():
-                        for groupName in blacklist:
-                            try:
+                    if helpers.set_up_anidb_connection() and not anidb_failed:
+                        try:
+                            for groupName in blacklist:
                                 group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
                                 for line in group.datalines:
                                     if line["shortname"]:
@@ -1364,10 +1366,10 @@ class Home(WebRoot):
                                 else:
                                     if not groupName in shortBlacklist:
                                         shortBlacklist.append(groupName)
-                            except Exception as e:
-                                ui.notifications.error('Unable to retreive blacklist short name from AniDB.')
-                                if not groupName in shortBlacklist:
-                                    shortBlacklist.append(groupName)
+                        except Exception as e:
+                            anidb_failed = True
+                            ui.notifications.error('Unable to retreive blacklist short name from AniDB.')
+                            shortBlacklist = blacklist
                     else:
                         shortBlacklist = blacklist
                     bwl.set_black_keywords_for("release_group", shortBlacklist)
