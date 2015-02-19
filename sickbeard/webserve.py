@@ -3597,13 +3597,18 @@ class ConfigBackupRestore(Config):
 
         if backupDir:
             source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
+            source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
+            source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
             target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
-            for (dir, _, files) in os.walk(sickbeard.CACHE_DIR):
-                for f in files:
-                    source.append(os.path.join(dir, f))
+            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
+                for dirname in dirs:
+                    if path == sickbeard.CACHE_DIR and dirname not in ['images']:
+                        dirs.remove(dirname)
+                for filename in files:
+                    source.append(os.path.join(path, filename))
 
-            if helpers.makeZip(source, target):
+            if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
                 finalResult += "Successful backup to " + target
             else:
                 finalResult += "Backup FAILED"
@@ -3623,7 +3628,7 @@ class ConfigBackupRestore(Config):
             source = backupFile
             target_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
 
-            if helpers.extractZip(source, target_dir):
+            if helpers.restoreConfigZip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir
                 finalResult += "<br>Restart sickrage to complete the restore."
             else:
