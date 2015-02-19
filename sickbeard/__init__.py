@@ -24,6 +24,7 @@ import socket
 import os
 import re
 import os.path
+import shutil
 
 from threading import Lock
 import sys
@@ -638,7 +639,6 @@ def initialize(consoleLogging=True):
             if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, 'cache')):
                 def restoreCache(srcDir, dstDir):
                     import ntpath
-                    import shutil
 
                     def path_leaf(path):
                         head, tail = ntpath.split(path)
@@ -659,7 +659,10 @@ def initialize(consoleLogging=True):
             logger.log(u"Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
         finally:
             if os.path.exists(os.path.join(DATA_DIR, 'restore')):
-                os.rmdir(os.path.join(DATA_DIR, 'restore'))
+                try:
+                    shutil.rmtree(os.path.join(DATA_DIR, 'restore'))
+                except Exception as e:
+                    logger.log(u"Restore: Unable to remove the restore directory: {0}".format(str(e)), logger.ERROR)
 
         # clean cache folders
         if CACHE_DIR:
