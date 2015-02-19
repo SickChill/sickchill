@@ -93,6 +93,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                        ' 720p HEVC',
                        ' Ver 720',
                        ' 720p HEVC',
+                       ' 720p',
                       ]
 
         self.category_dict = {
