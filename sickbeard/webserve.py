@@ -1368,7 +1368,7 @@ class Home(WebRoot):
                                         shortBlacklist.append(groupName)
                         except Exception as e:
                             anidb_failed = True
-                            ui.notifications.error('Unable to retreive blacklist short name from AniDB.')
+                            ui.notifications.error('Unable to retreive data from AniDB.')
                             shortBlacklist = blacklist
                     else:
                         shortBlacklist = blacklist
