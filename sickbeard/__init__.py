@@ -633,29 +633,33 @@ def initialize(consoleLogging=True):
             CACHE_DIR = None
 
         # Check if we need to perform a restore of the cache folder
-        restoreDir = os.path.join(DATA_DIR, 'restore')
-        if os.path.exists(restoreDir):
-            def restoreCache(srcDir, dstDir):
-                import ntpath
-                import shutil
+        try:
+            restoreDir = os.path.join(DATA_DIR, 'restore')
+            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, 'cache')):
+                def restoreCache(srcDir, dstDir):
+                    import ntpath
+                    import shutil
 
-                def path_leaf(path):
-                    head, tail = ntpath.split(path)
-                    return tail or ntpath.basename(head)
+                    def path_leaf(path):
+                        head, tail = ntpath.split(path)
+                        return tail or ntpath.basename(head)
 
-                try:
-                    if os.path.isdir(dstDir):
-                        bakFilename = '{0}-{1}'.format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
-                        shutil.move(dstDir, os.path.join(ntpath.dirname(dstDir), bakFilename))
+                    try:
+                        if os.path.isdir(dstDir):
+                            bakFilename = '{0}-{1}'.format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+                            shutil.move(dstDir, os.path.join(ntpath.dirname(dstDir), bakFilename))
 
-                    shutil.move(srcDir, dstDir)
-                    logger.log(u"Restore: restoring cache successful", logger.INFO)
-                except Exception as e:
-                    logger.log(u"Restore: restoring cache failed", logger.ERROR)
-                finally:
-                    os.rmdir(restoreDir)
+                        shutil.move(srcDir, dstDir)
+                        logger.log(u"Restore: restoring cache successful", logger.INFO)
+                    except Exception as e:
+                        logger.log(u"Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
 
-            restoreCache(os.path.join(restoreDir, 'cache'), CACHE_DIR)
+                restoreCache(os.path.join(restoreDir, 'cache'), CACHE_DIR)
+        except Exception as e:
+            logger.log(u"Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
+        finally:
+            if os.path.exists(os.path.join(DATA_DIR, 'restore')):
+                os.rmdir(os.path.join(DATA_DIR, 'restore'))
 
         # clean cache folders
         if CACHE_DIR:
