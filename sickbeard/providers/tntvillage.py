@@ -84,7 +84,7 @@ class TNTVillageProvider(generic.TorrentProvider):
         self.minseed = None
         self.minleech = None
 
-        self.hdtext = {
+        self.hdtext = [
                        ' Versione 720p',
                        ' V 720p',
                        ' V HEVC',
@@ -93,7 +93,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                        ' 720p HEVC',
                        ' Ver 720',
                        ' 720p HEVC',
-                      }
+                      ]
 
         self.category_dict = {
                               'Serie TV' : 29,
