@@ -262,12 +262,15 @@ class SickRage(object):
         os.chdir(sickbeard.DATA_DIR)
 
         # Check if we need to perform a restore first
-        restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
-        if self.consoleLogging and os.path.exists(restoreDir):
-            if self.restoreDB(restoreDir, sickbeard.DATA_DIR):
-                sys.stdout.write("Restore: restoring DB and config.ini successful...\n")
-            else:
-                sys.stdout.write("Restore: restoring DB and config.ini FAILED!\n")
+        try:
+            restoreDir = os.path.join(sickbeard.DATA_DIR, 'restore')
+            if self.consoleLogging and os.path.exists(restoreDir):
+                if self.restoreDB(restoreDir, sickbeard.DATA_DIR):
+                    sys.stdout.write("Restore: restoring DB and config.ini successful...\n")
+                else:
+                    sys.stdout.write("Restore: restoring DB and config.ini FAILED!\n")
+        except Exception as e:
+            sys.stdout.write("Restore: restoring DB and config.ini FAILED!\n")
 
         # Load the config and publish it to the sickbeard package
         if self.consoleLogging and not os.path.isfile(sickbeard.CONFIG_FILE):

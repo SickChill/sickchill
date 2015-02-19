@@ -1080,9 +1080,16 @@ def backupConfigZip(fileList, archive, arcname = None):
 
 
 def restoreConfigZip(archive, targetDir):
+    import ntpath
     try:
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
+        else:
+            def path_leaf(path):
+                head, tail = ntpath.split(path)
+                return tail or ntpath.basename(head)
+            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+            shutil.move(targetDir, os.path.join(ntpath.dirname(targetDir), bakFilename))
 
         zip_file = zipfile.ZipFile(archive, 'r')
         for member in zip_file.namelist():
