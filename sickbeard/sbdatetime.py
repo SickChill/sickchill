@@ -130,7 +130,7 @@ class sbdatetime(datetime.datetime):
 
         try:
             if sbdatetime.has_locale:
-                locale.setlocale(locale.LC_TIME, 'us_US')
+                locale.setlocale(locale.LC_TIME, 'en_US')
         except:
             sbdatetime.has_locale = False
 
@@ -210,7 +210,7 @@ class sbdatetime(datetime.datetime):
                         strd = dt.strftime(sickbeard.DATE_PRESET)
                     try:
                         if sbdatetime.has_locale:
-                            locale.setlocale(locale.LC_TIME, 'us_US')
+                            locale.setlocale(locale.LC_TIME, 'en_US')
                     except:
                         sbdatetime.has_locale = False
                     if t_preset is not None:
@@ -226,7 +226,7 @@ class sbdatetime(datetime.datetime):
                     strd = self.strftime(sickbeard.DATE_PRESET)
                 try:
                     if sbdatetime.has_locale:
-                        locale.setlocale(locale.LC_TIME, 'us_US')
+                        locale.setlocale(locale.LC_TIME, 'en_US')
                 except:
                     sbdatetime.has_locale = False
                 if t_preset is not None:

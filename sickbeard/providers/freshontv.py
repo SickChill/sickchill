@@ -111,6 +111,10 @@ class FreshOnTVProvider(generic.TorrentProvider):
             if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response.text):
                 logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
                 return False
+                
+            if re.search('DDoS protection by CloudFlare', response.text):
+                logger.log(u'Unable to login to ' + self.name + ' due to CloudFlare DDoS javascript check.', logger.ERROR)
+                return False
 
             try:
                 if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:

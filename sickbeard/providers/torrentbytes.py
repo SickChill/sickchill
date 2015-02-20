@@ -81,7 +81,7 @@ class TorrentBytesProvider(generic.TorrentProvider):
 
         login_params = {'username': self.username,
                         'password': self.password,
-                        'login': 'submit'
+                        'login': 'Log in!'
         }
 
         self.session = requests.Session()

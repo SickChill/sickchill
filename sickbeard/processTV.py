@@ -251,7 +251,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
         process_failed(os.path.join(path, dirName), nzbNameOriginal, result)
         return False
 
-    if helpers.is_hidden_folder(dirName):
+    if helpers.is_hidden_folder(os.path.join(path, dirName)):
         result.output += logHelper(u"Ignoring hidden folder: " + dirName, logger.DEBUG)
         return False
 

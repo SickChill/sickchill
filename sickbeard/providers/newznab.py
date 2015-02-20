@@ -360,16 +360,16 @@ class NewznabProvider(generic.NZBProvider):
 
                 try:
                     result_date = datetime.datetime(*item['published_parsed'][0:6])
-                except AttributeError:
+                except (AttributeError, KeyError):
                     try:
                         result_date = datetime.datetime(*item['updated_parsed'][0:6])
-                    except AttributeError:
+                    except (AttributeError, KeyError):
                         try:
                             result_date = datetime.datetime(*item['created_parsed'][0:6])
-                        except AttributeError:
+                        except (AttributeError, KeyError):
                             try:
                                 result_date = datetime.datetime(*item['date'][0:6])
-                            except AttributeError:
+                            except (AttributeError, KeyError):
                                 logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
                                 continue
 
