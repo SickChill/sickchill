@@ -67,7 +67,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.subcategories = [41] #18
+        self.subcategories = ['18;41']
 
 
     def getURL(self, url, post_data=None, params=None, timeout=30, json=False):
