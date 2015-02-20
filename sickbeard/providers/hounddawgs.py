@@ -56,9 +56,9 @@ class HoundDawgsProvider(generic.TorrentProvider):
 
         self.cache = HoundDawgsCache(self)
 		
-        self.urls = {'base_url': 'https://192.99.10.104/',
-		        'search': 'https://192.99.10.104/torrents.php?type=&userid=&searchstr=%s&searchimdb=&searchtags=&order_by=s3&order_way=desc&%s',
-                'login': 'https://192.99.10.104/login.php',
+        self.urls = {'base_url': 'https://hounddawgs.org/',
+		        'search': 'https://hounddawgs.org/torrents.php?type=&userid=&searchstr=%s&searchimdb=&searchtags=&order_by=s3&order_way=desc&%s',
+                'login': 'https://hounddawgs.org/login.php',
         }
 
         self.url = self.urls['base_url']
