@@ -20,6 +20,7 @@ from .core import (SERVICES, LANGUAGE_INDEX, SERVICE_INDEX, SERVICE_CONFIDENCE,
     group_by_video, key_subtitles)
 from .language import language_set, language_list, LANGUAGES
 import logging
+import sys
 
 
 __all__ = ['list_subtitles', 'download_subtitles']
@@ -48,7 +49,7 @@ def list_subtitles(paths, languages=None, services=None, force=True, multi=False
     if isinstance(paths, basestring):
         paths = [paths]
     if any([not isinstance(p, unicode) for p in paths]):
-        logger.warning(u'Not all entries are unicode')
+        logger.warning(u'Not all entries are unicode') if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     results = []
     service_instances = {}
     tasks = create_list_tasks(paths, languages, services, force, multi, cache_dir, max_depth, scan_filter)
@@ -57,7 +58,7 @@ def list_subtitles(paths, languages=None, services=None, force=True, multi=False
             result = consume_task(task, service_instances)
             results.append((task.video, result))
         except:
-            logger.error(u'Error consuming task %r' % task, exc_info=True)
+            logger.error(u'Error consuming task %r' % task, exc_info=True) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     for service_instance in service_instances.itervalues():
         service_instance.terminate()
     return group_by_video(results)
@@ -106,7 +107,7 @@ def download_subtitles(paths, languages=None, services=None, force=True, multi=F
             result = consume_task(task, service_instances)
             results.append((task.video, result))
         except:
-            logger.error(u'Error consuming task %r' % task, exc_info=True)
+            logger.error(u'Error consuming task %r' % task, exc_info=True) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     for service_instance in service_instances.itervalues():
         service_instance.terminate()
     return group_by_video(results)

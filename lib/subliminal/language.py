@@ -18,6 +18,7 @@
 from .utils import to_unicode
 import re
 import logging
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -846,7 +847,7 @@ class Language(object):
             try:
                 self.country = Country(country, countries)
             except ValueError:
-                logger.warning(u'Country %s could not be identified' % country)
+                logger.warning(u'Country %s could not be identified' % country) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 if strict:
                     raise
 
@@ -859,7 +860,7 @@ class Language(object):
                     try:
                         self.country = Country(regexp.group(2), countries)
                     except ValueError:
-                        logger.warning(u'Country %s could not be identified' % country)
+                        logger.warning(u'Country %s could not be identified' % country) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                         if strict:
                             raise
                     break

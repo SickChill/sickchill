@@ -23,6 +23,7 @@ from .tasks import StopTask
 import Queue
 import logging
 import threading
+import sys
 
 
 __all__ = ['Worker', 'Pool']
@@ -47,11 +48,11 @@ class Worker(threading.Thread):
                 result = consume_task(task, self.services)
                 self.results.put((task.video, result))
             except:
-                logger.error(u'Exception raised in worker %s' % self.name, exc_info=True)
+                logger.error(u'Exception raised in worker %s' % self.name, exc_info=True) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             finally:
                 self.tasks.task_done()
         self.terminate()
-        logger.debug(u'Thread %s terminated' % self.name)
+        logger.debug(u'Thread %s terminated' % self.name) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
 
     def terminate(self):
         """Terminate instantiated services"""
@@ -59,7 +60,7 @@ class Worker(threading.Thread):
             try:
                 service.terminate()
             except:
-                logger.error(u'Exception raised when terminating service %s' % service_name, exc_info=True)
+                logger.error(u'Exception raised when terminating service %s' % service_name, exc_info=True) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
 
 
 class Pool(object):
@@ -116,7 +117,7 @@ class Pool(object):
         if isinstance(paths, basestring):
             paths = [paths]
         if any([not isinstance(p, unicode) for p in paths]):
-            logger.warning(u'Not all entries are unicode')
+            logger.warning(u'Not all entries are unicode') if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         tasks = create_list_tasks(paths, languages, services, force, multi, cache_dir, max_depth, scan_filter)
         for task in tasks:
             self.tasks.put(task)

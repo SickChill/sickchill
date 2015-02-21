@@ -24,6 +24,7 @@ from ..videos import Episode, Movie
 from hashlib import md5, sha256
 import logging
 import xmlrpclib
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -69,10 +70,10 @@ class Podnapisi(ServiceBase):
     def query(self, filepath, languages, moviehash):
         results = self.server.search(self.token, [moviehash])
         if results['status'] != 200:
-            logger.error('Search failed with error code %d' % results['status'])
+            logger.error('Search failed with error code %d' % results['status']) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         if not results['results'] or not results['results'][moviehash]['subtitles']:
-            logger.debug(u'Could not find subtitles for %r with token %s' % (moviehash, self.token))
+            logger.debug(u'Could not find subtitles for %r with token %s' % (moviehash, self.token)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         subtitles = []
         for result in results['results'][moviehash]['subtitles']:

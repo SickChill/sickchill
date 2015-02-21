@@ -24,6 +24,7 @@ from ..videos import Episode
 from bs4 import BeautifulSoup
 import logging
 import re
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -33,7 +34,7 @@ def match(pattern, string):
     try:
         return re.search(pattern, string).group(1)
     except AttributeError:
-        logger.debug(u'Could not match %r on %r' % (pattern, string))
+        logger.debug(u'Could not match %r on %r' % (pattern, string)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         return None
 
 
@@ -116,13 +117,13 @@ class TvSubtitles(ServiceBase):
         return self.query(video.path or video.release, languages, get_keywords(video.guess), video.series, video.season, video.episode)
 
     def query(self, filepath, languages, keywords, series, season, episode):
-        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
+        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         self.init_cache()
         sid = self.get_likely_series_id(series.lower())
         try:
             ep_id = self.get_episode_id(sid, season, episode)
         except KeyError:
-            logger.debug(u'Could not find episode id for %s season %d episode %d' % (series, season, episode))
+            logger.debug(u'Could not find episode id for %s season %d episode %d' % (series, season, episode)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         subids = self.get_sub_ids(ep_id)
         # filter the subtitles with our queried languages
