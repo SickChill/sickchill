@@ -183,17 +183,15 @@ class AlphaRatioProvider(generic.TorrentProvider):
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
-
-                            link = cells[1].find('a', attrs={'title': 'Download'})
-                            full_id = link['href'].replace('torrents.php?action=download&id=', '')
-                            torrent_id = full_id.split("&")[0]
+                            link = result.find('a', attrs = {'dir': 'ltr'})
+                            url = result.find('a', attrs = {'title': 'Download'})
 
                             try:
-                                title = cells[1].find('a', attrs={'title': 'View Auto Torrent'}).contents[0]
-                                download_url = self.urls['download'] % (link['href'])
-                                id = torrent_id
-                                seeders = cells[6].contents[0]
-                                leechers = cells[7].contents[0]
+                                title = link.contents[0]
+                                download_url = self.urls['download'] % (url['href'])
+                                id = link['href'].replace('torrents.php?id=', '').split('&')[0]
+                                seeders = cells[len(cells)-2].string
+                                leechers = cells[len(cells)-1].string
                             except (AttributeError, TypeError):
                                 continue
 
