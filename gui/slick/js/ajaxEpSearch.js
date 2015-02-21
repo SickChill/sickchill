@@ -45,9 +45,9 @@ function updateImages(data) {
         if (el) {
         	if (ep.searchstatus == 'searching') {
 				//el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
-				img.prop('title','Searching');
-				img.prop('alt','Searching');
-				img.prop('src',sbRoot+'/images/' + loadingImage);
+				img.attr('title','Searching');
+				img.attr('alt','earching');
+				img.attr('src',sbRoot+'/images/' + loadingImage);
 				disableLink(el);
 				// Update Status and Quality
 				var rSearchTerm = /(\w+)\s\((.+?)\)/;
@@ -56,24 +56,23 @@ function updateImages(data) {
         	}
         	else if (ep.searchstatus == 'queued') {
 				//el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
-				img.prop('title','Queued');
-				img.prop('alt','queued');
-				img.prop('src',sbRoot+'/images/' + queuedImage );
+				img.attr('title','Queued');
+				img.attr('alt','queued');
+				img.attr('src',sbRoot+'/images/' + queuedImage );
 				disableLink(el);
 				HtmlContent = ep.searchstatus;
 			}
         	else if (ep.searchstatus == 'finished') {
 				//el=$('td#' + ep.season + 'x' + ep.episode + '.search img');
-				img.prop('title','Searching');
-				img.prop('alt','searching');
-				img.parent().prop('class','epRetry');
-				img.prop('src',sbRoot+'/images/' + searchImage);
+				img.attr('title','Searching');
+				img.attr('alt','searching');
+				img.parent().attr('class','epRetry');
+				img.attr('src',sbRoot+'/images/' + searchImage);
 				enableLink(el);
 				
 				// Update Status and Quality
 				var rSearchTerm = /(\w+)\s\((.+?)\)/;
 	            HtmlContent = ep.status.replace(rSearchTerm,"$1"+' <span class="quality '+ep.quality+'">'+"$2"+'</span>');
-	            parent.closest('tr').prop("class", ep.overview + " season-" + ep.season + " seasonstyle")
 		        
 			}
         	// update the status column if it exists
@@ -92,13 +91,13 @@ $(document).ready(function () {
 
 function enableLink(el) {
 	el.on('click.disabled', false);
-	el.prop('enableClick', '1');
+	el.attr('enableClick', '1');
 	el.fadeTo("fast", 1)
 }
 
 function disableLink(el) {
 	el.off('click.disabled');
-	el.prop('enableClick', '0');
+	el.attr('enableClick', '0');
 	el.fadeTo("fast", .5)
 }
 
@@ -122,11 +121,11 @@ function disableLink(el) {
 	    	event.preventDefault();
 	        
 	    	// Check if we have disabled the click
-	    	if ( $(this).prop('enableClick') == '0' ) {
+	    	if ( $(this).attr('enableClick') == '0' ) {
 	    		return false;
 	    	}
 	    	
-	    	if ( $(this).prop('class') == "epRetry" ) {
+	    	if ( $(this).attr('class') == "epRetry" ) {
 	    		if ( !confirm("Mark download as bad and retry?") )
 	                return false;
 	    	};
@@ -138,12 +137,12 @@ function disableLink(el) {
 	    	
 	    	// Create var for img under anchor and set options for the loading gif
 	        img=$(this).children('img');
-	        img.prop('title','loading');
-			img.prop('alt','');
-			img.prop('src',sbRoot+'/images/' + options.loadingImage);
+	        img.attr('title','loading');
+			img.attr('alt','');
+			img.attr('src',sbRoot+'/images/' + options.loadingImage);
 			
 	        
-	        $.getJSON($(this).prop('href'), function(data){
+	        $.getJSON($(this).attr('href'), function(data){
 	            
 	        	// if they failed then just put the red X
 	            if (data.result == 'failure') {
@@ -162,15 +161,15 @@ function disableLink(el) {
 	                    HtmlContent = data.result.replace(rSearchTerm,"$1"+' <span class="quality '+data.quality+'">'+"$2"+'</span>');
 	                // update the status column if it exists
                     parent.siblings('.col-status').html(HtmlContent)
-                    // Only if the queuing was successful, disable the onClick event of the loading image
+                    // Only if the queing was succesfull, disable the onClick event of the loading image
                     disableLink(link);
 	            }
 
 	            // put the corresponding image as the result of queuing of the manual search
-	            img.prop('title',img_result);
-				img.prop('alt',img_result);
-				img.prop('height', options.size);
-				img.prop('src',sbRoot+"/images/"+img_name);
+	            img.attr('title',img_result);
+				img.attr('alt',img_result);
+				img.attr('height', options.size);
+				img.attr('src',sbRoot+"/images/"+img_name);
 	        });
 	        // 
 	        
