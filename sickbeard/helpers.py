@@ -190,6 +190,7 @@ def sanitizeFileName(name):
     # remove bad chars from the filename
     name = re.sub(r'[\\/\*]', '-', name)
     name = re.sub(r'[:"<>|?]', '', name)
+    name = re.sub(ur'\u2122', '', name) # Trade Mark Sign
 
     # remove leading/trailing periods and spaces
     name = name.strip(' .')
