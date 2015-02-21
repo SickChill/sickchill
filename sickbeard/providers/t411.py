@@ -51,10 +51,10 @@ class T411Provider(generic.TorrentProvider):
 
         self.cache = T411Cache(self)
 
-        self.urls = {'base_url': 'http://www.t411.me/',
-                'search': 'http://www.t411.me/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
-                'login_page': 'http://www.t411.me/users/login/',
-                'download': 'http://www.t411.me/torrents/download/?id=%s',
+        self.urls = {'base_url': 'http://www.t411.io/',
+                'search': 'http://www.t411.io/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
+                'login_page': 'http://www.t411.io/users/login/',
+                'download': 'http://www.t411.io/torrents/download/?id=%s',
                 }
 
         self.url = self.urls['base_url']
