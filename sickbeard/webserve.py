@@ -1824,7 +1824,14 @@ class Home(WebRoot):
     def getManualSearchStatus(self, show=None, season=None):
         def getEpisodes(searchThread, searchstatus):
             results = []
-            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+            if show is None:
+                return self._genericMessage("Error", "Invalid show ID")
+            else:
+                showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+                if showObj is None:
+                    return self._genericMessage("Error", "Unable to find the specified show")
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 results.append({'episode': searchThread.segment.episode,
