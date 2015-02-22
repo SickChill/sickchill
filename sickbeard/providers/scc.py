@@ -185,7 +185,10 @@ class SCCProvider(generic.TorrentProvider):
 
                 for searchURL in searchURLS:
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
-                    data += [x for x in [self.getURL(searchURL)] if x]
+                    try:
+                        data += [x for x in [self.getURL(searchURL)] if x]
+                    except Exception as e:
+                        logger.log(u"Unable to fetch data reason: {0}".format(str(e)), logger.WARNING)
 
                 if not len(data):
                     continue
