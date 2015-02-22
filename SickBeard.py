@@ -146,7 +146,7 @@ class SickRage(object):
         if not hasattr(sys, "setdefaultencoding"):
             reload(sys)
   
-        if sys.getwindowsversion()[0] >= 6 and sickbeard.SYS_ENCODING in ['ascii','cp1252'] and sys.stdout.encoding == 'cp65001':
+        if sys.getwindowsversion()[0] >= 6 and sys.stdout.encoding == 'cp65001':
             sickbeard.SYS_ENCODING = 'UTF-8'
 
         try:
