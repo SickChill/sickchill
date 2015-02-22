@@ -5,6 +5,7 @@ cache/
 cache.db*
 config.ini*
 Logs/*
+Logs/
 sickbeard.db*
 failed.db*
 autoProcessTV/autoProcessTV.cfg
