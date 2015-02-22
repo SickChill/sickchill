@@ -1824,6 +1824,7 @@ class Home(WebRoot):
     def getManualSearchStatus(self, show=None, season=None):
         def getEpisodes(searchThread, searchstatus):
             results = []
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 results.append({'episode': searchThread.segment.episode,
@@ -1831,7 +1832,8 @@ class Home(WebRoot):
                                 'season': searchThread.segment.season,
                                 'searchstatus': searchstatus,
                                 'status': statusStrings[searchThread.segment.status],
-                                'quality': self.getQualityClass(searchThread.segment)})
+                                'quality': self.getQualityClass(searchThread.segment),
+                                'overview': Overview.overviewStrings[showObj.getOverview(int(searchThread.segment.status or -1))]})
             else:
                 for epObj in searchThread.segment:
                     results.append({'episode': epObj.episode,
@@ -1839,11 +1841,15 @@ class Home(WebRoot):
                                     'season': epObj.season,
                                     'searchstatus': searchstatus,
                                     'status': statusStrings[epObj.status],
-                                    'quality': self.getQualityClass(epObj)})
+                                    'quality': self.getQualityClass(epObj),
+                                    'overview': Overview.overviewStrings[showObj.getOverview(int(epObj.status or -1))]})
 
             return results
 
         episodes = []
+
+        if not show and not season:
+            return json.dumps({'show': show, 'episodes': episodes})
 
         # Queued Searches
         searchstatus = 'queued'
