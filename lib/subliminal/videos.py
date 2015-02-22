@@ -57,9 +57,6 @@ class Video(object):
         self.imdbid = imdbid
         self._path = None
         self.hashes = {}
-        
-        if isinstance(path, unicode):
-            path = path.encode('utf-8')
 
         if isinstance(path, str):
             path = unicode(path.encode('utf-8'))
@@ -229,8 +226,6 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
     :rtype: list of (:class:`Video`, [:class:`~subliminal.subtitles.Subtitle`])
 
     """
-    if isinstance(entry, unicode):
-        entry = entry.encode('utf-8')
 
     if isinstance(entry, str):
         entry = unicode(entry.encode('utf-8'))
