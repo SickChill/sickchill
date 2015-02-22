@@ -20,6 +20,9 @@
 # Check needed software dependencies to nudge users to fix their setup
 from __future__ import with_statement
 
+import codecs
+codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
+
 import time
 import signal
 import sys
@@ -142,6 +145,9 @@ class SickRage(object):
 
         if not hasattr(sys, "setdefaultencoding"):
             reload(sys)
+  
+        if sys.getwindowsversion()[0] >= 6 and sickbeard.SYS_ENCODING in ['ascii','cp1252'] and sys.stdout.encoding == 'cp65001':
+            sickbeard.SYS_ENCODING = 'UTF-8'
 
         try:
             # pylint: disable=E1101

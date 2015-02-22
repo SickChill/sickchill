@@ -24,6 +24,7 @@ import time
 import urllib
 import re
 import datetime
+import codecs
 
 import sickbeard
 from sickbeard import config, sab
@@ -4774,7 +4775,7 @@ class ErrorLogs(WebRoot):
 
         data = []
         if os.path.isfile(logger.logFile):
-            with ek.ek(open, logger.logFile) as f:
+            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
                 data = f.readlines()
 
         regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
