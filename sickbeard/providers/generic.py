@@ -504,7 +504,7 @@ class ProviderProxy:
     def _buildURL(self, url):
         """ Return the Proxyfied URL of the page """
         if self.isEnabled():
-            url = self.getProxyURL() + self.param + urllib.quote_plus(url) + self.option
+            url = self.getProxyURL() + self.param + urllib.quote_plus(url.encode('UTF-8')) + self.option
             logger.log(u"Proxified URL: " + url, logger.DEBUG)
 
         return url
