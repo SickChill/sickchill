@@ -1028,6 +1028,10 @@ class TVShow(object):
             except OSError, e:
                 logger.log(u'Unable to %s %s: %s / %s' % (action, self._location, repr(e), str(e)), logger.WARNING)
 
+        if sickbeard.USE_TRAKT:
+            logger.log(u"Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist", logger.DEBUG)
+            notifiers.trakt_notifier.update_watchlist(self, update="remove")
+
     def populateCache(self):
         cache_inst = image_cache.ImageCache()
 

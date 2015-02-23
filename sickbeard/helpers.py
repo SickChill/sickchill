@@ -1406,3 +1406,30 @@ def remove_article(text=''):
 def generateCookieSecret():
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+
+def dict_merge(*dicts):
+    if not reduce(lambda x, y: isinstance(y, dict) and x, dicts, True):
+        raise TypeError, "Object in *dicts not of type dict"
+    if len(dicts) < 2:
+        raise ValueError, "Requires 2 or more dict objects"
+
+    def merge(a, b):
+        for d in set(a.keys()).union(b.keys()):
+            if d in a and d in b:
+                if type(a[d]) == type(b[d]):
+                    if not isinstance(a[d], dict):
+                        ret = list({a[d], b[d]})
+                #        if len(ret) == 1: ret = ret[0]
+                        yield (d, sorted(ret))
+                    else:
+                        yield (d, dict(merge(a[d], b[d])))
+                else:
+                    raise TypeError, "Conflicting key:value type assignment"
+            elif d in a:
+                yield (d, a[d])
+            elif d in b:
+                yield (d, b[d])
+            else:
+                raise KeyError
+
+    return reduce(lambda x, y: dict(merge(x, y)), dicts[1:], dicts[0])

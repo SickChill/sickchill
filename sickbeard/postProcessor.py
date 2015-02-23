@@ -924,6 +924,26 @@ class PostProcessor(object):
 
                 sql_l.append(cur_ep.get_sql())
 
+                data  = {
+                        'seasons': [
+                            {
+                                'number': epObj.season,
+                                'episodes': [
+                                    {
+                                        'number': epObj.episode
+                                    }
+                                ]
+                            }
+                        ]
+
+                 }
+
+                datas.update(data)
+
+        if sickbeard.USE_TRAKT:
+            logger.log(u"Remove episodes, showid: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " to Watchlist", logger.DEBUG)
+            notifiers.trakt_notifier.update_watchlist(self, data_obj=data, update="remove")
+
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)

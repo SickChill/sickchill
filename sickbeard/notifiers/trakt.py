@@ -105,6 +105,87 @@ class TraktNotifier:
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
+    def update_watchlist (self, show_obj, s=None, e=None, data_obj=None, update="add"):
+
+        """
+        Sends a request to trakt indicating that the given episode is part of our library.
+
+        ep_obj: The TVEpisode object to add to trakt
+        """
+
+        trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+        logger.log(u"update: " + str(update), logger.ERROR)
+
+        if sickbeard.USE_TRAKT:
+
+            try:
+                # URL parameters
+                data = {
+                    'shows': [
+                        {
+                            'title': show_obj.name,
+                            'year': show_obj.startyear,
+                            'ids': {},
+                        }
+                    ]
+                 }
+
+                logger.log(u"data: " + str(data), logger.ERROR)
+
+                if trakt_id == 'tvdb_id':
+                    data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
+                else:
+                    data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
+
+                logger.log(u"data: " + str(data), logger.ERROR)
+
+                if s is not None:
+                    # traktv URL parameters
+                    season = {
+                        'season': [
+                            {
+                                'number': s,
+                            }
+                        ]
+                     }
+
+                    data.update(season)
+                    logger.log(u"data: " + str(data), logger.ERROR)
+
+                if e is not None:
+                    # traktv URL parameters
+                    episode = {
+                        'episodes': [
+                            {
+                                'number': e
+                            }
+                        ]
+                     }
+
+                    data['season'][0].update(episode)
+                    logger.log(u"data: " + str(data), logger.ERROR)
+
+                if data_obj is not None:
+                    data.update(data_obj)
+                    logger.log(u"data: " + str(data), logger.ERROR)
+
+                trakt_url = "sync/watchlist"
+                if update=="remove":
+                    trakt_url += "/remove"
+
+                logger.log(u"trakt_url: " + str(trakt_url), logger.ERROR)
+
+                r=trakt_api.traktRequest(trakt_url, data, method='POST')
+                logger.log(u"track response: " + str(r), logger.ERROR)
+
+            except (traktException, traktAuthException, traktServerBusy) as e:
+                logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
+                return False
+
+        return True
+
     def test_notify(self, username, password, disable_ssl):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
