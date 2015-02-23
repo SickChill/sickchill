@@ -381,7 +381,7 @@
 			#end if
 			>Name</th>
 			#if ($sickbeard.DISPLAY_FILESIZE == True):
-				<th class="col-ep">Filesize</th>
+				<th class="col-ep">Size</th>
 			#end if
 				<th class="col-airdate">Airdate</th>
 			#if $sickbeard.DOWNLOAD_URL
@@ -481,8 +481,8 @@
 		#if ($sickbeard.DISPLAY_FILESIZE == True):
 		<td class="col-ep">
 			#if $epResult["file_size"]:
-				#set $file_size = $epResult["file_size"]  / 1024 / 1024 
-				$file_size MB
+				#set $file_size = $sickbeard.helpers.pretty_filesize($epResult["file_size"])
+				$file_size
 			#end if
 		</td>
 		#end if
