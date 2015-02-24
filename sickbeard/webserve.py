@@ -1071,9 +1071,12 @@ class Home(WebRoot):
                                         "Update wasn't successful, not restarting. Check your log for more information.")
 
     def branchCheckout(self, branch):
-        sickbeard.BRANCH = branch
-        ui.notifications.message('Checking out branch: ', branch)
-        return self.update(sickbeard.PID)
+        if sickbeard.BRANCH != branch:
+            sickbeard.BRANCH = branch
+            ui.notifications.message('Checking out branch: ', branch)
+            return self.update(sickbeard.PID)
+        else:
+            ui.notifications.message('Already on branch: ', branch)
 
     def displayShow(self, show=None):
 
