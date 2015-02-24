@@ -135,7 +135,10 @@ class TraktNotifier:
                 else:
                     data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
 
-                if s is not None:
+                if data_obj is not None:
+                    data['shows'][0].update(data_obj)
+
+                elif s is not None:
                     # traktv URL parameters
                     season = {
                         'season': [
@@ -145,22 +148,19 @@ class TraktNotifier:
                         ]
                      }
 
-                    data.append(season)
+                    if e is not None:
+                        # traktv URL parameters
+                        episode = {
+                            'episodes': [
+                                {
+                                    'number': e
+                                }
+                            ]
+                         }
 
-                if e is not None:
-                    # traktv URL parameters
-                    episode = {
-                        'episodes': [
-                            {
-                                'number': e
-                            }
-                        ]
-                     }
-
-                    data['season'][0].update(episode)
-
-                if data_obj is not None:
-                    data['shows'][0].update(data_obj)
+                        season['season'][0].update(episode)
+                    
+                    data['shows'][0].update(season)
 
                 trakt_url = "sync/watchlist"
                 if update=="remove":
