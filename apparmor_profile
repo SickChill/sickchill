@@ -26,6 +26,7 @@ profile sickrage {
 	/usr/bin/python2.7 rix,
 	/bin/dash rix,
 	/usr/bin/git rix,
+	/usr/lib/git-core/git-remote-http rix,
 
 	/usr/lib r,
 	/usr/lib/** mr,
