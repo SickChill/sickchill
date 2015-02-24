@@ -22,10 +22,10 @@ profile sickrage {
 	/dev/random r,
 	/dev/urandom r,
 
-	/usr/bin/python rix,
-	/usr/bin/python2.7 rix,
 	/bin/dash rix,
 	/usr/bin/git rix,
+	/usr/bin/python rix,
+	/usr/bin/python2.7 rix,
 	/usr/lib/git-core/git-remote-http rix,
 
 	/usr/lib r,
