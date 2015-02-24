@@ -1,0 +1,50 @@
+#include <tunables/global>
+
+profile sickrage {
+	#include <abstractions/base>
+	#include <abstractions/dbus>
+	#include <abstractions/fonts>
+	#include <abstractions/nameservice>
+	#include <abstractions/private-files>
+	#include <abstractions/python>
+	#include <abstractions/user-tmp>
+
+	deny @{HOME}/.bash* rw,
+	deny @{HOME}/.ssh/* rw,
+	deny @{PROC}/ r,
+	deny @{PROC}/* r,
+
+	@{PROC}/[0-9]*/maps r,
+	@{PROC}/*/mounts r,
+	@{PROC}/*/net/route r,
+	@{PROC}/[0-9]*/fd/ r,
+	@{PROC}/sys/kernel/random/uuid r,
+	/dev/random r,
+	/dev/urandom r,
+
+	/usr/bin/python rix,
+	/usr/bin/python2.7 rix,
+	/bin/dash rix,
+	/usr/bin/git rix,
+
+	/usr/lib r,
+	/usr/lib/** mr,
+	/usr/share/ r,
+	/usr/share/** r,
+
+	owner @{HOME} r,
+	owner @{HOME}/.icons/ r,
+	owner @{HOME}/.icons/** r,
+	owner @{HOME}/Downloads/ r,
+        owner /opt/sickbeard/ r,
+
+	owner @{HOME}/Downloads/** rwlk,
+        owner /opt/sickbeard/** rwlk,
+
+	/etc/default/sickbeard r,
+	/etc/mtab r,
+	/etc/mime.types r,
+
+	#include <local/sickrage>
+}
+
