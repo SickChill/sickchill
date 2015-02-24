@@ -1614,7 +1614,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         segments = {}
-        datas = {}
+        data = {}
         if eps is not None:
 
             sql_l = []
@@ -1662,7 +1662,7 @@ class Home(WebRoot):
                     # mass add to database
                     sql_l.append(epObj.get_sql())
 
-                    data  = {
+                    episode  = {
                             'seasons': [
                                 {
                                     'number': epObj.season,
@@ -1676,15 +1676,15 @@ class Home(WebRoot):
 
                      }
 
+                    logger.log(u"episode: " + str(episode), logger.DEBUG)
+
+                    data = helpers.trakt_post_data_merge(data,episode)
+
                     logger.log(u"data: " + str(data), logger.DEBUG)
 
-                    datas = helpers.dict_merge(datas,data)
+            logger.log(u"data: " + str(data), logger.DEBUG)
 
-                    logger.log(u"datas: " + str(datas), logger.DEBUG)
-
-            logger.log(u"datas: " + str(datas), logger.DEBUG)
-
-            if sickbeard.USE_TRAKT:
+            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
                 if int(status) == WANTED:
                     logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
                     upd = "add"
@@ -1692,7 +1692,8 @@ class Home(WebRoot):
                     logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
                     upd = "remove"
 
-                notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
+                if data:
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()

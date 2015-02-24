@@ -151,7 +151,7 @@ class TraktNotifier:
                         ]
                      }
 
-                    data.update(season)
+                    data.append(season)
                     logger.log(u"data: " + str(data), logger.ERROR)
 
                 if e is not None:
@@ -168,7 +168,7 @@ class TraktNotifier:
                     logger.log(u"data: " + str(data), logger.ERROR)
 
                 if data_obj is not None:
-                    data.update(data_obj)
+                    data['shows'][0].update(data_obj)
                     logger.log(u"data: " + str(data), logger.ERROR)
 
                 trakt_url = "sync/watchlist"

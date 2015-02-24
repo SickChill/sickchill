@@ -149,7 +149,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     # don't notify when we re-download an episode
     sql_l = []
-    datas = {}
+    data = {}
     for curEpObj in result.episodes:
         with curEpObj.lock:
             if isFirstBestMatch(result):
@@ -161,25 +161,27 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
-            data  = {
-                    'seasons': [
-                        {
-                            'number': epObj.season,
-                            'episodes': [
-                                {
-                                    'number': epObj.episode
-                                }
-                            ]
-                        }
-                    ]
 
-             }
+        episode  = {
+                'seasons': [
+                    {
+                        'number': curEpObj.season,
+                        'episodes': [
+                            {
+                                'number': curEpObj.episode
+                            }
+                        ]
+                    }
+                ]
 
-            datas.update(data)
+         }
 
-    if sickbeard.USE_TRAKT:
-        logger.log(u"Add episodes, showid: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " to Watchlist", logger.DEBUG)
-        notifiers.trakt_notifier.update_watchlist(self, data_obj=data, update="add")
+        data = helpers.trakt_post_data_merge(data,episode)
+
+    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        logger.log(u"Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist", logger.DEBUG)
+        if data:
+            notifiers.trakt_notifier.update_watchlist(result.show, data_obj=data, update="add")
 
     if len(sql_l) > 0:
         myDB = db.DBConnection()

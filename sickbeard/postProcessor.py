@@ -893,6 +893,7 @@ class PostProcessor(object):
 
         # update the ep info before we rename so the quality & release name go into the name properly
         sql_l = []
+        data = {}
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
 
@@ -924,13 +925,13 @@ class PostProcessor(object):
 
                 sql_l.append(cur_ep.get_sql())
 
-                data  = {
+                episode  = {
                         'seasons': [
                             {
-                                'number': epObj.season,
+                                'number': cur_ep.season,
                                 'episodes': [
                                     {
-                                        'number': epObj.episode
+                                        'number': cur_ep.episode
                                     }
                                 ]
                             }
@@ -938,11 +939,12 @@ class PostProcessor(object):
 
                  }
 
-                datas.update(data)
+                data = helpers.trakt_post_data_merge(data,episode)
 
-        if sickbeard.USE_TRAKT:
-            logger.log(u"Remove episodes, showid: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " to Watchlist", logger.DEBUG)
-            notifiers.trakt_notifier.update_watchlist(self, data_obj=data, update="remove")
+        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            logger.log(u"Remove episodes, showid: indexerid " + str(show.indexerid) + ", Title " + str(show.name) + " to Traktv Watchlist", logger.DEBUG)
+            if data:
+                notifiers.trakt_notifier.update_watchlist(show, data_obj=data, update="remove")
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()

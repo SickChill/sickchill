@@ -386,8 +386,9 @@ class QueueItemAdd(ShowQueueItem):
             if sickbeard.TRAKT_SYNC:
                 sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
 
-            logger.log(u"update watchlist")
-            notifiers.trakt_notifier.update_watchlist(self.show)
+            if sickbeard.TRAKT_SYNC_WATCHLIST:
+                logger.log(u"update watchlist")
+                notifiers.trakt_notifier.update_watchlist(self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)

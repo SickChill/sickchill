@@ -1407,29 +1407,34 @@ def generateCookieSecret():
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
 
-def dict_merge(*dicts):
-    if not reduce(lambda x, y: isinstance(y, dict) and x, dicts, True):
-        raise TypeError, "Object in *dicts not of type dict"
-    if len(dicts) < 2:
-        raise ValueError, "Requires 2 or more dict objects"
+def trakt_post_data_merge(a,b):
 
-    def merge(a, b):
-        for d in set(a.keys()).union(b.keys()):
-            if d in a and d in b:
-                if type(a[d]) == type(b[d]):
-                    if not isinstance(a[d], dict):
-                        ret = list({a[d], b[d]})
-                #        if len(ret) == 1: ret = ret[0]
-                        yield (d, sorted(ret))
-                    else:
-                        yield (d, dict(merge(a[d], b[d])))
-                else:
-                    raise TypeError, "Conflicting key:value type assignment"
-            elif d in a:
-                yield (d, a[d])
-            elif d in b:
-                yield (d, b[d])
-            else:
-                raise KeyError
+    # Create a list of the results
+    d = [a, b]
+ 
+    # Create a list of tuple(season, episode)
+    results = []
+    for seasonsList in d:
+        for seasons, seasonList in seasonsList.iteritems():
+            for season in seasonList:
+                for episode in season['episodes']:
+                    results.append((season['number'], episode['number']))
+ 
+    # Find how many unique season we have 
+    uniqueSeasons = []
+    for season, episode in results:
+        if season not in uniqueSeasons:
+            uniqueSeasons.append(season)
+ 
+    #build the query
+    seasonsList = []
+    for searchedSeason in uniqueSeasons:
+        episodesList = []
+        for season, episode in results:
+            if season == searchedSeason:
+                episodesList.append({'number': episode})
+        seasonsList.append({'number': searchedSeason, 'episodes': episodesList})
+ 
+    post_data = {'seasons': seasonsList}
 
-    return reduce(lambda x, y: dict(merge(x, y)), dicts[1:], dicts[0])
+    return post_data
