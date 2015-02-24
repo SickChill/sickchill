@@ -22,6 +22,7 @@ profile sickrage {
 	/dev/random r,
 	/dev/urandom r,
 
+	/bin/cp rix,
 	/bin/dash rix,
 	/usr/bin/git rix,
 	/usr/bin/python rix,
