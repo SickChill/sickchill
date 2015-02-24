@@ -17,6 +17,7 @@
 <script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/newShow.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
 
    #if $varExists('header') 
    	<h1 class="header">$header</h1>
@@ -53,8 +54,7 @@
 				
 				<input type="text" id="nameToSearch" value="$default_show_name" class="form-control form-control-inline input-sm input350" />
 				&nbsp;&nbsp;
-				<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm">
-					<option value="en" selected="selected">en</option>
+				<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="en" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#">
 				</select><b>*</b>
 				&nbsp;
 				<select name="providedIndexer" id="providedIndexer" class="form-control form-control-inline input-sm">
