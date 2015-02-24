@@ -1676,13 +1676,7 @@ class Home(WebRoot):
 
                      }
 
-                    logger.log(u"episode: " + str(episode), logger.DEBUG)
-
                     data = helpers.trakt_post_data_merge(data,episode)
-
-                    logger.log(u"data: " + str(data), logger.DEBUG)
-
-            logger.log(u"data: " + str(data), logger.DEBUG)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
                 logger.log(u"Quality.DOWNLOADED: " + str(Quality.DOWNLOADED), logger.DEBUG)

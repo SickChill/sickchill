@@ -116,8 +116,6 @@ class TraktNotifier:
         trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
 
-        logger.log(u"update: " + str(update), logger.ERROR)
-
         if sickbeard.USE_TRAKT:
 
             try:
@@ -132,14 +130,10 @@ class TraktNotifier:
                     ]
                  }
 
-                logger.log(u"data: " + str(data), logger.ERROR)
-
                 if trakt_id == 'tvdb_id':
                     data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
                 else:
                     data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
-
-                logger.log(u"data: " + str(data), logger.ERROR)
 
                 if s is not None:
                     # traktv URL parameters
@@ -152,7 +146,6 @@ class TraktNotifier:
                      }
 
                     data.append(season)
-                    logger.log(u"data: " + str(data), logger.ERROR)
 
                 if e is not None:
                     # traktv URL parameters
@@ -165,20 +158,15 @@ class TraktNotifier:
                      }
 
                     data['season'][0].update(episode)
-                    logger.log(u"data: " + str(data), logger.ERROR)
 
                 if data_obj is not None:
                     data['shows'][0].update(data_obj)
-                    logger.log(u"data: " + str(data), logger.ERROR)
 
                 trakt_url = "sync/watchlist"
                 if update=="remove":
                     trakt_url += "/remove"
 
-                logger.log(u"trakt_url: " + str(trakt_url), logger.ERROR)
-
-                r=trakt_api.traktRequest(trakt_url, data, method='POST')
-                logger.log(u"track response: " + str(r), logger.ERROR)
+                trakt_api.traktRequest(trakt_url, data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
