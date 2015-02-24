@@ -36,10 +36,10 @@ profile sickrage {
 	owner @{HOME}/.icons/ r,
 	owner @{HOME}/.icons/** r,
 	owner @{HOME}/Downloads/ r,
-        owner /opt/sickbeard/ r,
+	owner /opt/sickbeard/ r,
 
 	owner @{HOME}/Downloads/** rwlk,
-        owner /opt/sickbeard/** rwlk,
+	owner /opt/sickbeard/** rwlk,
 
 	/etc/default/sickbeard r,
 	/etc/mtab r,
