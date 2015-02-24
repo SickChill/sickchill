@@ -176,7 +176,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
          }
 
-        data = helpers.trakt_post_data_merge(data,episode)
+        data = notifiers.trakt_notifier.trakt_post_data_merge(data,episode)
 
     if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
         logger.log(u"Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist", logger.DEBUG)

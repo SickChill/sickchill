@@ -939,7 +939,7 @@ class PostProcessor(object):
 
                  }
 
-                data = helpers.trakt_post_data_merge(data,episode)
+                data = notifiers.trakt_notifier.trakt_post_data_merge(data,episode)
 
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
             logger.log(u"Remove episodes, showid: indexerid " + str(show.indexerid) + ", Title " + str(show.name) + " to Traktv Watchlist", logger.DEBUG)

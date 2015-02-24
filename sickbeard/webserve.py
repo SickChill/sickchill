@@ -1676,10 +1676,9 @@ class Home(WebRoot):
 
                      }
 
-                    data = helpers.trakt_post_data_merge(data,episode)
+                    data = notifiers.trakt_notifier.trakt_post_data_merge(data,episode)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
-                logger.log(u"Quality.DOWNLOADED: " + str(Quality.DOWNLOADED), logger.DEBUG)
                 if int(status) in [WANTED, FAILED]:
                     logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
                     upd = "add"

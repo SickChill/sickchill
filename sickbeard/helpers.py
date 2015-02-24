@@ -1406,35 +1406,3 @@ def remove_article(text=''):
 def generateCookieSecret():
 
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
-
-def trakt_post_data_merge(a,b):
-
-    # Create a list of the results
-    d = [a, b]
- 
-    # Create a list of tuple(season, episode)
-    results = []
-    for seasonsList in d:
-        for seasons, seasonList in seasonsList.iteritems():
-            for season in seasonList:
-                for episode in season['episodes']:
-                    results.append((season['number'], episode['number']))
- 
-    # Find how many unique season we have 
-    uniqueSeasons = []
-    for season, episode in results:
-        if season not in uniqueSeasons:
-            uniqueSeasons.append(season)
- 
-    #build the query
-    seasonsList = []
-    for searchedSeason in uniqueSeasons:
-        episodesList = []
-        for season, episode in results:
-            if season == searchedSeason:
-                episodesList.append({'number': episode})
-        seasonsList.append({'number': searchedSeason, 'episodes': episodesList})
- 
-    post_data = {'seasons': seasonsList}
-
-    return post_data
