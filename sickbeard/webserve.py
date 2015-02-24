@@ -1685,10 +1685,11 @@ class Home(WebRoot):
             logger.log(u"data: " + str(data), logger.DEBUG)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
-                if int(status) == WANTED:
+                logger.log(u"Quality.DOWNLOADED: " + str(Quality.DOWNLOADED), logger.DEBUG)
+                if int(status) in [WANTED, FAILED]:
                     logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
                     upd = "add"
-                elif int(status) in [ARCHIVED, IGNORED, FAILED, SKIPPED]:
+                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
                     logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
                     upd = "remove"
 
