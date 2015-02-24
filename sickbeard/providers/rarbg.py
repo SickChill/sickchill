@@ -171,7 +171,7 @@ class RarbgProvider(generic.TorrentProvider):
             for search_string in search_params[mode]:
 
                 for sc in self.subcategories:
-                    searchURL = self.urls['search'] % (urllib.quote(search_string.encode('UTF-8'))), sc)
+                    searchURL = self.urls['search'] % (urllib.quote(search_string.encode('UTF-8')), sc)
                     logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
                     data = self.getURL(searchURL)
