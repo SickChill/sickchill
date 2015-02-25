@@ -68,9 +68,11 @@ def delete_folder(folder, check_empty=True):
 
     return True
 
-def delete_files(processPath, notwantedFiles, result):
+def delete_files(processPath, notwantedFiles, result, force=False):
 
-    if not result.result:
+    if not result.result and force:
+        result.output += logHelper(u"Forcing deletion of files, even though last result was not success", logger.DEBUG)
+    elif not result.result:
         return
 
     #Delete all file not needed
@@ -178,7 +180,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
     elif sickbeard.DELRARCONTENTS and videoInRar:
         result.result = process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
-        delete_files(path, rarContent, result)
+        delete_files(path, rarContent, result, True)
         for video in set(videoFiles) - set(videoInRar):
             result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
     else:
@@ -216,7 +218,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result)
                 process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
                               is_priority, result)
-                delete_files(processPath, rarContent, result)
+                delete_files(processPath, rarContent, result, True)
             else:
                 process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
 
