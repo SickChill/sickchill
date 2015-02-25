@@ -1614,7 +1614,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         segments = {}
-        data = {}
+        trakt_data = []
         if eps is not None:
 
             sql_l = []
@@ -1662,21 +1662,9 @@ class Home(WebRoot):
                     # mass add to database
                     sql_l.append(epObj.get_sql())
 
-                    episode  = {
-                            'seasons': [
-                                {
-                                    'number': epObj.season,
-                                    'episodes': [
-                                        {
-                                            'number': epObj.episode
-                                        }
-                                    ]
-                                }
-                            ]
+                    trakt_data.append((epObj.season, epObj.episode))
 
-                     }
-
-                    data = notifiers.trakt_notifier.trakt_post_data_merge(data,episode)
+            data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
                 if int(status) in [WANTED, FAILED]:
