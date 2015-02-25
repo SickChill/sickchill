@@ -166,7 +166,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
 
-
     if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
         logger.log(u"Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist", logger.DEBUG)
         if data:
