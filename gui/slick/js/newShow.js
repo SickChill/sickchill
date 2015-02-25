@@ -1,34 +1,5 @@
 $(document).ready(function () {
 
-    function populateSelect() {
-        if (!$('#nameToSearch').length) {
-            return;
-        }
-
-        if ($('#indexerLangSelect option').length <= 1) {
-            $.getJSON(sbRoot + '/home/addShows/getIndexerLanguages', {}, function (data) {
-                var selected, resultStr = '';
-
-                if (data.results.length === 0) {
-                    resultStr = '<option value="en" selected="selected">en</option>';
-                } else {
-                    $.each(data.results, function (index, obj) {
-                        if (resultStr == '') {
-                            selected = ' selected="selected"';
-                        } else {
-                            selected = '';
-                        }
-
-                        resultStr += '<option value="' + obj + '"' + selected + '>' + obj + '</option>';
-                    });
-                }
-
-                $('#indexerLangSelect').html(resultStr);
-                $('#indexerLangSelect').change(function () { searchIndexers(); });
-            });
-        }
-    }
-
     var searchRequestXhr = null;
 
     function searchIndexers() {
@@ -136,7 +107,6 @@ $(document).ready(function () {
         formid: 'addShowForm',
         revealfx: ['slide', 500],
         oninit: function () {
-            populateSelect();
             updateSampleText();
             if ($('input:hidden[name=whichSeries]').length && $('#fullShowPath').length) {
                 goToStep(3);
