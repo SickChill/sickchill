@@ -26,6 +26,7 @@ from itertools import groupby
 import bs4
 import guessit
 import logging
+import sys
 
 
 __all__ = ['SERVICES', 'LANGUAGE_INDEX', 'SERVICE_INDEX', 'SERVICE_CONFIDENCE', 'MATCHING_CONFIDENCE',
@@ -56,7 +57,7 @@ def create_list_tasks(paths, languages, services, force, multi, cache_dir, max_d
     scan_result = []
     for p in paths:
         scan_result.extend(scan(p, max_depth, scan_filter))
-    logger.debug(u'Found %d videos in %r with maximum depth %d' % (len(scan_result), paths, max_depth))
+    logger.debug(u'Found %d videos in %r with maximum depth %d' % (len(scan_result), paths, max_depth)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     tasks = []
     config = ServiceConfig(multi, cache_dir)
     services = filter_services(services)
@@ -66,19 +67,19 @@ def create_list_tasks(paths, languages, services, force, multi, cache_dir, max_d
         if not force and multi:
             wanted_languages -= detected_languages
             if not wanted_languages:
-                logger.debug(u'No need to list multi subtitles %r for %r because %r detected' % (languages, video, detected_languages))
+                logger.debug(u'No need to list multi subtitles %r for %r because %r detected' % (languages, video, detected_languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 continue
         if not force and not multi and Language('Undetermined') in detected_languages:
-            logger.debug(u'No need to list single subtitles %r for %r because one detected' % (languages, video))
+            logger.debug(u'No need to list single subtitles %r for %r because one detected' % (languages, video)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             continue
-        logger.debug(u'Listing subtitles %r for %r with services %r' % (wanted_languages, video, services))
+        logger.debug(u'Listing subtitles %r for %r with services %r' % (wanted_languages, video, services)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         for service_name in services:
             mod = __import__('services.' + service_name, globals=globals(), locals=locals(), fromlist=['Service'], level=-1)
             service = mod.Service
             if not service.check_validity(video, wanted_languages):
                 continue
             task = ListTask(video, wanted_languages & service.languages, service_name, config)
-            logger.debug(u'Created task %r' % task)
+            logger.debug(u'Created task %r' % task) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             tasks.append(task)
     return tasks
 
@@ -101,12 +102,12 @@ def create_download_tasks(subtitles_by_video, languages, multi):
             continue
         if not multi:
             task = DownloadTask(video, list(subtitles))
-            logger.debug(u'Created task %r' % task)
+            logger.debug(u'Created task %r' % task) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             tasks.append(task)
             continue
         for _, by_language in groupby(subtitles, lambda s: languages.index(s.language)):
             task = DownloadTask(video, list(by_language))
-            logger.debug(u'Created task %r' % task)
+            logger.debug(u'Created task %r' % task) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             tasks.append(task)
     return tasks
 
@@ -125,7 +126,7 @@ def consume_task(task, services=None):
     """
     if services is None:
         services = {}
-    logger.info(u'Consuming %r' % task)
+    logger.info(u'Consuming %r' % task) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     result = None
     if isinstance(task, ListTask):
         service = get_service(services, task.service, config=task.config)
@@ -138,10 +139,10 @@ def consume_task(task, services=None):
                 result = [subtitle]
                 break
             except DownloadFailedError:
-                logger.warning(u'Could not download subtitle %r, trying next' % subtitle)
+                logger.warning(u'Could not download subtitle %r, trying next' % subtitle) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 continue
         if result is None:
-            logger.error(u'No subtitles could be downloaded for video %r' % task.video)
+            logger.error(u'No subtitles could be downloaded for video %r' % task.video) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     return result
 
 
@@ -159,7 +160,7 @@ def matching_confidence(video, subtitle):
     guess = guessit.guess_file_info(subtitle.release, 'autodetect')
     video_keywords = get_keywords(video.guess)
     subtitle_keywords = get_keywords(guess) | subtitle.keywords
-    logger.debug(u'Video keywords %r - Subtitle keywords %r' % (video_keywords, subtitle_keywords))
+    logger.debug(u'Video keywords %r - Subtitle keywords %r' % (video_keywords, subtitle_keywords)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     replacement = {'keywords': len(video_keywords & subtitle_keywords)}
     if isinstance(video, Episode):
         replacement.update({'series': 0, 'season': 0, 'episode': 0})
@@ -182,11 +183,11 @@ def matching_confidence(video, subtitle):
             if 'year' in guess and guess['year'] == video.year:
                 replacement['year'] = 1
     else:
-        logger.debug(u'Not able to compute confidence for %r' % video)
+        logger.debug(u'Not able to compute confidence for %r' % video) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         return 0.0
-    logger.debug(u'Found %r' % replacement)
+    logger.debug(u'Found %r' % replacement) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     confidence = float(int(matching_format.format(**replacement), 2)) / float(int(best, 2))
-    logger.info(u'Computed confidence %.4f for %r and %r' % (confidence, video, subtitle))
+    logger.info(u'Computed confidence %.4f for %r and %r' % (confidence, video, subtitle)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     return confidence
 
 
@@ -271,6 +272,6 @@ def filter_services(services):
         mod = __import__('services.' + service_name, globals=globals(), locals=locals(), fromlist=['Service'], level=-1)
         service = mod.Service
         if service.required_features is not None and bs4.builder_registry.lookup(*service.required_features) is None:
-            logger.warning(u'Service %s not available: none of available features could be used. One of %r required' % (service_name, service.required_features))
+            logger.warning(u'Service %s not available: none of available features could be used. One of %r required' % (service_name, service.required_features)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             filtered_services.remove(service_name)
     return filtered_services

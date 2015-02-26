@@ -30,6 +30,7 @@ import requests
 import zipfile
 import StringIO
 import guessit
+import sys
 
 from sickbeard.common import Quality
 
@@ -117,7 +118,7 @@ class Itasa(ServiceBase):
                 break
         
         if not season_link:
-            logger.debug(u'Could not find season %s for series %s' % (series, str(season)))
+            logger.debug(u'Could not find season %s for series %s' % (series, str(season))) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return None
         
         r = self.session.get(season_link)
@@ -133,7 +134,7 @@ class Itasa(ServiceBase):
 
         #If we want SDTV we are just on the right page so quality link will be None                
         if not quality == Quality.SDTV and not quality_link:
-            logger.debug(u'Could not find a subtitle with required quality for series %s season %s' % (series, str(season)))
+            logger.debug(u'Could not find a subtitle with required quality for series %s season %s' % (series, str(season))) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return None
         
         all_episodes = soup.find('div', attrs = {'id' : 'remositoryfilelisting'})
@@ -152,18 +153,18 @@ class Itasa(ServiceBase):
             
     def query(self, filepath, languages, keywords, series, season, episode):
 
-        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
+        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         self.init_cache()
         try:
             series = series.lower().replace('(','').replace(')','')
             series_id = self.get_series_id(series)
         except KeyError:
-            logger.debug(u'Could not find series id for %s' % series)
+            logger.debug(u'Could not find series id for %s' % series) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         
         episode_id = self.get_episode_id(series, series_id, season, episode, Quality.nameQuality(filepath))
         if not episode_id:
-            logger.debug(u'Could not find subtitle for series %s' % series)
+            logger.debug(u'Could not find subtitle for series %s' % series) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
 
         r = self.session.get(self.server_url + 'index.php?option=com_remository&Itemid=6&func=fileinfo&id=' + episode_id)
@@ -178,7 +179,7 @@ class Itasa(ServiceBase):
 
     def download(self, subtitle):
         
-        logger.info(u'Downloading %s in %s' % (subtitle.link, subtitle.path))
+        logger.info(u'Downloading %s in %s' % (subtitle.link, subtitle.path)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         try:
             r = self.session.get(subtitle.link, headers={'Referer': self.server_url, 'User-Agent': self.user_agent})
             zipcontent = StringIO.StringIO(r.content)
@@ -211,6 +212,6 @@ class Itasa(ServiceBase):
                 os.remove(subtitle.path)
             raise DownloadFailedError(str(e))
         
-        logger.debug(u'Download finished')
+        logger.debug(u'Download finished') if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         
 Service = Itasa        

@@ -24,6 +24,7 @@ from ..videos import Episode, Movie
 from bs4 import BeautifulSoup
 import logging
 import urllib
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -55,41 +56,41 @@ class SubsWiki(ServiceBase):
             request_series = series.lower().replace(' ', '_')
             if isinstance(request_series, unicode):
                 request_series = request_series.encode('utf-8')
-            logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
+            logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             r = self.session.get('%s/serie/%s/%s/%s/' % (self.server_url, urllib.quote(request_series), season, episode))
             if r.status_code == 404:
-                logger.debug(u'Could not find subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
+                logger.debug(u'Could not find subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 return []
         elif movie and year:
             request_movie = movie.title().replace(' ', '_')
             if isinstance(request_movie, unicode):
                 request_movie = request_movie.encode('utf-8')
-            logger.debug(u'Getting subtitles for %s (%d) with languages %r' % (movie, year, languages))
+            logger.debug(u'Getting subtitles for %s (%d) with languages %r' % (movie, year, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             r = self.session.get('%s/film/%s_(%d)' % (self.server_url, urllib.quote(request_movie), year))
             if r.status_code == 404:
-                logger.debug(u'Could not find subtitles for %s (%d) with languages %r' % (movie, year, languages))
+                logger.debug(u'Could not find subtitles for %s (%d) with languages %r' % (movie, year, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 return []
         else:
             raise ServiceError('One or more parameter missing')
         if r.status_code != 200:
-            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         soup = BeautifulSoup(r.content, self.required_features)
         subtitles = []
         for sub in soup('td', {'class': 'NewsTitle'}):
             sub_keywords = split_keyword(sub.b.string.lower())
             if keywords and not keywords & sub_keywords:
-                logger.debug(u'None of subtitle keywords %r in %r' % (sub_keywords, keywords))
+                logger.debug(u'None of subtitle keywords %r in %r' % (sub_keywords, keywords)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 continue
             for html_language in sub.parent.parent.find_all('td', {'class': 'language'}):
                 language = self.get_language(html_language.string.strip())
                 if language not in languages:
-                    logger.debug(u'Language %r not in wanted languages %r' % (language, languages))
+                    logger.debug(u'Language %r not in wanted languages %r' % (language, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                     continue
                 html_status = html_language.find_next_sibling('td')
                 status = html_status.strong.string.strip()
                 if status != 'Completado':
-                    logger.debug(u'Wrong subtitle status %s' % status)
+                    logger.debug(u'Wrong subtitle status %s' % status) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                     continue
                 path = get_subtitle_path(filepath, language, self.config.multi)
                 subtitle = ResultSubtitle(path, language, self.__class__.__name__.lower(), '%s%s' % (self.server_url, html_status.find_next('td').find('a')['href']))

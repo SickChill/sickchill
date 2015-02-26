@@ -26,6 +26,7 @@ import guessit
 import logging
 import re
 from subliminal.subtitles import get_subtitle_path
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -93,13 +94,13 @@ class PodnapisiWeb(ServiceBase):
             params['sR'] = keywords
         r = self.session.get(self.server_url + '/ppodnapisi/search', params=params)
         if r.status_code != 200:
-            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         subtitles = []
         soup = BeautifulSoup(r.content, self.required_features)
         for sub in soup('subtitle'):
             if 'n' in sub.flags:
-                logger.debug(u'Skipping hearing impaired')
+                logger.debug(u'Skipping hearing impaired') if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 continue
             language = self.get_language(sub.languageId.text)
             confidence = float(sub.rating.text) / 5.0
