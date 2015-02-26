@@ -145,7 +145,7 @@ class PostProcessor(object):
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, base_name_only=False, subtitles_only=False):
+    def list_associated_files(self, file_path, base_name_only=False, subtitles_only=False, subfolders=False):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -179,7 +179,11 @@ class PostProcessor(object):
         # don't confuse glob with chars we didn't mean to use
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
         
-        for associated_file_path in ek.ek(recursive_glob, self.folder_path,  base_name + '*'):
+        if subfolders:
+            filelist = ek.ek(recursive_glob, self.folder_path,  base_name + '*')
+        else:
+            filelist = ek.ek(glob.glob, base_name + '*')
+        for associated_file_path in filelist:
             # only add associated to list
             if associated_file_path == file_path:
                 continue

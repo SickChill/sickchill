@@ -131,7 +131,9 @@ def replaceExtension(filename, newExt):
 
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
-    if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    syncfiles = sickbeard.SYNC_FILES
+    if extension in syncfiles.split(","):
         return True
     else:
         return False
