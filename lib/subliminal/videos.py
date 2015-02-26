@@ -53,14 +53,15 @@ class Video(object):
 
     """
     def __init__(self, path, guess, imdbid=None):
-        self.release = path
         self.guess = guess
         self.imdbid = imdbid
         self._path = None
         self.hashes = {}
-        
-        if isinstance(path, unicode):
-            path = path.encode('utf-8')
+
+        if isinstance(path, str):
+            path = unicode(path.encode('utf-8'))
+            
+        self.release = path
         
         if os.path.exists(path):
             self._path = path
@@ -225,8 +226,9 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
     :rtype: list of (:class:`Video`, [:class:`~subliminal.subtitles.Subtitle`])
 
     """
-    if isinstance(entry, unicode):
-        entry = entry.encode('utf-8')
+
+    if isinstance(entry, str):
+        entry = unicode(entry.encode('utf-8'))
     
     if depth > max_depth and max_depth != 0:  # we do not want to search the whole file system except if max_depth = 0
         return []
