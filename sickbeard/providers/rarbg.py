@@ -1,5 +1,6 @@
 # -*- coding: latin-1 -*-
 # Author: djoole <bobby.djoole@gmail.com>
+# Author: CoRpO <corpo@gruk.org>
 # URL: http://code.google.com/p/sickbeard/
 #
 # This file is part of Sick Beard.
@@ -61,13 +62,14 @@ class RarbgProvider(generic.TorrentProvider):
         self.opener.addheaders=[('User-agent', 'Mozilla/5.0')]
 
         self.urls = {'base_url': 'https://rarbg.com/torrents.php',
-                'search': 'https://rarbg.com/torrents.php?search=%s&category[]=%s',
+                'search': 'https://rarbg.com/torrents.php?search=%s&category=%s&page=%s',
                 'download': 'https://rarbg.com/download.php?id=%s&f=%s',
                 }
 
         self.url = self.urls['base_url']
 
-        self.subcategories = ['18;41']
+        self.subcategories = [18,41]
+        self.pages = [1,2,3,4,5]
 
 
     def getURL(self, url, post_data=None, params=None, timeout=30, json=False):
@@ -171,53 +173,59 @@ class RarbgProvider(generic.TorrentProvider):
             for search_string in search_params[mode]:
 
                 for sc in self.subcategories:
-                    searchURL = self.urls['search'] % (urllib.quote(search_string.encode('UTF-8')), sc)
-                    logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                    data = self.getURL(searchURL)
-                    if not data:
-                        continue
+                    for page in self.pages:
 
-                    try:
-                        with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                            resultsTable = html.find('table', attrs={'class': 'lista2t'})
+                        searchURL = self.urls['search'] % (urllib.quote(search_string.encode('UTF-8')), sc, page)
+                        logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                            if not resultsTable:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                           logger.DEBUG)
-                                continue
+                        data = self.getURL(searchURL)
+                        if not data:
+                            continue
 
-                            entries = resultsTable.find("tbody").findAll("tr")
+                        try:
+                            with BS4Parser(data, features=["html5lib", "permissive"]) as html:
+                                resultsTable = html.find('table', attrs={'class': 'lista2t'})
 
-                            if len(entries) > 0:
-                                for result in entries:
-
-                                    try:
-                                        link = result.find('a', title=True)
-                                        torrentName = link['title']
-                                        torrent_name = str(torrentName)
-                                        torrentId = result.find_all('td')[1].find_all('a')[0]['href'][1:].replace(
-                                            'torrent/', '')
-                                        torrent_download_url = (self.urls['download'] % (torrentId, urllib.quote(torrent_name) + '-[rarbg.com].torrent')).encode('utf8')
-                                    except (AttributeError, TypeError):
-                                        continue
-
-                                    if not torrent_name or not torrent_download_url:
-                                        continue
-
-                                    item = torrent_name, torrent_download_url
-                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
+                                if not resultsTable:
+                                    logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
                                                logger.DEBUG)
-                                    items[mode].append(item)
+                                    continue
 
-                            else:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                           logger.WARNING)
-                                continue
+                                entries = resultsTable.find("tbody").findAll("tr")
 
-                    except Exception, e:
-                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                                   logger.ERROR)
+                                if len(entries) > 0:
+                                    for result in entries:
+
+                                        try:
+                                            link = result.find('a', title=True)
+                                            torrentName = link['title']
+                                            torrent_name = str(torrentName)
+                                            torrentId = result.find_all('td')[1].find_all('a')[0]['href'][1:].replace(
+                                                'torrent/', '')
+                                            torrent_download_url = (self.urls['download'] % (torrentId, urllib.quote(torrent_name) + '-[rarbg.com].torrent')).encode('utf8')
+                                        except (AttributeError, TypeError):
+                                            continue
+
+                                        if not torrent_name or not torrent_download_url:
+                                            continue
+
+                                        item = torrent_name, torrent_download_url
+                                        logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
+                                                   logger.DEBUG)
+                                        items[mode].append(item)
+
+                                else:
+                                    logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                               logger.WARNING)
+                                    continue
+
+                                if len(entries) < 25:
+                                    break
+
+                        except Exception, e:
+                            logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                                       logger.ERROR)
             results += items[mode]
 
         return results
