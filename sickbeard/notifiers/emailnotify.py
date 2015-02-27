@@ -22,6 +22,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formatdate
 
 import re
 
@@ -42,12 +43,13 @@ class EmailNotifier:
         msg['Subject'] = 'SickRage: Test Message'
         msg['From'] = smtp_from
         msg['To'] = to
+        msg['Date'] = formatdate(localtime=True)
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
 
     def notify_snatch(self, ep_name, title="Snatched:"):
         """
         Send a notification that an episode was snatched
-        
+
         ep_name: The name of the episode that was snatched
         title: The title of the notification (optional)
         """
@@ -76,6 +78,7 @@ class EmailNotifier:
                 msg['Subject'] = 'Snatched: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
+                msg['Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log("Snatch notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
@@ -114,6 +117,7 @@ class EmailNotifier:
                 msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
+                msg['Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.log("Download notification sent to [%s] for '%s'" % (to, ep_name), logger.DEBUG)
