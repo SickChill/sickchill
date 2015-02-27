@@ -464,6 +464,10 @@ def searchProviders(show, episodes, manualSearch=False):
         searchCount = 0
         search_mode = curProvider.search_mode
 
+        # Always search for episode when manually searching when in sponly and fallback false
+        if search_mode == 'sponly' and manualSearch == True and curProvider.search_fallback == False:
+            search_mode = 'eponly'
+
         while(True):
             searchCount += 1
 

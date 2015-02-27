@@ -150,6 +150,9 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         return [search_string]
 
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
+        return generic.TorrentProvider.findSearchResults(self, show, episodes, 'eponly', manualSearch)
+
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
         results = []
