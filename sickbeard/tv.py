@@ -2565,7 +2565,7 @@ class TVEpisode(object):
         if sickbeard.TIMEZONE_DISPLAY == 'local':
             airdatetime = sbdatetime.sbdatetime.convert_to_setting( network_timezones.parse_date_time(datetime.date.toordinal(self.airdate), self.show.airs, self.show.network))
         else:
-            airdatetime = datetime.datetime.combine(self.airdate, airtime)
+            airdatetime = datetime.datetime.combine(self.airdate, airtime).replace(tzinfo=tzlocal())
 
         filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=tzlocal())
 
