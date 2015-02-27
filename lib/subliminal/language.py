@@ -853,6 +853,8 @@ class Language(object):
 
         # Language + Country format
         #TODO: Improve this part
+        if language is None:
+            language = 'und'
         if country is None:
             for regexp in [r.match(language) for r in self.with_country_regexps]:
                 if regexp:
