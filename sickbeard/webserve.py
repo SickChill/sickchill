@@ -186,10 +186,29 @@ class BaseHandler(RequestHandler):
                                </html>""" % (error, error, trace_info, request_info, sickbeard.WEB_ROOT))
 
     def redirect(self, url, permanent=False, status=None):
+        """Sends a redirect to the given (optionally relative) URL.
+
+        ----->>>>> NOTE: Removed self.finish <<<<<-----
+
+        If the ``status`` argument is specified, that value is used as the
+        HTTP status code; otherwise either 301 (permanent) or 302
+        (temporary) is chosen based on the ``permanent`` argument.
+        The default is 302 (temporary).
+        """
+        import urlparse
+        from tornado.escape import utf8
         if not url.startswith(sickbeard.WEB_ROOT):
             url = sickbeard.WEB_ROOT + url
 
-        super(BaseHandler, self).redirect(url, permanent, status)
+        if self._headers_written:
+            raise Exception("Cannot redirect after headers have been written")
+        if status is None:
+            status = 301 if permanent else 302
+        else:
+            assert isinstance(status, int) and 300 <= status <= 399
+        self.set_status(status)
+        self.set_header("Location", urlparse.urljoin(utf8(self.request.uri),
+                                                     utf8(url)))
 
     def get_current_user(self, *args, **kwargs):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
@@ -205,23 +224,23 @@ class WebHandler(BaseHandler):
 
     executor = ThreadPoolExecutor(50)
 
-    @coroutine
-    @asynchronous
     @authenticated
+    @coroutine
     def get(self, route, *args, **kwargs):
         try:
             # route -> method obj
             route = route.strip('/').replace('.', '_') or 'index'
             method = getattr(self, route)
 
-            # process request async
-            self.async_call(method, callback=self.async_done)
+            results = yield self.async_call(method)
+            self.finish(results)
+
         except:
             logger.log('Failed doing webui request "%s": %s' % (route, traceback.format_exc()), logger.DEBUG)
             raise HTTPError(404)
 
     @run_on_executor
-    def async_call(self, function, callback=None):
+    def async_call(self, function):
         try:
             kwargs = self.request.arguments
             for arg, value in kwargs.items():
@@ -229,21 +248,10 @@ class WebHandler(BaseHandler):
                     kwargs[arg] = value[0]
 
             result = function(**kwargs)
-            if callback:
-                callback(result)
             return result
         except:
             logger.log('Failed doing webui callback: %s' % (traceback.format_exc()), logger.ERROR)
             raise
-
-    def async_done(self, results):
-        try:
-            if results:
-                self.finish(results)
-        except:
-            logger.log('Failed sending webui reponse: %s' % (traceback.format_exc()), logger.DEBUG)
-            raise
-
 
     # post uses get method
     post = get
