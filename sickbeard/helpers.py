@@ -288,21 +288,22 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
                 continue
 
             try:
-                seriesname = search.seriesname
+                seriesname = search[0]['seriesname']
             except:
                 seriesname = None
 
             try:
-                series_id = search.id
+                series_id = search[0]['id']
             except:
                 series_id = None
 
             if not (seriesname and series_id):
                 continue
-
-            if str(name).lower() == str(seriesname).lower and not indexer_id:
+            ShowObj = findCertainShow(sickbeard.showList, int(series_id))
+            #Check if we can find the show in our list (if not, it's not the right show)
+            if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
                 return (seriesname, i, int(series_id))
-            elif int(indexer_id) == int(series_id):
+            elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
                 return (seriesname, i, int(indexer_id))
 
         if indexer:
