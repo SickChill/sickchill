@@ -50,6 +50,7 @@ from indexers.indexer_exceptions import indexer_shownotfound, indexer_showincomp
     indexer_episodenotfound, indexer_attributenotfound, indexer_seasonnotfound, indexer_userabort, indexerExcepts
 from sickbeard.common import SD, SKIPPED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
+from sickbeard.helpers import ex
 
 from lib.configobj import ConfigObj
 
@@ -583,10 +584,6 @@ def initialize(consoleLogging=True):
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
         GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', '', censor_log=True)
 
-        # github api
-        try:gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
-        except:gh = None
-
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
 
@@ -601,6 +598,13 @@ def initialize(consoleLogging=True):
 
         # init logging
         logger.initLogging(consoleLogging=consoleLogging, fileLogging=fileLogging, debugLogging=DEBUG)
+
+        # github api
+        try:
+            gh = Github(user_agent="SiCKRAGE").get_organization(GIT_ORG).get_repo(GIT_REPO)
+        except Exception as e:
+            gh = None
+            logger.log('Unable to setup github properly, github will not be available. Error: {0}'.format(ex(e)),logger.WARNING)
 
         # git reset on update
         GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
