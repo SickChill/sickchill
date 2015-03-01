@@ -88,7 +88,7 @@ class html_entities(CheetahFilter):
         elif val is None:
             filtered = ''
         elif isinstance(val, str):
-            filtered = val.decode(sickbeard.SYS_ENCODING).encode('ascii', 'xmlcharrefreplace')
+            filtered = val.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
         else:
             filtered = self.filter(str(val))
 
