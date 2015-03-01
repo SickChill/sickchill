@@ -304,7 +304,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     Overview.text = ""
 
                 mpaa = etree.SubElement(episode, "mpaa")
-                if myShow["contentrating"] != None:
+                if getattr(myShow, 'contentrating', None) is not None:
                     mpaa.text = myShow["contentrating"]
 
                 if not ep_obj.relatedEps:
