@@ -179,6 +179,20 @@
                                                      </label>
                                                  </div>
 
+                                                <div id="content_use_failed_downloads">
+                                                    <div class="field-pair">
+                                                        <input id="delete_failed" type="checkbox" name="delete_failed" #if $sickbeard.DELETE_FAILED == True then "checked=\"checked\"" else ""# />
+                                                        <label for="delete_failed">
+                                                            <span class="component-title">Delete Failed</span>
+                                                            <span class="component-desc">Delete files left over from a failed download?</span>
+                                                        </label>
+                                                        <label class="nocheck" for="delete_failed">
+                                                            <span class="component-title">&nbsp;</span>
+                                                            <span class="component-desc"><b>NOTE:</b> This only works if Use Failed Downloads is enabled.</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
 						<input type="submit" class="btn config_submitter" value="Save Changes" />
 
 					</fieldset>
