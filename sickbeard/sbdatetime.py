@@ -135,7 +135,7 @@ class sbdatetime(datetime.datetime):
         except Exception as e:
             try:
                 if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, self.en_US_norm)
+                    locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
             except:
                 sbdatetime.has_locale = False
 
@@ -219,7 +219,7 @@ class sbdatetime(datetime.datetime):
                     except:
                         try:
                             if sbdatetime.has_locale:
-                                locale.setlocale(locale.LC_TIME, self.en_US_norm)
+                                locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
                         except:
                             sbdatetime.has_locale = False
                     if t_preset is not None:
@@ -239,7 +239,7 @@ class sbdatetime(datetime.datetime):
                 except:
                     try:
                         if sbdatetime.has_locale:
-                            locale.setlocale(locale.LC_TIME, self.en_US_norm)
+                            locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
                     except:
                         sbdatetime.has_locale = False
                 if t_preset is not None:
