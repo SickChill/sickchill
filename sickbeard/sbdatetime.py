@@ -132,7 +132,11 @@ class sbdatetime(datetime.datetime):
             if sbdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, 'en_US')
         except:
-            sbdatetime.has_locale = False
+            try:
+                if sbdatetime.has_locale:
+                    locale.setlocale(locale.LC_TIME, 'en_US.uft8')
+            except:
+                sbdatetime.has_locale = False
 
         strt = ''
         try:
@@ -212,7 +216,11 @@ class sbdatetime(datetime.datetime):
                         if sbdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, 'en_US')
                     except:
-                        sbdatetime.has_locale = False
+                        try:
+                            if sbdatetime.has_locale:
+                                locale.setlocale(locale.LC_TIME, 'en_US.uft8')
+                        except:
+                            sbdatetime.has_locale = False
                     if t_preset is not None:
                         strd += u', ' + dt.strftime(t_preset)
                     elif show_seconds:
@@ -228,7 +236,11 @@ class sbdatetime(datetime.datetime):
                     if sbdatetime.has_locale:
                         locale.setlocale(locale.LC_TIME, 'en_US')
                 except:
-                    sbdatetime.has_locale = False
+                    try:
+                        if sbdatetime.has_locale:
+                            locale.setlocale(locale.LC_TIME, 'en_US.uft8')
+                    except:
+                        sbdatetime.has_locale = False
                 if t_preset is not None:
                     strd += u', ' + self.strftime(t_preset)
                 elif show_seconds:
