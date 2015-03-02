@@ -19,7 +19,7 @@ function(){
     \$('#minLevel,#logFilter,#logSearch').change(function(){
         if ( \$('#logSearch').val().length > 0 ) {
             \$('#logSearch').prop('disabled', true);
-            \$('#logFilter option[value=<NONE>]').prop('selected', true); 
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
             \$('#minLevel option[value=INFO]').prop('selected', true); 
         }
         \$('#minLevel').prop('disabled', true);
@@ -48,7 +48,7 @@ function(){
 
     \$('#logSearch').keyup(function() {
         if ( \$('#logSearch').val().length == 0 ) {
-            \$('#logFilter option[value=<NONE>]').prop('selected', true); 
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
             \$('#minLevel option[value=INFO]').prop('selected', true); 
             \$('#minLevel').prop('disabled', false);
             \$('#logFilter').prop('disabled', false);
