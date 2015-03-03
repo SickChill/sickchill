@@ -353,6 +353,27 @@ def unRAR(path, rarFiles, force, result):
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
                 del rar_handle
+
+            except FatalRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Fatal Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except CRCRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Archive CRC Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except IncorrectRARPassword:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Password".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except NoFileToExtract:
+                result.output += logHelper(u"Failed Unrar archive (0): Unrar: No file to extract, file already exist?".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except GenericRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Generic Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
             except Exception, e:
                 result.output += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
                 result.result = False

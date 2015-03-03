@@ -63,9 +63,12 @@ class RarFileImplementation(object):
         global rar_executable_version
         self.password = password
         
+        proc = self.call('v', [])
+        stdoutdata, stderrdata = proc.communicate()
         
-        stdoutdata, stderrdata = self.call('v', []).communicate()
-        
+        # Use unrar return code if available
+        self._check_returncode(proc.returncode)
+
         for line in stderrdata.splitlines():
             if line.strip().startswith("Cannot open"):
                 raise FileOpenError
@@ -123,7 +126,11 @@ class RarFileImplementation(object):
     def infoiter(self):
         
         command = "v" if rar_executable_version == 4 else "l"
-        stdoutdata, stderrdata = self.call(command, ['c-']).communicate()
+        proc = self.call(command, ['c-'])
+        stdoutdata, stderrdata = proc.communicate()
+        
+        # Use unrar return code if available
+        self._check_returncode(proc.returncode)
         
         for line in stderrdata.splitlines():
             if line.strip().startswith("Cannot open"):
@@ -135,7 +142,7 @@ class RarFileImplementation(object):
         while not line.startswith('-----------'):
             if line.strip().endswith('is not RAR archive'):
                 raise InvalidRARArchive
-            if line.startswith("CRC failed") or line.startswith("Checksum error"):
+            if line.startswith("CRC failed") or line.startswith("Checksum error") or line.startswith("checksum error"):
                 raise IncorrectRARPassword  
             line = source.next()
         line = source.next()
@@ -210,9 +217,46 @@ class RarFileImplementation(object):
         names.append(path)
         proc = self.call(command, options, names)
         stdoutdata, stderrdata = proc.communicate()
-        if stderrdata.find("CRC failed")>=0 or stderrdata.find("Checksum error")>=0:
-            raise IncorrectRARPassword  
-        return res            
+        
+        # Use unrar return code if available
+        self._check_returncode(proc.returncode)
+        
+        if stderrdata.find("CRC failed")>=0 or stderrdata.find("Checksum error")>=0 or stderrdata.find("checksum error")>=0:
+            raise CRCRARError
+        if stderrdata.find("No files to extract")>=0:
+            raise NoFileToExtract
+        if stderrdata.find("Bad archive")>=0:
+            raise FatalRARError
+            
+        return res
+    
+    def _check_returncode(self, returncode):
+        # RAR exit code from unrarsrc-5.2.1.tar.gz/errhnd.hpp
+        RARX_SUCCESS   =   0
+        RARX_WARNING   =   1
+        RARX_FATAL     =   2
+        RARX_CRC       =   3
+        RARX_LOCK      =   4
+        RARX_WRITE     =   5
+        RARX_OPEN      =   6
+        RARX_USERERROR =   7
+        RARX_MEMORY    =   8
+        RARX_CREATE    =   9
+        RARX_NOFILES   =  10
+        RARX_BADPWD    =  11
+        RARX_USERBREAK = 255
+        
+        if returncode != RARX_SUCCESS:
+            if returncode == RARX_FATAL:
+                raise FatalRARError
+            elif returncode == RARX_CRC:
+                raise CRCRARError
+            elif returncode == RARX_BADPWD:
+                raise IncorrectRARPassword
+            elif returncode == RARX_NOFILES:
+                raise NoFileToExtract
+            else:
+                raise GenericRARError
             
     def destruct(self):
         pass
