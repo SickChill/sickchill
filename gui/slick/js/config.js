@@ -68,9 +68,27 @@ $(document).ready(function(){
         });
     });
 
-    $('#branchCheckout').click(function () {
-        url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
-		window.location.href = url;
+    $('#branchCheckout').click(function() {
+    	var url = sbRoot+'/home/branchCheckout?branch='+$("#branchVersion").val();
+    	var  checkDBversion = sbRoot + "/home/getDBcompare?branchDest="
+    	var branchDest = $('#branchVersion option:selected').val()
+    	$.getJSON(checkDBversion + branchDest, function(data){
+    		if (data.status == "success") {
+    			if (data.message == "equal") {
+    				//Checkout Branch
+    				window.location.href = url;
+    			}
+    			if (data.message == "upgrade") {
+    				if ( confirm("Changing branch will upgrade your database.\nYou won't be able to downgrade afterward.\nDo you want to continue?") ) {
+    					//Checkout Branch
+    					window.location.href = url;
+    				}
+    			}
+    			if (data.message == "downgrade") {
+    				alert("Can't switch branch as this will result in a database downgrade.")
+    			}
+    		}
+    	});
     });
 	
 });
