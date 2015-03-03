@@ -315,7 +315,7 @@ class TraktRolling():
 
     def updateWantedList(self, indexer_id = None):
 
-        if not sickbeard.USE_TRAKT:
+        if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
             logger.log(u"Trakt integrazione disabled, quit", logger.DEBUG)
             return True
 
