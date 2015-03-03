@@ -199,7 +199,7 @@ class GenericClient(object):
 
         except Exception, e:
             logger.log(self.name + u': Failed Sending Torrent', logger.ERROR)
-            logger.log(self.name + u': Exception raised when sending torrent: ' + str(e), logger.DEBUG)
+            logger.log(self.name + u': Exception raised when sending torrent: ' + str(result) + u'. Error: ' + str(e), logger.DEBUG)
             return r_code
 
         return r_code
