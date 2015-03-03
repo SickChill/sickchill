@@ -97,6 +97,7 @@ properFinderScheduler = None
 autoPostProcesserScheduler = None
 subtitlesFinderScheduler = None
 traktCheckerScheduler = None
+traktRollingScheduler = None
 
 showList = None
 loadingShowList = None
@@ -413,6 +414,10 @@ TRAKT_SYNC = False
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_DISABLE_SSL_VERIFY = False
 TRAKT_TIMEOUT = 30
+TRAKT_USE_ROLLING_DOWNLOAD = 0
+TRAKT_ROLLING_NUM_EP = 0
+TRAKT_ROLLING_ADD_PAUSED = 1
+TRAKT_ROLLING_FREQUENCY = 15
 
 USE_PYTIVO = False
 PYTIVO_NOTIFY_ONSNATCH = False
@@ -516,7 +521,7 @@ def initialize(consoleLogging=True):
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, \
             USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, \
             KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, KODI_PASSWORD, BACKLOG_FREQUENCY, \
-            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_DISABLE_SSL_VERIFY, TRAKT_TIMEOUT, \
+            USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_REMOVE_WATCHLIST, TRAKT_USE_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, traktRollingScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_DISABLE_SSL_VERIFY, TRAKT_TIMEOUT, TRAKT_USE_ROLLING_DOWNLOAD, TRAKT_ROLLING_NUM_EP, TRAKT_ROLLING_ADD_PAUSED, TRAKT_ROLLING_FREQUENCY, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
             showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
@@ -980,6 +985,10 @@ def initialize(consoleLogging=True):
         TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1)
         TRAKT_DISABLE_SSL_VERIFY = bool(check_setting_int(CFG, 'Trakt', 'trakt_disable_ssl_verify', 0))
         TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30)
+        TRAKT_USE_ROLLING_DOWNLOAD = bool(check_setting_int(CFG, 'Trakt', 'trakt_use_rolling_download', 0))
+        TRAKT_ROLLING_NUM_EP = check_setting_int(CFG, 'Trakt', 'trakt_rolling_num_ep', 0)
+        TRAKT_ROLLING_ADD_PAUSED = check_setting_int(CFG, 'Trakt', 'trakt_rolling_add_paused', 1)
+        TRAKT_ROLLING_FREQUENCY = check_setting_int(CFG, 'Trakt', 'trakt_rolling_frequency', 15)
 
         CheckSection(CFG, 'pyTivo')
         USE_PYTIVO = bool(check_setting_int(CFG, 'pyTivo', 'use_pytivo', 0))
@@ -1298,6 +1307,11 @@ def initialize(consoleLogging=True):
                                                     threadName="TRAKTCHECKER",
                                                     silent=not USE_TRAKT)
 
+        traktRollingScheduler = scheduler.Scheduler(traktChecker.TraktRolling(),
+                                                    cycleTime=datetime.timedelta(TRAKT_ROLLING_FREQUENCY),
+                                                    threadName="TRAKTROLLING",
+                                                    silent=not TRAKT_USE_ROLLING_DOWNLOAD)
+
         subtitlesFinderScheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                        cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
                                                        threadName="FINDSUBTITLES",
@@ -1314,7 +1328,7 @@ def start():
     global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, USE_SUBTITLES, traktCheckerScheduler, \
+        subtitlesFinderScheduler, USE_SUBTITLES, traktCheckerScheduler, traktRollingScheduler,  \
         dailySearchScheduler, events, started
 
     with INIT_LOCK:
@@ -1356,6 +1370,10 @@ def start():
             if USE_TRAKT:
                 traktCheckerScheduler.start()
 
+            # start the trakt checker
+            if TRAKT_USE_ROLLING_DOWNLOAD:
+                traktRollingScheduler.start()
+
             started = True
 
 
@@ -1363,7 +1381,7 @@ def halt():
     global __INITIALIZED__, backlogSearchScheduler, \
         showUpdateScheduler, versionCheckScheduler, showQueueScheduler, \
         properFinderScheduler, autoPostProcesserScheduler, searchQueueScheduler, \
-        subtitlesFinderScheduler, traktCheckerScheduler, \
+        subtitlesFinderScheduler, traktCheckerScheduler, traktRollingScheduler, \
         dailySearchScheduler, events, started
 
     with INIT_LOCK:
@@ -1434,6 +1452,14 @@ def halt():
                 logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
                 try:
                     traktCheckerScheduler.join(10)
+                except:
+                    pass
+
+            if TRAKT_USE_ROLLING_DOWNLOAD:
+                traktRollingScheduler.stop.set()
+                logger.log(u"Waiting for the TRAKTROLLING thread to exit")
+                try:
+                    traktRollingScheduler.join(10)
                 except:
                     pass
 
@@ -1873,6 +1899,10 @@ def save_config():
     new_config['Trakt']['trakt_default_indexer'] = int(TRAKT_DEFAULT_INDEXER)
     new_config['Trakt']['trakt_disable_ssl_verify'] = int(TRAKT_DISABLE_SSL_VERIFY)
     new_config['Trakt']['trakt_timeout'] = int(TRAKT_TIMEOUT)
+    new_config['Trakt']['trakt_use_rolling_download'] = int(TRAKT_USE_ROLLING_DOWNLOAD)
+    new_config['Trakt']['trakt_rolling_num_ep'] = int(TRAKT_ROLLING_NUM_EP)
+    new_config['Trakt']['trakt_rolling_add_paused'] = int(TRAKT_ROLLING_ADD_PAUSED)
+    new_config['Trakt']['trakt_rolling_frequency'] = int(TRAKT_ROLLING_FREQUENCY)
 
     new_config['pyTivo'] = {}
     new_config['pyTivo']['use_pytivo'] = int(USE_PYTIVO)

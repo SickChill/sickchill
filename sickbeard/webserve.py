@@ -1475,6 +1475,11 @@ class Home(WebRoot):
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
+        if not paused:
+            sickbeard.traktRollingScheduler.action.refreshEpisodeWatched()
+            if not sickbeard.traktRollingScheduler.action.updateWantedList():
+                errors.append("Unable to force an update on wanted episode")
+
         if do_update_scene_numbering:
             try:
                 sickbeard.scene_numbering.xem_refresh(showObj.indexerid, showObj.indexer)
@@ -4478,6 +4483,7 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
+                          trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -4601,6 +4607,10 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_DISABLE_SSL_VERIFY = config.checkbox_to_value(trakt_disable_ssl_verify)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
+        sickbeard.TRAKT_USE_ROLLING_DOWNLOAD = config.checkbox_to_value(trakt_use_rolling_download)
+        sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
+        sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
+        sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
 
         if sickbeard.USE_TRAKT:
             sickbeard.traktCheckerScheduler.silent = False
