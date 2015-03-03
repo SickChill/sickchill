@@ -230,6 +230,9 @@ class FreshOnTVProvider(generic.TorrentProvider):
                         #limit page number to 15 just in case something goes wrong
                         if max_page_number > 15:
                             max_page_number = 15
+                        #limit RSS search
+                        if max_page_number > 3 and mode is 'RSS':
+                            max_page_number = 3
                 except:
                     logger.log(u"BS4 parser unable to process response " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
                     continue
