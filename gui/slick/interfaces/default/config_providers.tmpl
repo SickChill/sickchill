@@ -115,7 +115,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                     
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <label for="editAProvider">
+                            <label for="editAProvider" id="provider-list">
                                 <span class="component-title">Configure provider:</span>
                                 <span class="component-desc">
                                     #set $provider_config_list = []
@@ -613,7 +613,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         
-                        <div class="field-pair">
+                        <div class="field-pair" id="newznabcapdiv">
                             <label>
                                 <span class="component-title">Newznab search categories:</span>
                                 <select id="newznab_cap" multiple="multiple" style="min-width:10em;" ></select>
@@ -698,7 +698,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
             </div><!-- /component-group4 //-->
             #end if
 
-            <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+            <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
                 
             </div><!-- /config-components //-->
 

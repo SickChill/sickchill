@@ -45,7 +45,7 @@ $(document).ready(function(){
     // bind 'myForm' and provide a simple callback function 
     $('#configForm').ajaxForm({
         beforeSubmit: function(){
-            $('.config_submitter').each(function(){
+            $('.config_submitter .config_submitter_refresh').each(function(){
                 $(this).attr("disabled", "disabled");
                 $(this).after('<span><img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
                 $(this).hide();
@@ -80,6 +80,13 @@ function config_success(){
         $(this).removeAttr("disabled");
         $(this).next().remove();
         $(this).show();
+    });
+    $('.config_submitter_refresh').each(function(){
+        $(this).removeAttr("disabled");
+        $(this).next().remove();
+        $(this).show();
+        url = sbRoot+'/config/providers/';
+	window.location.href = url;
     });
     $('#email_show').trigger('notify');
 }
