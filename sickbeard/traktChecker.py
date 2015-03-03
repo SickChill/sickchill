@@ -372,7 +372,7 @@ class TraktRolling():
                 show_watched = [show for show in self.EpisodeWatched if show['show']['ids']['imdb'] == imdb_id]
 
                 season = show_watched[0]['seasons'][-1]['number']
-                episode = show_watched[0]['seasons'][0]['episodes'][-1]['number']
+                episode = show_watched[0]['seasons'][-1]['episodes'][-1]['number']
                 logger.log(u"Last watched, Season: " + str(season) + " - Episode: " + str(episode), logger.DEBUG)
 
                 num_of_ep = num_of_download - (self._num_ep_for_season(last_per_season, sn_sb, ep_sb) - self._num_ep_for_season(last_per_season, season, episode)) + 1
@@ -415,7 +415,7 @@ class TraktRolling():
         if epObj:
 
             with epObj.lock:
-                if epObj.status not in (SKIPPED, FAILED):
+                if epObj.status not in (SKIPPED):
                     return
 
                 logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to " + statusStrings[sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS])
