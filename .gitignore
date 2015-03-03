@@ -3,6 +3,7 @@
 cache/
 Logs/
 restore/
+backup/
 cache.db*
 config.ini*
 sickbeard.db*
