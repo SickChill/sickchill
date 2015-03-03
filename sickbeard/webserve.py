@@ -4871,22 +4871,11 @@ class ErrorLogs(WebRoot):
         if logFilter not in logNameFilters:
             logFilter = '<NONE>'
 
+
         data = []
-        
-        logfiles = [logger.logFile]
-        for l in range(1, int(sickbeard.LOG_NR)):
-            logfiles.append(u"{0}.{1}".format(logger.logFile, l))
-        
-        try:
-            for logfile in logfiles:
-                if os.path.isfile(logfile):
-                    with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
-                        for line in f:
-                            data += line
-                            if len(data) >= maxLines:
-                                raise StopIteration
-        except StopIteration:
-            pass
+        if os.path.isfile(logger.logFile):
+            with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
+                data = f.readlines()
 
         regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
 
