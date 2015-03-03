@@ -28,7 +28,7 @@ from sickbeard import logger
 from sickbeard import helpers
 from sickbeard import search_queue
 from sickbeard import db
-from sickbeard.common import SKIPPED, WANTED, IGNORED, FAILED
+from sickbeard.common import SKIPPED, WANTED, IGNORED, FAILED, statusStrings
 
 from lib.trakt import *
 from trakt.exceptions import traktException, traktAuthException, traktServerBusy
@@ -400,7 +400,7 @@ class TraktRolling():
                             else:
                                 self.todoWanted.append(int(indexer_id), s, e)
                     else:
-                        self.setEpisodeToIgnored(newShow, s, e)
+                        self.setEpisodeToDefaultWatched(newShow, s, e)
 
                     if (s*100+e) == (int(last_s[0]['number'])*100+int(last_s[0]['episode_count'])):
                         s = s + 1
@@ -411,7 +411,7 @@ class TraktRolling():
         logger.log(u"Stop looking if having " + str(num_of_download) + " episode not watched", logger.DEBUG)
         return True
 
-    def setEpisodeToIgnored(self, show, s, e):
+    def setEpisodeToDefaultWatched(self, show, s, e):
         """
         Sets an episode to ignored, only if it is currently skipped or failed
         """
@@ -422,9 +422,9 @@ class TraktRolling():
                 if epObj.status not in (SKIPPED, FAILED):
                     return
 
-                logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to ignored")
+                logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to " + statusStrings[sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS])
 
-                epObj.status = IGNORED
+                epObj.status = sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS
                 epObj.saveToDB()
 
     def _num_ep_for_season(self, show, season, episode):
