@@ -1664,7 +1664,7 @@ class Home(WebRoot):
 
                     trakt_data.append((epObj.season, epObj.episode))
 
-            data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+            data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
                 if int(status) in [WANTED, FAILED]:
@@ -1675,7 +1675,7 @@ class Home(WebRoot):
                     upd = "remove"
 
                 if data:
-                    notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_episode=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()
