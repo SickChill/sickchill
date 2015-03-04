@@ -164,12 +164,12 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
             trakt_data.append((curEpObj.season, curEpObj.episode))
 
-    data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+    data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
     if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
         logger.log(u"Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist", logger.DEBUG)
         if data:
-            notifiers.trakt_notifier.update_watchlist(result.show, data_obj=data, update="add")
+            notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
 
     if len(sql_l) > 0:
         myDB = db.DBConnection()
