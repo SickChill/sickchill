@@ -24,6 +24,7 @@ import socket
 import os
 import re
 import os.path
+import shutil
 import lib.shutil_custom
 
 shutil.copyfile = lib.shutil_custom.copyfile_custom
