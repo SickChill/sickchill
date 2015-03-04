@@ -37,11 +37,15 @@ $(document).ready(function(){
     	var params = {url: url, name: name, key: key};
     	var returnData;
     	
-    	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
+    	$(".updating_categories").wrapInner('<span><img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
+    	var jqxhr = $.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
                 function(data){
                     $(this).updateNewznabCaps( data, selectedProvider );
                     console.debug(data.tv_categories);
             });
+    	jqxhr.always(function() {
+    		$(".updating_categories").empty();
+    		 });
     };
     
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
