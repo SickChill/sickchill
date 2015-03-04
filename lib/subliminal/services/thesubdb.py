@@ -20,6 +20,7 @@ from ..language import language_set, Language
 from ..subtitles import get_subtitle_path, ResultSubtitle
 from ..videos import Episode, Movie, UnknownVideo
 import logging
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -43,10 +44,10 @@ class TheSubDB(ServiceBase):
     def query(self, filepath, moviehash, languages):
         r = self.session.get(self.server_url, params={'action': 'search', 'hash': moviehash})
         if r.status_code == 404:
-            logger.debug(u'Could not find subtitles for hash %s' % moviehash)
+            logger.debug(u'Could not find subtitles for hash %s' % moviehash) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         if r.status_code != 200:
-            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         available_languages = language_set(r.content.split(','))
         #this is needed becase for theSubDB pt languages is Portoguese Brazil and not Portoguese#
@@ -55,7 +56,7 @@ class TheSubDB(ServiceBase):
             available_languages = available_languages - language_set(['pt']) | language_set(['pb'])
         languages &= available_languages
         if not languages:
-            logger.debug(u'Could not find subtitles for hash %s with languages %r (only %r available)' % (moviehash, languages, available_languages))
+            logger.debug(u'Could not find subtitles for hash %s with languages %r (only %r available)' % (moviehash, languages, available_languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
         subtitles = []
         for language in languages:

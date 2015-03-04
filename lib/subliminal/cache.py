@@ -24,6 +24,7 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
+import sys
 
 
 __all__ = ['Cache', 'cachedmethod']
@@ -55,18 +56,18 @@ class Cache(object):
 
             self.cache[service_name] = defaultdict(dict)
             filename = self.cache_location(service_name)
-            logger.debug(u'Cache: loading cache from %s' % filename)
+            logger.debug(u'Cache: loading cache from %s' % filename) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             try:
                 self.cache[service_name] = pickle.load(open(filename, 'rb'))
             except IOError:
-                logger.info('Cache: Cache file "%s" doesn\'t exist, creating it' % filename)
+                logger.info('Cache: Cache file "%s" doesn\'t exist, creating it' % filename) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             except EOFError:
-                logger.error('Cache: cache file "%s" is corrupted... Removing it.' % filename)
+                logger.error('Cache: cache file "%s" is corrupted... Removing it.' % filename) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 os.remove(filename)
 
     def save(self, service_name):
         filename = self.cache_location(service_name)
-        logger.debug(u'Cache: saving cache to %s' % filename)
+        logger.debug(u'Cache: saving cache to %s' % filename) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         with self.lock:
             pickle.dump(self.cache[service_name], open(filename, 'wb'))
 
@@ -121,7 +122,7 @@ def cachedmethod(function):
 
         if key in func_cache:
             result = func_cache[key]
-            logger.debug(u'Using cached value for %s(%s), returns: %s' % (func_key, key, result))
+            logger.debug(u'Using cached value for %s(%s), returns: %s' % (func_key, key, result)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return result
 
         result = function(*args)

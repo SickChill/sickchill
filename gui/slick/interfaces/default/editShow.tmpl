@@ -16,51 +16,16 @@
 
 
 #if $varExists('header') 
-	<h1 class="header">$header</h1>
+    <h1 class="header">$header</h1>
 #else 
-	<h1 class="title">$title</h1>
+    <h1 class="title">$title</h1>
 #end if
 
 <div id="editShow">
 <script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
-<script type="text/javascript" charset="utf-8">
-<!--
-\$(document).ready(function(){
+<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
 
-  \$.getJSON('$sbRoot/home/addShows/getIndexerLanguages', {}, function(data) {
-        var resultStr = '';
 
-        if (data.results.length == 0) {
-            flag = ' class="flag" style="background-image:url($sbRoot/images/flags/${show.lang}.png)"';
-            resultStr = '<option value="$show.lang" selected="selected" + flag>$show.lang</option>';
-        } else {
-            var current_lang_added = false;
-            \$.each(data.results, function(index, obj) {
-
-                if (obj == "$show.lang") {
-                	selected = ' selected="selected"';
-                    current_lang_added = true;
-                }
-                else {
-                    selected = '';
-                }
-
-                flag = ' class="flag" style="background-image:url($sbRoot/images/flags/' + obj + '.png);"';
-                resultStr += '<option value="' + obj + '"' + selected + flag + '>' + obj + '</option>';
-            });
-            if (!current_lang_added)
-                resultStr += '<option value="$show.lang" selected="selected">$show.lang</option>';
-
-        }
-        \$('#indexerLangSelect').html(resultStr)
-
-  });
-
-});
-//-->
-</script>
-
-<br>
 
 <form action="editShow" method="post">
 <input type="hidden" name="show" value="$show.indexerid" />
@@ -73,22 +38,22 @@
 <input class="btn btn-inline" type="button" value="Add" id="addSceneName"><br />
 
 <div id="SceneException" >
-	<div>
-		<p>This will <b>affect the episode show search</b> on nzb and torrent provider.<br />
-		This list overrides the original name, it doesn't append to it.<br />
-		</p>
-	</div>
+    <div>
+        <p>This will <b>affect the episode show search</b> on nzb and torrent provider.<br />
+        This list overrides the original name, it doesn't append to it.<br />
+        </p>
+    </div>
 
-	<div class="pull-left" style="text-align:center;">
-		<h4>Exceptions List</h4>
-		<select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
-				#for $cur_exception in $show.exceptions:
-					<option value="$cur_exception">$cur_exception</option>
-				#end for
-		</select>
-	<div>
-		<input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/>
-	</div>
+    <div class="pull-left" style="text-align:center;">
+        <h4>Exceptions List</h4>
+        <select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
+                #for $cur_exception in $show.exceptions:
+                    <option value="$cur_exception">$cur_exception</option>
+                #end for
+        </select>
+    <div>
+        <input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/>
+    </div>
 <br />
 </div>
 </div>
@@ -113,7 +78,7 @@
 
 <b>Info Language:</b><br />
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />
-<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm"></select><br />
+<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="en" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select><br />
 <br />
 
 <b>Flatten files (no folders):</b> <input type="checkbox" name="flatten_folders" #if $show.flatten_folders == 1 and not $sickbeard.NAMING_FORCE_FOLDERS then "checked=\"checked\"" else ""# #if $sickbeard.NAMING_FORCE_FOLDERS then "disabled=\"disabled\"" else ""#/><br />
@@ -178,49 +143,49 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
 <script type="text/javascript" charset="utf-8">
 <!--
-   	var all_exceptions = new Array;
+    var all_exceptions = new Array;
 
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
    
     \$('#submit').click(function(){
-		all_exceptions = []
+        all_exceptions = []
 
-		\$("#exceptions_list option").each  ( function() {
-			all_exceptions.push( \$(this).val() );
-	    });
-		
-		\$("#exceptions_list").val(all_exceptions);
+        \$("#exceptions_list option").each  ( function() {
+            all_exceptions.push( \$(this).val() );
+        });
+        
+        \$("#exceptions_list").val(all_exceptions);
 
         var realvalues = [];
 
-		\$('#white option').each(function(i, selected) {
-		    realvalues[i] = \$(selected).val();
-		});
-		\$("#whitelist").val(realvalues.join(","));
+        \$('#white option').each(function(i, selected) {
+            realvalues[i] = \$(selected).val();
+        });
+        \$("#whitelist").val(realvalues.join(","));
 
-		realvalues = [];
-		\$('#black option').each(function(i, selected) {
-		    realvalues[i] = \$(selected).val();
-		});
-		\$("#blacklist").val(realvalues.join(","));
+        realvalues = [];
+        \$('#black option').each(function(i, selected) {
+            realvalues[i] = \$(selected).val();
+        });
+        \$("#blacklist").val(realvalues.join(","));
 
-	});  
+    });  
    
     \$('#addSceneName').click(function() {
         var scene_ex = \$('#SceneName').val()
         var option = \$("<option>")
-		all_exceptions = []
-			
-	    \$("#exceptions_list option").each  ( function() {
-	       all_exceptions.push( \$(this).val() )
-	    });
+        all_exceptions = []
+            
+        \$("#exceptions_list option").each  ( function() {
+           all_exceptions.push( \$(this).val() )
+        });
         
         \$('#SceneName').val('')
         
         if (jQuery.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
-        	return
+            return
 
-		\$("#SceneException").show()
+        \$("#SceneException").show()
 
         option.attr("value",scene_ex)
         option.html(scene_ex)
@@ -228,39 +193,39 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
     });
     
     \$('#removeSceneName').click(function() {
-		\$('#exceptions_list option:selected').remove();
-		
-		\$(this).toggle_SceneException()
+        \$('#exceptions_list option:selected').remove();
+        
+        \$(this).toggle_SceneException()
     });
     
    $.fn.toggle_SceneException = function() {
-   		all_exceptions = []
-   		
-   		\$("#exceptions_list option").each  ( function() {
-			all_exceptions.push( \$(this).val() );
-	    });
-	    
-		if (all_exceptions == '')
-			\$("#SceneException").hide();
-		else
-			\$("#SceneException").show();
-	}
+        all_exceptions = []
+        
+        \$("#exceptions_list option").each  ( function() {
+            all_exceptions.push( \$(this).val() );
+        });
+        
+        if (all_exceptions == '')
+            \$("#SceneException").hide();
+        else
+            \$("#SceneException").show();
+    }
 
-	\$(this).toggle_SceneException();
+    \$(this).toggle_SceneException();
 
     \$('#removeW').click(function() {
-		return !\$('#white option:selected').remove().appendTo('#pool');
-	});
-	\$('#addW').click(function() {
-	 	return !\$('#pool option:selected').remove().appendTo('#white');
-	});
-	\$('#addB').click(function() {
-	 	return !\$('#pool option:selected').remove().appendTo('#black');
-	 });
+        return !\$('#white option:selected').remove().appendTo('#pool');
+    });
+    \$('#addW').click(function() {
+        return !\$('#pool option:selected').remove().appendTo('#white');
+    });
+    \$('#addB').click(function() {
+        return !\$('#pool option:selected').remove().appendTo('#black');
+     });
     \$('#removeP').click(function() {
         return !\$('#pool option:selected').remove();
     });
-	\$('#removeB').click(function() {
+    \$('#removeB').click(function() {
         return !\$('#black option:selected').remove().appendTo('#pool');
     });
 

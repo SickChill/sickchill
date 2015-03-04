@@ -19,6 +19,7 @@
 import re
 import traceback
 import datetime
+import time
 import urlparse
 import sickbeard
 import generic
@@ -104,28 +105,36 @@ class FreshOnTVProvider(generic.TorrentProvider):
 
             try:
                 response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
-            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
                 logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
                 return False
 
-            if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response.text):
-                logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
-                return False
+            if re.search('/logout.php', response.text):
+                logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
 
-            try:
-                if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
-                    self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
-                    self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
+                try:
+                    if requests.utils.dict_from_cookiejar(self.session.cookies)['uid'] and requests.utils.dict_from_cookiejar(self.session.cookies)['pass']:
+                        self._uid = requests.utils.dict_from_cookiejar(self.session.cookies)['uid']
+                        self._hash = requests.utils.dict_from_cookiejar(self.session.cookies)['pass']
 
-                    self.cookies = {'uid': self._uid,
-                                    'pass': self._hash
-                    }
-                    return True
-            except:
-                pass
+                        self.cookies = {'uid': self._uid,
+                                        'pass': self._hash
+                        }
+                        return True
+                except:
+                    logger.log(u'Unable to obtain cookie for FreshOnTV', logger.ERROR)
+                    return False
 
-            logger.log(u'Unable to obtain cookie for FreshOnTV', logger.ERROR)
-            return False
+            else:
+                logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)
+                if re.search('Username does not exist in the userbase or the account is not confirmed yet.', response.text):
+                    logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+
+                if re.search('DDoS protection by CloudFlare', response.text):
+                    logger.log(u'Unable to login to ' + self.name + ' due to CloudFlare DDoS javascript check.', logger.ERROR)
+
+                    return False
+
 
     def _get_season_search_strings(self, ep_obj):
 
@@ -191,66 +200,119 @@ class FreshOnTVProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-
                 searchURL = self.urls['search'] % (freeleech, search_string)
-
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
+                init_html = self.getURL(searchURL)
+                max_page_number = 0
 
-                # returns top 15 results by default, expandable in user profile to 100
-                data = self.getURL(searchURL)
-                if not data:
+                if not init_html:
+                    logger.log(u"The opening search response from " + self.name + " is empty.",logger.DEBUG)
                     continue
 
                 try:
-                    with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                        torrent_table = html.find('table', attrs={'class': 'frame'})
-                        torrent_rows = torrent_table.findChildren('tr') if torrent_table else []
+                    with BS4Parser(init_html, features=["html5lib", "permissive"]) as init_soup:
 
-                        #Continue only if one Release is found
-                        if len(torrent_rows) < 2:
-                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                       logger.DEBUG)
+                        #Check to see if there is more than 1 page of results
+                        pager = init_soup.find('div', {'class': 'pager'})
+                        if pager:
+                            page_links = pager.find_all('a', href=True)
+                        else:
+                            page_links = []
+
+                        if len(page_links) > 0:
+                            for lnk in page_links:
+                                link_text = lnk.text.strip()
+                                if link_text.isdigit():
+                                    page_int = int(link_text)
+                                    if page_int > max_page_number:
+                                        max_page_number = page_int
+
+                        #limit page number to 15 just in case something goes wrong
+                        if max_page_number > 15:
+                            max_page_number = 15
+                        #limit RSS search
+                        if max_page_number > 3 and mode is 'RSS':
+                            max_page_number = 3
+                except:
+                    logger.log(u"BS4 parser unable to process response " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                    continue
+
+                data_response_list = []
+                data_response_list.append(init_html)
+
+                #Freshon starts counting pages from zero, even though it displays numbers from 1
+                if max_page_number > 1:
+                    for i in range(1, max_page_number):
+
+                        time.sleep(1)
+                        page_searchURL = searchURL + '&page=' + str(i)
+                        logger.log(u"Search string: " + page_searchURL, logger.DEBUG)
+                        page_html = self.getURL(page_searchURL)
+
+                        if not page_html:
+                            logger.log(u"The search response for page number " + str(i) + " is empty." + self.name,logger.DEBUG)
                             continue
 
-                        # skip colheader
-                        for result in torrent_rows[1:]:
-                            cells = result.findChildren('td')
+                        data_response_list.append(page_html)
 
-                            link = cells[1].find('a', attrs = {'class': 'torrent_name_link'})
-                            #skip if torrent has been nuked due to poor quality
-                            if cells[1].find('img', alt='Nuked') != None:
+                try:
+
+                    for data_response in data_response_list:
+
+                        with BS4Parser(data_response, features=["html5lib", "permissive"]) as html:
+
+                            torrent_rows = html.findAll("tr", {"class": re.compile('torrent_[0-9]*')})
+
+                            #Continue only if a Release is found
+                            if len(torrent_rows) == 0:
+                                logger.log(u"The Data returned from " + self.name + " does not contain any torrent", logger.DEBUG)
                                 continue
 
-                            torrent_id = link['href'].replace('/details.php?id=', '')
+                            for individual_torrent in torrent_rows:
 
+                                #skip if torrent has been nuked due to poor quality
+                                if individual_torrent.find('img', alt='Nuked') != None:
+                                    continue
 
-                            try:
-                                if link.has_key('title'):
-                                    title = cells[1].find('a', {'class': 'torrent_name_link'})['title']
-                                else:
-                                    title = link.contents[0]
-                                download_url = self.urls['download'] % (torrent_id)
-                                id = int(torrent_id)
+                                try:
+                                    title = individual_torrent.find('a', {'class': 'torrent_name_link'})['title']
+                                except:
+                                    logger.log(u"Unable to parse torrent title " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                    continue
 
-                                seeders = int(cells[8].find('a', {'class': 'link'}).span.contents[0].strip())
-                                leechers = int(cells[9].find('a', {'class': 'link'}).contents[0].strip())
-                            except (AttributeError, TypeError):
-                                continue
+                                try:
+                                    details_url = individual_torrent.find('a', {'class': 'torrent_name_link'})['href']
+                                    id = int((re.match('.*?([0-9]+)$', details_url).group(1)).strip())
+                                    download_url = self.urls['download'] % (str(id))
+                                except:
+                                    logger.log(u"Unable to parse torrent id & download url  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                    continue
 
-                            #Filter unseeded torrent
-                            if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
-                                continue
+                                try:
+                                    seeders = int(individual_torrent.find('td', {'class': 'table_seeders'}).find('span').text.strip())
+                                except:
+                                    logger.log(u"Unable to parse torrent seeders content  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                    seeders = 1
+                                try:
+                                    leechers = int(individual_torrent.find('td', {'class': 'table_leechers'}).find('a').text.strip())
+                                except:
+                                    logger.log(u"Unable to parse torrent leechers content " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                    leechers = 0
 
-                            if not title or not download_url:
-                                continue
+                                #Filter unseeded torrent
+                                if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                    continue
 
-                            item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                                if not title or not download_url:
+                                    continue
 
-                            items[mode].append(item)
+                                item = title, download_url, id, seeders, leechers
+                                logger.log(u"Found result: " + title + " (" + searchURL + ")", logger.DEBUG)
 
-                except Exception, e:
-                    logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
+                                items[mode].append(item)
+
+                except Exception as e:
+                    logger.log(u"Failed parsing " + " Traceback: " + traceback.format_exc(), logger.DEBUG)
 
             #For each search mode sort all the items by seeders
             items[mode].sort(key=lambda tup: tup[3], reverse=True)

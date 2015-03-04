@@ -64,7 +64,8 @@
         });
 
     if (trimZero) {
-        timeToken = timeToken.replace(/hh/ig, 'h');
+        timeToken = timeToken.replace(/hh/g, 'h');
+        timeToken = timeToken.replace(/HH/g, 'H');
         dateToken = dateToken.replace(/\bDD\b/g, 'D');
     }
 

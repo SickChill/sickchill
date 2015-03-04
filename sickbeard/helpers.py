@@ -19,6 +19,7 @@
 from __future__ import with_statement
 
 import os
+import ctypes
 import random
 import re
 import shutil
@@ -130,7 +131,9 @@ def replaceExtension(filename, newExt):
 
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
-    if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
+    syncfiles = sickbeard.SYNC_FILES
+    if extension in syncfiles.split(","):
         return True
     else:
         return False
@@ -189,6 +192,7 @@ def sanitizeFileName(name):
     # remove bad chars from the filename
     name = re.sub(r'[\\/\*]', '-', name)
     name = re.sub(r'[:"<>|?]', '', name)
+    name = re.sub(ur'\u2122', '', name) # Trade Mark Sign
 
     # remove leading/trailing periods and spaces
     name = name.strip(' .')
@@ -284,21 +288,22 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
                 continue
 
             try:
-                seriesname = search.seriesname
+                seriesname = search[0]['seriesname']
             except:
                 seriesname = None
 
             try:
-                series_id = search.id
+                series_id = search[0]['id']
             except:
                 series_id = None
 
             if not (seriesname and series_id):
                 continue
-
-            if str(name).lower() == str(seriesname).lower and not indexer_id:
+            ShowObj = findCertainShow(sickbeard.showList, int(series_id))
+            #Check if we can find the show in our list (if not, it's not the right show)
+            if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
                 return (seriesname, i, int(series_id))
-            elif int(indexer_id) == int(series_id):
+            elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
                 return (seriesname, i, int(indexer_id))
 
         if indexer:
@@ -951,8 +956,21 @@ def is_hidden_folder(folder):
     On Linux based systems hidden folders start with . (dot)
     folder: Full path of folder to check
     """
+    def is_hidden(filepath):
+        name = os.path.basename(os.path.abspath(filepath))
+        return name.startswith('.') or has_hidden_attribute(filepath)
+
+    def has_hidden_attribute(filepath):
+        try:
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(filepath))
+            assert attrs != -1
+            result = bool(attrs & 2)
+        except (AttributeError, AssertionError):
+            result = False
+        return result
+    
     if ek.ek(os.path.isdir, folder):
-        if ek.ek(os.path.basename, folder).startswith('.'):
+        if is_hidden(folder):
             return True
 
     return False
@@ -994,16 +1012,20 @@ def set_up_anidb_connection():
 
     if not sickbeard.ADBA_CONNECTION:
         anidb_logger = lambda x: logger.log("ANIDB: " + str(x), logger.DEBUG)
-        sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
-
-    if not sickbeard.ADBA_CONNECTION.authed():
         try:
-            sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
-        except Exception, e:
-            logger.log(u"exception msg: " + str(e))
+            sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
+        except Exception as e:
+            logger.log(u"anidb exception msg: " + str(e))
             return False
-    else:
-        return True
+
+    try:
+        if not sickbeard.ADBA_CONNECTION.authed():
+            sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
+        else:
+            return True
+    except Exception as e:
+        logger.log(u"anidb exception msg: " + str(e))
+        return False
 
     return sickbeard.ADBA_CONNECTION.authed()
 
@@ -1050,6 +1072,41 @@ def extractZip(archive, targetDir):
         return True
     except Exception as e:
         logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
+        return False
+
+
+def backupConfigZip(fileList, archive, arcname = None):
+    try:
+        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
+        for f in fileList:
+            a.write(f, os.path.relpath(f, arcname))
+        a.close()
+        return True
+    except Exception as e:
+        logger.log(u"Zip creation error: " + str(e), logger.ERROR)
+        return False
+
+
+def restoreConfigZip(archive, targetDir):
+    import ntpath
+    try:
+        if not os.path.exists(targetDir):
+            os.mkdir(targetDir)
+        else:
+            def path_leaf(path):
+                head, tail = ntpath.split(path)
+                return tail or ntpath.basename(head)
+            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
+            shutil.move(targetDir, os.path.join(ntpath.dirname(targetDir), bakFilename))
+
+        zip_file = zipfile.ZipFile(archive, 'r')
+        for member in zip_file.namelist():
+            zip_file.extract(member, targetDir)
+        zip_file.close()
+        return True
+    except Exception as e:
+        logger.log(u"Zip extraction error: " + str(e), logger.ERROR)
+        shutil.rmtree(targetDir)
         return False
 
 

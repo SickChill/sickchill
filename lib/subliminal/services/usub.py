@@ -24,6 +24,7 @@ from ..videos import Episode
 from bs4 import BeautifulSoup
 import logging
 import urllib
+import sys
 
 logger = logging.getLogger("subliminal")
 
@@ -46,11 +47,11 @@ class Usub(ServiceBase):
             request_series = series.lower().replace(' ', '-')
             if isinstance(request_series, unicode):
                 request_series = request_series.encode('utf-8')
-            logger.debug(u'Getting subtitles for %s season %d episode %d with language %r' % (series, season, episode, languages))
+            logger.debug(u'Getting subtitles for %s season %d episode %d with language %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             r = self.session.get('%s/%s/saison_%s' % (self.server_url, urllib.quote(request_series),season))
             if r.status_code == 404:
                 print "Error 404"
-                logger.debug(u'Could not find subtitles for %s' % (series))
+                logger.debug(u'Could not find subtitles for %s' % (series)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 return []
         else:
             print "One or more parameter missing"
@@ -59,7 +60,7 @@ class Usub(ServiceBase):
         ## Check if we didn't got an big and nasty http error
         if r.status_code != 200:
             print u'Request %s returned status code %d' % (r.url, r.status_code)
-            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return []
             
         ## Editing episode informations to be able to use it with our search

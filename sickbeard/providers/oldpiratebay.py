@@ -23,6 +23,7 @@ import re
 import urllib, urllib2, urlparse
 import sys
 import os
+import traceback
 import datetime
 
 import sickbeard
@@ -36,6 +37,7 @@ from sickbeard import tvcache
 from sickbeard import helpers
 from sickbeard import clients
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
+from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
@@ -114,54 +116,62 @@ class OldPirateBayProvider(generic.TorrentProvider):
 
         fileName = None
 
-        fileURL = self.url + 'ajax_details_filelist.php?id=' + str(torrent_id)
+        fileURL = self.url + 'torrent/' + str(torrent_id)
         data = self.getURL(fileURL)
         if not data:
             return None
 
-        filesList = re.findall('<td.+>(.*?)</td>', data)
-
-        if not filesList:
-            logger.log(u"Unable to get the torrent file list for " + title, logger.ERROR)
-
-        videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, filesList)
-
-        #Filtering SingleEpisode/MultiSeason Torrent
-        if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
-            logger.log(
-                u"Result " + title + " have " + str(ep_number) + " episode and episodes retrived in torrent are " + str(
-                    len(videoFiles)), logger.DEBUG)
-            logger.log(u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
-                       logger.DEBUG)
-            return None
-
-        if Quality.sceneQuality(title) != Quality.UNKNOWN:
-            return title
-
-        for fileName in videoFiles:
-            quality = Quality.sceneQuality(os.path.basename(fileName))
-            if quality != Quality.UNKNOWN: break
-
-        if fileName is not None and quality == Quality.UNKNOWN:
-            quality = Quality.assumeQuality(os.path.basename(fileName))
-
-        if quality == Quality.UNKNOWN:
-            logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
-            return None
-
         try:
-            myParser = NameParser(showObj=self.show)
-            parse_result = myParser.parse(fileName)
-        except (InvalidNameException, InvalidShowException):
-            return None
+            with BS4Parser(data, features=["html5lib", "permissive"]) as soup:
+                files_tbody = soup.find('div', attrs={'class': 'description-files'}).find('tbody')
+                if (not files_tbody):
+                    return None
+                files = []
+                rows = files_tbody.find_all('tr')
+                for row in rows:
+                    files.append(row.find_all('td')[1].text)
 
-        logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
+                videoFiles = filter(lambda x: x.rpartition(".")[2].lower() in mediaExtensions, files)
 
-        if parse_result.series_name and parse_result.season_number:
-            title = parse_result.series_name + ' S%02d' % int(parse_result.season_number) + ' ' + self._reverseQuality(
-                quality)
+                #Filtering SingleEpisode/MultiSeason Torrent
+                if len(videoFiles) < ep_number or len(videoFiles) > float(ep_number * 1.1):
+                    logger.log(u"Result " + title + " have " + str(
+                        ep_number) + " episode and episodes retrived in torrent are " + str(len(videoFiles)), logger.DEBUG)
+                    logger.log(
+                        u"Result " + title + " Seem to be a Single Episode or MultiSeason torrent, skipping result...",
+                        logger.DEBUG)
+                    return None
 
-        return title
+                if Quality.sceneQuality(title) != Quality.UNKNOWN:
+                    return title
+
+                for fileName in videoFiles:
+                    quality = Quality.sceneQuality(os.path.basename(fileName))
+                    if quality != Quality.UNKNOWN: break
+
+                if fileName is not None and quality == Quality.UNKNOWN:
+                    quality = Quality.assumeQuality(os.path.basename(fileName))
+
+                if quality == Quality.UNKNOWN:
+                    logger.log(u"Unable to obtain a Season Quality for " + title, logger.DEBUG)
+                    return None
+
+                try:
+                    myParser = NameParser(showObj=self.show)
+                    parse_result = myParser.parse(fileName)
+                except (InvalidNameException, InvalidShowException):
+                    return None
+
+                logger.log(u"Season quality for " + title + " is " + Quality.qualityStrings[quality], logger.DEBUG)
+
+                if parse_result.series_name and parse_result.season_number:
+                    title = parse_result.series_name + ' S%02d' % int(
+                        parse_result.season_number) + ' ' + self._reverseQuality(quality)
+
+                return title
+
+        except Exception, e:
+            logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
     def _get_season_search_strings(self, ep_obj):
 
@@ -229,7 +239,7 @@ class OldPirateBayProvider(generic.TorrentProvider):
                 if mode != 'RSS':
                     searchURL = self.searchurl % (urllib.quote(search_string))
                 else:
-                    searchURL = self.url + 'tv/latest/'
+                    searchURL = self.url + 'search?iht=8&sort=-created_at'
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
@@ -245,7 +255,6 @@ class OldPirateBayProvider(generic.TorrentProvider):
                     title = torrent.group('title').replace('_',
                                                            '.')  #Do not know why but SickBeard skip release with '_' in name
                     url = torrent.group('url')
-                    print 'torrent url: ' + url
                     id = int(torrent.group('id'))
                     seeders = int(torrent.group('seeders'))
                     leechers = int(torrent.group('leechers'))

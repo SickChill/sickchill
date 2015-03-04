@@ -28,6 +28,7 @@ import platform
 import sickbeard
 from sickbeard import classes, encodingKludge as ek
 from github import Github, InputFileContent
+import codecs
 
 # log levels
 ERROR = logging.ERROR
@@ -105,7 +106,7 @@ class Logger(object):
         # console log handler
         if self.consoleLogging:
             console = logging.StreamHandler()
-            console.setFormatter(CensoredFormatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
+            console.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
             console.setLevel(INFO if not self.debugLogging else DEBUG)
 
             for logger in self.loggers:
@@ -114,7 +115,7 @@ class Logger(object):
         # rotating log file handler
         if self.fileLogging:
             rfh = logging.handlers.RotatingFileHandler(self.logFile, maxBytes=sickbeard.LOG_SIZE, backupCount=sickbeard.LOG_NR, encoding='utf-8')
-            rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
+            rfh.setFormatter(CensoredFormatter(u'%(asctime)s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M:%S'))
             rfh.setLevel(DEBUG)
 
             for logger in self.loggers:
@@ -156,7 +157,7 @@ class Logger(object):
             # read log file
             log_data = None
             if self.logFile and os.path.isfile(self.logFile):
-                with ek.ek(open, self.logFile) as f:
+                with ek.ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
                     log_data = f.readlines()
                 log_data = [line for line in reversed(log_data)]
 

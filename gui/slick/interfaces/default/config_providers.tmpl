@@ -115,7 +115,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                     
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <label for="editAProvider">
+                            <label for="editAProvider" id="provider-list">
                                 <span class="component-title">Configure provider:</span>
                                 <span class="component-desc">
                                     #set $provider_config_list = []
@@ -530,6 +530,33 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
+                        #if $hasattr($curTorrentProvider, 'cat') and $curTorrentProvider.getID() == 'tntvillage':
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_cat">
+                                <span class="component-title">Category:</span>
+                                <span class="component-desc">
+                                    <select name="${curTorrentProvider.getID()}_cat" id="${curTorrentProvider.getID()}_cat" class="form-control input-sm">
+                                        #for $i in $curTorrentProvider.category_dict.keys():
+                                        <option value="$curTorrentProvider.category_dict[$i]" #if $curTorrentProvider.category_dict[$i] == $curTorrentProvider.cat then "selected=\"selected\"" else ""#>$i</option>
+                                        #end for
+                                    </select>
+                                </span>
+                           </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'subtitle') and $curTorrentProvider.getID() == 'tntvillage':
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_subtitle">
+                                <span class="component-title">Subtitled</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" #if $curTorrentProvider.subtitle then "checked=\"checked\"" else ""#/>
+                                    <p>select torrent with Italian subtitle</p>
+                                </span>
+                            </label>
+                        </div>
+                        #end if
+
                     </div>
                     #end for
 
@@ -586,7 +613,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         
-                        <div class="field-pair">
+                        <div class="field-pair" id="newznabcapdiv">
                             <label>
                                 <span class="component-title">Newznab search categories:</span>
                                 <select id="newznab_cap" multiple="multiple" style="min-width:10em;" ></select>
@@ -598,7 +625,9 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc"><input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories" /></span>                                
+                                <span class="component-desc"><input class="btn" type="button" class="newznab_cat_update" id="newznab_cat_update" value="Update Categories" />
+                                    <span class="updating_categories"></span>
+                                </span>
                             </label>
                         </div>
                         
@@ -671,7 +700,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
             </div><!-- /component-group4 //-->
             #end if
 
-            <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
+            <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
                 
             </div><!-- /config-components //-->
 

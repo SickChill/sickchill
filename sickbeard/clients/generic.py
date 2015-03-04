@@ -51,19 +51,19 @@ class GenericClient(object):
             self.response = self.session.__getattribute__(method)(self.url, params=params, data=data, files=files,
                                                                   timeout=120, verify=False)
         except requests.exceptions.ConnectionError, e:
-            logger.log(self.name + u': Unable to connect ' + ex(e), logger.ERROR)
+            logger.log(self.name + u': Unable to connect ' + str(e), logger.ERROR)
             return False
         except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
             logger.log(self.name + u': Invalid Host', logger.ERROR)
             return False
         except requests.exceptions.HTTPError, e:
-            logger.log(self.name + u': Invalid HTTP Request ' + ex(e), logger.ERROR)
+            logger.log(self.name + u': Invalid HTTP Request ' + str(e), logger.ERROR)
             return False
         except requests.exceptions.Timeout, e:
-            logger.log(self.name + u': Connection Timeout ' + ex(e), logger.ERROR)
+            logger.log(self.name + u': Connection Timeout ' + str(e), logger.ERROR)
             return False
         except Exception, e:
-            logger.log(self.name + u': Unknown exception raised when send torrent to ' + self.name + ': ' + ex(e),
+            logger.log(self.name + u': Unknown exception raised when send torrent to ' + self.name + ': ' + str(e),
                        logger.ERROR)
             return False
 
@@ -199,7 +199,7 @@ class GenericClient(object):
 
         except Exception, e:
             logger.log(self.name + u': Failed Sending Torrent', logger.ERROR)
-            logger.log(self.name + u': Exception raised when sending torrent: ' + ex(e), logger.DEBUG)
+            logger.log(self.name + u': Exception raised when sending torrent: ' + str(result) + u'. Error: ' + str(e), logger.DEBUG)
             return r_code
 
         return r_code

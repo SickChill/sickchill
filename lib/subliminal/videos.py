@@ -25,6 +25,7 @@ import logging
 import mimetypes
 import os
 import struct
+import sys
 
 from sickbeard import encodingKludge as ek
 import sickbeard
@@ -53,14 +54,15 @@ class Video(object):
 
     """
     def __init__(self, path, guess, imdbid=None):
-        self.release = path
         self.guess = guess
         self.imdbid = imdbid
         self._path = None
         self.hashes = {}
-        
-        if isinstance(path, unicode):
-            path = path.encode('utf-8')
+
+        if isinstance(path, str):
+            path = unicode(path.encode('utf-8'))
+            
+        self.release = path
         
         if os.path.exists(path):
             self._path = path
@@ -133,9 +135,9 @@ class Video(object):
         video_infos = None
         try:
             video_infos = enzyme.parse(self.path)
-            logger.debug(u'Succeeded parsing %s with enzyme: %r' % (self.path, video_infos))
+            logger.debug(u'Succeeded parsing %s with enzyme: %r' % (self.path, video_infos)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         except:
-            logger.debug(u'Failed parsing %s with enzyme' % self.path)
+            logger.debug(u'Failed parsing %s with enzyme' % self.path) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         if isinstance(video_infos, enzyme.core.AVContainer):
             results.extend([subtitles.EmbeddedSubtitle.from_enzyme(self.path, s) for s in video_infos.subtitles])
         # cannot use glob here because it chokes if there are any square
@@ -225,19 +227,20 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
     :rtype: list of (:class:`Video`, [:class:`~subliminal.subtitles.Subtitle`])
 
     """
-    if isinstance(entry, unicode):
-        entry = entry.encode('utf-8')
+
+    if isinstance(entry, str):
+        entry = unicode(entry.encode('utf-8'))
     
     if depth > max_depth and max_depth != 0:  # we do not want to search the whole file system except if max_depth = 0
         return []
     if os.path.isdir(entry):  # a dir? recurse
-        logger.debug(u'Scanning directory %s with depth %d/%d' % (entry, depth, max_depth))
+        logger.debug(u'Scanning directory %s with depth %d/%d' % (entry, depth, max_depth)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         result = []
         for e in os.listdir(entry):
             result.extend(scan(os.path.join(entry, e), max_depth, scan_filter, depth + 1))
         return result
     if os.path.isfile(entry) or depth == 0:
-        logger.debug(u'Scanning file %s with depth %d/%d' % (entry, depth, max_depth))
+        logger.debug(u'Scanning file %s with depth %d/%d' % (entry, depth, max_depth)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         if depth != 0:  # trust the user: only check for valid format if recursing
             if mimetypes.guess_type(entry)[0] not in MIMETYPES and os.path.splitext(entry)[1] not in EXTENSIONS:
                 return []
@@ -245,7 +248,7 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
                 return []
         video = Video.from_path(entry)
         return [(video, video.scan())]
-    logger.warning(u'Scanning entry %s failed with depth %d/%d' % (entry, depth, max_depth))
+    logger.warning(u'Scanning entry %s failed with depth %d/%d' % (entry, depth, max_depth)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     return []  # anything else
 
 
@@ -276,7 +279,7 @@ def hash_opensubtitles(path):
             filehash += l_value
             filehash = filehash & 0xFFFFFFFFFFFFFFFF
     returnedhash = '%016x' % filehash
-    logger.debug(u'Computed OpenSubtitle hash %s for %s' % (returnedhash, path))
+    logger.debug(u'Computed OpenSubtitle hash %s for %s' % (returnedhash, path)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     return returnedhash
 
 
@@ -296,5 +299,5 @@ def hash_thesubdb(path):
         f.seek(-readsize, os.SEEK_END)
         data += f.read(readsize)
     returnedhash = hashlib.md5(data).hexdigest()
-    logger.debug(u'Computed TheSubDB hash %s for %s' % (returnedhash, path))
+    logger.debug(u'Computed TheSubDB hash %s for %s' % (returnedhash, path)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
     return returnedhash

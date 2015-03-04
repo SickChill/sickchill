@@ -13,10 +13,51 @@
 
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){
-    \$('#minLevel').change(function(){
-        url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$(this).val()
+\$(document).ready(
+
+function(){
+    \$('#minLevel,#logFilter,#logSearch').change(function(){
+        if ( \$('#logSearch').val().length > 0 ) {
+            \$('#logSearch').prop('disabled', true);
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
+            \$('#minLevel option[value=5]').prop('selected', true); 
+        }
+        \$('#minLevel').prop('disabled', true);
+        \$('#logFilter').prop('disabled', true);
+        \$('#logSearch').prop('disabled', true);
+        document.body.style.cursor='wait'
+        url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
         window.location.href = url
+
+    });
+
+    \$(window).load(function(){
+
+        if ( \$('#logSearch').val().length == 0 ) {
+            \$('#minLevel').prop('disabled', false);
+            \$('#logFilter').prop('disabled', false);
+            \$('#logSearch').prop('disabled', false);
+        } else { 
+            \$('#minLevel').prop('disabled', true);
+            \$('#logFilter').prop('disabled', true);
+            \$('#logSearch').prop('disabled', false);
+	    } 
+
+         document.body.style.cursor='default';
+    });
+
+    \$('#logSearch').keyup(function() {
+        if ( \$('#logSearch').val().length == 0 ) {
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
+            \$('#minLevel option[value=20]').prop('selected', true); 
+            \$('#minLevel').prop('disabled', false);
+            \$('#logFilter').prop('disabled', false);
+            url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
+            window.location.href = url
+        } else {
+            \$('#minLevel').prop('disabled', true);
+            \$('#logFilter').prop('disabled', true);
+        }
     });
 });
 //-->
@@ -35,6 +76,14 @@ $levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
 <option value="$reverseNames[$level]" #if $minLevel == $reverseNames[$level] then "selected=\"selected\"" else ""#>$level.title()</option>
 #end for
 </select>
+
+Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
+#for $logNameFilter in sorted($logNameFilters)
+<option value="$logNameFilter" #if $logFilter == $logNameFilter then "selected=\"selected\"" else ""#>$logNameFilters[$logNameFilter]</option>
+#end for
+</select>
+Search log by:
+<input type="text" name="logSearch" id="logSearch" value="#if $logSearch then $logSearch else ""#" class="form-control form-control-inline input-sm" />
 </div>
 <br />
 <div class="align-left"><pre>
@@ -42,12 +91,6 @@ $logLines
 </pre>
 </div>
 <br />
-<script type="text/javascript" charset="utf-8">
-<!--
-window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes
-//-->
-</script>
-
 <script type="text/javascript" charset="utf-8">
 <!--
 window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minutes

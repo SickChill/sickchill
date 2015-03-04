@@ -176,7 +176,7 @@ class SCCProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                if mode == 'Season':
+                if mode == 'Season' and search_mode == 'sponly':
                     searchURLS += [self.urls['archive'] % (search_string)]
                 else:
                     searchURLS += [self.urls['search'] % (search_string, self.categories)]
@@ -185,7 +185,10 @@ class SCCProvider(generic.TorrentProvider):
 
                 for searchURL in searchURLS:
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
-                    data += [x for x in [self.getURL(searchURL)] if x]
+                    try:
+                        data += [x for x in [self.getURL(searchURL)] if x]
+                    except Exception as e:
+                        logger.log(u"Unable to fetch data reason: {0}".format(str(e)), logger.WARNING)
 
                 if not len(data):
                     continue

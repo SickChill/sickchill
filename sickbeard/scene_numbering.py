@@ -35,6 +35,7 @@ except ImportError:
 from sickbeard import logger
 from sickbeard import db
 from sickbeard.exceptions import ex
+from sickbeard import helpers
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
     """
@@ -221,6 +222,10 @@ def set_scene_numbering(indexer_id, indexer, season=None, episode=None, absolute
         myDB.action(
             "UPDATE scene_numbering SET scene_absolute_number = ? WHERE indexer = ? and indexer_id = ? and absolute_number = ?",
             [sceneAbsolute, indexer, indexer_id, absolute_number])
+
+    #Reload data from DB so that cache and db are in sync
+    show = helpers.findCertainShow(sickbeard.showList, indexer_id)
+    show.flushEpisodes()
 
 
 def find_xem_numbering(indexer_id, indexer, season, episode):

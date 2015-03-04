@@ -24,6 +24,7 @@ from ..language import language_set
 from ..subtitles import get_subtitle_path, ResultSubtitle
 from ..videos import Episode, Movie
 from ..utils import to_unicode, get_keywords
+import sys
 
 
 logger = logging.getLogger("subliminal")
@@ -57,7 +58,7 @@ class Subscenter(ServiceBase):
                           episode, title)
 
     def query(self, filepath, languages=None, keywords=None, series=None, season=None, episode=None, title=None):
-        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages))
+        logger.debug(u'Getting subtitles for %s season %d episode %d with languages %r' % (series, season, episode, languages)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         # Converts the title to Subscenter format by replacing whitespaces and removing specific chars.
         if series and season and episode:
             # Search for a TV show.
@@ -72,7 +73,7 @@ class Subscenter(ServiceBase):
             url = self.server_url + 'cinemast/data/movie/sb/' + slugified_title + '/'
         else:
             raise ServiceError('One or more parameters are missing')
-        logger.debug('Searching subtitles %r', {'title': title, 'season': season, 'episode': episode})
+        logger.debug('Searching subtitles %r', {'title': title, 'season': season, 'episode': episode}) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         response = self.session.get(url)
         if response.status_code != 200:
             raise ServiceError('Request failed with status code %d' % response.status_code)

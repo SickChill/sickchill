@@ -29,7 +29,7 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
-
+import sys
 
 logger = logging.getLogger("subliminal")
 
@@ -48,16 +48,16 @@ class BierDopje(ServiceBase):
     def get_show_id(self, series):
         r = self.session.get('%sGetShowByName/%s' % (self.server_url, urllib.quote(series.lower())))
         if r.status_code != 200:
-            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+            logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return None
         soup = BeautifulSoup(r.content, self.required_features)
         if soup.status.contents[0] == 'false':
-            logger.debug(u'Could not find show %s' % series)
+            logger.debug(u'Could not find show %s' % series) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             return None
         return int(soup.showid.contents[0])
 
     def load_cache(self):
-        logger.debug(u'Loading showids from cache...')
+        logger.debug(u'Loading showids from cache...') if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
         with self.lock:
             with open(self.showids_cache, 'r') as f:
                 self.showids = pickle.load(f)
@@ -78,14 +78,14 @@ class BierDopje(ServiceBase):
             raise ServiceError('One or more parameter missing')
         subtitles = []
         for language in languages:
-            logger.debug(u'Getting subtitles for %s %d season %d episode %d with language %s' % (request_source, request_id, season, episode, language.alpha2))
+            logger.debug(u'Getting subtitles for %s %d season %d episode %d with language %s' % (request_source, request_id, season, episode, language.alpha2)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
             r = self.session.get('%sGetAllSubsFor/%s/%s/%s/%s/%s' % (self.server_url, request_id, season, episode, language.alpha2, request_is_tvdbid))
             if r.status_code != 200:
-                logger.error(u'Request %s returned status code %d' % (r.url, r.status_code))
+                logger.error(u'Request %s returned status code %d' % (r.url, r.status_code)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 return []
             soup = BeautifulSoup(r.content, self.required_features)
             if soup.status.contents[0] == 'false':
-                logger.debug(u'Could not find subtitles for %s %d season %d episode %d with language %s' % (request_source, request_id, season, episode, language.alpha2))
+                logger.debug(u'Could not find subtitles for %s %d season %d episode %d with language %s' % (request_source, request_id, season, episode, language.alpha2)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
                 continue
             path = get_subtitle_path(filepath, language, self.config.multi)
             for result in soup.results('result'):
