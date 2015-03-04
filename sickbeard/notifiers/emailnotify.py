@@ -112,7 +112,7 @@ class EmailNotifier:
                     try:
                         msg = MIMEText(ep_name)
                     except:
-                        mag = MIMEText('Episode Downloaded')
+                        msg = MIMEText('Episode Downloaded')
 
                 msg['Subject'] = 'Downloaded: ' + ep_name
                 msg['From'] = sickbeard.EMAIL_FROM
