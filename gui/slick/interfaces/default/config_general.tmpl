@@ -578,14 +578,27 @@
 								<span class="component-title">Branch version:</span>
 								<span class="component-desc">
 									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-									#if $sickbeard.versionCheckScheduler.action.list_remote_branches() 
-									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
-										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+									#set $gh_branch = $sickbeard.versionCheckScheduler.action.list_remote_branches()
+									#for $cur_branch in $gh_branch:
+										#if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $sickbeard.DEVELOPER == 1
+											<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+										#else if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $cur_branch in ['master', 'develop']
+											<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+										#else if $cur_branch == 'master'
+											<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
+										#end if
 									#end for
-									#end if
 									</select>
-									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-									<div class="clear-left"><p>select branch to use (restart required)</p></div>
+									#if  not $gh_branch
+									   <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
+									#else
+									   <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+									#end if
+									#if not $gh_branch
+									   <div class="clear-left" style="color:#FF0000"><p>Error: No branches found.</p></div>
+									#else
+									   <div class="clear-left"><p>select branch to use (restart required)</p></div>
+									#end if
 								</span>
 							</label>
 						</div>

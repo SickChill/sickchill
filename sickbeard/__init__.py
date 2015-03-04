@@ -127,6 +127,7 @@ GIT_USERNAME = None
 GIT_PASSWORD = None
 GIT_PATH = None
 GIT_AUTOISSUES = False
+DEVELOPER = False
 
 INIT_LOCK = Lock()
 started = False
@@ -557,7 +558,7 @@ def initialize(consoleLogging=True):
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
-            GIT_AUTOISSUES, gh
+            GIT_AUTOISSUES, DEVELOPER, gh
 
         if __INITIALIZED__:
             return False
@@ -589,6 +590,7 @@ def initialize(consoleLogging=True):
         # git login info
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username', '')
         GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', '', censor_log=True)
+        DEVELOPER = bool(check_setting_int(CFG, 'General', 'developer', 0))
 
         # debugging
         DEBUG = bool(check_setting_int(CFG, 'General', 'debug', 0))
@@ -1622,6 +1624,7 @@ def save_config():
     new_config['General']['ignore_words'] = IGNORE_WORDS
     new_config['General']['require_words'] = REQUIRE_WORDS
     new_config['General']['calendar_unprotected'] = int(CALENDAR_UNPROTECTED)
+    new_config['General']['developer'] = int(DEVELOPER)
 
     new_config['Blackhole'] = {}
     new_config['Blackhole']['nzb_dir'] = NZB_DIR

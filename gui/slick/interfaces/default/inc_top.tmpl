@@ -254,7 +254,7 @@
 		</div>
 		#end if
 	  	
-	  	#if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master':	
+	  	#if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER
 		<div class="alert alert-danger upgrade-notification" role="alert">
 			<span>You're using the $sickbeard.BRANCH branch. Please use 'master' unless specifically asked</span>
 		</div>
