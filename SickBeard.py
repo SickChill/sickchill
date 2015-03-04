@@ -26,9 +26,13 @@ codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else No
 import time
 import signal
 import sys
-import shutil
 import subprocess
 import traceback
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."

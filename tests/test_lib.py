@@ -31,13 +31,17 @@ sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../lib'))
 
 import sickbeard
-import shutil
 
 from sickbeard import providers, tvcache
 from sickbeard import db
 from sickbeard.databases import mainDB
 from sickbeard.databases import cache_db, failed_db
 from sickbeard.tv import TVEpisode
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 #=================
 # test globals

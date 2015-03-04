@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import os
-import shutil
 import stat
 
 import sickbeard
@@ -35,6 +34,12 @@ from sickbeard import failedProcessor
 
 from lib.unrar2 import RarFile, RarInfo
 from lib.unrar2.rar_exceptions import *
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
+
 
 class ProcessResult:
     def __init__(self):
