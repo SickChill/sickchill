@@ -575,7 +575,11 @@
 									#end if
 									</select>
 									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+									#if len($sickbeard.versionCheckScheduler.action.list_remote_branches()) > 0
 									<div class="clear-left"><p>select branch to use (restart required)</p></div>
+									#else
+									<div class="clear-left"><p>Error fetching branches from GITHUB</p></div>                                    
+									#end if
 								</span>
 							</label>
 						</div>
