@@ -4903,7 +4903,50 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
+        
+        def Get_Data(Levelmin, data_in, lines_in, regex, Filter, Search, mlines):
+            
+            lastLine = False
+            numLines = lines_in
+            numToShow = min(maxLines, numLines + len(data_in))
+            
+            finalData = [] 
+            
+            for x in reversed(data_in):
 
+                x = ek.ss(x)
+                match = re.match(regex, x)
+
+                if match:
+                    level = match.group(7)
+                    logName = match.group(8)
+                    if level not in logger.reverseNames:
+                        lastLine = False
+                        continue
+
+                    if logSearch and logSearch.lower() in x.lower():
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    else:
+                        lastLine = False
+                        continue
+
+                elif lastLine:
+                    finalData.append("AA" + x)
+                    numLines += 1
+
+                
+
+                if numLines >= numToShow:
+                    return finalData
+                
+            return finalData
+            
         t = PageTemplate(rh=self, file="viewlogs.tmpl")
         t.submenu = self.ErrorLogsMenu()
 
@@ -4930,51 +4973,24 @@ class ErrorLogs(WebRoot):
         if logFilter not in logNameFilters:
             logFilter = '<NONE>'
 
-
+        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
         data = []
+        
         if os.path.isfile(logger.logFile):
             with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
-                data = f.readlines()
+                data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
+                
+        for i in range (1 , int(sickbeard.LOG_NR)):
+            if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
+                with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                        data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
 
-        finalData = []
+               
 
-        numLines = 0
-        lastLine = False
-        numToShow = min(maxLines, len(data))
-
-        for x in reversed(data):
-
-            x = ek.ss(x)
-            match = re.match(regex, x)
-
-            if match:
-                level = match.group(7)
-                logName = match.group(8)
-                if level not in logger.reverseNames:
-                    lastLine = False
-                    continue
-
-                if logSearch and logSearch.lower() in x.lower():
-                    lastLine = True
-                    finalData.append(x)
-                elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
-                    lastLine = True
-                    finalData.append(x)
-                else:
-                    lastLine = False
-                    continue
-
-            elif lastLine:
-                finalData.append("AA" + x)
-
-            numLines += 1
-
-            if numLines >= numToShow:
-                break
-
-        result = "".join(finalData)
+        result = "".join(data)
 
         t.logLines = result
         t.minLevel = minLevel
