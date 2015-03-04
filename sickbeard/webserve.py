@@ -4895,7 +4895,7 @@ class ErrorLogs(WebRoot):
         return t.respond()
 
     def haveErrors(self):
-        if len(classes.ErrorViewer.errors) > 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.GIT_AUTOISSUES == 1:
+        if len(classes.ErrorViewer.errors) > 0:
             return True
 
     def clearerrors(self):
@@ -4986,6 +4986,7 @@ class ErrorLogs(WebRoot):
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
+            ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
             issue = logger.submit_errors()

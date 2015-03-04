@@ -344,7 +344,7 @@
 								<span class="component-title">Browser video player</span>
 								<span class="component-desc">
 									<input type="checkbox" name="play_videos" id="play_videos" #if $sickbeard.PLAY_VIDEOS then 'checked="checked"' else ''#/>
-									<p>play video files from display show page<?p>
+									<p>play video files from display show page</p>
 								</span>
 							</label>
 						</div>
@@ -640,11 +640,11 @@
 							</label>
 						</div>
 
-						<div class="field-pair">
+						<div class="field-pair" hidden>
 							<label for="git_autoissues">
 								<span class="component-title">Git auto-issues submit</span>
 								<span class="component-desc">
-									<input type="checkbox" name="git_autoissues" id="git_autoissues" #if True == $sickbeard.GIT_AUTOISSUES then 'checked="checked"' else ''#/>
+									<input type="checkbox" name="git_autoissues" id="git_autoissues" #if True == $sickbeard.GIT_AUTOISSUES then 'checked="checked"' else ''# disable/>
 									<p>automatically submit bug/issue reports to our issue tracker when errors are logged</p>
 								</span>
 							</label>
