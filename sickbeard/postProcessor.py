@@ -167,7 +167,10 @@ class PostProcessor(object):
 
         file_path_list = []
 
-        base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
+        if subfolders:
+            base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
+        else:
+            base_name = file_path.rpartition('.')[0]
 
         if not base_name_only:
             base_name = base_name + '.'
