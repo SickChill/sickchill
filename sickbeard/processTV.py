@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import os
-import shutil
 import stat
 
 import sickbeard
@@ -35,6 +34,12 @@ from sickbeard import failedProcessor
 
 from lib.unrar2 import RarFile, RarInfo
 from lib.unrar2.rar_exceptions import *
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
+
 
 class ProcessResult:
     def __init__(self):
@@ -353,6 +358,27 @@ def unRAR(path, rarFiles, force, result):
                         if basename not in unpacked_files:
                             unpacked_files.append(basename)
                 del rar_handle
+
+            except FatalRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Fatal Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except CRCRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Archive CRC Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except IncorrectRARPassword:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Password".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except NoFileToExtract:
+                result.output += logHelper(u"Failed Unrar archive (0): Unrar: No file to extract, file already exist?".format(archive), logger.ERROR)
+                result.result = False
+                continue
+            except GenericRARError:
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Generic Error".format(archive), logger.ERROR)
+                result.result = False
+                continue
             except Exception, e:
                 result.output += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
                 result.result = False

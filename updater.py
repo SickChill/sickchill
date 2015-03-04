@@ -1,4 +1,9 @@
-import subprocess, os, time, sys, os.path, shutil, re
+import subprocess, os, time, sys, os.path, re
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 try:
     log_file = open('sb-update.log', 'w')

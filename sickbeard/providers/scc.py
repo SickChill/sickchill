@@ -176,7 +176,7 @@ class SCCProvider(generic.TorrentProvider):
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
 
-                if mode == 'Season':
+                if mode == 'Season' and search_mode == 'sponly':
                     searchURLS += [self.urls['archive'] % (search_string)]
                 else:
                     searchURLS += [self.urls['search'] % (search_string, self.categories)]

@@ -101,6 +101,7 @@ class static_or_instance(object):
 # subclass datetime.datetime to add function to display custom date and time formats
 class sbdatetime(datetime.datetime):
     has_locale = True
+    en_US_norm = locale.normalize('en_US.utf-8')
 
     @static_or_instance
     def convert_to_setting(self, dt=None):
@@ -131,8 +132,12 @@ class sbdatetime(datetime.datetime):
         try:
             if sbdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, 'en_US')
-        except:
-            sbdatetime.has_locale = False
+        except Exception as e:
+            try:
+                if sbdatetime.has_locale:
+                    locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+            except:
+                sbdatetime.has_locale = False
 
         strt = ''
         try:
@@ -212,7 +217,11 @@ class sbdatetime(datetime.datetime):
                         if sbdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, 'en_US')
                     except:
-                        sbdatetime.has_locale = False
+                        try:
+                            if sbdatetime.has_locale:
+                                locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+                        except:
+                            sbdatetime.has_locale = False
                     if t_preset is not None:
                         strd += u', ' + dt.strftime(t_preset)
                     elif show_seconds:
@@ -228,7 +237,11 @@ class sbdatetime(datetime.datetime):
                     if sbdatetime.has_locale:
                         locale.setlocale(locale.LC_TIME, 'en_US')
                 except:
-                    sbdatetime.has_locale = False
+                    try:
+                        if sbdatetime.has_locale:
+                            locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+                    except:
+                        sbdatetime.has_locale = False
                 if t_preset is not None:
                     strd += u', ' + self.strftime(t_preset)
                 elif show_seconds:

@@ -42,7 +42,7 @@ from sickbeard import network_timezones
 from sickbeard import sbdatetime
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList
@@ -1076,6 +1076,64 @@ class Home(WebRoot):
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
+        def _keeplatestbackup(backupDir):
+            import glob
+            files = glob.glob(os.path.join(backupDir,'*.zip'))
+            if not files:
+                return True
+            now = time.time()
+            newest = files[0], now - os.path.getctime(files[0])
+            for file in files[1:]:
+                age = now - os.path.getctime(file)
+                if age < newest[1]:
+                    newest = file, age
+            files.remove(newest[0])
+
+            for file in files:
+                os.remove(file)
+        
+        # TODO: Merge with backup in helpers
+        def _backup(backupDir=None):
+            if backupDir:
+                source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
+                source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
+                source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
+                target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+
+                for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
+                    for dirname in dirs:
+                        if path == sickbeard.CACHE_DIR and dirname not in ['images']:
+                            dirs.remove(dirname)
+                    for filename in files:
+                        source.append(os.path.join(path, filename))
+
+                if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        # Do a system backup
+        ui.notifications.message('Backup', 'Config backup in progress...')
+        try:
+            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
+            if not os.path.isdir(backupDir):
+                os.mkdir(backupDir)
+
+            _keeplatestbackup(backupDir)
+
+            if _backup(backupDir):
+                ui.notifications.message('Backup', 'Config backup successful, updating...')
+            else:
+                ui.notifications.message('Backup', 'Config backup failed, aborting update')
+                return self.redirect('/home/')
+
+        except Exception as e:
+            ui.notifications.message('Backup', 'Config backup failed, aborting update')
+            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.DEBUG)
+            return self.redirect('/home/')
+
         if sickbeard.versionCheckScheduler.action.update():
             # do a hard restart
             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
@@ -1093,6 +1151,35 @@ class Home(WebRoot):
             return self.update(sickbeard.PID)
         else:
             ui.notifications.message('Already on branch: ', branch)
+            return self.redirect('/home')
+
+    def getDBcompare(self, branchDest=None):
+        from lib import requests
+        from lib.requests.exceptions import RequestException
+        if not branchDest:
+            return json.dumps({ "status": "error", 'message': 'branchDest empty' })
+        try:
+            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py")
+            response.raise_for_status()
+            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
+            branchDestDBversion = int(match.group('version'))
+            myDB = db.DBConnection()
+            branchCurrDBversion = myDB.checkDBVersion()
+            if branchDestDBversion > branchCurrDBversion:
+                logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+                return json.dumps({ "status": "success", 'message': 'upgrade' })
+            elif branchDestDBversion == branchCurrDBversion:
+                logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
+                return json.dumps({ "status": "success", 'message': 'equal' })
+            else:
+                logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+                return json.dumps({ "status": "success", 'message': 'downgrade' })
+        except RequestException as e:
+            logger.log(u"Checkout branch couldn't compare DB version - Requests error", logger.ERROR)
+            return json.dumps({ "status": "error", 'message': 'Requests error' })
+        except Exception as e:
+            logger.log(u"Checkout branch couldn't compare DB version - General exception", logger.ERROR)
+            return json.dumps({ "status": "error", 'message': 'General exception' })
 
     def displayShow(self, show=None):
 
@@ -1513,7 +1600,11 @@ class Home(WebRoot):
 
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC:
             # remove show from trakt.tv library
-            sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
+            try:
+                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(showObj)
+            except traktException as e:
+                logger.log("Trakt: Unable to delete show: {0}. Error: {1}".format(showObj.name, ex(e)),logger.ERROR)
+                return self._genericMessage("Error", "Unable to delete show: {0}".format(showObj.name))
 
         showObj.deleteShow(bool(full))
 
@@ -1638,6 +1729,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         segments = {}
+        trakt_data = []
         if eps is not None:
 
             sql_l = []
@@ -1684,6 +1776,21 @@ class Home(WebRoot):
 
                     # mass add to database
                     sql_l.append(epObj.get_sql())
+
+                    trakt_data.append((epObj.season, epObj.episode))
+
+            data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+
+            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+                if int(status) in [WANTED, FAILED]:
+                    logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
+                    upd = "add"
+                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
+                    logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
+                    upd = "remove"
+
+                if data:
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()
@@ -3524,7 +3631,7 @@ class ConfigGeneral(Config):
         sickbeard.save_config()
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
+                    update_shows_on_start=None, update_shows_on_snatch=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
                     launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
@@ -3549,6 +3656,7 @@ class ConfigGeneral(Config):
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = log_size
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
+        sickbeard.UPDATE_SHOWS_ON_SNATCH = config.checkbox_to_value(update_shows_on_snatch)
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         config.change_UPDATE_FREQUENCY(update_frequency)
@@ -3703,8 +3811,8 @@ class ConfigSearch(Config):
                    nzbget_host=None, nzbget_use_https=None, backlog_days=None, backlog_frequency=None,
                    dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None,
-                   randomize_providers=None, backlog_startup=None, dailysearch_startup=None,
-                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
+                   randomize_providers=None, backlog_startup=None, use_failed_downloads=None, delete_failed=None,
+                   dailysearch_startup=None, torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
@@ -3741,6 +3849,8 @@ class ConfigSearch(Config):
 
         sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
+        sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
+        sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 
         sickbeard.SAB_USERNAME = sab_username
         sickbeard.SAB_PASSWORD = sab_password
@@ -4480,7 +4590,7 @@ class ConfigNotifications(Config):
                           use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
                           use_trakt=None, trakt_username=None, trakt_password=None,
-                          trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
+                          trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
                           trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None, trakt_rolling_default_watched_status=None, 
@@ -4599,7 +4709,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_PASSWORD = trakt_password
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
-        sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
+        sickbeard.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
         sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
         sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)

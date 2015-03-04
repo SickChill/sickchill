@@ -37,11 +37,15 @@ $(document).ready(function(){
     	var params = {url: url, name: name, key: key};
     	var returnData;
     	
-    	$.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
+    	$(".updating_categories").wrapInner('<span><img src="' + sbRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
+    	var jqxhr = $.getJSON(sbRoot + '/config/providers/getNewznabCategories', params,
                 function(data){
                     $(this).updateNewznabCaps( data, selectedProvider );
                     console.debug(data.tv_categories);
             });
+    	jqxhr.always(function() {
+    		$(".updating_categories").empty();
+    		 });
     };
     
     $.fn.addProvider = function (id, name, url, key, cat, isDefault, showProvider) {
@@ -144,6 +148,8 @@ $(document).ready(function(){
             $('#newznab_update_div').hide();
             $('#newznab_cat').attr('disabled','disabled');
             $('#newznab_cap').attr('disabled','disabled');
+            $('#newznab_cat_update').attr('disabled','disabled');
+            $('#newznabcapdiv').hide();
             
             $("#newznab_cat option").each(function() {
             	$(this).remove();
@@ -162,6 +168,8 @@ $(document).ready(function(){
             $('#newznab_update_div').show();
             $('#newznab_cat').removeAttr("disabled");
             $('#newznab_cap').removeAttr("disabled");
+            $('#newznab_cat_update').removeAttr("disabled");
+            $('#newznabcapdiv').show();
         }
 
         $('#newznab_name').val(data[0]);
@@ -180,7 +188,8 @@ $(document).ready(function(){
         var newCatOptions = [];
         if (rrcat) {
         	rrcat.forEach(function (cat) {
-        		newCatOptions.push({text : cat, value : cat});
+        		if (cat != "")
+        		    newCatOptions.push({text : cat, value : cat});
             });
         	$("#newznab_cat").replaceOptions(newCatOptions);
         };
@@ -203,9 +212,7 @@ $(document).ready(function(){
                 if (data[0] && data[1] && data[2] && !ifExists($.fn.newznabProvidersCapabilities, data[0])) {
                 	$(this).getCategories(isDefault, data);
                 }
-                else {
-                	$(this).updateNewznabCaps( null, data );
-                }
+                $(this).updateNewznabCaps( null, data );
             }
         }
     }
@@ -317,6 +324,32 @@ $(document).ready(function(){
         });
 
             $("#provider_order").val(finalArr.join(' '));
+
+        $(this).refreshEditAProvider();
+    }
+
+    $.fn.refreshEditAProvider = function() {
+        $('#provider-list').empty();
+
+        var idArr = $("#provider_order_list").sortable('toArray');
+        var finalArr = new Array();
+        $.each(idArr, function(key, val) {
+            if ($('#enable_'+val).prop('checked')) {
+                finalArr.push(val);
+            }
+        });
+        
+        if (finalArr.length > 0) {
+            $('<select>').prop('id','editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
+            for (var i = 0; i < finalArr.length; i++) {
+                var provider = finalArr[i];
+                $('#editAProvider').append($('<option>').prop('value',provider).text($.trim($('#'+provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
+            }
+        } else {
+            document.getElementsByClassName('component-desc')[0].innerHTML = "No providers available to configure.";
+        }
+
+        $(this).showHideProviders();
     }
 
     var newznabProviders = new Array();
@@ -366,8 +399,7 @@ $(document).ready(function(){
         $(this).updateTorrentRssProvider(selectedProvider, url, cookies);
     });
 
-
-    $('#editAProvider').change(function(){
+    $('body').on('change', '#editAProvider',function(){
         $(this).showHideProviders();
     });
 
@@ -483,12 +515,14 @@ $(document).ready(function(){
                 }
 
                 $(this).addTorrentRssProvider(data.success, name, url, cookies);
+                $(this).refreshEditAProvider();
         });
     });
 
     $('.torrentrss_delete').on('click', function(){
         var selectedProvider = $('#editATorrentRssProvider :selected').val();
         $(this).deleteTorrentRssProvider(selectedProvider);
+        $(this).refreshEditAProvider();
     });
 
 
@@ -579,4 +613,7 @@ $(document).ready(function(){
 
     $("#provider_order_list").disableSelection();
 
+    $(this).populateNewznabSection();
+
 });
+

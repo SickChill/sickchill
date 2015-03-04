@@ -71,7 +71,7 @@ class TraktChecker():
 
         try:
             # add shows from trakt.tv watchlist
-            if sickbeard.TRAKT_USE_WATCHLIST:
+            if sickbeard.TRAKT_SYNC_WATCHLIST:
                 self.todoWanted = []  # its about to all get re-added
                 if len(sickbeard.ROOT_DIRS.split('|')) < 2:
                     logger.log(u"No default root directory", logger.ERROR)

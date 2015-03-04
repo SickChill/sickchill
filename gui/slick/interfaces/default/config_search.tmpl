@@ -166,6 +166,33 @@
 								</span>
 							</label>
 						</div>
+						
+                                                 <div class="field-pair">
+                                                     <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" #if $sickbeard.USE_FAILED_DOWNLOADS == True then "checked=\"checked\"" else ""# />
+                                                     <label for="use_failed_downloads">
+                                                         <span class="component-title">Use Failed Downloads</span>
+                                                         <span class="component-desc">Use Failed Download Handling?</span>
+                                                     </label>
+                                                     <label class="nocheck" for="use_failed_downloads">
+                                                         <span class="component-title">&nbsp;</span>
+                                                         <span class="component-desc">Will only work with snatched/downloaded episodes after enabling this</span>
+                                                         <span class="component-desc"><b>NOTE:</b> See <i>readme-FailedDownloads.md</i> before enabling.</span>
+                                                     </label>
+                                                 </div>
+
+                                                <div id="content_use_failed_downloads">
+                                                    <div class="field-pair">
+                                                        <input id="delete_failed" type="checkbox" name="delete_failed" #if $sickbeard.DELETE_FAILED == True then "checked=\"checked\"" else ""# />
+                                                        <label for="delete_failed">
+                                                            <span class="component-title">Delete Failed</span>
+                                                            <span class="component-desc">Delete files left over from a failed download?</span>
+                                                        </label>
+                                                        <label class="nocheck" for="delete_failed">
+                                                            <span class="component-title">&nbsp;</span>
+                                                            <span class="component-desc"><b>NOTE:</b> This only works if Use Failed Downloads is enabled.</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
 
 						<input type="submit" class="btn config_submitter" value="Save Changes" />
 

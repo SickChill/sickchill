@@ -20,7 +20,7 @@ function(){
         if ( \$('#logSearch').val().length > 0 ) {
             \$('#logSearch').prop('disabled', true);
             \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
-            \$('#minLevel option[value=INFO]').prop('selected', true); 
+            \$('#minLevel option[value=5]').prop('selected', true); 
         }
         \$('#minLevel').prop('disabled', true);
         \$('#logFilter').prop('disabled', true);
@@ -49,7 +49,7 @@ function(){
     \$('#logSearch').keyup(function() {
         if ( \$('#logSearch').val().length == 0 ) {
             \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
-            \$('#minLevel option[value=INFO]').prop('selected', true); 
+            \$('#minLevel option[value=20]').prop('selected', true); 
             \$('#minLevel').prop('disabled', false);
             \$('#logFilter').prop('disabled', false);
             url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
