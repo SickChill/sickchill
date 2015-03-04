@@ -1273,8 +1273,10 @@ class TVShow(object):
             anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
             if bestQualities:
                 maxBestQuality = max(bestQualities)
+                minBestQuality = min(bestQualities)
             else:
                 maxBestQuality = None
+                minBestQuality = None
 
             epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
@@ -1287,6 +1289,12 @@ class TVShow(object):
                     return Overview.QUAL
                 return Overview.SNATCHED
             elif maxBestQuality == None:
+                return Overview.GOOD
+            # if the want only first match and already have one call it good
+            elif self.archive_firstmatch and curQuality in bestQualities:
+                return Overview.GOOD
+            # if they want only first match and current quality is higher than minimal best quality call it good
+            elif self.archive_firstmatch and minBestQuality != None and curQuality > minBestQuality:
                 return Overview.GOOD
             # if they have one but it's not the best they want then mark it as qual
             elif curQuality < maxBestQuality:
