@@ -415,10 +415,10 @@ class TraktRolling():
         if epObj:
 
             with epObj.lock:
-                if epObj.status not in (SKIPPED):
+                if epObj.status != SKIPPED:
                     return
 
-                logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to " + statusStrings[sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS])
+                logger.log(u"Setting episode s"+str(s)+"e"+str(e)+" of show " + show.name + " to " + statusStrings[sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS], logger.DEBUG)
 
                 epObj.status = sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS
                 epObj.saveToDB()
