@@ -42,7 +42,7 @@ from sickbeard import network_timezones
 from sickbeard import sbdatetime
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList
@@ -1724,6 +1724,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         segments = {}
+        trakt_data = []
         if eps is not None:
 
             sql_l = []
@@ -1770,6 +1771,21 @@ class Home(WebRoot):
 
                     # mass add to database
                     sql_l.append(epObj.get_sql())
+
+                    trakt_data.append((epObj.season, epObj.episode))
+
+            data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+
+            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+                if int(status) in [WANTED, FAILED]:
+                    logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
+                    upd = "add"
+                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
+                    logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
+                    upd = "remove"
+
+                if data:
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()
@@ -4568,7 +4584,7 @@ class ConfigNotifications(Config):
                           use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
                           use_trakt=None, trakt_username=None, trakt_password=None,
-                          trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
+                          trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
@@ -4686,7 +4702,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_PASSWORD = trakt_password
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
-        sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
+        sickbeard.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
         sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
         sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
