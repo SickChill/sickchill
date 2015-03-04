@@ -929,7 +929,7 @@ class PostProcessor(object):
 
         data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
             logger.log(u"Remove episodes, showid: indexerid " + str(show.indexerid) + ", Title " + str(show.name) + " to Traktv Watchlist", logger.DEBUG)
             if data:
                 notifiers.trakt_notifier.update_watchlist(show, data_obj=data, update="remove")

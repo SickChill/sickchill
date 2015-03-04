@@ -80,10 +80,6 @@ class TraktNotifier:
                 # update library
                 trakt_api.traktRequest("sync/collection", data, method='POST')
 
-                # remove from watchlist
-                if sickbeard.TRAKT_REMOVE_WATCHLIST:
-                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
-
                 if sickbeard.TRAKT_REMOVE_SERIESLIST:
                     data = {
                         'shows': [
