@@ -4189,7 +4189,7 @@ class ConfigProviders(Config):
         return '1'
 
 
-    def canAddTorrentRssProvider(self, name, url, cookies):
+    def canAddTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name:
             return json.dumps({'error': 'Invalid name specified'})
@@ -4197,7 +4197,7 @@ class ConfigProviders(Config):
         providerDict = dict(
             zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
 
-        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
 
         if tempProvider.getID() in providerDict:
             return json.dumps({'error': 'Exists as ' + providerDict[tempProvider.getID()].name})
@@ -4209,7 +4209,7 @@ class ConfigProviders(Config):
                 return json.dumps({'error': errMsg})
 
 
-    def saveTorrentRssProvider(self, name, url, cookies):
+    def saveTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name or not url:
             return '0'
@@ -4220,11 +4220,12 @@ class ConfigProviders(Config):
             providerDict[name].name = name
             providerDict[name].url = config.clean_url(url)
             providerDict[name].cookies = cookies
+            providerDict[name].titleTAG = titleTAG
 
             return providerDict[name].getID() + '|' + providerDict[name].configStr()
 
         else:
-            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
             sickbeard.torrentRssProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
@@ -4326,10 +4327,10 @@ class ConfigProviders(Config):
                 if not curTorrentRssProviderStr:
                     continue
 
-                curName, curURL, curCookies = curTorrentRssProviderStr.split('|')
+                curName, curURL, curCookies, curTitleTAG = curTorrentRssProviderStr.split('|')
                 curURL = config.clean_url(curURL)
 
-                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies)
+                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies, curTitleTAG)
 
                 curID = newProvider.getID()
 
@@ -4338,6 +4339,7 @@ class ConfigProviders(Config):
                     torrentRssProviderDict[curID].name = curName
                     torrentRssProviderDict[curID].url = curURL
                     torrentRssProviderDict[curID].cookies = curCookies
+                    torrentRssProviderDict[curID].curTitleTAG = curTitleTAG
                 else:
                     sickbeard.torrentRssProviderList.append(newProvider)
 
