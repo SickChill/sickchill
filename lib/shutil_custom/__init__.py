@@ -45,5 +45,8 @@ def copyfile_custom(src, dst):
     except Exception as e:
         raise e
     finally:
-        os.close(fin)
-        os.close(fout)
+        try:
+            os.close(fin)
+            os.close(fout)
+        except:
+            pass
