@@ -1511,7 +1511,7 @@ def save_config():
     new_config['General'] = {}
     new_config['General']['git_autoissues'] = int(GIT_AUTOISSUES)
     new_config['General']['git_username'] = GIT_USERNAME
-    new_config['General']['git_password'] = GIT_PASSWORD
+    new_config['General']['git_password'] = helpers.encrypt(GIT_PASSWORD, ENCRYPTION_VERSION)
     new_config['General']['git_reset'] = int(GIT_RESET)
     new_config['General']['branch'] = BRANCH
     new_config['General']['git_remote'] = GIT_REMOTE
