@@ -192,7 +192,7 @@ class TraktChecker():
                     logger.log(u"Episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']["season"]) + ", Episode" + str(episode['episode']["number"]) + " not in Sickberad ShowList", logger.DEBUG)
                     continue
             else:
-                logger.log(u"Show: tvdb_id " + str(episode["tvdb_id"]) + ", Title " + str(episode["title"]) + " not in Sickberad ShowList", logger.DEBUG)
+                logger.log(u"Show: tvdb_id " + str(episode['show']['ids']['tvdb']) + ", Title " + str(episode['show']['title']) + " not in Sickberad ShowList", logger.DEBUG)
                 continue
 
         if len(trakt_data):
@@ -293,6 +293,7 @@ class TraktChecker():
                 if newShow is None:
                     if indexer_id not in managed_show:
                         self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
+                        managed_show.append(indexer_id)
                     self.todoWanted.append((indexer_id, show['episode']['season'], show['episode']['number']))
                 else:
                     if newShow.indexer == indexer:
