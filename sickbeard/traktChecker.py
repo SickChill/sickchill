@@ -198,7 +198,7 @@ class TraktChecker():
         if len(trakt_data):
             data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
             notifiers.trakt_notifier.update_watchlist(newShow, data_episode=data, update="remove")
-            #self._getEpisodeWatchlist()
+            self._getEpisodeWatchlist()
 
         logger.log(u"Stop looking if some episode has to be removed from watchlist", logger.DEBUG)
 
