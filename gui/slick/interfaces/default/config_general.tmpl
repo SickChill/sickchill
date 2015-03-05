@@ -578,17 +578,23 @@
 								<span class="component-title">Branch version:</span>
 								<span class="component-desc">
 									<select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-									#if $sickbeard.versionCheckScheduler.action.list_remote_branches() 
-									#for $cur_branch in $sickbeard.versionCheckScheduler.action.list_remote_branches():
+									#set $gh_branch = $sickbeard.versionCheckScheduler.action.list_remote_branches() 
+									#for $cur_branch in $gh_branch:
 										<option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
 									#end for
-									#end if
 									</select>
-									<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-									<div class="clear-left"><p>select branch to use (restart required)</p></div>
+									#if $gh_branch
+										<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
+										<div class="clear-left"><p>select branch to use (restart required)</p></div>
+									#else
+										<input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
+										<div class="clear-left"><p>You need to install SickRage with GIT to enable checkout </p></div>
+									#end if
+
 								</span>
 							</label>
 						</div>
+
 
 						<div class="field-pair">
 							<label for="git_username">
