@@ -57,6 +57,7 @@ from lib.unrar2 import RarFile
 from lib import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
+from versionChecker import CheckVersion
 
 try:
     import json
@@ -1154,31 +1155,21 @@ class Home(WebRoot):
             return self.redirect('/home')
 
     def getDBcompare(self, branchDest=None):
-        from lib import requests
-        from lib.requests.exceptions import RequestException
-        if not branchDest:
-            return json.dumps({ "status": "error", 'message': 'branchDest empty' })
-        try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
-            response.raise_for_status()
-            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
-            branchDestDBversion = int(match.group('version'))
-            myDB = db.DBConnection()
-            branchCurrDBversion = myDB.checkDBVersion()
-            if branchDestDBversion > branchCurrDBversion:
-                logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'upgrade' })
-            elif branchDestDBversion == branchCurrDBversion:
-                logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'equal' })
-            else:
-                logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'downgrade' })
-        except RequestException as e:
-            logger.log(u"Checkout branch couldn't compare DB version - Requests error", logger.ERROR)
-            return json.dumps({ "status": "error", 'message': 'Requests error' })
-        except Exception as e:
-            logger.log(u"Checkout branch couldn't compare DB version - General exception", logger.ERROR)
+
+        checkversion = CheckVersion()
+        db_status = checkversion.getDBcompare(branchDest)
+
+        if db_status == 'upgrade':
+            logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'upgrade' })
+        elif db_status == 'equal':
+            logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'equal' })
+        elif db_status == 'downgrade':
+            logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'downgrade' })
+        else:
+            logger.log(u"Checkout branch couldn't compare DB version.", logger.ERROR)
             return json.dumps({ "status": "error", 'message': 'General exception' })
 
     def displayShow(self, show=None):
