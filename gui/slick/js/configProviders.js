@@ -613,7 +613,9 @@ $(document).ready(function(){
 
     $("#provider_order_list").disableSelection();
 
-    $(this).populateNewznabSection();
+    if ($('#editANewznabProvider').length) {
+    	$(this).populateNewznabSection();
+    }
 
 });
 
