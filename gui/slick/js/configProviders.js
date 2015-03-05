@@ -278,7 +278,7 @@ $(document).ready(function(){
         var selectedProvider = $('#editATorrentRssProvider :selected').val();
 
         if (selectedProvider == 'addTorrentRss') {
-            var data = ['','','',''];
+            var data = ['','','','title'];
             $('#torrentrss_add_div').show();
             $('#torrentrss_update_div').hide();
         } else {
