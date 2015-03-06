@@ -174,28 +174,31 @@ class TraktChecker():
         logger.log(u"Start looking if some episode has to be removed from watchlist", logger.DEBUG)
 
         if not len(self.EpisodeWatchlist):
-            logger.log(u"No shows found in your watchlist, aborting watchlist update", logger.DEBUG)
+            logger.log(u"No episode found in your watchlist, aborting watchlist update", logger.DEBUG)
             return True
 
         trakt_data = []
         for episode in self.EpisodeWatchlist:
-            newShow = helpers.findCertainShow(sickbeard.showList, episode['show']['ids']["tvdb"])
+            tvdb_id = int(episode['show']['ids']['tvdb'])
+            tvrage_id = int(episode['show']['ids']['tvrage'] or 0)
+            newShow = helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id])
             if newShow is not None:
-                ep_obj = newShow.getEpisode(int(episode['episode']["season"]), int(episode['episode']["number"]))
+                ep_obj = newShow.getEpisode(int(episode['episode']['season']), int(episode['episode']['number']))
                 if ep_obj is not None:
                     if ep_obj.status != WANTED and ep_obj.status != UNKNOWN and ep_obj.status not in Quality.SNATCHED and ep_obj.status not in Quality.SNATCHED_PROPER:
-                        logger.log(u"Removing episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']["season"]) + ", Episode " + str(episode['episode']["number"]) + ", Status " + str(ep_obj.status) + " from Watchlist", logger.DEBUG)
+                        logger.log(u"Removing episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']['season']) + ", Episode " + str(episode['episode']['number']) + ", Status " + str(ep_obj.status) + " from Watchlist", logger.DEBUG)
                         trakt_data.append((ep_obj.season, ep_obj.episode))
                 else:
                     logger.log(u"Episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']["season"]) + ", Episode" + str(episode['episode']["number"]) + " not in Sickberad ShowList", logger.DEBUG)
                     continue
             else:
-                logger.log(u"Show: tvdb_id " + str(episode["tvdb_id"]) + ", Title " + str(episode["title"]) + " not in Sickberad ShowList", logger.DEBUG)
+                logger.log(u"Show: tvdb_id " + str(episode['show']['ids']['tvdb']) + ", Title " + str(episode['show']['title']) + " not in Sickberad ShowList", logger.DEBUG)
                 continue
 
         if len(trakt_data):
             data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
             notifiers.trakt_notifier.update_watchlist(newShow, data_episode=data, update="remove")
+            self._getEpisodeWatchlist()
 
         logger.log(u"Stop looking if some episode has to be removed from watchlist", logger.DEBUG)
 
@@ -218,6 +221,7 @@ class TraktChecker():
                 if len(trakt_data):
                     data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
                     notifiers.trakt_notifier.update_watchlist(newShow, data_episode=data)
+                    self._getEpisodeWatchlist()
 
             logger.log(u"Stop looking if some WANTED episode need to be added to watchlist", logger.DEBUG)
 
@@ -236,6 +240,7 @@ class TraktChecker():
                 if len(trakt_data):
                     data = notifiers.trakt_notifier.trakt_show_data_generate(trakt_data)
                     notifiers.trakt_notifier.update_watchlist(data_show=data)
+                    self._getShowWatchlist()
 
             logger.log(u"Stop looking if some show need to be added to watchlist", logger.DEBUG)
 
@@ -272,9 +277,10 @@ class TraktChecker():
         logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
 
         if not len(self.EpisodeWatchlist):
-            logger.log(u"No shows found in your watchlist, aborting watchlist update", logger.DEBUG)
+            logger.log(u"No episode found in your watchlist, aborting episode update", logger.DEBUG)
             return
 
+        managed_show = []
         for show in self.EpisodeWatchlist:
             indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
             if indexer == 2:
@@ -283,16 +289,15 @@ class TraktChecker():
                 indexer_id = int(show["show"]["ids"]["tvdb"])
 
             newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
-            if newShow is None:
-                self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
-
             try:
-                if newShow and newShow.indexer == indexer:
-                    for episode in show["episode"]:
-                        if newShow is not None:
-                            self.setEpisodeToWanted(newShow, episode["season"], episode["number"])
-                        else:
-                            self.todoWanted.append((indexer_id, episode["season"], episode["number"]))
+                if newShow is None:
+                    if indexer_id not in managed_show:
+                        self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
+                        managed_show.append(indexer_id)
+                    self.todoWanted.append((indexer_id, show['episode']['season'], show['episode']['number']))
+                else:
+                    if newShow.indexer == indexer:
+                        self.setEpisodeToWanted(newShow, show['episode']['season'], show['episode']['number'])
             except TypeError:
                 logger.log(u"Could not parse the output from trakt for " + show["show"]["title"], logger.DEBUG)
 
