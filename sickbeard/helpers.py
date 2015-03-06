@@ -917,7 +917,7 @@ def _check_against_names(nameInQuestion, show, season=-1):
     return False
 
 
-def get_show(name, tryIndexers=False):
+def get_show(name, tryIndexers=False, trySceneExceptions=False):
     if not sickbeard.showList:
         return
 
@@ -930,11 +930,16 @@ def get_show(name, tryIndexers=False):
         if cache:
             fromCache = True
             showObj = findCertainShow(sickbeard.showList, int(cache))
-
+        
+        #try indexers    
         if not showObj and tryIndexers:
             showObj = findCertainShow(sickbeard.showList,
                                       searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
-
+        
+        #try scene exceptions
+        if not showObj and trySceneExceptions:
+            showObj = findCertainShow(sickbeard.showList,
+                                      int(sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]))
         # add show to cache
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
