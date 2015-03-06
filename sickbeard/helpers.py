@@ -938,8 +938,10 @@ def get_show(name, tryIndexers=False, trySceneExceptions=False):
         
         #try scene exceptions
         if not showObj and trySceneExceptions:
-            showObj = findCertainShow(sickbeard.showList,
-                                      int(sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]))
+            ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
+            if ShowID:
+                showObj = findCertainShow(sickbeard.showList, int(ShowID))
+                
         # add show to cache
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
