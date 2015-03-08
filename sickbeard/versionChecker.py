@@ -18,7 +18,6 @@
 
 import os
 import platform
-import shutil
 import subprocess
 import re
 import urllib
@@ -32,6 +31,12 @@ from sickbeard import ui
 from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
+
 
 class CheckVersion():
     """

@@ -37,7 +37,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 <!--
 \$(document).ready(function(){
 #for $curTorrentRssProvider in $sickbeard.torrentRssProviderList:
-    \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies');
+    \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
 #end for
 });
 //-->
@@ -688,7 +688,16 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-desc">eg. uid=xx;pass=yy</span>
                             </label>
                         </div>
-                        
+                        <div class="field-pair">
+                            <label for="torrentrss_titleTAG">
+                                <span class="component-title">Search element:</span>
+                                <input type="text" id="torrentrss_titleTAG" class="form-control input-sm input200" value="title"/>
+                            </label>
+                            <label>
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">eg: title</span>
+                            </label>
+                        </div>
                         <div id="torrentrss_add_div">
                             <input type="button" class="btn torrentrss_save" id="torrentrss_add" value="Add" />
                         </div>

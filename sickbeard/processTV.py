@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 import os
-import shutil
 import stat
 
 import sickbeard
@@ -35,6 +34,12 @@ from sickbeard import failedProcessor
 
 from lib.unrar2 import RarFile, RarInfo
 from lib.unrar2.rar_exceptions import *
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
+
 
 class ProcessResult:
     def __init__(self):
@@ -174,18 +179,18 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     #Don't Link media when the media is extracted from a rar in the same path
     if process_method in ('hardlink', 'symlink') and videoInRar:
-        result.result = process_media(path, videoInRar, nzbName, 'move', force, is_priority, result)
+        process_media(path, videoInRar, nzbName, 'move', force, is_priority, result)
         delete_files(path, rarContent, result)
         for video in set(videoFiles) - set(videoInRar):
-            result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
+            process_media(path, [video], nzbName, process_method, force, is_priority, result)
     elif sickbeard.DELRARCONTENTS and videoInRar:
-        result.result = process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
+        process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
         delete_files(path, rarContent, result, True)
         for video in set(videoFiles) - set(videoInRar):
-            result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
+            process_media(path, [video], nzbName, process_method, force, is_priority, result)
     else:
         for video in videoFiles:
-            result.result = process_media(path, [video], nzbName, process_method, force, is_priority, result)
+            process_media(path, [video], nzbName, process_method, force, is_priority, result)
 
     #Process Video File in all TV Subdir
     for dir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
@@ -367,7 +372,7 @@ def unRAR(path, rarFiles, force, result):
                 result.result = False
                 continue
             except NoFileToExtract:
-                result.output += logHelper(u"Failed Unrar archive (0): Unrar: No file to extract, file already exist?".format(archive), logger.ERROR)
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: No file to extract, file already exist?".format(archive), logger.ERROR)
                 result.result = False
                 continue
             except GenericRARError:
@@ -414,7 +419,7 @@ def already_postprocessed(dirName, videofile, force, result):
         
         #Needed if we have downloaded the same episode @ different quality
         #But we need to make sure we check the history of the episode we're going to PP, and not others
-        np = NameParser(dirName, tryIndexers=True, convert=True)
+        np = NameParser(dirName, tryIndexers=True, trySceneExceptions=True, convert=True)
         try: #if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
             parse_result = np.parse(dirName)
         except: #ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.

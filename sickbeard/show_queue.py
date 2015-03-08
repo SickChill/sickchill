@@ -25,7 +25,7 @@ import sickbeard
 from lib.imdb import _exceptions as imdb_exceptions
 from sickbeard.common import SKIPPED, WANTED
 from sickbeard.tv import TVShow
-from sickbeard import exceptions, logger, ui, db
+from sickbeard import exceptions, logger, ui, db, notifiers
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
@@ -385,6 +385,10 @@ class QueueItemAdd(ShowQueueItem):
             # add show to trakt.tv library
             if sickbeard.TRAKT_SYNC:
                 sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+
+            if sickbeard.TRAKT_SYNC_WATCHLIST:
+                logger.log(u"update watchlist")
+                notifiers.trakt_notifier.update_watchlist(self.show)
 
         # Load XEM data to DB for show
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)

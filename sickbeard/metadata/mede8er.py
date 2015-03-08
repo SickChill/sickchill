@@ -131,7 +131,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         # check for title and id
         try:
-            if myShow['seriesname'] == None or myShow['seriesname'] == "" or myShow['id'] == None or myShow['id'] == "":
+            if getattr(myShow, 'seriesname', None) == None or getattr(myShow, 'seriesname', "") == "" or getattr(myShow, 'id', None) == None or getattr(myShow, 'id', "") == "":
                 logger.log(u"Incomplete info for show with id " + str(show_obj.indexerid) + " on tvdb, skipping it", logger.ERROR)
                 return False
         except sickbeard.indexer_attributenotfound:
@@ -139,24 +139,21 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         SeriesName = etree.SubElement(tv_node, "title")
-        if myShow['seriesname'] != None:
-            SeriesName.text = myShow['seriesname']
-        else:
-            SeriesName.text = ""
-
+        SeriesName.text = myShow['seriesname']
+        
         Genres = etree.SubElement(tv_node, "genres")
-        if myShow["genre"] != None:
+        if getattr(myShow, "genre", None) != None:
             for genre in myShow['genre'].split('|'):
                 if genre and genre.strip():
                     cur_genre = etree.SubElement(Genres, "Genre")
                     cur_genre.text = genre.strip()
 
         FirstAired = etree.SubElement(tv_node, "premiered")
-        if myShow['firstaired'] != None:
+        if getattr(myShow, 'firstaired', None) != None:
             FirstAired.text = myShow['firstaired']
 
         year = etree.SubElement(tv_node, "year")
-        if myShow["firstaired"] != None:
+        if getattr(myShow, "firstaired", None) != None:
             try:
                 year_text = str(datetime.datetime.strptime(myShow["firstaired"], '%Y-%m-%d').year)
                 if year_text:
@@ -167,7 +164,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         if getattr(myShow, 'overview', None) is not None:
             plot.text = myShow["overview"]
 
-        if myShow['rating'] != None:
+        if getattr(myShow, 'rating', None) != None:
             try:
                 rating = int((float(myShow['rating']) * 10))
             except ValueError:
@@ -178,24 +175,24 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 Rating.text = rating_text
 
         Status = etree.SubElement(tv_node, "status")
-        if myShow['status'] != None:
+        if getattr(myShow, 'status', None) != None:
             Status.text = myShow['status']
 
         mpaa = etree.SubElement(tv_node, "mpaa")
-        if myShow["contentrating"] != None:
+        if getattr(myShow, "contentrating", None) != None:
             mpaa.text = myShow["contentrating"]
 
         IMDB_ID = etree.SubElement(tv_node, "id")
-        if myShow['imdb_id'] != None:
+        if getattr(myShow, 'imdb_id', None) != None:
             IMDB_ID.attrib["moviedb"] = "imdb"
             IMDB_ID.text = myShow['imdb_id']
 
         indexerid = etree.SubElement(tv_node, "indexerid")
-        if myShow['id'] != None:
+        if getattr(myShow, 'id', None) != None:
             indexerid.text = myShow['id']
 
         Runtime = etree.SubElement(tv_node, "runtime")
-        if myShow['runtime'] != None:
+        if getattr(myShow, 'runtime', None) != None:
             Runtime.text = myShow['runtime']
 
         cast = etree.SubElement(tv_node, "cast")
@@ -264,10 +261,10 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 # root (or single) episode
 
                 # default to today's date for specials if firstaired is not set
-                if myEp['firstaired'] == None and ep_obj.season == 0:
+                if getattr(myEp, 'firstaired', None) == None and ep_obj.season == 0:
                     myEp['firstaired'] = str(datetime.date.fromordinal(1))
 
-                if myEp['episodename'] == None or myEp['firstaired'] == None:
+                if getattr(myEp, 'episodename', None) == None or getattr(myEp, 'firstaired', None) == None:
                     return None
 
                 episode = movie
@@ -285,7 +282,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 EpisodeNumber.text = str(ep_obj.episode)
 
                 year = etree.SubElement(episode, "year")
-                if myShow["firstaired"] != None:
+                if getattr(myShow, "firstaired", None) != None:
                     try:
                         year_text = str(datetime.datetime.strptime(myShow["firstaired"], '%Y-%m-%d').year)
                         if year_text:
@@ -294,7 +291,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                         pass
 
                 plot = etree.SubElement(episode, "plot")
-                if myShow["overview"] != None:
+                if getattr(myShow, "overview", None) != None:
                     plot.text = myShow["overview"]
 
                 Overview = etree.SubElement(episode, "episodeplot")
@@ -319,12 +316,12 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                             Rating.text = rating_text
 
                 director = etree.SubElement(episode, "director")
-                director_text = myEp['director']
+                director_text = getattr(myEp, 'director', None)
                 if director_text != None:
                     director.text = director_text
 
                 credits = etree.SubElement(episode, "credits")
-                credits_text = myEp['writer']
+                credits_text = getattr(myEp, 'writer', None)
                 if credits_text != None:
                     credits.text = credits_text
 

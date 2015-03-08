@@ -189,9 +189,9 @@ class AlphaRatioProvider(generic.TorrentProvider):
                             try:
                                 title = link.contents[0]
                                 download_url = self.urls['download'] % (url['href'])
-                                id = link['href'].replace('torrents.php?id=', '').split('&')[0]
-                                seeders = cells[len(cells)-2].string
-                                leechers = cells[len(cells)-1].string
+                                id = link['href'][-6:]
+                                seeders = cells[len(cells)-2].contents[0]
+                                leechers = cells[len(cells)-1].contents[0]
                             except (AttributeError, TypeError):
                                 continue
 

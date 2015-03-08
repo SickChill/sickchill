@@ -22,7 +22,6 @@ import os
 import ctypes
 import random
 import re
-import shutil
 import socket
 import stat
 import tempfile
@@ -57,6 +56,11 @@ from sickbeard import clients
 
 from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 urllib._urlopener = classes.SickBeardURLopener()
 
@@ -350,11 +354,7 @@ def listMediaFiles(path):
 
 
 def copyFile(srcFile, destFile):
-    if isPosix():
-        subprocess.call(['cp', srcFile, destFile])
-    else:
-        ek.ek(shutil.copyfile, srcFile, destFile)
-        
+    ek.ek(shutil.copyfile, srcFile, destFile)
     try:
         ek.ek(shutil.copymode, srcFile, destFile)
     except OSError:
@@ -377,12 +377,6 @@ def link(src, dst):
         if ctypes.windll.kernel32.CreateHardLinkW(unicode(dst), unicode(src), 0) == 0: raise ctypes.WinError()
     else:
         os.link(src, dst)
-
-def isPosix(): 
-    if os.name.startswith('posix'):
-        return True
-    else:
-        return False
 
 
 def hardlinkFile(srcFile, destFile):
@@ -923,7 +917,7 @@ def _check_against_names(nameInQuestion, show, season=-1):
     return False
 
 
-def get_show(name, tryIndexers=False):
+def get_show(name, tryIndexers=False, trySceneExceptions=False):
     if not sickbeard.showList:
         return
 
@@ -936,11 +930,18 @@ def get_show(name, tryIndexers=False):
         if cache:
             fromCache = True
             showObj = findCertainShow(sickbeard.showList, int(cache))
-
+        
+        #try indexers    
         if not showObj and tryIndexers:
             showObj = findCertainShow(sickbeard.showList,
                                       searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
-
+        
+        #try scene exceptions
+        if not showObj and trySceneExceptions:
+            ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
+            if ShowID:
+                showObj = findCertainShow(sickbeard.showList, int(ShowID))
+                
         # add show to cache
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)

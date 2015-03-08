@@ -53,7 +53,7 @@ class PushbulletNotifier:
         if sickbeard.USE_PUSHBULLET:
             update_text=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title=common.notifyStrings[common.NOTIFY_GIT_UPDATE]
-            self._sendPushbullet(pushbullet_api=None, event=title, message=update_text + new_version, method="POST")
+            self._sendPushbullet(pushbullet_api=None, event=title, message=update_text + new_version, notificationType="note", method="POST")
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, event=None, message=None,
                         notificationType=None, method=None, force=False):

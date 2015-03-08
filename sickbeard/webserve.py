@@ -42,7 +42,7 @@ from sickbeard import network_timezones
 from sickbeard import sbdatetime
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStrings, cpu_presets
-from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED
+from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
 from sickbeard.blackandwhitelist import BlackAndWhiteList
@@ -1159,7 +1159,7 @@ class Home(WebRoot):
         if not branchDest:
             return json.dumps({ "status": "error", 'message': 'branchDest empty' })
         try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py")
+            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
             response.raise_for_status()
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
             branchDestDBversion = int(match.group('version'))
@@ -1724,6 +1724,7 @@ class Home(WebRoot):
                 return self._genericMessage("Error", errMsg)
 
         segments = {}
+        trakt_data = []
         if eps is not None:
 
             sql_l = []
@@ -1770,6 +1771,21 @@ class Home(WebRoot):
 
                     # mass add to database
                     sql_l.append(epObj.get_sql())
+
+                    trakt_data.append((epObj.season, epObj.episode))
+
+            data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
+
+            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+                if int(status) in [WANTED, FAILED]:
+                    logger.log(u"Add episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " to Watchlist", logger.DEBUG)
+                    upd = "add"
+                elif int(status) in [ARCHIVED, IGNORED, SKIPPED ] + Quality.DOWNLOADED:
+                    logger.log(u"Remove episodes, showid: indexerid " + str(showObj.indexerid) + ", Title " + str(showObj.name) + " from Watchlist", logger.DEBUG)
+                    upd = "remove"
+
+                if data:
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_episode=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()
@@ -3610,7 +3626,7 @@ class ConfigGeneral(Config):
         sickbeard.save_config()
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
-                    update_shows_on_start=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
+                    update_shows_on_start=None, update_shows_on_snatch=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
                     launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
@@ -3635,6 +3651,7 @@ class ConfigGeneral(Config):
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = log_size
         sickbeard.UPDATE_SHOWS_ON_START = config.checkbox_to_value(update_shows_on_start)
+        sickbeard.UPDATE_SHOWS_ON_SNATCH = config.checkbox_to_value(update_shows_on_snatch)
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         config.change_UPDATE_FREQUENCY(update_frequency)
@@ -4172,7 +4189,7 @@ class ConfigProviders(Config):
         return '1'
 
 
-    def canAddTorrentRssProvider(self, name, url, cookies):
+    def canAddTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name:
             return json.dumps({'error': 'Invalid name specified'})
@@ -4180,7 +4197,7 @@ class ConfigProviders(Config):
         providerDict = dict(
             zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
 
-        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
 
         if tempProvider.getID() in providerDict:
             return json.dumps({'error': 'Exists as ' + providerDict[tempProvider.getID()].name})
@@ -4192,7 +4209,7 @@ class ConfigProviders(Config):
                 return json.dumps({'error': errMsg})
 
 
-    def saveTorrentRssProvider(self, name, url, cookies):
+    def saveTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name or not url:
             return '0'
@@ -4203,11 +4220,12 @@ class ConfigProviders(Config):
             providerDict[name].name = name
             providerDict[name].url = config.clean_url(url)
             providerDict[name].cookies = cookies
+            providerDict[name].titleTAG = titleTAG
 
             return providerDict[name].getID() + '|' + providerDict[name].configStr()
 
         else:
-            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
             sickbeard.torrentRssProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
@@ -4309,10 +4327,10 @@ class ConfigProviders(Config):
                 if not curTorrentRssProviderStr:
                     continue
 
-                curName, curURL, curCookies = curTorrentRssProviderStr.split('|')
+                curName, curURL, curCookies, curTitleTAG = curTorrentRssProviderStr.split('|')
                 curURL = config.clean_url(curURL)
 
-                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies)
+                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies, curTitleTAG)
 
                 curID = newProvider.getID()
 
@@ -4321,6 +4339,7 @@ class ConfigProviders(Config):
                     torrentRssProviderDict[curID].name = curName
                     torrentRssProviderDict[curID].url = curURL
                     torrentRssProviderDict[curID].cookies = curCookies
+                    torrentRssProviderDict[curID].curTitleTAG = curTitleTAG
                 else:
                     sickbeard.torrentRssProviderList.append(newProvider)
 
@@ -4568,7 +4587,7 @@ class ConfigNotifications(Config):
                           use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
                           use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
                           use_trakt=None, trakt_username=None, trakt_password=None,
-                          trakt_remove_watchlist=None, trakt_use_watchlist=None, trakt_method_add=None,
+                          trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
@@ -4686,7 +4705,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_PASSWORD = trakt_password
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
-        sickbeard.TRAKT_USE_WATCHLIST = config.checkbox_to_value(trakt_use_watchlist)
+        sickbeard.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
         sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
         sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
@@ -4878,7 +4897,7 @@ class ErrorLogs(WebRoot):
         return t.respond()
 
     def haveErrors(self):
-        if len(classes.ErrorViewer.errors) > 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.GIT_AUTOISSUES == 1:
+        if len(classes.ErrorViewer.errors) > 0:
             return True
 
     def clearerrors(self):
@@ -4886,7 +4905,50 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
+        
+        def Get_Data(Levelmin, data_in, lines_in, regex, Filter, Search, mlines):
+            
+            lastLine = False
+            numLines = lines_in
+            numToShow = min(maxLines, numLines + len(data_in))
+            
+            finalData = [] 
+            
+            for x in reversed(data_in):
 
+                x = ek.ss(x)
+                match = re.match(regex, x)
+
+                if match:
+                    level = match.group(7)
+                    logName = match.group(8)
+                    if level not in logger.reverseNames:
+                        lastLine = False
+                        continue
+
+                    if logSearch and logSearch.lower() in x.lower():
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    else:
+                        lastLine = False
+                        continue
+
+                elif lastLine:
+                    finalData.append("AA" + x)
+                    numLines += 1
+
+                
+
+                if numLines >= numToShow:
+                    return finalData
+                
+            return finalData
+            
         t = PageTemplate(rh=self, file="viewlogs.tmpl")
         t.submenu = self.ErrorLogsMenu()
 
@@ -4913,51 +4975,24 @@ class ErrorLogs(WebRoot):
         if logFilter not in logNameFilters:
             logFilter = '<NONE>'
 
-
+        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
         data = []
+        
         if os.path.isfile(logger.logFile):
             with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
-                data = f.readlines()
+                data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
+                
+        for i in range (1 , int(sickbeard.LOG_NR)):
+            if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
+                with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                        data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
 
-        finalData = []
+               
 
-        numLines = 0
-        lastLine = False
-        numToShow = min(maxLines, len(data))
-
-        for x in reversed(data):
-
-            x = ek.ss(x)
-            match = re.match(regex, x)
-
-            if match:
-                level = match.group(7)
-                logName = match.group(8)
-                if level not in logger.reverseNames:
-                    lastLine = False
-                    continue
-
-                if logSearch and logSearch.lower() in x.lower():
-                    lastLine = True
-                    finalData.append(x)
-                elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
-                    lastLine = True
-                    finalData.append(x)
-                else:
-                    lastLine = False
-                    continue
-
-            elif lastLine:
-                finalData.append("AA" + x)
-
-            numLines += 1
-
-            if numLines >= numToShow:
-                break
-
-        result = "".join(finalData)
+        result = "".join(data)
 
         t.logLines = result
         t.minLevel = minLevel
@@ -4969,6 +5004,7 @@ class ErrorLogs(WebRoot):
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
+            ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
             issue = logger.submit_errors()

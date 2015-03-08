@@ -149,6 +149,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     # don't notify when we re-download an episode
     sql_l = []
+    trakt_data = []
     for curEpObj in result.episodes:
         with curEpObj.lock:
             if isFirstBestMatch(result):
@@ -161,9 +162,21 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if curEpObj.status not in Quality.DOWNLOADED:
             notifiers.notify_snatch(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN') + " from " + result.provider.name)
 
+            trakt_data.append((curEpObj.season, curEpObj.episode))
+
+    data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
+
+    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        logger.log(u"Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist", logger.DEBUG)
+        if data:
+            notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
+
     if len(sql_l) > 0:
         myDB = db.DBConnection()
         myDB.mass_action(sql_l)
+
+    if sickbeard.UPDATE_SHOWS_ON_SNATCH and not sickbeard.showQueueScheduler.action.isBeingUpdated(result.show) and result.show.status == "Continuing":
+        sickbeard.showQueueScheduler.action.updateShow(result.show, True)
 
     return True
 

@@ -25,7 +25,6 @@ import re
 import glob
 import stat
 import traceback
-import shutil
 
 import sickbeard
 
@@ -61,6 +60,11 @@ from common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, ARCHIVE
     UNKNOWN, FAILED
 from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_SEPARATED_REPEAT, \
     NAMING_LIMITED_EXTEND_E_PREFIXED
+
+import shutil
+import lib.shutil_custom
+
+shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 
 def dirty_setter(attr_name):
@@ -1031,6 +1035,10 @@ class TVShow(object):
             except OSError, e:
                 logger.log(u'Unable to %s %s: %s / %s' % (action, self._location, repr(e), str(e)), logger.WARNING)
 
+        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            logger.log(u"Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist", logger.DEBUG)
+            notifiers.trakt_notifier.update_watchlist(self, update="remove")
+
     def populateCache(self):
         cache_inst = image_cache.ImageCache()
 
@@ -1269,8 +1277,10 @@ class TVShow(object):
             anyQualities, bestQualities = Quality.splitQuality(self.quality)  # @UnusedVariable
             if bestQualities:
                 maxBestQuality = max(bestQualities)
+                minBestQuality = min(bestQualities)
             else:
                 maxBestQuality = None
+                minBestQuality = None
 
             epStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
@@ -1283,6 +1293,12 @@ class TVShow(object):
                     return Overview.QUAL
                 return Overview.SNATCHED
             elif maxBestQuality == None:
+                return Overview.GOOD
+            # if the want only first match and already have one call it good
+            elif self.archive_firstmatch and curQuality in bestQualities:
+                return Overview.GOOD
+            # if they want only first match and current quality is higher than minimal best quality call it good
+            elif self.archive_firstmatch and minBestQuality != None and curQuality > minBestQuality:
                 return Overview.GOOD
             # if they have one but it's not the best they want then mark it as qual
             elif curQuality < maxBestQuality:
