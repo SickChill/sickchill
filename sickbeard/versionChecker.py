@@ -24,6 +24,7 @@ import urllib
 import tarfile
 import stat
 import traceback
+import db
 
 import sickbeard
 from sickbeard import notifiers
@@ -31,6 +32,8 @@ from sickbeard import ui
 from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
+from lib import requests
+from lib.requests.exceptions import RequestException
 
 import shutil
 import lib.shutil_custom
@@ -60,13 +63,80 @@ class CheckVersion():
             sickbeard.BRANCH = self.get_branch()
 
             if self.check_for_new_version(force):
-                if sickbeard.AUTO_UPDATE:
+                if sickbeard.AUTO_UPDATE and self.safe_to_update():
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
                     if sickbeard.versionCheckScheduler.action.update():
                         logger.log(u"Update was successful!")
                         ui.notifications.message('Update was successful')
                         sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+
+    def safe_to_update(self):
+
+        def db_safe(self):
+            try:
+                result = self.getDBcompare(sickbeard.BRANCH)
+                if result == 'equal':
+                    logger.log(u"We can proceed with the update. New update has same DB version", logger.DEBUG)
+                    return True
+                elif result == 'upgrade':
+                    logger.log(u"We can't proceed with the update. New update has a new DB version. Please manually update", logger.WARNING)
+                    return False
+                elif result == 'downgrade':
+                    logger.log(u"We can't proceed with the update. New update has a old DB version. It's not possible to downgrade", logger.ERROR)
+                    return False
+                else:
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version", logger.ERROR)
+                    return False
+            except:
+                logger.log(u"We can't proceed with the update. Unable to compare DB version", logger.ERROR)
+                return False
+        
+        def postprocessor_safe(self):
+            if not sickbeard.autoPostProcesserScheduler.action.amActive:
+                logger.log(u"We can proceed with the update. Post-Processor is not running", logger.DEBUG)
+                return True
+            else:
+                logger.log(u"We can't proceed with the update. Post-Processor is running", logger.DEBUG)
+                return False
+        
+        def showupdate_safe(self):
+            if not sickbeard.showUpdateScheduler.action.amActive:
+                logger.log(u"We can proceed with the update. Shows are not being updated", logger.DEBUG)
+                return True
+            else:
+                logger.log(u"We can't proceed with the update. Shows are being updated", logger.DEBUG)
+                return False
+
+        db_safe = db_safe(self)
+        postprocessor_safe = postprocessor_safe(self)
+        showupdate_safe = showupdate_safe(self)
+
+        if db_safe == True and postprocessor_safe == True and showupdate_safe == True:
+            logger.log(u"Proceeding with auto update", logger.DEBUG)
+            return True
+        else:
+            logger.log(u"Auto update aborted", logger.DEBUG)
+            return False
+
+    def getDBcompare(self, branchDest):
+        try:
+            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
+            response.raise_for_status()
+            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
+            branchDestDBversion = int(match.group('version'))
+            myDB = db.DBConnection()
+            branchCurrDBversion = myDB.checkDBVersion()
+            if branchDestDBversion > branchCurrDBversion:
+                return 'upgrade'
+            elif branchDestDBversion == branchCurrDBversion:
+                return 'equal'
+            else:
+                return 'downgrade'
+        except RequestException as e:
+            return 'error'
+        except Exception as e:
+            return 'error'
 
     def find_install_type(self):
         """
@@ -186,6 +256,7 @@ class GitUpdateManager(UpdateManager):
             logger.log(u"Not using: " + main_git, logger.DEBUG)
 
         # trying alternatives
+
 
         alternative_git = []
 

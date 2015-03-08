@@ -18,7 +18,7 @@
 
 import datetime
 import os
-
+import threading
 import sickbeard
 
 from sickbeard import logger
@@ -31,8 +31,13 @@ from sickbeard import network_timezones
 from sickbeard import failed_history
 
 class ShowUpdater():
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.amActive = False
 
     def run(self, force=False):
+ 
+        self.amActive = True
 
         update_datetime = datetime.datetime.now()
         update_date = update_datetime.date()
@@ -87,6 +92,8 @@ class ShowUpdater():
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator("Daily Update", piList))
 
         logger.log(u"Completed full update on all shows")
+        
+        self.amActive = False
 
     def __del__(self):
         pass
