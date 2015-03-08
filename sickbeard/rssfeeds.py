@@ -31,14 +31,14 @@ class RSSFeeds:
         finally:
             self.rssDB.close()
 
-    def getFeed(self, url, post_data=None, request_headers=None, items=None):
+    def getFeed(self, url, post_data=None, request_headers=None, items=None, handlers=[]):
 
 
         if post_data:
             url += urllib.urlencode(post_data)
 
         try:
-            resp = Cache(self.rssDB).fetch(url, force_update=True, request_headers=request_headers)
+            resp = Cache(self.rssDB).fetch(url, force_update=True, request_headers=request_headers, handlers=handlers)
         finally:
             self.rssDB.close()
 
