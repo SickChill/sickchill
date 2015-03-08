@@ -98,7 +98,7 @@ class Cache:
                     del self.storage[url]
         return
 
-    def fetch(self, url, force_update=False, offline=False, request_headers=None, referrer=None):
+    def fetch(self, url, force_update=False, offline=False, request_headers=None, referrer=None, handlers=[]):
         """Return the feed at url.
 
         url - The URL of the feed.
@@ -115,6 +115,8 @@ class Cache:
         request_headers=None - Add addition request headers to request
 
         referrer=None - Added a referrer to request
+
+        handlers=None - Urllib2 handlers
 
         If there is data for that feed in the cache already, check
         the expiration date before accessing the server.  If the
@@ -180,7 +182,8 @@ class Cache:
                                          modified=modified,
                                          etag=etag,
                                          referrer=referrer,
-                                         request_headers=request_headers)
+                                         request_headers=request_headers,
+                                         handlers = handlers)
 
         status = parsed_result.get('status', None)
         logger.debug('HTTP status=%s' % status)
