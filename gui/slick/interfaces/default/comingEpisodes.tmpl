@@ -502,11 +502,15 @@
             #set $airday = $cur_result['localtime'].date()
 
             #if $airday == $day:
-                #set $day_has_show = True
-                #set $airtime = $sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result['localtime'].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING)
-                #if $sickbeard.TRIM_ZERO:
-                #set $airtime = re.sub(r'0(\d:\d\d)', r'\1', $airtime, 0, re.IGNORECASE | re.MULTILINE)
-                #end if
+                #try
+                    #set $day_has_show = True
+                    #set $airtime = $sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result['localtime'].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING)
+                    #if $sickbeard.TRIM_ZERO:
+                    #set $airtime = re.sub(r'0(\d:\d\d)', r'\1', $airtime, 0, re.IGNORECASE | re.MULTILINE)
+                    #end if
+                #except OverflowError
+                    #set $airtime = "Invalid"
+                #end try
 
 				<tr>
 					<td class="calendarShow">
