@@ -198,7 +198,10 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
         result.result = True
 
         for processPath, processDir, fileList in ek.ek(os.walk, ek.ek(os.path.join, path, dir), topdown=False):
-
+            
+            if (not validateDir(path, processPath, nzbNameOriginal, failed, result)):
+                continue
+            
             SyncFiles = filter(helpers.isSyncFile, fileList)
 
             # Don't post process if files are still being synced and option is activated
@@ -237,7 +240,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 if process_method == "move" and \
                                 ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath,
                                                                               sickbeard.TV_DOWNLOAD_DIR):
-                    if delete_folder(processPath, check_empty=False):
+                    if delete_folder(processPath, check_empty=True):
                         result.output += logHelper(u"Deleted folder: " + processPath, logger.DEBUG)
 
     if result.result:
