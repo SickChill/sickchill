@@ -924,6 +924,9 @@ def get_show(name, tryIndexers=False, trySceneExceptions=False):
     showObj = None
     fromCache = False
 
+    if not name:
+        return showObj
+
     try:
         # check cache for show
         cache = sickbeard.name_cache.retrieveNameFromCache(name)
