@@ -120,7 +120,11 @@ class Logger(object):
 
             for logger in self.loggers:
                 logger.addHandler(rfh)
-
+                
+    def shutdown(self):
+        
+        logging.shutdown()
+        
     def log(self, msg, level=INFO, *args, **kwargs):
         meThread = threading.currentThread().getName()
         message = meThread + u" :: " + msg
