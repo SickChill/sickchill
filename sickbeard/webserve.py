@@ -1798,7 +1798,7 @@ class Home(WebRoot):
 
             if segments:
                 ui.notifications.message("Backlog started", msg)
-        elif int(status) == Wanted and showObj.paused:
+        elif int(status) == WANTED and showObj.paused:
             logger.log(u"Some episodes were set to wanted, but " + showObj.name + " is paused. Not adding to Backlog until show is unpaused")
             
         if int(status) == FAILED:
