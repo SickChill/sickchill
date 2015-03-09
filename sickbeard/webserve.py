@@ -1139,7 +1139,7 @@ class Home(WebRoot):
             # do a hard restart
             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
-            t = PageTemplate(rh=self, file="restart_bare.tmpl")
+            t = PageTemplate(rh=self, file="restart.tmpl")
             return t.respond()
         else:
             return self._genericMessage("Update Failed",
