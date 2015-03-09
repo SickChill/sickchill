@@ -1782,7 +1782,7 @@ class Home(WebRoot):
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
 
-        if int(status) == WANTED:
+        if int(status) == WANTED and not showObj.paused:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
 
@@ -1798,7 +1798,9 @@ class Home(WebRoot):
 
             if segments:
                 ui.notifications.message("Backlog started", msg)
-
+        elif int(status) == WANTED and showObj.paused:
+            logger.log(u"Some episodes were set to wanted, but " + showObj.name + " is paused. Not adding to Backlog until show is unpaused")
+            
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
