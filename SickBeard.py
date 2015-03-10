@@ -521,9 +521,11 @@ class SickRage(object):
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
                     logger.log(u"Restarting SickRage with " + str(popen_list))
+                    logger.shutdown() #shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
         # system exit
+        logger.shutdown() #Make sure the logger has stopped, just in case
         os._exit(0)
 
 
