@@ -24,6 +24,7 @@ import logging
 import logging.handlers
 import threading
 import platform
+import locale
 
 import sickbeard
 from sickbeard import classes, encodingKludge as ek
@@ -186,6 +187,11 @@ class Logger(object):
                 message = u"### INFO\n"
                 message += u"Python Version: **" + sys.version[:120] + "**\n"
                 message += u"Operating System: **" + platform.platform() + "**\n"
+                if not 'Windows' in platform.platform():
+                    try:
+                        message += u"Locale: " + locale.getdefaultlocale()[1] + "\n"
+                    except:
+                        message += u"Locale: unknown" + "\n"                        
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
                 message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
                 if gist:
