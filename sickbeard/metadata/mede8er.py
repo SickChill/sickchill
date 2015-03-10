@@ -305,7 +305,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     mpaa.text = myShow["contentrating"]
 
                 if not ep_obj.relatedEps:
-                    if myEp["rating"] != None:
+                    if getattr(myEp, "rating", None) != None:
                         try:
                             rating = int((float(myEp['rating']) * 10))
                         except ValueError:
