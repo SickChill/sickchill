@@ -377,7 +377,7 @@ def unRAR(path, rarFiles, force, result):
                 result.result = False
                 continue
             except NoFileToExtract:
-                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: No file to extract, file already exist?".format(archive), logger.ERROR)
+                result.output += logHelper(u"Failed Unrar archive {0}: Unrar: No file extracted, check the parent folder and destination file permissions.".format(archive), logger.ERROR)
                 result.result = False
                 continue
             except GenericRARError:
