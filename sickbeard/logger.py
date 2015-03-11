@@ -161,10 +161,17 @@ class Logger(object):
         try:
             # read log file
             log_data = None
-            if self.logFile and os.path.isfile(self.logFile):
+
+            if os.path.isfile(self.logFile):
                 with ek.ek(codecs.open, *[self.logFile, 'r', 'utf-8']) as f:
                     log_data = f.readlines()
-                log_data = [line for line in reversed(log_data)]
+                    
+            for i in range (1 , int(sickbeard.LOG_NR)):
+                if os.path.isfile(self.logFile + "." + str(i)) and (len(log_data) <= 500):
+                    with ek.ek(codecs.open, *[self.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                            log_data += f.readlines()
+
+            log_data = [line for line in reversed(log_data)]
 
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
@@ -183,6 +190,8 @@ class Logger(object):
                             if paste_data:
                                 gist = gh.get_user().create_gist(True, {"sickrage.log": InputFileContent(paste_data)})
                             break
+                    else:
+                        gist = 'No ERROR found'
 
                 message = u"### INFO\n"
                 message += u"Python Version: **" + sys.version[:120] + "**\n"
@@ -194,8 +203,10 @@ class Logger(object):
                         message += u"Locale: unknown" + "\n"                        
                 message += u"Branch: **" + sickbeard.BRANCH + "**\n"
                 message += u"Commit: SiCKRAGETV/SickRage@" + sickbeard.CUR_COMMIT_HASH + "\n"
-                if gist:
+                if gist and gist != 'No ERROR found':
                     message += u"Link to Log: " + gist.html_url + "\n"
+                else:
+                    message += u"No Log available with ERRORS: " + "\n"
                 message += u"### ERROR\n"
                 message += u"```\n"
                 message += curError.message + "\n"
