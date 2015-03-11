@@ -245,11 +245,9 @@ class CheckVersion():
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
 
-            if not sickbeard.AUTO_UPDATE:
+            if force:
+                ui.notifications.message('No update needed')
                 logger.log(u"No update needed")
-
-                if force:
-                    ui.notifications.message('No update needed')
 
             # no updates needed
             return False
