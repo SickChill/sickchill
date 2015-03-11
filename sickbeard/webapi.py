@@ -721,6 +721,8 @@ class CMD_ComingEpisodes(ApiCall):
                 ['?'] * len(qualList)) + ")", [today, next_week] + qualList)
         for cur_result in sql_results:
             done_show_list.append(int(cur_result["indexerid"]))
+            if (isinstance(cur_result,sqlite3.Row)):
+                logger.log(u"API :: Returned SQLite3.Row instead of Dict.", logger.ERROR)
 
         more_sql_results = myDB.select(
             "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes outer_eps, tv_shows WHERE season != 0 AND showid NOT IN (" + ','.join(
@@ -729,11 +731,17 @@ class CMD_ComingEpisodes(ApiCall):
                 ['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED)) + ")",
             done_show_list + [next_week] + Quality.DOWNLOADED + Quality.SNATCHED)
         sql_results += more_sql_results
-
+        for cur_result in more_sql_results:
+            if (isinstance(cur_result,sqlite3.Row)):
+                logger.log(u"API :: Returned SQLite3.Row instead of Dict.", logger.ERROR)
+        
         more_sql_results = myDB.select(
             "SELECT airdate, airs, episode, name AS 'ep_name', description AS 'ep_plot', network, season, showid AS 'indexerid', show_name, tv_shows.quality AS quality, tv_shows.status AS 'show_status', tv_shows.paused AS 'paused' FROM tv_episodes, tv_shows WHERE season != 0 AND tv_shows.indexer_id = tv_episodes.showid AND airdate < ? AND airdate >= ? AND tv_episodes.status = ? AND tv_episodes.status NOT IN (" + ','.join(
                 ['?'] * len(qualList)) + ")", [today, recently, WANTED] + qualList)
         sql_results += more_sql_results
+        for cur_result in more_sql_results:
+            if (isinstance(cur_result,sqlite3.Row)):
+                logger.log(u"API :: Returned SQLite3.Row instead of Dict.", logger.ERROR)        
 
         # sort by air date
         sorts = {
