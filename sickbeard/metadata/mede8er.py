@@ -17,6 +17,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import os.path
 
 import sickbeard
 
@@ -24,6 +25,7 @@ import mediabrowser
 
 from sickbeard import logger, exceptions, helpers
 from sickbeard.exceptions import ex
+from sickbeard import encodingKludge as ek
 
 try:
     import xml.etree.cElementTree as etree
@@ -355,6 +357,93 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         return data
 
+    def write_show_file(self, show_obj):
+        """
+        Generates and writes show_obj's metadata under the given path to the
+        filename given by get_show_file_path()
+
+        show_obj: TVShow object for which to create the metadata
+
+        path: An absolute or relative path where we should put the file. Note that
+                the file name will be the default show_file_name.
+
+        Note that this method expects that _show_data will return an ElementTree
+        object. If your _show_data returns data in another format you'll need to
+        override this method.
+        """
+
+        data = self._show_data(show_obj)
+
+        if not data:
+            return False
+
+        nfo_file_path = self.get_show_file_path(show_obj)
+        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+
+        try:
+            if not ek.ek(os.path.isdir, nfo_file_dir):
+                logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                ek.ek(os.makedirs, nfo_file_dir)
+                helpers.chmodAsParent(nfo_file_dir)
+
+            logger.log(u"Writing show nfo file to " + nfo_file_path, logger.DEBUG)
+
+            nfo_file = ek.ek(open, nfo_file_path, 'w')
+
+            data.write(nfo_file, encoding="utf-8", xml_declaration=True)
+            nfo_file.close()
+            helpers.chmodAsParent(nfo_file_path)
+        except IOError, e:
+            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+                       logger.ERROR)
+            return False
+
+        return True
+    
+    def write_ep_file(self, ep_obj):
+        """
+        Generates and writes ep_obj's metadata under the given path with the
+        given filename root. Uses the episode's name with the extension in
+        _ep_nfo_extension.
+
+        ep_obj: TVEpisode object for which to create the metadata
+
+        file_name_path: The file name to use for this metadata. Note that the extension
+                will be automatically added based on _ep_nfo_extension. This should
+                include an absolute path.
+
+        Note that this method expects that _ep_data will return an ElementTree
+        object. If your _ep_data returns data in another format you'll need to
+        override this method.
+        """
+
+        data = self._ep_data(ep_obj)
+
+        if not data:
+            return False
+
+        nfo_file_path = self.get_episode_file_path(ep_obj)
+        nfo_file_dir = ek.ek(os.path.dirname, nfo_file_path)
+
+        try:
+            if not ek.ek(os.path.isdir, nfo_file_dir):
+                logger.log(u"Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                ek.ek(os.makedirs, nfo_file_dir)
+                helpers.chmodAsParent(nfo_file_dir)
+
+            logger.log(u"Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
+
+            nfo_file = ek.ek(open, nfo_file_path, 'w')
+
+            data.write(nfo_file, encoding="utf-8", xml_declaration = True)
+            nfo_file.close()
+            helpers.chmodAsParent(nfo_file_path)
+        except IOError, e:
+            logger.log(u"Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+                       logger.ERROR)
+            return False
+
+        return True
 
 # present a standard "interface" from the module
 metadata_class = Mede8erMetadata
