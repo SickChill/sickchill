@@ -110,9 +110,9 @@ class SickRage(object):
         help_msg += "    -q          --quiet             Disables logging to console\n"
         help_msg += "                --nolaunch          Suppress launching web browser on startup\n"
 
-        if sys.platform == 'win32':
+        if sys.platform == 'win32' or sys.platform == 'darwin':
             help_msg += "    -d          --daemon            Running as real daemon is not supported on Windows\n"
-            help_msg += "                                    On Windows, --daemon is substituted with: --quiet --nolaunch\n"
+            help_msg += "                                    On Windows and MAC, --daemon is substituted with: --quiet --nolaunch\n"
         else:
             help_msg += "    -d          --daemon            Run as double forked daemon (includes options --quiet --nolaunch)\n"
             help_msg += "                --pidfile=<path>    Combined with --daemon creates a pidfile (full path including filename)\n"
@@ -208,7 +208,7 @@ class SickRage(object):
                 self.consoleLogging = False
                 self.noLaunch = True
 
-                if sys.platform == 'win32':
+                if sys.platform == 'win32' or sys.platform == 'darwin':
                     self.runAsDaemon = False
 
             # Write a pidfile if requested
