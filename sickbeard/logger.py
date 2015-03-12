@@ -171,8 +171,8 @@ class Logger(object):
                 if not curError.title:
                     continue
 
-                if len(curError.title) > 254:
-                    title_Error = str(curError.title[0:254])
+                if len(curError.title) > 1024:
+                    title_Error = str(curError.title[0:1024])
                 else:
                     title_Error = str(curError.title)
 
