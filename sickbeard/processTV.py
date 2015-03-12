@@ -61,15 +61,22 @@ def delete_folder(folder, check_empty=True):
     if check_empty:
         check_files = ek.ek(os.listdir, folder)
         if check_files:
+            logger.log(u"Not deleting folder " + folder + " found the following files: " + str(check_files), logger.INFO)
             return False
-
-    # try deleting folder
-    try:
-        logger.log(u"Deleting folder: " + folder)
-        shutil.rmtree(folder)
-    except (OSError, IOError), e:
-        logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
-        return False
+        
+        try:
+            logger.log(u"Deleting folder (if it's empty): " + folder)
+            os.rmdir(folder)
+        except (OSError, IOError), e:
+            logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
+            return False
+    else:
+        try:
+            logger.log(u"Deleting folder: " + folder)
+            shutil.rmtree(folder)
+        except (OSError, IOError), e:
+            logger.log(u"Warning: unable to delete folder: " + folder + ": " + ex(e), logger.WARNING)
+            return False
 
     return True
 
@@ -217,6 +224,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             videoFiles = filter(helpers.isMediaFile, fileList)
             videoInRar = filter(helpers.isMediaFile, rarContent)
             notwantedFiles = [x for x in fileList if x not in videoFiles]
+            result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.INFO)
 
             #Don't Link media when the media is extracted from a rar in the same path
             if process_method in ('hardlink', 'symlink') and videoInRar:
