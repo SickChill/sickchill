@@ -1074,76 +1074,26 @@ class Home(WebRoot):
         return self.redirect('/home/')
 
     def update(self, pid=None):
+        
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
+            
+        checkversion = CheckVersion()
+        backup = checkversion._runbackup()
 
-        def _keeplatestbackup(backupDir):
-            import glob
-            files = glob.glob(os.path.join(backupDir,'*.zip'))
-            if not files:
-                return True
-            now = time.time()
-            newest = files[0], now - os.path.getctime(files[0])
-            for file in files[1:]:
-                age = now - os.path.getctime(file)
-                if age < newest[1]:
-                    newest = file, age
-            files.remove(newest[0])
+        if backup == True:
 
-            for file in files:
-                os.remove(file)
-        
-        # TODO: Merge with backup in helpers
-        def _backup(backupDir=None):
-            if backupDir:
-                source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
-                source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
-                source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
-                target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
-
-                for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
-                    for dirname in dirs:
-                        if path == sickbeard.CACHE_DIR and dirname not in ['images']:
-                            dirs.remove(dirname)
-                    for filename in files:
-                        source.append(os.path.join(path, filename))
-
-                if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
-                    return True
-                else:
-                    return False
+            if sickbeard.versionCheckScheduler.action.update():
+                # do a hard restart
+                sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+            
+                t = PageTemplate(rh=self, file="restart_bare.tmpl")
+                return t.respond()
             else:
-                return False
-
-        # Do a system backup
-        ui.notifications.message('Backup', 'Config backup in progress...')
-        try:
-            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
-            if not os.path.isdir(backupDir):
-                os.mkdir(backupDir)
-
-            _keeplatestbackup(backupDir)
-
-            if _backup(backupDir):
-                ui.notifications.message('Backup', 'Config backup successful, updating...')
-            else:
-                ui.notifications.message('Backup', 'Config backup failed, aborting update')
-                return self.redirect('/home/')
-
-        except Exception as e:
-            ui.notifications.message('Backup', 'Config backup failed, aborting update')
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.DEBUG)
-            return self.redirect('/home/')
-
-        if sickbeard.versionCheckScheduler.action.update():
-            # do a hard restart
-            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
-
-            t = PageTemplate(rh=self, file="restart.tmpl")
-            return t.respond()
+                return self._genericMessage("Update Failed",
+                                            "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self._genericMessage("Update Failed",
-                                        "Update wasn't successful, not restarting. Check your log for more information.")
+            return self.redirect('/home/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:

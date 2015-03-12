@@ -25,11 +25,12 @@ import tarfile
 import stat
 import traceback
 import db
+import time
 
 import sickbeard
 from sickbeard import notifiers
 from sickbeard import ui
-from sickbeard import logger
+from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 from lib import requests
@@ -58,18 +59,84 @@ class CheckVersion():
                 self.updater = SourceUpdateManager()
 
     def run(self, force=False):
+
         if self.updater:
             # set current branch version
             sickbeard.BRANCH = self.get_branch()
 
             if self.check_for_new_version(force):
-                if sickbeard.AUTO_UPDATE and self.safe_to_update():
+                if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
-                    if sickbeard.versionCheckScheduler.action.update():
-                        logger.log(u"Update was successful!")
-                        ui.notifications.message('Update was successful')
-                        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+                    if self.safe_to_update() == True and self._runbackup() == True:
+                        if sickbeard.versionCheckScheduler.action.update():
+                            logger.log(u"Update was successful!")
+                            ui.notifications.message('Update was successful')
+                            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+
+    def _runbackup(self):
+        # Do a system backup before update
+        logger.log(u"Config backup in progress...")
+        ui.notifications.message('Backup', 'Config backup in progress...')
+        try:
+            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
+            if not os.path.isdir(backupDir):
+                os.mkdir(backupDir)
+    
+            if self._keeplatestbackup(backupDir) == True and self._backup(backupDir) == True:
+                logger.log(u"Config backup successful, updating...")
+                ui.notifications.message('Backup', 'Config backup successful, updating...')
+                return True
+            else:
+                logger.log(u"Config backup failed, aborting update",logger.ERROR)
+                ui.notifications.message('Backup', 'Config backup failed, aborting update')
+                return False
+        except Exception as e:
+            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.ERROR)
+            ui.notifications.message('Backup', 'Config backup failed, aborting update')
+            return False
+
+    def _keeplatestbackup(self,backupDir=None):
+        if backupDir:
+            import glob
+            files = glob.glob(os.path.join(backupDir,'*.zip'))
+            if not files:
+                return True
+            now = time.time()
+            newest = files[0], now - os.path.getctime(files[0])
+            for file in files[1:]:
+                age = now - os.path.getctime(file)
+                if age < newest[1]:
+                    newest = file, age
+            files.remove(newest[0])
+            
+            for file in files:
+                os.remove(file)
+            return True
+        else:
+            return False
+    
+    # TODO: Merge with backup in helpers
+    def _backup(self,backupDir=None):
+        if backupDir:
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
+            source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
+            source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
+            target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+
+            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
+                for dirname in dirs:
+                    if path == sickbeard.CACHE_DIR and dirname not in ['images']:
+                        dirs.remove(dirname)
+                for filename in files:
+                    source.append(os.path.join(path, filename))
+
+            if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def safe_to_update(self):
 
@@ -178,11 +245,9 @@ class CheckVersion():
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
 
-            if not sickbeard.AUTO_UPDATE:
+            if force:
+                ui.notifications.message('No update needed')
                 logger.log(u"No update needed")
-
-                if force:
-                    ui.notifications.message('No update needed')
 
             # no updates needed
             return False
