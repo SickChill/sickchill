@@ -178,6 +178,11 @@ class Logger(object):
                 if not curError.title:
                     continue
 
+                if len(curError.title) > 1024:
+                    title_Error = str(curError.title[0:1024])
+                else:
+                    title_Error = str(curError.title)
+
                 gist = None
                 regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
@@ -214,7 +219,7 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + str(curError.title), message)
+                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + title_Error, message)
                 if issue:
                     self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
 
