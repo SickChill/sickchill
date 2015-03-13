@@ -233,7 +233,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 videoInRar = filter(helpers.isMediaFile, rarContent)
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
-                    result.output += logHelper(u"Found unwanted files: " + notwantedFiles, logger.INFO)
+                    result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.INFO)
     
                 #Don't Link media when the media is extracted from a rar in the same path
                 if process_method in ('hardlink', 'symlink') and videoInRar:
