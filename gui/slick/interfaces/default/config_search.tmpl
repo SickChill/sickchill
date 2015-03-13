@@ -122,7 +122,9 @@
 								<span class="component-title">Ignore words</span>
 								<span class="component-desc">
 									<input type="text" name="ignore_words" value="$sickbeard.IGNORE_WORDS" class="form-control input-sm input350" />
-									<div class="clear-left">results containing any word in the comma separated word list will be ignored</div>
+									<div class="clear-left">results with one or more word from this list will be ignored<br />
+									separate words with a comma, e.g. "word1,word2,word3"
+									</div>
 								</span>
 							</label>
 						</div>
@@ -132,7 +134,9 @@
 								<span class="component-title">Require words</span>
 								<span class="component-desc">
 									<input type="text" name="require_words" value="$sickbeard.REQUIRE_WORDS" class="form-control input-sm input350" />
-									<div class="clear-left">results not containing all words in the comma separated word list will be ignored</div>
+									<div class="clear-left">results with no word from this list will be ignored<br />
+									separate words with a comma, e.g. "word1,word2,word3"
+									</div>
 								</span>
 							</label>
 						</div>

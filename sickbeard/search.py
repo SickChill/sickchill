@@ -181,25 +181,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
     return True
 
 
-def filter_release_name(name, filter_words):
-    """
-    Filters out results based on filter_words
-
-    name: name to check
-    filter_words : Words to filter on, separated by comma
-
-    Returns: False if the release name is OK, True if it contains one of the filter_words
-    """
-    if filter_words:
-        filters = [re.compile('.*%s.*' % filter.strip(), re.I) for filter in filter_words.split(',')]
-        for regfilter in filters:
-            if regfilter.search(name):
-                logger.log(u"" + name + " contains pattern: " + regfilter.pattern, logger.DEBUG)
-                return True
-
-    return False
-
-
 def pickBestResult(results, show, quality_list=None):
     results = results if isinstance(results, list) else [results]
 
@@ -240,12 +221,12 @@ def pickBestResult(results, show, quality_list=None):
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
             continue
 
-        if show.rls_ignore_words and filter_release_name(cur_result.name, cur_result.show.rls_ignore_words):
+        if show.rls_ignore_words and show_name_helpers.containsAtLeastOneWord(cur_result.name, cur_result.show.rls_ignore_words):
             logger.log(u"Ignoring " + cur_result.name + " based on ignored words filter: " + show.rls_ignore_words,
                        logger.INFO)
             continue
 
-        if show.rls_require_words and not filter_release_name(cur_result.name, cur_result.show.rls_require_words):
+        if show.rls_require_words and not show_name_helpers.containsAtLeastOneWord(cur_result.name, cur_result.show.rls_require_words):
             logger.log(u"Ignoring " + cur_result.name + " based on required words filter: " + show.rls_require_words,
                        logger.INFO)
             continue
