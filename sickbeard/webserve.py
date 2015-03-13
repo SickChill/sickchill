@@ -1707,7 +1707,11 @@ class Home(WebRoot):
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
-
+                    
+                    if epObj.status in Quality.DOWNLOADED and int(status) == WANTED:
+                        logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
+                        epObj.release_name = ""
+                        
                     epObj.status = int(status)
 
                     # mass add to database
