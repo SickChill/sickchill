@@ -18,7 +18,7 @@
 #if $classes.ErrorViewer.errors:
     #for $curError in sorted($classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
         #filter WebSafe
-            $curError.time $curError.message
+$curError.time $curError.message
         #end filter
     #end for
 #end if
