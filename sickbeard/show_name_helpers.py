@@ -37,6 +37,25 @@ resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(be
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
 
+
+def containsAtLeastOneWord(name, words):
+    """
+    Filters out results based on filter_words
+
+    name: name to check
+    words : string of words separated by a ',' or list of words
+
+    Returns: False if the name doesn't contain any word of words list, or the found word from the list.
+    """
+    if isinstance(words, basestring):
+        words = words.split(',')
+    items = [(re.compile('(^|[\W_])%s($|[\W_])' % re.escape(word.strip()), re.I), word.strip()) for word in words]
+    for regexp, word in items:
+        if regexp.search(name):
+            return word
+    return False
+
+
 def filterBadReleases(name, parse=True):
     """
     Filters out non-english and just all-around stupid releases by comparing them
@@ -59,24 +78,21 @@ def filterBadReleases(name, parse=True):
     #    return False
 
     # if any of the bad strings are in the name then say no
+    ignore_words = list(resultFilters)
     if sickbeard.IGNORE_WORDS:
-        resultFilters.extend(sickbeard.IGNORE_WORDS.split(','))
-    filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in resultFilters]
-    for regfilter in filters:
-        if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contained: " + regfilter.pattern + ", ignoring it",
-                       logger.DEBUG)
-            return False
+        ignore_words.extend(sickbeard.IGNORE_WORDS.split(','))
+    word = containsAtLeastOneWord(name, ignore_words)
+    if word:
+        logger.log(u"Invalid scene release: " + name + " contains " + word + ", ignoring it", logger.DEBUG)
+        return False
 
     # if any of the good strings aren't in the name then say no
     if sickbeard.REQUIRE_WORDS:
-        require_words = sickbeard.REQUIRE_WORDS.split(',')
-        filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in require_words]
-        for regfilter in filters:
-            if not regfilter.search(name):
-                logger.log(u"Invalid scene release: " + name + " doesn't contain: " + regfilter.pattern + ", ignoring it",
-                           logger.DEBUG)
-                return False
+        require_words = sickbeard.REQUIRE_WORDS
+        if not containsAtLeastOneWord(name, require_words):
+            logger.log(u"Invalid scene release: " + name + " doesn't contain any of " + sickbeard.REQUIRE_WORDS +
+                       ", ignoring it", logger.DEBUG)
+            return False
 
     return True
 

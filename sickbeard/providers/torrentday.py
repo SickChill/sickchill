@@ -54,10 +54,10 @@ class TorrentDayProvider(generic.TorrentProvider):
 
         self.cache = TorrentDayCache(self)
 
-        self.urls = {'base_url': 'https://torrentday.eu',
-                'login': 'https://torrentday.eu/torrents/',
-                'search': 'https://torrentday.eu/V3/API/API.php',
-                'download': 'https://torrentday.eu/download.php/%s/%s'
+        self.urls = {'base_url': 'https://tdonline.org',
+                'login': 'https://tdonline.org/torrents/',
+                'search': 'https://tdonline.org/V3/API/API.php',
+                'download': 'https://tdonline.org/download.php/%s/%s'
         }
 
         self.url = self.urls['base_url']
@@ -200,11 +200,13 @@ class TorrentDayProvider(generic.TorrentProvider):
 
                 parsedJSON = self.getURL(self.urls['search'], post_data=post_data, json=True)
                 if not parsedJSON:
+                    logger.log(u"No result returned for {0}".format(search_string), logger.DEBUG)
                     continue
 
                 try:
                     torrents = parsedJSON.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
                 except:
+                    logger.log(u"No torrents found in JSON for {0}".format(search_string), logger.DEBUG)
                     continue
 
                 for torrent in torrents:
@@ -214,10 +216,12 @@ class TorrentDayProvider(generic.TorrentProvider):
                     seeders = int(torrent['seed'])
                     leechers = int(torrent['leech'])
 
-                    if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                    if not title or not url:
+                        logger.log(u"Discarding torrent because there's no title or url", logger.DEBUG)
                         continue
 
-                    if not title or not url:
+                    if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                        logger.log(u"Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
                         continue
 
                     item = title, url, seeders, leechers

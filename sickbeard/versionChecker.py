@@ -24,13 +24,17 @@ import urllib
 import tarfile
 import stat
 import traceback
+import db
+import time
 
 import sickbeard
 from sickbeard import notifiers
 from sickbeard import ui
-from sickbeard import logger
+from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
+from lib import requests
+from lib.requests.exceptions import RequestException
 
 import shutil
 import lib.shutil_custom
@@ -55,6 +59,7 @@ class CheckVersion():
                 self.updater = SourceUpdateManager()
 
     def run(self, force=False):
+
         if self.updater:
             # set current branch version
             sickbeard.BRANCH = self.get_branch()
@@ -63,10 +68,142 @@ class CheckVersion():
                 if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
-                    if sickbeard.versionCheckScheduler.action.update():
-                        logger.log(u"Update was successful!")
-                        ui.notifications.message('Update was successful')
-                        sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+                    if self.safe_to_update() == True and self._runbackup() == True:
+                        if sickbeard.versionCheckScheduler.action.update():
+                            logger.log(u"Update was successful!")
+                            ui.notifications.message('Update was successful')
+                            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+
+    def _runbackup(self):
+        # Do a system backup before update
+        logger.log(u"Config backup in progress...")
+        ui.notifications.message('Backup', 'Config backup in progress...')
+        try:
+            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
+            if not os.path.isdir(backupDir):
+                os.mkdir(backupDir)
+    
+            if self._keeplatestbackup(backupDir) == True and self._backup(backupDir) == True:
+                logger.log(u"Config backup successful, updating...")
+                ui.notifications.message('Backup', 'Config backup successful, updating...')
+                return True
+            else:
+                logger.log(u"Config backup failed, aborting update",logger.ERROR)
+                ui.notifications.message('Backup', 'Config backup failed, aborting update')
+                return False
+        except Exception as e:
+            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.ERROR)
+            ui.notifications.message('Backup', 'Config backup failed, aborting update')
+            return False
+
+    def _keeplatestbackup(self,backupDir=None):
+        if backupDir:
+            import glob
+            files = glob.glob(os.path.join(backupDir,'*.zip'))
+            if not files:
+                return True
+            now = time.time()
+            newest = files[0], now - os.path.getctime(files[0])
+            for file in files[1:]:
+                age = now - os.path.getctime(file)
+                if age < newest[1]:
+                    newest = file, age
+            files.remove(newest[0])
+            
+            for file in files:
+                os.remove(file)
+            return True
+        else:
+            return False
+    
+    # TODO: Merge with backup in helpers
+    def _backup(self,backupDir=None):
+        if backupDir:
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
+            source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
+            source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
+            target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+
+            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
+                for dirname in dirs:
+                    if path == sickbeard.CACHE_DIR and dirname not in ['images']:
+                        dirs.remove(dirname)
+                for filename in files:
+                    source.append(os.path.join(path, filename))
+
+            if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def safe_to_update(self):
+
+        def db_safe(self):
+            try:
+                result = self.getDBcompare(sickbeard.BRANCH)
+                if result == 'equal':
+                    logger.log(u"We can proceed with the update. New update has same DB version", logger.DEBUG)
+                    return True
+                elif result == 'upgrade':
+                    logger.log(u"We can't proceed with the update. New update has a new DB version. Please manually update", logger.WARNING)
+                    return False
+                elif result == 'downgrade':
+                    logger.log(u"We can't proceed with the update. New update has a old DB version. It's not possible to downgrade", logger.ERROR)
+                    return False
+                else:
+                    logger.log(u"We can't proceed with the update. Unable to check remote DB version", logger.ERROR)
+                    return False
+            except:
+                logger.log(u"We can't proceed with the update. Unable to compare DB version", logger.ERROR)
+                return False
+        
+        def postprocessor_safe(self):
+            if not sickbeard.autoPostProcesserScheduler.action.amActive:
+                logger.log(u"We can proceed with the update. Post-Processor is not running", logger.DEBUG)
+                return True
+            else:
+                logger.log(u"We can't proceed with the update. Post-Processor is running", logger.DEBUG)
+                return False
+        
+        def showupdate_safe(self):
+            if not sickbeard.showUpdateScheduler.action.amActive:
+                logger.log(u"We can proceed with the update. Shows are not being updated", logger.DEBUG)
+                return True
+            else:
+                logger.log(u"We can't proceed with the update. Shows are being updated", logger.DEBUG)
+                return False
+
+        db_safe = db_safe(self)
+        postprocessor_safe = postprocessor_safe(self)
+        showupdate_safe = showupdate_safe(self)
+
+        if db_safe == True and postprocessor_safe == True and showupdate_safe == True:
+            logger.log(u"Proceeding with auto update", logger.DEBUG)
+            return True
+        else:
+            logger.log(u"Auto update aborted", logger.DEBUG)
+            return False
+
+    def getDBcompare(self, branchDest):
+        try:
+            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
+            response.raise_for_status()
+            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
+            branchDestDBversion = int(match.group('version'))
+            myDB = db.DBConnection()
+            branchCurrDBversion = myDB.checkDBVersion()
+            if branchDestDBversion > branchCurrDBversion:
+                return 'upgrade'
+            elif branchDestDBversion == branchCurrDBversion:
+                return 'equal'
+            else:
+                return 'downgrade'
+        except RequestException as e:
+            return 'error'
+        except Exception as e:
+            return 'error'
 
     def find_install_type(self):
         """
@@ -108,11 +245,9 @@ class CheckVersion():
         if not self.updater.need_update():
             sickbeard.NEWEST_VERSION_STRING = None
 
-            if not sickbeard.AUTO_UPDATE:
+            if force:
+                ui.notifications.message('No update needed')
                 logger.log(u"No update needed")
-
-                if force:
-                    ui.notifications.message('No update needed')
 
             # no updates needed
             return False
@@ -186,6 +321,7 @@ class GitUpdateManager(UpdateManager):
             logger.log(u"Not using: " + main_git, logger.DEBUG)
 
         # trying alternatives
+
 
         alternative_git = []
 

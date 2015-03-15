@@ -1,3 +1,7 @@
+#compiler-settings
+useLegacyImportMode = False
+#end compiler-settings
+
 #import sickbeard
 #from sickbeard import db
 #from sickbeard.helpers import anon_url
@@ -38,6 +42,27 @@
         You don't have version checking turned on. Please turn on "Check for Update" in Config > General.<br />
 #end if
 	</td></tr>
+
+#set $sr_user = None
+#try
+#import pwd
+#set $sr_user = $pwd.getpwuid(os.getuid()).pw_name
+#except ImportError
+#import getpass
+#set $sr_user = $getpass.getuser()
+#end try
+#if $sr_user:
+    <tr><td class="infoTableHeader">SR User:</td><td class="infoTableCell">$sr_user</td></tr>
+#end if
+
+#try
+#import locale
+#set $sr_locale = $locale.getdefaultlocale()
+    <tr><td class="infoTableHeader">SR Locale:</td><td class="infoTableCell">$sr_locale</td></tr>
+#except
+#pass
+#end try
+
     <tr><td class="infoTableHeader">SR Config file:</td><td class="infoTableCell">$sickbeard.CONFIG_FILE</td></tr>
     <tr><td class="infoTableHeader">SR Database file:</td><td class="infoTableCell">$db.dbFilename()</td></tr>
     <tr><td class="infoTableHeader">SR Cache Dir:</td><td class="infoTableCell">$sickbeard.CACHE_DIR</td></tr>

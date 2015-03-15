@@ -1469,7 +1469,7 @@ def halt():
                     ADBA_CONNECTION.join(10)
                 except:
                     pass
-
+            
             __INITIALIZED__ = False
             started = False
 

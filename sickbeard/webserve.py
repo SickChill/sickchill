@@ -57,6 +57,7 @@ from lib.unrar2 import RarFile
 from lib import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
+from versionChecker import CheckVersion
 
 try:
     import json
@@ -1073,76 +1074,26 @@ class Home(WebRoot):
         return self.redirect('/home/')
 
     def update(self, pid=None):
+        
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
+            
+        checkversion = CheckVersion()
+        backup = checkversion._runbackup()
 
-        def _keeplatestbackup(backupDir):
-            import glob
-            files = glob.glob(os.path.join(backupDir,'*.zip'))
-            if not files:
-                return True
-            now = time.time()
-            newest = files[0], now - os.path.getctime(files[0])
-            for file in files[1:]:
-                age = now - os.path.getctime(file)
-                if age < newest[1]:
-                    newest = file, age
-            files.remove(newest[0])
+        if backup == True:
 
-            for file in files:
-                os.remove(file)
-        
-        # TODO: Merge with backup in helpers
-        def _backup(backupDir=None):
-            if backupDir:
-                source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
-                source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
-                source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
-                target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
-
-                for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
-                    for dirname in dirs:
-                        if path == sickbeard.CACHE_DIR and dirname not in ['images']:
-                            dirs.remove(dirname)
-                    for filename in files:
-                        source.append(os.path.join(path, filename))
-
-                if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
-                    return True
-                else:
-                    return False
+            if sickbeard.versionCheckScheduler.action.update():
+                # do a hard restart
+                sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+            
+                t = PageTemplate(rh=self, file="restart_bare.tmpl")
+                return t.respond()
             else:
-                return False
-
-        # Do a system backup
-        ui.notifications.message('Backup', 'Config backup in progress...')
-        try:
-            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
-            if not os.path.isdir(backupDir):
-                os.mkdir(backupDir)
-
-            _keeplatestbackup(backupDir)
-
-            if _backup(backupDir):
-                ui.notifications.message('Backup', 'Config backup successful, updating...')
-            else:
-                ui.notifications.message('Backup', 'Config backup failed, aborting update')
-                return self.redirect('/home/')
-
-        except Exception as e:
-            ui.notifications.message('Backup', 'Config backup failed, aborting update')
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.DEBUG)
-            return self.redirect('/home/')
-
-        if sickbeard.versionCheckScheduler.action.update():
-            # do a hard restart
-            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
-
-            t = PageTemplate(rh=self, file="restart_bare.tmpl")
-            return t.respond()
+                return self._genericMessage("Update Failed",
+                                            "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self._genericMessage("Update Failed",
-                                        "Update wasn't successful, not restarting. Check your log for more information.")
+            return self.redirect('/home/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
@@ -1154,31 +1105,21 @@ class Home(WebRoot):
             return self.redirect('/home')
 
     def getDBcompare(self, branchDest=None):
-        from lib import requests
-        from lib.requests.exceptions import RequestException
-        if not branchDest:
-            return json.dumps({ "status": "error", 'message': 'branchDest empty' })
-        try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
-            response.raise_for_status()
-            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
-            branchDestDBversion = int(match.group('version'))
-            myDB = db.DBConnection()
-            branchCurrDBversion = myDB.checkDBVersion()
-            if branchDestDBversion > branchCurrDBversion:
-                logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'upgrade' })
-            elif branchDestDBversion == branchCurrDBversion:
-                logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'equal' })
-            else:
-                logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'downgrade' })
-        except RequestException as e:
-            logger.log(u"Checkout branch couldn't compare DB version - Requests error", logger.ERROR)
-            return json.dumps({ "status": "error", 'message': 'Requests error' })
-        except Exception as e:
-            logger.log(u"Checkout branch couldn't compare DB version - General exception", logger.ERROR)
+
+        checkversion = CheckVersion()
+        db_status = checkversion.getDBcompare(branchDest)
+
+        if db_status == 'upgrade':
+            logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'upgrade' })
+        elif db_status == 'equal':
+            logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'equal' })
+        elif db_status == 'downgrade':
+            logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'downgrade' })
+        else:
+            logger.log(u"Checkout branch couldn't compare DB version.", logger.ERROR)
             return json.dumps({ "status": "error", 'message': 'General exception' })
 
     def displayShow(self, show=None):
@@ -1766,7 +1707,11 @@ class Home(WebRoot):
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
-
+                    
+                    if epObj.status in Quality.DOWNLOADED and int(status) == WANTED:
+                        logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
+                        epObj.release_name = ""
+                        
                     epObj.status = int(status)
 
                     # mass add to database
@@ -1791,7 +1736,7 @@ class Home(WebRoot):
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
 
-        if int(status) == WANTED:
+        if int(status) == WANTED and not showObj.paused:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
 
@@ -1807,7 +1752,9 @@ class Home(WebRoot):
 
             if segments:
                 ui.notifications.message("Backlog started", msg)
-
+        elif int(status) == WANTED and showObj.paused:
+            logger.log(u"Some episodes were set to wanted, but " + showObj.name + " is paused. Not adding to Backlog until show is unpaused")
+            
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'

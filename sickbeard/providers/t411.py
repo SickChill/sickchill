@@ -34,7 +34,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
-from sickbeard.helpers import sanitizeSceneName
+from sickbeard.helpers import sanitizeSceneName, arithmeticEval
 from sickbeard.exceptions import ex
 
 
@@ -84,11 +84,48 @@ class T411Provider(generic.TorrentProvider):
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
 
+        if re.search('confirmer le captcha', response.text.lower()):
+            logger.log(u'Too many login attempts. A captcha is displayed.', logger.INFO)
+            response = self.solveCaptcha(response, login_params)
+
         if not re.search('/users/logout/', response.text.lower()):
             logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
             return False
 
         return True
+
+    def solveCaptcha(self, response, login_params):
+        """
+        When trying to connect too many times with wrong password, a captcha can be requested.
+        This captcha is really simple and can be solved by the provider.
+
+        <label for="pass">204 + 65 = </label>
+            <input type="text" size="40" name="captchaAnswer" id="lgn" value=""/>
+            <input type="hidden" name="captchaQuery" value="204 + 65 = ">
+            <input type="hidden" name="captchaToken" value="005d54a7428aaf587460207408e92145">
+        <br/>
+
+        :param response: initial login output
+        :return: response after captcha resolution
+        """
+        with BS4Parser(response.text, features=["html5lib", "permissive"]) as html:
+            query = html.find('input', {'name': 'captchaQuery'})
+            token = html.find('input', {'name': 'captchaToken'})
+            if not query or not token:
+                logger.log(u'Unable to solve login captcha.', logger.ERROR)
+                return response
+
+            query_expr = query.attrs['value'].strip('= ')
+            logger.log(u'Captcha query: ' + query_expr, logger.DEBUG)
+            answer = arithmeticEval(query_expr)
+
+            logger.log(u'Captcha answer: %s' % answer, logger.DEBUG)
+
+            login_params['captchaAnswer'] = answer
+            login_params['captchaQuery'] = query.attrs['value']
+            login_params['captchaToken'] = token.attrs['value']
+
+            return self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False, headers=self.headers)
 
     def _get_season_search_strings(self, ep_obj):
 

@@ -43,7 +43,7 @@ def copyfile_custom(src, dst):
         for x in iter(lambda: os.read(fin, BUFFER_SIZE), ""):
             os.write(fout, x)
     except Exception as e:
-        raise e
+        raise
     finally:
         try:
             os.close(fin)

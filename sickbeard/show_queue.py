@@ -78,16 +78,13 @@ class ShowQueue(generic_queue.GenericQueue):
     def updateShow(self, show, force=False):
 
         if self.isBeingAdded(show):
-            raise exceptions.CantUpdateException(
-                "Show is still being added, wait until it is finished before you update.")
+            logger.log(str(show.name) + u" is still being added, wait until it is finished before you update.",logger.DEBUG)
 
         if self.isBeingUpdated(show):
-            raise exceptions.CantUpdateException(
-                "This show is already being updated, can't update again until it's done.")
+            logger.log(str(show.name) + u" is already being updated by Post-processor or manually started, can't update again until it's done.",logger.DEBUG)
 
         if self.isInUpdateQueue(show):
-            raise exceptions.CantUpdateException(
-                "This show is already being updated, can't update again until it's done.")
+            logger.log(str(show.name) + u" is in process of being updated by Post-processor or manually started, can't update again until it's done.",logger.DEBUG)
 
         if not force:
             queueItemObj = QueueItemUpdate(show)
