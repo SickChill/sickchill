@@ -149,6 +149,10 @@ class GenericClient(object):
             if len(result.hash) == 32:
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
+            if not result.content:
+                logger.log('Torrent without content', logger.ERROR)
+                raise
+
             try:
                 torrent_bdecode = bdecode(result.content)
             except BTFailure as e:
