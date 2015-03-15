@@ -151,7 +151,7 @@ class GenericClient(object):
         else:
             try:
                 torrent_bdecode = bdecode(result.content)
-            except BTFailure as e:
+            except Exception as e:
                 logger.log('Unable to bdecode torrent', logger.ERROR)
                 logger.log('Torrent bencoded data: {0}'.format(str(result.content)), logger.DEBUG)
                 raise
