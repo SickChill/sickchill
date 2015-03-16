@@ -224,7 +224,7 @@ class HoundDawgsProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url
-                            logger.log(u"Found result: " + title.replace(' ','.') + "(" + download_url + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
 
                             items[mode].append(item)
 
