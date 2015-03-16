@@ -210,7 +210,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title + "(" + download_url + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
 
                             items[mode].append(item)
 
