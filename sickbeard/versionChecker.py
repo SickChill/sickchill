@@ -387,7 +387,7 @@ class GitUpdateManager(UpdateManager):
 
         elif exit_status == 1:
             if 'stash' in output:
-                logger.log(u"Please enable 'git reset' in settings or stash your changes in local files")
+                logger.log(u"Please enable 'git reset' in settings or stash your changes in local files",logger.WARNING)
             else:
                 logger.log(cmd + u" returned : " + str(output), logger.ERROR)
             exit_status = 1
