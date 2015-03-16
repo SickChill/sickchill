@@ -495,7 +495,7 @@ DELETE_FAILED = False
 
 EXTRA_SCRIPTS = []
 
-IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
+IGNORE_WORDS = "core2hd,dutch,swedish,reenc,MrLss"
 REQUIRE_WORDS = ""
 SYNC_FILES = "!sync,lftp-pget-status,part,bts"
 
@@ -1469,7 +1469,7 @@ def halt():
                     ADBA_CONNECTION.join(10)
                 except:
                     pass
-            
+
             __INITIALIZED__ = False
             started = False
 
