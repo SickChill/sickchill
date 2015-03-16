@@ -94,7 +94,7 @@ class Quality:
     RAWHDTV = 1 << 3  # 8  -- 720p/1080i mpeg2 (trollhd releases)
     FULLHDTV = 1 << 4  # 16 -- 1080p HDTV (QCF releases)
     HDWEBDL = 1 << 5  # 32
-    FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl                        
+    FULLHDWEBDL = 1 << 6  # 64 -- 1080p web-dl
     HDBLURAY = 1 << 7  # 128
     FULLHDBLURAY = 1 << 8  # 256
 
@@ -174,7 +174,7 @@ class Quality:
     @staticmethod
     def sceneQuality(name, anime=False):
         """
-        Return The quality from the scene episode File 
+        Return The quality from the scene episode File
         """
         if not name:
             return Quality.UNKNOWN
@@ -210,24 +210,25 @@ class Quality:
         if checkName(["(pdtv|hdtv|dsr|tvrip).(xvid|x264|h.?264)"], all) and not checkName(["(720|1080)[pi]"], all) and\
                 not checkName(["hr.ws.pdtv.x264"], any):
             return Quality.SDTV
-        elif checkName(["web.dl|webrip", "xvid|x264|h.?264"], all) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName(["videomann"], all) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDTV
-        elif checkName(["(dvdrip|b[r|d]rip)(.ws)?.(xvid|divx|x264)"], any) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName(["web.dl|web(hd)?rip", "xvid|x264|h.?264"], all) and not checkName(["(720|1080)[pi]"], all):
+            return Quality.SDTV
+        elif checkName(["(dvdrip|ituneshd|blurayrip|b[r|d](rip)?)(.ws)?.(xvid|divx|x264)"], any) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDDVD
-        elif checkName(["720p", "hdtv", "x264"], all) or checkName(["hr.ws.pdtv.x264"], any) and not checkName(
-                ["(1080)[pi]"], all):
+        elif checkName(["720p", "hdtv", "x264"], all) or checkName(["hr.ws.pdtv.x264"], any) and not checkName(["(1080)[pi]"], all) or checkName(["videomann", "720p"], all):
             return Quality.HDTV
         elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?264"], all):
             return Quality.RAWHDTV
         elif checkName(["1080p", "hdtv", "x264"], all):
             return Quality.FULLHDTV
-        elif checkName(["720p", "web.dl|webrip"], all) or checkName(["720p", "itunes", "h.?264"], all):
+        elif checkName(["720p", "web.?dl|webrip|webhd(rip)?|netflixhd"], all) or checkName(["720p", "(webhd|itunes)", "(h|x).?264"], all) or checkName(["720p", "(webhd|itunes)", "avc"], all):
             return Quality.HDWEBDL
-        elif checkName(["1080p", "web.dl|webrip"], all) or checkName(["1080p", "itunes", "h.?264"], all):
+        elif checkName(["1080p", "web.?dl|webrip|webhd(rip)?|netflixhd"], all) or checkName(["1080p", "(webhd|itunes)", "(h|x).?264"], all) or checkName(["1080p", "(webhd|itunes)", "avc"], all):
             return Quality.FULLHDWEBDL
-        elif checkName(["720p", "bluray|hddvd|b[r|d]rip", "x264"], all):
+        elif checkName(["720p", "bluray|hddvd|b[r|d](rip)?", "(h|x)264"], all):
             return Quality.HDBLURAY
-        elif checkName(["1080p", "bluray|hddvd|b[r|d]rip", "x264"], all):
+        elif checkName(["1080p", "bluray|hddvd|b[r|d](rip)?", "(h|x)264"], all):
             return Quality.FULLHDBLURAY
         else:
             return Quality.UNKNOWN
@@ -291,7 +292,7 @@ ANY = Quality.combineQualities(
     [Quality.SDTV, Quality.SDDVD, Quality.HDTV, Quality.FULLHDTV, Quality.HDWEBDL, Quality.FULLHDWEBDL,
      Quality.HDBLURAY, Quality.FULLHDBLURAY, Quality.UNKNOWN], [])  # SD + HD
 
-# legacy template, cant remove due to reference in mainDB upgrade?                                                                                                                                        
+# legacy template, cant remove due to reference in mainDB upgrade?
 BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [Quality.HDTV])
 
 qualityPresets = (SD, HD, HD720p, HD1080p, ANY)
