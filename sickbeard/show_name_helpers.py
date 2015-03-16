@@ -37,6 +37,10 @@ resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(be
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
 
+languageMap = {
+    "de": ["german","videoman"],
+    "fr": ["french"]
+}
 
 def containsAtLeastOneWord(name, words):
     """
@@ -55,14 +59,35 @@ def containsAtLeastOneWord(name, words):
             return word
     return False
 
+def validReleaseForShowLang(name, showlang):
+    """
+    Filters out results based on the shows language
+
+    name: name to check
+    showlang: the ISO 3166-2 code of the language (de, en) etc
+
+    Returns: False if the release is not falid for the given language
+    """
+    if showlang in languageMap:
+        if not containsAtLeastOneWord(name, languageMap[showlang]):
+            logger.log(u"Ignoring " + name + " based on show language words filter '%s': %s" % (showlang, languageMap[showlang]), logger.INFO)
+            return False
+    #check for each other languages words, if present it's not a valid result
+    for lang in languageMap:
+        if lang != showlang and containsAtLeastOneWord(name, languageMap[lang]):
+            logger.log(u"Ignoring " + name + " because it contains at least one language word filters for languge '%s': %s" % (lang, languageMap[lang]), logger.INFO)
+            return False
+
+    return True
+
 
 def filterBadReleases(name, parse=True):
     """
     Filters out non-english and just all-around stupid releases by comparing them
     to the resultFilters contents.
-    
+
     name: the release name to check
-    
+
     Returns: True if the release name is OK, False if it's bad.
     """
 
@@ -100,9 +125,9 @@ def filterBadReleases(name, parse=True):
 def sceneToNormalShowNames(name):
     """
         Takes a show name from a scene dirname and converts it to a more "human-readable" format.
-    
+
     name: The show name to convert
-    
+
     Returns: a list of all the possible "normal" names
     """
 
@@ -286,9 +311,9 @@ def allPossibleShowNames(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
     country codes on the end, eg. "Show Name (AU)", and any scene exception names.
-    
+
     show: a TVShow object that we should get the names of
-    
+
     Returns: a list of all the possible show names
     """
 
