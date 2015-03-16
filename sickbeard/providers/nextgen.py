@@ -197,7 +197,7 @@ class NextGenProvider(generic.TorrentProvider):
 
             for search_string in search_params[mode]:
 
-                searchURL = self.urls['search'] % (search_string, self.categories)
+                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
                 logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
                 data = self.getURL(searchURL)
