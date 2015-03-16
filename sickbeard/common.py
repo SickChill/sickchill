@@ -29,7 +29,7 @@ mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
                    'ogm', 'mp4', 'iso', 'img', 'divx',
                    'm2ts', 'm4v', 'ts', 'flv', 'f4v',
                    'mov', 'rmvb', 'vob', 'dvr-ms', 'wtv',
-                   'ogv', '3gp', 'webm']
+                   'ogv', '3gp', 'webm', 'tp']
 
 subtitleExtensions = ['srt', 'sub', 'ass', 'idx', 'ssa']
 
