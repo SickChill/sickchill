@@ -249,7 +249,7 @@ class NextGenProvider(generic.TorrentProvider):
                                     continue
 
                                 item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name + " (" + torrent_details_url + ")",
+                                logger.log(u"Found result: " + torrent_name.replace(' ','.') + " (" + torrent_details_url + ")",
                                            logger.DEBUG)
                                 items[mode].append(item)
 
