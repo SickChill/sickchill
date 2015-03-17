@@ -127,7 +127,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
             elif ep_obj.show.anime:
                 ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
             else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  #1) showName SXX
+                ep_string = show_name + '.S%02d*' % int(ep_obj.scene_season)  #1) showName SXX
 
             search_string['Season'].append(re.sub('\.', '+', ep_string))
 
@@ -181,7 +181,6 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
                 if isinstance(search_string, unicode):
                     search_string = unidecode(search_string)
-
 
                 searchURL = self.urls['search'] % (search_string)
 
