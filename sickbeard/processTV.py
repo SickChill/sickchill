@@ -119,7 +119,7 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -251,7 +251,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     
                     #Delete all file not needed
                     if process_method != "move" or not result.result \
-                            or type == "manual":  #Avoid to delete files if is Manual PostProcessing
+                            or (type == "manual" and not delete_on):  #Avoid to delete files if is Manual PostProcessing
                         continue
     
                     delete_files(processPath, notwantedFiles, result)

@@ -2099,7 +2099,7 @@ class HomePostProcess(Home):
         return t.respond()
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, failed="0", type="auto", *args, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
 
         if failed == "0":
             failed = False
@@ -2115,12 +2115,17 @@ class HomePostProcess(Home):
             is_priority = True
         else:
             is_priority = False
-
+            
+        if delete_on in ["on", "1"]:
+            delete_on = True
+        else:
+            delete_on = False
+            
         if not dir:
             return self.redirect("/home/postprocess/")
         else:
             result = processTV.processDir(dir, nzbName, process_method=process_method, force=force,
-                                          is_priority=is_priority, failed=failed, type=type)
+                                          is_priority=is_priority, delete_on=delete_on, failed=failed, type=type)
             if quiet is not None and int(quiet) == 1:
                 return result
 
