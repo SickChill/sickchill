@@ -10,6 +10,7 @@ from sickbeard.clients import http_error_code
 from lib.bencode import bencode, bdecode
 from lib import requests
 from lib.requests import exceptions
+from lib.bencode.BTL import BTFailure
 
 class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
@@ -148,7 +149,21 @@ class GenericClient(object):
             if len(result.hash) == 32:
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
-            info = bdecode(result.content)["info"]
+            if not result.content:
+                logger.log('Torrent without content', logger.ERROR)
+                raise Exception('Torrent without content')
+
+            try:
+                torrent_bdecode = bdecode(result.content)
+            except BTFailure as e:
+                logger.log('Unable to bdecode torrent', logger.ERROR)
+                logger.log('Torrent bencoded data: {0}'.format(str(result.content)), logger.DEBUG)
+                raise
+            try:
+                info = torrent_bdecode["info"]
+            except Exception as e:
+                logger.log('Unable to find info field in torrent', logger.ERROR)
+                raise
             result.hash = sha1(bencode(info)).hexdigest()
 
         return result

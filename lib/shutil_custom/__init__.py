@@ -1,7 +1,10 @@
 import os
 import platform
 import stat
-from shutil import SpecialFileError, Error
+try:
+    from shutil import SpecialFileError, Error
+except:
+    from shutil import Error
 from shutil import _samefile
 
 
@@ -19,7 +22,10 @@ def copyfile_custom(src, dst):
         else:
             # XXX What about other special files? (sockets, devices...)
             if stat.S_ISFIFO(st.st_mode):
-                raise SpecialFileError("`%s` is a named pipe" % fn)
+                try:
+                    raise SpecialFileError("`%s` is a named pipe" % fn)
+                except NameError:
+                    raise Error("`%s` is a named pipe" % fn)
 
     try:
         # Windows
@@ -37,7 +43,10 @@ def copyfile_custom(src, dst):
         for x in iter(lambda: os.read(fin, BUFFER_SIZE), ""):
             os.write(fout, x)
     except Exception as e:
-        raise e
+        raise
     finally:
-        os.close(fin)
-        os.close(fout)
+        try:
+            os.close(fin)
+            os.close(fout)
+        except:
+            pass

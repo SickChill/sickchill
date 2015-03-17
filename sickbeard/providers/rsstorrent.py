@@ -33,7 +33,7 @@ from lib.bencode import bdecode
 
 
 class TorrentRssProvider(generic.TorrentProvider):
-    def __init__(self, name, url, cookies='', search_mode='eponly', search_fallback=False, enable_daily=False,
+    def __init__(self, name, url, cookies='', titleTAG='title', search_mode='eponly', search_fallback=False, enable_daily=False,
                  enable_backlog=False):
         generic.TorrentProvider.__init__(self, name)
         self.cache = TorrentRssCache(self)
@@ -51,11 +51,13 @@ class TorrentRssProvider(generic.TorrentProvider):
         self.enable_daily = enable_daily
         self.enable_backlog = enable_backlog
         self.cookies = cookies
+        self.titleTAG = titleTAG
 
     def configStr(self):
-        return "%s|%s|%s|%d|%s|%d|%d|%d" % (self.name or '',
+        return "%s|%s|%s|%s|%d|%s|%d|%d|%d" % (self.name or '',
                                             self.url or '',
                                             self.cookies or '',
+                                            self.titleTAG or '',
                                             self.enabled,
                                             self.search_mode or '',
                                             self.search_fallback,
@@ -74,7 +76,7 @@ class TorrentRssProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item.get('title')
+        title = item.get(self.titleTAG)
         if title:
             title = u'' + title
             title = title.replace(' ', '.')

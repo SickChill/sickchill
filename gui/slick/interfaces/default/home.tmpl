@@ -384,7 +384,13 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		<div class="show-date">
 #if $cur_airs_next
     #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
-			<span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</span>
+			<span class="${fuzzydate}">
+                #try
+                    $sbdatetime.sbdatetime.sbfdate($ldatetime)
+                #except ValueError
+                    Invalid date
+                #end try
+            </span>
 #else
     #set $output_html = '?'
     #if None is not $display_status
@@ -536,7 +542,13 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 	
 	#if $cur_airs_next
     #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
-		<td align="center" class="nowrap"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdate($ldatetime)</div><span class="sort_data">$calendar.timegm($ldatetime.timetuple())</span></td>
+		<td align="center" class="nowrap"><div class="${fuzzydate}">
+		#try
+		  $sbdatetime.sbdatetime.sbfdate($ldatetime)
+		#except ValueError
+		  Invalid date
+		#end try
+		</div><span class="sort_data">$calendar.timegm($ldatetime.timetuple())</span></td>
     #else:
     	<td align="center" class="nowrap"></td>
     #end if

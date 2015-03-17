@@ -83,11 +83,13 @@ Filter log by: <select name="logFilter" id="logFilter" class="form-control form-
 #end for
 </select>
 Search log by:
-<input type="text" name="logSearch" id="logSearch" value="#if $logSearch then $logSearch else ""#" class="form-control form-control-inline input-sm" />
+<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="#if $logSearch then $logSearch else ""#" class="form-control form-control-inline input-sm" />
 </div>
 <br />
 <div class="align-left"><pre>
+#filter WebSafe
 $logLines
+#end filter
 </pre>
 </div>
 <br />

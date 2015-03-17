@@ -23,6 +23,7 @@ import datetime
 import urlparse
 import sickbeard
 import generic
+import urllib
 from sickbeard.common import Quality, cpu_presets
 from sickbeard import logger
 from sickbeard import tvcache
@@ -190,7 +191,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                 if search_string == '':
                     continue
                 search_string = str(search_string).replace('.', ' ')
-                searchURL = self.urls['search'] % (search_string, self.categories)
+                searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
@@ -233,7 +234,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                             continue
 
                         item = title, download_url, id, seeders, leechers
-                        logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                        logger.log(u"Found result: " + title.replace(' ','.') + " (" + searchURL + ")", logger.DEBUG)
 
                         items[mode].append(item)
 

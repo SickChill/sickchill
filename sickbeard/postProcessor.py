@@ -167,7 +167,10 @@ class PostProcessor(object):
 
         file_path_list = []
 
-        base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
+        if subfolders:
+            base_name = ek.ek(os.path.basename, file_path).rpartition('.')[0]
+        else:
+            base_name = file_path.rpartition('.')[0]
 
         if not base_name_only:
             base_name = base_name + '.'
@@ -214,7 +217,7 @@ class PostProcessor(object):
         # figure out which files we want to delete
         file_list = [file_path]
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path)
+            file_list = file_list + self.list_associated_files(file_path, base_name_only=True, subfolders=True)
 
         if not file_list:
             self._log(u"There were no files associated with " + file_path + ", not deleting anything", logger.DEBUG)
@@ -324,7 +327,7 @@ class PostProcessor(object):
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
                 self._log("Unable to move file " + cur_file_path + " to " + new_file_path + ": " + str(e), logger.ERROR)
-                raise e
+                raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move,
                                       subtitles=subtitles)
@@ -345,7 +348,7 @@ class PostProcessor(object):
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
                 logger.log("Unable to copy file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
-                raise e
+                raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
                                       subtitles=subtitles)
@@ -367,7 +370,7 @@ class PostProcessor(object):
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
-                raise e
+                raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link)
 
@@ -387,7 +390,7 @@ class PostProcessor(object):
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
-                raise e
+                raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_move_and_sym_link)
@@ -489,7 +492,7 @@ class PostProcessor(object):
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 
         # parse the name to break it into show name, season, and episode
-        np = NameParser(file, tryIndexers=True, convert=True)
+        np = NameParser(file, tryIndexers=True, trySceneExceptions=True, convert=True)
         parse_result = np.parse(name)
 
         # show object
@@ -931,12 +934,12 @@ class PostProcessor(object):
 
                 trakt_data.append((cur_ep.season, cur_ep.episode))
 
-        data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+        data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
             logger.log(u"Remove episodes, showid: indexerid " + str(show.indexerid) + ", Title " + str(show.name) + " to Traktv Watchlist", logger.DEBUG)
             if data:
-                notifiers.trakt_notifier.update_watchlist(show, data_obj=data, update="remove")
+                notifiers.trakt_notifier.update_watchlist(show, data_episode=data, update="remove")
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()

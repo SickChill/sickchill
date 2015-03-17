@@ -1,0 +1,48 @@
+# SickBeard
+#
+# Configuration Notes
+#
+#    - Adjust setuid and setgid to the user/group you want Sickbeard to run as.
+#    - For all other settings edit /etc/default/sickbeard instead of this file.
+#      The following settings can be set in /etc/default/sickbeard and are used to run Sickbeard.
+#       SB_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickbeard
+#       SB_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickbeard
+#       PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python
+#       SB_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickbeard, i.e. " --config=/home/sickbeard/config.ini"
+
+description "SickBeard Daemon"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+# give time to shutdown
+kill timeout 30
+
+setuid sickbeard
+setgid sickbeard
+
+respawn
+respawn limit 10 5
+
+script
+    if [ -f /etc/default/sickbeard ]; then
+        . /etc/default/sickbeard
+    else
+        echo "/etc/default/sickbeard not found using default settings.";
+    fi
+    # Path to app SB_HOME=path_to_app_SickBeard.py
+    APP_PATH=${SB_HOME-/opt/sickbeard}
+
+    # Data directory where sickbeard.db, cache and logs are stored
+    DATA_DIR=${SB_DATA-/opt/sickbeard}
+
+    # path to python bin
+    DAEMON=${PYTHON_BIN-/usr/bin/python}
+
+    # Extra daemon option like: SB_OPTS=" --config=/home/sickbeard/config.ini"
+    EXTRA_DAEMON_OPTS=${SB_OPTS-}
+
+    DAEMON_OPTS=" SickBeard.py -q --daemon --nolaunch --datadir=${DATA_DIR} ${EXTRA_DAEMON_OPTS}"
+    chdir $APP_PATH
+    exec $DAEMON $DAEMON_OPTS
+end script

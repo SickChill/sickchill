@@ -57,6 +57,7 @@ from lib.unrar2 import RarFile
 from lib import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
+from versionChecker import CheckVersion
 
 try:
     import json
@@ -1073,76 +1074,26 @@ class Home(WebRoot):
         return self.redirect('/home/')
 
     def update(self, pid=None):
+        
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
+            
+        checkversion = CheckVersion()
+        backup = checkversion._runbackup()
 
-        def _keeplatestbackup(backupDir):
-            import glob
-            files = glob.glob(os.path.join(backupDir,'*.zip'))
-            if not files:
-                return True
-            now = time.time()
-            newest = files[0], now - os.path.getctime(files[0])
-            for file in files[1:]:
-                age = now - os.path.getctime(file)
-                if age < newest[1]:
-                    newest = file, age
-            files.remove(newest[0])
+        if backup == True:
 
-            for file in files:
-                os.remove(file)
-        
-        # TODO: Merge with backup in helpers
-        def _backup(backupDir=None):
-            if backupDir:
-                source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE]
-                source.append(os.path.join(sickbeard.DATA_DIR, 'failed.db'))
-                source.append(os.path.join(sickbeard.DATA_DIR, 'cache.db'))
-                target = os.path.join(backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
-
-                for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
-                    for dirname in dirs:
-                        if path == sickbeard.CACHE_DIR and dirname not in ['images']:
-                            dirs.remove(dirname)
-                    for filename in files:
-                        source.append(os.path.join(path, filename))
-
-                if helpers.backupConfigZip(source, target, sickbeard.DATA_DIR):
-                    return True
-                else:
-                    return False
+            if sickbeard.versionCheckScheduler.action.update():
+                # do a hard restart
+                sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+            
+                t = PageTemplate(rh=self, file="restart.tmpl")
+                return t.respond()
             else:
-                return False
-
-        # Do a system backup
-        ui.notifications.message('Backup', 'Config backup in progress...')
-        try:
-            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
-            if not os.path.isdir(backupDir):
-                os.mkdir(backupDir)
-
-            _keeplatestbackup(backupDir)
-
-            if _backup(backupDir):
-                ui.notifications.message('Backup', 'Config backup successful, updating...')
-            else:
-                ui.notifications.message('Backup', 'Config backup failed, aborting update')
-                return self.redirect('/home/')
-
-        except Exception as e:
-            ui.notifications.message('Backup', 'Config backup failed, aborting update')
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)),logger.DEBUG)
-            return self.redirect('/home/')
-
-        if sickbeard.versionCheckScheduler.action.update():
-            # do a hard restart
-            sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
-
-            t = PageTemplate(rh=self, file="restart_bare.tmpl")
-            return t.respond()
+                return self._genericMessage("Update Failed",
+                                            "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self._genericMessage("Update Failed",
-                                        "Update wasn't successful, not restarting. Check your log for more information.")
+            return self.redirect('/home/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
@@ -1154,31 +1105,21 @@ class Home(WebRoot):
             return self.redirect('/home')
 
     def getDBcompare(self, branchDest=None):
-        from lib import requests
-        from lib.requests.exceptions import RequestException
-        if not branchDest:
-            return json.dumps({ "status": "error", 'message': 'branchDest empty' })
-        try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py")
-            response.raise_for_status()
-            match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
-            branchDestDBversion = int(match.group('version'))
-            myDB = db.DBConnection()
-            branchCurrDBversion = myDB.checkDBVersion()
-            if branchDestDBversion > branchCurrDBversion:
-                logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'upgrade' })
-            elif branchDestDBversion == branchCurrDBversion:
-                logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'equal' })
-            else:
-                logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
-                return json.dumps({ "status": "success", 'message': 'downgrade' })
-        except RequestException as e:
-            logger.log(u"Checkout branch couldn't compare DB version - Requests error", logger.ERROR)
-            return json.dumps({ "status": "error", 'message': 'Requests error' })
-        except Exception as e:
-            logger.log(u"Checkout branch couldn't compare DB version - General exception", logger.ERROR)
+
+        checkversion = CheckVersion()
+        db_status = checkversion.getDBcompare(branchDest)
+
+        if db_status == 'upgrade':
+            logger.log(u"Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'upgrade' })
+        elif db_status == 'equal':
+            logger.log(u"Checkout branch has the same DB version - Equal", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'equal' })
+        elif db_status == 'downgrade':
+            logger.log(u"Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+            return json.dumps({ "status": "success", 'message': 'downgrade' })
+        else:
+            logger.log(u"Checkout branch couldn't compare DB version.", logger.ERROR)
             return json.dumps({ "status": "error", 'message': 'General exception' })
 
     def displayShow(self, show=None):
@@ -1563,7 +1504,6 @@ class Home(WebRoot):
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
         if not paused:
-            sickbeard.traktRollingScheduler.action.refreshEpisodeWatched()
             if not sickbeard.traktRollingScheduler.action.updateWantedList():
                 errors.append("Unable to force an update on wanted episode")
 
@@ -1771,7 +1711,11 @@ class Home(WebRoot):
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
-
+                    
+                    if epObj.status in Quality.DOWNLOADED and int(status) == WANTED:
+                        logger.log(u"Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
+                        epObj.release_name = ""
+                        
                     epObj.status = int(status)
 
                     # mass add to database
@@ -1779,7 +1723,7 @@ class Home(WebRoot):
 
                     trakt_data.append((epObj.season, epObj.episode))
 
-            data = notifiers.trakt_notifier.trakt_data_generate(trakt_data)
+            data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
                 if int(status) in [WANTED, FAILED]:
@@ -1790,13 +1734,13 @@ class Home(WebRoot):
                     upd = "remove"
 
                 if data:
-                    notifiers.trakt_notifier.update_watchlist(showObj, data_obj=data, update=upd)
+                    notifiers.trakt_notifier.update_watchlist(showObj, data_episode=data, update=upd)
 
             if len(sql_l) > 0:
                 myDB = db.DBConnection()
                 myDB.mass_action(sql_l)
 
-        if int(status) == WANTED:
+        if int(status) == WANTED and not showObj.paused:
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
 
@@ -1812,7 +1756,9 @@ class Home(WebRoot):
 
             if segments:
                 ui.notifications.message("Backlog started", msg)
-
+        elif int(status) == WANTED and showObj.paused:
+            logger.log(u"Some episodes were set to wanted, but " + showObj.name + " is paused. Not adding to Backlog until show is unpaused")
+            
         if int(status) == FAILED:
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
@@ -2157,7 +2103,7 @@ class HomePostProcess(Home):
         return t.respond()
 
     def processEpisode(self, dir=None, nzbName=None, jobName=None, quiet=None, process_method=None, force=None,
-                       is_priority=None, failed="0", type="auto", *args, **kwargs):
+                       is_priority=None, delete_on="0", failed="0", type="auto", *args, **kwargs):
 
         if failed == "0":
             failed = False
@@ -2173,12 +2119,17 @@ class HomePostProcess(Home):
             is_priority = True
         else:
             is_priority = False
-
+            
+        if delete_on in ["on", "1"]:
+            delete_on = True
+        else:
+            delete_on = False
+            
         if not dir:
             return self.redirect("/home/postprocess/")
         else:
             result = processTV.processDir(dir, nzbName, process_method=process_method, force=force,
-                                          is_priority=is_priority, failed=failed, type=type)
+                                          is_priority=is_priority, delete_on=delete_on, failed=failed, type=type)
             if quiet is not None and int(quiet) == 1:
                 return result
 
@@ -2447,20 +2398,55 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
-            shows = trakt_api.traktRequest("shows/trending?limit=50&extended=full,images") or []
+            if sickbeard.TRAKT_BLACKLIST_NAME is not None:
+                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+
+            limit_show = 50 + len(not_liked_show)
+
+            shows = trakt_api.traktRequest("shows/trending?limit=" + str(limit_show) + "&extended=full,images") or []
+
+            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
             for show in shows:
                 try:
                     tvdb_id = int(show['show']['ids']['tvdb'])
                     tvrage_id = int(show['show']['ids']['tvrage'] or 0)
                     if not helpers.findCertainShow(sickbeard.showList,
                                                    [tvdb_id, tvrage_id]):
-                        t.trending_shows += [show]
+                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                            if not_liked_show:
+                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
+                                    t.trending_shows += [show]
                 except exceptions.MultipleShowObjectsException:
                     continue
+
+            if sickbeard.TRAKT_BLACKLIST_NAME != '':
+                t.blacklist = True
+            else:
+                t.blacklist = False
+
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return t.respond()
+
+    def addShowToBlacklist(self, indexer_id):
+
+        # URL parameters
+        data = {
+            'shows': [
+                {
+                    'ids': {
+                           'tvdb': indexer_id
+                           }
+                }
+            ]
+        }
+
+        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+
+        result=trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
+
+        return self.redirect('/home/addShows/trendingShows/')
 
     def existingShows(self):
         """
@@ -4194,7 +4180,7 @@ class ConfigProviders(Config):
         return '1'
 
 
-    def canAddTorrentRssProvider(self, name, url, cookies):
+    def canAddTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name:
             return json.dumps({'error': 'Invalid name specified'})
@@ -4202,7 +4188,7 @@ class ConfigProviders(Config):
         providerDict = dict(
             zip([x.getID() for x in sickbeard.torrentRssProviderList], sickbeard.torrentRssProviderList))
 
-        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
 
         if tempProvider.getID() in providerDict:
             return json.dumps({'error': 'Exists as ' + providerDict[tempProvider.getID()].name})
@@ -4214,7 +4200,7 @@ class ConfigProviders(Config):
                 return json.dumps({'error': errMsg})
 
 
-    def saveTorrentRssProvider(self, name, url, cookies):
+    def saveTorrentRssProvider(self, name, url, cookies, titleTAG):
 
         if not name or not url:
             return '0'
@@ -4225,11 +4211,12 @@ class ConfigProviders(Config):
             providerDict[name].name = name
             providerDict[name].url = config.clean_url(url)
             providerDict[name].cookies = cookies
+            providerDict[name].titleTAG = titleTAG
 
             return providerDict[name].getID() + '|' + providerDict[name].configStr()
 
         else:
-            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies)
+            newProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
             sickbeard.torrentRssProviderList.append(newProvider)
             return newProvider.getID() + '|' + newProvider.configStr()
 
@@ -4331,10 +4318,10 @@ class ConfigProviders(Config):
                 if not curTorrentRssProviderStr:
                     continue
 
-                curName, curURL, curCookies = curTorrentRssProviderStr.split('|')
+                curName, curURL, curCookies, curTitleTAG = curTorrentRssProviderStr.split('|')
                 curURL = config.clean_url(curURL)
 
-                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies)
+                newProvider = rsstorrent.TorrentRssProvider(curName, curURL, curCookies, curTitleTAG)
 
                 curID = newProvider.getID()
 
@@ -4343,6 +4330,7 @@ class ConfigProviders(Config):
                     torrentRssProviderDict[curID].name = curName
                     torrentRssProviderDict[curID].url = curURL
                     torrentRssProviderDict[curID].cookies = curCookies
+                    torrentRssProviderDict[curID].curTitleTAG = curTitleTAG
                 else:
                     sickbeard.torrentRssProviderList.append(newProvider)
 
@@ -4592,7 +4580,7 @@ class ConfigNotifications(Config):
                           use_trakt=None, trakt_username=None, trakt_password=None,
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
-                          trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None,
+                          trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None, trakt_blacklist_name=None,
                           trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None, trakt_rolling_default_watched_status=None, 
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
@@ -4717,6 +4705,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
         sickbeard.TRAKT_DISABLE_SSL_VERIFY = config.checkbox_to_value(trakt_disable_ssl_verify)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
+        sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
         sickbeard.TRAKT_USE_ROLLING_DOWNLOAD = config.checkbox_to_value(trakt_use_rolling_download)
         sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
         sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
@@ -4906,7 +4895,7 @@ class ErrorLogs(WebRoot):
         return t.respond()
 
     def haveErrors(self):
-        if len(classes.ErrorViewer.errors) > 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.GIT_AUTOISSUES == 1:
+        if len(classes.ErrorViewer.errors) > 0:
             return True
 
     def clearerrors(self):
@@ -4914,7 +4903,50 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/")
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
+        
+        def Get_Data(Levelmin, data_in, lines_in, regex, Filter, Search, mlines):
+            
+            lastLine = False
+            numLines = lines_in
+            numToShow = min(maxLines, numLines + len(data_in))
+            
+            finalData = [] 
+            
+            for x in reversed(data_in):
 
+                x = ek.ss(x)
+                match = re.match(regex, x)
+
+                if match:
+                    level = match.group(7)
+                    logName = match.group(8)
+                    if level not in logger.reverseNames:
+                        lastLine = False
+                        continue
+
+                    if logSearch and logSearch.lower() in x.lower():
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
+                        lastLine = True
+                        finalData.append(x)
+                        numLines += 1
+                    else:
+                        lastLine = False
+                        continue
+
+                elif lastLine:
+                    finalData.append("AA" + x)
+                    numLines += 1
+
+                
+
+                if numLines >= numToShow:
+                    return finalData
+                
+            return finalData
+            
         t = PageTemplate(rh=self, file="viewlogs.tmpl")
         t.submenu = self.ErrorLogsMenu()
 
@@ -4941,51 +4973,24 @@ class ErrorLogs(WebRoot):
         if logFilter not in logNameFilters:
             logFilter = '<NONE>'
 
-
+        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
         data = []
+        
         if os.path.isfile(logger.logFile):
             with ek.ek(codecs.open, *[logger.logFile, 'r', 'utf-8']) as f:
-                data = f.readlines()
+                data = Get_Data(minLevel, f.readlines(), 0, regex, logFilter, logSearch, maxLines)
+                
+        for i in range (1 , int(sickbeard.LOG_NR)):
+            if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
+                with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
+                        data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        regex = "^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+        
 
-        finalData = []
+               
 
-        numLines = 0
-        lastLine = False
-        numToShow = min(maxLines, len(data))
-
-        for x in reversed(data):
-
-            x = ek.ss(x)
-            match = re.match(regex, x)
-
-            if match:
-                level = match.group(7)
-                logName = match.group(8)
-                if level not in logger.reverseNames:
-                    lastLine = False
-                    continue
-
-                if logSearch and logSearch.lower() in x.lower():
-                    lastLine = True
-                    finalData.append(x)
-                elif not logSearch and logger.reverseNames[level] >= minLevel and (logFilter == '<NONE>' or logName.startswith(logFilter)):
-                    lastLine = True
-                    finalData.append(x)
-                else:
-                    lastLine = False
-                    continue
-
-            elif lastLine:
-                finalData.append("AA" + x)
-
-            numLines += 1
-
-            if numLines >= numToShow:
-                break
-
-        result = "".join(finalData)
+        result = "".join(data)
 
         t.logLines = result
         t.minLevel = minLevel
@@ -4997,6 +5002,7 @@ class ErrorLogs(WebRoot):
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
+            ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
             issue = logger.submit_errors()

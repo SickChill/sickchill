@@ -36,6 +36,8 @@ import base64
 import zipfile
 import datetime
 import errno
+import ast
+import operator
 
 import sickbeard
 import subliminal
@@ -705,6 +707,38 @@ def sanitizeSceneName(name, ezrss=False, anime=False):
         return ''
 
 
+_binOps = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.div,
+    ast.Mod: operator.mod
+}
+
+
+def arithmeticEval(s):
+    """
+    A safe eval supporting basic arithmetic operations.
+
+    :param s: expression to evaluate
+    :return: value
+    """
+    node = ast.parse(s, mode='eval')
+
+    def _eval(node):
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+        elif isinstance(node, ast.Str):
+            return node.s
+        elif isinstance(node, ast.Num):
+            return node.n
+        elif isinstance(node, ast.BinOp):
+            return _binOps[type(node.op)](_eval(node.left), _eval(node.right))
+        else:
+            raise Exception('Unsupported type {}'.format(node))
+
+    return _eval(node.body)
+
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
@@ -917,12 +951,15 @@ def _check_against_names(nameInQuestion, show, season=-1):
     return False
 
 
-def get_show(name, tryIndexers=False):
+def get_show(name, tryIndexers=False, trySceneExceptions=False):
     if not sickbeard.showList:
         return
 
     showObj = None
     fromCache = False
+
+    if not name:
+        return showObj
 
     try:
         # check cache for show
@@ -930,11 +967,18 @@ def get_show(name, tryIndexers=False):
         if cache:
             fromCache = True
             showObj = findCertainShow(sickbeard.showList, int(cache))
-
+        
+        #try indexers    
         if not showObj and tryIndexers:
             showObj = findCertainShow(sickbeard.showList,
                                       searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
-
+        
+        #try scene exceptions
+        if not showObj and trySceneExceptions:
+            ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
+            if ShowID:
+                showObj = findCertainShow(sickbeard.showList, int(ShowID))
+                
         # add show to cache
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)

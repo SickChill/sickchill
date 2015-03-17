@@ -59,11 +59,11 @@ class Video(object):
         self._path = None
         self.hashes = {}
 
-        if isinstance(path, str):
-            path = unicode(path.encode('utf-8'))
-            
+        if isinstance(path, unicode):
+            path = path.encode('utf-8')
+
         self.release = path
-        
+
         if os.path.exists(path):
             self._path = path
             self.size = os.path.getsize(self._path)
@@ -228,9 +228,9 @@ def scan(entry, max_depth=3, scan_filter=None, depth=0):
 
     """
 
-    if isinstance(entry, str):
-        entry = unicode(entry.encode('utf-8'))
-    
+    if isinstance(entry, unicode):
+        entry = entry.encode('utf-8')
+
     if depth > max_depth and max_depth != 0:  # we do not want to search the whole file system except if max_depth = 0
         return []
     if os.path.isdir(entry):  # a dir? recurse

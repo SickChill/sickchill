@@ -22,6 +22,7 @@ import time
 import datetime
 import itertools
 import traceback
+import urllib2
 
 import sickbeard
 
@@ -133,13 +134,29 @@ class TVCache():
         except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
         except Exception, e:
-            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
     def getRSSFeed(self, url, post_data=None, items=[]):
+        handlers = []
+
         if self.provider.proxy.isEnabled():
             self.provider.headers.update({'Referer': self.provider.proxy.getProxyURL()})
-        return RSSFeeds(self.providerID).getFeed(self.provider.proxy._buildURL(url), post_data, self.provider.headers, items)
+        elif sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
+            scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
+            if not scheme:
+                scheme = 'http'
+                address = 'http://' + sickbeard.PROXY_SETTING
+            else:
+                address = sickbeard.PROXY_SETTING
+            handlers = [urllib2.ProxyHandler({scheme: address})]
+
+        return RSSFeeds(self.providerID).getFeed(
+            self.provider.proxy._buildURL(url),
+            post_data,
+            self.provider.headers,
+            items,
+            handlers=handlers)
 
     def _translateTitle(self, title):
         return u'' + title.replace(' ', '.')

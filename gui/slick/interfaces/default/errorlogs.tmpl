@@ -16,9 +16,11 @@
 #end if
 <div class="align-left"><pre>
 #if $classes.ErrorViewer.errors:
-#for $curError in sorted($classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+    #for $curError in sorted($classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+        #filter WebSafe
 $curError.time $curError.message
-#end for
+        #end filter
+    #end for
 #end if
 </pre>
 </div>

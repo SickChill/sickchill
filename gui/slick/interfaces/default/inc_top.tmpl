@@ -90,7 +90,7 @@
 				\$("#SubMenu a:contains('Clear History')").addClass('btn clearhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
 				\$("#SubMenu a:contains('Trim History')").addClass('btn trimhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
 				\$("#SubMenu a[href$='/errorlogs/clearerrors/']").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear Errors');
-				#if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.GIT_AUTOISSUES == 1:
+				#if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
 				\$("#SubMenu a[href$='/errorlogs/submit_errors/']").addClass('btn').html('<span class="ui-icon ui-icon-arrowreturnthick-1-n pull-left"></span> Submit Errors');
 				#end if
 				\$("#SubMenu a:contains('Re-scan')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Re-scan');
@@ -253,7 +253,13 @@
 		</span>
 		</div>
 		#end if
-	  
+	  	
+	  	#if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER
+		<div class="alert alert-danger upgrade-notification" role="alert">
+			<span>You're using the $sickbeard.BRANCH branch. Please use 'master' unless specifically asked</span>
+		</div>
+		#end if
+		
 		#if $sickbeard.NEWEST_VERSION_STRING:	
 		<div class="alert alert-success upgrade-notification" role="alert">
 			<span>$sickbeard.NEWEST_VERSION_STRING</span>

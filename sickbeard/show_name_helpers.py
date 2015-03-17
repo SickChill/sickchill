@@ -37,13 +37,57 @@ resultFilters = ["sub(bed|ed|pack|s)", "(dk|fin|heb|kor|nor|nordic|pl|swe)sub(be
                  "(dir|sample|sub|nfo)fix", "sample", "(dvd)?extras",
                  "dub(bed)?"]
 
+languageMap = {
+    "de": ["german","videoman"],
+    "fr": ["french"]
+}
+
+def containsAtLeastOneWord(name, words):
+    """
+    Filters out results based on filter_words
+
+    name: name to check
+    words : string of words separated by a ',' or list of words
+
+    Returns: False if the name doesn't contain any word of words list, or the found word from the list.
+    """
+    if isinstance(words, basestring):
+        words = words.split(',')
+    items = [(re.compile('(^|[\W_])%s($|[\W_])' % re.escape(word.strip()), re.I), word.strip()) for word in words]
+    for regexp, word in items:
+        if regexp.search(name):
+            return word
+    return False
+
+def validReleaseForShowLang(name, showlang):
+    """
+    Filters out results based on the shows language
+
+    name: name to check
+    showlang: the ISO 3166-2 code of the language (de, en) etc
+
+    Returns: False if the release is not falid for the given language
+    """
+    if showlang in languageMap:
+        if not containsAtLeastOneWord(name, languageMap[showlang]):
+            logger.log(u"Ignoring " + name + " based on show language words filter '%s': %s" % (showlang, languageMap[showlang]), logger.INFO)
+            return False
+    #check for each other languages words, if present it's not a valid result
+    for lang in languageMap:
+        if lang != showlang and containsAtLeastOneWord(name, languageMap[lang]):
+            logger.log(u"Ignoring " + name + " because it contains at least one language word filters for languge '%s': %s" % (lang, languageMap[lang]), logger.INFO)
+            return False
+
+    return True
+
+
 def filterBadReleases(name, parse=True):
     """
     Filters out non-english and just all-around stupid releases by comparing them
     to the resultFilters contents.
-    
+
     name: the release name to check
-    
+
     Returns: True if the release name is OK, False if it's bad.
     """
 
@@ -59,24 +103,21 @@ def filterBadReleases(name, parse=True):
     #    return False
 
     # if any of the bad strings are in the name then say no
+    ignore_words = list(resultFilters)
     if sickbeard.IGNORE_WORDS:
-        resultFilters.extend(sickbeard.IGNORE_WORDS.split(','))
-    filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in resultFilters]
-    for regfilter in filters:
-        if regfilter.search(name):
-            logger.log(u"Invalid scene release: " + name + " contained: " + regfilter.pattern + ", ignoring it",
-                       logger.DEBUG)
-            return False
+        ignore_words.extend(sickbeard.IGNORE_WORDS.split(','))
+    word = containsAtLeastOneWord(name, ignore_words)
+    if word:
+        logger.log(u"Invalid scene release: " + name + " contains " + word + ", ignoring it", logger.DEBUG)
+        return False
 
     # if any of the good strings aren't in the name then say no
     if sickbeard.REQUIRE_WORDS:
-        require_words = sickbeard.REQUIRE_WORDS.split(',')
-        filters = [re.compile('(^|[\W_])%s($|[\W_])' % re.escape(filter.strip()), re.I) for filter in require_words]
-        for regfilter in filters:
-            if not regfilter.search(name):
-                logger.log(u"Invalid scene release: " + name + " doesn't contain: " + regfilter.pattern + ", ignoring it",
-                           logger.DEBUG)
-                return False
+        require_words = sickbeard.REQUIRE_WORDS
+        if not containsAtLeastOneWord(name, require_words):
+            logger.log(u"Invalid scene release: " + name + " doesn't contain any of " + sickbeard.REQUIRE_WORDS +
+                       ", ignoring it", logger.DEBUG)
+            return False
 
     return True
 
@@ -84,9 +125,9 @@ def filterBadReleases(name, parse=True):
 def sceneToNormalShowNames(name):
     """
         Takes a show name from a scene dirname and converts it to a more "human-readable" format.
-    
+
     name: The show name to convert
-    
+
     Returns: a list of all the possible "normal" names
     """
 
@@ -270,9 +311,9 @@ def allPossibleShowNames(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
     country codes on the end, eg. "Show Name (AU)", and any scene exception names.
-    
+
     show: a TVShow object that we should get the names of
-    
+
     Returns: a list of all the possible show names
     """
 
