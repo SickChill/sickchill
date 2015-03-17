@@ -134,8 +134,7 @@ class TVCache():
         except AuthException, e:
             logger.log(u"Authentication error: " + ex(e), logger.ERROR)
         except Exception, e:
-            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + ex(e), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.log(u"Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 
     def getRSSFeed(self, url, post_data=None, items=[]):
         handlers = []
