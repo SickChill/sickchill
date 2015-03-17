@@ -20,7 +20,7 @@ import re
 import traceback
 import datetime
 import urlparse
-
+import urllib
 import sickbeard
 import generic
 
@@ -170,7 +170,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                 if mode == 'RSS':
                     searchURL = self.urls['index'] % self.categories
                 else:
-                    searchURL = self.urls['search'] % (search_string, self.categories)
+                    searchURL = self.urls['search'] % (urllib.quote(search_string), self.categories)
 
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
@@ -210,7 +210,7 @@ class TorrentLeechProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title + "(" + download_url + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
 
                             items[mode].append(item)
 
