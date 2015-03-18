@@ -793,7 +793,6 @@ def initialize(consoleLogging=True):
         RANDOMIZE_PROVIDERS = bool(check_setting_int(CFG, 'General', 'randomize_providers', 0))
 
         ALLOW_HIGH_PRIORITY = bool(check_setting_int(CFG, 'General', 'allow_high_priority', 1))
-        SAB_FORCED = bool(check_setting_int(CFG, 'General', 'sab_forced', 0))
 
         DAILYSEARCH_STARTUP = bool(check_setting_int(CFG, 'General', 'dailysearch_startup', 1))
         BACKLOG_STARTUP = bool(check_setting_int(CFG, 'General', 'backlog_startup', 1))
@@ -858,6 +857,7 @@ def initialize(consoleLogging=True):
         SAB_CATEGORY = check_setting_str(CFG, 'SABnzbd', 'sab_category', 'tv')
         SAB_CATEGORY_ANIME = check_setting_str(CFG, 'SABnzbd', 'sab_category_anime', 'anime')
         SAB_HOST = check_setting_str(CFG, 'SABnzbd', 'sab_host', '')
+        SAB_FORCED = bool(check_setting_int(CFG, 'SABnzbd', 'sab_forced', 0))
 
         NZBGET_USERNAME = check_setting_str(CFG, 'NZBget', 'nzbget_username', 'nzbget', censor_log=True)
         NZBGET_PASSWORD = check_setting_str(CFG, 'NZBget', 'nzbget_password', 'tegbzn6789', censor_log=True)
@@ -1561,7 +1561,6 @@ def save_config():
     new_config['General']['randomize_providers'] = int(RANDOMIZE_PROVIDERS)
     new_config['General']['check_propers_interval'] = CHECK_PROPERS_INTERVAL
     new_config['General']['allow_high_priority'] = int(ALLOW_HIGH_PRIORITY)
-    new_config['General']['sab_forced'] = int(sab_forced)
     new_config['General']['dailysearch_startup'] = int(DAILYSEARCH_STARTUP)
     new_config['General']['backlog_startup'] = int(BACKLOG_STARTUP)
     new_config['General']['skip_removed_files'] = int(SKIP_REMOVED_FILES)
@@ -1742,6 +1741,7 @@ def save_config():
     new_config['SABnzbd']['sab_category'] = SAB_CATEGORY
     new_config['SABnzbd']['sab_category_anime'] = SAB_CATEGORY_ANIME
     new_config['SABnzbd']['sab_host'] = SAB_HOST
+    new_config['SABnzbd']['sab_forced'] = int(SAB_FORCED)
 
     new_config['NZBget'] = {}
 
