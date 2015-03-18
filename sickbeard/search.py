@@ -221,9 +221,6 @@ def pickBestResult(results, show, quality_list=None):
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
             continue
 
-        if not show_name_helpers.validReleaseForShowLang(cur_result.name, show.lang):
-            continue
-
         if show.rls_ignore_words and show_name_helpers.containsAtLeastOneWord(cur_result.name, cur_result.show.rls_ignore_words):
             logger.log(u"Ignoring " + cur_result.name + " based on ignored words filter: " + show.rls_ignore_words,
                        logger.INFO)
