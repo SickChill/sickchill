@@ -59,7 +59,10 @@ def sendNZB(nzb):
 
     # use high priority if specified (recently aired episode)
     if nzb.priority == 1:
-        params['priority'] = 1
+        if sickbeard.SAB_FORCED == 1:
+            params['priority'] = 2
+        else:
+            params['priority'] = 1
 
     # if it's a normal result we just pass SAB the URL
     if nzb.resultType == "nzb":

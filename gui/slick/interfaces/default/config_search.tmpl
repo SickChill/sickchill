@@ -309,6 +309,16 @@
 									</span>
 								</label>
 							</div>
+							#if sickbeard.ALLOW_HIGH_PRIORITY == True
+							<div class="field-pair">
+								<label for="sab_forced">
+									<span class="component-title">Use forced priority</span>
+									<span class="component-desc">
+										<input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" <%= html_checked if sickbeard.SAB_FORCED else '' %>/>
+										<p>enable to change priority from HIGH to FORCED</p></span>
+								</label>
+							</div>
+							#end if
 						</div>
 
 						<div id="nzbget_settings">
