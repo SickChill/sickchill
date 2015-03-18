@@ -2341,7 +2341,7 @@ class HomeAddShows(Home):
                     [int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
                      'http://www.trakt.tv/shows/%s' % show['ids']['slug'], show['title'],
                      show['overview'],
-                     None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime('%Y%m%d')]
+                     None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime(sickbeard.DATE_PRESET)]
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
                     int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
         except (traktException, traktAuthException, traktServerBusy) as e:
