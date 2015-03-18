@@ -3796,7 +3796,7 @@ class ConfigSearch(Config):
                    randomize_providers=None, backlog_startup=None, use_failed_downloads=None, delete_failed=None,
                    dailysearch_startup=None, torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
-                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
+                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, coming_eps_missed_range=None,
                    torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
 
         results = []
@@ -3808,9 +3808,11 @@ class ConfigSearch(Config):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
+        
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
         sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
+        sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range,default=7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -3828,7 +3830,6 @@ class ConfigSearch(Config):
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
-        sickbeard.SAB_FORCED = config.checkbox_to_value(sab_forced)
 
         sickbeard.DAILYSEARCH_STARTUP = config.checkbox_to_value(dailysearch_startup)
         sickbeard.BACKLOG_STARTUP = config.checkbox_to_value(backlog_startup)
@@ -3841,6 +3842,7 @@ class ConfigSearch(Config):
         sickbeard.SAB_CATEGORY = sab_category
         sickbeard.SAB_CATEGORY_ANIME = sab_category_anime
         sickbeard.SAB_HOST = config.clean_url(sab_host)
+        sickbeard.SAB_FORCED = config.checkbox_to_value(sab_forced)
 
         sickbeard.NZBGET_USERNAME = nzbget_username
         sickbeard.NZBGET_PASSWORD = nzbget_password
