@@ -749,7 +749,11 @@ class CMD_ComingEpisodes(ApiCall):
         for curType in self.type:
             finalEpResults[curType] = []
 
-        for ep in sql_results:
+        # Safety Measure to convert rows in sql_results to dict.
+        # This should not be required as the DB connections should only be returning dict results not sqlite3.row_type
+        dict_results = [dict(row) for row in sql_results]
+        
+        for ep in dict_results:
             """
                 Missed:   yesterday... (less than 1week)
                 Today:    today
