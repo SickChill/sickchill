@@ -516,7 +516,7 @@ class SickRage(object):
                                       sys.executable,
                                       sickbeard.MY_FULLNAME]
 
-                if popen_list:
+                if popen_list and not sickbeard.NO_RESTART:
                     popen_list += sickbeard.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
