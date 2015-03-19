@@ -89,6 +89,7 @@
         sortList: [[5,1],[1,0]],
         textExtraction: {
 			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			2: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
 			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
 			4: function(node) { return \$(node).find("span").text(); },
 			5: function(node) { return \$(node).find("img").attr("alt"); }
@@ -112,6 +113,7 @@
         sortList: [[5,1],[1,0]],
         textExtraction: {
 			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			2: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
 			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
 			4: function(node) { return \$(node).find("span").text(); },
 			5: function(node) { return \$(node).find("img").attr("alt"); }
@@ -413,12 +415,12 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 				<td class="show-table">
 				    #if $layout != 'simple':	
 						#if $curShow.network:
-							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
+							<span title="$curShow.network"><img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" /></span>	
 						#else:
-							<img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+							<span title="No Network"><img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
 						#end if
 					#else:
-						$curShow.network
+						<span title="$curShow.network">$curShow.network</span>
 					#end if	
 				</td>
 				
@@ -577,14 +579,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #if $layout != 'simple':	
 		<td align="center">
         #if $curShow.network:
-        	<img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
+        	<span title="$curShow.network"><img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" /></span>
     	#else:
-    		<img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+    		<span title="No Network"><img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
 		#end if
 		</td>
 	#else:
 		<td>
-			$curShow.network
+			<span title="$curShow.network">$curShow.network</span>
 		</td>
 	#end if		
 
