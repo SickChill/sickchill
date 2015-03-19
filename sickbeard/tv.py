@@ -1770,7 +1770,10 @@ class TVEpisode(object):
 
                 # if we somehow are still UNKNOWN then just use the shows defined default status or SKIPPED
                 elif self.status == UNKNOWN:
-                    self.status = self.show.default_ep_status
+                    if self.season > 0: #If it's not a special
+                        self.status = self.show.default_ep_status
+                    else:
+                        self.status = SKIPPED
 
                 else:
                     logger.log(
