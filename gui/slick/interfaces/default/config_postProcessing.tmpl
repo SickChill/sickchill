@@ -188,6 +188,18 @@
                                 <span class="component-desc">eg. NZBMedia w/ NZBGET, sabToSickbeard w/ SABnzbd+!</span>
                             </label>                            
                         </div>
+                        
+                        <div class="field-pair">
+                            <input type="checkbox" name="no_delete" id="no_delete" #if $sickbeard.NO_DELETE == True then "checked=\"checked\"" else ""# />
+                            <label for="no_delete">
+                                <span class="component-title">Don't delete empty folders</span>
+                                <span class="component-desc">Leave empty folders when Post Processing?</span>
+                            </label>
+                            <label class="nocheck" for="no_delete">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Can be overridden using manual Post Processing</span>
+                            </label>
+                        </div>
 
                         <div class="field-pair">
                             <label class="nocheck">

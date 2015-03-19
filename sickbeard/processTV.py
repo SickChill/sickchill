@@ -256,7 +256,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     
                     delete_files(processPath, notwantedFiles, result)
     
-                    if process_method == "move" and \
+                    if (not sickbeard.NO_DELETE or type == "manual") and process_method == "move" and \
                                     ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath,
                                                                                   sickbeard.TV_DOWNLOAD_DIR):
                         if delete_folder(processPath, check_empty=True):
