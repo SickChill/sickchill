@@ -465,8 +465,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         </tr>
     </tfoot>
     
-	<tbody>
 
+#if $sickbeard.showQueueScheduler.action.loadingShowList
+    <tbody class="tablesorter-infoOnly">
 #for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
 
   #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
@@ -478,7 +479,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td></td>
     <td>
     #if $curLoadingShow.show == None:
-    Loading... ($curLoadingShow.show_name)
+    <span title="">Loading... ($curLoadingShow.show_name)</span>
     #else:
     <a href="displayShow?show=$curLoadingShow.show.indexerid">$curLoadingShow.show.name</a>
     #end if
@@ -489,6 +490,10 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td></td>
   </tr>
 #end for
+    </tbody>
+#end if
+
+    <tbody>
 
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
