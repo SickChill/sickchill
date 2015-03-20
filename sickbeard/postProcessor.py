@@ -183,7 +183,7 @@ class PostProcessor(object):
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
         
         if subfolders:
-            filelist = ek.ek(recursive_glob, self.folder_path,  base_name + '*')
+            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path),  base_name + '*')
         else:
             filelist = ek.ek(glob.glob, base_name + '*')
         for associated_file_path in filelist:
