@@ -9,31 +9,36 @@ $.fn.manualSearches = [];
 function check_manual_searches() {
     var poll_interval = 5000;
     showId = $('#showID').val()
+    var url = ""
     if ( showId !== undefined) {
-        $.ajax({
-            url: search_status_url + '?show=' + showId,
-            success: function (data) {
-                if (data.episodes) {
-                	poll_interval = 5000;
-                }
-                else {
-                	poll_interval = 15000;
-                }
-            	
-                updateImages(data);
-                //cleanupManualSearches(data);
-            },
-            error: function () {
-                poll_interval = 30000;
-            },
-            type: "GET",
-            dataType: "json",
-            complete: function () {
-                setTimeout(check_manual_searches, poll_interval);
-            },
-            timeout: 15000 // timeout every 15 secs
-        });
+    	var url = search_status_url + '?show=' + showId;
+    } else {
+    	var url = search_status_url;
     }
+    
+    $.ajax({
+        url: url,
+        success: function (data) {
+            if (data.episodes) {
+            	poll_interval = 5000;
+            }
+            else {
+            	poll_interval = 15000;
+            }
+        	
+            updateImages(data);
+            //cleanupManualSearches(data);
+        },
+        error: function () {
+            poll_interval = 30000;
+        },
+        type: "GET",
+        dataType: "json",
+        complete: function () {
+            setTimeout(check_manual_searches, poll_interval);
+        },
+        timeout: 15000 // timeout every 15 secs
+    });
 }
 
 
@@ -45,7 +50,7 @@ function updateImages(data) {
         var searchImage = 'search16.png';
         var status = null;
         //Try to get the <a> Element
-        el=$('a[id=' + ep.season + 'x' + ep.episode+']');
+        el=$('a[id=' + ep.show + 'x' + ep.season + 'x' + ep.episode+']');
         img=el.children('img');
         parent=el.parent();        
         if (el) {
@@ -86,7 +91,29 @@ function updateImages(data) {
 	        parent.siblings('.col-status').html(HtmlContent)
         	
         }
-		
+        el_comEps=$('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode+']');
+        img_comEps=el_comEps.children('img');
+        if (el_comEps) {
+        	if (ep.searchstatus == 'searching') {
+        		img_comEps.prop('title','Searching');
+        		img_comEps.prop('alt','Searching');
+        		img_comEps.prop('src',sbRoot+'/images/' + loadingImage);
+        		disableLink(el_comEps);
+        	} else if (ep.searchstatus == 'queued') {
+        		img_comEps.prop('title','Queued');
+        		img_comEps.prop('alt','queued');
+        		img_comEps.prop('src',sbRoot+'/images/' + queuedImage );
+        	} else if (ep.searchstatus == 'finished') {
+        		img_comEps.prop('title','Manual Search');
+        		img_comEps.prop('alt','[search]');
+        		img_comEps.prop('src',sbRoot+'/images/' + searchImage);
+        		if (ep.overview == 'snatched') {
+        			el_comEps.closest('tr').remove();
+        		} else {
+        			enableLink(el_comEps);
+        		}
+        	}
+        }
 	});
 }
 
