@@ -46,7 +46,8 @@
             4: function(node) { return \$(node).find("img").attr("alt"); },
 			5: function(node) { return \$(node).find("img").attr("alt"); },
 			6: function(node) { return \$(node).find("img").attr("alt"); },
-			7: function(node) { return \$(node).find("img").attr("alt"); }
+			7: function(node) { return \$(node).find("img").attr("alt"); },
+			8: function(node) { return \$(node).find("img").attr("alt"); },
         },
         widgets: ['zebra'],
         headers: {
@@ -58,15 +59,16 @@
             5: { sorter: 'anime'},              
             6: { sorter: 'flatfold'},
             7: { sorter: 'paused'},
-            8: { sorter: 'default_ep_status'},
-            9: { sorter: 'status'},
-           10: { sorter: false},
+            8: { sorter: 'subtitle'},
+            9: { sorter: 'default_ep_status'},
+           10: { sorter: 'status'},
            11: { sorter: false},
            12: { sorter: false},
            13: { sorter: false},
-		   14: { sorter: false},
+           14: { sorter: false},
 		   15: { sorter: false},
-		   16: { sorter: false}
+		   16: { sorter: false},
+		   17: { sorter: false}
         }
     }); 
 });
@@ -91,13 +93,14 @@
 			<th class="col-legend">Anime</th>
 			<th class="col-legend">Flat Folders</th>
 			<th class="col-legend">Paused</th>
+			<th class="col-legend">Subtitle</th>
 			<th class="col-legend">Default Ep<br>Status</th>
 			<th class="col-legend">Status</th>
 			<th width="1%">Update<br/><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
 			<th width="1%">Rescan<br/><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
 			<th width="1%">Rename<br/><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
 		#if $sickbeard.USE_SUBTITLES:
-			<th width="1%">Subtitle<br/><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
+			<th width="1%">Search Subtitle<br/><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
 		#end if
 			<!-- <th>Force Metadata Regen <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
 			<th width="1%">Delete<br/><input type="checkbox" class="bulkCheck" id="deleteCheck" /></th>
@@ -108,7 +111,7 @@
 	<tfoot>
 		<tr>
 			<td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left" type="button" value="Edit Selected" id="submitMassEdit" /></td>
-			<td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 13 else 12#" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
+			<td rowspan="1" colspan="#if $sickbeard.USE_SUBTITLES then 15 else 14#" class="align-right alt"><input class="btn pull-right" type="button" value="Submit" id="submitMassUpdate" /></td>
 		</tr>
 	</tfoot>
 	
@@ -174,6 +177,7 @@
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.is_anime) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.flatten_folders) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
 			<td align="center"><img src="$sbRoot/images/#if int($curShow.paused) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
+			<td align="center"><img src="$sbRoot/images/#if int($curShow.subtitles) == 1 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" /></td>
 			<td align="center">$statusStrings[$curShow.default_ep_status]</td>
 			<td align="center">$curShow.status</td>
 			<td align="center">$curUpdate</td>
