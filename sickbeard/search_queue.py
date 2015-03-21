@@ -159,7 +159,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self, show, segment, downCurQuality=False):
         generic_queue.QueueItem.__init__(self, 'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'MANUAL-' + str(show.indexerid)
@@ -167,6 +167,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.show = show
         self.segment = segment
         self.started = None
+        self.downCurQuality = downCurQuality
 
     def run(self):
         generic_queue.QueueItem.run(self)
@@ -175,7 +176,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
             self.started = True
             
-            searchResult = search.searchProviders(self.show, [self.segment], True)
+            searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
 
             if searchResult:
                 # just use the first result for now
@@ -236,7 +237,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 
 class FailedQueueItem(generic_queue.QueueItem):
-    def __init__(self, show, segment):
+    def __init__(self, show, segment, downCurQuality=False):
         generic_queue.QueueItem.__init__(self, 'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'RETRY-' + str(show.indexerid)
@@ -244,6 +245,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.segment = segment
         self.success = None
         self.started = None
+        self.downCurQuality = downCurQuality
 
     def run(self):
         generic_queue.QueueItem.run(self)
@@ -264,7 +266,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                 failed_history.revertEpisode(epObj)
                 logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
 
-            searchResult = search.searchProviders(self.show, self.segment, True)
+            searchResult = search.searchProviders(self.show, self.segment, True, self.downCurQuality)
 
             if searchResult:
                 for result in searchResult:
