@@ -136,14 +136,15 @@ class Video(object):
             return []
         basepath = os.path.splitext(self.path)[0]
         results = []
-        video_infos = None
-        try:
-            video_infos = enzyme.parse(self.path)
-            logger.debug(u'Succeeded parsing %s with enzyme: %r' % (self.path, video_infos)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
-        except:
-            logger.debug(u'Failed parsing %s with enzyme' % self.path) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
-        if isinstance(video_infos, enzyme.core.AVContainer):
-            results.extend([subtitles.EmbeddedSubtitle.from_enzyme(self.path, s) for s in video_infos.subtitles])
+        if not sickbeard.EMBEDDED_SUBTITLES_ALL:
+            video_infos = None
+            try:
+                video_infos = enzyme.parse(self.path)
+                logger.debug(u'Succeeded parsing %s with enzyme: %r' % (self.path, video_infos)) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
+            except:
+                logger.debug(u'Failed parsing %s with enzyme' % self.path) if sys.platform != 'win32' else logger.debug('Log line suppressed on windows')
+            if isinstance(video_infos, enzyme.core.AVContainer):
+                results.extend([subtitles.EmbeddedSubtitle.from_enzyme(self.path, s) for s in video_infos.subtitles])
         # cannot use glob here because it chokes if there are any square
         # brackets inside the filename, so we have to use basic string
         # startswith/endswith comparisons
