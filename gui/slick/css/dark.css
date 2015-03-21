@@ -3092,3 +3092,26 @@ jquery.confirm.css
 #confirmBox .red:hover {
 	background-color: #A13331;
 }
+
+/* =======================================================================
+bootstarp modal
+========================================================================== */
+
+.modal-content {
+  background-color: #3D3D3D;
+}
+.modal-body {
+  background-color: #3D3D3D;
+}
+
+.modal-header {
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #15528F;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+ }

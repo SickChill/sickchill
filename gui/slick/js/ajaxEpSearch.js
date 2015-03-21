@@ -1,4 +1,7 @@
 var search_status_url = sbRoot + '/home/getManualSearchStatus';
+var failedDownload = false
+var qualityDownload = false
+var selectedEpisode = ""
 PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
@@ -121,32 +124,81 @@ function disableLink(el) {
 	$.fn.ajaxEpSearch = function(options){
 		options = $.extend({}, $.ajaxEpSearch.defaults, options);
 		
-	    $('.epSearch, .epRetry').click(function(event){
+		$('.epRetry').click(function(event){
 	    	event.preventDefault();
-	        
-	    	// Check if we have disabled the click
+			
+			// Check if we have disabled the click
 	    	if ( $(this).prop('enableClick') == '0' ) {
 	    		return false;
-	    	}
-	    	
-	    	if ( $(this).prop('class') == "epRetry" ) {
-	    		if ( !confirm("Mark download as bad and retry?") )
-	                return false;
 	    	};
-	    	
-	    	var parent = $(this).parent();
+			
+			selectedEpisode = $(this)
+			
+			$("#manualSearchModalFailed").modal('show');
+		});
+		
+		$('.epSearch').click(function(event){
+	    	event.preventDefault();
+			
+			// Check if we have disabled the click
+	    	if ( $(this).prop('enableClick') == '0' ) {
+	    		return false;
+	    	};
+			
+			selectedEpisode = $(this);
+			
+			if ($(this).parent().parent().children(".col-status").children(".quality").length) {
+				$("#manualSearchModalQuality").modal('show');
+			} else {
+				manualSearch();
+			}
+		});
+		
+		$('#manualSearchModalFailed .btn').click(function(){
+			val=$(this).text();
+			if(val=='Yes'){
+				failedDownload = true;
+			} else {
+				failedDownload = false;
+			}
+			$("#manualSearchModalQuality").modal('show');
+		});
+		
+		$('#manualSearchModalQuality .btn').click(function(){
+			val=$(this).text();
+			if(val=='Yes'){
+				qualityDownload = true;
+			} else {
+				qualityDownload = false;
+			}
+			manualSearch();
+		});
+		
+		function manualSearch(){
+			var parent = selectedEpisode.parent();
 	        
 	    	// Create var for anchor
-	    	link = $(this);
+	    	link = selectedEpisode;
 	    	
 	    	// Create var for img under anchor and set options for the loading gif
-	        img=$(this).children('img');
+	        img=selectedEpisode.children('img');
 	        img.prop('title','loading');
 			img.prop('alt','');
 			img.prop('src',sbRoot+'/images/' + options.loadingImage);
 			
-	        
-	        $.getJSON($(this).prop('href'), function(data){
+			var url = selectedEpisode.prop('href');
+			
+			if (failedDownload === false) {
+				url = url.replace("retryEpisode", "searchEpisode"); 
+			}
+			
+			if (qualityDownload === true) {
+				url = url + "&downCurQuality=1";
+			} else {
+				url = url + "&downCurQuality=0";
+			}
+			
+	        $.getJSON(url, function(data){
 	            
 	        	// if they failed then just put the red X
 	            if (data.result == 'failure') {
@@ -179,6 +231,7 @@ function disableLink(el) {
 	        
 	        // don't follow the link
 	        return false;
-	    });
-	}
+		};
+		
+	};
 })();

@@ -252,7 +252,7 @@ class GenericProvider:
 
         return title, url
 
-    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
 
         self._checkAuth()
         self.show = show
@@ -263,7 +263,7 @@ class GenericProvider:
         searched_scene_season = None
         for epObj in episodes:
             # search cache for episode result
-            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            cacheResult = self.cache.searchCache(epObj, manualSearch, downCurQuality)
             if cacheResult:
                 if epObj.episode not in results:
                     results[epObj.episode] = cacheResult
@@ -399,7 +399,7 @@ class GenericProvider:
             # make sure we want the episode
             wantEp = True
             for epNo in actual_episodes:
-                if not showObj.wantEpisode(actual_season, epNo, quality, manualSearch):
+                if not showObj.wantEpisode(actual_season, epNo, quality, manualSearch, downCurQuality):
                     wantEp = False
                     break
 
