@@ -49,6 +49,7 @@ class GenericProvider:
         self.name = name
 
         self.proxy = ProviderProxy()
+        self.proxyGlypeProxySSLwarning = None
         self.urls = {}
         self.url = ''
 
@@ -127,9 +128,11 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
+            # GlypeProxy SSL warning message
+            self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
 
         return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json)
+                              session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
 
     def downloadResult(self, result):
         """
