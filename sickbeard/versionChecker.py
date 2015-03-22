@@ -73,6 +73,9 @@ class CheckVersion():
                             logger.log(u"Update was successful!")
                             ui.notifications.message('Update was successful')
                             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+                        else:
+                            logger.log(u"Update failed!")
+                            ui.notifications.message('Update failed!')
 
     def _runbackup(self):
         # Do a system backup before update
@@ -372,7 +375,7 @@ class GitUpdateManager(UpdateManager):
 
             if output:
                 output = output.strip()
-            logger.log(u"git output: " + str(output), logger.DEBUG)
+
 
         except OSError:
             logger.log(u"Command " + cmd + " didn't work")
@@ -383,7 +386,10 @@ class GitUpdateManager(UpdateManager):
             exit_status = 0
 
         elif exit_status == 1:
-            logger.log(cmd + u" returned : " + str(output), logger.ERROR)
+            if 'stash' in output:
+                logger.log(u"Please enable 'git reset' in settings or stash your changes in local files",logger.WARNING)
+            else:
+                logger.log(cmd + u" returned : " + str(output), logger.ERROR)
             exit_status = 1
 
         elif exit_status == 128 or 'fatal:' in output or err:
@@ -555,6 +561,8 @@ class GitUpdateManager(UpdateManager):
                 notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH if sickbeard.CUR_COMMIT_HASH else "")
 
             return True
+        else:
+            return False
 
     def clean(self):
         """

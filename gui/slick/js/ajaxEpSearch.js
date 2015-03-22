@@ -1,4 +1,7 @@
 var search_status_url = sbRoot + '/home/getManualSearchStatus';
+var failedDownload = false
+var qualityDownload = false
+var selectedEpisode = ""
 PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
@@ -6,31 +9,36 @@ $.fn.manualSearches = [];
 function check_manual_searches() {
     var poll_interval = 5000;
     showId = $('#showID').val()
+    var url = ""
     if ( showId !== undefined) {
-        $.ajax({
-            url: search_status_url + '?show=' + showId,
-            success: function (data) {
-                if (data.episodes) {
-                	poll_interval = 5000;
-                }
-                else {
-                	poll_interval = 15000;
-                }
-            	
-                updateImages(data);
-                //cleanupManualSearches(data);
-            },
-            error: function () {
-                poll_interval = 30000;
-            },
-            type: "GET",
-            dataType: "json",
-            complete: function () {
-                setTimeout(check_manual_searches, poll_interval);
-            },
-            timeout: 15000 // timeout every 15 secs
-        });
+    	var url = search_status_url + '?show=' + showId;
+    } else {
+    	var url = search_status_url;
     }
+    
+    $.ajax({
+        url: url,
+        success: function (data) {
+            if (data.episodes) {
+            	poll_interval = 5000;
+            }
+            else {
+            	poll_interval = 15000;
+            }
+        	
+            updateImages(data);
+            //cleanupManualSearches(data);
+        },
+        error: function () {
+            poll_interval = 30000;
+        },
+        type: "GET",
+        dataType: "json",
+        complete: function () {
+            setTimeout(check_manual_searches, poll_interval);
+        },
+        timeout: 15000 // timeout every 15 secs
+    });
 }
 
 
@@ -42,7 +50,7 @@ function updateImages(data) {
         var searchImage = 'search16.png';
         var status = null;
         //Try to get the <a> Element
-        el=$('a[id=' + ep.season + 'x' + ep.episode+']');
+        el=$('a[id=' + ep.show + 'x' + ep.season + 'x' + ep.episode+']');
         img=el.children('img');
         parent=el.parent();        
         if (el) {
@@ -83,7 +91,29 @@ function updateImages(data) {
 	        parent.siblings('.col-status').html(HtmlContent)
         	
         }
-		
+        el_comEps=$('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode+']');
+        img_comEps=el_comEps.children('img');
+        if (el_comEps) {
+        	if (ep.searchstatus == 'searching') {
+        		img_comEps.prop('title','Searching');
+        		img_comEps.prop('alt','Searching');
+        		img_comEps.prop('src',sbRoot+'/images/' + loadingImage);
+        		disableLink(el_comEps);
+        	} else if (ep.searchstatus == 'queued') {
+        		img_comEps.prop('title','Queued');
+        		img_comEps.prop('alt','queued');
+        		img_comEps.prop('src',sbRoot+'/images/' + queuedImage );
+        	} else if (ep.searchstatus == 'finished') {
+        		img_comEps.prop('title','Manual Search');
+        		img_comEps.prop('alt','[search]');
+        		img_comEps.prop('src',sbRoot+'/images/' + searchImage);
+        		if (ep.overview == 'snatched') {
+        			el_comEps.closest('tr').remove();
+        		} else {
+        			enableLink(el_comEps);
+        		}
+        	}
+        }
 	});
 }
 
@@ -121,32 +151,81 @@ function disableLink(el) {
 	$.fn.ajaxEpSearch = function(options){
 		options = $.extend({}, $.ajaxEpSearch.defaults, options);
 		
-	    $('.epSearch, .epRetry').click(function(event){
+		$('.epRetry').click(function(event){
 	    	event.preventDefault();
-	        
-	    	// Check if we have disabled the click
+			
+			// Check if we have disabled the click
 	    	if ( $(this).prop('enableClick') == '0' ) {
 	    		return false;
-	    	}
-	    	
-	    	if ( $(this).prop('class') == "epRetry" ) {
-	    		if ( !confirm("Mark download as bad and retry?") )
-	                return false;
 	    	};
-	    	
-	    	var parent = $(this).parent();
+			
+			selectedEpisode = $(this)
+			
+			$("#manualSearchModalFailed").modal('show');
+		});
+		
+		$('.epSearch').click(function(event){
+	    	event.preventDefault();
+			
+			// Check if we have disabled the click
+	    	if ( $(this).prop('enableClick') == '0' ) {
+	    		return false;
+	    	};
+			
+			selectedEpisode = $(this);
+			
+			if ($(this).parent().parent().children(".col-status").children(".quality").length) {
+				$("#manualSearchModalQuality").modal('show');
+			} else {
+				manualSearch();
+			}
+		});
+		
+		$('#manualSearchModalFailed .btn').click(function(){
+			val=$(this).text();
+			if(val=='Yes'){
+				failedDownload = true;
+			} else {
+				failedDownload = false;
+			}
+			$("#manualSearchModalQuality").modal('show');
+		});
+		
+		$('#manualSearchModalQuality .btn').click(function(){
+			val=$(this).text();
+			if(val=='Yes'){
+				qualityDownload = true;
+			} else {
+				qualityDownload = false;
+			}
+			manualSearch();
+		});
+		
+		function manualSearch(){
+			var parent = selectedEpisode.parent();
 	        
 	    	// Create var for anchor
-	    	link = $(this);
+	    	link = selectedEpisode;
 	    	
 	    	// Create var for img under anchor and set options for the loading gif
-	        img=$(this).children('img');
+	        img=selectedEpisode.children('img');
 	        img.prop('title','loading');
 			img.prop('alt','');
 			img.prop('src',sbRoot+'/images/' + options.loadingImage);
 			
-	        
-	        $.getJSON($(this).prop('href'), function(data){
+			var url = selectedEpisode.prop('href');
+			
+			if (failedDownload === false) {
+				url = url.replace("retryEpisode", "searchEpisode"); 
+			}
+			
+			if (qualityDownload === true) {
+				url = url + "&downCurQuality=1";
+			} else {
+				url = url + "&downCurQuality=0";
+			}
+			
+	        $.getJSON(url, function(data){
 	            
 	        	// if they failed then just put the red X
 	            if (data.result == 'failure') {
@@ -179,6 +258,7 @@ function disableLink(el) {
 	        
 	        // don't follow the link
 	        return false;
-	    });
-	}
+		};
+		
+	};
 })();

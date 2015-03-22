@@ -10,37 +10,39 @@ $(document).ready(function () {
                 resultStr += '<b>No recommended shows found, update your watched shows list on trakt.tv.</b>';
             } else {
                 $.each(data.results, function (index, obj) {
-                    if (firstResult) {
-                        checked = ' checked';
-                        firstResult = false;
-                    } else {
-                        checked = '';
-                    }
-
-                    var whichSeries = obj.join('|');
-
-                    resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
-                    resultStr += '<a href="' + anonURL + obj[1] + '" onclick="window.open(this.href, \'_blank\'); return false;"><b>' + obj[2] + '</b></a>';
-
-                    if (obj[4] !== null) {
-                        var startDate = new Date(obj[4]);
-                        var today = new Date();
-                        if (startDate > today) {
-                            resultStr += ' (will debut on ' + obj[4] + ')';
+                    if (obj[2] !== null) {
+                        if (firstResult) {
+                            checked = ' checked';
+                            firstResult = false;
                         } else {
-                            resultStr += ' (started on ' + obj[4] + ')';
+                            checked = '';
                         }
+                        
+                        var whichSeries = obj.join('|');
+                        
+                        resultStr += '<input type="radio" id="whichSeries" name="whichSeries" value="' + whichSeries + '"' + checked + ' /> ';
+                        resultStr += '<a href="' + anonURL + obj[1] + '" onclick="window.open(this.href, \'_blank\'); return false;"><b>' + obj[2] + '</b></a>';
+                        
+                        if (obj[4] !== null) {
+                            var startDate = new Date(obj[4]);
+                            var today = new Date();
+                            if (startDate > today) {
+                                resultStr += ' (will debut on ' + obj[4] + ')';
+                            } else {
+                                resultStr += ' (started on ' + obj[4] + ')';
+                            }
+                        }
+                        
+                        if (obj[0] !== null) {
+                            resultStr += ' [' + obj[0] + ']';
+                        }
+                        
+                        if (obj[3] !== null) {
+                            resultStr += '<br />' + obj[3];
+                        }
+                        
+                        resultStr += '<p /><br />';
                     }
-
-                    if (obj[0] !== null) {
-                        resultStr += ' [' + obj[0] + ']';
-                    }
-
-                    if (obj[3] !== null) {
-                        resultStr += '<br />' + obj[3];
-                    }
-
-                    resultStr += '<p /><br />';
                 });
                 resultStr += '</ul>';
             }

@@ -1240,7 +1240,7 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
-def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False):
+def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1278,6 +1278,15 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
             logger.log(u"Requested url " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
             return
+
+        if proxyGlypeProxySSLwarning is not None:
+            if re.search('The site you are attempting to browse is on a secure connection', resp.text):
+                resp = session.get(proxyGlypeProxySSLwarning)
+
+                if not resp.ok:
+                    logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
+                        resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
+                    return
 
     except requests.exceptions.HTTPError, e:
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)

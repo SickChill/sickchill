@@ -43,8 +43,10 @@ shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 class ProcessResult:
     def __init__(self):
-       self.result = True
-       self.output = ''
+        self.result = True
+        self.output = ''
+        self.missedfiles = []
+        self.aggresult = True
 
 def delete_folder(folder, check_empty=True):
 
@@ -117,7 +119,7 @@ def logHelper(logMessage, logLevel=logger.INFO):
     return logMessage + u"\n"
 
 
-def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, failed=False, type="auto"):
+def processDir(dirName, nzbName=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, type="auto"):
     """
     Scans through the files in dirName and processes whatever media files it finds
 
@@ -133,7 +135,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     result.output += logHelper(u"Processing folder " + dirName, logger.DEBUG)
 
     result.output += logHelper(u"TV_DOWNLOAD_DIR: " + sickbeard.TV_DOWNLOAD_DIR, logger.DEBUG)
-
+    postpone = False
     # if they passed us a real dir then assume it's the one we want
     if ek.ek(os.path.isdir, dirName):
         dirName = ek.ek(os.path.realpath, dirName)
@@ -157,49 +159,54 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     # Don't post process if files are still being synced and option is activated
     if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
-        result.output += logHelper(u"Found temporary sync files, skipping post processing", logger.WARNING)
-        result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path " + path, logger.WARNING)
-        return result.output
-
-    result.output += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
-    result.output += logHelper(u"PostProcessing Dirs: " + str(dirs), logger.DEBUG)
-
-    rarFiles = filter(helpers.isRarFile, files)
-    rarContent = unRAR(path, rarFiles, force, result)
-    files += rarContent
-    videoFiles = filter(helpers.isMediaFile, files)
-    videoInRar = filter(helpers.isMediaFile, rarContent)
-
-    result.output += logHelper(u"PostProcessing Files: " + str(files), logger.DEBUG)
-    result.output += logHelper(u"PostProcessing VideoFiles: " + str(videoFiles), logger.DEBUG)
-    result.output += logHelper(u"PostProcessing RarContent: " + str(rarContent), logger.DEBUG)
-    result.output += logHelper(u"PostProcessing VideoInRar: " + str(videoInRar), logger.DEBUG)
-
-    # If nzbName is set and there's more than one videofile in the folder, files will be lost (overwritten).
+        postpone = True
+        
     nzbNameOriginal = nzbName
-    if len(videoFiles) >= 2:
-        nzbName = None
 
-    if not process_method:
-        process_method = sickbeard.PROCESS_METHOD
+    if not postpone:
+        result.output += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
+        result.output += logHelper(u"PostProcessing Dirs: " + str(dirs), logger.DEBUG)
 
-    result.result = True
+        rarFiles = filter(helpers.isRarFile, files)
+        rarContent = unRAR(path, rarFiles, force, result)
+        files += rarContent
+        videoFiles = filter(helpers.isMediaFile, files)
+        videoInRar = filter(helpers.isMediaFile, rarContent)
 
-    #Don't Link media when the media is extracted from a rar in the same path
-    if process_method in ('hardlink', 'symlink') and videoInRar:
-        process_media(path, videoInRar, nzbName, 'move', force, is_priority, result)
-        delete_files(path, rarContent, result)
-        for video in set(videoFiles) - set(videoInRar):
-            process_media(path, [video], nzbName, process_method, force, is_priority, result)
-    elif sickbeard.DELRARCONTENTS and videoInRar:
-        process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
-        delete_files(path, rarContent, result, True)
-        for video in set(videoFiles) - set(videoInRar):
-            process_media(path, [video], nzbName, process_method, force, is_priority, result)
+        result.output += logHelper(u"PostProcessing Files: " + str(files), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing VideoFiles: " + str(videoFiles), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing RarContent: " + str(rarContent), logger.DEBUG)
+        result.output += logHelper(u"PostProcessing VideoInRar: " + str(videoInRar), logger.DEBUG)
+
+        # If nzbName is set and there's more than one videofile in the folder, files will be lost (overwritten).
+        if len(videoFiles) >= 2:
+            nzbName = None
+
+        if not process_method:
+            process_method = sickbeard.PROCESS_METHOD
+    
+        result.result = True
+    
+        #Don't Link media when the media is extracted from a rar in the same path
+        if process_method in ('hardlink', 'symlink') and videoInRar:
+            process_media(path, videoInRar, nzbName, 'move', force, is_priority, result)
+            delete_files(path, rarContent, result)
+            for video in set(videoFiles) - set(videoInRar):
+                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+        elif sickbeard.DELRARCONTENTS and videoInRar:
+            process_media(path, videoInRar, nzbName, process_method, force, is_priority, result)
+            delete_files(path, rarContent, result, True)
+            for video in set(videoFiles) - set(videoInRar):
+                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+        else:
+            for video in videoFiles:
+                process_media(path, [video], nzbName, process_method, force, is_priority, result)
+        
     else:
-        for video in videoFiles:
-            process_media(path, [video], nzbName, process_method, force, is_priority, result)
-
+        result.output += logHelper(u"Found temporary sync files, skipping post processing for folder " + str(path), logger.WARNING)
+        result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + path, logger.WARNING)
+        result.missedfiles.append(path + " : Syncfiles found")
+        
     #Process Video File in all TV Subdir
     for dir in [x for x in dirs if validateDir(path, x, nzbNameOriginal, failed, result)]:
 
@@ -210,53 +217,65 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
             if (not validateDir(path, processPath, nzbNameOriginal, failed, result)):
                 continue
             
+            postpone = False
+            
             SyncFiles = filter(helpers.isSyncFile, fileList)
 
             # Don't post process if files are still being synced and option is activated
             if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
-                result.output += logHelper(u"Found temporary sync files, skipping post processing", logger.WARNING)
-                result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path " + processPath, logger.WARNING)
-                return result.output
+                postpone = True
 
-            rarFiles = filter(helpers.isRarFile, fileList)
-            rarContent = unRAR(processPath, rarFiles, force, result)
-            fileList = set(fileList + rarContent)
-            videoFiles = filter(helpers.isMediaFile, fileList)
-            videoInRar = filter(helpers.isMediaFile, rarContent)
-            notwantedFiles = [x for x in fileList if x not in videoFiles]
-            result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.INFO)
-
-            #Don't Link media when the media is extracted from a rar in the same path
-            if process_method in ('hardlink', 'symlink') and videoInRar:
-                process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, result)
-                process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
-                              is_priority, result)
-                delete_files(processPath, rarContent, result)
-            elif sickbeard.DELRARCONTENTS and videoInRar:
-                process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result)
-                process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
-                              is_priority, result)
-                delete_files(processPath, rarContent, result, True)
+            if not postpone:
+                rarFiles = filter(helpers.isRarFile, fileList)
+                rarContent = unRAR(processPath, rarFiles, force, result)
+                fileList = set(fileList + rarContent)
+                videoFiles = filter(helpers.isMediaFile, fileList)
+                videoInRar = filter(helpers.isMediaFile, rarContent)
+                notwantedFiles = [x for x in fileList if x not in videoFiles]
+                if notwantedFiles:
+                    result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.INFO)
+    
+                #Don't Link media when the media is extracted from a rar in the same path
+                if process_method in ('hardlink', 'symlink') and videoInRar:
+                    process_media(processPath, videoInRar, nzbName, 'move', force, is_priority, result)
+                    process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
+                                  is_priority, result)
+                    delete_files(processPath, rarContent, result)
+                elif sickbeard.DELRARCONTENTS and videoInRar:
+                    process_media(processPath, videoInRar, nzbName, process_method, force, is_priority, result)
+                    process_media(processPath, set(videoFiles) - set(videoInRar), nzbName, process_method, force,
+                                  is_priority, result)
+                    delete_files(processPath, rarContent, result, True)
+                else:
+                    process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
+    
+                    #Delete all file not needed
+                    if process_method != "move" or not result.result \
+                            or (type == "manual" and not delete_on):  #Avoid to delete files if is Manual PostProcessing
+                        continue
+    
+                    delete_files(processPath, notwantedFiles, result)
+    
+                    if (not sickbeard.NO_DELETE or type == "manual") and process_method == "move" and \
+                                    ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath,
+                                                                                  sickbeard.TV_DOWNLOAD_DIR):
+                        if delete_folder(processPath, check_empty=True):
+                            result.output += logHelper(u"Deleted folder: " + processPath, logger.DEBUG)
             else:
-                process_media(processPath, videoFiles, nzbName, process_method, force, is_priority, result)
-
-                #Delete all file not needed
-                if process_method != "move" or not result.result \
-                        or type == "manual":  #Avoid to delete files if is Manual PostProcessing
-                    continue
-
-                delete_files(processPath, notwantedFiles, result)
-
-                if process_method == "move" and \
-                                ek.ek(os.path.normpath, processPath) != ek.ek(os.path.normpath,
-                                                                              sickbeard.TV_DOWNLOAD_DIR):
-                    if delete_folder(processPath, check_empty=True):
-                        result.output += logHelper(u"Deleted folder: " + processPath, logger.DEBUG)
-
-    if result.result:
+                result.output += logHelper(u"Found temporary sync files, skipping post processing for folder: " + str(processPath), logger.WARNING)
+                result.output += logHelper(u"Sync Files: " + str(SyncFiles) + " in path: " + processPath, logger.WARNING)
+                result.missedfiles.append(processPath + " : Syncfiles found")
+                                
+    if result.aggresult:
         result.output += logHelper(u"Successfully processed")
+        if result.missedfiles:
+            result.output += logHelper(u"I did encounter some unprocessable items: ")
+            for missedfile in result.missedfiles:
+                result.output += logHelper(u"[" + missedfile + "]")
     else:
-        result.output += logHelper(u"Problem(s) during processing", logger.WARNING)
+        result.output += logHelper(u"Problem(s) during processing, failed the following files/folders:  ", logger.WARNING)
+        for missedfile in result.missedfiles:
+            result.output += logHelper(u"[" + missedfile + "]", logger.WARNING)
 
     return result.output
 
@@ -275,14 +294,17 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
     elif ek.ek(os.path.basename, dirName).upper().startswith('_UNPACK'):
         result.output += logHelper(u"The directory name indicates that this release is in the process of being unpacked.",
                                logger.DEBUG)
+        result.missedfiles.append(dirName + " : Being unpacked")
         return False
 
     if failed:
         process_failed(os.path.join(path, dirName), nzbNameOriginal, result)
+        result.missedfiles.append(dirName + " : Failed download")
         return False
 
     if helpers.is_hidden_folder(os.path.join(path, dirName)):
         result.output += logHelper(u"Ignoring hidden folder: " + dirName, logger.DEBUG)
+        result.missedfiles.append(dirName + " : Hidden folder")
         return False
 
     # make sure the dir isn't inside a show dir
@@ -296,6 +318,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
             result.output += logHelper(
                 u"You're trying to post process an episode that's already been moved to its show dir, skipping",
                 logger.ERROR)
+            result.missedfiles.append(dirName + " : Already processed")
             return False
 
     # Get the videofile list for the next checks
@@ -333,7 +356,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
                 return True
             except (InvalidNameException, InvalidShowException):
                 pass
-
+            
+    result.missedfiles.append(dirName + " : No processable items found in folder")
     return False
 
 def unRAR(path, rarFiles, force, result):
@@ -359,6 +383,7 @@ def unRAR(path, rarFiles, force, result):
                             u"Archive file already post-processed, extraction skipped: " + file_in_archive,
                             logger.DEBUG)
                         skip_file = True
+                        result.missedfiles.append(archive + " : RAR already processed")
                         break
 
                 if skip_file:
@@ -375,26 +400,32 @@ def unRAR(path, rarFiles, force, result):
             except FatalRARError:
                 result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Fatal Error".format(archive), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : Fatal error unpacking archive")
                 continue
             except CRCRARError:
                 result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Archive CRC Error".format(archive), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : CRC error unpacking archive")
                 continue
             except IncorrectRARPassword:
                 result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Invalid Password".format(archive), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : Password protected RAR")
                 continue
             except NoFileToExtract:
                 result.output += logHelper(u"Failed Unrar archive {0}: Unrar: No file extracted, check the parent folder and destination file permissions.".format(archive), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : Nothing was unpacked (file permissions?)")
                 continue
             except GenericRARError:
                 result.output += logHelper(u"Failed Unrar archive {0}: Unrar: Generic Error".format(archive), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : Unpacking Failed with a Generic Error")
                 continue
             except Exception, e:
                 result.output += logHelper(u"Failed Unrar archive " + archive + ': ' + ex(e), logger.ERROR)
                 result.result = False
+                result.missedfiles.append(archive + " : Unpacking failed for an unknown reason")
                 continue
 
         result.output += logHelper(u"UnRar content: " + str(unpacked_files), logger.DEBUG)
@@ -463,6 +494,7 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
     for cur_video_file in videoFiles:
 
         if already_postprocessed(processPath, cur_video_file, force, result):
+            result.missedfiles.append(ek.ek(os.path.join, processPath, cur_video_file) + " : Already processed")
             continue
 
         cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
@@ -483,10 +515,9 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
         else:
             result.output += logHelper(u"Processing failed for " + cur_video_file_path + ": " + process_fail_message,
                                    logger.WARNING)
+            result.missedfiles.append(cur_video_file_path + " : Processing failed: " + process_fail_message)
+            result.aggresult = False
 
-        #If something fail abort the processing on dir
-        if not result.result:
-            break
 
 def get_path_dir_files(dirName, nzbName, type):
     path = ""

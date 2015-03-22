@@ -23,6 +23,7 @@ import datetime
 import urlparse
 import sickbeard
 import generic
+import urllib
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
@@ -177,11 +178,11 @@ class SCCProvider(generic.TorrentProvider):
                     search_string = unidecode(search_string)
 
                 if mode == 'Season' and search_mode == 'sponly':
-                    searchURLS += [self.urls['archive'] % (search_string)]
+                    searchURLS += [self.urls['archive'] % (urllib.quote(search_string))]
                 else:
-                    searchURLS += [self.urls['search'] % (search_string, self.categories)]
-                    searchURLS += [self.urls['nonscene'] % (search_string)]
-                    searchURLS += [self.urls['foreign'] % (search_string)]
+                    searchURLS += [self.urls['search'] % (urllib.quote(search_string), self.categories)]
+                    searchURLS += [self.urls['nonscene'] % (urllib.quote(search_string))]
+                    searchURLS += [self.urls['foreign'] % (urllib.quote(search_string))]
 
                 for searchURL in searchURLS:
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
@@ -239,7 +240,7 @@ class SCCProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            #logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + searchURL + ")", logger.DEBUG)
 
                             items[mode].append(item)
 

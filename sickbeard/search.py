@@ -130,9 +130,12 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
-            #result.content = result.provider.getURL(result.url) if not result.url.startswith('magnet') else None
-            client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
-            dlResult = client.sendTORRENT(result)
+            if result.content:
+                client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
+                dlResult = client.sendTORRENT(result)
+            else:
+                logger.log(u"Torrent file content is empty", logger.ERROR)
+                dlResult = False
     else:
         logger.log(u"Unknown result type, unable to download it", logger.ERROR)
         dlResult = False
@@ -421,7 +424,7 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, episodes, manualSearch=False):
+def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     foundResults = {}
     finalResults = []
 
@@ -471,7 +474,7 @@ def searchProviders(show, episodes, manualSearch=False):
                 logger.log(u"Performing season pack search for " + show.name)
 
             try:
-                searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch)
+                searchResults = curProvider.findSearchResults(show, episodes, search_mode, manualSearch, downCurQuality)
             except exceptions.AuthException, e:
                 logger.log(u"Authentication error: " + ex(e), logger.ERROR)
                 break
@@ -545,7 +548,7 @@ def searchProviders(show, episodes, manualSearch=False):
             anyWanted = False
             for curEpNum in allEps:
                 for season in set([x.season for x in episodes]):
-                    if not show.wantEpisode(season, curEpNum, seasonQual):
+                    if not show.wantEpisode(season, curEpNum, seasonQual, downCurQuality):
                         allWanted = False
                     else:
                         anyWanted = True

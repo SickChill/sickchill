@@ -243,6 +243,7 @@ class ProperFinder():
                 result.quality = curProper.quality
                 result.release_group = curProper.release_group
                 result.version = curProper.version
+                result.content = curProper.content
 
                 # snatch it
                 search.snatchEpisode(result, SNATCHED_PROPER)

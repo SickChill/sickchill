@@ -29,7 +29,8 @@
 #set $sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str($SKIPPED) + ' OR status = ' + str($WANTED) + ' OR status = ' + str($FAILED) + ')) '
 #set $sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
-#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next '
+#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
+#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate <> 1 AND status <> ' + str($UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
 #set $sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
 #set $sql_result = $myDB.select($sql_statement)
@@ -86,49 +87,57 @@
     });
 
     \$("#showListTableShows:has(tbody tr)").tablesorter({
-        sortList: [[5,1],[1,0]],
+        sortList: [[6,1],[2,0]],
         textExtraction: {
 			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
-			4: function(node) { return \$(node).find("span").text(); },
-			5: function(node) { return \$(node).find("img").attr("alt"); }
+			1: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			3: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
+			4: function(node) { return \$(node).find("span").text().toLowerCase(); },
+			5: function(node) { return \$(node).find("span").text(); },
+			6: function(node) { return \$(node).find("img").attr("alt"); }
         },
-        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter'],
+        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
 			0: { sorter: 'isoDate' },
-			1: { sorter: 'loadingNames' },
-			3: { sorter: 'quality' },
-			4: { sorter: 'eps' }
+			1: { columnSelector: false },
+			2: { sorter: 'loadingNames' },
+			4: { sorter: 'quality' },
+			5: { sorter: 'eps' }
         },
 		widgetOptions : {
             filter_columnFilters: false,
-			filter_reset: '.resetshows'
+			filter_reset: '.resetshows',
+			columnSelector_mediaquery: false,
 		},
         sortStable: true,
-        sortAppend: [[1,0]]
+        sortAppend: [[2,0]]
     });
 	
 	\$("#showListTableAnime:has(tbody tr)").tablesorter({
-        sortList: [[5,1],[1,0]],
+        sortList: [[6,1],[2,0]],
         textExtraction: {
-			0: function(node) { return \$(node).find("span").text().toLowerCase(); },
-			3: function(node) { return \$(node).find("span").text().toLowerCase(); },
-			4: function(node) { return \$(node).find("span").text(); },
-			5: function(node) { return \$(node).find("img").attr("alt"); }
+            0: function(node) { return \$(node).find("span").text().toLowerCase(); },
+            1: function(node) { return \$(node).find("span").text().toLowerCase(); },
+            3: function(node) { return \$(node).find("span").prop("title").toLowerCase(); },
+            4: function(node) { return \$(node).find("span").text().toLowerCase(); },
+            5: function(node) { return \$(node).find("span").text(); },
+            6: function(node) { return \$(node).find("img").attr("alt"); }
         },
-        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter'],
+        widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
         headers: {
 			0: { sorter: 'isoDate' },
-			1: { sorter: 'loadingNames' },
-			3: { sorter: 'quality' },
-			4: { sorter: 'eps' }
+			1: { columnSelector: false },
+			2: { sorter: 'loadingNames' },
+			4: { sorter: 'quality' },
+			5: { sorter: 'eps' }
         },
 		widgetOptions : {
             filter_columnFilters: false,
-			filter_reset: '.resetanime'
+			filter_reset: '.resetanime',
+			columnSelector_mediaquery: false,
 		},
         sortStable: true,
-        sortAppend: [[1,0]]
+        sortAppend: [[2,0]]
     });
 
 	if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
@@ -160,7 +169,7 @@
             sortAscending: $sickbeard.POSTER_SORTDIR,
 			layoutMode: 'masonry',
 			masonry: {
-				columnWidth: 12,
+				columnWidth: 13,
 				isFitWidth: true
 			},
 			getSortData: {
@@ -200,6 +209,21 @@
         \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
 	});
 	
+	\$('#popover')
+	    .popover({
+	      placement: 'bottom',
+	      html: true, // required if content has HTML
+	      content: '<div id="popover-target"></div>'
+	    })
+	    // bootstrap popover event triggered when the popover opens
+	    .on('shown.bs.popover', function () {
+	      // call this function to copy the column selection code into the popover
+	      \$.tablesorter.columnSelector.attachTo( \$('#showListTableShows'), '#popover-target');
+	      #if $sickbeard.ANIME_SPLIT_HOME:
+	    	\$.tablesorter.columnSelector.attachTo( \$('#showListTableAnime'), '#popover-target');
+	      #end if
+	    });
+	
 });
 
 //-->
@@ -212,6 +236,9 @@
 #end if
 
 <div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
+    #if $layout != 'poster':
+        <button id="popover" type="button" class="btn btn-inline">Select Column</button>
+    #end if
 	<span> Layout: 
 		<select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
 			<option value="$sbRoot/setHomeLayout/?layout=poster" #if $sickbeard.HOME_LAYOUT == "poster" then "selected=\"selected\"" else ""#>Poster</option>
@@ -221,7 +248,8 @@
 		</select>
 		#if $layout != 'poster':
         Search:
-			<input class="search form-control form-control-inline input-sm input200" type="search" data-column="1" placeholder="Search Show Name"> <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
+			<input class="search form-control form-control-inline input-sm input200" type="search" data-column="1" placeholder="Search Show Name">
+			<button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
 		#end if
 	</span>
 	
@@ -413,12 +441,12 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 				<td class="show-table">
 				    #if $layout != 'simple':	
 						#if $curShow.network:
-							<img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />	
+							<span title="$curShow.network"><img class="show-network-image" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" /></span>	
 						#else:
-							<img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+							<span title="No Network"><img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
 						#end if
 					#else:
-						$curShow.network
+						<span title="$curShow.network">$curShow.network</span>
 					#end if	
 				</td>
 				
@@ -447,6 +475,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <thead>
 		<tr>
 			<th class="nowrap">Next Ep</th>
+			<th class="nowrap">Prev Ep</th>
 			<th>Show</th>
 			<th>Network</th>
 			<th>Quality</th>
@@ -459,12 +488,19 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <tfoot>
         <tr>
 			<th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">Add Show</a></th>
-			<th rowspan="1" colspan="6"></th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
         </tr>
     </tfoot>
     
-	<tbody>
 
+#if $sickbeard.showQueueScheduler.action.loadingShowList
+    <tbody class="tablesorter-infoOnly">
 #for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
 
   #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
@@ -476,7 +512,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td></td>
     <td>
     #if $curLoadingShow.show == None:
-    Loading... ($curLoadingShow.show_name)
+    <span title="">Loading... ($curLoadingShow.show_name)</span>
     #else:
     <a href="displayShow?show=$curLoadingShow.show.indexerid">$curLoadingShow.show.name</a>
     #end if
@@ -487,11 +523,16 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     <td></td>
   </tr>
 #end for
+    </tbody>
+#end if
+
+    <tbody>
 
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
 
     #set $cur_airs_next = ''
+    #set $cur_airs_prev = ''
     #set $cur_snatched = 0
     #set $cur_downloaded = 0
     #set $cur_total = 0
@@ -499,6 +540,8 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
     #if $curShow.indexerid in $show_stat:
         #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
+        #set $cur_airs_prev = $show_stat[$curShow.indexerid]['ep_airs_prev']
+        
 
         #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
         #if not $cur_snatched:
@@ -552,7 +595,20 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #else:
     	<td align="center" class="nowrap"></td>
     #end if
-	
+
+    #if $cur_airs_prev
+    #set $pdatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_prev,$curShow.airs,$curShow.network))
+        <td align="center" class="nowrap"><div class="${fuzzydate}">
+        #try
+          $sbdatetime.sbdatetime.sbfdate($pdatetime)
+        #except ValueError
+          Invalid date
+        #end try
+        </div><span class="sort_data">$calendar.timegm($pdatetime.timetuple())</span></td>
+    #else:
+        <td align="center" class="nowrap"></td>
+    #end if
+
 	#if $layout == 'small':
 	    <td class="tvShow">
 	    	<div class="imgsmallposter $layout">
@@ -577,14 +633,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #if $layout != 'simple':	
 		<td align="center">
         #if $curShow.network:
-        	<img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" />
+        	<span title="$curShow.network"><img id="network" width="54" height="27" src="$sbRoot/images/network/${curShow.network.replace(u"\u00C9",'e').replace(u"\u00E9",'e').lower()}.png" alt="$curShow.network" title="$curShow.network" /></span>
     	#else:
-    		<img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" />
+    		<span title="No Network"><img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
 		#end if
 		</td>
 	#else:
 		<td>
-			$curShow.network
+			<span title="$curShow.network">$curShow.network</span>
 		</td>
 	#end if		
 

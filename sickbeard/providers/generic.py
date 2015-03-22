@@ -49,6 +49,7 @@ class GenericProvider:
         self.name = name
 
         self.proxy = ProviderProxy()
+        self.proxyGlypeProxySSLwarning = None
         self.urls = {}
         self.url = ''
 
@@ -127,9 +128,11 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
+            # GlypeProxy SSL warning message
+            self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
 
         return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
-                              session=self.session, json=json)
+                              session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
 
     def downloadResult(self, result):
         """
@@ -252,7 +255,7 @@ class GenericProvider:
 
         return title, url
 
-    def findSearchResults(self, show, episodes, search_mode, manualSearch=False):
+    def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
 
         self._checkAuth()
         self.show = show
@@ -263,7 +266,7 @@ class GenericProvider:
         searched_scene_season = None
         for epObj in episodes:
             # search cache for episode result
-            cacheResult = self.cache.searchCache(epObj, manualSearch)
+            cacheResult = self.cache.searchCache(epObj, manualSearch, downCurQuality)
             if cacheResult:
                 if epObj.episode not in results:
                     results[epObj.episode] = cacheResult
@@ -399,7 +402,7 @@ class GenericProvider:
             # make sure we want the episode
             wantEp = True
             for epNo in actual_episodes:
-                if not showObj.wantEpisode(actual_season, epNo, quality, manualSearch):
+                if not showObj.wantEpisode(actual_season, epNo, quality, manualSearch, downCurQuality):
                     wantEp = False
                     break
 
