@@ -3828,6 +3828,22 @@ class ConfigSearch(Config):
         sickbeard.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
 
         sickbeard.DOWNLOAD_PROPERS = config.checkbox_to_value(download_propers)
+        config.change_DOWNLOAD_PROPERS(sickbeard.DOWNLOAD_PROPERS)
+
+        if sickbeard.DOWNLOAD_PROPERS and not sickbeard.properFinderScheduler.isAlive():
+            sickbeard.properFinderScheduler.silent = False
+            try:
+                sickbeard.properFinderScheduler.start()
+            except:
+                pass
+        elif not sickbeard.DOWNLOAD_PROPERS:
+            sickbeard.properFinderScheduler.stop.set()
+            sickbeard.properFinderScheduler.silent = True
+            try:
+                sickbeard.properFinderScheduler.join(5)
+            except:
+                pass
+
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
