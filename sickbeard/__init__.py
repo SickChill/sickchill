@@ -589,6 +589,9 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
 
+        # Need to be before any passwords
+        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
+
         GIT_AUTOISSUES = bool(check_setting_int(CFG, 'General', 'git_autoissues', 0))
 
         # git login info
@@ -705,7 +708,6 @@ def initialize(consoleLogging=True):
         WEB_IPV6 = bool(check_setting_int(CFG, 'General', 'web_ipv6', 0))
         WEB_ROOT = check_setting_str(CFG, 'General', 'web_root', '').rstrip("/")
         WEB_LOG = bool(check_setting_int(CFG, 'General', 'web_log', 0))
-        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
         WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '', censor_log=True)
         WEB_PASSWORD = check_setting_str(CFG, 'General', 'web_password', '', censor_log=True)
         WEB_COOKIE_SECRET = check_setting_str(CFG, 'General', 'web_cookie_secret', helpers.generateCookieSecret(), censor_log=True)
