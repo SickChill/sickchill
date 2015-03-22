@@ -1894,13 +1894,14 @@ class Home(WebRoot):
     ### Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
-    def getManualSearchStatus(self, show=None, season=None):
+    def getManualSearchStatus(self, show=None):
         def getEpisodes(searchThread, searchstatus):
             results = []
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
-                results.append({'episode': searchThread.segment.episode,
+                results.append({'show': searchThread.show.indexerid,
+                                'episode': searchThread.segment.episode,
                                 'episodeindexid': searchThread.segment.indexerid,
                                 'season': searchThread.segment.season,
                                 'searchstatus': searchstatus,
@@ -1909,7 +1910,8 @@ class Home(WebRoot):
                                 'overview': Overview.overviewStrings[showObj.getOverview(int(searchThread.segment.status or -1))]})
             else:
                 for epObj in searchThread.segment:
-                    results.append({'episode': epObj.episode,
+                    results.append({'show': epObj.show.indexerid,
+                                    'episode': epObj.episode,
                                     'episodeindexid': epObj.indexerid,
                                     'season': epObj.season,
                                     'searchstatus': searchstatus,
@@ -1920,9 +1922,6 @@ class Home(WebRoot):
             return results
 
         episodes = []
-
-        if not show and not season:
-            return json.dumps({'show': show, 'episodes': episodes})
 
         # Queued Searches
         searchstatus = 'queued'
@@ -1942,8 +1941,9 @@ class Home(WebRoot):
         # Finished Searches
         searchstatus = 'finished'
         for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
-            if not str(searchThread.show.indexerid) == show:
-                continue
+            if show is not None:
+                if not str(searchThread.show.indexerid) == show:
+                    continue
 
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
@@ -1953,7 +1953,7 @@ class Home(WebRoot):
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
-        return json.dumps({'show': show, 'episodes': episodes})
+        return json.dumps({'episodes': episodes})
 
     def getQualityClass(self, ep_obj):
         # return the correct json value
