@@ -130,7 +130,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
-            if result.content:
+            if result.content or result.url.startswith('magnet'):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
