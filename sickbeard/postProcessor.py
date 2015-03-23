@@ -44,6 +44,7 @@ from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from lib import adba
+from sickbeard.helpers import verify_freespace
 
 
 class PostProcessor(object):
@@ -868,6 +869,11 @@ class PostProcessor(object):
             self._log(
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one",
                 logger.DEBUG)
+        
+        # try to find out if we have enough space to perform the copy or move action.
+        if not verify_freespace(self.file_path, ek.ek(os.path.dirname, ep_obj.location), [ep_obj] + ep_obj.relatedEps):
+            self._log("Not enough space to continue PP, exiting")
+            return False
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
@@ -941,10 +947,6 @@ class PostProcessor(object):
             if data:
                 notifiers.trakt_notifier.update_watchlist(show, data_episode=data, update="remove")
 
-        if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
-
         # Just want to keep this consistent for failed handling right now
         releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
         if releaseName is not None:
@@ -981,7 +983,7 @@ class PostProcessor(object):
         # add to anidb
         if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
             self._add_to_anidb_mylist(self.file_path)
-
+        
         try:
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
@@ -1008,6 +1010,11 @@ class PostProcessor(object):
                 with cur_ep.lock:
                     cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
                     cur_ep.downloadSubtitles(force=True)
+
+        # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         # put the new location in the database
         sql_l = []
