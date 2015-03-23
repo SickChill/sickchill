@@ -786,6 +786,26 @@ td.tvShow a:hover {
     color: #09A2FF;
 }
 
+#popover-target label {
+  margin: 0 5px;
+  display: block;
+}
+#popover-target input {
+  margin-left: 5px;
+}
+.popover {
+  margin-left: -50px;
+  background-color: #333;
+}
+
+.popover-content {
+  background-color: #333;
+}
+
+.popover.bottom .arrow:after {
+  border-bottom-color: #333;
+}
+
 /* =======================================================================
 home_addShows.tmpl
 ========================================================================== */
@@ -3072,3 +3092,26 @@ jquery.confirm.css
 #confirmBox .red:hover {
 	background-color: #A13331;
 }
+
+/* =======================================================================
+bootstarp modal
+========================================================================== */
+
+.modal-content {
+  background-color: #3D3D3D;
+}
+.modal-body {
+  background-color: #3D3D3D;
+}
+
+.modal-header {
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #15528F;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+ }

@@ -124,7 +124,6 @@
         sortList: sortList,
         textExtraction: {
             0: function(node) { return \$(node).find('span').text().toLowerCase() },
-            4: function(node) { return \$(node).find('img').attr('alt') },
             5: function(node) { return \$(node).find('span').text().toLowerCase() }
         },
         headers: {
@@ -249,7 +248,7 @@
 			</td>
 
 			<td align="center">
-				<a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+				<a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
 			</td>
 		</tr>
 		<!-- end $cur_result['show_name'] //-->

@@ -43,20 +43,20 @@
 
 					<fieldset class="component-group-list">
 						<div class="field-pair">
-							<label for="download_propers">
-								<span class="component-title">Download propers</span>
-								<span class="component-desc">
-									<input type="checkbox" name="download_propers" id="download_propers" class="enabler" <%= html_checked if sickbeard.DOWNLOAD_PROPERS == True else '' %>/>
-									<p>replace original download with "Proper" or "Repack" if nuked</p>
-								</span>
-							</label>
-						</div>
-						<div class="field-pair">
 							<label for="randomize_providers">
 								<span class="component-title">Randomize Providers</span>
 								<span class="component-desc">
 									<input type="checkbox" name="randomize_providers" id="randomize_providers" class="enabler" <%= html_checked if sickbeard.RANDOMIZE_PROVIDERS == True else '' %>/>
 									<p>randomize the provider search order instead of going in order of placement</p>
+								</span>
+							</label>
+						</div>
+						<div class="field-pair">
+							<label for="download_propers">
+								<span class="component-title">Download propers</span>
+								<span class="component-desc">
+									<input type="checkbox" name="download_propers" id="download_propers" class="enabler" <%= html_checked if sickbeard.DOWNLOAD_PROPERS == True else '' %>/>
+									<p>replace original download with "Proper" or "Repack" if nuked</p>
 								</span>
 							</label>
 						</div>
@@ -104,6 +104,16 @@
 									<input type="text" name="dailysearch_frequency" value="$sickbeard.DAILYSEARCH_FREQUENCY" class="form-control input-sm input75" />
 									<p>time in minutes between searches (min. $sickbeard.MIN_DAILYSEARCH_FREQUENCY)</p>
 									</span>
+							</label>
+						</div>
+
+						<div class="field-pair">
+							<label>
+								<span class="component-title">Missed episodes range</span>
+								<span class="component-desc">
+									<input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="$sickbeard.COMING_EPS_MISSED_RANGE" class="form-control input-sm input75" />
+									<p>Set the range in days of the missed episodes</p>
+								</span>
 							</label>
 						</div>
 
@@ -309,6 +319,16 @@
 									</span>
 								</label>
 							</div>
+							#if sickbeard.ALLOW_HIGH_PRIORITY == True
+							<div class="field-pair">
+								<label for="sab_forced">
+									<span class="component-title">Use forced priority</span>
+									<span class="component-desc">
+										<input type="checkbox" name="sab_forced" class="enabler" id="sab_forced" <%= html_checked if sickbeard.SAB_FORCED else '' %>/>
+										<p>enable to change priority from HIGH to FORCED</p></span>
+								</label>
+							</div>
+							#end if
 						</div>
 
 						<div id="nzbget_settings">

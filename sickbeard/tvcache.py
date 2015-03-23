@@ -297,8 +297,8 @@ class TVCache():
                 [name, season, episodeText, parse_result.show.indexerid, url, curTimestamp, quality, release_group, version]]
 
 
-    def searchCache(self, episode, manualSearch=False):
-        neededEps = self.findNeededEpisodes(episode, manualSearch)
+    def searchCache(self, episode, manualSearch=False, downCurQuality=False):
+        neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
         return neededEps[episode] if len(neededEps) > 0 else []
 
     def listPropers(self, date=None, delimiter="."):
@@ -311,7 +311,7 @@ class TVCache():
         return filter(lambda x: x['indexerid'] != 0, myDB.select(sql))
 
 
-    def findNeededEpisodes(self, episode, manualSearch=False):
+    def findNeededEpisodes(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = {}
         cl = []
 
@@ -356,7 +356,7 @@ class TVCache():
             curVersion = curResult["version"]
 
             # if the show says we want that episode then add it to the list
-            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch):
+            if not showObj.wantEpisode(curSeason, curEp, curQuality, manualSearch, downCurQuality):
                 logger.log(u"Skipping " + curResult["name"] + " because we don't want an episode that's " +
                            Quality.qualityStrings[curQuality], logger.DEBUG)
                 continue

@@ -273,7 +273,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                                 continue
 
                             item = title, download_url, id, seeders, leechers
-                            logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
+                            logger.log(u"Found result: " + title.replace(' ','.') + " (" + searchURL + ")", logger.DEBUG)
 
                             items[mode].append(item)
 
@@ -321,9 +321,15 @@ class HDTorrentsProvider(generic.TorrentProvider):
             if not self.show: continue
             curEp = curshow.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
 
-            searchString = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+            proper_searchString = self._get_episode_search_strings(curEp, add_string='PROPER')
 
-            for item in self._doSearch(searchString[0]):
+            for item in self._doSearch(proper_searchString[0]):
+                title, url = self._get_title_and_url(item)
+                results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
+                
+            repack_searchString = self._get_episode_search_strings(curEp, add_string='REPACK')
+
+            for item in self._doSearch(repack_searchString[0]):
                 title, url = self._get_title_and_url(item)
                 results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 

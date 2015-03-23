@@ -37,7 +37,7 @@ from github import Github
 from sickbeard import providers, metadata, config, webserveInit
 from sickbeard.providers.generic import GenericProvider
 from providers import ezrss, btn, newznab, womble, thepiratebay, oldpiratebay, torrentleech, kat, iptorrents, \
-    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, fanzub, torrentbytes, animezb, \
+    omgwtfnzbs, scc, hdtorrents, torrentday, hdbits, hounddawgs, nextgen, speedcd, nyaatorrents, animenzb, torrentbytes, animezb, \
     freshontv, morethantv, bitsoup, t411, tokyotoshokan, shazbat, rarbg, alpharatio, tntvillage, binsearch
 from sickbeard.config import CheckSection, check_setting_int, check_setting_str, check_setting_float, ConfigMigrator, \
     naming_ep_type
@@ -224,6 +224,7 @@ TORRENT_DIR = None
 DOWNLOAD_PROPERS = False
 CHECK_PROPERS_INTERVAL = None
 ALLOW_HIGH_PRIORITY = False
+SAB_FORCED = False
 RANDOMIZE_PROVIDERS = False
 
 AUTOPOSTPROCESSER_FREQUENCY = None
@@ -251,6 +252,7 @@ CREATE_MISSING_SHOW_DIRS = False
 RENAME_EPISODES = False
 AIRDATE_EPISODES = False
 PROCESS_AUTOMATICALLY = False
+NO_DELETE = False
 KEEP_PROCESSED_DIR = False
 PROCESS_METHOD = None
 DELRARCONTENTS = False
@@ -502,11 +504,12 @@ DELETE_FAILED = False
 
 EXTRA_SCRIPTS = []
 
-IGNORE_WORDS = "core2hd,dutch,swedish,reenc,MrLss"
+IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 REQUIRE_WORDS = ""
 SYNC_FILES = "!sync,lftp-pget-status,part,bts"
 
 CALENDAR_UNPROTECTED = False
+NO_RESTART = False
 
 TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
 TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
@@ -524,7 +527,7 @@ def initialize(consoleLogging=True):
     with INIT_LOCK:
 
         global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG, ENCRYPTION_VERSION, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, API_KEY, API_ROOT, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, \
-            HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, TORRENT_METHOD, \
+            HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, \
             SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_CATEGORY_ANIME, SAB_HOST, \
             NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_CATEGORY_ANIME, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS, backlogSearchScheduler, \
             TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH, TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, \
@@ -542,7 +545,7 @@ def initialize(consoleLogging=True):
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, \
             USE_PUSHALOT, PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, \
             USE_PUSHBULLET, PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE, \
-            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, UNPACK, CPU_PRESET, \
+            versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, UNPACK, CPU_PRESET, \
             KEEP_PROCESSED_DIR, PROCESS_METHOD, DELRARCONTENTS, TV_DOWNLOAD_DIR, MIN_DAILYSEARCH_FREQUENCY, DEFAULT_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, UPDATE_FREQUENCY, \
             showQueueScheduler, searchQueueScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, TIMEZONE_DISPLAY, \
             NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, \
@@ -559,7 +562,7 @@ def initialize(consoleLogging=True):
             NEWZBIN, NEWZBIN_USERNAME, NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, NFO_RENAME, \
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DISPLAY_FILESIZE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, \
-            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CREATE_MISSING_SHOW_DIRS, \
+            METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, NO_RESTART, CREATE_MISSING_SHOW_DIRS, \
             ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
@@ -591,6 +594,9 @@ def initialize(consoleLogging=True):
         CheckSection(CFG, 'Pushalot')
         CheckSection(CFG, 'Pushbullet')
         CheckSection(CFG, 'Subtitles')
+
+        # Need to be before any passwords
+        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
 
         GIT_AUTOISSUES = bool(check_setting_int(CFG, 'General', 'git_autoissues', 0))
 
@@ -708,7 +714,6 @@ def initialize(consoleLogging=True):
         WEB_IPV6 = bool(check_setting_int(CFG, 'General', 'web_ipv6', 0))
         WEB_ROOT = check_setting_str(CFG, 'General', 'web_root', '').rstrip("/")
         WEB_LOG = bool(check_setting_int(CFG, 'General', 'web_log', 0))
-        ENCRYPTION_VERSION = check_setting_int(CFG, 'General', 'encryption_version', 0)
         WEB_USERNAME = check_setting_str(CFG, 'General', 'web_username', '', censor_log=True)
         WEB_PASSWORD = check_setting_str(CFG, 'General', 'web_password', '', censor_log=True)
         WEB_COOKIE_SECRET = check_setting_str(CFG, 'General', 'web_cookie_secret', helpers.generateCookieSecret(), censor_log=True)
@@ -835,6 +840,7 @@ def initialize(consoleLogging=True):
 
         TV_DOWNLOAD_DIR = check_setting_str(CFG, 'General', 'tv_download_dir', '')
         PROCESS_AUTOMATICALLY = bool(check_setting_int(CFG, 'General', 'process_automatically', 0))
+        NO_DELETE = bool(check_setting_int(CFG, 'General', 'no_delete', 0))
         UNPACK = bool(check_setting_int(CFG, 'General', 'unpack', 0))
         RENAME_EPISODES = bool(check_setting_int(CFG, 'General', 'rename_episodes', 1))
         AIRDATE_EPISODES = bool(check_setting_int(CFG, 'General', 'airdate_episodes', 0))
@@ -862,6 +868,7 @@ def initialize(consoleLogging=True):
         SAB_CATEGORY = check_setting_str(CFG, 'SABnzbd', 'sab_category', 'tv')
         SAB_CATEGORY_ANIME = check_setting_str(CFG, 'SABnzbd', 'sab_category_anime', 'anime')
         SAB_HOST = check_setting_str(CFG, 'SABnzbd', 'sab_host', '')
+        SAB_FORCED = bool(check_setting_int(CFG, 'SABnzbd', 'sab_forced', 0))
 
         NZBGET_USERNAME = check_setting_str(CFG, 'NZBget', 'nzbget_username', 'nzbget', censor_log=True)
         NZBGET_PASSWORD = check_setting_str(CFG, 'NZBget', 'nzbget_password', 'tegbzn6789', censor_log=True)
@@ -1070,6 +1077,8 @@ def initialize(consoleLogging=True):
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
 
         CALENDAR_UNPROTECTED = bool(check_setting_int(CFG, 'General', 'calendar_unprotected', 0))
+        
+        NO_RESTART = bool(check_setting_int(CFG, 'General', 'no_restart', 0))
 
         EXTRA_SCRIPTS = [x.strip() for x in check_setting_str(CFG, 'General', 'extra_scripts', '').split('|') if
                          x.strip()]
@@ -1499,7 +1508,7 @@ def halt():
                     ADBA_CONNECTION.join(10)
                 except:
                     pass
-
+            
             __INITIALIZED__ = False
             started = False
 
@@ -1643,6 +1652,7 @@ def save_config():
     new_config['General']['postpone_if_sync_files'] = int(POSTPONE_IF_SYNC_FILES)
     new_config['General']['nfo_rename'] = int(NFO_RENAME)
     new_config['General']['process_automatically'] = int(PROCESS_AUTOMATICALLY)
+    new_config['General']['no_delete'] = int(NO_DELETE)
     new_config['General']['unpack'] = int(UNPACK)
     new_config['General']['rename_episodes'] = int(RENAME_EPISODES)
     new_config['General']['airdate_episodes'] = int(AIRDATE_EPISODES)
@@ -1654,6 +1664,7 @@ def save_config():
     new_config['General']['ignore_words'] = IGNORE_WORDS
     new_config['General']['require_words'] = REQUIRE_WORDS
     new_config['General']['calendar_unprotected'] = int(CALENDAR_UNPROTECTED)
+    new_config['General']['no_restart'] = int(NO_RESTART)
     new_config['General']['developer'] = int(DEVELOPER)
 
     new_config['Blackhole'] = {}
@@ -1767,6 +1778,7 @@ def save_config():
     new_config['SABnzbd']['sab_category'] = SAB_CATEGORY
     new_config['SABnzbd']['sab_category_anime'] = SAB_CATEGORY_ANIME
     new_config['SABnzbd']['sab_host'] = SAB_HOST
+    new_config['SABnzbd']['sab_forced'] = int(SAB_FORCED)
 
     new_config['NZBget'] = {}
 

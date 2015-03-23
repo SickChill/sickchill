@@ -199,7 +199,7 @@ class Logger(object):
                         gist = 'No ERROR found'
 
                 message = u"### INFO\n"
-                message += u"Python Version: **" + sys.version[:120] + "**\n"
+                message += u"Python Version: **" + sys.version[:120].replace('\n','') + "**\n"
                 message += u"Operating System: **" + platform.platform() + "**\n"
                 if not 'Windows' in platform.platform():
                     try:

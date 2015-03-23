@@ -529,9 +529,9 @@
 		<td class="col-search">
 			#if int($epResult["season"]) != 0:
 			#if ( int($epResult["status"]) in $Quality.SNATCHED or int($epResult["status"]) in $Quality.DOWNLOADED ) and $sickbeard.USE_FAILED_DOWNLOADS:
-				<a class="epRetry" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
+				<a class="epRetry" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
 			#else:
-				<a class="epSearch" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+				<a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
 			#end if
 			#end if
 			
@@ -544,5 +544,47 @@
 	#end for
 	
 </table>
+
+<!--Begin - Bootstrap Modal-->
+
+<div id="manualSearchModalFailed" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Manual Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to mark this episode as failed?</p>
+                <p class="text-warning"><small>The episode release name will be added to the failed history, preventing it to be downloaded again.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="manualSearchModalQuality" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Manual Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to include the current episode quality in the search?</p>
+                <p class="text-warning"><small>Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End - Bootstrap Modal-->
 
 #include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

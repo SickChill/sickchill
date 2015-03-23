@@ -1,5 +1,6 @@
 #import os.path
 #import sickbeard
+#import sys
 #from sickbeard.common import *
 #from sickbeard import config
 #from sickbeard import metadata
@@ -71,7 +72,12 @@
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
-                                        #for $curAction in ('copy', 'move', 'hardlink', 'symlink'):
+                                        #if sys.platform == 'win32'
+                                            #set $process_action = ('copy', 'move')
+                                        #else
+                                            #set $process_action = ('copy', 'move', 'hardlink', 'symlink')                                        
+                                        #end if
+                                        #for $curAction in $process_action:
                                           #if $sickbeard.PROCESS_METHOD == $curAction:
                                             #set $process_method = "selected=\"selected\""
                                           #else
@@ -188,6 +194,18 @@
                                 <span class="component-desc">eg. NZBMedia w/ NZBGET, sabToSickbeard w/ SABnzbd+!</span>
                             </label>                            
                         </div>
+                        
+                        <div class="field-pair">
+                            <input type="checkbox" name="no_delete" id="no_delete" #if $sickbeard.NO_DELETE == True then "checked=\"checked\"" else ""# />
+                            <label for="no_delete">
+                                <span class="component-title">Don't delete empty folders</span>
+                                <span class="component-desc">Leave empty folders when Post Processing?</span>
+                            </label>
+                            <label class="nocheck" for="no_delete">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc"><b>NOTE:</b> Can be overridden using manual Post Processing</span>
+                            </label>
+                        </div>
 
                         <div class="field-pair">
                             <label class="nocheck">
@@ -283,6 +301,10 @@
                                         <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
                                     </span>
                                 </label>
+                                <label class="nocheck">
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc"><b>NOTE:</b> Dont' forget to add quality pattern. Otherwise after post-procesing the episode will have UNKNOWN quality</span>
+                                 </label>
                             </div>
 
                             <div id="naming_key" class="nocheck" style="display: none;">

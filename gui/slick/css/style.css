@@ -794,6 +794,17 @@ td.tvShow a:hover {
 	color: #428BCA;
 }
 
+#popover-target label {
+  margin: 0 5px;
+  display: block;
+}
+#popover-target input {
+  margin-left: 5px;
+}
+.popover {
+  margin-left: -50px;
+}
+
 /* =======================================================================
 home_addShows.tmpl
 ========================================================================== */

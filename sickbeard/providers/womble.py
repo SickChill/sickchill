@@ -55,8 +55,11 @@ class WombleCache(tvcache.TVCache):
         self.setLastUpdate()
 
         cl = []
-        for url in [self.provider.url + 'rss/?sec=tv-sd&fr=false', self.provider.url + 'rss/?sec=tv-hd&fr=false']:
-            logger.log(u"Womble's Index cache update URL: " + url, logger.DEBUG)
+        for url in [self.provider.url + 'rss/?sec=tv-x264&fr=false',
+                    self.provider.url + 'rss/?sec=tv-sd&fr=false',
+                    self.provider.url + 'rss/?sec=tv-dvd&fr=false',
+                    self.provider.url + 'rss/?sec=tv-hd&fr=false']:
+            logger.log(u'Womble\'s Index cache update URL: ' + url, logger.DEBUG)
 
             for item in self.getRSSFeed(url)['entries'] or []:
                 ci = self._parseItem(item)

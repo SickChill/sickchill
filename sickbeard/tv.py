@@ -1198,7 +1198,7 @@ class TVShow(object):
         return toReturn
 
 
-    def wantEpisode(self, season, episode, quality, manualSearch=False):
+    def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
         logger.log(u"Checking if found episode " + str(season) + "x" + str(episode) + " is wanted at quality " +
                    Quality.qualityStrings[quality], logger.DEBUG)
@@ -1230,21 +1230,22 @@ class TVShow(object):
             logger.log(u"Existing episode status is skipped/ignored/archived, ignoring found episode", logger.DEBUG)
             return False
 
+        curStatus, curQuality = Quality.splitCompositeStatus(epStatus)
+
         # if it's one of these then we want it as long as it's in our allowed initial qualities
         if quality in anyQualities + bestQualities:
             if epStatus in (WANTED, UNAIRED, SKIPPED):
                 logger.log(u"Existing episode status is wanted/unaired/skipped, getting found episode", logger.DEBUG)
                 return True
-            #elif manualSearch:
-            #    logger.log(
-            #        u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
-            #        logger.DEBUG)
-            #    return True
+            elif manualSearch:
+                if (downCurQuality and quality >= curQuality) or (not downCurQuality and quality > curQuality):
+                    logger.log(
+                        u"Usually ignoring found episode, but forced search allows the quality, getting found episode",
+                        logger.DEBUG)
+                    return True
             else:
                 logger.log(u"Quality is on wanted list, need to check if it's better than existing quality",
                            logger.DEBUG)
-
-        curStatus, curQuality = Quality.splitCompositeStatus(epStatus)
 
         # if we are re-downloading then we only want it if it's in our bestQualities list and better than what we have
         if curStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST and quality in bestQualities and quality > curQuality:
@@ -1289,9 +1290,8 @@ class TVShow(object):
             if epStatus == DOWNLOADED and curQuality == Quality.UNKNOWN:
                 return Overview.QUAL
             elif epStatus in (SNATCHED, SNATCHED_PROPER, SNATCHED_BEST):
-                if curQuality < maxBestQuality:
-                    return Overview.QUAL
                 return Overview.SNATCHED
+            # if they don't want re-downloads then we call it good if they have anything
             elif maxBestQuality == None:
                 return Overview.GOOD
             # if the want only first match and already have one call it good
@@ -1770,7 +1770,10 @@ class TVEpisode(object):
 
                 # if we somehow are still UNKNOWN then just use the shows defined default status or SKIPPED
                 elif self.status == UNKNOWN:
-                    self.status = self.show.default_ep_status
+                    if self.season > 0: #If it's not a special
+                        self.status = self.show.default_ep_status
+                    else:
+                        self.status = SKIPPED
 
                 else:
                     logger.log(

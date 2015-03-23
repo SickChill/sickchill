@@ -518,7 +518,19 @@
 								</span>
 							</label>
 						</div>
+						
+						<div class="field-pair">
+							<label for="no_restart">
+								<span class="component-title">No Restart</span>
+								<span class="component-desc">
+									<input type="checkbox" name="no_restart" id="no_restart" #if $sickbeard.NO_RESTART then 'checked="checked"' else ''#/>
+									<p>Only shutdown when restarting SR.
+									Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)</p>
+								</span>
 
+							</label>
+						</div>
+						
 						<div class="field-pair">
 							<label for="encryption_version">
 								<span class="component-title">Encrypt passwords</span>

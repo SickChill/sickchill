@@ -30,11 +30,11 @@ from sickbeard import tvcache
 from lib.dateutil.parser import parse as parseDate
 
 
-class Fanzub(generic.NZBProvider):
+class animenzb(generic.NZBProvider):
 
     def __init__(self):
 
-        generic.NZBProvider.__init__(self, "Fanzub")
+        generic.NZBProvider.__init__(self, "AnimeNZB")
 
         self.supportsBacklog = False
         self.supportsAbsoluteNumbering = True
@@ -42,9 +42,9 @@ class Fanzub(generic.NZBProvider):
 
         self.enabled = False
 
-        self.cache = FanzubCache(self)
+        self.cache = animenzbCache(self)
 
-        self.urls = {'base_url': 'https://fanzub.com/'}
+        self.urls = {'base_url': 'http://animenzb.com//'}
 
         self.url = self.urls['base_url']
 
@@ -52,7 +52,7 @@ class Fanzub(generic.NZBProvider):
         return self.enabled
 
     def imageName(self):
-        return 'fanzub.gif'
+        return 'animenzb.gif'
 
     def _get_season_search_strings(self, ep_obj):
         return [x for x in show_name_helpers.makeSceneSeasonSearchString(self.show, ep_obj)]
@@ -111,13 +111,13 @@ class Fanzub(generic.NZBProvider):
         return results
 
 
-class FanzubCache(tvcache.TVCache):
+class animenzbCache(tvcache.TVCache):
 
     def __init__(self, provider):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll Fanzub every 20 minutes max
+        # only poll animenzb every 20 minutes max
         self.minTime = 20
 
     def _getRSSData(self):
@@ -133,4 +133,4 @@ class FanzubCache(tvcache.TVCache):
 
         return self.getRSSFeed(rss_url)
 
-provider = Fanzub()
+provider = animenzb()
