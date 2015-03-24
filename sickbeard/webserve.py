@@ -2395,8 +2395,11 @@ class HomeAddShows(Home):
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
-            if sickbeard.TRAKT_BLACKLIST_NAME is not None:
+            not_liked_show = ""
+            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
                 not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+            else:
+                logger.log(u"trending blacklist name is empty", logger.DEBUG)
 
             limit_show = 50 + len(not_liked_show)
 
@@ -2413,6 +2416,9 @@ class HomeAddShows(Home):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
                                     t.trending_shows += [show]
+                            else:
+                                t.trending_shows += [show]
+
                 except exceptions.MultipleShowObjectsException:
                     continue
 
