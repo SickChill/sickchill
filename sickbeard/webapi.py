@@ -1669,13 +1669,8 @@ class CMD_SickBeardSearchIndexers(ApiCall):
              }
     }
 
-    valid_languages = {
-        'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
-        'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
-        'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
-        'sv': 8, 'sl': 30}
-
     def __init__(self, args, kwargs):
+        self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
         # required
         # optional
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
@@ -2078,13 +2073,8 @@ class CMD_ShowAddNew(ApiCall):
              }
     }
 
-    valid_languages = {
-        'el': 20, 'en': 7, 'zh': 27, 'it': 15, 'cs': 28, 'es': 16, 'ru': 22,
-        'nl': 13, 'pt': 26, 'no': 9, 'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31,
-        'de': 14, 'da': 10, 'fi': 11, 'hu': 19, 'ja': 25, 'he': 24, 'ko': 32,
-        'sv': 8, 'sl': 30}
-
     def __init__(self, args, kwargs):
+        self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
         # required
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
