@@ -1027,7 +1027,7 @@ def validateShow(show, season=None, episode=None):
     try:
         lINDEXER_API_PARMS = sickbeard.indexerApi(show.indexer).api_params.copy()
 
-        if indexer_lang and not indexer_lang == 'en':
+        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
             lINDEXER_API_PARMS['language'] = indexer_lang
 
         t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)

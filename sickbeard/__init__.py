@@ -170,6 +170,7 @@ ENABLE_HTTPS = False
 HTTPS_CERT = None
 HTTPS_KEY = None
 
+INDEXER_DEFAULT_LANGUAGE = None
 LAUNCH_BROWSER = False
 CACHE_DIR = None
 ACTUAL_CACHE_DIR = None
@@ -536,7 +537,7 @@ def initialize(consoleLogging=True):
             USE_TRAKT, TRAKT_USERNAME, TRAKT_PASSWORD, TRAKT_REMOVE_WATCHLIST, TRAKT_SYNC_WATCHLIST, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, traktRollingScheduler, TRAKT_USE_RECOMMENDED, TRAKT_SYNC, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_DISABLE_SSL_VERIFY, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, TRAKT_USE_ROLLING_DOWNLOAD, TRAKT_ROLLING_NUM_EP, TRAKT_ROLLING_ADD_PAUSED, TRAKT_ROLLING_FREQUENCY, TRAKT_ROLLING_DEFAULT_WATCHED_STATUS, \
             USE_PLEX, PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, \
             PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_HOST, PLEX_USERNAME, PLEX_PASSWORD, DEFAULT_BACKLOG_FREQUENCY, MIN_BACKLOG_FREQUENCY, BACKLOG_STARTUP, SKIP_REMOVED_FILES, \
-            showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, UPDATE_SHOWS_ON_SNATCH, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
+            showUpdateScheduler, __INITIALIZED__, INDEXER_DEFAULT_LANGUAGE, LAUNCH_BROWSER, UPDATE_SHOWS_ON_START, UPDATE_SHOWS_ON_SNATCH, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, SORT_ARTICLE, showList, loadingShowList, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, \
             QUALITY_DEFAULT, FLATTEN_FOLDERS_DEFAULT, SUBTITLES_DEFAULT, STATUS_DEFAULT, DAILYSEARCH_STARTUP, \
             GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, \
@@ -719,6 +720,9 @@ def initialize(consoleLogging=True):
         WEB_COOKIE_SECRET = check_setting_str(CFG, 'General', 'web_cookie_secret', helpers.generateCookieSecret(), censor_log=True)
         if not WEB_COOKIE_SECRET:
             WEB_COOKIE_SECRET = helpers.generateCookieSecret()
+
+        INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
+
         LAUNCH_BROWSER = bool(check_setting_int(CFG, 'General', 'launch_browser', 1))
 
         PLAY_VIDEOS = bool(check_setting_int(CFG, 'General', 'play_videos', 0))
@@ -1508,7 +1512,7 @@ def halt():
                     ADBA_CONNECTION.join(10)
                 except:
                     pass
-            
+
             __INITIALIZED__ = False
             started = False
 
@@ -1621,6 +1625,7 @@ def save_config():
     new_config['General']['naming_multi_ep'] = int(NAMING_MULTI_EP)
     new_config['General']['naming_anime_multi_ep'] = int(NAMING_ANIME_MULTI_EP)
     new_config['General']['naming_anime'] = int(NAMING_ANIME)
+    new_config['General']['indexerDefaultLang'] = INDEXER_DEFAULT_LANGUAGE
     new_config['General']['launch_browser'] = int(LAUNCH_BROWSER)
     new_config['General']['update_shows_on_start'] = int(UPDATE_SHOWS_ON_START)
     new_config['General']['update_shows_on_snatch'] = int(UPDATE_SHOWS_ON_SNATCH)

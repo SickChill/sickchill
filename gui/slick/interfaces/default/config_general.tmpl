@@ -30,6 +30,7 @@
 
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
 
 <div id="config">
 	<div id="config-content">
@@ -53,6 +54,17 @@
 					</div>
 
 					<fieldset class="component-group-list">
+
+						<div class="field-pair">
+							<label for="indexerDefaultLang">
+								<span class="component-title">Default Indexer Language</span>
+								<span class="component-desc">
+									<select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=$sickbeard.INDEXER_DEFAULT_LANGUAGE data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select>
+									<span>for adding shows and metadata providers</span>
+								</span>
+							</label>
+						</div>
+
 						<div class="field-pair">
 							<label for="launch_browser">
 								<span class="component-title">Launch browser</span>
