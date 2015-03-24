@@ -2150,12 +2150,6 @@ class HomeAddShows(Home):
     def getIndexerLanguages(self):
         result = sickbeard.indexerApi().config['valid_languages']
 
-        # Make sure list is sorted alphabetically but default language is in front
-        if sickbeard.INDEXER_DEFAULT_LANGUAGE in result:
-            del result[result.index(sickbeard.INDEXER_DEFAULT_LANGUAGE)]
-        result.sort()
-        result.insert(0, sickbeard.INDEXER_DEFAULT_LANGUAGE)
-
         return json.dumps({'results': result})
 
 
