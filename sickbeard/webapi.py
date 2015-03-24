@@ -1679,7 +1679,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
         # required
         # optional
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
-        self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string", self.valid_languages.keys())
+        self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string", self.valid_languages.keys())
 
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
 
@@ -1696,7 +1696,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 lINDEXER_API_PARMS = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == 'en':
+                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
                     lINDEXER_API_PARMS['language'] = self.lang
 
                 lINDEXER_API_PARMS['actors'] = False
@@ -1722,7 +1722,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
             for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
                 lINDEXER_API_PARMS = sickbeard.indexerApi(_indexer).api_params.copy()
 
-                if self.lang and not self.lang == 'en':
+                if self.lang and not self.lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
                     lINDEXER_API_PARMS['language'] = self.lang
 
                 lINDEXER_API_PARMS['actors'] = False
@@ -2102,7 +2102,7 @@ class CMD_ShowAddNew(ApiCall):
                                                        "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "archived", "ignored"])
-        self.lang, args = self.check_params(args, kwargs, "lang", "en", False, "string",
+        self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
                                                  False, "int",

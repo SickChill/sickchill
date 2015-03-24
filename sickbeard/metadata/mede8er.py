@@ -107,7 +107,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         lINDEXER_API_PARMS['actors'] = True
 
-        if indexer_lang and not indexer_lang == 'en':
+        if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
             lINDEXER_API_PARMS['language'] = indexer_lang
 
         if show_obj.dvdorder != 0:
@@ -229,7 +229,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             # change the language value elsewhere
             lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
 
-            if indexer_lang and not indexer_lang == 'en':
+            if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
                 lINDEXER_API_PARMS['language'] = indexer_lang
 
             if ep_obj.show.dvdorder != 0:
