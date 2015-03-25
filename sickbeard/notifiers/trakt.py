@@ -219,7 +219,7 @@ class TraktNotifier:
 
         return post_data
 
-    def test_notify(self, username, password, disable_ssl):
+    def test_notify(self, username, password, disable_ssl, blacklist_name=None):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.
@@ -227,13 +227,23 @@ class TraktNotifier:
         api: The api string to use
         username: The username to use
         password: The password to use
+        blacklist_name: slug of trakt list used to hide not interested show
 
         Returns: True if the request succeeded, False otherwise
         """
         try:
             trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password, disable_ssl, sickbeard.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
-            return "Test notice sent successfully to Trakt"
+            if blacklist_name and blacklist_name is not None:
+                trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
+                found = False
+                for trakt_list in trakt_lists:
+                    if (trakt_list['ids']['slug'] == blacklist_name):
+                        return "Test notice sent successfully to Trakt"
+                if not found:
+                    return "Trakt blacklist doesn't exists"
+            else:
+                return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return "Test notice failed to Trakt: %s" % ex(e)

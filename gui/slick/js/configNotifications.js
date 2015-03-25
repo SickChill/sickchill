@@ -299,6 +299,7 @@ $(document).ready(function(){
     $('#testTrakt').click(function () {
         var trakt_username = $.trim($('#trakt_username').val());
         var trakt_password = $.trim($('#trakt_password').val());
+        var trakt_trending_blacklist = $.trim($('#trakt_blacklist_name').val());
         var trakt_disable_ssl_verify = $('#trakt_disable_ssl_verify').is(':checked');
         if (!trakt_username || !trakt_password) {
             $('#testTrakt-result').html('Please fill out the necessary fields above.');
@@ -314,10 +315,17 @@ $(document).ready(function(){
 			}
             return;
         }
+
+        if (/\s/g.test(trakt_trending_blacklist)) {
+            $('#testTrakt-result').html('Check blacklist name; the value need to be a trakt slug');
+	    $('#trakt_blacklist_name').addClass('warning');
+            return;
+        }
 		$('#trakt_username,#trakt_password').removeClass('warning');
+	        $('#trakt_blacklist_name').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testTrakt-result').html(loading);
-        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify})
+        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify, 'blacklist_name': trakt_trending_blacklist})
             .done(function (data) {
                 $('#testTrakt-result').html(data);
                 $('#testTrakt').prop('disabled', false);
