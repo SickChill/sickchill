@@ -1480,7 +1480,7 @@ def verify_freespace(src, dest, oldfile=None):
         def disk_usage(path):
             _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), \
                                ctypes.c_ulonglong()
-            if sys.version_info >= (3,):
+            if sys.version_info >= (3,) or isinstance(path, unicode):
                 fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
             else:
                 fun = ctypes.windll.kernel32.GetDiskFreeSpaceExA
@@ -1507,7 +1507,8 @@ def verify_freespace(src, dest, oldfile=None):
     
     if oldfile:
         for file in oldfile:
-            neededspace -= ek.ek(os.path.getsize, file.location)
+            if os.path.isfile(file.location):
+                diskfree += ek.ek(os.path.getsize, file.location)
         
     if diskfree > neededspace:
         return True
