@@ -239,11 +239,11 @@ class TraktNotifier:
                 found = False
                 for trakt_list in trakt_lists:
                     if (trakt_list['ids']['slug'] == blacklist_name):
-                        return "a Test notice sent successfully to Trakt"
+                        return "Test notice sent successfully to Trakt"
                 if not found:
                     return "Trakt blacklist doesn't exists"
             else:
-                return "b Test notice sent successfully to Trakt"
+                return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
             return "Test notice failed to Trakt: %s" % ex(e)
