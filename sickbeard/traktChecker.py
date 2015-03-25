@@ -454,7 +454,7 @@ class TraktRolling():
         if not self.refreshEpisodeWatched():
             return False
 
-        num_of_download = sickbeard.TRAKT_NUM_EP
+        num_of_download = sickbeard.TRAKT_ROLLING_NUM_EP
 
         if not len(self.EpisodeWatched) or num_of_download == 0:
             return True
