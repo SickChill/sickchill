@@ -585,26 +585,32 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 	
 	#if $cur_airs_next
     #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
-		<td align="center" class="nowrap"><div class="${fuzzydate}">
-		#try
-		  $sbdatetime.sbdatetime.sbfdate($ldatetime)
-		#except ValueError
-		  Invalid date
-		#end try
-		</div><span class="sort_data">$calendar.timegm($ldatetime.timetuple())</span></td>
+    	#try
+    		#set $temp_sbfdate_next = $sbdatetime.sbdatetime.sbfdate($ldatetime)
+    		#set $temp_timegm_next = $calendar.timegm($ldatetime.timetuple())
+    		<td align="center" class="nowrap">
+    			<div class="${fuzzydate}">$temp_sbfdate_next</div>
+    			<span class="sort_data">$temp_timegm_next</span>
+    		</td>
+    	#except ValueError
+    		<td align="center" class="nowrap"></td>
+    	#end try
     #else:
     	<td align="center" class="nowrap"></td>
     #end if
 
     #if $cur_airs_prev
     #set $pdatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_prev,$curShow.airs,$curShow.network))
-        <td align="center" class="nowrap"><div class="${fuzzydate}">
-        #try
-          $sbdatetime.sbdatetime.sbfdate($pdatetime)
-        #except ValueError
-          Invalid date
-        #end try
-        </div><span class="sort_data">$calendar.timegm($pdatetime.timetuple())</span></td>
+    	#try
+    		#set $temp_sbfdate_prev = $sbdatetime.sbdatetime.sbfdate($pdatetime)
+    		#set $temp_timegm_prev = $calendar.timegm($pdatetime.timetuple())
+    		<td align="center" class="nowrap">
+    			<div class="${fuzzydate}">$temp_sbfdate_prev</div>
+    			<span class="sort_data">$temp_timegm_prev</span>
+    		</td>
+    	#except ValueError
+    		<td align="center" class="nowrap"></td>
+    	#end try
     #else:
         <td align="center" class="nowrap"></td>
     #end if
