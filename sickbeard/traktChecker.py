@@ -322,7 +322,7 @@ class TraktChecker():
                     self.todoWanted.append((indexer_id, show['episode']['season'], show['episode']['number']))
                 else:
                     if newShow.indexer == indexer:
-                        self.setEpisodeToWanted(newShow, show['episode']['season'], show['episode']['number'])
+                        setEpisodeToWanted(newShow, show['episode']['season'], show['episode']['number'])
             except TypeError:
                 logger.log(u"Could not parse the output from trakt for " + show["show"]["title"], logger.DEBUG)
 
@@ -454,8 +454,7 @@ class TraktRolling():
         if not self.refreshEpisodeWatched():
             return False
 
-        #num_of_download = sickbeard.TRAKT_NUM_EP
-        num_of_download = 4
+        num_of_download = sickbeard.TRAKT_NUM_EP
 
         if not len(self.EpisodeWatched) or num_of_download == 0:
             return True
@@ -583,9 +582,3 @@ class TraktRolling():
 
         return num_ep
 
-    def manageNewShow(self, show):
-        logger.log(u"Checking if trakt watch list wants to search for episodes from new show " + show.name, logger.DEBUG)
-        episodes = [i for i in self.todoWanted if i[0] == show.indexerid]
-        for episode in episodes:
-            self.todoWanted.remove(episode)
-            self.setEpisodeToWanted(show, episode[1], episode[2])
