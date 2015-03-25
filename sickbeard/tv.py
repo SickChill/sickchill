@@ -1082,12 +1082,12 @@ class TVShow(object):
                 # check if downloaded files still exist, update our data if this has changed
                 if not sickbeard.SKIP_REMOVED_FILES:
                     with curEp.lock:
-                        # if it used to have a file associated with it and it doesn't anymore then set it to IGNORED
+                        # if it used to have a file associated with it and it doesn't anymore then set it to ARCHIVED
                         if curEp.location and curEp.status in Quality.DOWNLOADED:
                             logger.log(str(self.indexerid) + u": Location for " + str(season) + "x" + str(
-                                episode) + " doesn't exist, removing it and changing our status to IGNORED",
+                                episode) + " doesn't exist, removing it and changing our status to ARCHIVED",
                                        logger.DEBUG)
-                            curEp.status = IGNORED
+                            curEp.status = ARCHIVED
                             curEp.subtitles = list()
                             curEp.subtitles_searchcount = 0
                             curEp.subtitles_lastsearch = str(datetime.datetime.min)
