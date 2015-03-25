@@ -1397,7 +1397,7 @@ def start():
                 traktCheckerScheduler.start()
 
             # start the trakt checker
-            if TRAKT_USE_ROLLING_DOWNLOAD:
+            if TRAKT_USE_ROLLING_DOWNLOAD and USE_TRAKT:
                 traktRollingScheduler.start()
 
             started = True
@@ -1481,7 +1481,7 @@ def halt():
                 except:
                     pass
 
-            if TRAKT_USE_ROLLING_DOWNLOAD:
+            if TRAKT_USE_ROLLING_DOWNLOAD and USE_TRAKT:
                 traktRollingScheduler.stop.set()
                 logger.log(u"Waiting for the TRAKTROLLING thread to exit")
                 try:

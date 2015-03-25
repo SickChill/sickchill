@@ -179,7 +179,10 @@ def snatchEpisode(result, endStatus=SNATCHED):
         myDB.mass_action(sql_l)
 
     if sickbeard.UPDATE_SHOWS_ON_SNATCH and not sickbeard.showQueueScheduler.action.isBeingUpdated(result.show) and result.show.status == "Continuing":
-        sickbeard.showQueueScheduler.action.updateShow(result.show, True)
+        try:
+            sickbeard.showQueueScheduler.action.updateShow(result.show, True)
+        except exceptions.CantUpdateException as e:
+            logger.log("Unable to update show: {0}".format(str(e)),logger.DEBUG)
 
     return True
 

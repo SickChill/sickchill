@@ -680,7 +680,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		</td>
 	
         <td align="center">
-			<img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
+			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
 		</td>
 		
         <td align="center">
