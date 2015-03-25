@@ -959,13 +959,13 @@ class Home(WebRoot):
                 "dbloc": dbloc}
 
 
-    def testTrakt(self, username=None, password=None, disable_ssl=None):
+    def testTrakt(self, username=None, password=None, disable_ssl=None, blacklist_name=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if disable_ssl == 'true':
             disable_ssl = True
         else:
             disable_ssl = False
-        return notifiers.trakt_notifier.test_notify(username, password, disable_ssl)
+        return notifiers.trakt_notifier.test_notify(username, password, disable_ssl, blacklist_name)
 
 
     def loadShowNotifyLists(self):

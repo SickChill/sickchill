@@ -325,7 +325,7 @@ $(document).ready(function(){
 	        $('#trakt_blacklist_name').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testTrakt-result').html(loading);
-        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify})
+        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify, 'blacklist_name': trakt_trending_blacklist})
             .done(function (data) {
                 $('#testTrakt-result').html(data);
                 $('#testTrakt').prop('disabled', false);
