@@ -79,15 +79,15 @@ class ShowQueue(generic_queue.GenericQueue):
 
         if self.isBeingAdded(show):
             raise exceptions.CantUpdateException(
-                "Show is still being added, wait until it is finished before you update.")
+                str(show.name) + u" is still being added, wait until it is finished before you update.")
 
         if self.isBeingUpdated(show):
             raise exceptions.CantUpdateException(
-                "This show is already being updated, can't update again until it's done.")
+                str(show.name) + u" is already being updated by Post-processor or manually started, can't update again until it's done.")
 
         if self.isInUpdateQueue(show):
             raise exceptions.CantUpdateException(
-                "This show is already being updated, can't update again until it's done.")
+                str(show.name) + u" is in process of being updated by Post-processor or manually started, can't update again until it's done.")
 
         if not force:
             queueItemObj = QueueItemUpdate(show)
@@ -105,7 +105,7 @@ class ShowQueue(generic_queue.GenericQueue):
 
         if (self.isBeingUpdated(show) or self.isInUpdateQueue(show)) and not force:
             logger.log(
-                u"A refresh was attempted but there is already an update queued or in progress. Since updates do a refres at the end anyway I'm skipping this request.",
+                u"A refresh was attempted but there is already an update queued or in progress. Since updates do a refresh at the end anyway I'm skipping this request.",
                 logger.DEBUG)
             return
 
@@ -209,7 +209,7 @@ class QueueItemAdd(ShowQueueItem):
         self.scene = scene
         self.paused = paused
 
-        if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
+        if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
 
         self.show = None

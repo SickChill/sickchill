@@ -1493,8 +1493,8 @@ class Home(WebRoot):
             try:
                 sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-            except exceptions.CantUpdateException, e:
-                errors.append("Unable to force an update on the show.")
+            except exceptions.CantUpdateException as e:
+                errors.append("Unable to update show: {0}".format(str(e)))
 
         if do_update_exceptions:
             try:
@@ -1503,7 +1503,9 @@ class Home(WebRoot):
             except exceptions.CantUpdateException, e:
                 errors.append("Unable to force an update on scene exceptions of the show.")
 
-        if not paused:
+        if not paused and (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
+            # Checking if trakt and rolling_download are enable because updateWantedList()
+            # doesn't do the distinction between a failuire and being not activated(Return false)
             if not sickbeard.traktRollingScheduler.action.updateWantedList():
                 errors.append("Unable to force an update on wanted episode")
 
@@ -3289,7 +3291,7 @@ class Manage(Home, WebRoot):
                     sickbeard.showQueueScheduler.action.updateShow(showObj, True)
                     updates.append(showObj.name)
                 except exceptions.CantUpdateException, e:
-                    errors.append("Unable to update show " + showObj.name + ": " + ex(e))
+                    errors.append("Unable to update show: {0}".format(str(e)))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:

@@ -415,11 +415,10 @@ class TraktRolling():
         self.EpisodeWatched = []
 
     def run(self, force=False):
-        if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
-            logger.log(u"Trakt rolling donwload disabled, quit", logger.DEBUG)
+        if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
             return
 
-        logger.log(u"Start getting list from Tracktv", logger.DEBUG)
+        logger.log(u"Start getting list from Traktv", logger.DEBUG)
 
         logger.log(u"Getting EpisodeWatched", logger.DEBUG)
         if not self._getEpisodeWatched():
@@ -439,8 +438,7 @@ class TraktRolling():
 
     def refreshEpisodeWatched(self):
 
-       if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
-           logger.log(u"Trakt rolling donwload disabled, quit", logger.DEBUG)
+       if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
            return False
 
        if not self._getEpisodeWatched():
@@ -450,8 +448,7 @@ class TraktRolling():
 
     def updateWantedList(self, indexer_id = None):
 
-        if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD:
-            logger.log(u"Trakt rolling donwload disabled, quit", logger.DEBUG)
+        if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
             return False
 
         if not self.refreshEpisodeWatched():
@@ -463,7 +460,7 @@ class TraktRolling():
         if not len(self.EpisodeWatched) or num_of_download == 0:
             return True
 
-        logger.log(u"Start looking if having " + str(num_of_download) + " episode not watched", logger.DEBUG)
+        logger.log(u"Start looking if having " + str(num_of_download) + " episode(s) not watched", logger.DEBUG)
 
         myDB = db.DBConnection()
 
