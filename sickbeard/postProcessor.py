@@ -589,19 +589,28 @@ class PostProcessor(object):
                     logger.DEBUG)
                 airdate = episodes[0].toordinal()
                 myDB = db.DBConnection()
+                # Ignore season 0 when searching for episode(Conflict between special and regular episode, same air date)
                 sql_result = myDB.select(
-                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ? and season != 0",
                     [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
                     season = int(sql_result[0][0])
                     episodes = [int(sql_result[0][1])]
                 else:
-                    self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
+                    # Found no result, try with season 0
+                    sql_result = myDB.select(
+                        "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                        [show.indexerid, show.indexer, airdate])
+                    if sql_result:
+                        season = int(sql_result[0][0])
+                        episodes = [int(sql_result[0][1])]
+                    else:
+                        self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
                         show.indexerid) + u", skipping", logger.DEBUG)
-                    # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
-                    episodes = []
-                    continue
+                        # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
+                        episodes = []
+                        continue
 
             # if there's no season then we can hopefully just use 1 automatically
             elif season == None and show:
