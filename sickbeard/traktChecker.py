@@ -32,7 +32,7 @@ from sickbeard import notifiers
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN, FAILED
 from common import Quality, qualityPresetStrings, statusStrings
 from lib.trakt import *
-from trakt.exceptions import traktException, traktAuthException, traktServerBusy
+from trakt.exceptions import traktException
 
 
 def setEpisodeToWanted(show, s, e):
@@ -107,7 +107,7 @@ class TraktChecker():
                 return
 
             traktShow = filter(lambda x: int(indexerid) in [int(x['show']['ids']['tvdb'] or 0), int(x['show']['ids']['tvrage'] or 0)], library)
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return traktShow
@@ -140,7 +140,7 @@ class TraktChecker():
             logger.log(u"Removing " + show_obj.name + " from trakt.tv library", logger.DEBUG)
             try:
                 self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
-            except (traktException, traktAuthException, traktServerBusy) as e:
+            except traktException as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 pass
 
@@ -175,7 +175,7 @@ class TraktChecker():
 
             try:
                 self.trakt_api.traktRequest("sync/collection", data, method='POST')
-            except (traktException, traktAuthException, traktServerBusy) as e:
+            except traktException as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 return
 
@@ -367,7 +367,7 @@ class TraktChecker():
 
         try:
             self.ShowWatchlist = self.trakt_api.traktRequest("sync/watchlist/shows")
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Show Watchlist: %s" % ex(e), logger.ERROR)
             return False
 
@@ -377,7 +377,7 @@ class TraktChecker():
 
         try:
             self.EpisodeWatchlist = self.trakt_api.traktRequest("sync/watchlist/episodes")
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Episode Watchlist: %s" % ex(e), logger.WARNING)
             return False
 
@@ -430,7 +430,7 @@ class TraktRolling():
 
         try:
             self.EpisodeWatched = self.trakt_api.traktRequest("sync/watched/shows")
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download show from library: %s" % ex(e), logger.ERROR)
             return False
 

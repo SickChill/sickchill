@@ -56,7 +56,7 @@ from lib.dateutil import tz, parser as dateutil_parser
 from lib.unrar2 import RarFile
 from lib import adba, subliminal
 from lib.trakt import TraktAPI
-from lib.trakt.exceptions import traktException, traktAuthException, traktServerBusy
+from lib.trakt.exceptions import traktException
 from versionChecker import CheckVersion
 
 try:
@@ -2349,7 +2349,7 @@ class HomeAddShows(Home):
                      None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime(sickbeard.DATE_PRESET)]
                     for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
                     int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return json.dumps({'results': final_results})
@@ -2429,7 +2429,7 @@ class HomeAddShows(Home):
             else:
                 t.blacklist = False
 
-        except (traktException, traktAuthException, traktServerBusy) as e:
+        except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return t.respond()
