@@ -2547,7 +2547,8 @@ class HomeAddShows(Home):
 
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
-            show_name = series_pieces[4]
+            # Show name was sent in UTF-8 in the form
+            show_name = series_pieces[4].decode('utf-8')
         else:
             # if no indexer was provided use the default indexer set in General settings
             if not providedIndexer:
