@@ -260,12 +260,4 @@ $(document).ready(function () {
         }
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
     });
-
-    $('.jwvideo').each(function () {
-        jwplayer(this.id).setup({
-            file: $(this).attr("id"),
-            width:120,
-            height:120
-        });
-    });
 });

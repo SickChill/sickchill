@@ -149,8 +149,6 @@ WEB_HOST = None
 WEB_IPV6 = None
 WEB_COOKIE_SECRET = None
 
-PLAY_VIDEOS = False
-
 DOWNLOAD_URL = None
 
 HANDLE_REVERSE_PROXY = False
@@ -569,7 +567,7 @@ def initialize(consoleLogging=True):
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
-            ANIME_SPLIT_HOME, SCENE_DEFAULT, PLAY_VIDEOS, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
+            ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
             GIT_AUTOISSUES, DEVELOPER, gh
 
         if __INITIALIZED__:
@@ -725,8 +723,6 @@ def initialize(consoleLogging=True):
         INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
 
         LAUNCH_BROWSER = bool(check_setting_int(CFG, 'General', 'launch_browser', 1))
-
-        PLAY_VIDEOS = bool(check_setting_int(CFG, 'General', 'play_videos', 0))
 
         DOWNLOAD_URL = check_setting_str(CFG, 'General', 'download_url', "")
 
@@ -1577,7 +1573,6 @@ def save_config():
     new_config['General']['web_username'] = WEB_USERNAME
     new_config['General']['web_password'] = helpers.encrypt(WEB_PASSWORD, ENCRYPTION_VERSION)
     new_config['General']['web_cookie_secret'] = WEB_COOKIE_SECRET
-    new_config['General']['play_videos'] = int(PLAY_VIDEOS)
     new_config['General']['download_url'] = DOWNLOAD_URL
     new_config['General']['localhost_ip'] = LOCALHOST_IP
     new_config['General']['cpu_preset'] = CPU_PRESET
