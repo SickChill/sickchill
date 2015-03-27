@@ -838,6 +838,7 @@ class PostProcessor(object):
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(show, season, episodes)
+        old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # get the quality of the episode we're processing
         if quality:
@@ -866,6 +867,11 @@ class PostProcessor(object):
 
         # if it's not priority then we don't want to replace smaller files in case it was a mistake
         if not priority_download:
+
+            # Not a priority and the quality is lower than what we already have
+            if (new_ep_quality < old_ep_quality and new_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
+                self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace", logger.DEBUG)
+                return False
 
             # if there's an existing file that we don't want to replace stop here
             if existing_file_status == PostProcessor.EXISTS_LARGER:
