@@ -31,7 +31,7 @@ from sickbeard import config, sab
 from sickbeard import clients
 from sickbeard import history, notifiers, processTV
 from sickbeard import ui
-from sickbeard import logger, helpers, exceptions, classes, db
+from sickbeard import logger, helpers, exceptions, classes, db, scheduler, showUpdater
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
 from sickbeard import image_cache
@@ -3643,6 +3643,21 @@ class ConfigGeneral(Config):
         sickbeard.DOWNLOAD_URL = download_url
         sickbeard.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        if sickbeard.SHOWUPDATE_HOUR != config.to_int(showupdate_hour):
+            sickbeard.showUpdateScheduler.stop.set()
+            logger.log(u"Waiting for the SHOWUPDATER thread to exit so we can set new start hour")
+            try:
+                sickbeard.showUpdateScheduler.join(10) # Wait 10 sec for the thread to exit
+            except:
+                pass
+            if  sickbeard.showUpdateScheduler.isAlive():
+                logger.log(u"Unable to stop SHOWUPDATER thread, the new configuration will be applied after a restart", logger.WARNING)
+            else:
+                logger.log(u"Starting SHOWUPDATER thread with the new start hour: " + str(config.to_int(showupdate_hour)))
+                sickbeard.showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
+                                              cycleTime=datetime.timedelta(hours=1),
+                                              threadName="SHOWUPDATER",
+                                              start_time=datetime.time(hour=config.to_int(showupdate_hour)))            
         sickbeard.SHOWUPDATE_HOUR = config.to_int(showupdate_hour)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
