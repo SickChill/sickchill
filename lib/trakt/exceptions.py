@@ -6,6 +6,3 @@ class traktAuthException(traktException):
 
 class traktServerBusy(traktException):
     pass
-
-class traktInternalError(traktException):
-    pass
