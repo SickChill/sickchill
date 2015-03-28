@@ -461,7 +461,8 @@ class ConfigMigrator():
                                 3: 'Rename omgwtfnzb variables',
                                 4: 'Add newznab catIDs',
                                 5: 'Metadata update',
-                                6: 'Convert from XBMC to new KODI variables'
+                                6: 'Convert from XBMC to new KODI variables',
+                                7: 'Use version 2 for password encryption'
         }
 
     def migrate_config(self):
@@ -491,7 +492,7 @@ class ConfigMigrator():
             else:
                 logger.log(u"Proceeding with upgrade")
 
-            # do the                                                                                                migration, expect a method named _migrate_v<num>
+            # do the migration, expect a method named _migrate_v<num>
             logger.log(u"Migrating config up to version " + str(next_version) + migration_name)
             getattr(self, '_migrate_v' + str(next_version))()
             self.config_version = next_version
@@ -745,3 +746,6 @@ class ConfigMigrator():
         sickbeard.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
         sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
+    # Migration v6: Use version 2 for password encryption
+    def _migrate_v7(self):
+        sickbeard.ENCRYPTION_VERSION = 2

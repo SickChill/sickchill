@@ -923,6 +923,13 @@ def encrypt(data, encryption_version=0, decrypt=False):
         else:
             return base64.encodestring(
                 ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(data, cycle(unique_key1)))).strip()
+    # Version 2: Simple XOR encryption (this is not very secure, but works)
+    elif encryption_version == 2:
+        if decrypt:
+            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(base64.decodestring(data), cycle(sickbeard.ENCRYPTION_SECRET)))
+        else:
+            return base64.encodestring(
+                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(data, cycle(sickbeard.ENCRYPTION_SECRET)))).strip()
     # Version 0: Plain text
     else:
         return data
