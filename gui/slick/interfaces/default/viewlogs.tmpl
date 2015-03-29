@@ -73,6 +73,9 @@ function(){
 #set $levels = $reverseNames.keys()
 $levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
 #for $level in $levels:
+	#if not $sickbeard.DEBUG and ($level == 'DEBUG' or $level == 'DB')
+		#continue
+	#end if
 <option value="$reverseNames[$level]" #if $minLevel == $reverseNames[$level] then "selected=\"selected\"" else ""#>$level.title()</option>
 #end for
 </select>
