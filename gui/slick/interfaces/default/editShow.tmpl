@@ -100,12 +100,12 @@
 
 <b>Air by date: </b>
 <input type="checkbox" name="air_by_date" #if $show.air_by_date == 1 then "checked=\"checked\"" else ""# /><br />
-(check this if the show is released as Show.03.02.2010 rather than Show.S02E03)<br />
+(check this if the show is released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Sports: </b>
 <input type="checkbox" name="sports" #if $show.sports == 1 then "checked=\"checked\"" else ""# /><br />
-(check this if the show is a sporting or MMA event and released as Show.03.02.2010 rather than Show.S02E03)<br />
+(check this if the show is a sporting or MMA event and released as Show.03.02.2010 rather than Show.S02E03. <span style="color:red">In case air date conflict between regular and special episodes, the later will be ignored.</span>)<br />
 <br />
 
 <b>Anime: </b>
@@ -115,7 +115,7 @@
 
 <b>DVD Order: </b>
 <input type="checkbox" name="dvdorder" #if $show.dvdorder == 1 then "checked=\"checked\"" else ""# /><br/>
-(check this if you wish to use the DVD order instead of the Airing order)
+(check this if you wish to use the DVD order instead of the Airing order. A "Force Full Update" is necessary, and if you have existing episodes you need to move them)
 <br/><br/>
 
 #if $anyQualities + $bestQualities

@@ -148,7 +148,7 @@ class GenericProvider:
                 torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
 
                 if len(torrent_hash) == 32:
-                    torrent_hash = b16encode(b32decode(torrent_hash)).lower()
+                    torrent_hash = b16encode(b32decode(torrent_hash)).upper()
 
                 if not torrent_hash:
                     logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
@@ -156,8 +156,8 @@ class GenericProvider:
 
                 urls = [
                     'http://torcache.net/torrent/' + torrent_hash + '.torrent',
-                    'http://torrage.com/torrent/' + torrent_hash + '.torrent',
-                    'http://zoink.it/torrent/' + torrent_hash + '.torrent',
+                    'http://zoink.ch/torrent/' + torrent_hash + '.torrent',
+                    'http://torrage.com/torrent/' + torrent_hash.lower() + '.torrent',
                 ]
             except:
                 urls = [result.url]

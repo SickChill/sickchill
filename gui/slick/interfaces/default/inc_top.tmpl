@@ -38,16 +38,19 @@
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/browser.css?$sbPID" />
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery-ui-1.10.4.custom.css?$sbPID" />
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery.qtip-2.2.1.min.css?$sbPID"/>
-		<link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/pnotify.custom.min.css?$sbPID" />
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/style.css?$sbPID"/>
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/${sickbeard.THEME_NAME}.css?$sbPID" />
+		#if $sbLogin:
+		<link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/pnotify.custom.min.css?$sbPID" />
 		<link rel="stylesheet" type="text/css" href="$sbRoot/css/country-flags.css?$sbPID"/>
+		#end if
 
 
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery-1.11.2.min.js?$sbPID"></script>
 		<script type="text/javascript" src="$sbRoot/js/lib/bootstrap.min.js?$sbPID"></script>
 		<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-hover-dropdown.min.js?$sbPID"></script>
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery-ui-1.10.4.custom.min.js?$sbPID"></script>
+		#if $sbLogin:
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery.cookie.js?$sbPID"></script>
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery.cookiejar.js?$sbPID"></script>
 		<script type="text/javascript" src="$sbRoot/js/lib/jquery.json-2.2.min.js?$sbPID"></script>
@@ -129,7 +132,8 @@
 			});
 		//-->
 		</script>
-        <script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
+	<script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
+	#end if
 	</head>
 
 	<body>
@@ -255,13 +259,13 @@
 		</div>
 		#end if
 	  	
-	  	#if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER
+	  	#if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER and $sbLogin
 		<div class="alert alert-danger upgrade-notification" role="alert">
 			<span>You're using the $sickbeard.BRANCH branch. Please use 'master' unless specifically asked</span>
 		</div>
 		#end if
 		
-		#if $sickbeard.NEWEST_VERSION_STRING:	
+		#if $sickbeard.NEWEST_VERSION_STRING and $sbLogin	
 		<div class="alert alert-success upgrade-notification" role="alert">
 			<span>$sickbeard.NEWEST_VERSION_STRING</span>
 		</div>

@@ -85,10 +85,13 @@ class TNTVillageProvider(generic.TorrentProvider):
         self.minleech = None
 
         self.hdtext = [
+                       ' - Versione 720p',
                        ' Versione 720p',
                        ' V 720p',
+                       ' V 720',
                        ' V HEVC',
                        ' V  HEVC',
+                       ' V 1080',
                        ' Versione 1080p',
                        ' 720p HEVC',
                        ' Ver 720',
@@ -396,7 +399,10 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 logger.log(u"name: " + title + "", logger.DEBUG)
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
                                 for text in self.hdtext:
+                                    title1 = title
                                     title = title.replace(text,filename_qt)
+                                    if title != title1:
+                                        break
 
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt 

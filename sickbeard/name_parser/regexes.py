@@ -395,6 +395,13 @@ anime_regexes = [
      '''
     ),
 
+    ('anime_WarB3asT',
+     # 003. Show Name - Ep Name.ext
+     # 003-004. Show Name - Ep Name.ext
+     '''
+     ^(?P<ep_ab_num>\d{3,4})(-(?P<extra_ab_ep_num>\d{3,4}))?\.\s+(?P<series_name>.+?)\s-\s.*
+     '''),
+
     ('anime_bare',
      # One Piece - 102
      # [ACX]_Wolf's_Spirit_001.mkv

@@ -15,8 +15,6 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 <script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/jwplayer/jwplayer.js"></script>
-<script type="text/javascript">jwplayer.key="Zq3m618ITHrFxeKGi3Gf33ovC+XtdGQz19MMug==";</script>
 
 <input type="hidden" id="sbRoot" value="$sbRoot" />
 
@@ -360,9 +358,6 @@
 			
 			<tr id="season-$epResult["season"]-cols" class="seasoncols">
 				<th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
-			#if $sickbeard.PLAY_VIDEOS:
-				<th>Video</th>
-			#end if
 				<th class="col-metadata">NFO</th>
 				<th class="col-metadata">TBN</th>
 				<th class="col-ep">Episode</th>
@@ -406,18 +401,6 @@
 			<input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
 		#end if
 		</td>
-    
-		#if $sickbeard.PLAY_VIDEOS:
-			<td align="center">
-			#if $epResult["location"]:
-				#set $video_root = $os.path.dirname($show._location)
-				#set $video_source = $sbRoot + $epResult["location"].replace($video_root, '/videos')
-				<div id="$video_source" class="jwvideo">Loading the player...</div>
-			#else:
-				No Video
-			#end if
-			</td>
-		#end if
 		
 		<td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
 		

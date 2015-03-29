@@ -63,56 +63,69 @@
                     
 					<fieldset class="component-group-list">
 			            <div class="field-pair">
-                            <input type="checkbox" class="enabler" #if $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""# id="use_subtitles" name="use_subtitles">
                             <label for="use_subtitles" class="clearfix">
                                 <span class="component-title">Search Subtitles</span>
+								<span class="component-desc">
+									<input type="checkbox" class="enabler" #if $sickbeard.USE_SUBTITLES then " checked=\"checked\"" else ""# id="use_subtitles" name="use_subtitles">
+								</span>
                             </label>
                         </div>
                         <div id="content_use_subtitles">
 	                        	<div class="field-pair">
-		                            <label class="nocheck">
+		                            <label>
 		                                <span class="component-title">Subtitle Languages</span>
 		                                <span class="component-desc"><input type="text" id="subtitles_languages" name="subtitles_languages" /></span>
 		                            </label>
 		                        </div>
                         		<div class="field-pair">
-	                        		<label class="nocheck">
+	                        		<label>
 		                                <span class="component-title">Subtitle Directory</span>
 		                                <input type="text" value="$sickbeard.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
 		                            </label>
-	                            	<label class="nocheck">
+	                            	<label>
 	    	                            	<span class="component-title">&nbsp;</span>
 			                                <span class="component-desc">The directory where SickRage should store your <i>Subtitles</i> files.</span>
 	          	                	</label>
-	                            	<label class="nocheck">
+	                            	<label>
 	    	                            	<span class="component-title">&nbsp;</span>
 			                                <span class="component-desc"><b>NOTE:</b> Leave empty if you want store subtitle in episode path.</span>
 	          	                	</label>
                         		</div>
 	                            <div class="field-pair">
-	                            	<label class="nocheck">
+	                            	<label>
 	                                	<span class="component-title">Subtitle Find Frequency</span>
 	                                    <input type="number" name="subtitles_finder_frequency" value="$sickbeard.SUBTITLES_FINDER_FREQUENCY" hours="1" class="form-control input-sm input75" />
-	                                </label>
-	                                <label class="nocheck">
-	                                	<span class="component-title">&nbsp;</span>
-	                                    <span class="component-desc">Time in hours between scans (hours. 1)</span>
+										<span class="component-desc">time in hours between scans (default: 1)</span>
 	                                </label>
 	                            </div>
 		                        <div class="field-pair">
-		                            <input type="checkbox" name="subtitles_history" id="subtitles_history" #if $sickbeard.SUBTITLES_HISTORY then " checked=\"checked\"" else ""#/>
 		                            <label class="clearfix" for="subtitles_history">
 		                                <span class="component-title">Subtitles History</span>
-		                                <span class="component-desc">Log downloaded Subtitle on History page?</span>
+		                                <span class="component-desc">
+											<input type="checkbox" name="subtitles_history" id="subtitles_history" #if $sickbeard.SUBTITLES_HISTORY then " checked=\"checked\"" else ""#/>
+											<p>Log downloaded Subtitle on History page?</p>
+										</span>
 		                            </label>
 		                        </div>                        		
 		                        <div class="field-pair">
-		                            <input type="checkbox" name="subtitles_multi" id="subtitles_multi" #if $sickbeard.SUBTITLES_MULTI then " checked=\"checked\"" else ""#/>
 		                            <label class="clearfix" for="subtitles_multi">
 		                                <span class="component-title">Subtitles Multi-Language</span>
-		                                <span class="component-desc">Append language codes to subtitle filenames?</span>
+		                                <span class="component-desc">
+											<input type="checkbox" name="subtitles_multi" id="subtitles_multi" #if $sickbeard.SUBTITLES_MULTI then " checked=\"checked\"" else ""#/>
+											<p>Append language codes to subtitle filenames?</p>
+										</span>
 		                            </label>
 		                        </div>
+								<div class="field-pair">
+									<label class="clearfix" for="embedded_subtitles_all">
+										<span class="component-title">Embedded Subtitles</span>
+										<span class="component-desc">
+											<input type="checkbox" name="embedded_subtitles_all" id="embedded_subtitles_all" #if $sickbeard.EMBEDDED_SUBTITLES_ALL then " checked=\"checked\"" else ""#/>
+											<p>Ignore subtitles embedded inside video file?</p>
+											<p><b>Warning: </b>this will ignore <u>all</u> embedded subtitles for every video file!</p>
+										</span>
+									</label>
+								</div>   
 	                    <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                         </div>
                     </fieldset>

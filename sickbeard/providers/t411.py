@@ -216,8 +216,7 @@ class T411Provider(generic.TorrentProvider):
 
                                     try:
                                         link = result.find('a', title=True)
-                                        torrentName = link['title']
-                                        torrent_name = str(torrentName)
+                                        torrent_name = link['title']
                                         torrentId = result.find_all('td')[2].find_all('a')[0]['href'][1:].replace(
                                             'torrents/nfo/?id=', '')
                                         torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')

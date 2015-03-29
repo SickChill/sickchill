@@ -1,0 +1,79 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+* text=auto
+
+#
+# The above will handle all files NOT found below
+#
+
+#
+## These files are text and should be normalized (Convert crlf => lf)
+#
+
+# git config
+.gitattributes	text
+.gitignore		text
+
+# Documentation
+*.md			text
+CHANGES			text
+
+# Startup script
+init.*			text
+
+# Various
+*.ini			text
+*.txt			text
+*.less			text
+*.h				text
+*.in			text
+
+# Python Source files
+*.pxd			text
+*.py 			text
+*.py3 			text
+*.pyw 			text
+*.pyx  			text
+
+# Cheetah template
+*.tmpl			text
+
+# Web file
+*.htm text
+*.html text
+*.css text
+*.js text
+*.xml text
+
+#
+## These files are binary and should be left untouched
+#
+
+# Python Binary files
+*.db			binary
+*.p 			binary
+*.pkl 			binary
+*.pyc 			binary
+*.pyd			binary
+*.pyo 			binary
+
+# These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
+*.png			binary
+*.jpg			binary
+*.jpeg			binary
+*.gif			binary
+*.ico			binary
+*.swf			binary
+*.gz			binary
+*.zip			binary
+*.7z			binary
+*.ttf			binary
+*.svg			binary
+*.woff			binary
+*.eot			binary
+*.rar			binary
+*.dll			binary
+*.lib

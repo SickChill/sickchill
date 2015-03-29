@@ -1,5 +1,6 @@
 #import sickbeard
 #from sickbeard.helpers import anon_url
+#from sickbeard.common import *
 
 #set global $title="Config - Notifications"
 #set global $header="Notifications"
@@ -1498,13 +1499,69 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_blacklist_name">
-                                    <span class="component-title">Traktv BlackList name:</span>
+                                    <span class="component-title">Trakt blackList name:</span>
                                     <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="$sickbeard.TRAKT_BLACKLIST_NAME" class="form-control input-sm input150" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Name(slug) of List on Traktv for blacklisting show on tranding page</span>
+                                    <span class="component-desc">Name(slug) of List on Trakt for blacklisting show on tranding page</span>
                                 </label>
+                            </div>
+                            <div class="field-pair">
+                                <label for="trakt_use_rolling_download">
+                                    <span class="component-title">Use rolling download:</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" class="enabler" name="trakt_use_rolling_download" id="trakt_use_rolling_download" #if $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <p>Collect defined number of episodes after last watched one</p>
+                                    </span>
+                                </label>
+                            </div>
+                            <div id="content_trakt_use_rolling_download">
+              	                <div class="field-pair">
+                                    <label for="trakt_rolling_num_ep">
+                                        <span class="component-title">Number of Episode:</span>
+                                        <span class="component-desc">
+                                	    <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="$sickbeard.TRAKT_ROLLING_NUM_EP" class="form-control input-sm input75"/>
+                                    </label>
+                                    <label>
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc">numebr of episode that SickBeard try to download fron last watched episode</span>
+                                    </label>    
+                                </div>
+                                <div class="field-pair">
+                                    <label for="trakt_rolling_frequency">
+                                        <span class="component-title">Rolling frequency check:</span>
+                                        <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="$sickbeard.TRAKT_ROLLING_FREQUENCY" class="form-control input-sm input250" />
+                                    </label>
+                                    <p>
+                                        <span class="component-desc">Minutes between check.</span>
+                                    </p>
+                                </div>
+              	                <div class="field-pair">
+                                    <label for="trakt_rolling_add_paused">
+                                        <span class="component-title">Should new show to be added paused?:</span>
+                                        <span class="component-desc">
+                                	    <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" #if $sickbeard.TRAKT_ROLLING_ADD_PAUSED then "checked=\"checked\"" else ""# />
+                                    </label>
+                                    <label>
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc">This feauture will try to snatch <i>number of episode</i> if the show is active. Whould you like to add new show in paused mode(this override previous choice)?</span>
+                                    </label>    
+                                </div>
+                                <div class="field-pair">
+                                    <label for="trakt_rolling_default_watched_status">
+                                        <span class="component-title">Default watched status:</span>
+                                            <select name="trakt_rolling_default_watched_status" id="trakt_rolling_default_watched_status" class="form-control form-control-inline input-sm">
+                                            #for $defStatus in [$ARCHIVED, $IGNORED]:
+                                            <option value="$defStatus" #if $defStatus == $sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
+                                            #end for
+                                            </select>
+                                    </label>
+                                    <label>
+                                        <span class="component-title">&nbsp;</span>
+                                        <span class="component-desc">Define the status to be set for watched episode. This will be set only on show add.</span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="testNotification" id="testTrakt-result">Click below to test.</div>
                             <input type="button" class="btn" value="Test Trakt" id="testTrakt" />

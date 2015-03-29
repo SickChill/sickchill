@@ -44,6 +44,7 @@ from sickbeard.exceptions import ex
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 from lib import adba
+from sickbeard.helpers import verify_freespace
 
 
 class PostProcessor(object):
@@ -588,19 +589,28 @@ class PostProcessor(object):
                     logger.DEBUG)
                 airdate = episodes[0].toordinal()
                 myDB = db.DBConnection()
+                # Ignore season 0 when searching for episode(Conflict between special and regular episode, same air date)
                 sql_result = myDB.select(
-                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ? and season != 0",
                     [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
                     season = int(sql_result[0][0])
                     episodes = [int(sql_result[0][1])]
                 else:
-                    self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
+                    # Found no result, try with season 0
+                    sql_result = myDB.select(
+                        "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
+                        [show.indexerid, show.indexer, airdate])
+                    if sql_result:
+                        season = int(sql_result[0][0])
+                        episodes = [int(sql_result[0][1])]
+                    else:
+                        self._log(u"Unable to find episode with date " + str(episodes[0]) + u" for show " + str(
                         show.indexerid) + u", skipping", logger.DEBUG)
-                    # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
-                    episodes = []
-                    continue
+                        # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
+                        episodes = []
+                        continue
 
             # if there's no season then we can hopefully just use 1 automatically
             elif season == None and show:
@@ -761,13 +771,23 @@ class PostProcessor(object):
         if self.is_priority:
             return True
 
-        # if SB downloaded this on purpose then this is a priority download
-        if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            self._log(u"SB snatched this episode so I'm marking it as priority", logger.DEBUG)
-            return True
-
         old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
+        # if SB downloaded this on purpose we likely have a priority download
+        if self.in_history or ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
+            # if the episode is still in a snatched status, then we can assume we want this
+            if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
+                self._log(u"SB snatched this episode and it is not processed before", logger.DEBUG)
+                return True
+            # if it's not snatched, we only want it if the new quality is higher or if it's a proper of equal or higher quality
+            if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
+                self._log(u"SB snatched this episode and it is a higher quality so I'm marking it as priority", logger.DEBUG)
+                return True
+            if self.is_proper and new_ep_quality >= old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
+                self._log(u"SB snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority", logger.DEBUG)
+                return True
+            return False
+            
         # if the user downloaded it manually and it's higher quality than the existing episode then it's priority
         if new_ep_quality > old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
             self._log(
@@ -818,6 +838,7 @@ class PostProcessor(object):
 
         # retrieve/create the corresponding TVEpisode objects
         ep_obj = self._get_ep_obj(show, season, episodes)
+        old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # get the quality of the episode we're processing
         if quality:
@@ -847,6 +868,11 @@ class PostProcessor(object):
         # if it's not priority then we don't want to replace smaller files in case it was a mistake
         if not priority_download:
 
+            # Not a priority and the quality is lower than what we already have
+            if (new_ep_quality < old_ep_quality and new_ep_quality != common.Quality.UNKNOWN) and not existing_file_status == PostProcessor.DOESNT_EXIST:
+                self._log(u"File exists and new file quality is lower than existing, marking it unsafe to replace", logger.DEBUG)
+                return False
+
             # if there's an existing file that we don't want to replace stop here
             if existing_file_status == PostProcessor.EXISTS_LARGER:
                 if self.is_proper:
@@ -868,6 +894,11 @@ class PostProcessor(object):
             self._log(
                 u"This download is marked a priority download so I'm going to replace an existing file if I find one",
                 logger.DEBUG)
+        
+        # try to find out if we have enough space to perform the copy or move action.
+        if not verify_freespace(self.file_path, ek.ek(os.path.dirname, ep_obj.show._location), [ep_obj] + ep_obj.relatedEps):
+            self._log("Not enough space to continue PP, exiting")
+            return False
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
@@ -941,10 +972,6 @@ class PostProcessor(object):
             if data:
                 notifiers.trakt_notifier.update_watchlist(show, data_episode=data, update="remove")
 
-        if len(sql_l) > 0:
-            myDB = db.DBConnection()
-            myDB.mass_action(sql_l)
-
         # Just want to keep this consistent for failed handling right now
         releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)
         if releaseName is not None:
@@ -981,7 +1008,7 @@ class PostProcessor(object):
         # add to anidb
         if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
             self._add_to_anidb_mylist(self.file_path)
-
+        
         try:
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
@@ -1008,6 +1035,11 @@ class PostProcessor(object):
                 with cur_ep.lock:
                     cur_ep.location = ek.ek(os.path.join, dest_path, new_file_name)
                     cur_ep.downloadSubtitles(force=True)
+
+        # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.
+        if len(sql_l) > 0:
+            myDB = db.DBConnection()
+            myDB.mass_action(sql_l)
 
         # put the new location in the database
         sql_l = []

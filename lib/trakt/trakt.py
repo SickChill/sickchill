@@ -40,8 +40,11 @@ class TraktAPI():
                 logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
                 return self.validateAccount()
             elif code == 401:
+                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
                 raise traktAuthException(e)
-            elif code == 503:
+            elif code in (500,501,503,504,520,521,522):
+                #http://docs.trakt.apiary.io/#introduction/status-codes
+                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)
@@ -79,8 +82,11 @@ class TraktAPI():
                 logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
                 return self.traktRequest(path, data, method)
             elif code == 401:
+                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
                 raise traktAuthException(e)
-            elif code == 503:
+            elif code in (500,501,503,504,520,521,522):
+                #http://docs.trakt.apiary.io/#introduction/status-codes
+                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)
