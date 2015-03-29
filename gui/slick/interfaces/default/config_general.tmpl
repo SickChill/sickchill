@@ -542,6 +542,16 @@
 						</div>
 						
 						<div class="field-pair">
+							<label for="debug">
+								<span class="component-title">Enable debug</span>
+								<span class="component-desc">
+									<input type="checkbox" name="debug" id="debug" #if $sickbeard.DEBUG then 'checked="checked"' else ''#/>
+									<p>Enable debug logs<p>
+								</span>
+							</label>
+						</div>
+						
+						<div class="field-pair">
 							<label for="no_restart">
 								<span class="component-title">No Restart</span>
 								<span class="component-desc">
