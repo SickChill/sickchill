@@ -2,7 +2,7 @@ import requests
 import json
 from sickbeard import logger
 
-from exceptions import traktException, traktAuthException, traktServerBusy, traktInternalError
+from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
     def __init__(self, apikey, username=None, password=None, disable_ssl_verify=False, timeout=30):
@@ -40,11 +40,12 @@ class TraktAPI():
                 logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
                 return self.validateAccount()
             elif code == 401:
+                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
                 raise traktAuthException(e)
-            elif code == 503:
+            elif code in (500,501,503,504,520,521,522):
+                #http://docs.trakt.apiary.io/#introduction/status-codes
+                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
                 raise traktServerBusy(e)
-            elif code == 500:
-                raise traktInternalError(e)
             else:
                 raise traktException(e)
         if 'token' in resp:
@@ -81,8 +82,11 @@ class TraktAPI():
                 logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
                 return self.traktRequest(path, data, method)
             elif code == 401:
+                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
                 raise traktAuthException(e)
-            elif code == 503:
+            elif code in (500,501,503,504,520,521,522):
+                #http://docs.trakt.apiary.io/#introduction/status-codes
+                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)
