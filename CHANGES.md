@@ -1,3 +1,35 @@
+### 4.0.14 (2014-03-29)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.13...v4.0.14)
+
+* Feature: Added Free Space check in PP before deleting files
+* Added DEBUG setting to UI
+* Added better note to Extra Scripts setting in PP
+* Added more network logs
+* Added anime regex for 003-004. Show Name - Ep Name.ext
+* Added Quality check even if SR itself downloaded the episode
+* Added Default Info Language in general settings 
+* Fixed password encryption when restoring backup to another computer
+* Fixed T411 torrent name with special chars
+* Fixed PP when higher quality have lower size making SR re-download multiple times
+* Fixed Trakt exceptions
+* Fixed debug and db events in log when debug log is disabled
+* Fixed showupdater when user changed updater hour and thread didn't restart
+* Fixed inc_top.tmpl loading unnecessary stuff when not logged 
+* Fixed gitignore issue with relative folder
+* Fixed Add show with improperly decoded utf-8 characters
+* Fixed PP episodes with Airdate. Check without season 0 first
+* Fixed don't display prev and next airs if date is invalid
+* Fixed verify_freespace to check show location and check old file exists
+* Fixed tntvillage provider (cosmetic)
+* Fixed active status on home accordingly to manage rolling download enable/disable
+* Fixed trending blacklist management
+* Fixed Hounddawgs (various fixes)
+* Fixed Torrent file content is empty on magnet torrent
+* Fixed search show name in Home
+* Hide Proxy indexers settings when proxy host is empty
+* Change removed episodes status from IGNORED to ARCHIVED 
+
 ### 4.0.13 (2014-03-22)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.12...v4.0.13)
