@@ -3674,7 +3674,10 @@ class ConfigGeneral(Config):
         sickbeard.WEB_PORT = config.to_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()
-        sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version)
+        if config.checkbox_to_value(encryption_version) == 1:
+            sickbeard.ENCRYPTION_VERSION = 2
+        else:
+            sickbeard.ENCRYPTION_VERSION = 0
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = web_password
 
