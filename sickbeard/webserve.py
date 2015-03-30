@@ -1324,6 +1324,7 @@ class Home(WebRoot):
                     except Exception as e:
                         anidb_failed = True
                         ui.notifications.error('Unable to retreive Fansub Groups from AniDB.')
+                        logger.log('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
 
             with showObj.lock:
                 t.show = showObj
@@ -1393,6 +1394,7 @@ class Home(WebRoot):
                         except Exception as e:
                             anidb_failed = True
                             ui.notifications.error('Unable to retreive data from AniDB.')
+                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
                             shortWhiteList = whitelist
                     else:
                         shortWhiteList = whitelist
@@ -1416,6 +1418,7 @@ class Home(WebRoot):
                         except Exception as e:
                             anidb_failed = True
                             ui.notifications.error('Unable to retreive data from AniDB.')
+                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
                             shortBlacklist = blacklist
                     else:
                         shortBlacklist = blacklist
