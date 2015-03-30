@@ -662,6 +662,8 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
                 # if we're keeping this multi-result then remember it
                 for epObj in multiResult.episodes:
+                    if not multiResult.url.startswith('magnet'):
+                        multiResult.content = multiResult.provider.getURL(cur_result.url)
                     multiResults[epObj.episode] = multiResult
 
                 # don't bother with the single result if we're going to get it with a multi result
