@@ -19,10 +19,9 @@
 import re
 import traceback
 import datetime
-import urlparse
 import sickbeard
 import generic
-from sickbeard.common import Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import db
@@ -32,7 +31,7 @@ from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
 from sickbeard import clients
 from lib import requests
-from lib.requests import exceptions
+from lib.requests.exceptions import RequestException
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -152,7 +151,7 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30, verify=False)
-        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+        except RequestException as e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
 
@@ -174,10 +173,7 @@ class TNTVillageProvider(generic.TorrentProvider):
                 ep_string = show_name + ' ' + "%d" % ep_obj.scene_absolute_number
             else:
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season)  #1) showName SXX
-
             search_string['Season'].append(ep_string)
-
-
         return [search_string]
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
@@ -242,29 +238,25 @@ class TNTVillageProvider(generic.TorrentProvider):
         """
             Return The quality from the scene episode HTML row.
         """
-
         file_quality=''
-        releaser=''
 
         img_all = (torrent_rows.find_all('td'))[1].find_all('img')
         
         if len(img_all) > 0:
-            for type in img_all:
+            for img_type in img_all:
                 try:
-    
-                    file_quality = file_quality + " " + type['src'].replace("style_images/mkportal-636/","").replace(".gif","").replace(".png","")
-    
-                except Exception, e:
+                    file_quality = file_quality + " " + img_type['src'].replace("style_images/mkportal-636/","").replace(".gif","").replace(".png","")
+                except Exception:
                     logger.log(u"Failed parsing " + self.name + " Traceback: "  + traceback.format_exc(), logger.ERROR)
 
         else:
             file_quality = (torrent_rows.find_all('td'))[1].get_text()
-            logger.log(u"file_quality: " + str(file_quality), logger.DEBUG)
+            logger.log(u"Episode quality: " + str(file_quality), logger.DEBUG)
 
         checkName = lambda list, func: func([re.search(x, file_quality, re.I) for x in list])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
-        blueRayOptions = checkName(["BD","BDmux", "BDrip", "BRrip", "Bluray"], any)
+        bluRayOptions = checkName(["BD","BDmux", "BDrip", "BRrip", "Bluray"], any)
         sdOptions = checkName(["h264", "divx", "XviD", "tv", "TVrip", "SATRip", "DTTrip", "Mpeg2"], any)
         hdOptions = checkName(["720p"], any)
         fullHD = checkName(["1080p", "fullHD"], any)
@@ -274,23 +266,24 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         webdl = checkName(["webdl", "webmux", "webrip", "dl-webmux", "web-dlmux", "webdl-mux", "web-dl", "webdlmux", "dlmux"], any)
 
-        logger.log(u"dvdOptions: " + str(dvdOptions) + ", blueRayOptions: " + str(blueRayOptions) + ", sdOptions: " + str(sdOptions) + ", hdOptions: " + str(hdOptions) + ", fullHD: " + str(fullHD) + ", webdl: " + str(webdl), logger.DEBUG)
+        logger.log(u"Episode options: dvdOptions: " + str(dvdOptions) + ", bluRayOptions: " + str(bluRayOptions) + \
+                   ", sdOptions: " + str(sdOptions) + ", hdOptions: " + str(hdOptions) + ", fullHD: " + str(fullHD) + ", webdl: " + str(webdl), logger.DEBUG)
 
         if sdOptions and not dvdOptions and not fullHD and not hdOptions:
             return Quality.SDTV
         elif dvdOptions:
             return Quality.SDDVD
-        elif hdOptions and not blueRayOptions and not fullHD and not webdl:
+        elif hdOptions and not bluRayOptions and not fullHD and not webdl:
             return Quality.HDTV
-        elif not hdOptions and not blueRayOptions and fullHD and not webdl:
+        elif not hdOptions and not bluRayOptions and fullHD and not webdl:
             return Quality.FULLHDTV
-        elif hdOptions and not blueRayOptions and not fullHD and webdl:
+        elif hdOptions and not bluRayOptions and not fullHD and webdl:
             return Quality.HDWEBDL
-        elif not hdOptions and not blueRayOptions and fullHD and webdl:
+        elif not hdOptions and not bluRayOptions and fullHD and webdl:
             return Quality.FULLHDWEBDL
-        elif blueRayOptions and hdOptions and not fullHD:
+        elif bluRayOptions and hdOptions and not fullHD:
             return Quality.HDBLURAY
-        elif blueRayOptions and fullHD and not hdOptions:
+        elif bluRayOptions and fullHD and not hdOptions:
             return Quality.FULLHDBLURAY
         else:
             return Quality.UNKNOWN
@@ -299,15 +292,13 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         is_italian = 0
 
-        name=''
-
         span_tag = (torrent_rows.find_all('td'))[1].find('b').find('span')
 
         name = str(span_tag)
         name = name.split('sub')[0] 
 
         if re.search("ita", name, re.I):
-            logger.log(u"Found Italian Language", logger.DEBUG)
+            logger.log(u"Found Italian release", logger.DEBUG)
             is_italian=1
 
         return is_italian
@@ -340,12 +331,9 @@ class TNTVillageProvider(generic.TorrentProvider):
                 search_string = str(search_string).replace('.', ' ')
 
                 for x in range(0,y):
-				
                     z=x*20
                     if last_page:
                         break	
-
-                    logger.log(u"Page: " + str(x) + " of " + str(y), logger.DEBUG)
 
                     if mode != 'RSS':
                         searchURL = (self.urls['search_page'] + '&filter={2}').format(z,self.categories,search_string)
@@ -356,7 +344,7 @@ class TNTVillageProvider(generic.TorrentProvider):
 
                     data = self.getURL(searchURL)
                     if not data:
-                        logger.log(u"data is empty", logger.DEBUG)
+                        logger.log(u"Received no data from the server", logger.DEBUG)
                         continue
 
                     try:
@@ -365,13 +353,12 @@ class TNTVillageProvider(generic.TorrentProvider):
                             torrent_rows = torrent_table.find_all('tr') if torrent_table else []
 
                             #Continue only if one Release is found
-                            logger.log(u"Num of Row: "+ str(len(torrent_rows)), logger.DEBUG)
-
                             if len(torrent_rows)<3:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                           logger.DEBUG)
+                                logger.log(u"The server returned no torrents", logger.DEBUG)
                                 last_page=1
                                 continue
+
+                            logger.log(u"Parsing results from page " + str(x+1), logger.DEBUG)
 
                             if len(torrent_rows) < 42:
                                 last_page=1
@@ -396,7 +383,6 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 if not title or not download_url:
                                     continue
 
-                                logger.log(u"name: " + title + "", logger.DEBUG)
                                 filename_qt = self._reverseQuality(self._episodeQuality(result))
                                 for text in self.hdtext:
                                     title1 = title
@@ -407,20 +393,16 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt 
 
-                                logger.log(u"name, inserted quallity: " + title + "", logger.DEBUG)
+                                if not self._is_italian(result) and not self.subtitle:
+                                    logger.log(u"Subtitled, skipping "  + title + "(" + searchURL + ")", logger.DEBUG)
+                                    continue
 
                                 item = title, download_url, id, seeders, leechers
                                 logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
 
-                                if not self._is_italian(result) and not self.subtitle:
-                                    logger.log(u"Subtitled, Skipped", logger.DEBUG)
-                                    continue
-                                else:
-                                    logger.log(u"Not Subtitled or Forced, Got It!", logger.DEBUG)
-
                                 items[mode].append(item)
 
-                    except Exception, e:
+                    except Exception:
                         logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(), logger.ERROR)
 
                 #For each search mode sort all the items by seeders
