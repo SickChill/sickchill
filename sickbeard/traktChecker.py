@@ -556,10 +556,9 @@ class TraktRolling():
                 if epObj.status != SKIPPED:
                     return
 
-                logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
-                # figure out what segment the episode is in and remember it so we can backlog it
+                logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to " + statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS])
 
-                epObj.status = sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS
+                epObj.status = sickbeard.EP_DEFAULT_DELETED_STATUS
                 epObj.saveToDB()
 
     def _num_ep_for_season(self, show, season, episode):

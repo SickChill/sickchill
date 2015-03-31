@@ -84,7 +84,21 @@
 								</span>
 							</label>
 						</div>
-
+#if not $sickbeard.SKIP_REMOVED_FILES or $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD
+                                                <div class="field-pair">
+                                                    <label for="ep_default_deleted_status">
+                                                        <span class="component-title">Default deleted episode status:</span>
+                                                        <span class="component-desc">
+                                                            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
+                                                            #for $defStatus in [$ARCHIVED, $IGNORED]:
+                                                                <option value="$defStatus" #if $defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
+                                                            #end for
+                                                            </select>
+                                                            <span>Define the status to be set for media file that has been deleted.</span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+#end if
 						<div class="field-pair">
 							<label for="launch_browser">
 								<span class="component-title">Launch browser</span>
