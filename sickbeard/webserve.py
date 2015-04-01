@@ -3650,22 +3650,7 @@ class ConfigGeneral(Config):
         sickbeard.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
         sickbeard.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
-        if sickbeard.SHOWUPDATE_HOUR != config.to_int(showupdate_hour):
-            sickbeard.showUpdateScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWUPDATER thread to exit so we can set new start hour")
-            try:
-                sickbeard.showUpdateScheduler.join(10) # Wait 10 sec for the thread to exit
-            except:
-                pass
-            if  sickbeard.showUpdateScheduler.isAlive():
-                logger.log(u"Unable to stop SHOWUPDATER thread, the new configuration will be applied after a restart", logger.WARNING)
-            else:
-                logger.log(u"Starting SHOWUPDATER thread with the new start hour: " + str(config.to_int(showupdate_hour)))
-                sickbeard.showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
-                                              cycleTime=datetime.timedelta(hours=1),
-                                              threadName="SHOWUPDATER",
-                                              start_time=datetime.time(hour=config.to_int(showupdate_hour)))            
-        sickbeard.SHOWUPDATE_HOUR = config.to_int(showupdate_hour)
+        config.change_SHOWUPDATE_HOUR(showupdate_hour)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
