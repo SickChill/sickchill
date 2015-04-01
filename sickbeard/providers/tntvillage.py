@@ -35,6 +35,7 @@ from lib.requests.exceptions import RequestException
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
+from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
 category_excluded = {
               'Sport' : 22,
@@ -303,6 +304,24 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         return is_italian
 
+    def _is_season_pack(self, name):
+
+        try:
+            myParser = NameParser(tryIndexers=True, trySceneExceptions=True, convert=True)
+            parse_result = myParser.parse(name)
+        except InvalidNameException:
+            logger.log(u"Unable to parse the filename " + str(name) + " into a valid episode", logger.DEBUG)
+            return False
+        except InvalidShowException:
+            logger.log(u"Unable to parse the filename " + str(name) + " into a valid show", logger.DEBUG)
+            return False
+
+        myDB = db.DBConnection()
+        sql_selection="select count(*) as count from tv_episodes where showid = ? and season = ?"
+        episodes = myDB.select(sql_selection, [parse_result.show.indexerid, parse_result.season_number])
+        if int(episodes[0]['count']) == len(parse_result.episode_numbers):
+            return True
+
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
 
         results = []
@@ -396,6 +415,9 @@ class TNTVillageProvider(generic.TorrentProvider):
                                 if not self._is_italian(result) and not self.subtitle:
                                     logger.log(u"Subtitled, skipping "  + title + "(" + searchURL + ")", logger.DEBUG)
                                     continue
+
+                                if self._is_season_pack(title):
+                                    title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
                                 item = title, download_url, id, seeders, leechers
                                 logger.log(u"Found result: " + title + "(" + searchURL + ")", logger.DEBUG)
