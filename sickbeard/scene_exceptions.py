@@ -306,7 +306,11 @@ def _xem_exceptions_fetcher():
                 continue
 
             for indexerid, names in parsedJSON['data'].items():
-                xem_exception_dict[int(indexerid)] = names
+                try:
+                    xem_exception_dict[int(indexerid)] = names
+                except Exception as e:
+                    logger.log(u"XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
+                    logger.log(u"XEM: Rejected entry error message:{0}".format(str(e)), logger.DEBUG)
 
         setLastRefresh('xem')
 
