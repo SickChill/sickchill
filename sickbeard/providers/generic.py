@@ -480,6 +480,53 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.TORRENT
+        
+        # Don't add a rule to remove everything between bracket, it will break anime release
+        self.removeWordsList = {'\[rartv\]$': 'searchre',
+                               '\[rarbg\]$': 'searchre',
+                               '\[eztv\]$': 'searchre',
+                               '\[ettv\]$': 'searchre',
+                               '\[GloDLS\]$': 'searchre',
+                               '\[silv4\]$': 'searchre',
+                               '\[Seedbox\]$': 'searchre',
+                               '\[AndroidTwoU\]$': 'searchre',
+                               '\.RiPSaLoT$': 'searchre',
+                              }
+
+    def _clean_title_from_provider(self, title):
+        torrent_title = title
+        for remove_string, remove_type in self.removeWordsList.iteritems():
+            if remove_type == 'search':
+                torrent_title = torrent_title.replace(remove_string, '')
+            elif remove_type == 'searchre':
+                torrent_title = re.sub(remove_string, '', torrent_title)
+
+        if torrent_title != title:
+            logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=title, new_name=torrent_title), logger.DEBUG)
+
+        return torrent_title
+
+    def _get_title_and_url(self, item):
+        """
+        Retrieves the title and URL data from the item XML node
+
+        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
+
+        Returns: A tuple containing two strings representing title and URL respectively
+        """
+
+        title, url = item
+
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
+
+        if url:
+            url = str(url).replace('&amp;', '&')
+
+        return title, url
+
 
 class ProviderProxy:
     def __init__(self):

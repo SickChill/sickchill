@@ -94,9 +94,6 @@ class NyaaProvider(generic.TorrentProvider):
 
         return results
 
-    def _get_title_and_url(self, item):
-        return generic.TorrentProvider._get_title_and_url(self, item)
-
     def _extract_name_from_filename(self, filename):
         name_regex = '(.*?)\.?(\[.*]|\d+\.TPB)\.torrent$'
         logger.log(u"Comparing " + name_regex + " against " + filename, logger.DEBUG)

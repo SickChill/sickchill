@@ -58,37 +58,12 @@ class KATProvider(generic.TorrentProvider):
         self.urls = {'base_url': 'https://kickass.to/'}
 
         self.url = self.urls['base_url']
-        
-                # Valid options search, searchre
-        self.removeWordsList = {'\[rartv\]$': 'searchre',
-                               '\[rarbg\]$': 'searchre',
-                               '\[eztv\]$': 'searchre',
-                               '\[ettv\]$': 'searchre',
-                               '\[GloDLS\]$': 'searchre',
-                               '\[silv4\]$': 'searchre',
-                               '\[Seedbox\]$': 'searchre',
-                               '\[AndroidTwoU\]$': 'searchre',
-                               '\.RiPSaLoT$': 'searchre',
-                              }
 
     def isEnabled(self):
         return self.enabled
 
     def imageName(self):
         return 'kat.png'
-
-    def removeWords(self, title):
-        torrent_title = title
-        for remove_string, remove_type in self.removeWordsList.iteritems():
-            if remove_type == 'search':
-                torrent_title = torrent_title.replace(remove_string, '')
-            elif remove_type == 'searchre':
-                torrent_title = re.sub(remove_string, '', torrent_title)
-
-        if torrent_title != title:
-            logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=title, new_name=torrent_title), logger.DEBUG)
-
-        return torrent_title
 
     def getQuality(self, item, anime=False):
 
@@ -262,7 +237,7 @@ class KATProvider(generic.TorrentProvider):
                         try:
                             link = item['link']
                             id = item['guid']
-                            title = self.removeWords(item['title'])
+                            title = item['title']
                             url = item['torrent_magneturi']
                             verified = bool(int(item['torrent_verified']) or 0)
                             seeders = int(item['torrent_seeds'])
@@ -324,6 +299,7 @@ class KATProvider(generic.TorrentProvider):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         if url:
             url = url.replace('&amp;', '&')
