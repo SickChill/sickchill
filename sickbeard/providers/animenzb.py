@@ -60,7 +60,7 @@ class animenzb(generic.NZBProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
         if self.show and not self.show.is_anime:
             logger.log(u"" + str(self.show.name) + " is not an anime skiping ...")
             return []

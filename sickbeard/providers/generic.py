@@ -227,7 +227,7 @@ class GenericProvider:
         quality = Quality.sceneQuality(title, anime)
         return quality
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         return []
 
     def _get_season_search_strings(self, episode):
@@ -286,11 +286,11 @@ class GenericProvider:
             if len(episodes) > 1:
                 # get season search results
                 for curString in self._get_season_search_strings(epObj):
-                    itemList += self._doSearch(curString, search_mode, len(episodes))
+                    itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
             else:
                 # get single episode search results
                 for curString in self._get_episode_search_strings(epObj):
-                    itemList += self._doSearch(curString, 'eponly', len(episodes))
+                    itemList += self._doSearch(curString, 'eponly', len(episodes), epObj=epObj)
 
         # if we found what we needed already from cache then return results and exit
         if len(results) == len(episodes):

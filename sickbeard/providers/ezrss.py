@@ -112,7 +112,7 @@ class EZRSSProvider(generic.TorrentProvider):
 
         return [params]
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         params = {"mode": "rss"}
 
