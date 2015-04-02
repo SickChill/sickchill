@@ -186,7 +186,7 @@ def change_UPDATE_FREQUENCY(freq):
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
 
 def change_SHOWUPDATE_HOUR(freq):
-    sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.SHOWUPDATE_HOUR)
+    sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.DEFAULT_SHOWUPDATE_HOUR)
 
     if sickbeard.SHOWUPDATE_HOUR > 23:
         sickbeard.SHOWUPDATE_HOUR = 0
@@ -194,6 +194,13 @@ def change_SHOWUPDATE_HOUR(freq):
         sickbeard.SHOWUPDATE_HOUR = 0
 
     sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+
+def change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency):
+    
+    if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
+            subtitles_finder_frequency = 1
+    
+    sickbeard.SUBTITLES_FINDER_FREQUENCY = to_int(subtitles_finder_frequency, 1)
 
 def change_VERSION_NOTIFY(version_notify):
     oldSetting = sickbeard.VERSION_NOTIFY

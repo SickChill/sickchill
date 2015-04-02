@@ -1521,4 +1521,20 @@ def verify_freespace(src, dest, oldfile=None):
         return True
     else:
         logger.log("Not enough free space: Needed: " + str(neededspace) + " bytes (" + pretty_filesize(neededspace) + "), found: " + str(diskfree) + " bytes (" + pretty_filesize(diskfree) + ")", logger.WARNING)
-        return False  
+        return False
+
+# https://gist.github.com/thatalextaylor/7408395
+def pretty_time_delta(seconds):
+    sign_string = '-' if seconds < 0 else ''
+    seconds = abs(int(seconds))
+    days, seconds = divmod(seconds, 86400)
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+    if days > 0:
+        return '%s%dd%02dh%02dm%02ds' % (sign_string, days, hours, minutes, seconds)
+    elif hours > 0:
+        return '%s%02dh%02dm%02ds' % (sign_string, hours, minutes, seconds)
+    elif minutes > 0:
+        return '%s%02dm%02ds' % (sign_string, minutes, seconds)
+    else:
+        return '%s%02ds' % (sign_string, seconds)

@@ -991,9 +991,9 @@ class Home(WebRoot):
 
         myDB = db.DBConnection()
         if myDB.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [emails, show]):
-	    return 'OK'
-	else:
-	    return 'ERROR: %s' % myDB.last_err
+            return 'OK'
+        else:
+            return 'ERROR: %s' % myDB.last_err
 
 
     def testEmail(self, host=None, port=None, smtp_from=None, use_tls=None, user=None, pwd=None, to=None):
@@ -1044,6 +1044,10 @@ class Home(WebRoot):
             return result
         else:
             return "Error sending Pushbullet notification"
+
+    def status(self):
+        t = PageTemplate(rh=self, file='status.tmpl')
+        return t.respond()
 
     def shutdown(self, pid=None):
         if str(pid) != str(sickbeard.PID):
@@ -3834,7 +3838,6 @@ class ConfigSearch(Config):
             results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_DAILYSEARCH_FREQUENCY(dailysearch_frequency)
-        
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
 
@@ -3852,20 +3855,6 @@ class ConfigSearch(Config):
 
         sickbeard.DOWNLOAD_PROPERS = config.checkbox_to_value(download_propers)
         config.change_DOWNLOAD_PROPERS(sickbeard.DOWNLOAD_PROPERS)
-
-        if sickbeard.DOWNLOAD_PROPERS and not sickbeard.properFinderScheduler.isAlive():
-            sickbeard.properFinderScheduler.silent = False
-            try:
-                sickbeard.properFinderScheduler.start()
-            except:
-                pass
-        elif not sickbeard.DOWNLOAD_PROPERS:
-            sickbeard.properFinderScheduler.stop.set()
-            sickbeard.properFinderScheduler.silent = True
-            try:
-                sickbeard.properFinderScheduler.join(5)
-            except:
-                pass
 
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
@@ -3948,22 +3937,8 @@ class ConfigPostProcessing(Config):
         if not config.change_TV_DOWNLOAD_DIR(tv_download_dir):
             results += ["Unable to create directory " + os.path.normpath(tv_download_dir) + ", dir not changed."]
 
-        sickbeard.PROCESS_AUTOMATICALLY = config.checkbox_to_value(process_automatically)
         config.change_AUTOPOSTPROCESSER_FREQUENCY(autopostprocesser_frequency)
-
-        if sickbeard.PROCESS_AUTOMATICALLY and not sickbeard.autoPostProcesserScheduler.isAlive():
-            sickbeard.autoPostProcesserScheduler.silent = False
-            try:
-                sickbeard.autoPostProcesserScheduler.start()
-            except:
-                pass
-        elif not sickbeard.PROCESS_AUTOMATICALLY:
-            sickbeard.autoPostProcesserScheduler.stop.set()
-            sickbeard.autoPostProcesserScheduler.silent = True
-            try:
-                sickbeard.autoPostProcesserScheduler.join(5)
-            except:
-                pass
+        config.change_PROCESS_AUTOMATICALLY(process_automatically)
 
         if unpack:
             if self.isRarSupported() != 'not supported':
@@ -4731,7 +4706,7 @@ class ConfigNotifications(Config):
         sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(
             synologynotifier_notify_onsubtitledownload)
 
-        sickbeard.USE_TRAKT = config.checkbox_to_value(use_trakt)
+        config.change_USE_TRAKT(use_trakt)
         sickbeard.TRAKT_USERNAME = trakt_username
         sickbeard.TRAKT_PASSWORD = trakt_password
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
@@ -4745,15 +4720,10 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_DISABLE_SSL_VERIFY = config.checkbox_to_value(trakt_disable_ssl_verify)
         sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
         sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
-        sickbeard.TRAKT_USE_ROLLING_DOWNLOAD = config.checkbox_to_value(trakt_use_rolling_download)
+        config.change_TRAKT_USE_ROLLING_DOWNLOAD(trakt_use_rolling_download)
         sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
         sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
         sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
-
-        if sickbeard.USE_TRAKT:
-            sickbeard.traktCheckerScheduler.silent = False
-        else:
-            sickbeard.traktCheckerScheduler.silent = True
 
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
@@ -4826,30 +4796,14 @@ class ConfigSubtitles(Config):
 
         results = []
 
-        if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
-            subtitles_finder_frequency = 1
+        config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
+        config.change_USE_SUBTITLES(use_subtitles)
 
-        if use_subtitles == "on" and not sickbeard.subtitlesFinderScheduler.isAlive():
-            sickbeard.subtitlesFinderScheduler.silent = False
-            try:
-                sickbeard.subtitlesFinderScheduler.start()
-            except:
-                pass
-        elif not use_subtitles == "on":
-            sickbeard.subtitlesFinderScheduler.stop.set()
-            sickbeard.subtitlesFinderScheduler.silent = True
-            try:
-                sickbeard.subtitlesFinderScheduler.join(5)
-            except:
-                pass
-
-        sickbeard.USE_SUBTITLES = config.checkbox_to_value(use_subtitles)
         sickbeard.SUBTITLES_LANGUAGES = [lang.alpha2 for lang in subtitles.isValidLanguage(
             subtitles_languages.replace(' ', '').split(','))] if subtitles_languages != '' else ''
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
-        sickbeard.SUBTITLES_FINDER_FREQUENCY = config.to_int(subtitles_finder_frequency, default=1)
         sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
 
         # Subtitles services
