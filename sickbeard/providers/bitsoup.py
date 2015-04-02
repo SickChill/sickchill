@@ -230,6 +230,7 @@ class BitSoupProvider(generic.TorrentProvider):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         if url:
             url = str(url).replace('&amp;', '&')

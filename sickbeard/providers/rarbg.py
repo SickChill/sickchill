@@ -84,12 +84,6 @@ class RarbgProvider(generic.TorrentProvider):
                                 self.urlOptions['format'].format(format='json') + \
                                 self.urlOptions['ranked'].format(ranked='1')
 
-        # Valid options search, searchre
-        self.removeWords = {'\[rartv\]$': 'searchre',
-                            '\[rarbg\]$': 'searchre',
-                            '\[eztv\]$': 'searchre',
-                            }
-
         self.next_request = datetime.datetime.now()
 
         self.cache = RarbgCache(self)
@@ -192,10 +186,15 @@ class RarbgProvider(generic.TorrentProvider):
         if not self._doLogin():
             return results
 
+        if epObj != None:
+            ep_indexerid = epObj.show.indexerid
+            ep_indexer = epObj.show.indexer
+        else:
+            ep_indexerid = None
+            ep_indexer = None
+
         for mode in search_params.keys(): #Mode = RSS, Season, Episode
             for search_string in search_params[mode]:
-                ep_indexerid = epObj.show.indexerid
-                ep_indexer = epObj.show.indexer
                 if mode == 'RSS':
                     searchURL = self.urls['listing'].format(token=self.token) + self.defaultOptions
                 elif mode == 'Season':
@@ -261,12 +260,6 @@ class RarbgProvider(generic.TorrentProvider):
                     for item in data_json:
                         try:
                             torrent_title = item['f']
-                            for remove_string, remove_type in self.removeWords.iteritems():
-                                if remove_type == 'search':
-                                    torrent_title = torrent_title.replace(remove_string, '')
-                                elif remove_type == 'searchre':
-                                    torrent_title = re.sub(remove_string, '', torrent_title)
-
                             torrent_download = item['d']
                             if torrent_title and torrent_download:
                                 items[mode].append((torrent_title, torrent_download))
@@ -281,19 +274,6 @@ class RarbgProvider(generic.TorrentProvider):
             results += items[mode]
 
         return results
-
-    def _get_title_and_url(self, item):
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return title, url
 
     def findPropers(self, search_date=datetime.datetime.today()):
 

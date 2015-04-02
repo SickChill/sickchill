@@ -86,6 +86,7 @@ class HDBitsProvider(generic.TorrentProvider):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
 
