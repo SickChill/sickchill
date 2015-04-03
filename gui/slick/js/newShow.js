@@ -9,12 +9,12 @@ $(document).ready(function () {
 
         if (searchRequestXhr) searchRequestXhr.abort();
 
-        var searchingFor = $('#nameToSearch').val() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
+        var searchingFor = $('#nameToSearch').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect').val();
         $('#searchResults').empty().html('<img id="searchingAnim" src="' + sbRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> searching ' + searchingFor + '...');
 
         searchRequestXhr = $.ajax({
             url: sbRoot + '/home/addShows/searchIndexersForShowName',
-            data: {'search_term': $('#nameToSearch').val(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
+            data: {'search_term': $('#nameToSearch').val().trim(), 'lang': $('#indexerLangSelect').val(), 'indexer': $('#providedIndexer').val()},
             timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
             dataType: 'json',
             error: function () {
