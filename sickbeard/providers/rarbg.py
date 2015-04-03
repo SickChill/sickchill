@@ -247,6 +247,12 @@ class RarbgProvider(generic.TorrentProvider):
                     logger.log(u'{name} Too many requests per minute.'.format(name=self.name), logger.ERROR)
                     time.sleep(10)
                     continue
+                if re.search('Cant find search_tvdb in database. Are you sure this imdb exists?', data):
+                    logger.log(u'{name} no results found. Search tvdb id do not exist on server.'.format(name=self.name), logger.DEBUG)
+                    continue
+                if re.search('Cant find search_tvrage in database. Are you sure this imdb exists?', data):
+                    logger.log(u'{name} no results found. Search tvrage id do not exist on server.'.format(name=self.name), logger.DEBUG)
+                    continue
 
                 try:
                     data_json = json.loads(data)
