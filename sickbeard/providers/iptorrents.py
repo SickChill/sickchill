@@ -403,6 +403,19 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         return results
 
+    def _get_title_and_url(self, item):
+
+        title, url = item
+
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
+        if url:
+            url = str(url).replace('&amp;', '&')
+
+        return (title, url)
+
     def findPropers(self, search_date=datetime.datetime.today()):
 
         results = []
