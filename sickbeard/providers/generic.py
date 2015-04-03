@@ -506,27 +506,6 @@ class TorrentProvider(GenericProvider):
 
         return torrent_title
 
-    def _get_title_and_url(self, item):
-        """
-        Retrieves the title and URL data from the item XML node
-
-        item: An elementtree.ElementTree element representing the <item> tag of the RSS feed
-
-        Returns: A tuple containing two strings representing title and URL respectively
-        """
-
-        title, url = item
-
-        if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
-            title = self._clean_title_from_provider(title)
-
-        if url:
-            url = str(url).replace('&amp;', '&')
-
-        return title, url
-
 
 class ProviderProxy:
     def __init__(self):

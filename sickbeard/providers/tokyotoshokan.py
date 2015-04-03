@@ -53,6 +53,19 @@ class TokyoToshokanProvider(generic.TorrentProvider):
     def imageName(self):
         return 'tokyotoshokan.png'
 
+    def _get_title_and_url(self, item):
+
+        title, url = item
+
+        if title:
+            title = u'' + title
+            title = title.replace(' ', '.')
+
+        if url:
+            url = url.replace('&amp;', '&')
+
+        return (title, url)
+
     def seedRatio(self):
         return self.ratio
 
