@@ -186,14 +186,14 @@ def change_UPDATE_FREQUENCY(freq):
     sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
 
 def change_SHOWUPDATE_HOUR(freq):
-    sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.DEFAULT_UPDATE_FREQUENCY)
+    sickbeard.SHOWUPDATE_HOUR = to_int(freq, default=sickbeard.SHOWUPDATE_HOUR)
 
     if sickbeard.SHOWUPDATE_HOUR > 23:
         sickbeard.SHOWUPDATE_HOUR = 0
     elif sickbeard.SHOWUPDATE_HOUR < 0:
         sickbeard.SHOWUPDATE_HOUR = 0
 
-    sickbeard.showUpdateScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+    sickbeard.showUpdateScheduler.cycleTime = datetime.timedelta(hours=sickbeard.SHOWUPDATE_HOUR)
 
 def change_VERSION_NOTIFY(version_notify):
     oldSetting = sickbeard.VERSION_NOTIFY
