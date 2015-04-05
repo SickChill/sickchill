@@ -176,8 +176,8 @@ class Logger(object):
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
-                    if len(curError.title) > 1024:
-                        title_Error = str(curError.title[0:1024])
+                    if len(str(curError.title)) > 1024:
+                        title_Error = str(curError.title)[0:1024]
                     else:
                         title_Error = str(curError.title)
                 except Exception as e:
