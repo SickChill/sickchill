@@ -51,41 +51,40 @@ class Scheduler(threading.Thread):
         return False
 
     def run(self):
+        try:
+            while not self.stop.is_set():
 
-        while not self.stop.is_set():
+                current_time = datetime.datetime.now()
+                should_run = False
 
-            current_time = datetime.datetime.now()
-            should_run = False
-
-            # check if interval has passed
-            if current_time - self.lastRun >= self.cycleTime:
-                # check if wanting to start around certain time taking interval into account
-                if self.start_time:
-                    hour_diff = current_time.time().hour - self.start_time.hour
-                    if not hour_diff < 0 and hour_diff < self.cycleTime.seconds / 3600:
-                        should_run = True
+                # check if interval has passed
+                if current_time - self.lastRun >= self.cycleTime:
+                    # check if wanting to start around certain time taking interval into account
+                    if self.start_time:
+                        hour_diff = current_time.time().hour - self.start_time.hour
+                        if not hour_diff < 0 and hour_diff < self.cycleTime.seconds / 3600:
+                            should_run = True
+                        else:
+                            # set lastRun to only check start_time after another cycleTime
+                            self.lastRun = current_time
                     else:
-                        # set lastRun to only check start_time after another cycleTime
-                        self.lastRun = current_time
-                else:
-                    should_run = True
+                        should_run = True
 
-            if should_run:
-                self.lastRun = current_time
+                if should_run:
+                    self.lastRun = current_time
 
-                try:
                     if not self.silent:
                         logger.log(u"Starting new thread: " + self.name, logger.DEBUG)
 
                     self.action.run(self.force)
-                except Exception, e:
-                    logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
-                    logger.log(repr(traceback.format_exc()), logger.DEBUG)
 
-            if self.force:
-                self.force = False
+                if self.force:
+                    self.force = False
 
-            time.sleep(1)
+                time.sleep(1)
 
-        # exiting thread
-        self.stop.clear()
+            # exiting thread
+            self.stop.clear()
+        except Exception, e:
+            logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
+            logger.log(repr(traceback.format_exc()), logger.DEBUG)
