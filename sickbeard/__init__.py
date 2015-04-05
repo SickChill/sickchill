@@ -1337,7 +1337,7 @@ def initialize(consoleLogging=True):
                                                     silent=not USE_TRAKT)
 
         traktRollingScheduler = scheduler.Scheduler(traktChecker.TraktRolling(),
-                                                    cycleTime=datetime.timedelta(TRAKT_ROLLING_FREQUENCY),
+                                                    cycleTime=datetime.timedelta(minutes=TRAKT_ROLLING_FREQUENCY),
                                                     threadName="TRAKTROLLING",
                                                     silent=not TRAKT_USE_ROLLING_DOWNLOAD)
 
