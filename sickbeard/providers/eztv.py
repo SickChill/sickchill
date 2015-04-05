@@ -21,6 +21,9 @@ import traceback
 import re, datetime
 
 import generic
+import sickbeard
+from sickbeard import classes
+from sickbeard import helpers
 from sickbeard import logger, tvcache, db
 from sickbeard.common import Quality
 
