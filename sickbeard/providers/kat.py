@@ -177,8 +177,8 @@ class KATProvider(generic.TorrentProvider):
                 ep_string = show_name + ' S%02d' % int(ep_obj.scene_season) + ' -S%02d' % int(
                     ep_obj.scene_season) + 'E' + ' category:tv'  #1) showName SXX -SXXE
                 search_string['Season'].append(ep_string)
-                ep_string = show_name + ' Season ' + str(
-                    ep_obj.scene_season) + ' -Ep*' + ' category:tv'  # 2) showName Season X
+                ep_string = show_name + ' "Season ' + str(
+                    ep_obj.scene_season) + '" -Ep*' + ' category:tv'  # 2) showName "Season X"
                 search_string['Season'].append(ep_string)
 
         return [search_string]
@@ -214,7 +214,7 @@ class KATProvider(generic.TorrentProvider):
         return [search_string]
 
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
@@ -299,6 +299,7 @@ class KATProvider(generic.TorrentProvider):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         if url:
             url = url.replace('&amp;', '&')

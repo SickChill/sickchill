@@ -20,26 +20,26 @@
 import traceback
 import re
 import datetime
+import time
+from lib.requests.auth import AuthBase
 import sickbeard
 import generic
 
 from lib import requests
 from lib.requests import exceptions
 
-from sickbeard.common import USER_AGENT, Quality, cpu_presets
+from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
-from sickbeard.bs4_parser import BS4Parser
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import classes
-from sickbeard.helpers import sanitizeSceneName, arithmeticEval
+from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex
 
 
 class T411Provider(generic.TorrentProvider):
-
     def __init__(self):
         generic.TorrentProvider.__init__(self, "T411")
 
@@ -48,14 +48,16 @@ class T411Provider(generic.TorrentProvider):
         self.username = None
         self.password = None
         self.ratio = None
+        self.token = None
+        self.tokenLastUpdate = None
 
         self.cache = T411Cache(self)
 
         self.urls = {'base_url': 'http://www.t411.io/',
-                'search': 'http://www.t411.io/torrents/search/?name=%s&cat=210&subcat=%s&search=%s&submit=Recherche',
-                'login_page': 'http://www.t411.io/users/login/',
-                'download': 'http://www.t411.io/torrents/download/?id=%s',
-                }
+                     'search': 'https://api.t411.io/torrents/search/%s?cid=%s&limit=100',
+                     'login_page': 'https://api.t411.io/auth',
+                     'download': 'https://api.t411.io/torrents/download/%s',
+        }
 
         self.url = self.urls['base_url']
 
@@ -72,60 +74,35 @@ class T411Provider(generic.TorrentProvider):
         return quality
 
     def _doLogin(self):
-        login_params = {'login': self.username,
-                        'password': self.password,
-        }
+
+        if self.token is not None:
+            if time.time() < (self.tokenLastUpdate + 30 * 60):
+                logger.log('T411 Authentication token is still valid', logger.DEBUG)
+                return True
+
+        login_params = {'username': self.username,
+                        'password': self.password}
 
         self.session = requests.Session()
 
+        logger.log('Performing authentication to T411', logger.DEBUG)
+
         try:
-            response = self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False, headers=self.headers)
+            response = helpers.getURL(self.urls['login_page'], post_data=login_params, timeout=30, session=self.session, json=True)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
 
-        if re.search('confirmer le captcha', response.text.lower()):
-            logger.log(u'Too many login attempts. A captcha is displayed.', logger.INFO)
-            response = self.solveCaptcha(response, login_params)
-
-        if not re.search('/users/logout/', response.text.lower()):
-            logger.log(u'Invalid username or password for ' + self.name + ' Check your settings', logger.ERROR)
+        if 'token' in response:
+            self.token = response['token']
+            self.tokenLastUpdate = time.time()
+            self.uid = response['uid'].encode('ascii', 'ignore')
+            self.session.auth = T411Auth(self.token)
+            logger.log('Using T411 Authorization token : ' + self.token, logger.DEBUG)
+            return True
+        else:
+            logger.log('T411 token not found in authentication response', logger.ERROR)
             return False
-
-        return True
-
-    def solveCaptcha(self, response, login_params):
-        """
-        When trying to connect too many times with wrong password, a captcha can be requested.
-        This captcha is really simple and can be solved by the provider.
-
-        <label for="pass">204 + 65 = </label>
-            <input type="text" size="40" name="captchaAnswer" id="lgn" value=""/>
-            <input type="hidden" name="captchaQuery" value="204 + 65 = ">
-            <input type="hidden" name="captchaToken" value="005d54a7428aaf587460207408e92145">
-        <br/>
-
-        :param response: initial login output
-        :return: response after captcha resolution
-        """
-        with BS4Parser(response.text, features=["html5lib", "permissive"]) as html:
-            query = html.find('input', {'name': 'captchaQuery'})
-            token = html.find('input', {'name': 'captchaToken'})
-            if not query or not token:
-                logger.log(u'Unable to solve login captcha.', logger.ERROR)
-                return response
-
-            query_expr = query.attrs['value'].strip('= ')
-            logger.log(u'Captcha query: ' + query_expr, logger.DEBUG)
-            answer = arithmeticEval(query_expr)
-
-            logger.log(u'Captcha answer: %s' % answer, logger.DEBUG)
-
-            login_params['captchaAnswer'] = answer
-            login_params['captchaQuery'] = query.attrs['value']
-            login_params['captchaToken'] = token.attrs['value']
-
-            return self.session.post(self.urls['login_page'], data=login_params, timeout=30, verify=False, headers=self.headers)
 
     def _get_season_search_strings(self, ep_obj):
 
@@ -136,7 +113,7 @@ class T411Provider(generic.TorrentProvider):
             elif ep_obj.show.anime:
                 ep_string = show_name + '.' + "%d" % ep_obj.scene_absolute_number
             else:
-                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  #1) showName.SXX
+                ep_string = show_name + '.S%02d' % int(ep_obj.scene_season)  # 1) showName.SXX
 
             search_string['Season'].append(ep_string)
 
@@ -175,66 +152,53 @@ class T411Provider(generic.TorrentProvider):
 
         return [search_string]
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
+
+        logger.log(u"_doSearch started with ..." + str(search_params), logger.DEBUG)
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}
-
-        if not self._doLogin():
-            return results
 
         for mode in search_params.keys():
 
             for search_string in search_params[mode]:
 
-                if search_string == '':
-                    search_string2 = ''
-                else:
-                    search_string2 = '%40name+' + search_string + '+'
-
                 for sc in self.subcategories:
-                    searchURL = self.urls['search'] % (search_string, sc, search_string2)
+                    searchURL = self.urls['search'] % (search_string, sc)
                     logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                    data = self.getURL(searchURL)
+                    data = self.getURL(searchURL, json=True)
                     if not data:
                         continue
-
                     try:
-                        with BS4Parser(data, features=["html5lib", "permissive"]) as html:
-                            resultsTable = html.find('table', attrs={'class': 'results'})
 
-                            if not resultsTable:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                        if 'torrents' not in data:
+                            logger.log(
+                                u"The Data returned from " + self.name + " do not contains any torrent : " + str(data),
+                                logger.DEBUG)
+                            continue
+
+                        torrents = data['torrents']
+
+                        if len(torrents) > 0:
+                            for torrent in torrents:
+
+                                torrent_name = torrent['name']
+                                torrent_id = torrent['id']
+                                torrent_download_url = (self.urls['download'] % torrent_id).encode('utf8')
+
+                                if not torrent_name or not torrent_download_url:
+                                    continue
+
+                                item = torrent_name, torrent_download_url
+                                logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
                                            logger.DEBUG)
-                                continue
+                                items[mode].append(item)
 
-                            entries = resultsTable.find("tbody").findAll("tr")
-
-                            if len(entries) > 0:
-                                for result in entries:
-
-                                    try:
-                                        link = result.find('a', title=True)
-                                        torrent_name = link['title']
-                                        torrentId = result.find_all('td')[2].find_all('a')[0]['href'][1:].replace(
-                                            'torrents/nfo/?id=', '')
-                                        torrent_download_url = (self.urls['download'] % torrentId).encode('utf8')
-                                    except (AttributeError, TypeError):
-                                        continue
-
-                                    if not torrent_name or not torrent_download_url:
-                                        continue
-
-                                    item = torrent_name, torrent_download_url
-                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
-                                               logger.DEBUG)
-                                    items[mode].append(item)
-
-                            else:
-                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
-                                           logger.WARNING)
-                                continue
+                        else:
+                            logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                       logger.WARNING)
+                            continue
 
                     except Exception, e:
                         logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
@@ -248,8 +212,9 @@ class T411Provider(generic.TorrentProvider):
         title, url = item
 
         if title:
-            title = u'' + title
+            title += u''
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         if url:
             url = str(url).replace('&amp;', '&')
@@ -286,6 +251,16 @@ class T411Provider(generic.TorrentProvider):
 
     def seedRatio(self):
         return self.ratio
+
+
+class T411Auth(AuthBase):
+    """Attaches HTTP Authentication to the given Request object."""
+    def __init__(self, token):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers['Authorization'] = self.token
+        return r
 
 
 class T411Cache(tvcache.TVCache):

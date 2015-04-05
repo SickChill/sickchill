@@ -391,14 +391,18 @@ class TraktChecker():
         else:
             watchlist = self.ShowWatchlist
 
+        trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
+        
         for watchlist_el in watchlist:
 
-            trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
             if trakt_id == 'tvdb_id':
                 indexer_id = int(watchlist_el['show']['ids']["tvdb"])
             else:
-                indexer_id = int(watchlist_el['show']['ids']["tvrage"])
-
+                if not watchlist_el['show']['ids']["tvrage"] is None:
+                   indexer_id = int(watchlist_el['show']['ids']["tvrage"])
+                else:
+                    indexer_id = 0
+                    
             if indexer_id == show_obj.indexerid and season is None and episode is None:
                 found=True
                 break
@@ -556,10 +560,9 @@ class TraktRolling():
                 if epObj.status != SKIPPED:
                     return
 
-                logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
-                # figure out what segment the episode is in and remember it so we can backlog it
+                logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to " + statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS])
 
-                epObj.status = sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS
+                epObj.status = sickbeard.EP_DEFAULT_DELETED_STATUS
                 epObj.saveToDB()
 
     def _num_ep_for_season(self, show, season, episode):

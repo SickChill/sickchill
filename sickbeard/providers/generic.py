@@ -227,7 +227,7 @@ class GenericProvider:
         quality = Quality.sceneQuality(title, anime)
         return quality
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         return []
 
     def _get_season_search_strings(self, episode):
@@ -286,11 +286,11 @@ class GenericProvider:
             if len(episodes) > 1:
                 # get season search results
                 for curString in self._get_season_search_strings(epObj):
-                    itemList += self._doSearch(curString, search_mode, len(episodes))
+                    itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
             else:
                 # get single episode search results
                 for curString in self._get_episode_search_strings(epObj):
-                    itemList += self._doSearch(curString, 'eponly', len(episodes))
+                    itemList += self._doSearch(curString, 'eponly', len(episodes), epObj=epObj)
 
         # if we found what we needed already from cache then return results and exit
         if len(results) == len(episodes):
@@ -480,6 +480,32 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
 
         self.providerType = GenericProvider.TORRENT
+        
+        # Don't add a rule to remove everything between bracket, it will break anime release
+        self.removeWordsList = {'\[rartv\]$': 'searchre',
+                               '\[rarbg\]$': 'searchre',
+                               '\[eztv\]$': 'searchre',
+                               '\[ettv\]$': 'searchre',
+                               '\[GloDLS\]$': 'searchre',
+                               '\[silv4\]$': 'searchre',
+                               '\[Seedbox\]$': 'searchre',
+                               '\[AndroidTwoU\]$': 'searchre',
+                               '\.RiPSaLoT$': 'searchre',
+                              }
+
+    def _clean_title_from_provider(self, title):
+        torrent_title = title
+        for remove_string, remove_type in self.removeWordsList.iteritems():
+            if remove_type == 'search':
+                torrent_title = torrent_title.replace(remove_string, '')
+            elif remove_type == 'searchre':
+                torrent_title = re.sub(remove_string, '', torrent_title)
+
+        if torrent_title != title:
+            logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=title, new_name=torrent_title), logger.DEBUG)
+
+        return torrent_title
+
 
 class ProviderProxy:
     def __init__(self):

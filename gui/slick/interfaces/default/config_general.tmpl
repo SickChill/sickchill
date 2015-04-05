@@ -84,7 +84,6 @@
 								</span>
 							</label>
 						</div>
-
 						<div class="field-pair">
 							<label for="launch_browser">
 								<span class="component-title">Launch browser</span>
@@ -302,6 +301,15 @@
 								<span class="component-desc">
 									<input type="checkbox" name="display_filesize" id="display_filesize" #if $sickbeard.DISPLAY_FILESIZE == True then 'checked="checked"' else ''#/>
 									<p>display filesizes for downloaded episodes on show page</p>
+								</span>
+							</label>
+						</div>
+						<div class="field-pair">
+							<label for="coming_eps_missed_range">
+								<span class="component-title">Missed episodes range</span>
+								<span class="component-desc">
+									<input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="$sickbeard.COMING_EPS_MISSED_RANGE" class="form-control input-sm input75" />
+									<p>Set the range in days of the missed episodes in the Coming Episode page</p>
 								</span>
 							</label>
 						</div>
@@ -601,6 +609,28 @@
 								<span class="component-desc">
 									<input type="checkbox" name="proxy_indexers" id="proxy_indexers" #if True == $sickbeard.PROXY_INDEXERS then 'checked="checked"' else ''#/>
 									<p>use proxy host for connecting to indexers (thetvdb, tvrage)</p>
+								</span>
+							</label>
+						</div>
+						<div class="field-pair">
+							<label for="ep_default_deleted_status">
+								<span class="component-title">Default deleted episode status:</span>
+									<span class="component-desc">
+#if not $sickbeard.SKIP_REMOVED_FILES or ($sickbeard.USE_TRAKT and $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
+										<select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
+										#for $defStatus in [$ARCHIVED, $IGNORED]:
+											<option value="$defStatus" #if $defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
+										#end for
+										</select>
+#else
+										<select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" disabled="disabled">
+										#for $defStatus in [$ARCHIVED, $IGNORED]:
+											<option value="$defStatus" #if $defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
+										#end for
+										</select>
+										<input type="hidden" name="ep_default_deleted_status" value="$sickbeard.EP_DEFAULT_DELETED_STATUS" />
+#end if
+									<span>Define the status to be set for media file that has been deleted.</span>
 								</span>
 							</label>
 						</div>

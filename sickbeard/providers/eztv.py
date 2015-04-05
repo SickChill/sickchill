@@ -21,6 +21,9 @@ import traceback
 import re, datetime
 
 import generic
+import sickbeard
+from sickbeard import classes
+from sickbeard import helpers
 from sickbeard import logger, tvcache, db
 from sickbeard.common import Quality
 
@@ -74,7 +77,7 @@ class EZTVProvider(generic.TorrentProvider):
         else:
             return Quality.sceneQuality(item.get('title'), anime)
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
         items = {'Season': [], 'Episode': [], 'RSS': []}

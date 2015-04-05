@@ -86,12 +86,13 @@ class HDBitsProvider(generic.TorrentProvider):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         url = self.urls['download'] + urllib.urlencode({'id': item['id'], 'passkey': self.passkey})
 
         return (title, url)
 
-    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
         results = []
 
         self._checkAuth()

@@ -1514,7 +1514,7 @@ def verify_freespace(src, dest, oldfile=None):
     
     if oldfile:
         for file in oldfile:
-            if os.path.isfile(file.location):
+            if ek.ek(os.path.isfile, file.location):
                 diskfree += ek.ek(os.path.getsize, file.location)
         
     if diskfree > neededspace:

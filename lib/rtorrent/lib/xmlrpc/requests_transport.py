@@ -163,7 +163,7 @@ class RequestsTransport(xmlrpc_client.Transport):
             Response tuple and target method.
         """
         p, u = self.getparser()
-        p.feed(response.text)
+        p.feed(response.text.encode('utf-8'))
         p.close()
         return u.close()
 

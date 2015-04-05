@@ -82,7 +82,7 @@ class TokyoToshokanProvider(generic.TorrentProvider):
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         return [x.replace('.', ' ') for x in show_name_helpers.makeSceneSearchString(self.show, ep_obj)]
 
-    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0):
+    def _doSearch(self, search_string, search_mode='eponly', epcount=0, age=0, epObj=None):
         if self.show and not self.show.is_anime:
             logger.log(u"" + str(self.show.name) + " is not an anime skiping " + str(self.name))
             return []
@@ -149,6 +149,7 @@ class TokyoToshokanCache(tvcache.TVCache):
         if title:
             title = u'' + title
             title = title.replace(' ', '.')
+            title = self._clean_title_from_provider(title)
 
         url = item.link if item.link else None
         if url:

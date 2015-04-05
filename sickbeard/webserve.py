@@ -597,13 +597,16 @@ class CalendarHandler(BaseHandler):
                 ical = ical + 'DTEND:' + air_date_time_end.strftime(
                     "%Y%m%d") + 'T' + air_date_time_end.strftime(
                     "%H%M%S") + 'Z\r\n'
-                ical = ical + 'SUMMARY:' + show['show_name'] + ' - ' + str(
-                    episode['season']) + "x" + str(episode['episode']) + " - " + episode['name'] + '\r\n'
+                ical = ical + u'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
+                       show['show_name'],
+                       episode['season'],
+                       episode['episode'],
+                       episode['name'])
                 ical = ical + 'UID:Sick-Beard-' + str(datetime.date.today().isoformat()) + '-' + show[
                     'show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + 'S' + str(
                     episode['season']) + '\r\n'
                 if episode['description']:
-                    ical = ical + 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
+                    ical = ical + u'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
                         (show['airs'] or '(Unknown airs)'),
                         (show['network'] or 'Unknown network'),
                         episode['description'].splitlines()[0])
@@ -1324,6 +1327,7 @@ class Home(WebRoot):
                     except Exception as e:
                         anidb_failed = True
                         ui.notifications.error('Unable to retreive Fansub Groups from AniDB.')
+                        logger.log('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
 
             with showObj.lock:
                 t.show = showObj
@@ -1393,6 +1397,7 @@ class Home(WebRoot):
                         except Exception as e:
                             anidb_failed = True
                             ui.notifications.error('Unable to retreive data from AniDB.')
+                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
                             shortWhiteList = whitelist
                     else:
                         shortWhiteList = whitelist
@@ -1416,6 +1421,7 @@ class Home(WebRoot):
                         except Exception as e:
                             anidb_failed = True
                             ui.notifications.error('Unable to retreive data from AniDB.')
+                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
                             shortBlacklist = blacklist
                     else:
                         shortBlacklist = blacklist
@@ -3627,12 +3633,12 @@ class ConfigGeneral(Config):
 
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, update_shows_on_snatch=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
-                    indexerDefaultLang='en', launch_browser=None, showupdate_hour=3, web_username=None,
+                    indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
                     api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
-                    calendar_unprotected=None, debug=None, no_restart=None,
+                    calendar_unprotected=None, debug=None, no_restart=None, coming_eps_missed_range=None,
                     display_filesize=None, fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None,
                     git_reset=None, git_username=None, git_password=None, git_autoissues=None):
@@ -3642,23 +3648,9 @@ class ConfigGeneral(Config):
         # Misc
         sickbeard.DOWNLOAD_URL = download_url
         sickbeard.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
+        sickbeard.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
         sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
-        if sickbeard.SHOWUPDATE_HOUR != config.to_int(showupdate_hour):
-            sickbeard.showUpdateScheduler.stop.set()
-            logger.log(u"Waiting for the SHOWUPDATER thread to exit so we can set new start hour")
-            try:
-                sickbeard.showUpdateScheduler.join(10) # Wait 10 sec for the thread to exit
-            except:
-                pass
-            if  sickbeard.showUpdateScheduler.isAlive():
-                logger.log(u"Unable to stop SHOWUPDATER thread, the new configuration will be applied after a restart", logger.WARNING)
-            else:
-                logger.log(u"Starting SHOWUPDATER thread with the new start hour: " + str(config.to_int(showupdate_hour)))
-                sickbeard.showUpdateScheduler = scheduler.Scheduler(showUpdater.ShowUpdater(),
-                                              cycleTime=datetime.timedelta(hours=1),
-                                              threadName="SHOWUPDATER",
-                                              start_time=datetime.time(hour=config.to_int(showupdate_hour)))            
-        sickbeard.SHOWUPDATE_HOUR = config.to_int(showupdate_hour)
+        config.change_SHOWUPDATE_HOUR(showupdate_hour)
         config.change_VERSION_NOTIFY(config.checkbox_to_value(version_notify))
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
@@ -3686,6 +3678,7 @@ class ConfigGeneral(Config):
         sickbeard.NO_RESTART = config.checkbox_to_value(no_restart)
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
+        sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range,default=7)
 
         sickbeard.WEB_PORT = config.to_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
@@ -3823,13 +3816,13 @@ class ConfigSearch(Config):
     def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
                    sab_apikey=None, sab_category=None, sab_category_anime=None, sab_host=None, nzbget_username=None,
                    nzbget_password=None, nzbget_category=None, nzbget_category_anime=None, nzbget_priority=None,
-                   nzbget_host=None, nzbget_use_https=None, backlog_days=None, backlog_frequency=None,
+                   nzbget_host=None, nzbget_use_https=None, backlog_frequency=None,
                    dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
                    download_propers=None, check_propers_interval=None, allow_high_priority=None, sab_forced=None,
                    randomize_providers=None, backlog_startup=None, use_failed_downloads=None, delete_failed=None,
                    dailysearch_startup=None, torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
                    torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
-                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None, coming_eps_missed_range=None,
+                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type = None, ignore_words=None, require_words=None):
 
         results = []
@@ -3844,8 +3837,6 @@ class ConfigSearch(Config):
         
 
         config.change_BACKLOG_FREQUENCY(backlog_frequency)
-        sickbeard.BACKLOG_DAYS = config.to_int(backlog_days, default=7)
-        sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range,default=7)
 
         sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
         sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
@@ -4629,7 +4620,7 @@ class ConfigNotifications(Config):
                           trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_method_add=None,
                           trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None,
                           trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_disable_ssl_verify=None, trakt_timeout=None, trakt_blacklist_name=None,
-                          trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None, trakt_rolling_default_watched_status=None, 
+                          trakt_use_rolling_download=None, trakt_rolling_num_ep=None, trakt_rolling_add_paused=None, trakt_rolling_frequency=None,
                           use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
                           synologynotifier_notify_ondownload=None, synologynotifier_notify_onsubtitledownload=None,
                           use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
@@ -4758,7 +4749,6 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_ROLLING_NUM_EP = int(trakt_rolling_num_ep)
         sickbeard.TRAKT_ROLLING_ADD_PAUSED = config.checkbox_to_value(trakt_rolling_add_paused)
         sickbeard.TRAKT_ROLLING_FREQUENCY = int(trakt_rolling_frequency)
-        sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS = int(trakt_rolling_default_watched_status)
 
         if sickbeard.USE_TRAKT:
             sickbeard.traktCheckerScheduler.silent = False

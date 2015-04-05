@@ -1548,20 +1548,6 @@
                                         <span class="component-desc">This feauture will try to snatch <i>number of episode</i> if the show is active. Whould you like to add new show in paused mode(this override previous choice)?</span>
                                     </label>    
                                 </div>
-                                <div class="field-pair">
-                                    <label for="trakt_rolling_default_watched_status">
-                                        <span class="component-title">Default watched status:</span>
-                                            <select name="trakt_rolling_default_watched_status" id="trakt_rolling_default_watched_status" class="form-control form-control-inline input-sm">
-                                            #for $defStatus in [$ARCHIVED, $IGNORED]:
-                                            <option value="$defStatus" #if $defStatus == $sickbeard.TRAKT_ROLLING_DEFAULT_WATCHED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
-                                            #end for
-                                            </select>
-                                    </label>
-                                    <label>
-                                        <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">Define the status to be set for watched episode. This will be set only on show add.</span>
-                                    </label>
-                                </div>
                             </div>
                             <div class="testNotification" id="testTrakt-result">Click below to test.</div>
                             <input type="button" class="btn" value="Test Trakt" id="testTrakt" />
