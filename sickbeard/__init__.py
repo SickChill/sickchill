@@ -344,7 +344,7 @@ FREEMOBILE_NOTIFY_ONSNATCH = False
 FREEMOBILE_NOTIFY_ONDOWNLOAD = False
 FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = False
 FREEMOBILE_ID = ''
-FREEMOBILE_APIKEY= ''
+FREEMOBILE_APIKEY = ''
 
 USE_PROWL = False
 PROWL_NOTIFY_ONSNATCH = False
@@ -418,18 +418,18 @@ TRAKT_PASSWORD = None
 TRAKT_REMOVE_WATCHLIST = False
 TRAKT_REMOVE_SERIESLIST = False
 TRAKT_SYNC_WATCHLIST = False
-TRAKT_METHOD_ADD = 0
+TRAKT_METHOD_ADD = None
 TRAKT_START_PAUSED = False
 TRAKT_USE_RECOMMENDED = False
 TRAKT_SYNC = False
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_DISABLE_SSL_VERIFY = False
-TRAKT_TIMEOUT = 60
-TRAKT_BLACKLIST_NAME = ''
-TRAKT_USE_ROLLING_DOWNLOAD = 0
-TRAKT_ROLLING_NUM_EP = 0
-TRAKT_ROLLING_ADD_PAUSED = 1
-TRAKT_ROLLING_FREQUENCY = 15
+TRAKT_TIMEOUT = None
+TRAKT_BLACKLIST_NAME = None
+TRAKT_USE_ROLLING_DOWNLOAD = None
+TRAKT_ROLLING_NUM_EP = None
+TRAKT_ROLLING_ADD_PAUSED = None
+TRAKT_ROLLING_FREQUENCY = None
 
 USE_PYTIVO = False
 PYTIVO_NOTIFY_ONSNATCH = False
@@ -707,7 +707,7 @@ def initialize(consoleLogging=True):
 
         try:
             WEB_PORT = check_setting_int(CFG, 'General', 'web_port', 8081)
-        except:
+        except Exception:
             WEB_PORT = 8081
 
         if WEB_PORT < 21 or WEB_PORT > 65535:
@@ -1014,7 +1014,9 @@ def initialize(consoleLogging=True):
         TRAKT_USE_ROLLING_DOWNLOAD = bool(check_setting_int(CFG, 'Trakt', 'trakt_use_rolling_download', 0))
         TRAKT_ROLLING_NUM_EP = check_setting_int(CFG, 'Trakt', 'trakt_rolling_num_ep', 0)
         TRAKT_ROLLING_ADD_PAUSED = check_setting_int(CFG, 'Trakt', 'trakt_rolling_add_paused', 1)
-        TRAKT_ROLLING_FREQUENCY = check_setting_int(CFG, 'Trakt', 'trakt_rolling_frequency', 15)
+        TRAKT_ROLLING_FREQUENCY = check_setting_int(CFG, 'Trakt', 'trakt_rolling_frequency', 8)
+        if TRAKT_ROLLING_FREQUENCY < 4:
+            TRAKT_ROLLING_FREQUENCY = 4
 
         CheckSection(CFG, 'pyTivo')
         USE_PYTIVO = bool(check_setting_int(CFG, 'pyTivo', 'use_pytivo', 0))
@@ -1084,7 +1086,7 @@ def initialize(consoleLogging=True):
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
 
         CALENDAR_UNPROTECTED = bool(check_setting_int(CFG, 'General', 'calendar_unprotected', 0))
-        
+
         NO_RESTART = bool(check_setting_int(CFG, 'General', 'no_restart', 0))
 
         EXTRA_SCRIPTS = [x.strip() for x in check_setting_str(CFG, 'General', 'extra_scripts', '').split('|') if
@@ -1337,7 +1339,7 @@ def initialize(consoleLogging=True):
                                                     silent=not USE_TRAKT)
 
         traktRollingScheduler = scheduler.Scheduler(traktChecker.TraktRolling(),
-                                                    cycleTime=datetime.timedelta(minutes=TRAKT_ROLLING_FREQUENCY),
+                                                    cycleTime=datetime.timedelta(hours=TRAKT_ROLLING_FREQUENCY),
                                                     threadName="TRAKTROLLING",
                                                     silent=not TRAKT_USE_ROLLING_DOWNLOAD)
 
@@ -1363,45 +1365,77 @@ def start():
     with INIT_LOCK:
         if __INITIALIZED__:
             # start sysetm events queue
+            events.enable = True
             events.start()
 
             # start the daily search scheduler
+            dailySearchScheduler.enable = True
             dailySearchScheduler.start()
 
             # start the backlog scheduler
+            backlogSearchScheduler.enable = True
             backlogSearchScheduler.start()
 
             # start the show updater
+            showUpdateScheduler.enable = True
             showUpdateScheduler.start()
 
             # start the version checker
+            versionCheckScheduler.enable = True
             versionCheckScheduler.start()
 
             # start the queue checker
+            showQueueScheduler.enable = True
             showQueueScheduler.start()
 
             # start the search queue checker
+            searchQueueScheduler.enable = True
             searchQueueScheduler.start()
 
             # start the queue checker
             if DOWNLOAD_PROPERS:
-                properFinderScheduler.start()
+                properFinderScheduler.silent = False
+                properFinderScheduler.enable = True
+            else:
+                properFinderScheduler.enable = False
+                properFinderScheduler.silent = True
+            properFinderScheduler.start()
 
             # start the proper finder
             if PROCESS_AUTOMATICALLY:
-                autoPostProcesserScheduler.start()
+                autoPostProcesserScheduler.silent = False
+                autoPostProcesserScheduler.enable = True
+            else:
+                autoPostProcesserScheduler.enable = False
+                autoPostProcesserScheduler.silent = True
+            autoPostProcesserScheduler.start()
 
             # start the subtitles finder
             if USE_SUBTITLES:
-                subtitlesFinderScheduler.start()
+                subtitlesFinderScheduler.silent = False
+                subtitlesFinderScheduler.enable = True
+            else:
+                subtitlesFinderScheduler.enable = False
+                subtitlesFinderScheduler.silent = True
+            subtitlesFinderScheduler.start()
 
             # start the trakt checker
             if USE_TRAKT:
-                traktCheckerScheduler.start()
+                traktCheckerScheduler.silent = False
+                traktCheckerScheduler.enable = True
+            else:
+                traktCheckerScheduler.enable = False
+                traktCheckerScheduler.silent = True
+            traktCheckerScheduler.start()
 
             # start the trakt checker
             if TRAKT_USE_ROLLING_DOWNLOAD and USE_TRAKT:
-                traktRollingScheduler.start()
+                traktRollingScheduler.silent = False
+                traktRollingScheduler.enable = True
+            else:
+                traktRollingScheduler.enable = False
+                traktRollingScheduler.silent = True
+            traktRollingScheduler.start()
 
             started = True
 
@@ -1423,97 +1457,92 @@ def halt():
             logger.log(u"Waiting for the EVENTS thread to exit")
             try:
                 events.join(10)
-            except:
+            except Exception:
                 pass
 
             dailySearchScheduler.stop.set()
             logger.log(u"Waiting for the DAILYSEARCH thread to exit")
             try:
                 dailySearchScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
             backlogSearchScheduler.stop.set()
             logger.log(u"Waiting for the BACKLOG thread to exit")
             try:
                 backlogSearchScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
             showUpdateScheduler.stop.set()
             logger.log(u"Waiting for the SHOWUPDATER thread to exit")
             try:
                 showUpdateScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
             versionCheckScheduler.stop.set()
             logger.log(u"Waiting for the VERSIONCHECKER thread to exit")
             try:
                 versionCheckScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
             showQueueScheduler.stop.set()
             logger.log(u"Waiting for the SHOWQUEUE thread to exit")
             try:
                 showQueueScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
             searchQueueScheduler.stop.set()
             logger.log(u"Waiting for the SEARCHQUEUE thread to exit")
             try:
                 searchQueueScheduler.join(10)
-            except:
+            except Exception:
                 pass
 
-            if PROCESS_AUTOMATICALLY:
-                autoPostProcesserScheduler.stop.set()
-                logger.log(u"Waiting for the POSTPROCESSER thread to exit")
-                try:
-                    autoPostProcesserScheduler.join(10)
-                except:
-                    pass
+            autoPostProcesserScheduler.stop.set()
+            logger.log(u"Waiting for the POSTPROCESSER thread to exit")
+            try:
+                autoPostProcesserScheduler.join(10)
+            except Exception:
+                pass
 
-            if USE_TRAKT:
-                traktCheckerScheduler.stop.set()
-                logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
-                try:
-                    traktCheckerScheduler.join(10)
-                except:
-                    pass
+            traktCheckerScheduler.stop.set()
+            logger.log(u"Waiting for the TRAKTCHECKER thread to exit")
+            try:
+                traktCheckerScheduler.join(10)
+            except Exception:
+                pass
 
-            if TRAKT_USE_ROLLING_DOWNLOAD and USE_TRAKT:
-                traktRollingScheduler.stop.set()
-                logger.log(u"Waiting for the TRAKTROLLING thread to exit")
-                try:
-                    traktRollingScheduler.join(10)
-                except:
-                    pass
+            traktRollingScheduler.stop.set()
+            logger.log(u"Waiting for the TRAKTROLLING thread to exit")
+            try:
+                traktRollingScheduler.join(10)
+            except Exception:
+                pass
 
-            if DOWNLOAD_PROPERS:
-                properFinderScheduler.stop.set()
-                logger.log(u"Waiting for the PROPERFINDER thread to exit")
-                try:
-                    properFinderScheduler.join(10)
-                except:
-                    pass
+            properFinderScheduler.stop.set()
+            logger.log(u"Waiting for the PROPERFINDER thread to exit")
+            try:
+                properFinderScheduler.join(10)
+            except Exception:
+                pass
 
-            if USE_SUBTITLES:
-                subtitlesFinderScheduler.stop.set()
-                logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
-                try:
-                    subtitlesFinderScheduler.join(10)
-                except:
-                    pass
+            subtitlesFinderScheduler.stop.set()
+            logger.log(u"Waiting for the SUBTITLESFINDER thread to exit")
+            try:
+                subtitlesFinderScheduler.join(10)
+            except Exception:
+                pass
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
                 logger.log(u"Waiting for the ANIDB CONNECTION thread to exit")
                 try:
                     ADBA_CONNECTION.join(10)
-                except:
+                except Exception:
                     pass
 
             __INITIALIZED__ = False
@@ -2048,10 +2077,10 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
 
     try:
         webbrowser.open(browserURL, 2, 1)
-    except:
+    except Exception:
         try:
             webbrowser.open(browserURL, 1, 1)
-        except:
+        except Exception:
             logger.log(u"Unable to launch a browser", logger.ERROR)
 
 

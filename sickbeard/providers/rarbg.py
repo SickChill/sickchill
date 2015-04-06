@@ -269,7 +269,6 @@ class RarbgProvider(generic.TorrentProvider):
                             torrent_download = item['d']
                             if torrent_title and torrent_download:
                                 items[mode].append((torrent_title, torrent_download))
-                                logger.log(u'{name} found valid result: {title}'.format(name=self.name, title=torrent_title), logger.DEBUG)
                             else:
                                 logger.log(u'{name} skipping invalid result'.format(name=self.name), logger.DEBUG)
                         except Exception:
