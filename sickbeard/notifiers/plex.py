@@ -52,7 +52,7 @@ class PLEXNotifier(KODINotifier):
             logger.log("Notification for Plex not enabled, skipping this notification", logger.DEBUG)
             return False
 
-        return self._notify_pmc(message=message, title=title, host=host, username=username, password=password,
+        return self._notify_kodi(message=message, title=title, host=host, username=username, password=password,
                                  force=True)
 
     def notify_snatch(self, ep_name):
