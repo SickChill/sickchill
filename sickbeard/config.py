@@ -193,7 +193,7 @@ def change_SHOWUPDATE_HOUR(freq):
     elif sickbeard.SHOWUPDATE_HOUR < 0:
         sickbeard.SHOWUPDATE_HOUR = 0
 
-    sickbeard.showUpdateScheduler.cycleTime = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+    sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
 
 def change_VERSION_NOTIFY(version_notify):
     oldSetting = sickbeard.VERSION_NOTIFY
