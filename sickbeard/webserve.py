@@ -5008,7 +5008,8 @@ class ErrorLogs(WebRoot):
                           'ERROR': u'Error',
                           'TORNADO': u'Tornado',
                           'Thread': u'Thread',
-                          'MAIN': u'Main'
+                          'MAIN': u'Main',
+                          'TRAKTROLLING': u'Trakt Rolling'
                           }
 
         if logFilter not in logNameFilters:
