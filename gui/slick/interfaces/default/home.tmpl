@@ -105,7 +105,12 @@
 			5: { sorter: 'eps' }
         },
 		widgetOptions : {
-            filter_columnFilters: false,
+            #if $sickbeard.FILTER_ROW:
+                filter_columnFilters: true,
+                filter_hideFilters : true,
+            #else 
+                filter_columnFilters: false,
+            #end if
 			filter_reset: '.resetshows',
 			columnSelector_mediaquery: false,
 		},
@@ -132,7 +137,12 @@
 			5: { sorter: 'eps' }
         },
 		widgetOptions : {
-            filter_columnFilters: false,
+            #if $sickbeard.FILTER_ROW:
+                filter_columnFilters: true,
+                filter_hideFilters : true,
+            #else 
+                filter_columnFilters: false,
+            #end if
 			filter_reset: '.resetanime',
 			columnSelector_mediaquery: false,
 		},
