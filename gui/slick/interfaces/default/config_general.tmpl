@@ -296,6 +296,15 @@
 							</label>
 						</div>
 						<div class="field-pair">
+							<label for="filter_row">
+								<span class="component-title">Filter Row</span>
+								<span class="component-desc">
+									<input type="checkbox" name="filter_row" id="display_filesize" #if $sickbeard.FILTER_ROW == True then 'checked="checked"' else ''#/>
+									<p>Add a filter row to the show display on the home page</p>
+								</span>
+							</label>
+						</div>                        
+						<div class="field-pair">
 							<label for="display_filesize">
 								<span class="component-title">Display Filesizes</span>
 								<span class="component-desc">
