@@ -327,7 +327,8 @@ class OldPirateBayProvider(generic.TorrentProvider):
 
                 for item in self._doSearch(searchString[0]):
                     title, url = self._get_title_and_url(item)
-                    results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
+                    if re.search('(PROPER|REPACK)', title, re.I):
+                        results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 
