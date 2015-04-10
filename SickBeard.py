@@ -367,7 +367,7 @@ class SickRage(object):
 
         # Start an update if we're supposed to
         if self.forceUpdate or sickbeard.UPDATE_SHOWS_ON_START:
-            sickbeard.showUpdateScheduler.action.run(force=True)  # @UndefinedVariable
+            sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.noLaunch or self.runAsDaemon):

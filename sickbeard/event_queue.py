@@ -1,5 +1,9 @@
 import threading
+import traceback
 from Queue import Queue, Empty
+from sickbeard import logger
+from sickbeard.exceptions import ex
+
 
 class Event:
     def __init__(self, type):
@@ -8,6 +12,7 @@ class Event:
     @property
     def type(self):
         return self._type
+
 
 class Events(threading.Thread):
     def __init__(self, callback):
@@ -22,21 +27,25 @@ class Events(threading.Thread):
         self.queue.put(type)
 
     def run(self):
-        while (not self.stop.is_set()):
-            try:
-                # get event type
-                type = self.queue.get(True, 1)
+        try:
+            while (not self.stop.is_set()):
+                try:
+                    # get event type
+                    type = self.queue.get(True, 1)
 
-                # perform callback if we got a event type
-                self.callback(type)
+                    # perform callback if we got a event type
+                    self.callback(type)
 
-                # event completed
-                self.queue.task_done()
-            except Empty:
-                type = None
+                    # event completed
+                    self.queue.task_done()
+                except Empty:
+                    type = None
 
-        # exiting thread
-        self.stop.clear()
+            # exiting thread
+            self.stop.clear()
+        except Exception, e:
+            logger.log(u"Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
+            logger.log(repr(traceback.format_exc()), logger.DEBUG)
 
     # System Events
     class SystemEvent(Event):

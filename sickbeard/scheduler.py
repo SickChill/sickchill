@@ -64,7 +64,6 @@ class Scheduler(threading.Thread):
 
     def forceRun(self):
         if not self.action.amActive:
-            self.lastRun = datetime.datetime.fromordinal(1)
             self.force = True
             return True
         return False
@@ -75,8 +74,11 @@ class Scheduler(threading.Thread):
                 if self.enable:
                     current_time = datetime.datetime.now()
                     should_run = False
+                    #Is self.force enable
+                    if self.force:
+                        should_run = True
                     # check if interval has passed
-                    if current_time - self.lastRun >= self.cycleTime:
+                    elif current_time - self.lastRun >= self.cycleTime:
                         # check if wanting to start around certain time taking interval into account
                         if self.start_time:
                             hour_diff = current_time.time().hour - self.start_time.hour
