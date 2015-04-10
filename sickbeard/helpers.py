@@ -1308,7 +1308,18 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
         logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return
 
-    return resp.content if not json else resp.json()
+    if not json:
+        try:
+            resp.content
+        except Exception as e:
+            logger.log(u"Unable to return content for " + url + ": " + traceback.format_exc(), logger.WARNING)
+            return
+    else:
+        try:
+            resp.json()
+        except Exception as e:
+            logger.log(u"Unable to decode json data for  " + url + ": " + traceback.format_exc(), logger.WARNING)
+            return {}
 
 def download_file(url, filename, session=None):
     # create session
