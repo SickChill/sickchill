@@ -211,7 +211,7 @@ def change_VERSION_NOTIFY(version_notify):
         sickbeard.NEWEST_VERSION_STRING = None
 
     if oldSetting == False and version_notify == True:
-        sickbeard.versionCheckScheduler.action.run()  # @UndefinedVariable
+        sickbeard.versionCheckScheduler.forceRun()
 
 def change_DOWNLOAD_PROPERS(download_propers):
     download_propers = checkbox_to_value(download_propers)

@@ -1367,7 +1367,6 @@ def start():
     with INIT_LOCK:
         if __INITIALIZED__:
             # start sysetm events queue
-            events.enable = True
             events.start()
 
             # start the daily search scheduler
