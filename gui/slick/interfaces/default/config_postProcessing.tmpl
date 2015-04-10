@@ -1,6 +1,5 @@
 #import os.path
 #import sickbeard
-#import sys
 #from sickbeard.common import *
 #from sickbeard import config
 #from sickbeard import metadata
@@ -72,12 +71,7 @@
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
-                                        #if sys.platform == 'win32'
-                                            #set $process_action = ('copy', 'move')
-                                        #else
-                                            #set $process_action = ('copy', 'move', 'hardlink', 'symlink')                                        
-                                        #end if
-                                        #for $curAction in $process_action:
+                                        #for $curAction in ('copy', 'move', 'hardlink', 'symlink'):
                                           #if $sickbeard.PROCESS_METHOD == $curAction:
                                             #set $process_method = "selected=\"selected\""
                                           #else
