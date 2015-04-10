@@ -93,7 +93,11 @@ class EZTVProvider(generic.TorrentProvider):
                 searchURL = self.urls['show'] % (search_string['imdb_id'])
                 logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-                parsedJSON = self.getURL(searchURL, json=True)
+                try:
+                    parsedJSON = self.getURL(searchURL, json=True)
+                except ValueError as e:
+                    parsedJSON = None
+
                 if not parsedJSON:
                     logger.log(u"" + self.name + " could not retrieve page URL:" + searchURL, logger.DEBUG)
                     return results
