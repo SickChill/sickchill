@@ -53,7 +53,39 @@
 	};
 
 	\$('.imdbstars').generateStars();
-	
+
+    #set $curSeason = -1
+
+	#for $epResult in $sqlResults:
+		#if int($epResult["season"]) != $curSeason:
+			#set $curSeason = int($epResult["season"])
+    \$("#showSeasonTable$epResult["season"]").tablesorter({
+        widgets: ['columnSelector'],
+		widgetOptions : {
+            columnSelector_saveColumns: true,
+            columnSelector_layout : '<br/><label><input type="checkbox">{name}</label>',
+			columnSelector_mediaquery: false,
+            columnSelector_cssChecked : 'checked'
+		},
+    });	
+        #end if
+    #end for
+    
+    
+	\$('#popover')
+	    .popover({
+	      placement: 'bottom',
+	      html: true, // required if content has HTML
+	      content: '<div id="popover-target"></div>'
+	    })
+	    // bootstrap popover event triggered when the popover opens
+	    .on('shown.bs.popover', function () {
+        #for $epResult in $sqlResults:
+            #if int($epResult["season"]) != $curSeason:        
+            \$.tablesorter.columnSelector.attachTo( \$('#showSeasonTable$epResult["season"]'), '#popover-target');
+            #end if
+        #end for
+        });      
 });
 //-->
 </script>
@@ -295,28 +327,26 @@
 			<label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>$epCounts[$Overview.SNATCHED]</b></span></label>
 		</div>
 		
+        <button id="popover" type="button" class="btn btn-xs">Select Columns</button>
 		<div class="pull-right" >
 			<button class="btn btn-xs seriesCheck">Select Filtered Episodes</button> 
 			<button class="btn btn-xs clearAll">Clear All</button>
 		</div>
 	</div>
 <br />	
-
-<table class="sickbeardTable display_show" cellspacing="0" border="0" cellpadding="0">
+<br />
+<br />
 
 #set $curSeason = -1
 #set $odd = 0
-
 	#for $epResult in $sqlResults:
 		#set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
 		#if not $epStr in $epCats:
 			#continue
 		#end if
-
 		#if not $sickbeard.DISPLAY_SHOW_SPECIALS and int($epResult["season"]) == 0:
 			#continue
 		#end if	
-
 		#set $scene = False
 		#set $scene_anime = False
 		#if not $show.air_by_date and not $show.is_sports and not $show.is_anime and $show.is_scene:
@@ -324,13 +354,10 @@
 		#elif not $show.air_by_date and not $show.is_sports and $show.is_anime and $show.is_scene:
 			#set $scene_anime = True
 		#end if
-
 		#set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (0, 0, 0)
-
 		#if (epResult["season"], epResult["episode"]) in $xem_numbering:
 			#set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
 		#end if
-
 		#if epResult["absolute_number"] in $xem_absolute_numbering:
 			#set $dfltAbsolute = $xem_absolute_numbering[epResult["absolute_number"]]
 		#end if
@@ -351,79 +378,71 @@
 			#set $dfltEpNumbering = True
 		#end if
 
+        #set $epLoc = $epResult["location"]       
+
 		#if int($epResult["season"]) != $curSeason:
-		    <tr>
-				<th class="row-seasonheader" colspan="13" style="width: auto;"><h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3></th>
-			</tr>
-			
-			<tr id="season-$epResult["season"]-cols" class="seasoncols">
-				<th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
-				<th class="col-metadata">NFO</th>
-				<th class="col-metadata">TBN</th>
-				<th class="col-ep">Episode</th>
+            #if $curSeason != -1:
+    </tbody>
+</table>
+            #end if            
+			#set $curSeason = int($epResult["season"])
+<br/>
+<span>
+    <h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+</span>
+<table id="showSeasonTable$epResult["season"]" class="sickbeardTable display_show" cellspacing="0" border="0" cellpadding="0">
+    <thead>
+        <tr id="season-$epResult["season"]-cols" class="seasoncols">
+				<th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
+				<th data-sorter="false" class="col-metadata">NFO</th>
+				<th data-sorter="false" class="col-metadata">TBN</th>
+				<th data-sorter="false" class="col-ep">Episode</th>
 			#if $show.is_anime:
-				<th class="col-ep">Absolute</th>
+				<th data-sorter="false" class="col-ep">Absolute</th>
 			#end if
 			#if $scene:
-				<th class="col-ep">Scene</th>
+				<th data-sorter="false" class="col-ep">Scene</th>
 			#end if
 			#if $scene_anime:
-				<th class="col-ep">Scene Absolute</th>
+				<th data-sorter="false" class="col-ep">Scene Absolute</th>
 			#end if
-				<th class="col-name"
-			#if ($sickbeard.DISPLAY_FILESIZE == True):
-			style="min-width: 190px"
-			#end if
-			>Name</th>
-			#if ($sickbeard.DISPLAY_FILESIZE == True):
-				<th class="col-ep">Size</th>
-			#end if
-				<th class="col-airdate">Airdate</th>
-			#if $sickbeard.DOWNLOAD_URL
-				<th class="col-ep">Download</th>
-			#end if
+				<th data-sorter="false" class="col-name">Name</th>
+				<th data-sorter="false" class="col-ep">Size</th>
+				<th data-sorter="false" class="col-airdate">Airdate</th>
+				<th data-sorter="false" class="col-ep">Download</th>
 			#if $sickbeard.USE_SUBTITLES and $show.subtitles:
-				<th class="col-subtitles">Subtitles</th>
+				<th data-sorter="false" class="col-subtitles">Subtitles</th>
 			#end if
-				<th class="col-status">Status</th>
-				<th class="col-search">Search</th>
-			</tr>
-			#set $curSeason = int($epResult["season"])
-		#end if    
-
-		#set $epLoc = $epResult["location"]
-		
+				<th data-sorter="false" class="col-status">Status</th>
+				<th data-sorter="false" class="col-search">Search</th>        
+        </tr>
+    </thead>  
+    <tbody>	            
+		#end if     
 		<tr class="$Overview.overviewStrings[$epCats[$epStr]] season-$curSeason seasonstyle">
-		
-		<td class="col-checkbox">
-		
-		#if int($epResult["status"]) != $UNAIRED
-			<input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
-		#end if
-		</td>
-		
-		<td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
-		
-		<td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
-		
-		<td align="center">
-			#if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
-				#set $epLoc = $epLoc[len($show._location)+1:]
-			#elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
-				#set $epLoc = $epLoc
-			#end if
-		
-			#if $epLoc != "" and $epLoc != None:
-				<span title="$epLoc" class="addQTip">$epResult["episode"]</span>
-			#else
-				$epResult["episode"]
-			#end if
-		</td>
-		
+            <td class="col-checkbox">	
+                #if int($epResult["status"]) != $UNAIRED
+                    <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
+                #end if
+            </td>	
+            <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>	
+            <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
+            <td align="center">
+                #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
+                    #set $epLoc = $epLoc[len($show._location)+1:]
+                #elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
+                    #set $epLoc = $epLoc
+                #end if
+            
+                #if $epLoc != "" and $epLoc != None:
+                    <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
+                #else
+                    $epResult["episode"]
+                #end if
+            </td>
 		#if $show.is_anime:
 			<td align="center">$epResult["absolute_number"]</td>
 		#end if
-
 		#if $scene:
 			<td align="center">
 				<input type="text" placeholder="<%=str(dfltSeas) + 'x' + str(dfltEpis)%>" size="6" maxlength="8"
@@ -451,7 +470,6 @@
 						style="padding: 0; text-align: center; max-width: 60px;" />
 			</td>
 		#end if
-
 		<td class="col-name">
 			#if $epResult["description"] != "" and $epResult["description"] != None:
 				<img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid<%="_" + str(epResult["season"]) + "_" + str(epResult["episode"])%>" />
@@ -459,22 +477,19 @@
 				<img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
 			#end if
 			$epResult["name"]
-		</td>
-		
-		#if ($sickbeard.DISPLAY_FILESIZE == True):
+		</td>	
 		<td class="col-ep">
 			#if $epResult["file_size"]:
 				#set $file_size = $sickbeard.helpers.pretty_filesize($epResult["file_size"])
 				$file_size
 			#end if
 		</td>
-		#end if
 		<td class="col-airdate">
 			<span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
 		</td>
-
-		#if $sickbeard.DOWNLOAD_URL and $epResult['location']
+		
 		<td>
+            #if $epResult['location']
 			#set $filename = $epResult['location']
 		  	#for $rootDir in $sickbeard.ROOT_DIRS.split('|')
 		   		#if $rootDir.startswith('/')
@@ -483,11 +498,8 @@
 		   	#end for
 			#set $filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
 			<center><a href="$filename">Download</a></center>
+            #end if		
 		</td>
-		#elif $sickbeard.DOWNLOAD_URL
-			<td></td>
-		#end if
-		
 		#if $sickbeard.USE_SUBTITLES and $show.subtitles:
 			<td class="col-subtitles" align="center">
         #if $epResult["subtitles"]:
@@ -501,33 +513,29 @@
         #end if
 			</td>
 		#end if
-		
 		#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($epResult["status"]))
 			#if $curQuality != Quality.NONE:   
 				<td class="col-status">$statusStrings[$curStatus] <span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("RawHD TV", "RawHD").replace("HD TV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
 			#else:    
 				<td class="col-status">$statusStrings[$curStatus]</td>
 			#end if
-		
 		<td class="col-search">
 			#if int($epResult["season"]) != 0:
-			#if ( int($epResult["status"]) in $Quality.SNATCHED or int($epResult["status"]) in $Quality.DOWNLOADED ) and $sickbeard.USE_FAILED_DOWNLOADS:
-				<a class="epRetry" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
-			#else:
-				<a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                #if ( int($epResult["status"]) in $Quality.SNATCHED or int($epResult["status"]) in $Quality.DOWNLOADED ) and $sickbeard.USE_FAILED_DOWNLOADS:
+                    <a class="epRetry" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
+                #else:
+                    <a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                #end if
 			#end if
-			#end if
-			
 			#if $sickbeard.USE_SUBTITLES and $show.subtitles and len(set(str($epResult["subtitles"]).split(',')).intersection(set($subtitles.wantedLanguages()))) < len($subtitles.wantedLanguages()) and $epResult["location"]
 				<a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
 			#end if
 		</td>
-	</tr>
-
-	#end for
-	
+	</tr>	
+    #end for
+    </tbody>
 </table>
-
+    
 <!--Begin - Bootstrap Modal-->
 
 <div id="manualSearchModalFailed" class="modal fade">

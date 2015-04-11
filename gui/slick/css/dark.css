@@ -1200,9 +1200,11 @@ span.snatched b {
 	text-align: center;
 	border: none;
 	empty-cells: show;
-	color: #000;
 }
 
+.sickbeardTable tr{
+	color: #000;
+}
 .sickbeardTable th{
 	color: #fff;
 	text-align: center;
@@ -2747,7 +2749,6 @@ tablesorter.css
 	width: 100%;
 	margin-right: auto;
 	margin-left: auto;
-	color: #fff;
 	text-align: left;
 	background-color: #333;
 	border-spacing: 0;
@@ -2768,12 +2769,12 @@ tablesorter.css
 }
 
 .tablesorter th {
-	color: #fff;
 	text-align: center;
-	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+    color: #fff;
+/*	text-shadow: -1px -1px 0 rgba(0,0,0,0.3); */
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
 	background-color: #15528F;
 	border-collapse: collapse;
-	font-weight: normal;
 }
 
 .tablesorter .tablesorter-header {
@@ -2869,7 +2870,6 @@ thead.tablesorter-stickyHeader {
 }
 
 .tablesorter tfoot tr {
-	color: #fff;
 	text-align: center;
 	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
 	background-color: #333;
@@ -2877,7 +2877,6 @@ thead.tablesorter-stickyHeader {
 }
 
 .tablesorter tfoot a {
-	color:#fff;
 	text-decoration: none;
 }
 
