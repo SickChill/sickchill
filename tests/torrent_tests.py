@@ -72,7 +72,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
 if __name__ == "__main__":
     print "=================="
-    print "STARTING - XEM Scene Numbering TESTS"
+    print "STARTING - Torrent Basic TESTS"
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
