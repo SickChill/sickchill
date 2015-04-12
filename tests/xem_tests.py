@@ -20,12 +20,12 @@
 from __future__ import with_statement
 
 import unittest
-import sys, os.path
 import datetime
 import re
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+import sys, os.path
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import test_lib as test
 import sickbeard

@@ -1,10 +1,9 @@
 import unittest
-import sys
-import os.path
+import sys, os.path
 import test_lib as test
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard.rssfeeds import RSSFeeds
 

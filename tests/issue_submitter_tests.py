@@ -23,8 +23,8 @@ import unittest
 import sys, os.path
 from configobj import ConfigObj
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
 import test_lib as test
