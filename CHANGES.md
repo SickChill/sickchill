@@ -1,3 +1,20 @@
+### 4.0.16 (2015-04-12)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.15...v4.0.16)
+
+* 	New Feature: Added option to add a filter row on main show page (enabled in general settings - interface)
+* 	New Feature: added scheduling status page
+* 	Fixed EZTV rss blank result
+* 	Fixed RARBG tokend
+* 	Fixed Home page filter: change to allow to use parsed data for active(yes/no)
+* 	Fixed OldTPB: Check if the returned results ar proper|repack
+* 	Don't display paused show in backlogOverview
+* 	Trakt Sync by Episode not by Show
+* 	Added gzip setting in config.ini
+* 	Added TRAKTROLLING to filter in viewlog
+* 	Redone Scheduler
+* 	Replace fuzzy images on Add Show ( Add Trending) 
+
 ### 4.0.15 (2015-04-05)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.14...v4.0.15)
