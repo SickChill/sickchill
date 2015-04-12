@@ -28,8 +28,9 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class AllTests(unittest.TestCase):
+    blacklist = [tests_dir + 'all_tests.py',tests_dir + 'issue_submitter_tests.py']
     def setUp(self):
-        self.test_file_strings = [ x for x in glob.glob(tests_dir + '*_tests.py') if not __file__ in x ]
+        self.test_file_strings = [ x for x in glob.glob(tests_dir + '*_tests.py') if not x in self.blacklist ]
         self.module_strings = [file_string[len(tests_dir):len(file_string) - 3] for file_string in self.test_file_strings]
         self.suites = [unittest.defaultTestLoader.loadTestsFromName(file_string) for file_string in self.module_strings]
         self.testSuite = unittest.TestSuite(self.suites)
