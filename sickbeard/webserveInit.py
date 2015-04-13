@@ -69,7 +69,7 @@ class SRWebServer(threading.Thread):
         self.app = Application([],
                                  debug=True,
                                  autoreload=False,
-                                 gzip=True,
+                                 gzip=sickbeard.WEB_USE_GZIP,
                                  xheaders=sickbeard.HANDLE_REVERSE_PROXY,
                                  cookie_secret=sickbeard.WEB_COOKIE_SECRET,
                                  login_url='%s/login/' % self.options['web_root'],

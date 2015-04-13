@@ -1440,9 +1440,20 @@
                                     <span class="component-title">Sync libraries:</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
-                                        <p>sync your SickRage show library with your trakt show library.</p>
+                                        <p>Sync your SickRage show Library with your Trakt Show Collection.</p>
                                     </span>
                                 </label>
+                            </div>
+                            <div id="content_trakt_sync">
+                                <div class="field-pair">
+                                    <label for="trakt_sync_remove">
+                                        <span class="component-title">Remove Episodes From Collection:</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" #if $sickbeard.TRAKT_SYNC_REMOVE then "checked=\"checked\"" else ""# />
+                                            <p>Remove an Episode from your Trakt Collection if it is not in your SickRage Library.</p>
+                                        </span>
+                                    </label>
+                                 </div>                            
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_sync_watchlist">
@@ -1504,7 +1515,7 @@
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Name(slug) of List on Trakt for blacklisting show on tranding page</span>
+                                    <span class="component-desc">Name(slug) of List on Trakt for blacklisting show on 'Add Trending Show' page</span>
                                 </label>
                             </div>
                             <div class="field-pair">
@@ -1534,7 +1545,7 @@
                                         <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="$sickbeard.TRAKT_ROLLING_FREQUENCY" class="form-control input-sm input250" />
                                     </label>
                                     <p>
-                                        <span class="component-desc">Minutes between check.</span>
+                                        <span class="component-desc">Hours between check. (Cannot be lower than 4 hours)</span>
                                     </p>
                                 </div>
               	                <div class="field-pair">

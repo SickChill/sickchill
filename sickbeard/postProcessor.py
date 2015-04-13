@@ -931,7 +931,7 @@ class PostProcessor(object):
 
         # update the ep info before we rename so the quality & release name go into the name properly
         sql_l = []
-        trakt_data = [] 
+
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
 
@@ -962,15 +962,6 @@ class PostProcessor(object):
                     cur_ep.release_group = ""
 
                 sql_l.append(cur_ep.get_sql())
-
-                trakt_data.append((cur_ep.season, cur_ep.episode))
-
-        data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
-
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
-            logger.log(u"Remove episodes, showid: indexerid " + str(show.indexerid) + ", Title " + str(show.name) + " to Traktv Watchlist", logger.DEBUG)
-            if data:
-                notifiers.trakt_notifier.update_watchlist(show, data_episode=data, update="remove")
 
         # Just want to keep this consistent for failed handling right now
         releaseName = show_name_helpers.determineReleaseName(self.folder_path, self.nzb_name)

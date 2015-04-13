@@ -102,10 +102,18 @@
 			1: { columnSelector: false },
 			2: { sorter: 'loadingNames' },
 			4: { sorter: 'quality' },
-			5: { sorter: 'eps' }
+			5: { sorter: 'eps' },
+			#if $sickbeard.FILTER_ROW:
+				6: { filter : 'parsed' }
+				#end if
         },
 		widgetOptions : {
-            filter_columnFilters: false,
+            #if $sickbeard.FILTER_ROW:
+                filter_columnFilters: true,
+                filter_hideFilters : true,
+            #else 
+                filter_columnFilters: false,
+            #end if
 			filter_reset: '.resetshows',
 			columnSelector_mediaquery: false,
 		},
@@ -129,10 +137,18 @@
 			1: { columnSelector: false },
 			2: { sorter: 'loadingNames' },
 			4: { sorter: 'quality' },
-			5: { sorter: 'eps' }
+			5: { sorter: 'eps' },
+			#if $sickbeard.FILTER_ROW:
+			6: { filter : 'parsed' }
+			#end if
         },
 		widgetOptions : {
-            filter_columnFilters: false,
+            #if $sickbeard.FILTER_ROW:
+                filter_columnFilters: true,
+                filter_hideFilters : true,
+            #else 
+                filter_columnFilters: false,
+            #end if
 			filter_reset: '.resetanime',
 			columnSelector_mediaquery: false,
 		},
@@ -687,9 +703,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 	
         <td align="center">
 #if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
-			<img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
+			<img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
 #else
-			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Y\"" else "no16.png\" alt=\"N\""# width="16" height="16" />
+			<img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
 #end if
 		</td>
 		

@@ -184,7 +184,7 @@
 							#end if	
 							#if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
 							and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \
-							or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):                            
+							or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):
 								<li><a href="$sbRoot/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
 							#end if
 							#if $sickbeard.USE_FAILED_DOWNLOADS:
@@ -226,6 +226,7 @@
                                 <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
                                 <li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
                                 <li><a href="$sbRoot/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                <li><a href="$sbRoot/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
 							</ul>
 						</li>
 			            <li id="donate"><a href="http://sr-upgrade.appspot.com" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>

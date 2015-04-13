@@ -37,7 +37,7 @@ from trakt.exceptions import traktException
 
 def setEpisodeToWanted(show, s, e):
     """
-    Sets an episode to wanted, only is it is currently skipped
+    Sets an episode to wanted, only if it is currently skipped
     """
     epObj = show.getEpisode(int(s), int(e))
     if epObj:
@@ -62,16 +62,14 @@ def setEpisodeToWanted(show, s, e):
 class TraktChecker():
 
     def __init__(self):
-        self.todoWanted = []
         self.trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         self.todoBacklog = []
-        self.ShowWatchlist = []
-        self.EpisodeWatchlist = []
+        self.todoWanted = []        
+        self.ShowWatchlist = {}
+        self.EpisodeWatchlist = {}
+        self.Collectionlist = {}
 
     def run(self, force=False):
-        if not sickbeard.USE_TRAKT:
-            logger.log(u"Trakt integration disabled, quit", logger.DEBUG)
-            return
 
         # add shows from trakt.tv watchlist
         if sickbeard.TRAKT_SYNC_WATCHLIST:
@@ -87,8 +85,7 @@ class TraktChecker():
 
             try:
                 # sync trakt.tv library with sickrage library
-                if sickbeard.TRAKT_SYNC:
-                    self.syncLibrary()
+                self.syncLibrary()
             except Exception:
                 logger.log(traceback.format_exc(), logger.DEBUG) 
 
@@ -111,12 +108,6 @@ class TraktChecker():
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
         return traktShow
-
-    def syncLibrary(self):
-        logger.log(u"Syncing Trakt.tv show library", logger.DEBUG)
-
-        for myShow in sickbeard.showList:
-            self.addShowToTraktLibrary(myShow)
 
     def removeShowFromTraktLibrary(self, show_obj):
         if self.findShow(show_obj.indexer, show_obj.indexerid):
@@ -178,115 +169,161 @@ class TraktChecker():
             except traktException as e:
                 logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                 return
+                
+    def syncLibrary(self):
+        if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:    
+            logger.log(u"Sync SickRage with Trakt Collection", logger.DEBUG)
 
-    def syncWatchlist(self):
+            if self._getShowCollection():
+                self.addEpisodeToTraktCollection()
+                if sickbeard.TRAKT_SYNC_REMOVE:
+                    self.removeEpisodeFromTraktCollection()
 
-        logger.log(u"Syncing Trakt.tv show watchlist", logger.DEBUG)
-
-        logger.log(u"Getting ShowWatchlist", logger.DEBUG)
-        if self._getShowWatchlist():
-            self.addShowToTraktWatchList()
-            self.updateShows()
-
-        logger.log(u"Getting EpisodeWatchlist", logger.DEBUG)
-        if self._getEpisodeWatchlist():
-            self.removeEpisodeFromTraktWatchList()
-            self.addEpisodeToTraktWatchList()
-            self.updateEpisodes()
-
-    def removeEpisodeFromTraktWatchList(self):
-
-        logger.log(u"Start looking if some episode has to be removed from watchlist", logger.DEBUG)
-
-        if not len(self.EpisodeWatchlist):
-            logger.log(u"No episode found in your watchlist, aborting watchlist update", logger.DEBUG)
-            return True
-
-        trakt_data = []
-        for episode in self.EpisodeWatchlist:
-            tvdb_id = int(episode['show']['ids']['tvdb'])
-            tvrage_id = int(episode['show']['ids']['tvrage'] or 0)
-            newShow = helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id])
-            if newShow is not None:
-                ep_obj = newShow.getEpisode(int(episode['episode']['season']), int(episode['episode']['number']))
-                if ep_obj is not None:
-                    if ep_obj.status != WANTED and ep_obj.status != UNKNOWN and ep_obj.status not in Quality.SNATCHED and ep_obj.status not in Quality.SNATCHED_PROPER:
-                        logger.log(u"Removing episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']['season']) + ", Episode " + str(episode['episode']['number']) + ", Status " + str(ep_obj.status) + " from Watchlist", logger.DEBUG)
-                        trakt_data.append((ep_obj.season, ep_obj.episode))
-                else:
-                    logger.log(u"Episode: Indexer " + str(newShow.indexer) + ", indexer_id " + str(newShow.indexerid) + ", Title " + str(newShow.name) + ", Season " + str(episode['episode']["season"]) + ", Episode" + str(episode['episode']["number"]) + " not in Sickberad ShowList", logger.DEBUG)
-                    continue
-            else:
-                logger.log(u"Show: tvdb_id " + str(episode['show']['ids']['tvdb']) + ", Title " + str(episode['show']['title']) + " not in Sickberad ShowList", logger.DEBUG)
-                continue
-
-        if len(trakt_data):
-            data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
-            notifiers.trakt_notifier.update_watchlist(newShow, data_episode=data, update="remove")
-            self._getEpisodeWatchlist()
-
-        logger.log(u"Stop looking if some episode has to be removed from watchlist", logger.DEBUG)
-
-    def addEpisodeToTraktWatchList(self):
-
-        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
-            logger.log(u"Start looking if some WANTED episode need to be added to watchlist", logger.DEBUG)
+    def removeEpisodeFromTraktCollection(self):
+        if sickbeard.TRAKT_SYNC_REMOVE and sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
+            logger.log(u"COLLECTION::REMOVE::START - Look for Episodes to Remove From Trakt Collection", logger.DEBUG)
 
             myDB = db.DBConnection()
-            sql_selection='select tv_shows.indexer, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in ('+','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + [WANTED]])+')'
+            sql_selection='select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode, tv_episodes.status, tv_episodes.location from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid'
             episodes = myDB.select(sql_selection)
             if episodes is not None:
                 trakt_data = []
                 for cur_episode in episodes:
-                    newShow = helpers.findCertainShow(sickbeard.showList, int(cur_episode["showid"])) 
-                    if not self.check_watchlist(newShow, cur_episode["season"], cur_episode["episode"]):
-                        logger.log(u"Episode: Indexer " + str(cur_episode["indexer"]) + ", indexer_id " + str(cur_episode["showid"])+ ", Title " +  str(cur_episode["show_name"]) + " " + str(cur_episode["season"]) + "x" + str(cur_episode["episode"]) + " should be added to watchlist", logger.DEBUG)
-                        trakt_data.append((cur_episode["season"], cur_episode["episode"]))
+                    trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
+                    if self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"]), List='Collection'):
+                        if cur_episode["location"] == '':
+                            logger.log(u"Removing Episode: Indexer %s %s - %s - S%sE%s from Collection" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)
+                            trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
+
+            if len(trakt_data):
+                data = self.trakt_bulk_data_generate(trakt_data)
+                self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
+                self._getShowCollection()                
+ 
+            logger.log(u"COLLECTION::REMOVE::FINISH - Look for Episodes to Remove From Trakt Collection", logger.DEBUG)
+    
+    def addEpisodeToTraktCollection(self):
+        if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
+            logger.log(u"COLLECTION::ADD::START - Look for Episodes to Add to Trakt Collection", logger.DEBUG)  
+
+            myDB = db.DBConnection()
+            sql_selection='select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in ('+','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]])+')'
+            episodes = myDB.select(sql_selection)
+            if episodes is not None:
+                trakt_data = []
+                for cur_episode in episodes:
+                    trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
+                    if not self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"]), List='Collection'):
+                        logger.log(u"Adding Episode: Indexer %s %s - %s - S%sE%s to Collection" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)                   
+                        trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
 
                 if len(trakt_data):
-                    data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
-                    notifiers.trakt_notifier.update_watchlist(newShow, data_episode=data)
+                    data = self.trakt_bulk_data_generate(trakt_data)
+                    self.trakt_api.traktRequest("sync/collection", data, method='POST')
+                    self._getShowCollection()
+
+            logger.log(u"COLLECTION::ADD::FINISH - Look for Episodes to Add to Trakt Collection", logger.DEBUG)  
+                
+    def syncWatchlist(self):
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
+            logger.log(u"Sync SickRage with Trakt Watchlist", logger.DEBUG)
+
+            if self._getShowWatchlist():
+                self.addShowToTraktWatchList()
+                self.updateShows()
+
+            if self._getEpisodeWatchlist():
+                self.removeEpisodeFromTraktWatchList()
+                self.addEpisodeToTraktWatchList()
+                self.updateEpisodes()
+
+    def removeEpisodeFromTraktWatchList(self):
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
+            logger.log(u"WATCHLIST::REMOVE::START - Look for Episodes to Remove from Trakt Watchlist", logger.DEBUG)
+
+            myDB = db.DBConnection()
+            sql_selection='select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode, tv_episodes.status from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid'
+            episodes = myDB.select(sql_selection)
+            if episodes is not None:
+                trakt_data = []
+                for cur_episode in episodes:
+                    trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
+                    if self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"])):
+                        if cur_episode["status"] not in Quality.SNATCHED + Quality.SNATCHED_PROPER + [UNKNOWN] + [WANTED]:
+                            logger.log(u"Removing Episode: Indexer %s %s - %s - S%sE%s from Watchlist" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)
+                            trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
+
+            if len(trakt_data):
+                data = self.trakt_bulk_data_generate(trakt_data)
+                self.trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                self._getEpisodeWatchlist()                
+
+            logger.log(u"WATCHLIST::REMOVE::FINISH - Look for Episodes to Remove from Trakt Watchlist", logger.DEBUG)
+
+    def addEpisodeToTraktWatchList(self):
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
+            logger.log(u"WATCHLIST::ADD::START - Look for Episodes to Add to Trakt Watchlist", logger.DEBUG)
+
+            myDB = db.DBConnection()
+            sql_selection='select tv_shows.indexer, tv_shows.startyear, showid, show_name, season, episode from tv_episodes,tv_shows where tv_shows.indexer_id = tv_episodes.showid and tv_episodes.status in ('+','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + [WANTED]])+')'
+            episodes = myDB.select(sql_selection)
+            if episodes is not None:
+                trakt_data = []
+                for cur_episode in episodes:
+                    trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
+                    if not self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"])):
+                        logger.log(u"Adding Episode: Indexer %s %s - %s - S%sE%s to Watchlist" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)                     
+                        trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
+
+                if len(trakt_data):
+                    data = self.trakt_bulk_data_generate(trakt_data)
+                    self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
                     self._getEpisodeWatchlist()
 
-            logger.log(u"Stop looking if some WANTED episode need to be added to watchlist", logger.DEBUG)
+            logger.log(u"WATCHLIST::ADD::FINISH - Look for Episodes to Add to Trakt Watchlist", logger.DEBUG)
 
     def addShowToTraktWatchList(self):
-
         if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
-            logger.log(u"Start looking if some show need to be added to watchlist", logger.DEBUG)
-
+            logger.log(u"SHOW_WATCHLIST::ADD::START - Look for Shows to Add to Trakt Watchlist", logger.DEBUG)
+            
             if sickbeard.showList is not None:
                 trakt_data = []
                 for show in sickbeard.showList:
-                    if not self.check_watchlist(show):
-                        logger.log(u"Show: Indexer " + str(show.indexer) + ", indexer_id " + str(show.indexerid) + ", Title " +  str(show.name) + " should be added to watchlist", logger.DEBUG)
-                        trakt_data.append((show.indexer, show.indexerid, show.name, show.startyear))
+                    trakt_id = sickbeard.indexerApi(show.indexer).config['trakt_id']
+                    if not self._checkInList(trakt_id,str(show.indexerid),'0','0',List='Show'):
+                        logger.log(u"Adding Show: Indexer %s %s - %s to Watchlist" % ( trakt_id,str(show.indexerid), show.name), logger.DEBUG)                    
+                        show_el = {'title': show.name, 'year': show.startyear, 'ids': {}}
+                        if trakt_id == 'tvdb_id':
+                            show_el['ids']['tvdb'] = show.indexerid
+                        else:
+                            show_el['ids']['tvrage'] = show.indexerid
+                        trakt_data.append(show_el)
 
                 if len(trakt_data):
-                    data = notifiers.trakt_notifier.trakt_show_data_generate(trakt_data)
-                    notifiers.trakt_notifier.update_watchlist(data_show=data)
+                    data = {'shows': trakt_data}
+                    self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
                     self._getShowWatchlist()
 
-            logger.log(u"Stop looking if some show need to be added to watchlist", logger.DEBUG)
+            logger.log(u"SHOW_WATCHLIST::ADD::FINISH - Look for Shows to Add to Trakt Watchlist", logger.DEBUG)
 
     def updateShows(self):
-        logger.log(u"Starting trakt show watchlist check", logger.DEBUG)
+        logger.log(u"SHOW_WATCHLIST::CHECK::START - Trakt Show Watchlist", logger.DEBUG)
 
         if not len(self.ShowWatchlist):
             logger.log(u"No shows found in your watchlist, aborting watchlist update", logger.DEBUG)
             return
 
-        for show in self.ShowWatchlist:
-            indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
-            if indexer == 2:
-                indexer_id = int(show["show"]["ids"]["tvrage"])
-            else:
-                indexer_id = int(show["show"]["ids"]["tvdb"])
+        indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
+        trakt_id = sickbeard.indexerApi(indexer).config['trakt_id']
+        for show_el in self.ShowWatchlist[trakt_id]:
+            indexer_id = int(str(show_el))
+            show = self.ShowWatchlist[trakt_id][show_el]
 
+            #logger.log(u"Checking Show: %s %s %s" % (trakt_id, indexer_id, show['title']),logger.DEBUG)
             if int(sickbeard.TRAKT_METHOD_ADD) != 2:
-                self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
+                self.addDefaultShow(indexer, indexer_id, show['title'], SKIPPED)
             else:
-                self.addDefaultShow(indexer, indexer_id, show["show"]["title"], WANTED)
+                self.addDefaultShow(indexer, indexer_id, show['title'], WANTED)
 
             if int(sickbeard.TRAKT_METHOD_ADD) == 1:
                 newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
@@ -294,38 +331,49 @@ class TraktChecker():
                     setEpisodeToWanted(newShow, 1, 1)
                 else:
                     self.todoWanted.append((indexer_id, 1, 1))
-
+        logger.log(u"SHOW_WATCHLIST::CHECK::FINISH - Trakt Show Watchlist", logger.DEBUG)
+        
     def updateEpisodes(self):
         """
         Sets episodes to wanted that are in trakt watchlist
         """
-        logger.log(u"Starting trakt episode watchlist check", logger.DEBUG)
+        logger.log(u"SHOW_WATCHLIST::CHECK::START - Trakt Episode Watchlist", logger.DEBUG)
 
         if not len(self.EpisodeWatchlist):
             logger.log(u"No episode found in your watchlist, aborting episode update", logger.DEBUG)
             return
 
         managed_show = []
-        for show in self.EpisodeWatchlist:
-            indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
-            if indexer == 2:
-                indexer_id = int(show["show"]["ids"]["tvrage"])
-            else:
-                indexer_id = int(show["show"]["ids"]["tvdb"])
+        
+        indexer = int(sickbeard.TRAKT_DEFAULT_INDEXER)
+        trakt_id = sickbeard.indexerApi(indexer).config['trakt_id']
+        
+        for show_el in self.EpisodeWatchlist[trakt_id]:
+            indexer_id = int(show_el)
+            show = self.EpisodeWatchlist[trakt_id][show_el]
+
 
             newShow = helpers.findCertainShow(sickbeard.showList, indexer_id)
+
             try:
                 if newShow is None:
                     if indexer_id not in managed_show:
-                        self.addDefaultShow(indexer, indexer_id, show["show"]["title"], SKIPPED)
+                        self.addDefaultShow(indexer, indexer_id, show['title'], SKIPPED)
                         managed_show.append(indexer_id)
-                    self.todoWanted.append((indexer_id, show['episode']['season'], show['episode']['number']))
+                        for season_el in show['seasons']:
+                            season = int(season_el)
+                            for episode_el in show['seasons'][season_el]['episodes']:                          
+                                self.todoWanted.append((indexer_id, season, int(episode_el)))
                 else:
                     if newShow.indexer == indexer:
-                        setEpisodeToWanted(newShow, show['episode']['season'], show['episode']['number'])
+                        for season_el in show['seasons']:
+                            season = int(season_el)
+                            for episode_el in show['seasons'][season_el]['episodes']:
+                                setEpisodeToWanted(newShow, season, int(episode_el))
             except TypeError:
-                logger.log(u"Could not parse the output from trakt for " + show["show"]["title"], logger.DEBUG)
-
+                logger.log(u"Could not parse the output from trakt for " + show["title"], logger.DEBUG)
+        logger.log(u"SHOW_WATCHLIST::CHECK::FINISH - Trakt Episode Watchlist", logger.DEBUG)
+        
     def addDefaultShow(self, indexer, indexer_id, name, status):
         """
         Adds a new show with the default settings
@@ -363,55 +411,215 @@ class TraktChecker():
             self.todoWanted.remove(episode)
             setEpisodeToWanted(show, episode[1], episode[2])
 
+    def _checkInList(self,trakt_id, showid, season, episode, List = None):
+        """
+         Check in the Watchlist or CollectionList for Show
+         Is the Show, Season and Episode in the trakt_id list (tvdb / tvrage)
+        """
+        #logger.log(u"Checking Show: %s %s %s " % (trakt_id, showid, List),logger.DEBUG)        
+        
+        if "Collection" == List:
+            try:
+                if self.Collectionlist[trakt_id][showid]['seasons'][season]['episodes'][episode] == episode:
+                    return True
+            except:
+                return False       
+        elif "Show" == List:
+            try:
+                if self.ShowWatchlist[trakt_id][showid]['id'] == showid:
+                    return True
+            except:
+                return False          
+        else:
+            try:
+                if self.EpisodeWatchlist[trakt_id][showid]['seasons'][season]['episodes'][episode] == episode:
+                    return True
+            except:
+                return False
+                
     def _getShowWatchlist(self):
-
+        """
+        Get Watchlist and parse once into addressable structure
+        """
+        
         try:
-            self.ShowWatchlist = self.trakt_api.traktRequest("sync/watchlist/shows")
+            self.ShowWatchlist = { 'tvdb_id' : {}, 'tvrage_id': {} }
+            TraktShowWatchlist = self.trakt_api.traktRequest("sync/watchlist/shows")
+            tvdb_id = 'tvdb'
+            tvrage_id = 'tvrage'
+            
+            for watchlist_el in TraktShowWatchlist:
+                tvdb = False
+                tvrage = False
+                if not watchlist_el['show']['ids']["tvdb"] is None:
+                    tvdb = True
+                if not watchlist_el['show']['ids']["tvrage"] is None:
+                    tvrage = True
+
+                title = watchlist_el['show']['title']
+                year = str(watchlist_el['show']['year'])
+                    
+                if tvdb:
+                    showid = str(watchlist_el['show']['ids'][tvdb_id])
+                    self.ShowWatchlist[tvdb_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year }
+                if tvrage:
+                    showid = str(watchlist_el['show']['ids'][tvrage_id])
+                    self.ShowWatchlist[tvrage_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year }
+                   
         except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Show Watchlist: %s" % ex(e), logger.ERROR)
             return False
 
         return True
-
+       
     def _getEpisodeWatchlist(self):
-
+        """
+         Get Watchlist and parse once into addressable structure
+        """
+        
         try:
-            self.EpisodeWatchlist = self.trakt_api.traktRequest("sync/watchlist/episodes")
+            self.EpisodeWatchlist = { 'tvdb_id' : {}, 'tvrage_id': {} }
+            TraktEpisodeWatchlist = self.trakt_api.traktRequest("sync/watchlist/episodes")
+            tvdb_id = 'tvdb'
+            tvrage_id = 'tvrage'
+            
+            for watchlist_el in TraktEpisodeWatchlist:
+                tvdb = False
+                tvrage = False
+                if not watchlist_el['show']['ids']["tvdb"] is None:
+                    tvdb = True
+                if not watchlist_el['show']['ids']["tvrage"] is None:
+                    tvrage = True
+                    
+                title = watchlist_el['show']['title']
+                year = str(watchlist_el['show']['year'])              
+                season = str(watchlist_el['episode']['season'])
+                episode = str(watchlist_el['episode']['number'])
+
+                if tvdb:
+                    showid = str(watchlist_el['show']['ids'][tvdb_id])
+                    if not showid in self.EpisodeWatchlist[tvdb_id + '_id'].keys():
+                        self.EpisodeWatchlist[tvdb_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year , 'seasons' : {} } 
+                    
+                    if not season in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'].keys():                               
+                        self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season] = { 's': season , 'episodes' : {} }
+                    
+                    if not episode in self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                        self.EpisodeWatchlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
+
+                if tvrage:
+                    showid = str(watchlist_el['show']['ids'][tvrage_id])
+                    if not showid in self.EpisodeWatchlist[tvrage_id + '_id'].keys():
+                        self.EpisodeWatchlist[tvrage_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year , 'seasons' : {} } 
+                    
+                    if not season in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'].keys():                               
+                        self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season] = { 's': season , 'episodes' : {} }
+                    
+                    if not episode in self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                        self.EpisodeWatchlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode 
+
         except traktException as e:
             logger.log(u"Could not connect to trakt service, cannot download Episode Watchlist: %s" % ex(e), logger.WARNING)
             return False
 
         return True
 
-    def check_watchlist (self, show_obj, season=None, episode=None):
-
-        found = False
-        if episode is not None:
-            watchlist = self.EpisodeWatchlist
-        else:
-            watchlist = self.ShowWatchlist
-
-        trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
+    def _getShowCollection(self):
+        """
+        Get Collection and parse once into addressable structure
+        """
         
-        for watchlist_el in watchlist:
-
-            if trakt_id == 'tvdb_id':
-                indexer_id = int(watchlist_el['show']['ids']["tvdb"])
-            else:
+        try:
+        
+            self.Collectionlist = { 'tvdb_id' : {}, 'tvrage_id': {} }
+            logger.log(u"Getting Show Collection", logger.DEBUG)
+            TraktCollectionList = self.trakt_api.traktRequest("sync/collection/shows")
+            tvdb_id = 'tvdb'
+            tvrage_id = 'tvrage'
+            
+            for watchlist_el in TraktCollectionList:
+                tvdb = False
+                tvrage = False
+                if not watchlist_el['show']['ids']["tvdb"] is None:
+                    tvdb = True
                 if not watchlist_el['show']['ids']["tvrage"] is None:
-                   indexer_id = int(watchlist_el['show']['ids']["tvrage"])
+                    tvrage = True
+
+                title = watchlist_el['show']['title']
+                year = str(watchlist_el['show']['year'])
+                
+                if 'seasons' in watchlist_el:                    
+                    for season_el in watchlist_el['seasons']:
+                        for episode_el in season_el['episodes']:
+                            season = str(season_el['number'])
+                            episode = str(episode_el['number'])
+
+                            if tvdb:
+                                showid = str(watchlist_el['show']['ids'][tvdb_id])
+                                if not showid in self.Collectionlist[tvdb_id + '_id'].keys():
+                                    self.Collectionlist[tvdb_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year , 'seasons' : {} } 
+                                
+                                if not season in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'].keys():                               
+                                    self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season] = { 's': season , 'episodes' : {} }
+                                
+                                if not episode in self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                                    self.Collectionlist[tvdb_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode
+
+                            if tvrage:
+                                showid = str(watchlist_el['show']['ids'][tvrage_id])
+                                if not showid in self.Collectionlist[tvrage_id + '_id'].keys():
+                                    self.Collectionlist[tvrage_id + '_id'][showid] = { 'id': showid , 'title' : title , 'year': year , 'seasons' : {} } 
+                                
+                                if not season in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'].keys():                               
+                                    self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season] = { 's': season , 'episodes' : {} }
+                                
+                                if not episode in self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'].keys():
+                                    self.Collectionlist[tvrage_id + '_id'][showid]['seasons'][season]['episodes'][episode] = episode                                    
+                                
+        except traktException as e:
+            logger.log(u"Could not connect to trakt service, cannot download Show Collection: %s" % ex(e), logger.ERROR)
+            return False
+
+        return True
+
+    def trakt_bulk_data_generate(self, data):
+        """
+        Build the JSON structure to send back to Trakt
+        """
+        
+        uniqueShows = {}
+        uniqueSeasons = {}
+        for showid,indexerid,show_name,startyear,season,episode in data:
+            if showid not in uniqueShows:
+                uniqueShows[showid] = {'title': show_name, 'year': startyear, 'ids': {},'seasons': []}
+                trakt_id = sickbeard.indexerApi(indexerid).config['trakt_id']
+                if trakt_id == 'tvdb_id':
+                    uniqueShows[showid]['ids']["tvdb"] = showid
                 else:
-                    indexer_id = 0
-                    
-            if indexer_id == show_obj.indexerid and season is None and episode is None:
-                found=True
-                break
-            elif indexer_id == show_obj.indexerid and season == watchlist_el['episode']["season"] and episode == watchlist_el['episode']["number"]:
-                found=True
-                break
+                    uniqueShows[showid]['ids']["tvrage"] = showid               
+                uniqueSeasons[showid] = []
 
-        return found
+        # Get the unique seasons per Show
+        for showid,indexerid,show_name,startyear,season,episode in data:           
+            if season not in uniqueSeasons[showid]:
+                uniqueSeasons[showid].append(season)
 
+        #build the query
+        showList = []
+        seasonsList = {}
+        for searchedShow in uniqueShows:
+            seasonsList[searchedShow] = []
+            for searchedSeason in uniqueSeasons[searchedShow]:
+                episodesList = []
+                for showid,indexerid,show_name,startyear,season,episode in data:
+                    if season == searchedSeason and showid == searchedShow:
+                        episodesList.append({'number': episode})
+                show = uniqueShows[searchedShow]
+                show['seasons'].append({'number': searchedSeason, 'episodes': episodesList})
+            showList.append(show)
+        post_data = {'shows': showList}
+        return post_data
+        
 class TraktRolling():
 
     def __init__(self):
@@ -419,9 +627,6 @@ class TraktRolling():
         self.EpisodeWatched = []
 
     def run(self, force=False):
-        if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
-            return
-
         logger.log(u"Start getting list from Traktv", logger.DEBUG)
 
         logger.log(u"Getting EpisodeWatched", logger.DEBUG)
@@ -442,13 +647,13 @@ class TraktRolling():
 
     def refreshEpisodeWatched(self):
 
-       if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
-           return False
+        if not (sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT):
+            return False
 
-       if not self._getEpisodeWatched():
-           return False
+        if not self._getEpisodeWatched():
+            return False
 
-       return True
+        return True
 
     def updateWantedList(self, indexer_id = None):
 
@@ -474,7 +679,7 @@ class TraktRolling():
         else:
             sql_selection=sql_selection + " and T1.paused = 0"
 
-	    sql_selection=sql_selection + " ORDER BY T1.show_name,season,episode"
+        sql_selection=sql_selection + " ORDER BY T1.show_name,season,episode"
 
         results = myDB.select(sql_selection,[SKIPPED])
 
@@ -584,4 +789,3 @@ class TraktRolling():
                 continue
 
         return num_ep
-
