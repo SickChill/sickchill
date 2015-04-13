@@ -24,6 +24,7 @@ import itertools
 
 import sickbeard
 import generic
+from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT
 from sickbeard.common import Quality
 from sickbeard import logger
 from sickbeard import tvcache
