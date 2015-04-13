@@ -190,7 +190,13 @@ class EmailNotifier:
     def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
         logger.log('HOST: %s; PORT: %s; FROM: %s, TLS: %s, USER: %s, PWD: %s, TO: %s' % (
             host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
-        srv = smtplib.SMTP(host, int(port))
+        try:
+            srv = smtplib.SMTP(host, int(port))
+        except Exception as e:
+            logger.log(u"Exception generated while sending e-mail: " + str(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            return False
+            
         if smtpDebug:
             srv.set_debuglevel(1)
         try:
