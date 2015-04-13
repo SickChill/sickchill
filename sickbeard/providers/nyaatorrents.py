@@ -73,7 +73,7 @@ class NyaaProvider(generic.TorrentProvider):
 
         params = {
             "term": search_string.encode('utf-8'),
-            "cats": '1_37',  # Limit to English-translated Anime (for now)
+            "cats": '1_0',  # All anime
             "sort": '2',     # Sort Descending By Seeders
         }
 
