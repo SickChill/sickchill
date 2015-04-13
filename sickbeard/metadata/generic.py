@@ -951,11 +951,6 @@ class GenericMetadata():
 
             name = showXML.findtext('title')
 
-            try:
-                indexer = int(showXML.findtext('indexer'))
-            except:
-                indexer = None
-
             if showXML.findtext('tvdbid') != None:
                 indexer_id = int(showXML.findtext('tvdbid'))
             elif showXML.findtext('id') != None:
@@ -967,6 +962,18 @@ class GenericMetadata():
             if indexer_id is None:
                 logger.log(u"Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.WARNING)
                 return empty_return
+
+            indexer = None
+            if showXML.findtext('indexer') != None:
+                indexer = int(showXML.findtext('indexer'))
+            elif showXML.find('episodeguide/url') != None:
+                epg_url = showXML.findtext('episodeguide/url').lower()
+                if str(indexer_id) in epg_url:
+                    if 'thetvdb.com' in epg_url:
+                        indexer = 1
+                    elif 'tvrage' in epg_url:
+                        indexer = 2
+
 
         except Exception, e:
             logger.log(
