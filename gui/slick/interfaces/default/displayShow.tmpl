@@ -253,7 +253,7 @@
 					<tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if int($show.subtitles) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 					#end if
 					<tr><td class="showLegend">Flat Folders: </td><td><img src="$sbRoot/images/#if $show.flatten_folders == 1 or $sickbeard.NAMING_FORCE_FOLDERS then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-					<tr><td class="showLegend">Paused: </td><td><img src="$sbRoot/images/#if int($show.paused) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
+					<tr><td class="showLegend">Paused: </td><td><button class="btn btn-xs clearAll" id="pause">#if int($show.paused) == 1 then "<span class=\"ui-icon ui-icon-play\"></span>" else "<span class=\"ui-icon ui-icon-play\"></span>"#</button></td></tr>
 					<tr><td class="showLegend">Air-by-Date: </td><td><img src="$sbRoot/images/#if int($show.air_by_date) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 					<tr><td class="showLegend">Sports: </td><td><img src="$sbRoot/images/#if int($show.is_sports) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 					<tr><td class="showLegend">Anime: </td><td><img src="$sbRoot/images/#if int($show.is_anime) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
