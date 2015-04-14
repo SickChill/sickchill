@@ -962,6 +962,20 @@ class Home(WebRoot):
                 "dbloc": dbloc}
 
 
+    def togglePause(self, cmd=None, showid=None):
+        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(showid))
+        if not showObj:
+            return "Show not found"
+
+        if cmd == "Pause":
+            showObj.paused = 1
+            showObj.saveToDB()
+            return "Complete"
+        else:
+            showObj.paused = 0
+            showObj.saveToDB()
+            return "Complete"
+    
     def testTrakt(self, username=None, password=None, disable_ssl=None, blacklist_name=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if disable_ssl == 'true':

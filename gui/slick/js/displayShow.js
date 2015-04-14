@@ -260,4 +260,26 @@ $(document).ready(function () {
         }
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
     });
+    
+    $('#pause').click(function () {
+    var cmd = $('#pause').html();
+    var showid = $('#showID').val();
+    if (cmd == "<span class=\"ui-icon ui-icon-pause\"></span>") {
+        cmd = "Pause"
+    }
+    else {
+        cmd = "Unpause"
+    }
+    $.get(sbRoot + '/home/togglePause', {'cmd': cmd, 'showid': showid})
+        .done(function (data) {
+            if (data == "Complete") {
+                if (cmd == "Unpause") {
+                    $('#pause').html("<span class=\"ui-icon ui-icon-play\"></span>")
+                }
+                else {
+                    $('#pause').html("<span class=\"ui-icon ui-icon-pause\"></span>")
+                }
+            }
+        });
+    });
 });
