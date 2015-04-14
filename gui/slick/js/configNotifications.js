@@ -56,24 +56,44 @@ $(document).ready(function(){
             });
     });
 
-    $('#testPLEX').click(function () {
-        var plex_host = $.trim($('#plex_host').val());
-        var plex_username = $.trim($('#plex_username').val());
-        var plex_password = $.trim($('#plex_password').val());
-        if (!plex_host) {
-            $('#testPLEX-result').html('Please fill out the necessary fields above.');
+	$('#testPMC').click(function () {
+		var plex_host = $.trim($('#plex_host').val());
+		var plex_username = $.trim($('#plex_username').val());
+		var plex_password = $.trim($('#plex_password').val());
+		if (!plex_host) {
+			$('#testPMC-result').html('Please fill out the necessary fields above.');
 			$('#plex_host').addClass('warning');
-            return;
-        }
-        $('#plex_host').removeClass('warning');
+			return;
+		}
+		$('#plex_host').removeClass('warning');
 		$(this).prop('disabled', true);
-        $('#testPLEX-result').html(loading);
-        $.get(sbRoot + '/home/testPLEX', {'host': plex_host, 'username': plex_username, 'password': plex_password})
-            .done(function (data) {
-                $('#testPLEX-result').html(data);
-                $('#testPLEX').prop('disabled', false);
-            });
-    });
+		$('#testPMC-result').html(loading);
+		$.get(sbRoot + '/home/testPMC', {'host': plex_host, 'username': plex_username, 'password': plex_password})
+			.done(function (data) {
+				$('#testPMC-result').html(data);
+				$('#testPMC').prop('disabled', false);
+			});
+	});
+
+	$('#testPMS').click(function () {
+		var plex_server_host = $.trim($('#plex_server_host').val());
+		var plex_username = $.trim($('#plex_username').val());
+		var plex_password = $.trim($('#plex_password').val());
+        var plex_server_token = $.trim($('#plex_server_token').val());
+		if (!plex_server_host) {
+			$('#testPMS-result').html('Please fill out the necessary fields above.');
+			$('#plex_server_host').addClass('warning');
+			return;
+		}
+		$('#plex_server_host').removeClass('warning');
+		$(this).prop('disabled', true);
+		$('#testPMS-result').html(loading);
+		$.get(sbRoot + '/home/testPMS', {'host': plex_server_host, 'username': plex_username, 'password': plex_password, 'plex_server_token': plex_server_token})
+			.done(function (data) {
+				$('#testPMS-result').html(data);
+				$('#testPMS').prop('disabled', false);
+			});
+	});
 
     $('#testBoxcar').click(function() {
 		var boxcar_username = $.trim($('#boxcar_username').val());

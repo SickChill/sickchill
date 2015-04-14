@@ -891,21 +891,44 @@ class Home(WebRoot):
         return finalResult
 
 
-    def testPLEX(self, host=None, username=None, password=None):
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+    def testPMC(self, host=None, username=None, password=None):
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+
+        if None is not password and set('*') == set(password):
+            password = sickbeard.PLEX_PASSWORD
 
         finalResult = ''
-        for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.plex_notifier.test_notify(urllib.unquote_plus(curHost), username, password)
-            if len(curResult.split(":")) > 2 and 'OK' in curResult.split(":")[2]:
-                finalResult += "Test Plex notice sent successfully to " + urllib.unquote_plus(curHost)
+        for curHost in [x.strip() for x in host.split(',')]:
+            curResult = notifiers.plex_notifier.test_notify_pmc(urllib.unquote_plus(curHost), username, password)
+            if len(curResult.split(':')) > 2 and 'OK' in curResult.split(':')[2]:
+                finalResult += 'Successful test notice sent to Plex client ... ' + urllib.unquote_plus(curHost)
             else:
-                finalResult += "Test Plex notice failed to " + urllib.unquote_plus(curHost)
-            finalResult += "<br />\n"
+                finalResult += 'Test failed for Plex client ... ' + urllib.unquote_plus(curHost)
+            finalResult += '<br />' + '\n'
+
+        ui.notifications.message('Tested Plex client(s): ', urllib.unquote_plus(host.replace(',', ', ')))
 
         return finalResult
 
+    def testPMS(self, host=None, username=None, password=None, plex_server_token=None):
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
+        if None is not password and set('*') == set(password):
+            password = sickbeard.PLEX_PASSWORD
+
+        finalResult = ''
+
+        curResult = notifiers.plex_notifier.test_notify_pms(urllib.unquote_plus(host), username, password, plex_server_token)
+        if None is curResult:
+            finalResult += 'Successful test of Plex server(s) ... ' + urllib.unquote_plus(host.replace(',', ', '))
+        else:
+            finalResult += 'Test failed for Plex server(s) ... ' + urllib.unquote_plus(curResult.replace(',', ', '))
+        finalResult += '<br />' + '\n'
+
+        ui.notifications.message('Tested Plex Media Server host(s): ', urllib.unquote_plus(host.replace(',', ', ')))
+
+        return finalResult
+        
     def testLibnotify(self):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
