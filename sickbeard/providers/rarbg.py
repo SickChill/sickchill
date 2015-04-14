@@ -93,7 +93,7 @@ class RarbgProvider(generic.TorrentProvider):
 
         self.cache = RarbgCache(self)
         
-        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT}
+        self.headers = {'User-Agent': USER_AGENT}
 
     def isEnabled(self):
         return self.enabled
