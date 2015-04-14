@@ -1037,6 +1037,9 @@ def validateShow(show, season=None, episode=None):
         if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
             lINDEXER_API_PARMS['language'] = indexer_lang
 
+        if show.dvdorder != 0:
+            lINDEXER_API_PARMS['dvdorder'] = True
+            
         t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)
         if season is None and episode is None:
             return t
