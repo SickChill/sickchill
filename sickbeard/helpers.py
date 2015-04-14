@@ -1411,9 +1411,9 @@ def get_size(start_path='.'):
             fp = ek.ek(os.path.join, dirpath, f)
             try:
                 total_size += ek.ek(os.path.getsize, fp)
-            except OSError, e:
-                logger.log(u"Unable to get size for file " + fp + ": " + repr(e) + " / " + str(e),
-                                           logger.DEBUG)
+            except OSError as e:
+                logger.log('Unable to get size for file {filePath}. Error msg is: {errorMsg}'.format(filePath=fp, errorMsg=str(e)), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
 def generateApiKey():
