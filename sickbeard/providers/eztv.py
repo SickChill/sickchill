@@ -100,7 +100,7 @@ class EZTVProvider(generic.TorrentProvider):
 
                     try:
                         with BS4Parser(HTML, features=["html5lib", "permissive"]) as parsedHTML:
-                            resultsTable = parsedHTML.find_all('tr', attrs={'name': 'hover', 'class': 'forum_header_border'})
+                            resultsTable = parsedHTML.find_all('tr', attrs={'name': 'hover', 'class': 'header_brd'})
 
                             if not resultsTable:
                                 logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
