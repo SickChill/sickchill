@@ -30,7 +30,7 @@ from lib import requests
 from lib.requests import exceptions
 
 import sickbeard
-from sickbeard.common import Quality
+from sickbeard.common import Quality, USER_AGENT
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
@@ -92,6 +92,8 @@ class RarbgProvider(generic.TorrentProvider):
         self.next_request = datetime.datetime.now()
 
         self.cache = RarbgCache(self)
+        
+        self.headers = {'User-Agent': USER_AGENT}
 
     def isEnabled(self):
         return self.enabled
@@ -107,7 +109,7 @@ class RarbgProvider(generic.TorrentProvider):
         resp_json = None
 
         try:
-            response = self.session.get(self.urls['token'], timeout=30, verify=False)
+            response = self.session.get(self.urls['token'], timeout=30, verify=False, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
         except RequestException as e:
