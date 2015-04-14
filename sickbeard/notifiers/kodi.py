@@ -248,7 +248,7 @@ class KODINotifier:
             return result
 
         except Exception as e:
-            logger.log(u"Warning: Couldn't contact KODI HTTP at " + ek.ss(url) + " " + repr(e),
+            logger.log(u"Warning: Couldn't contact KODI HTTP at " + ek.ss(url) + " " + str(e),
                        logger.WARNING)
             return False
 
