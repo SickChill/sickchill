@@ -183,10 +183,19 @@ class PostProcessor(object):
         # don't confuse glob with chars we didn't mean to use
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
         
-        if subfolders:
-            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path),  base_name + '*')
-        else:
-            filelist = ek.ek(glob.glob, base_name + '*')
+        if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
+            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path),  base_name + '*') # just create the list of all files starting with the basename
+        else: # this is called when PP, so we need to do the filename check case-insensitive
+            filelist = []
+            checklist = ek.ek(glob.glob, ek.ek(os.path.join, ek.ek(os.path.dirname, file_path), '*')) # get a list of all the files in the folder
+            for filefound in checklist: # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+                file_name = filefound.rpartition('.')[0]
+                if not base_name_only:
+                    file_name = file_name + '.'
+                if file_name.lower() == base_name.lower(): # if there's no difference in the filename add it to the filelist
+                    filelist.append(filefound) 
+             
+                             
         for associated_file_path in filelist:
             # only add associated to list
             if associated_file_path == file_path:
