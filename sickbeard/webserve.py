@@ -3868,8 +3868,7 @@ class ConfigSearch(Config):
 
         sickbeard.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
 
-        sickbeard.DOWNLOAD_PROPERS = config.checkbox_to_value(download_propers)
-        config.change_DOWNLOAD_PROPERS(sickbeard.DOWNLOAD_PROPERS)
+        config.change_DOWNLOAD_PROPERS(download_propers)
 
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
