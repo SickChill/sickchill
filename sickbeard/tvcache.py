@@ -299,7 +299,12 @@ class TVCache():
 
     def searchCache(self, episode, manualSearch=False, downCurQuality=False):
         neededEps = self.findNeededEpisodes(episode, manualSearch, downCurQuality)
-        return neededEps[episode] if len(neededEps) > 0 else []
+        try:
+            neededEpsResult = neededEps[episode]
+        except KeyError, e:
+            logger.log(u"SickRage at the moment doesn't manage multiepisode torrent", logger.DEBUG)
+        return neededEpsResult if len(neededEps) > 0 else []
+
 
     def listPropers(self, date=None, delimiter="."):
         myDB = self._getDB()
