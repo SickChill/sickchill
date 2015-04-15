@@ -230,7 +230,7 @@ def change_DOWNLOAD_PROPERS(download_propers):
     else:
         sickbeard.properFinderScheduler.enable = False
         sickbeard.traktCheckerScheduler.silent = True
-        logger.log(u"Waiting for the PROPERFINDER thread to exit", logger.INFO)
+        logger.log(u"Stopping PROPERFINDER thread", logger.INFO)
 
 def change_USE_TRAKT(use_trakt):
     use_trakt = checkbox_to_value(use_trakt)
