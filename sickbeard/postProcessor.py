@@ -201,7 +201,12 @@ class PostProcessor(object):
 
             if ek.ek(os.path.isfile, associated_file_path):
                 file_path_list.append(associated_file_path)
-
+        
+        if file_path_list:
+            self._log(u"Found the following associated files: " + str(file_path_list), logger.DEBUG)
+        else:
+            self._log(u"No associated files were during this pass", logger.DEBUG)
+            
         return file_path_list
 
     def _delete(self, file_path, associated_files=False):
