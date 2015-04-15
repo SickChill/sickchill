@@ -841,7 +841,7 @@ class PostProcessor(object):
         old_ep_status, old_ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
 
         # get the quality of the episode we're processing
-        if quality:
+        if quality and not common.Quality.qualityStrings[quality] == 'Unknown':
             self._log(u"Snatch history had a quality in it, using that: " + common.Quality.qualityStrings[quality],
                       logger.DEBUG)
             new_ep_quality = quality
