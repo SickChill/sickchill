@@ -1439,7 +1439,10 @@ class TVEpisode(object):
                         helpers.chmodAsParent(subtitle.path)
 
         except Exception as e:
-            logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
+            if e.code = 503:
+                logger.log("Service is unavailable. Try again later", logger.WARNING)                
+            else:
+                logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
             return
 
         if sickbeard.SUBTITLES_MULTI:
