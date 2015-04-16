@@ -207,10 +207,10 @@ class PLEXNotifier:
                     token_arg = '?X-Plex-Token=' + token
 
                 except urllib2.URLError as e:
-                    logger.log(u'PLEX: Error fetching credentials from from plex.tv for user %s: %s' % (username, ex(e)), logger.MESSAGE)
+                    logger.log(u'PLEX: Error fetching credentials from from plex.tv for user %s: %s' % (username, ex(e)), logger.DEBUG)
 
                 except (ValueError, IndexError) as e:
-                    logger.log(u'PLEX: Error parsing plex.tv response: ' + ex(e), logger.MESSAGE)
+                    logger.log(u'PLEX: Error parsing plex.tv response: ' + ex(e), logger.DEBUG)
                 
             file_location = '' if None is ep_obj else ep_obj.location
             host_list = [x.strip() for x in host.split(',')]
@@ -230,7 +230,7 @@ class PLEXNotifier:
 
                 sections = media_container.findall('.//Directory')
                 if not sections:
-                    logger.log(u'PLEX: Plex Media Server not running on: ' + cur_host, logger.MESSAGE)
+                    logger.log(u'PLEX: Plex Media Server not running on: ' + cur_host, logger.DEBUG)
                     hosts_failed.append(cur_host)
                     continue
 
@@ -264,9 +264,9 @@ class PLEXNotifier:
                     hosts_failed.append(cur_host)
 
             if len(hosts_match):
-                logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(host_list)), logger.MESSAGE)
+                logger.log(u'PLEX: Updating hosts where TV section paths match the downloaded show: ' + ', '.join(set(host_list)), logger.DEBUG)
             else:
-                logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(host_list)), logger.MESSAGE)
+                logger.log(u'PLEX: Updating all hosts with TV sections: ' + ', '.join(set(host_list)), logger.DEBUG)
 
             return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
 
