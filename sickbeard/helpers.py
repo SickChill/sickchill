@@ -1250,16 +1250,15 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
-def codeDescription(status_code=None):
+def codeDescription(status_code):
     """
     Returns the description of the URL error code
     """
-    try:
-        code_description = clients.http_error_code[status_code]
-    except:
-        logger.log(u"Unknown error code. Please submit an issue", logger.ERROR)
-        code_description = 'unknown'
-    return code_description
+    if status_code in clients.http_error_code:
+        return clients.http_error_code[status_code]
+    else:
+        logger.log(u"Unknown error code. Please submit an issue", logger.WARNING)
+        return 'unknown'
 
 def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
@@ -1297,7 +1296,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + self.codeDescription(resp.status_code), logger.DEBUG)
+                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return
 
         if proxyGlypeProxySSLwarning is not None:
@@ -1306,7 +1305,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
-                        resp.status_code) + ': ' + self.codeDescription(resp.status_code), logger.DEBUG)
+                        resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
                     return
 
     except requests.exceptions.HTTPError, e:
@@ -1351,7 +1350,7 @@ def download_file(url, filename, session=None):
             
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + self.codeDescription(resp.status_code), logger.DEBUG)
+                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return False
 
         with open(filename, 'wb') as fp:
