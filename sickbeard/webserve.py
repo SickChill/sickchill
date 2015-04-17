@@ -1954,7 +1954,11 @@ class Home(WebRoot):
         def getEpisodes(searchThread, searchstatus):
             results = []
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
-
+            
+            if not ShowObj:
+                logger.log('No Show Object found for show with indexerID: ' + searchThread.show.indexerid, logger.ERROR)
+                return results
+            
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
                 results.append({'show': searchThread.show.indexerid,
                                 'episode': searchThread.segment.episode,
