@@ -150,6 +150,12 @@ $(document).ready(function(){
                 $(torrent_verify_rtorrent).show();
                 $(torrent_auth_type_option).show();
                 //$('#directory_title').text(client + directory);
+            } else if ('qbittorrent' == selectedProvider){
+                client = 'qbittorrent';
+                $(torrent_path_option).hide();
+                $(torrent_label_option).hide();
+                $(torrent_label_anime_option).hide();
+                $('#host_desc_torrent').text('URL to your qbittorrent client (e.g. http://localhost:8080)');
             }
             $('#host_title').text(client + host);
             $('#username_title').text(client + username);

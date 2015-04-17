@@ -20,7 +20,8 @@ __all__ = ['utorrent',
            'transmission',
            'deluge',
            'download_station',
-           'rtorrent'
+           'rtorrent',
+           'qbittorrent'
 ]
 
 import sickbeard
@@ -115,6 +116,7 @@ default_host = {'utorrent': 'http://localhost:8000',
                 'deluge': 'http://localhost:8112',
                 'download_station': 'http://localhost:5000',
                 'rtorrent': 'scgi://localhost:5000',
+                'qbittorrent': 'http://localhost:8080'
 }
 
 
