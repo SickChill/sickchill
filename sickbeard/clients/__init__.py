@@ -70,7 +70,7 @@ http_error_code = {
     415: 'Unsupported Media Type',
     416: 'Requested Range Not Satisfiable',
     417: 'Expectation Failed',
-    418: 'I'm a teapot',
+    418: 'Im a teapot',
     419: 'Authentication Timeout',
     420: 'Enhance Your Calm',
     422: 'Unprocessable Entity',
