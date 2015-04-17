@@ -1229,8 +1229,7 @@ class Home(WebRoot):
                 t.submenu.append(
                     {'title': 'Force Full Update', 'path': 'home/updateShow?show=%d&amp;force=1' % showObj.indexerid})
                 t.submenu.append({'title': 'Update show in KODI',
-                                  'path': 'home/updateKODI?showName=%s' % urllib.quote_plus(
-                                      showObj.name.encode('utf-8')), 'requires': self.haveKODI})
+                                  'path': 'home/updateKODI?show=%d' % showObj.indexerid, 'requires': self.haveKODI})
                 t.submenu.append({'title': 'Preview Rename', 'path': 'home/testRename?show=%d' % showObj.indexerid})
                 if sickbeard.USE_SUBTITLES and not sickbeard.showQueueScheduler.action.isBeingSubtitled(
                         showObj) and showObj.subtitles:
@@ -1668,8 +1667,14 @@ class Home(WebRoot):
         return self.redirect("/home/displayShow?show=" + str(showObj.indexerid))
 
 
-    def updateKODI(self, showName=None):
-
+    def updateKODI(self, show=None):        
+        showName=None
+        
+        if show:
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+            if showObj:
+                showName=urllib.quote_plus(showObj.name.encode('utf-8'))
+            
         # only send update to first host in the list -- workaround for kodi sql backend users
         if sickbeard.KODI_UPDATE_ONLYFIRST:
             # only send update to first host in the list -- workaround for kodi sql backend users
@@ -1681,8 +1686,11 @@ class Home(WebRoot):
             ui.notifications.message("Library update command sent to KODI host(s): " + host)
         else:
             ui.notifications.error("Unable to contact one or more KODI host(s): " + host)
-        return self.redirect('/home/')
-
+            
+        if showObj:
+            return self.redirect('/home/displayShow?show=' + str(showObj.indexerid))
+        else:
+            return self.redirect('/home/')
 
     def updatePLEX(self):
         if notifiers.plex_notifier.update_library():
