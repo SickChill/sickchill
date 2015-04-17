@@ -276,6 +276,6 @@ class UIError():
     """
 
     def __init__(self, message):
-        self.title = sys.exc_info()[-2]
+        self.title = sys.exc_info()[-2] or message
         self.message = message
         self.time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
