@@ -986,22 +986,7 @@ class Home(WebRoot):
         else:
             return '{"message": "Unable to find NMJ Database at location: %(dbloc)s. Is the right location selected and PCH running?", "database": ""}' % {
                 "dbloc": dbloc}
-
-
-    def togglePause(self, cmd=None, showid=None):
-        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(showid))
-        if not showObj:
-            return "Show not found"
-
-        if cmd == "Pause":
-            showObj.paused = 1
-            showObj.saveToDB()
-            return "Complete"
-        else:
-            showObj.paused = 0
-            showObj.saveToDB()
-            return "Complete"
-    
+   
     def testTrakt(self, username=None, password=None, disable_ssl=None, blacklist_name=None):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if disable_ssl == 'true':
@@ -1223,6 +1208,11 @@ class Home(WebRoot):
 
         if not sickbeard.showQueueScheduler.action.isBeingAdded(showObj):
             if not sickbeard.showQueueScheduler.action.isBeingUpdated(showObj):
+                if showObj.paused:
+                    t.submenu.append({'title': 'Resume', 'path': 'home/togglePause?show=%d' % showObj.indexerid})
+                else:
+                    t.submenu.append({'title': 'Pause', 'path': 'home/togglePause?show=%d' % showObj.indexerid})
+                    
                 t.submenu.append(
                     {'title': 'Remove', 'path': 'home/deleteShow?show=%d' % showObj.indexerid, 'confirm': True})
                 t.submenu.append({'title': 'Re-scan files', 'path': 'home/refreshShow?show=%d' % showObj.indexerid})
@@ -1576,6 +1566,25 @@ class Home(WebRoot):
         return self.redirect("/home/displayShow?show=" + show)
 
 
+    def togglePause(self, show=None):
+        if show is None:
+            return self._genericMessage("Error", "Invalid show ID")
+        
+        showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+        if showObj is None:
+            return self._genericMessage("Error", "Unable to find the specified show")
+
+        if showObj.paused:
+            showObj.paused = 0           
+        else:
+            showObj.paused = 1
+
+        showObj.saveToDB()
+
+        ui.notifications.message('<b>%s</b> has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
+        return self.redirect("/home/displayShow?show=" + show)
+        
     def deleteShow(self, show=None, full=0):
 
         if show is None:
@@ -5022,10 +5031,6 @@ class ErrorLogs(WebRoot):
             if os.path.isfile(logger.logFile + "." + str(i)) and (len(data) <= maxLines):
                 with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
-
-        
-
-               
 
         result = "".join(data)
 
