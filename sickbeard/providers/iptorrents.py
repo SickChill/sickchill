@@ -60,7 +60,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
 
         self.urls = {'base_url': 'https://iptorrents.eu',
                 'login': 'https://iptorrents.eu/torrents/',
-                'search': 'https://iptorrents.eu/torrents/t?%s%s&q=%s&qf=#torrents',
+                'search': 'https://iptorrents.eu/t?%s%s&q=%s&qf=#torrents',
         }
 
         self.url = self.urls['base_url']
