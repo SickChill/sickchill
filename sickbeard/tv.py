@@ -1437,7 +1437,8 @@ class TVEpisode(object):
                     for subtitle in subtitles.get(video):
                         added_subtitles.append(subtitle.language.alpha2)
                         helpers.chmodAsParent(subtitle.path)
-
+        except ServiceError as e:
+            logger.log("Service is unavailable: {0}".format(str(e)), logger.INFO)
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
             return
