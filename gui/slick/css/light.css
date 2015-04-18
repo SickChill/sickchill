@@ -1184,8 +1184,8 @@ span.snatched b {
 
 .displayShowTable th.row-seasonheader {
 	border: none !important;
-	background-color: #222 !important;
-	color: #fff !important;
+	background-color: #fff !important;
+	color: #000 !important; 
 	padding-top: 15px !important;
 	text-align: left !important;
 }
