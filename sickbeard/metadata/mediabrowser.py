@@ -265,9 +265,6 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         if getattr(myShow, 'id', None) is not None:
             indexerid.text = str(myShow['id'])
 
-        indexer = etree.SubElement(tv_node, "indexer")
-        if show_obj.indexer != None:
-            indexer.text = str(show_obj.indexer)
 
         SeriesName = etree.SubElement(tv_node, "SeriesName")
         if getattr(myShow, 'seriesname', None) is not None:
@@ -494,9 +491,6 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
                 indexerid = etree.SubElement(episode, "id")
                 indexerid.text = str(curEpToWrite.indexerid)
-
-                indexer = etree.SubElement(episode, "indexer")
-                indexer.text = str(curEpToWrite.show.indexer)
 
                 Persons = etree.SubElement(episode, "Persons")
 
