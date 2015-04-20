@@ -182,19 +182,21 @@ class T411Provider(generic.TorrentProvider):
 
                         if len(torrents) > 0:
                             for torrent in torrents:
+                                try:
+                                    torrent_name = torrent['name']
+                                    torrent_id = torrent['id']
+                                    torrent_download_url = (self.urls['download'] % torrent_id).encode('utf8')
 
-                                torrent_name = torrent['name']
-                                torrent_id = torrent['id']
-                                torrent_download_url = (self.urls['download'] % torrent_id).encode('utf8')
+                                    if not torrent_name or not torrent_download_url:
+                                        continue
 
-                                if not torrent_name or not torrent_download_url:
+                                    item = torrent_name, torrent_download_url
+                                    logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
+                                               logger.DEBUG)
+                                    items[mode].append(item)
+                                except Exception as e:
+                                    logger.log(u"Invalid torrent data, skipping results: {0}".format(str(torrent)), logger.DEBUG)
                                     continue
-
-                                item = torrent_name, torrent_download_url
-                                logger.log(u"Found result: " + torrent_name + " (" + torrent_download_url + ")",
-                                           logger.DEBUG)
-                                items[mode].append(item)
-
                         else:
                             logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
                                        logger.WARNING)
