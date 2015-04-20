@@ -1,19 +1,60 @@
+### 4.0.17 (2015-04-19)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.16...v4.0.17)
+
+* libnotify: Use gir-notify instead of pynotify.
+* Fix for xml_declaration unexpected keyword in python 2.6.
+* Fix UnboundLocalError exception can be thrown at piList.append(curQueueItem).
+* Fix Auto determine indexer when indexer tag not present in nfo.
+* Fix editShow: Select the default indexer language instead of forcing en.
+* Fix Catch emailnotify smtp error.
+* Fix Change log timeout errors to WARNING in requests provider clients.
+* Fix Ignore OSError when obtaining the size of a path in get_size.
+* New Add RSS to EZTV provider.
+* New SceneTime provider.
+* Fix iptorrent: Add missing import.
+* New Add Pause Button on displayShow page.
+* Fix Episode Thumbnail url when show is in DVD Order.
+* Fix Catch all errors from Kodi notify.
+* Fix Add user agent to RARBG when login.
+* New Use better logging for get_size exceptions.
+* New Added qbittorrent support.
+* Fix rarbg: remove urllib.quote.
+* Update PNotify to latest version.
+* Fix Plex Notification.
+* New added the option to use Plex Token vs Username / Password.
+* Fix PP Case Sensitive associated files check.
+* Fix unknown quality being accepted as a valid quality in PP.
+* Fix added notification of unsupported multiepisode torrent.
+* Fix proper: saveSearch broken for download propers.
+* New Add logline to show found associated files.
+* New Add a log line containing connecting IP on login.
+* Fix eztv provider.
+* Fix Title of None for Errors submitted through UI.
+* New Stay on Show Page after "Update Kodi".
+* Fix NoneType object has no attribute getOverview.
+* New  Manage Rolling Download on unpause from submenu button.
+* Fix provide a more detailed http code error.
+* Fix Show subtitle service unavailable as info.
+* New Column Selection for displayShow.
+* Fix Update IPTorrents search URL.
+
 ### 4.0.16 (2015-04-12)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.15...v4.0.16)
 
-* 	New Feature: Added option to add a filter row on main show page (enabled in general settings - interface)
-* 	New Feature: added scheduling status page
-* 	Fixed EZTV rss blank result
-* 	Fixed RARBG tokend
-* 	Fixed Home page filter: change to allow to use parsed data for active(yes/no)
-* 	Fixed OldTPB: Check if the returned results ar proper|repack
-* 	Don't display paused show in backlogOverview
-* 	Trakt Sync by Episode not by Show
-* 	Added gzip setting in config.ini
-* 	Added TRAKTROLLING to filter in viewlog
-* 	Redone Scheduler
-* 	Replace fuzzy images on Add Show ( Add Trending) 
+* New Feature: Added option to add a filter row on main show page (enabled in general settings - interface)
+* New Feature: added scheduling status page
+* Fixed EZTV rss blank result
+* Fixed RARBG tokend
+* Fixed Home page filter: change to allow to use parsed data for active(yes/no)
+* Fixed OldTPB: Check if the returned results ar proper|repack
+* Don't display paused show in backlogOverview
+* Trakt Sync by Episode not by Show
+* Added gzip setting in config.ini
+* Added TRAKTROLLING to filter in viewlog
+* Redone Scheduler
+* Replace fuzzy images on Add Show ( Add Trending) 
 
 ### 4.0.15 (2015-04-05)
 
