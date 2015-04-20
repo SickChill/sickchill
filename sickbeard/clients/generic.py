@@ -61,7 +61,7 @@ class GenericClient(object):
             logger.log(self.name + u': Invalid HTTP Request ' + str(e), logger.ERROR)
             return False
         except requests.exceptions.Timeout, e:
-            logger.log(self.name + u': Connection Timeout ' + str(e), logger.ERROR)
+            logger.log(self.name + u': Connection Timeout ' + str(e), logger.WARNING)
             return False
         except Exception, e:
             logger.log(self.name + u': Unknown exception raised when send torrent to ' + self.name + ': ' + str(e),

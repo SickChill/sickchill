@@ -259,5 +259,5 @@ $(document).ready(function () {
             sceneAbsolute = m[1];
         }
         setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
-    });
+    });   
 });

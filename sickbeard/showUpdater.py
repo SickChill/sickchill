@@ -78,16 +78,14 @@ class ShowUpdater():
                 # if should_update returns True (not 'Ended') or show is selected stale 'Ended' then update, otherwise just refresh
                 if curShow.should_update(update_date=update_date) or curShow.indexerid in stale_should_update:
                     try:
-                        curQueueItem = sickbeard.showQueueScheduler.action.updateShow(curShow, True)  # @UndefinedVariable
+                        piList.append(sickbeard.showQueueScheduler.action.updateShow(curShow, True))  # @UndefinedVariable
                     except exceptions.CantUpdateException as e:
                         logger.log("Unable to update show: {0}".format(str(e)),logger.DEBUG)
                 else:
                     logger.log(
                         u"Not updating episodes for show " + curShow.name + " because it's marked as ended and last/next episode is not within the grace period.",
                         logger.DEBUG)
-                    curQueueItem = sickbeard.showQueueScheduler.action.refreshShow(curShow, True)  # @UndefinedVariable
-
-                piList.append(curQueueItem)
+                    piList.append(sickbeard.showQueueScheduler.action.refreshShow(curShow, True))  # @UndefinedVariable
 
             except (exceptions.CantUpdateException, exceptions.CantRefreshException), e:
                 logger.log(u"Automatic update failed: " + ex(e), logger.ERROR)

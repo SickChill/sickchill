@@ -47,6 +47,7 @@ __all__ = ['ezrss',
            'tntvillage',
            'binsearch',
            'eztv',
+           'scenetime',
 ]
 
 import sickbeard

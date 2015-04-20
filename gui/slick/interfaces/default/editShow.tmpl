@@ -78,7 +78,7 @@
 
 <b>Info Language:</b><br />
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />
-<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="en" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select><br />
+<select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="#echo $sickbeard.INDEXER_DEFAULT_LANGUAGE#" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select><br />
 <br />
 
 <b>Flatten files (no folders): </b> <input type="checkbox" name="flatten_folders" #if $show.flatten_folders == 1 and not $sickbeard.NAMING_FORCE_FOLDERS then "checked=\"checked\"" else ""# #if $sickbeard.NAMING_FORCE_FOLDERS then "disabled=\"disabled\"" else ""#/><br />

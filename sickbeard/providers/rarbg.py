@@ -30,7 +30,7 @@ from lib import requests
 from lib.requests import exceptions
 
 import sickbeard
-from sickbeard.common import Quality
+from sickbeard.common import Quality, USER_AGENT
 from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard import show_name_helpers
@@ -62,13 +62,13 @@ class RarbgProvider(generic.TorrentProvider):
         self.token = None
         self.tokenExpireDate = None
 
-        self.urls = {'url': 'https://rarbg.com',
-                     'token': 'https://torrentapi.org/pubapi.php?get_token=get_token&format=json',
-                     'listing': 'https://torrentapi.org/pubapi.php?mode=list',
-                     'search': 'https://torrentapi.org/pubapi.php?mode=search&search_string={search_string}',
-                     'search_tvdb': 'https://torrentapi.org/pubapi.php?mode=search&search_tvdb={tvdb}&search_string={search_string}',
-                     'search_tvrage': 'https://torrentapi.org/pubapi.php?mode=search&search_tvrage={tvrage}&search_string={search_string}',
-                     'api_spec': 'https://rarbg.com/pubapi/apidocs.txt',
+        self.urls = {'url': u'https://rarbg.com',
+                     'token': u'https://torrentapi.org/pubapi.php?get_token=get_token&format=json',
+                     'listing': u'https://torrentapi.org/pubapi.php?mode=list',
+                     'search': u'https://torrentapi.org/pubapi.php?mode=search&search_string={search_string}',
+                     'search_tvdb': u'https://torrentapi.org/pubapi.php?mode=search&search_tvdb={tvdb}&search_string={search_string}',
+                     'search_tvrage': u'https://torrentapi.org/pubapi.php?mode=search&search_tvrage={tvrage}&search_string={search_string}',
+                     'api_spec': u'https://rarbg.com/pubapi/apidocs.txt',
                      }
 
         self.url = self.urls['listing']
@@ -92,6 +92,8 @@ class RarbgProvider(generic.TorrentProvider):
         self.next_request = datetime.datetime.now()
 
         self.cache = RarbgCache(self)
+        
+        self.headers = {'User-Agent': USER_AGENT}
 
     def isEnabled(self):
         return self.enabled
@@ -107,7 +109,7 @@ class RarbgProvider(generic.TorrentProvider):
         resp_json = None
 
         try:
-            response = self.session.get(self.urls['token'], timeout=30, verify=False)
+            response = self.session.get(self.urls['token'], timeout=30, verify=False, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
         except RequestException as e:
@@ -204,18 +206,18 @@ class RarbgProvider(generic.TorrentProvider):
                     searchURL = self.urls['listing'] + self.defaultOptions
                 elif mode == 'Season':
                     if ep_indexer == INDEXER_TVDB:
-                        searchURL = self.urls['search_tvdb'].format(search_string=urllib.quote(search_string), tvdb=ep_indexerid) + self.defaultOptions
+                        searchURL = self.urls['search_tvdb'].format(search_string=search_string, tvdb=ep_indexerid) + self.defaultOptions
                     elif ep_indexer == INDEXER_TVRAGE:
-                        searchURL = self.urls['search_tvrage'].format(search_string=urllib.quote(search_string), tvrage=ep_indexerid) + self.defaultOptions
+                        searchURL = self.urls['search_tvrage'].format(search_string=search_string, tvrage=ep_indexerid) + self.defaultOptions
                     else:
-                        searchURL = self.urls['search'].format(search_string=urllib.quote(search_string)) + self.defaultOptions
+                        searchURL = self.urls['search'].format(search_string=search_string) + self.defaultOptions
                 elif mode == 'Episode':
                     if ep_indexer == INDEXER_TVDB:
-                        searchURL = self.urls['search_tvdb'].format(search_string=urllib.quote(search_string), tvdb=ep_indexerid) + self.defaultOptions
+                        searchURL = self.urls['search_tvdb'].format(search_string=search_string, tvdb=ep_indexerid) + self.defaultOptions
                     elif ep_indexer == INDEXER_TVRAGE:
-                        searchURL = self.urls['search_tvrage'].format(search_string=urllib.quote(search_string), tvrage=ep_indexerid) + self.defaultOptions
+                        searchURL = self.urls['search_tvrage'].format(search_string=search_string, tvrage=ep_indexerid) + self.defaultOptions
                     else:
-                        searchURL = self.urls['search'].format(search_string=urllib.quote(search_string)) + self.defaultOptions
+                        searchURL = self.urls['search'].format(search_string=search_string) + self.defaultOptions
                 else:
                     logger.log(u'{name} invalid search mode:{mode}'.format(name=self.name, mode=mode), logger.ERROR)
 

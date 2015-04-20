@@ -299,20 +299,11 @@
 							<label for="filter_row">
 								<span class="component-title">Filter Row</span>
 								<span class="component-desc">
-									<input type="checkbox" name="filter_row" id="display_filesize" #if $sickbeard.FILTER_ROW == True then 'checked="checked"' else ''#/>
+									<input type="checkbox" name="filter_row" id="filter_row" #if $sickbeard.FILTER_ROW == True then 'checked="checked"' else ''#/>
 									<p>Add a filter row to the show display on the home page</p>
 								</span>
 							</label>
 						</div>                        
-						<div class="field-pair">
-							<label for="display_filesize">
-								<span class="component-title">Display Filesizes</span>
-								<span class="component-desc">
-									<input type="checkbox" name="display_filesize" id="display_filesize" #if $sickbeard.DISPLAY_FILESIZE == True then 'checked="checked"' else ''#/>
-									<p>display filesizes for downloaded episodes on show page</p>
-								</span>
-							</label>
-						</div>
 						<div class="field-pair">
 							<label for="coming_eps_missed_range">
 								<span class="component-title">Missed episodes range</span>

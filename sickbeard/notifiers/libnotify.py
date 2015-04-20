@@ -29,10 +29,11 @@ def diagnose():
     user-readable message indicating possible issues.
     '''
     try:
-        import pynotify  #@UnusedImport
+        from gi.repository import Notify #@UnusedImport
     except ImportError:
-        return (u"<p>Error: pynotify isn't installed.  On Ubuntu/Debian, install the "
-                u"<a href=\"apt:python-notify\">python-notify</a> package.")
+        return (u"<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
+                u"<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "
+                u"<a href=\"apt:gir1.0-notify-0.4\">gir1.0-notify-0.4</a> package.")
     if 'DISPLAY' not in os.environ and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
         return (u"<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
                 u"aren't set.  libnotify will only work when you run SickRage "
@@ -58,26 +59,26 @@ def diagnose():
 
 class LibnotifyNotifier:
     def __init__(self):
-        self.pynotify = None
+        self.Notify = None
         self.gobject = None
 
-    def init_pynotify(self):
-        if self.pynotify is not None:
+    def init_notify(self):
+        if self.Notify is not None:
             return True
         try:
-            import pynotify
+            from gi.repository import Notify
         except ImportError:
-            logger.log(u"Unable to import pynotify. libnotify notifications won't work.", logger.ERROR)
+            logger.log(u"Unable to import Notify from gi.repository. libnotify notifications won't work.", logger.ERROR)
             return False
         try:
             import gobject
         except ImportError:
             logger.log(u"Unable to import gobject. We can't catch a GError in display.", logger.ERROR)
             return False
-        if not pynotify.init('SickRage'):
-            logger.log(u"Initialization of pynotify failed. libnotify notifications won't work.", logger.ERROR)
+        if not Notify.init('SickRage'):
+            logger.log(u"Initialization of Notify failed. libnotify notifications won't work.", logger.ERROR)
             return False
-        self.pynotify = pynotify
+        self.Notify = Notify
         self.gobject = gobject
         return True
 
@@ -105,18 +106,17 @@ class LibnotifyNotifier:
     def _notify(self, title, message, force=False):
         if not sickbeard.USE_LIBNOTIFY and not force:
             return False
-        if not self.init_pynotify():
+        if not self.init_notify():
             return False
 
         # Can't make this a global constant because PROG_DIR isn't available
         # when the module is imported.
-        icon_path = os.path.join(sickbeard.PROG_DIR, "data/images/sickbeard_touch_icon.png")
-        icon_uri = 'file://' + os.path.abspath(icon_path)
+        icon_path = os.path.join(sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
 
         # If the session bus can't be acquired here a bunch of warning messages
         # will be printed but the call to show() will still return True.
         # pynotify doesn't seem too keen on error handling.
-        n = self.pynotify.Notification(title, message, icon_uri)
+        n = self.Notify.Notification.new(title, message, icon_path)
         try:
             return n.show()
         except self.gobject.GError:

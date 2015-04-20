@@ -176,6 +176,73 @@
 
                         <div id="content_use_plex">
                             <div class="field-pair">
+                                <label for="plex_server_token">
+                                    <span class="component-title">Plex Media Server Auth Token</span>
+                                    <input type="text" name="plex_server_token" id="plex_server_token" value="$sickbeard.PLEX_SERVER_TOKEN" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Auth Token used by plex</span>
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">(<a href="<%= anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
+                                </label>
+                            </div>                        
+							<div class="component-group" style="padding: 0; min-height: 130px">
+								<div class="field-pair">
+									<label for="plex_username">
+										<span class="component-title">Server/client username</span>
+										<span class="component-desc">
+											<input type="text" name="plex_username" id="plex_username" value="$sickbeard.PLEX_USERNAME" class="form-control input-sm input250" />
+											<p>blank = no authentication</p>
+										</span>
+									</label>
+								</div>
+								<div class="field-pair">
+									<label for="plex_password">
+										<span class="component-title">Server/client password</span>
+										<span class="component-desc">
+											<input type="password" name="plex_password" id="plex_password" value="#echo '*' * len($sickbeard.PLEX_PASSWORD)#" class="form-control input-sm input250" />
+											<p>blank = no authentication</p>
+										</span>
+									</label>
+								</div>
+							</div>
+                        
+							<div class="component-group" style="padding: 0; min-height: 50px">
+								<div class="field-pair">
+									<label for="plex_update_library">
+										<span class="component-title">Update server library</span>
+										<span class="component-desc">
+											<input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" #if $sickbeard.PLEX_UPDATE_LIBRARY then 'checked="checked" ' else ''#/>
+											<p>update Plex Media Server library when a download finishes</p>
+										</span>
+									</label>
+								</div>
+								<div id="content_plex_update_library">
+									<div class="field-pair">
+										<label for="plex_server_host">
+											<span class="component-title">Plex Media Server IP:Port</span>
+											<span class="component-desc">
+												<input type="text" name="plex_server_host" id="plex_server_host" value="<%= re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST) %>" class="form-control input-sm input350" />
+												<div class="clear-left">
+													<p>one or more hosts running Plex Media Server<br />(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
+												</div>
+											</span>
+										</label>
+									</div>
+
+									<div class="field-pair">
+										<div class="testNotification" id="testPMS-result">Click below to test Plex server(s)</div>
+										<input class="btn" type="button" value="Test Plex Server" id="testPMS" />
+										<input type="submit" class="config_submitter btn" value="Save Changes" />
+										<div class="clear-left">&nbsp;</div>
+									</div>
+								</div>
+							</div>
+                                    
+                            <div class="field-pair">
                                 <label for="plex_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
@@ -203,77 +270,24 @@
                                 </label>
                             </div>
                             <div class="field-pair">
-                                <label for="plex_update_library">
-                                    <span class="component-title">Update library</span>
+                                <label for="plex_host">
+                                    <span class="component-title">Plex Client IP:Port</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="plex_update_library" id="plex_update_library" #if $sickbeard.PLEX_UPDATE_LIBRARY then "checked=\"checked\"" else ""# />
-                                        <p>update Plex Media Server library when a download finishes ?</p>
+                                        <input type="text" name="plex_host" id="plex_host" value="$sickbeard.PLEX_HOST" class="form-control input-sm input350" />
+                                        <div class="clear-left">
+                                            <p>one or more hosts running Plex client<br />(eg. 192.168.1.100:3000, 192.168.1.101:3000)</p>
+                                        </div>
                                     </span>
                                 </label>
                             </div>
-                            <div class="field-pair">
-                                <label for="plex_server_host">
-                                    <span class="component-title">Plex Media Server IP:Port</span>
-                                    <input type="text" name="plex_server_host" id="plex_server_host" value="$sickbeard.PLEX_SERVER_HOST" class="form-control input-sm input250" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">host running Plex Media Server (eg. 192.168.1.100:32400)</span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="plex_server_token">
-                                    <span class="component-title">Plex Media Server Auth Token</span>
-                                    <input type="text" name="plex_server_token" id="plex_server_token" value="$sickbeard.PLEX_SERVER_TOKEN" class="form-control input-sm input250" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">Auth Token used by plex</span>
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">(<a href="<%= anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="plex_host">
-                                    <span class="component-title">Plex Client IP:Port</span>
-                                    <input type="text" name="plex_host" id="plex_host" value="$sickbeard.PLEX_HOST" class="form-control input-sm input350" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">host running Plex Client (eg. 192.168.1.100:3000)</span>
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">(multiple host strings must be separated by commas)</span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="plex_username">
-                                    <span class="component-title">Plex Client username</span>
-                                    <input type="text" name="plex_username" id="plex_username" value="$sickbeard.PLEX_USERNAME" class="form-control input-sm input250" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">username for your Plex client API (blank for none)</span>
-                                </label>
-                            </div>
-                            <div class="field-pair">
-                                <label for="plex_password">
-                                    <span class="component-title">Plex Client password</span>
-                                    <input type="password" name="plex_password" id="plex_password" value="$sickbeard.PLEX_PASSWORD" class="form-control input-sm input250" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                    <span class="component-desc">password for your Plex client API (blank for none)</span>
-                                </label>
-                            </div>
-                            <div class="testNotification" id="testPLEX-result">Click below to test.</div>
-                            <input class="btn" type="button" value="Test Plex Client" id="testPLEX" />
-                            <input type="submit" class="config_submitter btn" value="Save Changes" />
-                        </div><!-- /content_use_plex -->
 
+                            <div class="field-pair">
+                                <div class="testNotification" id="testPMC-result">Click below to test Plex client(s)</div>
+                                <input class="btn" type="button" value="Test Plex Client" id="testPMC" />
+                                <input type="submit" class="config_submitter btn" value="Save Changes" />
+                                <div class=clear-left><p>Note: some Plex clients <b class="boldest">do not</b> support notifications e.g. Plexapp for Samsung TVs</p></div>
+                            </div>
+                        </div><!-- /content_use_plex -->
                     </fieldset>
                 </div><!-- /plex component-group -->
 

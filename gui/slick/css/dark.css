@@ -1192,6 +1192,29 @@ span.snatched b {
 	opacity: 0.4;
 }
 
+.displayShowTable {
+	table-layout: auto;
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	text-align: center;
+	border: none;
+	empty-cells: show;
+	color: #000 !important;
+}
+
+.displayShowTable.display_show {
+	clear:both
+}
+
+.displayShowTable th.row-seasonheader {
+	border: none !important;
+	background-color: #222 !important;
+	color: #fff !important;
+	padding-top: 15px !important;
+	text-align: left !important;
+}
+  
 .sickbeardTable {
 	table-layout: auto;
 	width: 100%;

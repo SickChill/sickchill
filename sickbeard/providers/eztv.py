@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
-
 import traceback
 import re, datetime
 
@@ -26,6 +25,7 @@ from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import logger, tvcache, db
 from sickbeard.common import Quality
+from sickbeard.bs4_parser import BS4Parser
 
 class EZTVProvider(generic.TorrentProvider):
 
@@ -39,8 +39,9 @@ class EZTVProvider(generic.TorrentProvider):
         self.cache = EZTVCache(self)
 
         self.urls = {
-            'base_url': 'http://eztvapi.re/',
-            'show': 'http://eztvapi.re/show/%s',
+            'base_url': 'https://eztv.ch/',
+            'rss': 'https://eztv.ch/',
+            'episode': 'http://eztvapi.re/show/%s',
         }
 
         self.url = self.urls['base_url']
@@ -68,12 +69,15 @@ class EZTVProvider(generic.TorrentProvider):
         return [search_string]
 
     def getQuality(self, item, anime=False):
-        if item.get('quality') == "480p":
-            return Quality.SDTV
-        elif item.get('quality') == "720p":
-            return Quality.HDWEBDL
-        elif item.get('quality') == "1080p":
-            return Quality.FULLHDWEBDL
+        if 'quality' in item:
+            if item.get('quality') == "480p":
+                return Quality.SDTV
+            elif item.get('quality') == "720p":
+                return Quality.HDWEBDL
+            elif item.get('quality') == "1080p":
+                return Quality.FULLHDWEBDL
+            else:
+                return Quality.sceneQuality(item.get('title'), anime)
         else:
             return Quality.sceneQuality(item.get('title'), anime)
 
@@ -84,49 +88,83 @@ class EZTVProvider(generic.TorrentProvider):
 
         for mode in search_params.keys():
 
-            if mode != 'Episode':
-                logger.log(u"" + self.name + " does not accept " + mode + " mode", logger.DEBUG)
-                return results
+            if mode == 'RSS':
+                for search_string in search_params[mode]:
+                    searchURL = self.urls['rss']
+                    logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
 
-            for search_string in search_params[mode]:
+                    HTML = self.getURL(searchURL)
+                    if not HTML:
+                        logger.log(u"" + self.name + " could not retrieve page URL:" + searchURL, logger.DEBUG)
+                        return results
 
-                searchURL = self.urls['show'] % (search_string['imdb_id'])
-                logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
+                    try:
+                        with BS4Parser(HTML, features=["html5lib", "permissive"]) as parsedHTML:
+                            resultsTable = parsedHTML.find_all('tr', attrs={'name': 'hover', 'class': 'header_brd'})
 
-                try:
-                    parsedJSON = self.getURL(searchURL, json=True)
-                except ValueError as e:
-                    parsedJSON = None
+                            if not resultsTable:
+                                logger.log(u"The Data returned from " + self.name + " do not contains any torrent",
+                                           logger.DEBUG)
+                                continue
 
-                if not parsedJSON:
-                    logger.log(u"" + self.name + " could not retrieve page URL:" + searchURL, logger.DEBUG)
-                    return results
+                            for entries in resultsTable:
+                                title = entries.find('a', attrs={'class': 'epinfo'}).contents[0]
+                                link = entries.find('a', attrs={'class': 'magnet'}).get('href')
 
-            try:
-                for episode in parsedJSON['episodes']:
-                    if int(episode.get('season')) == search_string.get('season') and \
-                       int(episode.get('episode')) == search_string.get('episode'):
+                                item = {
+                                    'title': title,
+                                    'link': link,
+                                }
 
-                        for quality in episode['torrents'].keys():
-                            link = episode['torrents'][quality]['url']
-                            title = re.search('&dn=(.*?)&', link).group(1)
-
-                            item = {
-                                'title': title,
-                                'link': link,
-                                'quality': quality
-                            }
-
-                            # re.search in case of PROPER|REPACK. In other cases
-                            # add_string is empty, so condition is met.
-                            if re.search(search_string.get('add_string'), title):
                                 items[mode].append(item)
 
-                        break
+                    except Exception, e:
+                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                                    logger.ERROR)
 
-            except Exception, e:
-                logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
-                            logger.ERROR)
+            elif mode == 'Episode':
+                for search_string in search_params[mode]:
+                    searchURL = self.urls['episode'] % (search_string['imdb_id'])
+                    logger.log(u"" + self.name + " search page URL: " + searchURL, logger.DEBUG)
+
+                    try:
+                        parsedJSON = self.getURL(searchURL, json=True)
+                    except ValueError as e:
+                        parsedJSON = None
+
+                    if not parsedJSON:
+                        logger.log(u"" + self.name + " could not retrieve page URL:" + searchURL, logger.DEBUG)
+                        return results
+
+                    try:
+                        for episode in parsedJSON['episodes']:
+                            if int(episode.get('season')) == search_string.get('season') and \
+                               int(episode.get('episode')) == search_string.get('episode'):
+
+                                for quality in episode['torrents'].keys():
+                                    link = episode['torrents'][quality]['url']
+                                    title = re.search('&dn=(.*?)&', link).group(1)
+
+                                    item = {
+                                        'title': title,
+                                        'link': link,
+                                        'quality': quality
+                                    }
+
+                                    # re.search in case of PROPER|REPACK. In other cases
+                                    # add_string is empty, so condition is met.
+                                    if 'add_string' in search_string and  re.search(search_string.get('add_string'), title):
+                                        items[mode].append(item)
+
+                                break
+
+                    except Exception, e:
+                        logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),
+                                    logger.ERROR)
+
+            else:
+                logger.log(u"" + self.name + " does not accept " + mode + " mode", logger.DEBUG)
+                return results
 
             results += items[mode]
 

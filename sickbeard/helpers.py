@@ -1037,6 +1037,9 @@ def validateShow(show, season=None, episode=None):
         if indexer_lang and not indexer_lang == sickbeard.INDEXER_DEFAULT_LANGUAGE:
             lINDEXER_API_PARMS['language'] = indexer_lang
 
+        if show.dvdorder != 0:
+            lINDEXER_API_PARMS['dvdorder'] = True
+            
         t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)
         if season is None and episode is None:
             return t
@@ -1247,6 +1250,16 @@ def _getTempDir():
 
     return os.path.join(tempfile.gettempdir(), "sickrage-%s" % (uid))
 
+def codeDescription(status_code):
+    """
+    Returns the description of the URL error code
+    """
+    if status_code in clients.http_error_code:
+        return clients.http_error_code[status_code]
+    else:
+        logger.log(u"Unknown error code. Please submit an issue", logger.WARNING)
+        return 'unknown'
+
 def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
@@ -1283,7 +1296,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
+                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return
 
         if proxyGlypeProxySSLwarning is not None:
@@ -1292,7 +1305,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
-                        resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
+                        resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
                     return
 
     except requests.exceptions.HTTPError, e:
@@ -1334,9 +1347,10 @@ def download_file(url, filename, session=None):
 
     try:
         resp = session.get(url)
+            
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + clients.http_error_code[resp.status_code], logger.DEBUG)
+                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return False
 
         with open(filename, 'wb') as fp:
@@ -1409,7 +1423,11 @@ def get_size(start_path='.'):
     for dirpath, dirnames, filenames in ek.ek(os.walk, start_path):
         for f in filenames:
             fp = ek.ek(os.path.join, dirpath, f)
-            total_size += ek.ek(os.path.getsize, fp)
+            try:
+                total_size += ek.ek(os.path.getsize, fp)
+            except OSError as e:
+                logger.log('Unable to get size for file {filePath}. Error msg is: {errorMsg}'.format(filePath=fp, errorMsg=str(e)), logger.ERROR)
+                logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
 def generateApiKey():
