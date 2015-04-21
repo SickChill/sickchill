@@ -184,12 +184,12 @@ class PLEXNotifier:
                 password = sickbeard.PLEX_PASSWORD
                 
             if not plex_server_token:
-                token = sickbeard.PLEX_SERVER_TOKEN
+                plex_server_token = sickbeard.PLEX_SERVER_TOKEN
             
             # if username and password were provided, fetch the auth token from plex.tv
             token_arg = ''
             if plex_server_token:
-                token_arg = '?X-Plex-Token=' + sickbeard.PLEX_SERVER_TOKEN            
+                token_arg = '?X-Plex-Token=' + plex_server_token
             elif username and password:
                 logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
                 req = urllib2.Request('https://plex.tv/users/sign_in.xml', data='')
