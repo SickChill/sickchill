@@ -164,10 +164,6 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'id', None) is not None:
             indexerid.text = str(myShow["id"])
 
-        indexer = etree.SubElement(tv_node, "indexer")
-        if show_obj.indexer is not None:
-            indexer.text = str(show_obj.indexer)
-
         genre = etree.SubElement(tv_node, "genre")
         if getattr(myShow, 'genre', None) is not None:
             if isinstance(myShow["genre"], basestring):
