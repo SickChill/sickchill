@@ -1979,7 +1979,7 @@ class Home(WebRoot):
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
             
             if not showObj:
-                logger.log('No Show Object found for show with indexerID: ' + searchThread.show.indexerid, logger.ERROR)
+                logger.log('No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.ERROR)
                 return results
             
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
