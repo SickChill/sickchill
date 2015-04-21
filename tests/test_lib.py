@@ -145,7 +145,7 @@ class TestDBConnection(db.DBConnection, object):
 
     def __init__(self, dbFileName=TESTDBNAME):
         dbFileName = os.path.join(TESTDIR, dbFileName)
-        super(TestDBConnection, self).__init__(dbFileName, testdb=True)
+        super(TestDBConnection, self).__init__(dbFileName)
 
 
 class TestCacheDBConnection(TestDBConnection, object):
@@ -198,26 +198,19 @@ def tearDown_test_db():
     """Deletes the test db
         although this seams not to work on my system it leaves me with an zero kb file
     """
-    # uncomment next line so leave the db intact between test and at the end
-    # return False
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTDBNAME))
-    except:
-        pass
+    #uncomment next line so leave the db intact between test and at the end
+    #return False
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTCACHEDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTCACHEDBNAME))
-    except:
-        pass
+    for current_db in [ TESTDBNAME, TESTCACHEDBNAME, TESTFAILEDDBNAME ]:
+        for file_name in [ os.path.join(TESTDIR, current_db), os.path.join(TESTDIR, current_db + '-journal') ]:
+            if os.path.exists(file_name):
+                try:
+                    os.remove(file_name)
+                except (IOError, OSError) as e:
+                    print 'ERROR: Failed to remove ' + file_name
+                    print ex(e)
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTFAILEDDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTFAILEDDBNAME))
-    except:
-        pass
 
 def setUp_test_episode_file():
     if not os.path.exists(FILEDIR):

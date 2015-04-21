@@ -46,7 +46,7 @@ def dbFilename(filename="sickbeard.db", suffix=None):
     return ek.ek(os.path.join, sickbeard.DATA_DIR, filename)
 
 class DBConnection(object):
-    def __init__(self, filename="sickbeard.db", suffix=None, row_type=None, testdb=False):
+    def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
 
         self.filename = filename
         self.suffix = suffix
@@ -59,9 +59,7 @@ class DBConnection(object):
                 self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
                 self.connection.text_factory = self._unicode_text_factory
                 self.connection.isolation_level = None
-                if testdb:
-                    self.connection.cursor().execute('''PRAGMA journal_mode = MEMORY''')
-                    self.connection.commit()
+                self.connection.cursor().execute('''PRAGMA locking_mode = EXCLUSIVE''')
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]
