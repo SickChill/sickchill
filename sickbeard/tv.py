@@ -52,6 +52,7 @@ from sickbeard import history
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from dateutil.tz import *
+from lib.subliminal.exceptions import ServiceError
 
 from sickbeard import encodingKludge as ek
 
