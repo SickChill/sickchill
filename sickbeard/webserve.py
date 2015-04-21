@@ -1708,7 +1708,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
     def updatePLEX(self):
-        if notifiers.plex_notifier.update_library():
+        if None is notifiers.plex_notifier.update_library():
             ui.notifications.message(
                 "Library update command sent to Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST)
         else:
