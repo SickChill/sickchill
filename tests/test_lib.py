@@ -145,7 +145,7 @@ class TestDBConnection(db.DBConnection, object):
 
     def __init__(self, dbFileName=TESTDBNAME):
         dbFileName = os.path.join(TESTDIR, dbFileName)
-        super(TestDBConnection, self).__init__(dbFileName)
+        super(TestDBConnection, self).__init__(dbFileName, testdb=True)
 
 
 class TestCacheDBConnection(TestDBConnection, object):
@@ -245,7 +245,6 @@ def tearDown_test_show_dir():
     if os.path.exists(SHOWDIR):
         shutil.rmtree(SHOWDIR)
 
-tearDown_test_db()
 
 if __name__ == '__main__':
     print "=================="
