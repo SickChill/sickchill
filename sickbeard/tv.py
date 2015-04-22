@@ -1440,6 +1440,7 @@ class TVEpisode(object):
                         helpers.chmodAsParent(subtitle.path)
         except ServiceError as e:
             logger.log("Service is unavailable: {0}".format(str(e)), logger.INFO)
+            return
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
             return
