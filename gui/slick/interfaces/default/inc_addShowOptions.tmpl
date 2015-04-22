@@ -37,6 +37,7 @@
             </label>
         </div>
 
+#if $enable_anime_options
 		<div class="field-pair alt">
             <label for="anime" class="clearfix">
                 <span class="component-title">Anime</span>
@@ -46,6 +47,7 @@
                 </span>
             </label>
         </div>
+#end if
 
         <div class="field-pair alt">
 
@@ -72,3 +74,10 @@
                 </span>
             </label>
         </div><br>
+
+#if $enable_anime_options        
+#import sickbeard.blackandwhitelist
+#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
+#else
+		<input type="hidden" name="anime" id="anime" value="0" />
+#end if

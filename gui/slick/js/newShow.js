@@ -84,7 +84,7 @@ $(document).ready(function () {
             alert('You must choose a show to continue');
             return false;
         }
-
+        generate_bwlist()
         $('#addShowForm').submit();
     });
 
@@ -138,7 +138,7 @@ $(document).ready(function () {
         } else {
             show_name = '';
         }
-
+        update_bwlist(show_name);
         var sample_text = 'Adding show <b>' + show_name + '</b> into <b>';
 
         // if we have a root dir selected, figure out the path
@@ -194,4 +194,32 @@ $(document).ready(function () {
         }
     });
 
+    $('#anime').change (function () {
+        updateSampleText();
+        myform.loadsection(2);
+    });
+
+    function update_bwlist (show_name) {
+        $('#white').children().remove();
+        $('#black').children().remove();
+        $('#pool').children().remove();
+
+        if ($('#anime').prop('checked')) {
+            $('#blackwhitelist').show();
+            if (show_name) {
+                $.getJSON(sbRoot + '/home/fetch_releasegroups', {'show_name': show_name}, function (data) {
+                if (data['result'] == 'success') {
+                    $.each(data.groups, function(i, group) {
+                        var option = $("<option>");
+                        option.attr("value", group.name);
+                        option.html(group.name + ' | ' + group.rating + ' | ' + group.range);
+                        option.appendTo('#pool');
+                    });
+                }
+             });
+            }
+        } else {
+            $('#blackwhitelist').hide();
+        }
+    };
 });

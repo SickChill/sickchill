@@ -1935,32 +1935,19 @@ div.blackwhitelist{
 	float:left;
 	text-align: center; 
 }
-
 div.blackwhitelist input {
-    margin: 5px 5px;
+    margin: 5px 0px;
 }
-
 div.blackwhitelist.pool select{
-    width: 300px;
+    min-width: 230px;
 }
-
-div.blackwhitelist.pool {
-    margin:5px;
-}
-
 div.blackwhitelist.white select, div.blackwhitelist.black select {
-	width: 180px;
+	min-width: 150px;
 }
-
-div.blackwhitelist.white, div.blackwhitelist.black {
-	margin:5px;
-}
-
 div.blackwhitelist span {
 	display: block;
 	text-align: center;
 }
-
 div.blackwhitelist.anidb, div.blackwhitelist.manual {
 	margin: 7px 0px;
 }
