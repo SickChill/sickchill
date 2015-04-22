@@ -283,7 +283,7 @@ class GenericProvider:
             # mark season searched for season pack searches so we can skip later on
             searched_scene_season = epObj.scene_season
 
-            if len(episodes) > 1:
+            if len(episodes) > 1 and search_mode == 'sponly':
                 # get season search results
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
