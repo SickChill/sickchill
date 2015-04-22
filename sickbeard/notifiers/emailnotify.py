@@ -20,6 +20,7 @@
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
 import smtplib
+import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
