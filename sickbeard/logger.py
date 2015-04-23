@@ -151,6 +151,7 @@ class Logger(object):
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
+            self.log('Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
             return
 
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
@@ -184,7 +185,7 @@ class Logger(object):
                     title_Error = u"Unable to extract title from error"
 
                 gist = None
-                regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
+                regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
                     x = ek.ss(x)
                     match = re.match(regex, x)
@@ -219,14 +220,30 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + title_Error, message)
-                if issue:
-                    self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
+                title_Error = u"[APP SUBMITTED]: " + title_Error
+                reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues()
+
+                issue_found = False
+                issue_id = 0
+                for report in reports:
+                    if title_Error == report.title:
+                        comment = report.create_comment(message)
+                        if comment:
+                            issue_id = report.number
+                            self.log('Commented on existing issue #%s successfully!'  % issue_id )
+                            issue_found = True
+                        break
+
+                if not issue_found:
+                    issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue(title_Error, message)
+                    if issue:
+                        issue_id = issue.number
+                        self.log('Your issue ticket #%s was submitted successfully!'  % issue_id )
 
                 # clear error from error list
                 classes.ErrorViewer.errors.remove(curError)
 
-                return issue
+                return issue_id
         except Exception as e:
             self.log(sickbeard.exceptions.ex(e), ERROR)
 

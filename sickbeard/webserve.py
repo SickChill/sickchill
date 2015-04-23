@@ -5066,8 +5066,8 @@ class ErrorLogs(WebRoot):
             ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
-            issue = logger.submit_errors()
-            if issue:
-                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+            issue_id = logger.submit_errors()
+            if issue_id:
+                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue_id)
 
         return self.redirect("/errorlogs/")
