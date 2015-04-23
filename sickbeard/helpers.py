@@ -1520,7 +1520,7 @@ def verify_freespace(src, dest, oldfile=None):
 
     if not ek.ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. " + src + " is not a file.", logger.WARNING)
-        return False
+        return True
     
     try:
         diskfree = disk_usage(dest)
@@ -1570,7 +1570,7 @@ def isFileLocked(file, writeLockCheck=False):
     @param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     '''
     if(not(os.path.exists(file))):
-        return False
+        return True
     try:
         f = open(file, 'r')
         f.close()
