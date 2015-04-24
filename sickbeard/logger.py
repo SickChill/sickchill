@@ -177,12 +177,13 @@ class Logger(object):
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
-                    if len(str(curError.title)) > 1024:
-                        title_Error = str(curError.title)[0:1024]
-                    else:
-                        title_Error = str(curError.title)
+                    title_Error = str(curError.title)
+                    if not len(title_Error) or title_Error == 'None':
+                        title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ek.ss(str(curError.message))).group(1)
+                    if len(title_Error) > 1024:
+                        title_Error = title_Error[0:1024]
                 except Exception as e:
-                    title_Error = u"Unable to extract title from error"
+                    self.log("Unable to get error title : " + sickbeard.exceptions.ex(e), ERROR)
 
                 gist = None
                 regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
