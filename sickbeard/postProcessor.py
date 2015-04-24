@@ -1076,7 +1076,7 @@ class PostProcessor(object):
         notifiers.kodi_notifier.update_library(ep_obj.show.name)
 
         # do the library update for Plex
-        notifiers.plex_notifier.update_library()
+        notifiers.plex_notifier.update_library(ep_obj)
 
         # do the library update for NMJ
         # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
