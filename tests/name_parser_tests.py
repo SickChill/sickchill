@@ -348,6 +348,7 @@ class BasicTests(test.SickbeardTestDBCase):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         suite = unittest.TestLoader().loadTestsFromName('name_parser_tests.BasicTests.test_'+sys.argv[1])
+        unittest.TextTestRunner(verbosity=2).run(suite)
     else:
         suite = unittest.TestLoader().loadTestsFromTestCase(BasicTests)
     unittest.TextTestRunner(verbosity=2).run(suite)

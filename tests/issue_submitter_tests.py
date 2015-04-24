@@ -37,9 +37,11 @@ def error():
         sickbeard.logger.submit_errors()
         raise
 
+
 class IssueSubmitterBasicTests(unittest.TestCase):
     def test_submitter(self):
         self.assertRaises(Exception, error)
+
 
 if __name__ == "__main__":
     print "=================="
@@ -47,3 +49,4 @@ if __name__ == "__main__":
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(IssueSubmitterBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)
