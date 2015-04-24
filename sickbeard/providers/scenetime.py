@@ -178,11 +178,16 @@ class SceneTimeProvider(generic.TorrentProvider):
                             logger.log(u"The Data returned from %s does not contain any torrent links" % self.name,
                                        logger.DEBUG)
                             continue
+                       
+                        # Scenetime apparently uses different number of cells in #torrenttable based
+                        # on who you are. This works around that by extracting labels from the first
+                        # <tr> and using their index to find the correct download/seeders/leechers td.
+                        labels = [ label.get_text() for label in torrent_rows[0].find_all('td') ]
 
                         for result in torrent_rows[1:]:
                             cells = result.find_all('td')
 
-                            link = cells[1].find('a');
+                            link = cells[labels.index('Name')].find('a');
 
                             full_id = link['href'].replace('details.php?id=', '')
                             torrent_id = full_id.split("&")[0]
@@ -195,8 +200,9 @@ class SceneTimeProvider(generic.TorrentProvider):
                                 download_url = self.urls['download'] % (torrent_id, filename)
                               
                                 id = int(torrent_id)
-                                seeders = int(cells[6].get_text())
-                                leechers = int(cells[7].get_text())
+                                seeders = int(cells[labels.index('Seeders')].get_text())
+                                leechers = int(cells[labels.index('Leechers')].get_text())
+
                             except (AttributeError, TypeError):
                                 continue
 
