@@ -5067,7 +5067,9 @@ class ErrorLogs(WebRoot):
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
             issue_id = logger.submit_errors()
-            if issue_id:
+            if issue_id == 'RUNNING':
+                ui.notifications.message('Issue submitter is running, please wait for it to complete')
+            elif issue_id: 
                 ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue_id)
 
         return self.redirect("/errorlogs/")

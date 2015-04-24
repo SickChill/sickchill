@@ -82,6 +82,8 @@ class Logger(object):
         self.debugLogging = False
         self.logFile = None
 
+        self.submitter_running = False
+
     def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
         self.logFile = self.logFile or os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
         self.debugLogging = debugLogging
@@ -153,6 +155,11 @@ class Logger(object):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
             self.log('Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
             return
+
+        if self.submitter_running:
+            return 'RUNNING'
+
+        self.submitter_running = True
 
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
         gh_repo = 'sickrage-issues'
@@ -244,10 +251,12 @@ class Logger(object):
                 # clear error from error list
                 classes.ErrorViewer.errors.remove(curError)
 
+                self.submitter_running = False
                 return issue_id
         except Exception as e:
             self.log(sickbeard.exceptions.ex(e), ERROR)
 
+        self.submitter_running = False
 
 class Wrapper(object):
     instance = Logger()
@@ -263,4 +272,3 @@ class Wrapper(object):
 
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
-
