@@ -3713,7 +3713,7 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None, debug=None, no_restart=None, coming_eps_missed_range=None,
                     filter_row=None, fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None,
-                    git_reset=None, git_username=None, git_password=None, git_autoissues=None):
+                    git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
 
         results = []
 
@@ -3751,7 +3751,8 @@ class ConfigGeneral(Config):
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range,default=7)
-
+        sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
+        
         sickbeard.WEB_PORT = config.to_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()

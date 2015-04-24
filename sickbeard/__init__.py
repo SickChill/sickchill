@@ -182,6 +182,8 @@ TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
 SORT_ARTICLE = False
 DEBUG = False
+DISPLAY_ALL_SEASONS = True
+
 
 USE_LISTVIEW = False
 METADATA_KODI = None
@@ -572,7 +574,7 @@ def initialize(consoleLogging=True):
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
             ANIME_SPLIT_HOME, SCENE_DEFAULT, DOWNLOAD_URL, BACKLOG_DAYS, GIT_ORG, GIT_REPO, GIT_USERNAME, GIT_PASSWORD, \
-            GIT_AUTOISSUES, DEVELOPER, gh
+            GIT_AUTOISSUES, DEVELOPER, gh, DISPLAY_ALL_SEASONS
 
         if __INITIALIZED__:
             return False
@@ -1131,6 +1133,7 @@ def initialize(consoleLogging=True):
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1)
         FILTER_ROW =  bool(check_setting_int(CFG, 'GUI', 'filter_row', 0))
+        DISPLAY_ALL_SEASONS = bool(check_setting_int(CFG, 'General', 'display_all_seasons', 1))
 
         # initialize NZB and TORRENT providers
         providerList = providers.makeProviderList()
@@ -1709,6 +1712,7 @@ def save_config():
     new_config['General']['calendar_unprotected'] = int(CALENDAR_UNPROTECTED)
     new_config['General']['no_restart'] = int(NO_RESTART)
     new_config['General']['developer'] = int(DEVELOPER)
+    new_config['General']['display_all_seasons'] = int(DISPLAY_ALL_SEASONS)
 
     new_config['Blackhole'] = {}
     new_config['Blackhole']['nzb_dir'] = NZB_DIR
