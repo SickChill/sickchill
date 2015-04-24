@@ -341,7 +341,7 @@ class PostProcessor(object):
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError), e:
-                self._log("Unable to move file " + cur_file_path + " to " + new_file_path + ": " + str(e), logger.ERROR)
+                self._log("Unable to move file " + cur_file_path + " to " + new_file_path + ": " + ex(e), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move,
