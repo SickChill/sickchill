@@ -62,11 +62,11 @@ class MoreThanTVProvider(generic.TorrentProvider):
 
         self.cache = MoreThanTVCache(self)
 
-        self.urls = {'base_url': 'http://www.morethan.tv/',
-                'login': 'http://www.morethan.tv/login.php',
-                'detail': 'http://www.morethan.tv/torrents.php?id=%s',
-                'search': 'http://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
-                'download': 'http://www.morethan.tv/torrents.php?action=download&id=%s',
+        self.urls = {'base_url': 'https://www.morethan.tv/',
+                'login': 'https://www.morethan.tv/login.php',
+                'detail': 'https://www.morethan.tv/torrents.php?id=%s',
+                'search': 'https://www.morethan.tv/torrents.php?tags_type=1&order_by=time&order_way=desc&action=basic&searchsubmit=1&searchstr=%s',
+                'download': 'https://www.morethan.tv/torrents.php?action=download&id=%s',
                 }
 
         self.url = self.urls['base_url']
