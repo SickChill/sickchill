@@ -1684,6 +1684,7 @@ class Home(WebRoot):
 
     def updateKODI(self, show=None):        
         showName=None
+        showObj=None
         
         if show:
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
