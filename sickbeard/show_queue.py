@@ -29,6 +29,7 @@ from sickbeard import exceptions, logger, ui, db, notifiers
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
+from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 
 
 class ShowQueue(generic_queue.GenericQueue):
