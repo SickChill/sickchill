@@ -2361,48 +2361,50 @@ class HomeAddShows(Home):
         return t.respond()
 
     def getRecommendedShows(self):
-        final_results = []
+        t = PageTemplate(rh=self, file="trendingShows.tmpl")
+        t.submenu = self.HomeMenu()
 
-        logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-
+        t.trending_shows = []
+        
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
-            recommendedlist = trakt_api.traktRequest("recommendations/shows?extended=full,images")
+            not_liked_show = ""
+            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
+                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+            else:
+                logger.log(u"trending blacklist name is empty", logger.DEBUG)
 
-            if recommendedlist:
-                indexers = ['tvdb', 'tvrage']
-                map(final_results.append, (
-                    [int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
-                     'http://www.trakt.tv/shows/%s' % show['ids']['slug'], show['title'],
-                     show['overview'],
-                     None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime(sickbeard.DATE_PRESET)]
-                    for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                    int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+            shows = trakt_api.traktRequest("recommendations/shows?extended=full,images") or []
+
+            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+            
+            for show_detail in shows:
+                show = {}
+                show['show']=show_detail
+                try:
+                    tvdb_id = int(show['show']['ids']['tvdb'])
+                    tvrage_id = int(show['show']['ids']['tvrage'] or 0)
+                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
+                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                            if not_liked_show:
+                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
+                                    t.trending_shows += [show]
+                            else:
+                                t.trending_shows += [show]
+
+                except exceptions.MultipleShowObjectsException:
+                    continue
+
+            if sickbeard.TRAKT_BLACKLIST_NAME != '':
+                t.blacklist = True
+            else:
+                t.blacklist = False
+
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return json.dumps({'results': final_results})
-
-    def addRecommendedShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-                           anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                           fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                           scene=None):
-
-        indexer = 1
-        indexer_name = sickbeard.indexerApi(int(indexer)).name
-        show_url = whichSeries.split('|')[1]
-        indexer_id = whichSeries.split('|')[0]
-        show_name = whichSeries.split('|')[2]
-
-        if indexerLang is None:
-            indexerLang = sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        return self.addNewShow('|'.join([indexer_name, str(indexer), show_url, indexer_id, show_name, ""]),
-                               indexerLang, rootDir,
-                               defaultStatus,
-                               anyQualities, bestQualities, flatten_folders, subtitles, fullShowPath, other_shows,
-                               skipShow, providedIndexer, anime, scene)
+        return t.respond()
 
     def trendingShows(self):
         """
@@ -2443,11 +2445,10 @@ class HomeAddShows(Home):
                 try:
                     tvdb_id = int(show['show']['ids']['tvdb'])
                     tvrage_id = int(show['show']['ids']['tvrage'] or 0)
-                    if not helpers.findCertainShow(sickbeard.showList,
-                                                   [tvdb_id, tvrage_id]):
+                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
+                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
                                     t.trending_shows += [show]
                             else:
                                 t.trending_shows += [show]
