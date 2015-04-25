@@ -138,12 +138,10 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 <br />
 
 #if $show.is_anime:
-#from sickbeard.blackandwhitelist import *
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
+    #from sickbeard.blackandwhitelist import *
+    #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
+    <script type="text/javascript" src="$sbRoot/js/blackwhite.js?$sbPID"></script>
 #end if
-
-<input type="hidden" name="whitelist" id="whitelist"/>
-<input type="hidden" name="blacklist" id="blacklist"/>
 
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>
@@ -151,7 +149,7 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 <script type="text/javascript" charset="utf-8">
 <!--
     var all_exceptions = new Array;
-
+    
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
    
     \$('#submit').click(function(){
@@ -162,22 +160,12 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
         });
         
         \$("#exceptions_list").val(all_exceptions);
-
-        var realvalues = [];
-
-        \$('#white option').each(function(i, selected) {
-            realvalues[i] = \$(selected).val();
+  
+        #if $show.is_anime:
+            generate_bwlist()
+            
+        #end if
         });
-        \$("#whitelist").val(realvalues.join(","));
-
-        realvalues = [];
-        \$('#black option').each(function(i, selected) {
-            realvalues[i] = \$(selected).val();
-        });
-        \$("#blacklist").val(realvalues.join(","));
-
-    });  
-   
     \$('#addSceneName').click(function() {
         var scene_ex = \$('#SceneName').val()
         var option = \$("<option>")
@@ -219,43 +207,6 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
     }
 
     \$(this).toggle_SceneException();
-
-    \$('#removeW').click(function() {
-        return !\$('#white option:selected').remove().appendTo('#pool');
-    });
-    \$('#addW').click(function() {
-        return !\$('#pool option:selected').remove().appendTo('#white');
-    });
-    \$('#addB').click(function() {
-        return !\$('#pool option:selected').remove().appendTo('#black');
-     });
-    \$('#removeP').click(function() {
-        return !\$('#pool option:selected').remove();
-    });
-    \$('#removeB').click(function() {
-        return !\$('#black option:selected').remove().appendTo('#pool');
-    });
-
-    \$('#addToWhite').click(function() {
-        var group = \$('#addToPoolText').val()
-        if(group == "")
-            return
-        \$('#addToPoolText').val("")
-        var option = \$("<option>")
-        option.prop("value",group)
-        option.html(group)
-        return option.appendTo('#white');
-    });
-    \$('#addToBlack').click(function() {
-        var group = \$('#addToPoolText').val()
-        if(group == "")
-            return
-        \$('#addToPoolText').val("")
-        var option = \$("<option>")
-        option.prop("value",group)
-        option.html(group)
-        return option.appendTo('#black');
-    });
 
 //-->
 </script>

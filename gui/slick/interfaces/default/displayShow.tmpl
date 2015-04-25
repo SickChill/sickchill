@@ -267,14 +267,16 @@
                 #if $show.rls_ignore_words:
                     <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
                 #end if
-                #if $bwl and $bwl.get_white_keywords_for("release_group"):
-                    <tr><td class="showLegend">Wanted Group#if len($bwl.get_white_keywords_for("release_group"))>1 then "s" else ""#:</td>
-                    <td>#echo ', '.join($bwl.get_white_keywords_for("release_group"))#</td>
+                #if $bwl and $bwl.whitelist:
+                    <tr>
+                        <td class="showLegend">Wanted Group#if len($bwl.whitelist)>1 then "s" else ""#:</td>
+                        <td>#echo ', '.join($bwl.whitelist)#</td>
                     </tr>
                 #end if
-                #if $bwl and $bwl.get_black_keywords_for("release_group"):
-                    <tr><td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
-                    <td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
+                #if $bwl and $bwl.blacklist:
+                    <tr>
+                        <td class="showLegend">Unwanted Group#if len($bwl.blacklist)>1 then "s" else ""#:</td>
+                        <td>#echo ', '.join($bwl.blacklist)#</td>
                     </tr>
                 #end if
 
