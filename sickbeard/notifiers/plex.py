@@ -57,7 +57,7 @@ class PLEXNotifier:
             password = sickbeard.PLEX_PASSWORD
 
         if not host:
-            logger.log(u'PLEX: No host specified, check your settings', logger.ERROR)
+            logger.log(u'PLEX: No host specified, check your settings', logger.WARNING)
             return False
 
         for key in command:
@@ -224,7 +224,7 @@ class PLEXNotifier:
                     xml_tree = etree.parse(urllib.urlopen(url))
                     media_container = xml_tree.getroot()
                 except IOError, e:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.ERROR)
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
                     continue
 
@@ -260,7 +260,7 @@ class PLEXNotifier:
                     force and urllib.urlopen(url)
                     host_list.append(cur_host)
                 except Exception, e:
-                    logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.ERROR)
+                    logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
 
             if len(hosts_match):
