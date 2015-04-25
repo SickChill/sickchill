@@ -29,6 +29,7 @@
     </a>
 
 	<br/><br/>
+    #if $sickbeard.USE_TRAKT == True:	
     <a href="$sbRoot/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
@@ -38,7 +39,7 @@
     </a>
 
     <br/><br/>
-    #if $sickbeard.USE_TRAKT == True:
+
 	<a href="$sbRoot/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
