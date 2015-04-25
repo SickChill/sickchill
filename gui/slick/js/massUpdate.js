@@ -51,18 +51,42 @@ $(document).ready(function(){
       }
     });
 
-    $('.deleteCheck').each(function() {
-      if (this.checked == true) {
-        deleteArr.push($(this).attr('id').split('-')[1])
-      }
-    });
-	
 	$('.removeCheck').each(function() {
 	  if (this.checked == true) {
 		removeArr.push($(this).attr('id').split('-')[1])
 	  }
 	});
+    
+    var deleteCount = 0;
 
+    $('.deleteCheck').each(function() {
+        if (this.checked == true) {
+            deleteCount++;
+        }
+    });
+    
+    if (deleteCount >= 1) {
+        bootbox.confirm("You have selected to delete " + deleteCount + " show(s).  Are you sure you wish to cntinue? All files will be removed from your system.", function(result) {
+            if (result) {
+                $('.deleteCheck').each(function() {
+                    if (this.checked == true) {
+                        deleteArr.push($(this).attr('id').split('-')[1])
+                    }
+                });
+            }
+            if (updateArr.length+refreshArr.length+renameArr.length+subtitleArr.length+deleteArr.length+removeArr.length+metadataArr.length == 0)
+                return false;                   
+            url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
+            window.location.href = url
+        });
+    }
+    else
+    {
+        if (updateArr.length+refreshArr.length+renameArr.length+subtitleArr.length+deleteArr.length+removeArr.length+metadataArr.length == 0)
+            return false;
+        url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|');
+        window.location.href = url       
+    }
 /*
     $('.metadataCheck').each(function() {
       if (this.checked == true) {
@@ -70,12 +94,6 @@ $(document).ready(function(){
       }
     });
 */
-    if (updateArr.length+refreshArr.length+renameArr.length+subtitleArr.length+deleteArr.length+removeArr.length+metadataArr.length == 0)
-      return false
-
-    url = 'massUpdate?toUpdate='+updateArr.join('|')+'&toRefresh='+refreshArr.join('|')+'&toRename='+renameArr.join('|')+'&toSubtitle='+subtitleArr.join('|')+'&toDelete='+deleteArr.join('|')+'&toRemove='+removeArr.join('|')+'&toMetadata='+metadataArr.join('|')
-
-    window.location.href = url
 
   });
 
