@@ -422,7 +422,7 @@ def searchForNeededEpisodes():
     if not didSearch:
         logger.log(
             u"No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
-            logger.ERROR)
+            logger.WARNING)
 
     return foundResults.values()
 
@@ -714,6 +714,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     if not didSearch:
         logger.log(u"No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
-                   logger.ERROR)
+                   logger.WARNING)
 
     return finalResults
