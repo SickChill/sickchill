@@ -17,6 +17,7 @@
 
 <script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
 
+
 <input type="hidden" id="sbRoot" value="$sbRoot" />
 
 <script type="text/javascript" src="$sbRoot/js/displayShow.js?$sbPID"></script>
@@ -25,6 +26,7 @@
 <script type="text/javascript" src="$sbRoot/js/ratingTooltip.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSubtitles.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/lib/jquery.collapser.min.js?$sbPID"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
@@ -265,14 +267,16 @@
                 #if $show.rls_ignore_words:
                     <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
                 #end if
-                #if $bwl and $bwl.get_white_keywords_for("release_group"):
-                    <tr><td class="showLegend">Wanted Group#if len($bwl.get_white_keywords_for("release_group"))>1 then "s" else ""#:</td>
-                    <td>#echo ', '.join($bwl.get_white_keywords_for("release_group"))#</td>
+                #if $bwl and $bwl.whitelist:
+                    <tr>
+                        <td class="showLegend">Wanted Group#if len($bwl.whitelist)>1 then "s" else ""#:</td>
+                        <td>#echo ', '.join($bwl.whitelist)#</td>
                     </tr>
                 #end if
-                #if $bwl and $bwl.get_black_keywords_for("release_group"):
-                    <tr><td class="showLegend">Unwanted Group#if len($bwl.get_black_keywords_for("release_group"))>1 then "s" else ""#:</td>
-                    <td>#echo ', '.join($bwl.get_black_keywords_for("release_group"))#</td>
+                #if $bwl and $bwl.blacklist:
+                    <tr>
+                        <td class="showLegend">Unwanted Group#if len($bwl.blacklist)>1 then "s" else ""#:</td>
+                        <td>#echo ', '.join($bwl.blacklist)#</td>
                     </tr>
                 #end if
 
@@ -340,6 +344,7 @@
 
 <table #if not $show.is_anime then "id=\"showTable\"" else "id=\"animeTable\""# class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
 #set $curSeason = -1
+#set $seasonCount = 0
 #set $odd = 0
     #for $epResult in $sqlResults:
         #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
@@ -405,8 +410,12 @@
     </thead>            
     <tbody class="tablesorter-no-sort">      
         <tr>
-            <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;"><h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3></th>
-        </tr>            
+            <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;">          
+                <h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+            </th>
+        </tr>
+    </tbody>
+    <tbody class="tablesorter-no-sort">
         <tr id="season-$epResult["season"]-cols" class="seasoncols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
             <th class="col-metadata">NFO</th>
@@ -428,8 +437,30 @@
     </tbody>
     <tbody class="tablesorter-no-sort">       
         <tr>
-            <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;"><h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3></th>
-        </tr>            
+                <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;">
+                    <div class="pull-left"> <h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3></div>
+                #if $sickbeard.DISPLAY_ALL_SEASONS == False and $seasonCount >= 1:
+                    <div class="pull-right">
+                        <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']"><span class="sgicon-arrowdown"></span> Show Episodes</button>
+                    <script type="text/javascript">
+                    <!--
+                        \$(function() {
+                            \$('#collapseSeason-$epResult['season']').on('hide.bs.collapse', function () {
+                                \$('#showseason-$epResult['season']').html('<span class="sgicon-arrowdown"></span> Show Episodes');
+                            })
+                            \$('#collapseSeason-$epResult['season']').on('show.bs.collapse', function () {
+                                \$('#showseason-$epResult['season']').html('<span class="sgicon-arrowup"></span> Hide Episodes');
+                            })
+                        });
+                    //-->
+                    </script>
+                    </div>                    
+                #end if
+
+            </th>
+        </tr>
+    </tbody>
+    <tbody class="tablesorter-no-sort">
         <tr id="season-$epResult["season"]-cols" class="seasoncols">
             <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
             <th class="col-metadata">NFO</th>
@@ -449,7 +480,12 @@
         </tr>                    
             #end if
     </tbody>
+                #set $seasonCount = $seasonCount + 1
+                #if $sickbeard.DISPLAY_ALL_SEASONS == False and $seasonCount >= 2:
+    <tbody class="collapse" id="collapseSeason-$epResult['season']">
+                #else
     <tbody>
+                #end if  
             #set $curSeason = int($epResult["season"])
         #end if
         #set $epLoc = $epResult["location"]            

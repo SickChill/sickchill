@@ -62,7 +62,7 @@ class CensoredFormatter(logging.Formatter, object):
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub('apikey\=[^\&]*\&','apikey\=**********\&', msg)
+        msg = re.sub(r'(r|apikey|api_key)=[^&]*([&\w]?)',r'\1=**********\2', msg)
         return msg
 
 
@@ -81,6 +81,8 @@ class Logger(object):
         self.fileLogging = False
         self.debugLogging = False
         self.logFile = None
+
+        self.submitter_running = False
 
     def initLogging(self, consoleLogging=False, fileLogging=False, debugLogging=False):
         self.logFile = self.logFile or os.path.join(sickbeard.LOG_DIR, 'sickrage.log')
@@ -151,7 +153,13 @@ class Logger(object):
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
+            self.log('Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
             return
+
+        if self.submitter_running:
+            return 'RUNNING'
+
+        self.submitter_running = True
 
         gh_org = sickbeard.GIT_ORG or 'SiCKRAGETV'
         gh_repo = 'sickrage-issues'
@@ -176,15 +184,16 @@ class Logger(object):
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
                 try:
-                    if len(str(curError.title)) > 1024:
-                        title_Error = str(curError.title)[0:1024]
-                    else:
-                        title_Error = str(curError.title)
+                    title_Error = str(curError.title)
+                    if not len(title_Error) or title_Error == 'None':
+                        title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ek.ss(str(curError.message))).group(1)
+                    if len(title_Error) > 1024:
+                        title_Error = title_Error[0:1024]
                 except Exception as e:
-                    title_Error = u"Unable to extract title from error"
+                    self.log("Unable to get error title : " + sickbeard.exceptions.ex(e), ERROR)
 
                 gist = None
-                regex = "^(%s)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$" % curError.time
+                regex = "^(%s)\s+([A-Z]+)\s+([0-9A-Z\-]+)\s*(.*)$" % curError.time
                 for i, x in enumerate(log_data):
                     x = ek.ss(x)
                     match = re.match(regex, x)
@@ -219,17 +228,35 @@ class Logger(object):
                 message += u"---\n"
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
-                issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue("[APP SUBMITTED]: " + title_Error, message)
-                if issue:
-                    self.log('Your issue ticket #%s was submitted successfully!' % issue.number)
+                title_Error = u"[APP SUBMITTED]: " + title_Error
+                reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues()
+
+                issue_found = False
+                issue_id = 0
+                for report in reports:
+                    if title_Error == report.title:
+                        comment = report.create_comment(message)
+                        if comment:
+                            issue_id = report.number
+                            self.log('Commented on existing issue #%s successfully!'  % issue_id )
+                            issue_found = True
+                        break
+
+                if not issue_found:
+                    issue = gh.get_organization(gh_org).get_repo(gh_repo).create_issue(title_Error, message)
+                    if issue:
+                        issue_id = issue.number
+                        self.log('Your issue ticket #%s was submitted successfully!'  % issue_id )
 
                 # clear error from error list
                 classes.ErrorViewer.errors.remove(curError)
 
-                return issue
+                self.submitter_running = False
+                return issue_id
         except Exception as e:
             self.log(sickbeard.exceptions.ex(e), ERROR)
 
+        self.submitter_running = False
 
 class Wrapper(object):
     instance = Logger()
@@ -245,4 +272,3 @@ class Wrapper(object):
 
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
-

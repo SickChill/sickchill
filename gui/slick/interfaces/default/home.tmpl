@@ -79,6 +79,40 @@
     type: 'numeric'
 });
 
+\$.tablesorter.addParser({ 
+    id: 'eps',
+    is: function(s) {
+        return false; 
+    },
+    format: function(s) {
+        match = s.match(/^(.*)/);
+
+        if (match == null || match[1] == "?")
+          return -10;
+
+        var nums = match[1].split(" / ");
+        if (nums[0].indexOf("+") != -1) {
+            var num_parts = nums[0].split("+");
+            nums[0] = num_parts[0];
+        }
+
+        nums[0] = parseInt(nums[0])
+        nums[1] = parseInt(nums[1])
+
+        if (nums[0] === 0)
+          return nums[1];
+
+        var finalNum = parseInt($max_download_count*nums[0]/nums[1]);
+        var pct = Math.round((nums[0]/nums[1])*100) / 1000
+        if (finalNum > 0)
+          finalNum += nums[0];
+
+        return finalNum + pct;
+    },
+    type: 'numeric'
+});
+
+
 \$(document).ready(function(){ 
 	
     \$("img#network").on('error', function(){
@@ -111,6 +145,62 @@
             #if $sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
+                filter_saveFilters : true,
+                filter_functions : {
+                   5:function(e, n, f, i, r, c) {
+                        var test = false;
+                        var pct = Math.floor((n % 1) * 1000);
+                        if (f === '') {
+                           test = true;
+                        } else {
+                            var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                            if (result) {
+                                if (result[1] === "<") {
+                                    if (pct < parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === "<=") {
+                                    if (pct <= parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === ">=") {
+                                    if (pct >= parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === ">") {
+                                    if (pct > parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                }
+                            }
+                            
+                            var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                            if (result) {
+                                if ((result[2] === "-") || (result[2] === "to")) {
+                                    if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                        test = true;
+                                    }
+                                }
+                            }
+                            
+                            var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                            if (result) {
+                                if ((result[1] === "=") || (result[3] === "=")) {
+                                    if (parseInt(result[2]) === pct) {
+                                        test = true;
+                                    }
+                                }
+                            }
+                            
+                            if (!isNaN(parseFloat(f)) && isFinite(f)) {
+                                if (parseInt(f) === pct) {
+                                    test = true;
+                                }
+                            }                            
+                        }
+                        return test;
+                    },
+                },
             #else 
                 filter_columnFilters: false,
             #end if
@@ -146,6 +236,62 @@
             #if $sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
+                filter_saveFilters : true,
+                filter_functions : {
+                   5:function(e, n, f, i, r, c) {
+                        var test = false;
+                        var pct = Math.floor((n % 1) * 1000);
+                        if (f === '') {
+                           test = true;
+                        } else {
+                            var result = f.match(/(<|<=|>=|>)\s(\d+)/i);
+                            if (result) {
+                                if (result[1] === "<") {
+                                    if (pct < parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === "<=") {
+                                    if (pct <= parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === ">=") {
+                                    if (pct >= parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                } else if (result[1] === ">") {
+                                    if (pct > parseInt(result[2])) {
+                                        test = true;
+                                    }                            
+                                }
+                            }
+                            
+                            var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
+                            if (result) {
+                                if ((result[2] === "-") || (result[2] === "to")) {
+                                    if ((pct >= parseInt(result[1])) && (pct <= parseInt(result[3]))) {
+                                        test = true;
+                                    }
+                                }
+                            }
+                            
+                            var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
+                            if (result) {
+                                if ((result[1] === "=") || (result[3] === "=")) {
+                                    if (parseInt(result[2]) === pct) {
+                                        test = true;
+                                    }
+                                }
+                            }
+                            
+                            if (!isNaN(parseFloat(f)) && isFinite(f)) {
+                                if (parseInt(f) === pct) {
+                                    test = true;
+                                }
+                            }                            
+                        }
+                        return test;
+                    },
+                },
             #else 
                 filter_columnFilters: false,
             #end if
@@ -672,7 +818,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 		<td align="center"><span class="quality Custom">Custom</span></td>
 	#end if
 	
-		<td align="center"><span style="display: none;">$progressbar_percent</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
+		<td align="center"><span style="display: none;">$download_stat</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
 			<script type="text/javascript">
 			<!--
 				\$(function() {

@@ -29,6 +29,7 @@ from sickbeard import exceptions, logger, ui, db, notifiers
 from sickbeard import generic_queue
 from sickbeard import name_cache
 from sickbeard.exceptions import ex
+from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 
 
 class ShowQueue(generic_queue.GenericQueue):
@@ -132,13 +133,13 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang=None, subtitles=None, anime=None, scene=None, paused=None):
+                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene, paused)
+                                    subtitles, anime, scene, paused, blacklist, whitelist)
 
         self.add_item(queueItemObj)
 
@@ -195,7 +196,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 class QueueItemAdd(ShowQueueItem):
     def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
-                 scene, paused):
+                 scene, paused, blacklist, whitelist):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -208,6 +209,8 @@ class QueueItemAdd(ShowQueueItem):
         self.anime = anime
         self.scene = scene
         self.paused = paused
+        self.blacklist = blacklist
+        self.whitelist = whitelist
 
         if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
@@ -307,6 +310,13 @@ class QueueItemAdd(ShowQueueItem):
             logger.log(u"Setting all episodes to the specified default status: " + str(self.show.default_ep_status))
             self.show.default_ep_status = self.default_status
 
+            if self.show.anime:
+                self.show.release_groups = BlackAndWhiteList(self.show.indexerid)
+                if self.blacklist:
+                    self.show.release_groups.set_black_keywords(self.blacklist)
+                if self.whitelist:
+                    self.show.release_groups.set_white_keywords(self.whitelist)
+                    
             # be smartish about this
             if self.show.genre and "talk show" in self.show.genre.lower():
                 self.show.air_by_date = 1

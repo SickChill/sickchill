@@ -185,7 +185,7 @@ class Quality:
 
         if anime:
             dvdOptions = checkName(["dvd", "dvdrip"], any)
-            blueRayOptions = checkName(["bluray", "blu-ray", "BD"], any)
+            blueRayOptions = checkName(["BD", "blue?-?ray"], any)
             sdOptions = checkName(["360p", "480p", "848x480", "XviD"], any)
             hdOptions = checkName(["720p", "1280x720", "960x720"], any)
             fullHD = checkName(["1080p", "1920x1080"], any)
@@ -212,10 +212,10 @@ class Quality:
             return Quality.SDTV
         elif checkName(["web.dl|webrip", "xvid|x264|h.?264"], all) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDTV
-        elif checkName(["(dvdrip|b[r|d]rip)(.ws)?.(xvid|divx|x264)"], any) and not checkName(["(720|1080)[pi]"], all):
+        elif checkName(["(dvdrip|b[rd]rip|blue?-?ray)(.ws)?.(xvid|divx|x264)"], any) and not checkName(["(720|1080)[pi]"], all):
             return Quality.SDDVD
         elif checkName(["720p", "hdtv", "x264"], all) or checkName(["hr.ws.pdtv.x264"], any) and not checkName(
-                ["(1080)[pi]"], all):
+                ["1080[pi]"], all):
             return Quality.HDTV
         elif checkName(["720p|1080i", "hdtv", "mpeg-?2"], all) or checkName(["1080[pi].hdtv", "h.?264"], all):
             return Quality.RAWHDTV
@@ -225,9 +225,9 @@ class Quality:
             return Quality.HDWEBDL
         elif checkName(["1080p", "web.dl|webrip"], all) or checkName(["1080p", "itunes", "h.?264"], all):
             return Quality.FULLHDWEBDL
-        elif checkName(["720p", "bluray|hddvd|b[r|d]rip", "x264"], all):
+        elif checkName(["720p", "blue?-?ray|hddvd|b[rd]rip", "x264"], all):
             return Quality.HDBLURAY
-        elif checkName(["1080p", "bluray|hddvd|b[r|d]rip", "x264"], all):
+        elif checkName(["1080p", "blue?-?ray|hddvd|b[rd]rip", "x264"], all):
             return Quality.FULLHDBLURAY
         else:
             return Quality.UNKNOWN

@@ -23,6 +23,7 @@ setgid sickbeard
 
 respawn
 respawn limit 10 5
+expect daemon
 
 script
     if [ -f /etc/default/sickbeard ]; then

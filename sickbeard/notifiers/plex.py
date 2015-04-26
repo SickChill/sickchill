@@ -52,12 +52,12 @@ class PLEXNotifier:
 
         # fill in omitted parameters
         if not username:
-            username = sickbeard.PLEX_USERNAME
+            username = sickbeard.PLEX_CLIENT_USERNAME
         if not password:
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         if not host:
-            logger.log(u'PLEX: No host specified, check your settings', logger.ERROR)
+            logger.log(u'PLEX: No host specified, check your settings', logger.WARNING)
             return False
 
         for key in command:
@@ -110,16 +110,16 @@ class PLEXNotifier:
         """
 
         # suppress notifications if the notifier is disabled but the notify options are checked
-        if not sickbeard.USE_PLEX and not force:
+        if not sickbeard.USE_PLEX_CLIENT and not force:
             return False
 
         # fill in omitted parameters
         if not host:
             host = sickbeard.PLEX_HOST
         if not username:
-            username = sickbeard.PLEX_USERNAME
+            username = sickbeard.PLEX_CLIENT_USERNAME
         if not password:
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         result = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -184,12 +184,12 @@ class PLEXNotifier:
                 password = sickbeard.PLEX_PASSWORD
                 
             if not plex_server_token:
-                token = sickbeard.PLEX_SERVER_TOKEN
+                plex_server_token = sickbeard.PLEX_SERVER_TOKEN
             
             # if username and password were provided, fetch the auth token from plex.tv
             token_arg = ''
             if plex_server_token:
-                token_arg = '?X-Plex-Token=' + sickbeard.PLEX_SERVER_TOKEN            
+                token_arg = '?X-Plex-Token=' + plex_server_token
             elif username and password:
                 logger.log(u'PLEX: fetching plex.tv credentials for user: ' + username, logger.DEBUG)
                 req = urllib2.Request('https://plex.tv/users/sign_in.xml', data='')
@@ -224,7 +224,7 @@ class PLEXNotifier:
                     xml_tree = etree.parse(urllib.urlopen(url))
                     media_container = xml_tree.getroot()
                 except IOError, e:
-                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.ERROR)
+                    logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
                     continue
 
@@ -260,7 +260,7 @@ class PLEXNotifier:
                     force and urllib.urlopen(url)
                     host_list.append(cur_host)
                 except Exception, e:
-                    logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.ERROR)
+                    logger.log(u'PLEX: Error updating library section for Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
 
             if len(hosts_match):

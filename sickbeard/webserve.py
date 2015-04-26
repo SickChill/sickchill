@@ -45,7 +45,7 @@ from sickbeard.common import Quality, Overview, statusStrings, qualityPresetStri
 from sickbeard.common import SNATCHED, UNAIRED, IGNORED, ARCHIVED, WANTED, FAILED, SKIPPED
 from sickbeard.common import SD, HD720p, HD1080p
 from sickbeard.exceptions import ex
-from sickbeard.blackandwhitelist import BlackAndWhiteList
+from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickbeard.browser import foldersAtPath
 from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, get_scene_numbering_for_show, \
@@ -623,8 +623,7 @@ class CalendarHandler(BaseHandler):
         ical += 'END:VCALENDAR'
 
         return ical
-
-
+        
 @route('/ui(/?.*)')
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
@@ -898,7 +897,7 @@ class Home(WebRoot):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         if None is not password and set('*') == set(password):
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -1265,7 +1264,7 @@ class Home(WebRoot):
 
         t.bwl = None
         if showObj.is_anime:
-            t.bwl = BlackAndWhiteList(showObj.indexerid)
+            t.bwl = showObj.release_groups
 
         t.epCounts = epCounts
         t.epCats = epCats
@@ -1307,7 +1306,7 @@ class Home(WebRoot):
     def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], exceptions_list=[],
                  flatten_folders=None, paused=None, directCall=False, air_by_date=None, sports=None, dvdorder=None,
                  indexerLang=None, subtitles=None, archive_firstmatch=None, rls_ignore_words=None,
-                 rls_require_words=None, anime=None, blackWords=None, whiteWords=None, blacklist=None, whitelist=None,
+                 rls_require_words=None, anime=None, blacklist=None, whitelist=None,
                  scene=None, defaultEpStatus=None):
 
         anidb_failed = False
@@ -1334,23 +1333,8 @@ class Home(WebRoot):
             t.submenu = self.HomeMenu()
 
             if showObj.is_anime:
-                bwl = BlackAndWhiteList(showObj.indexerid)
-
-                t.whiteWords = ""
-                if "global" in bwl.whiteDict:
-                    t.whiteWords = ", ".join(bwl.whiteDict["global"])
-
-                t.blackWords = ""
-                if "global" in bwl.blackDict:
-                    t.blackWords = ", ".join(bwl.blackDict["global"])
-
-                t.whitelist = []
-                if bwl.whiteDict.has_key("release_group"):
-                    t.whitelist = bwl.whiteDict["release_group"]
-
-                t.blacklist = []
-                if bwl.blackDict.has_key("release_group"):
-                    t.blacklist = bwl.blackDict["release_group"]
+                t.whitelist = showObj.release_groups.whitelist
+                t.blacklist = showObj.release_groups.blacklist
 
                 t.groups = []
                 if helpers.set_up_anidb_connection() and not anidb_failed:
@@ -1412,67 +1396,22 @@ class Home(WebRoot):
             else:
                 do_update_exceptions = True
 
-            if showObj.is_anime:
-                bwl = BlackAndWhiteList(showObj.indexerid)
-                if whitelist:
-                    whitelist = whitelist.split(",")
-                    shortWhiteList = []
-                    if helpers.set_up_anidb_connection() and not anidb_failed:
-                        try:
-                            for groupName in whitelist:
-                                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                                for line in group.datalines:
-                                    if line["shortname"]:
-                                        shortWhiteList.append(line["shortname"])
-                                else:
-                                    if not groupName in shortWhiteList:
-                                        shortWhiteList.append(groupName)
-                        except Exception as e:
-                            anidb_failed = True
-                            ui.notifications.error('Unable to retreive data from AniDB.')
-                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
-                            shortWhiteList = whitelist
+            with showObj.lock:
+                if anime:
+                    if not showObj.release_groups:
+                        showObj.release_groups = BlackAndWhiteList(showObj.indexerid)
+
+                    if whitelist:
+                        shortwhitelist = short_group_names(whitelist)
+                        showObj.release_groups.set_white_keywords(shortwhitelist) 
                     else:
-                        shortWhiteList = whitelist
-                    bwl.set_white_keywords_for("release_group", shortWhiteList)
-                else:
-                    bwl.set_white_keywords_for("release_group", [])
+                        showObj.release_groups.set_white_keywords([])
 
-                if blacklist:
-                    blacklist = blacklist.split(",")
-                    shortBlacklist = []
-                    if helpers.set_up_anidb_connection() and not anidb_failed:
-                        try:
-                            for groupName in blacklist:
-                                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-                                for line in group.datalines:
-                                    if line["shortname"]:
-                                        shortBlacklist.append(line["shortname"])
-                                else:
-                                    if not groupName in shortBlacklist:
-                                        shortBlacklist.append(groupName)
-                        except Exception as e:
-                            anidb_failed = True
-                            ui.notifications.error('Unable to retreive data from AniDB.')
-                            logger.log('Unable to retreive data from AniDB. Error is {0}'.format(str(e)),logger.DEBUG)
-                            shortBlacklist = blacklist
+                    if blacklist:
+                        shortblacklist = short_group_names(blacklist)
+                        showObj.release_groups.set_black_keywords(shortblacklist)
                     else:
-                        shortBlacklist = blacklist
-                    bwl.set_black_keywords_for("release_group", shortBlacklist)
-                else:
-                    bwl.set_black_keywords_for("release_group", [])
-
-                if whiteWords:
-                    whiteWords = [x.strip() for x in whiteWords.split(",")]
-                    bwl.set_white_keywords_for("global", whiteWords)
-                else:
-                    bwl.set_white_keywords_for("global", [])
-
-                if blackWords:
-                    blackWords = [x.strip() for x in blackWords.split(",")]
-                    bwl.set_black_keywords_for("global", blackWords)
-                else:
-                    bwl.set_black_keywords_for("global", [])
+                        showObj.release_groups.set_black_keywords([])
 
         errors = []
         with showObj.lock:
@@ -1684,6 +1623,7 @@ class Home(WebRoot):
 
     def updateKODI(self, show=None):        
         showName=None
+        showObj=None
         
         if show:
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
@@ -1708,7 +1648,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
     def updatePLEX(self):
-        if notifiers.plex_notifier.update_library():
+        if None is notifiers.plex_notifier.update_library():
             ui.notifications.message(
                 "Library update command sent to Plex Media Server host: " + sickbeard.PLEX_SERVER_HOST)
         else:
@@ -1979,7 +1919,7 @@ class Home(WebRoot):
             showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(searchThread.show.indexerid))
             
             if not showObj:
-                logger.log('No Show Object found for show with indexerID: ' + searchThread.show.indexerid, logger.ERROR)
+                logger.log('No Show Object found for show with indexerID: ' + str(searchThread.show.indexerid), logger.ERROR)
                 return results
             
             if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
@@ -2170,6 +2110,15 @@ class Home(WebRoot):
         else:
             return json.dumps({'result': 'failure'})
 
+    def fetch_releasegroups(self, show_name):
+        logger.log(u'ReleaseGroups: %s' % show_name, logger.INFO)
+        if helpers.set_up_anidb_connection():
+            anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
+            groups = anime.get_groups()
+            logger.log(u'ReleaseGroups: %s' % groups, logger.INFO)
+            return json.dumps({'result': 'success', 'groups': groups})
+
+        return json.dumps({'result': 'failure'})            
 
 @route('/home/postprocess(/?.*)')
 class HomePostProcess(Home):
@@ -2360,7 +2309,8 @@ class HomeAddShows(Home):
         """
         t = PageTemplate(rh=self, file="home_newShow.tmpl")
         t.submenu = self.HomeMenu()
-
+        t.enable_anime_options = True
+        
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
 
         if indexer_id and indexer and show_name:
@@ -2394,7 +2344,9 @@ class HomeAddShows(Home):
         t.other_shows = other_shows
         t.provided_indexer = int(indexer or sickbeard.INDEXER_DEFAULT)
         t.indexers = sickbeard.indexerApi().indexers
-
+        t.whitelist = []
+        t.blacklist = []
+        t.groups = []
         return t.respond()
 
     def recommendedShows(self):
@@ -2404,52 +2356,55 @@ class HomeAddShows(Home):
         """
         t = PageTemplate(rh=self, file="home_recommendedShows.tmpl")
         t.submenu = self.HomeMenu()
-
+        t.enable_anime_options = False
+        
         return t.respond()
 
     def getRecommendedShows(self):
-        final_results = []
+        t = PageTemplate(rh=self, file="trendingShows.tmpl")
+        t.submenu = self.HomeMenu()
 
-        logger.log(u"Getting recommended shows from Trakt.tv", logger.DEBUG)
-
+        t.trending_shows = []
+        
         trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         try:
-            recommendedlist = trakt_api.traktRequest("recommendations/shows?extended=full,images")
+            not_liked_show = ""
+            if sickbeard.TRAKT_BLACKLIST_NAME is not None and sickbeard.TRAKT_BLACKLIST_NAME:
+                not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+            else:
+                logger.log(u"trending blacklist name is empty", logger.DEBUG)
 
-            if recommendedlist:
-                indexers = ['tvdb', 'tvrage']
-                map(final_results.append, (
-                    [int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]]),
-                     'http://www.trakt.tv/shows/%s' % show['ids']['slug'], show['title'],
-                     show['overview'],
-                     None if show['first_aired'] is None else dateutil_parser.parse(show['first_aired']).strftime(sickbeard.DATE_PRESET)]
-                    for show in recommendedlist if not helpers.findCertainShow(sickbeard.showList, [
-                    int(show['ids'][indexers[sickbeard.TRAKT_DEFAULT_INDEXER - 1]])])))
+            shows = trakt_api.traktRequest("recommendations/shows?extended=full,images") or []
+
+            library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
+            
+            for show_detail in shows:
+                show = {}
+                show['show']=show_detail
+                try:
+                    tvdb_id = int(show['show']['ids']['tvdb'])
+                    tvrage_id = int(show['show']['ids']['tvrage'] or 0)
+                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
+                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                            if not_liked_show:
+                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
+                                    t.trending_shows += [show]
+                            else:
+                                t.trending_shows += [show]
+
+                except exceptions.MultipleShowObjectsException:
+                    continue
+
+            if sickbeard.TRAKT_BLACKLIST_NAME != '':
+                t.blacklist = True
+            else:
+                t.blacklist = False
+
         except traktException as e:
             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
 
-        return json.dumps({'results': final_results})
-
-    def addRecommendedShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
-                           anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
-                           fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                           scene=None):
-
-        indexer = 1
-        indexer_name = sickbeard.indexerApi(int(indexer)).name
-        show_url = whichSeries.split('|')[1]
-        indexer_id = whichSeries.split('|')[0]
-        show_name = whichSeries.split('|')[2]
-
-        if indexerLang is None:
-            indexerLang = sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        return self.addNewShow('|'.join([indexer_name, str(indexer), show_url, indexer_id, show_name, ""]),
-                               indexerLang, rootDir,
-                               defaultStatus,
-                               anyQualities, bestQualities, flatten_folders, subtitles, fullShowPath, other_shows,
-                               skipShow, providedIndexer, anime, scene)
+        return t.respond()
 
     def trendingShows(self):
         """
@@ -2458,6 +2413,7 @@ class HomeAddShows(Home):
         """
         t = PageTemplate(rh=self, file="home_trendingShows.tmpl")
         t.submenu = self.HomeMenu()
+        t.enable_anime_options = False
 
         return t.respond()
 
@@ -2489,11 +2445,10 @@ class HomeAddShows(Home):
                 try:
                     tvdb_id = int(show['show']['ids']['tvdb'])
                     tvrage_id = int(show['show']['ids']['tvrage'] or 0)
-                    if not helpers.findCertainShow(sickbeard.showList,
-                                                   [tvdb_id, tvrage_id]):
+                    if not helpers.findCertainShow(sickbeard.showList, [tvdb_id, tvrage_id]):
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):	
+                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
                                     t.trending_shows += [show]
                             else:
                                 t.trending_shows += [show]
@@ -2536,7 +2491,8 @@ class HomeAddShows(Home):
         """
         t = PageTemplate(rh=self, file="home_addExistingShow.tmpl")
         t.submenu = self.HomeMenu()
-
+        t.enable_anime_options = False
+        
         return t.respond()
 
     def addTraktShow(self, indexer_id, showName):
@@ -2577,7 +2533,7 @@ class HomeAddShows(Home):
     def addNewShow(self, whichSeries=None, indexerLang=None, rootDir=None, defaultStatus=None,
                    anyQualities=None, bestQualities=None, flatten_folders=None, subtitles=None,
                    fullShowPath=None, other_shows=None, skipShow=None, providedIndexer=None, anime=None,
-                   scene=None):
+                   scene=None, blacklist=None, whitelist=None):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -2665,6 +2621,11 @@ class HomeAddShows(Home):
         flatten_folders = config.checkbox_to_value(flatten_folders)
         subtitles = config.checkbox_to_value(subtitles)
 
+        if whitelist:
+            whitelist = short_group_names(whitelist)
+        if blacklist:
+            blacklist = short_group_names(blacklist)
+        
         if not anyQualities:
             anyQualities = []
         if not bestQualities:
@@ -2678,7 +2639,7 @@ class HomeAddShows(Home):
         # add the show
         sickbeard.showQueueScheduler.action.addShow(indexer, indexer_id, show_dir, int(defaultStatus), newQuality,
                                                     flatten_folders, indexerLang, subtitles, anime,
-                                                    scene)
+                                                    scene, None, blacklist, whitelist)
         ui.notifications.message('Show added', 'Adding the specified show into ' + show_dir)
 
         return finishAddShow()
@@ -3712,7 +3673,7 @@ class ConfigGeneral(Config):
                     calendar_unprotected=None, debug=None, no_restart=None, coming_eps_missed_range=None,
                     filter_row=None, fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
                     indexer_timeout=None, download_url=None, rootDir=None, theme_name=None,
-                    git_reset=None, git_username=None, git_password=None, git_autoissues=None):
+                    git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
 
         results = []
 
@@ -3750,7 +3711,8 @@ class ConfigGeneral(Config):
         sickbeard.DEBUG = config.checkbox_to_value(debug)
         # sickbeard.LOG_DIR is set in config.change_LOG_DIR()
         sickbeard.COMING_EPS_MISSED_RANGE = config.to_int(coming_eps_missed_range,default=7)
-
+        sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
+        
         sickbeard.WEB_PORT = config.to_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
         # sickbeard.WEB_LOG is set in config.change_LOG_DIR()
@@ -4639,6 +4601,7 @@ class ConfigNotifications(Config):
                           use_plex=None, plex_notify_onsnatch=None, plex_notify_ondownload=None,
                           plex_notify_onsubtitledownload=None, plex_update_library=None,
                           plex_server_host=None, plex_server_token=None, plex_host=None, plex_username=None, plex_password=None,
+                          use_plex_client=None, plex_client_username=None, plex_client_password=None,
                           use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None,
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
@@ -4703,7 +4666,10 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_USERNAME = plex_username
         sickbeard.PLEX_PASSWORD = plex_password
-
+        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex)
+        sickbeard.PLEX_CLIENT_USERNAME = plex_username
+        sickbeard.PLEX_CLIENT_PASSWORD = plex_password
+        
         sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)
         sickbeard.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
         sickbeard.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
@@ -5064,8 +5030,10 @@ class ErrorLogs(WebRoot):
             ui.notifications.error("Missing information", "Please set your GitHub username and password in the config.")
             logger.log(u'Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
         else:
-            issue = logger.submit_errors()
-            if issue:
-                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue.number)
+            issue_id = logger.submit_errors()
+            if issue_id == 'RUNNING':
+                ui.notifications.message('Issue submitter is running, please wait for it to complete')
+            elif issue_id: 
+                ui.notifications.message('Your issue ticket #%s was submitted successfully!' % issue_id)
 
         return self.redirect("/errorlogs/")

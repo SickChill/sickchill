@@ -285,7 +285,15 @@
 								</span>
 							</label>
 						</div>
-
+						<div class="field-pair">
+							<label for="display_all_seasons">
+								<span class="component-title">Show all seasons</span>
+								<span class="component-desc">
+									<input type="checkbox" name="display_all_seasons" id="display_all_seasons" #if $sickbeard.DISPLAY_ALL_SEASONS then 'checked="checked"' else ''#>
+									<p>on the show summary page</p>
+								</span>
+							</label>
+						</div>
 						<div class="field-pair">
 							<label for="sort_article">
 								<span class="component-title">Sort with "The", "A", "An"</span>

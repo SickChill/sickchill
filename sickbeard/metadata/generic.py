@@ -286,14 +286,9 @@ class GenericMetadata():
                 with ek.ek(open, nfo_file_path, 'r') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
 
-                indexer = showXML.find('indexer')
                 indexerid = showXML.find('id')
 
                 root = showXML.getroot()
-                if indexer:
-                    indexer.text = show_obj.indexer
-                else:
-                    etree.SubElement(root, "indexer").text = str(show_obj.indexer)
 
                 if indexerid:
                     indexerid.text = show_obj.indexerid
@@ -940,11 +935,9 @@ class GenericMetadata():
 
             if showXML.findtext('title') == None \
                     or (showXML.findtext('tvdbid') == None
-                        and showXML.findtext('id') == None) \
-                            and showXML.findtext('indexer') == None:
+                        and showXML.findtext('id') == None):
                 logger.log(u"Invalid info in tvshow.nfo (missing name or id):" \
                            + str(showXML.findtext('title')) + " " \
-                           + str(showXML.findtext('indexer')) + " " \
                            + str(showXML.findtext('tvdbid')) + " " \
                            + str(showXML.findtext('id')))
                 return empty_return
@@ -964,9 +957,7 @@ class GenericMetadata():
                 return empty_return
 
             indexer = None
-            if showXML.findtext('indexer') != None:
-                indexer = int(showXML.findtext('indexer'))
-            elif showXML.find('episodeguide/url') != None:
+            if showXML.find('episodeguide/url') != None:
                 epg_url = showXML.findtext('episodeguide/url').lower()
                 if str(indexer_id) in epg_url:
                     if 'thetvdb.com' in epg_url:

@@ -20,10 +20,10 @@
 from __future__ import with_statement
 
 import unittest
-import sys, os.path
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+import sys, os.path
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import urlparse
 import test_lib as test
@@ -72,7 +72,8 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
 if __name__ == "__main__":
     print "=================="
-    print "STARTING - XEM Scene Numbering TESTS"
+    print "STARTING - Torrent Basic TESTS"
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)

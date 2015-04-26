@@ -23,8 +23,8 @@ import unittest
 import sys, os.path
 from configobj import ConfigObj
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
 import test_lib as test
@@ -37,9 +37,11 @@ def error():
         sickbeard.logger.submit_errors()
         raise
 
+
 class IssueSubmitterBasicTests(unittest.TestCase):
     def test_submitter(self):
         self.assertRaises(Exception, error)
+
 
 if __name__ == "__main__":
     print "=================="
@@ -47,3 +49,4 @@ if __name__ == "__main__":
     print "=================="
     print "######################################################################"
     suite = unittest.TestLoader().loadTestsFromTestCase(IssueSubmitterBasicTests)
+    unittest.TextTestRunner(verbosity=2).run(suite)

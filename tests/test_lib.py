@@ -20,15 +20,12 @@
 from __future__ import with_statement
 
 import unittest
-
 import sqlite3
-
-import sys
-import os.path
 from configobj import ConfigObj
 
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../lib'))
+import sys, os.path
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
 
@@ -201,26 +198,19 @@ def tearDown_test_db():
     """Deletes the test db
         although this seams not to work on my system it leaves me with an zero kb file
     """
-    # uncomment next line so leave the db intact between test and at the end
-    # return False
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTDBNAME))
-    except:
-        pass
+    #uncomment next line so leave the db intact between test and at the end
+    #return False
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTCACHEDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTCACHEDBNAME))
-    except:
-        pass
+    for current_db in [ TESTDBNAME, TESTCACHEDBNAME, TESTFAILEDDBNAME ]:
+        for file_name in [ os.path.join(TESTDIR, current_db), os.path.join(TESTDIR, current_db + '-journal') ]:
+            if os.path.exists(file_name):
+                try:
+                    os.remove(file_name)
+                except (IOError, OSError) as e:
+                    print 'ERROR: Failed to remove ' + file_name
+                    print ex(e)
 
-    try:
-        if os.path.exists(os.path.join(TESTDIR, TESTFAILEDDBNAME)):
-            os.remove(os.path.join(TESTDIR, TESTFAILEDDBNAME))
-    except:
-        pass
 
 def setUp_test_episode_file():
     if not os.path.exists(FILEDIR):
@@ -248,7 +238,6 @@ def tearDown_test_show_dir():
     if os.path.exists(SHOWDIR):
         shutil.rmtree(SHOWDIR)
 
-tearDown_test_db()
 
 if __name__ == '__main__':
     print "=================="
