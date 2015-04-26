@@ -442,7 +442,14 @@ def minimax(val, default, low, high):
 ################################################################################
 def check_setting_int(config, cfg_name, item_name, def_val, silent=True):
     try:
-        my_val = int(config[cfg_name][item_name])
+        my_val = config[cfg_name][item_name]
+        if str(my_val).lower() == "true":
+            my_val = 1
+        elif str(my_val).lower() == "false":
+            my_val = 0
+
+        my_val = int(my_val)
+
         if str(my_val) == str(None):
             raise
     except:
