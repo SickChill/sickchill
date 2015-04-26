@@ -1,3 +1,39 @@
+### 4.0.18 (2015-04-26)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.17...v4.0.18)
+
+* Fixed build tests
+* Fixed T411 wrong api data received
+* Fixed import error in subtitles
+* Fixed Plex auth token
+* Fixed log message error
+* Fixed SeasonPack search error
+* Fixed morethantv tracker
+* Fixed Kodi error
+* Fixed Scenetime tracker
+* Fixed issue submitter and don't allow dupe submissions
+* Fixed masking NZB API Keys in logs not working sometimes
+* Fixed upstart script
+* Added check to issue submitter to wait issue is fully submitted
+* Added SxEE to IPT
+* Added new network logos
+* Added SD bluray quality to regex
+* Added  Persistent Collapse Expand Buttons on Episode management
+* Enable trending shows only if Trakt is enabled
+* Changed KAT url to new domain page
+* Changed to 'WARNING' logger for 'No NZB/Torrent providers found or enabled' error
+* Changed BTN api limit error to warning
+* Changed plex user errors to warning instead of error
+* Removed "indexer" tag from metadata files
+* Feature: update only specific plex section
+* Feature: add home page filtering (persisted)
+* Feature: add option to collapse previous seasons in displayshow
+* Feature: "Recommended shows" use the same template as "Trending shows"
+* Feature: Ask user before delete show in mass edit
+* Feature: Seperate Plex Media Server and Plex Media Client in UI
+* Feature: filter shows with >, >=, <=, < ,  xx to yy , xx - yy, =
+* Note: signs should be first, followed by a space, then the value.
+
 ### 4.0.17 (2015-04-19)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.16...v4.0.17)
