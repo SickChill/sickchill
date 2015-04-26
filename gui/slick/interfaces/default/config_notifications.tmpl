@@ -189,59 +189,79 @@
                                     <span class="component-desc">(<a href="<%= anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><u>Finding your account token</u></a>)</span>
                                 </label>
                             </div>                        
-							<div class="component-group" style="padding: 0; min-height: 130px">
-								<div class="field-pair">
-									<label for="plex_username">
-										<span class="component-title">Server/client username</span>
-										<span class="component-desc">
-											<input type="text" name="plex_username" id="plex_username" value="$sickbeard.PLEX_USERNAME" class="form-control input-sm input250" />
-											<p>blank = no authentication</p>
-										</span>
-									</label>
-								</div>
-								<div class="field-pair">
-									<label for="plex_password">
-										<span class="component-title">Server/client password</span>
-										<span class="component-desc">
-											<input type="password" name="plex_password" id="plex_password" value="#echo '*' * len($sickbeard.PLEX_PASSWORD)#" class="form-control input-sm input250" />
-											<p>blank = no authentication</p>
-										</span>
-									</label>
-								</div>
-							</div>
+                            <div class="component-group" style="padding: 0; min-height: 130px">
+                                <div class="field-pair">
+                                    <label for="plex_username">
+                                        <span class="component-title">Server Username</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="plex_username" id="plex_username" value="$sickbeard.PLEX_USERNAME" class="form-control input-sm input250" />
+                                            <p>blank = no authentication</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
+                                    <label for="plex_password">
+                                        <span class="component-title">Server/client password</span>
+                                        <span class="component-desc">
+                                            <input type="password" name="plex_password" id="plex_password" value="#echo '*' * len($sickbeard.PLEX_PASSWORD)#" class="form-control input-sm input250" />
+                                            <p>blank = no authentication</p>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
                         
-							<div class="component-group" style="padding: 0; min-height: 50px">
-								<div class="field-pair">
-									<label for="plex_update_library">
-										<span class="component-title">Update server library</span>
-										<span class="component-desc">
-											<input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" #if $sickbeard.PLEX_UPDATE_LIBRARY then 'checked="checked" ' else ''#/>
-											<p>update Plex Media Server library when a download finishes</p>
-										</span>
-									</label>
-								</div>
-								<div id="content_plex_update_library">
-									<div class="field-pair">
-										<label for="plex_server_host">
-											<span class="component-title">Plex Media Server IP:Port</span>
-											<span class="component-desc">
-												<input type="text" name="plex_server_host" id="plex_server_host" value="<%= re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST) %>" class="form-control input-sm input350" />
-												<div class="clear-left">
-													<p>one or more hosts running Plex Media Server<br />(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
-												</div>
-											</span>
-										</label>
-									</div>
+                            <div class="component-group" style="padding: 0; min-height: 50px">
+                                <div class="field-pair">
+                                    <label for="plex_update_library">
+                                        <span class="component-title">Update server library</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" #if $sickbeard.PLEX_UPDATE_LIBRARY then 'checked="checked" ' else ''#/>
+                                            <p>update Plex Media Server library when a download finishes</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div id="content_plex_update_library">
+                                    <div class="field-pair">
+                                        <label for="plex_server_host">
+                                            <span class="component-title">Plex Media Server IP:Port</span>
+                                            <span class="component-desc">
+                                                <input type="text" name="plex_server_host" id="plex_server_host" value="<%= re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST) %>" class="form-control input-sm input350" />
+                                                <div class="clear-left">
+                                                    <p>one or more hosts running Plex Media Server<br />(eg. 192.168.1.1:32400, 192.168.1.2:32400)</p>
+                                                </div>
+                                            </span>
+                                        </label>
+                                    </div>
 
-									<div class="field-pair">
-										<div class="testNotification" id="testPMS-result">Click below to test Plex server(s)</div>
-										<input class="btn" type="button" value="Test Plex Server" id="testPMS" />
-										<input type="submit" class="config_submitter btn" value="Save Changes" />
-										<div class="clear-left">&nbsp;</div>
-									</div>
-								</div>
-							</div>
-                                    
+                                    <div class="field-pair">
+                                        <div class="testNotification" id="testPMS-result">Click below to test Plex server(s)</div>
+                                        <input class="btn" type="button" value="Test Plex Server" id="testPMS" />
+                                        <input type="submit" class="config_submitter btn" value="Save Changes" />
+                                        <div class="clear-left">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /content_use_plex -->
+                    </fieldset>
+                </div><!-- /plex media server component-group -->
+                
+                <div class="component-group">
+                    <div class="component-group-desc">
+                        <img class="notifier-icon" src="$sbRoot/images/notifiers/plex.png" alt="" title="Plex Media Client" />
+                        <h3><a href="<%= anon_url('http://www.plexapp.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Client</a></h3>
+                    </div>
+                    <fieldset class="component-group-list">
+                        <div class="field-pair">
+                            <label for="use_plex_client">
+                                <span class="component-title">Enable</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" class="enabler" name="use_plex" id="use_plex_client" #if $sickbeard.USE_PLEX_CLIENT then "checked=\"checked\"" else ""# />
+                                    <p>should SickRage send Plex commands ?</p>
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <div id="content_use_plex_client">
                             <div class="field-pair">
                                 <label for="plex_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
@@ -280,16 +300,36 @@
                                     </span>
                                 </label>
                             </div>
-
+                            <div class="component-group" style="padding: 0; min-height: 130px">
+                                <div class="field-pair">
+                                    <label for="plex_username">
+                                        <span class="component-title">Server Username</span>
+                                        <span class="component-desc">
+                                            <input type="text" name="plex_client_username" id="plex_client_username" value="$sickbeard.PLEX_CLIENT_USERNAME" class="form-control input-sm input250" />
+                                            <p>blank = no authentication</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
+                                    <label for="plex_client_password">
+                                        <span class="component-title">Client Password</span>
+                                        <span class="component-desc">
+                                            <input type="password" name="plex_client_password" id="plex_client_password" value="#echo '*' * len($sickbeard.PLEX_CLIENT_PASSWORD)#" class="form-control input-sm input250" />
+                                            <p>blank = no authentication</p>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
                             <div class="field-pair">
                                 <div class="testNotification" id="testPMC-result">Click below to test Plex client(s)</div>
                                 <input class="btn" type="button" value="Test Plex Client" id="testPMC" />
                                 <input type="submit" class="config_submitter btn" value="Save Changes" />
                                 <div class=clear-left><p>Note: some Plex clients <b class="boldest">do not</b> support notifications e.g. Plexapp for Samsung TVs</p></div>
                             </div>
-                        </div><!-- /content_use_plex -->
+                        </div><!-- /content_use_plex_client -->
                     </fieldset>
-                </div><!-- /plex component-group -->
+                </div><!-- /plex client component-group -->
 
 
                 <div class="component-group">
@@ -1542,11 +1582,11 @@
                                 </label>
                             </div>
                             <div id="content_trakt_use_rolling_download">
-              	                <div class="field-pair">
+                                  <div class="field-pair">
                                     <label for="trakt_rolling_num_ep">
                                         <span class="component-title">Number of Episode:</span>
                                         <span class="component-desc">
-                                	    <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="$sickbeard.TRAKT_ROLLING_NUM_EP" class="form-control input-sm input75"/>
+                                        <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="$sickbeard.TRAKT_ROLLING_NUM_EP" class="form-control input-sm input75"/>
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
@@ -1562,11 +1602,11 @@
                                         <span class="component-desc">Hours between check. (Cannot be lower than 4 hours)</span>
                                     </p>
                                 </div>
-              	                <div class="field-pair">
+                                  <div class="field-pair">
                                     <label for="trakt_rolling_add_paused">
                                         <span class="component-title">Should new show to be added paused?:</span>
                                         <span class="component-desc">
-                                	    <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" #if $sickbeard.TRAKT_ROLLING_ADD_PAUSED then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" #if $sickbeard.TRAKT_ROLLING_ADD_PAUSED then "checked=\"checked\"" else ""# />
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>

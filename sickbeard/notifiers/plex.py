@@ -52,9 +52,9 @@ class PLEXNotifier:
 
         # fill in omitted parameters
         if not username:
-            username = sickbeard.PLEX_USERNAME
+            username = sickbeard.PLEX_CLIENT_USERNAME
         if not password:
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         if not host:
             logger.log(u'PLEX: No host specified, check your settings', logger.WARNING)
@@ -110,16 +110,16 @@ class PLEXNotifier:
         """
 
         # suppress notifications if the notifier is disabled but the notify options are checked
-        if not sickbeard.USE_PLEX and not force:
+        if not sickbeard.USE_PLEX_CLIENT and not force:
             return False
 
         # fill in omitted parameters
         if not host:
             host = sickbeard.PLEX_HOST
         if not username:
-            username = sickbeard.PLEX_USERNAME
+            username = sickbeard.PLEX_CLIENT_USERNAME
         if not password:
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         result = ''
         for curHost in [x.strip() for x in host.split(',')]:

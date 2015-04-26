@@ -58,8 +58,8 @@ $(document).ready(function(){
 
 	$('#testPMC').click(function () {
 		var plex_host = $.trim($('#plex_host').val());
-		var plex_username = $.trim($('#plex_username').val());
-		var plex_password = $.trim($('#plex_password').val());
+		var plex_client_username = $.trim($('#plex_client_username').val());
+		var plex_client_password = $.trim($('#plex_client_password').val());
 		if (!plex_host) {
 			$('#testPMC-result').html('Please fill out the necessary fields above.');
 			$('#plex_host').addClass('warning');
@@ -68,7 +68,7 @@ $(document).ready(function(){
 		$('#plex_host').removeClass('warning');
 		$(this).prop('disabled', true);
 		$('#testPMC-result').html(loading);
-		$.get(sbRoot + '/home/testPMC', {'host': plex_host, 'username': plex_username, 'password': plex_password})
+		$.get(sbRoot + '/home/testPMC', {'host': plex_host, 'username': plex_client_username, 'password': plex_client_password})
 			.done(function (data) {
 				$('#testPMC-result').html(data);
 				$('#testPMC').prop('disabled', false);
@@ -536,5 +536,5 @@ $(document).ready(function(){
             $('.plexinfo').addClass('hide');
         }
     });
-
+    
 });
