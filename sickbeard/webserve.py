@@ -897,7 +897,7 @@ class Home(WebRoot):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         if None is not password and set('*') == set(password):
-            password = sickbeard.PLEX_PASSWORD
+            password = sickbeard.PLEX_CLIENT_PASSWORD
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -4601,6 +4601,7 @@ class ConfigNotifications(Config):
                           use_plex=None, plex_notify_onsnatch=None, plex_notify_ondownload=None,
                           plex_notify_onsubtitledownload=None, plex_update_library=None,
                           plex_server_host=None, plex_server_token=None, plex_host=None, plex_username=None, plex_password=None,
+                          use_plex_client=None, plex_client_username=None, plex_client_password=None,
                           use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None,
                           growl_notify_onsubtitledownload=None, growl_host=None, growl_password=None,
                           use_freemobile=None, freemobile_notify_onsnatch=None, freemobile_notify_ondownload=None,
@@ -4665,7 +4666,10 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
         sickbeard.PLEX_USERNAME = plex_username
         sickbeard.PLEX_PASSWORD = plex_password
-
+        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex)
+        sickbeard.PLEX_CLIENT_USERNAME = plex_username
+        sickbeard.PLEX_CLIENT_PASSWORD = plex_password
+        
         sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)
         sickbeard.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
         sickbeard.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
