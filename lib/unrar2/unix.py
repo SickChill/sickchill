@@ -178,7 +178,7 @@ class RarFileImplementation(object):
                 data['isdir'] = 'd' in attr.lower()
                 data['datetime'] = time.strptime(fields[2]+" "+fields[3], '%d-%m-%y %H:%M')
                 data['comment'] = None
-		data['volume'] = None
+                data['volume'] = None
                 yield data
                 i += 1
                 line = source.next()
