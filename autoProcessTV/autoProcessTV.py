@@ -26,7 +26,7 @@ import sys
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
 try:
-    import requests
+    from lib import requests
 except ImportError:
     print ("You need to install python requests library")
     sys.exit(1)

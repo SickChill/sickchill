@@ -26,7 +26,7 @@ import itertools
 import urllib
 
 import sickbeard
-import requests
+from lib import requests
 
 from sickbeard import helpers, classes, logger, db
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT

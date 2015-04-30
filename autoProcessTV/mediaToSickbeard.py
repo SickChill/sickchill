@@ -10,7 +10,7 @@ sys.path.append(os.path.join( sickbeardPath, 'lib'))
 sys.path.append(sickbeardPath)
 configFilename = os.path.join(sickbeardPath, "config.ini")
 
-import requests
+from lib import requests
 
 config = ConfigParser.ConfigParser()
 

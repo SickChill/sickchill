@@ -1,4 +1,4 @@
-from requests.adapters import HTTPAdapter
+from lib.requests.adapters import HTTPAdapter
 
 from .controller import CacheController
 from .cache import DictCache

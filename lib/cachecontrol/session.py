@@ -1,4 +1,4 @@
-from requests.sessions import Session
+from lib.requests.sessions import Session
 
 class CacheControlSession(Session):
     def __init__(self):
