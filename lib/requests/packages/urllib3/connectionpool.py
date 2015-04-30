@@ -72,21 +72,6 @@ class ConnectionPool(object):
         return '%s(host=%r, port=%r)' % (type(self).__name__,
                                          self.host, self.port)
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        # Return False to re-raise any potential exceptions
-        return False
-
-    def close():
-        """
-        Close all pooled connections and disable the pool.
-        """
-        pass
-
-
 # This is taken from http://hg.python.org/cpython/file/7aaba721ebc0/Lib/socket.py#l252
 _blocking_errnos = set([errno.EAGAIN, errno.EWOULDBLOCK])
 
@@ -368,7 +353,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
 
         # Receive the response from the server
         try:
-            try:  # Python 2.7, use buffering of HTTP responses
+            try:  # Python 2.7+, use buffering of HTTP responses
                 httplib_response = conn.getresponse(buffering=True)
             except TypeError:  # Python 2.6 and older
                 httplib_response = conn.getresponse()
@@ -573,14 +558,6 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
                 conn = None
             raise SSLError(e)
 
-        except SSLError:
-            # Treat SSLError separately from BaseSSLError to preserve
-            # traceback.
-            if conn:
-                conn.close()
-                conn = None
-            raise
-
         except (TimeoutError, HTTPException, SocketError, ConnectionError) as e:
             if conn:
                 # Discard the connection for these exceptions. It will be
@@ -588,13 +565,14 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
                 conn.close()
                 conn = None
 
+            stacktrace = sys.exc_info()[2]
             if isinstance(e, SocketError) and self.proxy:
                 e = ProxyError('Cannot connect to proxy.', e)
             elif isinstance(e, (SocketError, HTTPException)):
                 e = ProtocolError('Connection aborted.', e)
 
-            retries = retries.increment(method, url, error=e, _pool=self,
-                                        _stacktrace=sys.exc_info()[2])
+            retries = retries.increment(method, url, error=e,
+                                        _pool=self, _stacktrace=stacktrace)
             retries.sleep()
 
             # Keep track of the error for the retry warning.
@@ -735,6 +713,7 @@ class HTTPSConnectionPool(HTTPConnectionPool):
                  % (self.num_connections, self.host))
 
         if not self.ConnectionCls or self.ConnectionCls is DummyConnection:
+            # Platform-specific: Python without ssl
             raise SSLError("Can't connect to HTTPS URL because the SSL "
                            "module is not available.")
 
