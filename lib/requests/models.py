@@ -15,7 +15,7 @@ from .hooks import default_hooks
 from .structures import CaseInsensitiveDict
 
 from .auth import HTTPBasicAuth
-from .cookies import cookiejar_from_dict, get_cookie_header, _copy_cookie_jar
+from .cookies import cookiejar_from_dict, get_cookie_header
 from .packages.urllib3.fields import RequestField
 from .packages.urllib3.filepost import encode_multipart_formdata
 from .packages.urllib3.util import parse_url
@@ -143,13 +143,12 @@ class RequestEncodingMixin(object):
             else:
                 fn = guess_filename(v) or k
                 fp = v
+            if isinstance(fp, str):
+                fp = StringIO(fp)
+            if isinstance(fp, bytes):
+                fp = BytesIO(fp)
 
-            if isinstance(fp, (str, bytes, bytearray)):
-                fdata = fp
-            else:
-                fdata = fp.read()
-
-            rf = RequestField(name=k, data=fdata,
+            rf = RequestField(name=k, data=fp.read(),
                               filename=fn, headers=fh)
             rf.make_multipart(content_type=ft)
             new_fields.append(rf)
@@ -320,7 +319,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         p.method = self.method
         p.url = self.url
         p.headers = self.headers.copy() if self.headers is not None else None
-        p._cookies = _copy_cookie_jar(self._cookies)
+        p._cookies = self._cookies.copy() if self._cookies is not None else None
         p.body = self.body
         p.hooks = self.hooks
         return p
@@ -358,8 +357,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
         if not scheme:
             raise MissingSchema("Invalid URL {0!r}: No schema supplied. "
-                                "Perhaps you meant http://{0}?".format(
-                                    to_native_string(url, 'utf8')))
+                                "Perhaps you meant http://{0}?".format(url))
 
         if not host:
             raise InvalidURL("Invalid URL %r: No host supplied" % url)
@@ -502,15 +500,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             self.prepare_content_length(self.body)
 
     def prepare_cookies(self, cookies):
-        """Prepares the given HTTP cookie data.
-
-        This function eventually generates a ``Cookie`` header from the
-        given cookies using cookielib. Due to cookielib's design, the header
-        will not be regenerated if it already exists, meaning this function
-        can only be called once for the life of the
-        :class:`PreparedRequest <PreparedRequest>` object. Any subsequent calls
-        to ``prepare_cookies`` will have no actual effect, unless the "Cookie"
-        header is removed beforehand."""
+        """Prepares the given HTTP cookie data."""
 
         if isinstance(cookies, cookielib.CookieJar):
             self._cookies = cookies
@@ -523,10 +513,6 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
     def prepare_hooks(self, hooks):
         """Prepares the given hooks."""
-        # hooks can be passed as None to the prepare method and to this
-        # method. To prevent iterating over None, simply use an empty list
-        # if hooks is False-y
-        hooks = hooks or []
         for event in hooks:
             self.register_hook(event, hooks[event])
 
@@ -586,11 +572,7 @@ class Response(object):
         self.cookies = cookiejar_from_dict({})
 
         #: The amount of time elapsed between sending the request
-        #: and the arrival of the response (as a timedelta).
-        #: This property specifically measures the time taken between sending
-        #: the first byte of the request and finishing parsing the headers. It
-        #: is therefore unaffected by consuming the response content or the
-        #: value of the ``stream`` keyword argument.
+        #: and the arrival of the response (as a timedelta)
         self.elapsed = datetime.timedelta(0)
 
         #: The :class:`PreparedRequest <PreparedRequest>` object to which this
@@ -706,8 +688,6 @@ class Response(object):
         """Iterates over the response data, one line at a time.  When
         stream=True is set on the request, this avoids reading the
         content at once into memory for large responses.
-
-        .. note:: This method is not reentrant safe.
         """
 
         pending = None
