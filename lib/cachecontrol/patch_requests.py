@@ -1,7 +1,7 @@
-import requests
+from lib import requests
 
-from requests import models
-from requests.packages.urllib3.response import HTTPResponse
+from lib.requests import models
+from lib.requests.packages.urllib3.response import HTTPResponse
 
 __attrs__ = [
     '_content',

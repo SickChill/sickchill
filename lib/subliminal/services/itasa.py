@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 import logging
 import re
 import os
-import requests
+from lib import requests
 import zipfile
 import StringIO
 import guessit

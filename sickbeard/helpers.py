@@ -42,8 +42,7 @@ import operator
 import sickbeard
 import subliminal
 import adba
-import requests
-import requests.exceptions
+from lib import requests
 import xmltodict
 
 import subprocess
@@ -56,7 +55,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
 from sickbeard import clients
 
-from cachecontrol import CacheControl, caches
+from lib.cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
 import shutil

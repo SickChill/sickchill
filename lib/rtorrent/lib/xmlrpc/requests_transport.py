@@ -27,11 +27,11 @@ except ImportError:
 
 import traceback
 
-import requests
-from requests.exceptions import RequestException
-from requests.auth import HTTPBasicAuth
-from requests.auth import HTTPDigestAuth
-from requests.packages.urllib3 import disable_warnings  # @UnresolvedImport
+from lib import requests
+from lib.requests.exceptions import RequestException
+from lib.requests.auth import HTTPBasicAuth
+from lib.requests.auth import HTTPDigestAuth
+from lib.requests.packages.urllib3 import disable_warnings  # @UnresolvedImport
 
 
 class RequestsTransport(xmlrpc_client.Transport):
