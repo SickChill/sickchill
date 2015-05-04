@@ -1,4 +1,4 @@
-import requests
+from lib import requests
 import fanart
 from fanart.errors import RequestFanartError, ResponseFanartError
 

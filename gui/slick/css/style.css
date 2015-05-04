@@ -1216,6 +1216,10 @@ span.snatched b {
 	text-align: left !important;
 }
 
+.displayShowTable td.col-search {
+    text-align: center;
+}
+
 .sickbeardTable {
 	table-layout: auto;
 	width: 100%;

@@ -1,6 +1,6 @@
 import io
 
-from requests.structures import CaseInsensitiveDict
+from lib.requests.structures import CaseInsensitiveDict
 
 from .compat import HTTPResponse, pickle
 

@@ -1,4 +1,4 @@
-import requests
+from lib import requests
 import json
 from sickbeard import logger
 

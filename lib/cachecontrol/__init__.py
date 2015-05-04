@@ -6,5 +6,5 @@ from .wrapper import CacheControl
 from .adapter import CacheControlAdapter
 from .controller import CacheController
 
-from requests.packages import urllib3
+from lib.requests.packages import urllib3
 urllib3.disable_warnings()

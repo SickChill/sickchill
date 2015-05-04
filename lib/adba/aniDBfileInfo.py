@@ -23,7 +23,7 @@ import xml.etree.cElementTree as etree
 import time
 
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
-import requests
+from lib import requests
 
 
 def get_file_hash(filePath):

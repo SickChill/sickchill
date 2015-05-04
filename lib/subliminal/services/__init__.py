@@ -21,7 +21,7 @@ from ..language import language_set, Language
 from ..subtitles import EXTENSIONS
 import logging
 import os
-import requests
+from lib import requests
 import threading
 import zipfile
 import sys

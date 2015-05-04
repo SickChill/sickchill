@@ -162,7 +162,7 @@ class MoreThanTVProvider(generic.TorrentProvider):
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
                                                                   'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
 
-		search_string['Episode'].append(re.sub('\.', '+', ep_string))
+                search_string['Episode'].append(re.sub('\.', '+', ep_string))
 
         return [search_string]
 

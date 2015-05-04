@@ -6,7 +6,7 @@ import calendar
 import time
 import datetime
 
-from requests.structures import CaseInsensitiveDict
+from lib.requests.structures import CaseInsensitiveDict
 
 from .cache import DictCache
 from .compat import parsedate_tz

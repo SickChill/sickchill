@@ -143,7 +143,11 @@ class EZTVProvider(generic.TorrentProvider):
 
                                 for quality in episode['torrents'].keys():
                                     link = episode['torrents'][quality]['url']
-                                    title = re.search('&dn=(.*?)&', link).group(1)
+                                    getTitle = re.search('&dn=(.*?)&', link)
+                                    if getTitle:
+                                        title = getTitle.group(1)
+                                    else:
+                                        continue
 
                                     item = {
                                         'title': title,
