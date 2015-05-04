@@ -135,6 +135,8 @@ class Logger(object):
         # pass exception information if debugging enabled
 
         if level == ERROR:
+            #Replace the SSL error with a link to information about how to fix it.
+            re.sub(r'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', r'See: http://git.io/vJrkM', message)
             self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
 
@@ -183,6 +185,11 @@ class Logger(object):
 
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
+                #Skip SSL Error, we pointed them to a URL.
+                if re.search('http://git.io/vJrkM', curError.message):
+                    classes.ErrorViewer.errors.remove(curError)
+                    continue
+
                 try:
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
