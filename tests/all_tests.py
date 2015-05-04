@@ -24,8 +24,8 @@ import sys, os.path
 
 tests_dir=os.path.abspath(__file__)[:-len(os.path.basename(__file__))]
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(1, os.path.join(tests_dir, '../lib'))
+sys.path.insert(1, os.path.join(tests_dir, '..'))
 
 class AllTests(unittest.TestCase):
     #Block issue_submitter_tests to avoid issue tracker spam on every build

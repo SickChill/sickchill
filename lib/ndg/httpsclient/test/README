@@ -1,0 +1,26 @@
+NDG HTTPS Client Unit tests directory
+=====================================
+The unit tests expect to connect to a simple HTTPS server listening on port 
+4443.  An OpenSSL script is provided for this purpose in scripts/.  To run,
+
+$ ./scripts/openssl_https_server.sh
+
+Unit tests
+----------
+Run for example,
+
+$ python ./test_urllib2.py
+
+Troubleshooting
+---------------
+ * Run the openssl script from *this* directory.  
+ * Also ensure it is has execute bits set. e.g.
+
+ $ chmod 755 ./scripts/openssl_https_server.sh
+ 
+ * You may need to set the no_proxy environment variable if you have a HTTPS
+ proxy in place:
+ 
+ $ export no_proxy=localhost
+
+

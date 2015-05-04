@@ -60,6 +60,11 @@ if sys.hexversion >= 0x020600F0:
 if sys.version_info >= (2, 7, 9):
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
+else:
+    try:
+        import cryptography
+    except ImportError:
+        print("SNI is disabled when the cryptography module is missing. You may encounter SSL errors!")
 
 import locale
 import datetime
