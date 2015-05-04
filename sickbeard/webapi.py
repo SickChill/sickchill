@@ -1703,7 +1703,7 @@ class CMD_SickBeardSearchIndexers(ApiCall):
                     apiData = t[str(self.name).encode()]
                 except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
                     logger.log(u"API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
-                    return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
+                    continue
 
                 for curSeries in apiData:
                     results.append({indexer_ids[_indexer]: int(curSeries['id']),

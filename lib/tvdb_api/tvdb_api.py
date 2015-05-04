@@ -680,7 +680,11 @@ class Tvdb:
         log().debug("Searching for show %s" % series)
         self.config['params_getSeries']['seriesname'] = series
 
-        return self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries']).values()[0]
+        results = self._getetsrc(self.config['url_getSeries'], self.config['params_getSeries'])
+        if not results:
+            return
+
+        return results.values()[0]
 
     def _getSeries(self, series):
         """This searches TheTVDB.com for the series name,
