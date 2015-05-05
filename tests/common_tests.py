@@ -88,11 +88,11 @@ class QualityTests(unittest.TestCase):
         self.assertEqual(common.Quality.UNKNOWN, common.Quality.nameQuality("Test.Show.S01E02-SiCKBEARD"))
 
     def test_reverse_parsing(self):
-        self.assertEqual(common.Quality.SDTV, common.Quality.nameQuality("Test Show - S01E02 - SD TV - GROUP"))
+        self.assertEqual(common.Quality.SDTV, common.Quality.nameQuality("Test Show - S01E02 - SDTV - GROUP"))
         self.assertEqual(common.Quality.SDDVD, common.Quality.nameQuality("Test Show - S01E02 - SD DVD - GROUP"))
-        self.assertEqual(common.Quality.HDTV, common.Quality.nameQuality("Test Show - S01E02 - HD TV - GROUP"))
-        self.assertEqual(common.Quality.RAWHDTV, common.Quality.nameQuality("Test Show - S01E02 - RawHD TV - GROUP"))
-        self.assertEqual(common.Quality.FULLHDTV, common.Quality.nameQuality("Test Show - S01E02 - 1080p HD TV - GROUP"))
+        self.assertEqual(common.Quality.HDTV, common.Quality.nameQuality("Test Show - S01E02 - HDTV - GROUP"))
+        self.assertEqual(common.Quality.RAWHDTV, common.Quality.nameQuality("Test Show - S01E02 - RawHD - GROUP"))
+        self.assertEqual(common.Quality.FULLHDTV, common.Quality.nameQuality("Test Show - S01E02 - 1080p HDTV - GROUP"))
         self.assertEqual(common.Quality.HDWEBDL, common.Quality.nameQuality("Test Show - S01E02 - 720p WEB-DL - GROUP"))
         self.assertEqual(common.Quality.FULLHDWEBDL, common.Quality.nameQuality("Test Show - S01E02 - 1080p WEB-DL - GROUP"))
         self.assertEqual(common.Quality.HDBLURAY, common.Quality.nameQuality("Test Show - S01E02 - 720p BluRay - GROUP"))
