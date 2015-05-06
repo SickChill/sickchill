@@ -8,7 +8,7 @@ branches:
     - develop
 
 install:
-  - pip install cheetah cryptography
+  - pip install cheetah pyopenssl==0.13.1
 
 before_script:
  - chmod +x ./tests/all_tests.py
