@@ -26,7 +26,7 @@ Video File Manager for TV Shows, It watches for new episodes of your favorite sh
 -[Mobile](http://imgur.com/a/WPyG6)
 
 ## Dependencies
- To run SickRage from source you will need Python 2.6+ and Cheetah 2.1.0+.
+ To run SickRage from source you will need Python 2.6+, Cheetah 2.1.0+, and PyOpenSSL 0.13.1 or lower.
 
 ## Forums
  Any questions or setup info your looking for can be found at out forums https://www.sickrage.tv

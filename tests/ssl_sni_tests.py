@@ -32,12 +32,21 @@ if sys.version_info < (2, 7, 9):
     try:
         import cryptography
     except ImportError:
-        enabled_sni = False
+        try:
+            from OpenSSL.version import __version__ as pyOpenSSL_Version
+            if int(pyOpenSSL_Version.replace('.', '')[:3]) > 13:
+                raise ImportError
+        except ImportError:
+            enabled_sni = False
+
 
 class SNI_Tests(unittest.TestCase):
     def test_SNI_URLS(self):
         if not enabled_sni:
-            print("\nSNI is disabled when the cryptography module is missing, you may encounter SSL errors!")
+            print('\nSNI is disabled with pyOpenSSL >= 0.14 when the cryptography module is missing,\n' +
+                    'you will encounter SSL errors with HTTPS! To fix this issue:\n' +
+                    'pip install pyopenssl==0.13.1 (easy) or pip install cryptography (pita)')
+            print
         else:
             for provider in [ torrentday, rarbg, sceneaccess ]:
                 #print 'Checking ' + provider.name
