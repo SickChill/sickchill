@@ -1383,6 +1383,7 @@ class CMD_PostProcess(ApiCall):
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False,
                                                       "string", ["copy", "symlink", "hardlink", "move"])
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", 0, False, "bool", [])
+        self.failed, args = self.check_params(args, kwargs, "failed", 0, False, "bool", [])
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string",
                                             ["auto", "manual"])
         # super, missing, help
@@ -1400,7 +1401,7 @@ class CMD_PostProcess(ApiCall):
             self.type = 'manual'
 
         data = processTV.processDir(self.path, process_method=self.process_method, force=self.force_replace,
-                                    is_priority=self.is_priority, failed=False, type=self.type)
+                                    is_priority=self.is_priority, failed=self.failed, type=self.type)
 
         if not self.return_data:
             data = ""
