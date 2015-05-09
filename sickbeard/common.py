@@ -103,11 +103,11 @@ class Quality:
 
     qualityStrings = {NONE: "N/A",
                       UNKNOWN: "Unknown",
-                      SDTV: "SD TV",
+                      SDTV: "SDTV",
                       SDDVD: "SD DVD",
-                      HDTV: "HD TV",
-                      RAWHDTV: "RawHD TV",
-                      FULLHDTV: "1080p HD TV",
+                      HDTV: "HDTV",
+                      RAWHDTV: "RawHD",
+                      FULLHDTV: "1080p HDTV",
                       HDWEBDL: "720p WEB-DL",
                       FULLHDWEBDL: "1080p WEB-DL",
                       HDBLURAY: "720p BluRay",
@@ -156,20 +156,24 @@ class Quality:
         If no quality is achieved it will try sceneQuality regex
         """
 
+        #Try Scene names first
+        quality = Quality.sceneQuality(name, anime)
+        if quality != Quality.UNKNOWN:
+            return quality
+
         name = os.path.basename(name)
 
         # if we have our exact text then assume we put it there
         for x in sorted(Quality.qualityStrings.keys(), reverse=True):
-            if x == Quality.UNKNOWN:
+            if x == Quality.UNKNOWN or x == Quality.NONE:
                 continue
-
-            if x == Quality.NONE:  #Last chance
-                return Quality.sceneQuality(name, anime)
 
             regex = '\W' + Quality.qualityStrings[x].replace(' ', '\W') + '\W'
             regex_match = re.search(regex, name, re.I)
             if regex_match:
                 return x
+
+        return Quality.UNKNOWN
 
     @staticmethod
     def sceneQuality(name, anime=False):
