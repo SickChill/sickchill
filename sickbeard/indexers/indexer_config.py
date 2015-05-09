@@ -48,6 +48,6 @@ indexerConfig[INDEXER_TVDB]['base_url'] = 'http://thetvdb.com/api/%(apikey)s/ser
 indexerConfig[INDEXER_TVRAGE]['trakt_id'] = 'tvrage_id'
 indexerConfig[INDEXER_TVRAGE]['xem_origin'] = 'rage'
 indexerConfig[INDEXER_TVRAGE]['icon'] = 'tvrage16.png'
-indexerConfig[INDEXER_TVRAGE]['scene_url'] = 'https://raw.githubusercontent.com/echel0n/sb_tvrage_scene_exceptions/master/exceptions.txt'
+indexerConfig[INDEXER_TVRAGE]['scene_url'] = 'https://raw.githubusercontent.com/SiCKRAGETV/sr_tvrage_scene_exceptions/master/exceptions.txt'
 indexerConfig[INDEXER_TVRAGE]['show_url'] = 'http://tvrage.com/shows/id-'
 indexerConfig[INDEXER_TVRAGE]['base_url'] = 'http://tvrage.com/showinfo.php?key=%(apikey)s&sid=' % indexerConfig[INDEXER_TVRAGE]['api_params']
