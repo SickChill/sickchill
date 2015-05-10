@@ -200,9 +200,11 @@ def makeSceneSeasonSearchString(show, ep_obj, extraSearchType=None):
             # for providers that don't allow multiple searches in one request we only search for Sxx style stuff
             else:
                 for cur_season in seasonStrings:
-                    if len(show.release_groups.whitelist) > 0:
-                        for keyword in show.release_groups.whitelist:
-                            toReturn.append(keyword + '.' + curShow+ "." + cur_season)
+                    if ep_obj.show.is_anime:
+                        if ep_obj.show.release_groups is not None:
+                            if len(show.release_groups.whitelist) > 0:
+                                for keyword in show.release_groups.whitelist:
+                                    toReturn.append(keyword + '.' + curShow+ "." + cur_season)
                     else:
                         toReturn.append(curShow + "." + cur_season)
 
@@ -237,9 +239,11 @@ def makeSceneSearchString(show, ep_obj):
 
     for curShow in showNames:
         for curEpString in epStrings:
-            if len(ep_obj.show.release_groups.whitelist) > 0:
-                for keyword in ep_obj.show.release_groups.whitelist:
-                    toReturn.append(keyword + '.' + curShow + '.' + curEpString)
+            if ep_obj.show.is_anime:
+                if ep_obj.show.release_groups is not None:
+                    if len(ep_obj.show.release_groups.whitelist) > 0:
+                        for keyword in ep_obj.show.release_groups.whitelist:
+                            toReturn.append(keyword + '.' + curShow + '.' + curEpString)
             else:
                 toReturn.append(curShow + '.' + curEpString)
 
