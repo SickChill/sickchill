@@ -1,29 +1,29 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-  Assumes user=sickbeard group=other
-  Assumes /opt/sickbeard is installation directory
+  Assumes user=sickrage group=other
+  Assumes /opt/sickrage is installation directory
  
   See http://www.sun.com/bigadmin/content/selfheal/sdev_intro.jsp for more information
  
   To install (see http://docs.sun.com/app/docs/doc/819-2379/fgour?l=en&a=view for more information)
-    svccfg import sickbeard.smf
+    svccfg import sickrage.smf
  
   To enable/disable
-    svcadm enable sickbeard
-    svcadm disable sickbeard
+    svcadm enable sickrage
+    svcadm disable sickrage
  
   To check if failures
     svcs -xv
  
   To check logs
-    tail /var/svc/log/network-sickbeard\:default.log
+    tail /var/svc/log/network-sickrage\:default.log
 -->
  
-<service_bundle type='manifest' name='sickbeard'>
+<service_bundle type='manifest' name='sickrage'>
  
   <service
-    name='network/sickbeard'
+    name='network/sickrage'
     type='service'
     version='1'>
  
@@ -60,15 +60,15 @@
         <service_fmri value='svc:/system/filesystem/local:default'/>
     </dependency>
  
-    <!-- execute as user sickbeard -->
+    <!-- execute as user sickrage -->
     <method_context>
-        <method_credential user='sickbeard' group='other' />
+        <method_credential user='sickrage' group='other' />
     </method_context>
  
     <exec_method
         type='method'
         name='start'
-        exec='/opt/sickbeard/SickBeard.py --daemon'
+        exec='/opt/sickrage/SickBeard.py --daemon'
         timeout_seconds='60'>
     </exec_method>
  
@@ -81,15 +81,14 @@
  
     <template>
        <common_name>
-          <loctext xml:lang='C'>Sickbeard</loctext>
+          <loctext xml:lang='C'>Sickrage</loctext>
        </common_name>
        <documentation>
-          <doc_link name='sickbeard'
-                    uri='http://www.sickbeard.com/' />
+          <doc_link name='sickrage'
+                    uri='https://sickrage.tv/' />
        </documentation>
     </template>
  
   </service>
  
 </service_bundle>
-
