@@ -369,6 +369,8 @@ class WebRoot(WebHandler):
         # Redirect initial poster/banner thumb to default images
         if which[0:6] == 'poster':
             default_image_name = 'poster.png'
+        elif which[0:6] == 'fanart':
+            default_image_name = 'fanart.png'
         else:
             default_image_name = 'banner.png'
 
@@ -386,7 +388,11 @@ class WebRoot(WebHandler):
                 image_file_name = cache_obj.banner_path(show)
             if which == 'banner_thumb':
                 image_file_name = cache_obj.banner_thumb_path(show)
-
+            if which == 'fanart':
+                if not cache_obj.has_fanart(show):
+                    cache_obj.fill_cache(sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)))
+                image_file_name = cache_obj.fanart_path(show)
+                
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
