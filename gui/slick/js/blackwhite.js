@@ -13,7 +13,7 @@ function generate_bwlist() {
 		$("#blacklist").val(realvalues.join(","));
 };
 
-function update_bwlist (show_name) {
+function update_bwlist(show_name) {
 		$('#pool').children().remove();
 
         $('#blackwhitelist').show();
@@ -52,21 +52,23 @@ $('#removeB').click(function() {
 });
 
 $('#addToWhite').click(function() {
-	var group = $('#addToPoolText').attr("value");
-	if(group == "") { return; }
-	$('#addToPoolText').attr("value", "");
-	var option = $("<option>");
-	option.attr("value",group);
-	option.html(group);
-	option.appendTo('#white');
+	var group = $('#addToPoolText').val();
+	if('' != group) {		
+		var option = $('<option>');
+		option.attr('value',group);
+		option.html(group);
+		option.appendTo('#white');
+		$('#addToPoolText').val('');		
+	}
 });
 
 $('#addToBlack').click(function() {
-	var group = $('#addToPoolText').attr("value");
-	if(group == "") { return; }
-	$('#addToPoolText').attr("value", "");
-	var option = $("<option>");
-	option.attr("value",group);
-	option.html(group);
-	option.appendTo('#black');
+	var group = $('#addToPoolText').val();
+	if('' != group) {
+		var option = $('<option>');
+		option.attr('value',group);
+		option.html(group);
+		option.appendTo('#black');
+		$('#addToPoolText').val('');
+	}
 });
