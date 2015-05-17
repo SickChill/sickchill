@@ -109,18 +109,20 @@ class EZTVProvider(generic.TorrentProvider):
 
                             for entries in resultsTable:
                                 title = entries.find('a', attrs={'class': 'epinfo'}).contents[0]
-                                link = entries.find('a', attrs={'class': 'magnet'}) or entries.find('a', attrs={'class': 'download_1'})
-                                if link:
-                                    link = link.get('href')
-                                else:
+                                for link_type in ('magnet', 'download_1', 'download_3'):
+                                    link = entries.find('a', attrs={'class': link_type})
+                                    if link:
+                                        link = link.get('href')
+                                    else:
+                                        continue
+
+                                    item = {
+                                        'title': title,
+                                        'link': link,
+                                    }
+
+                                    items[mode].append(item)
                                     continue
-
-                                item = {
-                                    'title': title,
-                                    'link': link,
-                                }
-
-                                items[mode].append(item)
 
                     except Exception, e:
                         logger.log(u"Failed parsing " + self.name + " Traceback: " + traceback.format_exc(),

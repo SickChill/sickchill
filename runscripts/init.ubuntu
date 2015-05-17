@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          sickbeard
+# Provides:          sickrage
 # Required-Start:    $local_fs $network $remote_fs
 # Required-Stop:     $local_fs $network $remote_fs
 # Should-Start:      $NetworkManager
@@ -12,55 +12,55 @@
 # Description:       starts instance of SickRage using start-stop-daemon
 ### END INIT INFO
 
-# Source SickBeard configuration
-if [ -f /etc/default/sickbeard ]; then
-    . /etc/default/sickbeard
+# Source SickRage configuration
+if [ -f /etc/default/sickrage ]; then
+    . /etc/default/sickrage
 else
-    echo "/etc/default/sickbeard not found using default settings.";
+    echo "/etc/default/sickrage not found using default settings.";
 fi
 
 # Source init functions
 . /lib/lsb/init-functions
 
 # Script name
-NAME=sickbeard
+NAME=sickrage
 
 # App name
-DESC=SickBeard
+DESC=SickRage
 
 ## Don't edit this file
-## Edit user configuation in /etc/default/sickbeard to change
+## Edit user configuation in /etc/default/sickrage to change
 ##
-## SB_USER=         #$RUN_AS, username to run sickbeard under, the default is sickbeard
-## SB_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickbeard
-## SB_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickbeard
-## SB_PIDFILE=      #$PID_FILE, the location of sickbeard.pid, the default is /var/run/sickbeard/sickbeard.pid
+## SR_USER=         #$RUN_AS, username to run sickrage under, the default is sickrage
+## SR_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickrage
+## SR_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickrage
+## SR_PIDFILE=      #$PID_FILE, the location of sickrage.pid, the default is /var/run/sickrage/sickrage.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python
-## SB_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickbeard, i.e. " --config=/home/sickbeard/config.ini"
+## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickrage, i.e. " --config=/home/sickrage/config.ini"
 ## SSD_OPTS=        #$EXTRA_SSD_OPTS, extra start-stop-daemon option like " --group=users"
 ##
 ## EXAMPLE if want to run as different user
-## add SB_USER=username to /etc/default/sickbeard
-## otherwise default sickbeard is used
+## add SR_USER=username to /etc/default/sickrage
+## otherwise default sickrage is used
 
 ## The defaults
 # Run as username 
-RUN_AS=${SB_USER-sickbeard}
+RUN_AS=${SR_USER-sickrage}
 
-# Path to app SB_HOME=path_to_app_SickBeard.py
-APP_PATH=${SB_HOME-/opt/sickbeard}
+# Path to app SR_HOME=path_to_app_SickBeard.py
+APP_PATH=${SR_HOME-/opt/sickrage}
 
 # Data directory where sickbeard.db, cache and logs are stored
-DATA_DIR=${SB_DATA-/opt/sickbeard}
+DATA_DIR=${SR_DATA-/opt/sickrage}
 
 # Path to store PID file
-PID_FILE=${SB_PIDFILE-/var/run/sickbeard/sickbeard.pid}
+PID_FILE=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
 
 # path to python bin
 DAEMON=${PYTHON_BIN-/usr/bin/python}
 
-# Extra daemon option like: SB_OPTS=" --config=/home/sickbeard/config.ini"
-EXTRA_DAEMON_OPTS=${SB_OPTS-}
+# Extra daemon option like: SR_OPTS=" --config=/home/sickrage/config.ini"
+EXTRA_DAEMON_OPTS=${SR_OPTS-}
 
 # Extra start-stop-daemon option like START_OPTS=" --group=users"
 EXTRA_SSD_OPTS=${SSD_OPTS-}
@@ -75,7 +75,7 @@ test -x $DAEMON || exit 0
 
 set -e
 
-# Create PID directory if not exist and ensure the SickBeard user can write to it
+# Create PID directory if not exist and ensure the SickRage user can write to it
 if [ ! -d $PID_PATH ]; then
     mkdir -p $PID_PATH
     chown $RUN_AS $PID_PATH
@@ -94,28 +94,28 @@ if [ -e $PID_FILE ]; then
     fi
 fi
 
-start_sickbeard() {
+start_sickrage() {
     echo "Starting $DESC"
     start-stop-daemon -d $APP_PATH -c $RUN_AS $EXTRA_SSD_OPTS --start --pidfile $PID_FILE --exec $DAEMON -- $DAEMON_OPTS
 }
 
-stop_sickbeard() {
+stop_sickrage() {
     echo "Stopping $DESC"
     start-stop-daemon --stop --pidfile $PID_FILE --retry 15
 }
 
 case "$1" in
     start)
-        start_sickbeard
+        start_sickrage
         ;;
     stop)
-        stop_sickbeard
+        stop_sickrage
         ;;
 
     restart|force-reload)
-        stop_sickbeard
+        stop_sickrage
         sleep 2
-        start_sickbeard
+        start_sickrage
         ;;
     status)
         status_of_proc -p "$PID_FILE" "$DAEMON" "$DESC"
