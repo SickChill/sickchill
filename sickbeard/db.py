@@ -232,7 +232,7 @@ class DBConnection(object):
         try:
             return unicode(x, 'utf-8')
         except:
-            return unicode(x, sickbeard.SYS_ENCODING)
+            return unicode(x, sickbeard.SYS_ENCODING,errors="ignore")
 
     def _dict_factory(self, cursor, row):
         d = {}
