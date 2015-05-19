@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
+import httplib
 import urllib
 import urllib2
 import socket
@@ -385,7 +386,7 @@ class KODINotifier:
 
             try:
                 response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
+            except (httplib.BadStatusLine, urllib2.URLError), e:
                 logger.log(u"Error while trying to retrieve KODI API version for " + host + ": " + ex(e),
                            logger.WARNING)
                 return False
