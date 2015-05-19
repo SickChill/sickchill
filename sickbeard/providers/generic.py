@@ -256,6 +256,21 @@ class GenericProvider:
 
         return title, url
 
+    def _get_size(self, item):
+        """Gets the size from the item"""
+        if self.providerType != GenericProvider.NZB:
+            logger.log(u"Torrent Generic providers doesn't have _get_size() implemented yet", logger.DEBUG)
+            return -1
+        else:
+            size = item.get('links')[1].get('length')
+            if size:
+                size = int(size)
+                return size
+            else:
+                logger.log(u"Size was not found in your provider response", logger.DEBUG)
+                return -1
+
+
     def findSearchResults(self, show, episodes, search_mode, manualSearch=False, downCurQuality=False):
 
         self._checkAuth()
@@ -430,6 +445,7 @@ class GenericProvider:
             result.release_group = release_group
             result.version = version
             result.content = None
+            result.size = self._get_size(item)
 
             if len(epObj) == 1:
                 epNum = epObj[0].episode
