@@ -98,7 +98,7 @@
         moment.lang('en', {
             calendar: {
                 lastDay:dateA + 'Yesterday' + timeA, sameDay:dateA + 'Today' + timeA, nextDay:dateA + 'Tomorrow' + timeA,
-                lastWeek:dateA + 'last] ddd' + timeB, nextWeek:dateA + 'on] ddd' + timeB,
+                lastWeek:dateA + 'Last] ddd' + timeB, nextWeek:dateA + 'On] ddd' + timeB,
                 sameElse:dateA + ']ddd, MMM D YYYY[' + timeA
             },
             relativeTime: {
@@ -126,7 +126,7 @@
             if (fuzzer)
                 result = result.replace(/\bOn\b/i, 'Next');
 
-        } else if (! /\b((yester|to)day\b|tomo|last\b)/i.test(result)) {
+        } else if (! /\b((Yester|To)day\b|Tomo|Last\b)/i.test(result)) {
             if (14 > day)
                 result = airdate.from(today) + (dateWithTime ? dtGlue + airdatetime.format(timeToken) : '');
             else if (4 > week) {
@@ -141,14 +141,15 @@
             }
             titleThis = true;
         }
+        result = day < 7 ? result.replace(/\bLast \b/i, '') : result;
 
         var n = false; // disable for prod
         $(this).html(result);
-        if (dateWithTime && /(yester|to)day/i.test(result))
+        if (dateWithTime && /(Yester|To)day/i.test(result))
             $(this).find('.fd').attr('title',(n?'1) ':'') + moment.duration(airdatetime.diff(moment(),'seconds'),'seconds').humanize(true)).each(addQTip);
         else if (dateWithTime)
             $(this).find('.fd').attr('title',(n?'2) ':'') + airdate.from(today)).each(addQTip);
-        else if (! /today/i.test(result))
+        else if (! /Today/i.test(result))
             $(this).find('.fd').attr('title',(n?'3) ':'') + airdate.from(today)).each(addQTip);
         else
             titleThis = false;
