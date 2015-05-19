@@ -102,8 +102,8 @@
                 sameElse:dateA + ']ddd, MMM D YYYY[' + timeA
             },
             relativeTime: {
-                future:'in %s', past:'%s ago', s:'seconds', m:'a minute', mm:'%d minutes', h:'an hour', hh:'%d hours',
-                d:'a day', dd:'%d days', M:'a month', MM:'%d months', y:'a year', yy:'%d years'
+                future:'In %s', past:'%s ago', s:'seconds', m:'A minute', mm:'%d minutes', h:'An hour', hh:'%d hours',
+                d:'A day', dd:'%d days', M:'A month', MM:'%d months', y:'A year', yy:'%d years'
             }
         });
 
@@ -130,7 +130,7 @@
             if (14 > day)
                 result = airdate.from(today) + (dateWithTime ? dtGlue + airdatetime.format(timeToken) : '');
             else if (4 > week) {
-                result = (isPast ? '' : 'in ') + (1 == week ? 'a' : week) + ' week' + (1 == week ? '' : 's') + (isPast ? ' ago' : '');
+                result = (isPast ? '' : 'In ') + (1 == week ? 'A' : week) + ' week' + (1 == week ? '' : 's') + (isPast ? ' ago' : '');
                 qTipTime = true;
             } else {
                 result = airdate.from(today);
