@@ -47,7 +47,7 @@ class TraktNotifier:
         """
 
         trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD, sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
             try:
@@ -100,7 +100,7 @@ class TraktNotifier:
         update: type o action add or remove
         """
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, sickbeard.TRAKT_USERNAME, sickbeard.TRAKT_PASSWORD)
+        trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
 
@@ -205,7 +205,7 @@ class TraktNotifier:
 
         return post_data
 
-    def test_notify(self, username, password, disable_ssl, blacklist_name=None):
+    def test_notify(self, username, disable_ssl, blacklist_name=None):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.
@@ -218,7 +218,7 @@ class TraktNotifier:
         Returns: True if the request succeeded, False otherwise
         """
         try:
-            trakt_api = TraktAPI(sickbeard.TRAKT_API_KEY, username, password, disable_ssl, sickbeard.TRAKT_TIMEOUT)
+            trakt_api = TraktAPI(disable_ssl, sickbeard.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
             if blacklist_name and blacklist_name is not None:
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
