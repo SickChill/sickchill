@@ -176,7 +176,7 @@ def retrieve_exceptions():
             url_data = helpers.getURL(url)
             if url_data is None:
                 # When urlData is None, trouble connecting to github
-                logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.ERROR)
+                logger.log(u"Check scene exceptions update failed. Unable to get URL: " + url, logger.WARNING)
                 continue
 
             setLastRefresh(sickbeard.indexerApi(indexer).name)
