@@ -316,22 +316,62 @@ $(document).ready(function(){
             });
     });
 
+    $('#TraktGetPin').click(function () { 
+        var trakt_pin_url = $('#trakt_pin_url').val();
+        var w;
+        w = window.open(trakt_pin_url, "popUp", "toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550");
+         $('#trakt_pin').removeClass('hide');
+    });  
+    
+    $('#trakt_pin').change(function() {
+        var trakt_pin = $('#trakt_pin').val();
+        
+        if (trakt_pin.length !=0) {
+            $('#TraktGetPin').addClass('hide');
+            $('#authTrakt').removeClass('hide');
+        }
+        else {
+            $('#TraktGetPin').removeClass('hide');
+            $('#authTrakt').addClass('hide');
+        }
+    });
+    
+    $('#trakt_pin').keyup(function () {
+        var trakt_pin = $('#trakt_pin').val();
+        
+        if (trakt_pin.length !=0) {
+            $('#TraktGetPin').addClass('hide');
+            $('#authTrakt').removeClass('hide');
+        }
+        else {
+            $('#TraktGetPin').removeClass('hide');
+            $('#authTrakt').addClass('hide');
+        }
+    });
+    
+    $('#authTrakt').click(function() {
+        var trakt_pin = $('#trakt_pin').val();
+        if (trakt_pin.length !=0) {
+            $.get(sbRoot + '/home/getTraktToken', { "trakt_pin": trakt_pin })
+                .done(function (data) {
+                    $('#testTrakt-result').html(data);
+                    $('#authTrakt').addClass('hide');
+                    $('#trakt_pin').addClass('hide');               
+                    $('#TraktGetPin').addClass('hide');                 
+            });              
+        }
+    });
+    
     $('#testTrakt').click(function () {
         var trakt_username = $.trim($('#trakt_username').val());
-        var trakt_password = $.trim($('#trakt_password').val());
         var trakt_trending_blacklist = $.trim($('#trakt_blacklist_name').val());
         var trakt_disable_ssl_verify = $('#trakt_disable_ssl_verify').is(':checked');
-        if (!trakt_username || !trakt_password) {
+        if (!trakt_username) {
             $('#testTrakt-result').html('Please fill out the necessary fields above.');
 			if (!trakt_username) {
 				$('#trakt_username').addClass('warning');
 			} else {
 				$('#trakt_username').removeClass('warning');
-			}
-			if (!trakt_password) {
-				$('#trakt_password').addClass('warning');
-			} else {
-				$('#trakt_password').removeClass('warning');
 			}
             return;
         }
@@ -341,11 +381,11 @@ $(document).ready(function(){
 	    $('#trakt_blacklist_name').addClass('warning');
             return;
         }
-		$('#trakt_username,#trakt_password').removeClass('warning');
+		$('#trakt_username').removeClass('warning');
 	        $('#trakt_blacklist_name').removeClass('warning');
         $(this).prop('disabled', true);
         $('#testTrakt-result').html(loading);
-        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'password': trakt_password, 'disable_ssl': trakt_disable_ssl_verify, 'blacklist_name': trakt_trending_blacklist})
+        $.get(sbRoot + '/home/testTrakt', {'username': trakt_username, 'disable_ssl': trakt_disable_ssl_verify, 'blacklist_name': trakt_trending_blacklist})
             .done(function (data) {
                 $('#testTrakt-result').html(data);
                 $('#testTrakt').prop('disabled', false);

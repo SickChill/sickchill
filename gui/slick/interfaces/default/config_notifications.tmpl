@@ -1448,15 +1448,18 @@
                                     <span class="component-desc">username of your Trakt account.</span>
                                 </p>
                             </div>
+                            <input type="hidden" id="trakt_pin_url" value="$sickbeard.TRAKT_PIN_URL">
+                            <input type="button"#if $sickbeard.TRAKT_ACCESS_TOKEN then "class=\"btn hide\"" else "class=\"btn\""# value="Get Trakt PIN" id="TraktGetPin" />
                             <div class="field-pair">
-                                <label for="trakt_password">
-                                    <span class="component-title">Trakt password</span>
-                                    <input type="password" name="trakt_password" id="trakt_password" value="$sickbeard.TRAKT_PASSWORD" class="form-control input-sm input250" />
+                                <label for="trakt_pin">
+                                    <span class="component-title">Trakt PIN</span>
+                                    <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" />
                                 </label>
                                 <p>
-                                    <span class="component-desc">password of your Trakt account.</span>
+                                    <span class="component-desc">PIN code to authorize SickRage to access Trakt on your behalf.</span>
                                 </p>
                             </div>
+                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />                            
                             <div class="field-pair">
                                 <label for="trakt_disable_ssl_verify">
                                     <span class="component-title">Disable SSL Verification:</span>
@@ -1494,7 +1497,7 @@
                                     <span class="component-title">Sync libraries:</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
-                                        <p>Sync your SickRage show Library with your Trakt Show Collection.</p>
+                                        <p>sync your SickRage show library with your trakt show library.</p>
                                     </span>
                                 </label>
                             </div>

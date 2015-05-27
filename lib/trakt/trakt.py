@@ -1,67 +1,82 @@
 from lib import requests
 import json
+import sickbeard
+import time
 from sickbeard import logger
 
 from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
-    def __init__(self, apikey, username=None, password=None, disable_ssl_verify=False, timeout=30):
-        self.username = username
-        self.password = password
+    def __init__(self, disable_ssl_verify=False, timeout=30):
         self.verify = not disable_ssl_verify
         self.timeout = timeout if timeout else None
-        self.api_url = 'https://api-v2launch.trakt.tv/'
+        self.auth_url = sickbeard.TRAKT_OAUTH_URL
+        self.api_url = sickbeard.TRAKT_API_URL
         self.headers = {
           'Content-Type': 'application/json',
           'trakt-api-version': '2',
-          'trakt-api-key': apikey,
+          'trakt-api-key': sickbeard.TRAKT_API_KEY
         }
 
-    def validateAccount(self):
-        if hasattr(self, 'token'):
-            del(self.token)
+    def traktToken(self, trakt_pin=None, refresh=False, count=0):
+    
+        if count > 3:
+            sickbeard.TRAKT_ACCESS_TOKEN = ''
+            return False
+        elif count > 0:
+            time.sleep(2)
+        
+        
+        
         data = {
-            'login': self.username,
-            'password': self.password
+            'client_id': sickbeard.TRAKT_API_KEY,
+            'client_secret': sickbeard.TRAKT_API_SECRET,
+            'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob'
         }
-        try:
-            resp = requests.request('POST', self.api_url+"auth/login", headers=self.headers,
-                data=json.dumps(data), timeout=self.timeout, verify=self.verify)
-            resp.raise_for_status()
-            resp = resp.json()
-        except requests.RequestException as e:
-            code = getattr(e.response, 'status_code', None)
-            if not code:
-                # This is pretty much a fatal error if there is no status_code
-                # It means there basically was no response at all
-                raise traktException(e)
-            elif code == 502:
-                # Retry the request, cloudflare had a proxying issue
-                logger.log(u"Retrying trakt api request: auth/login", logger.WARNING)
-                return self.validateAccount()
-            elif code == 401:
-                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
-                raise traktAuthException(e)
-            elif code in (500,501,503,504,520,521,522):
-                #http://docs.trakt.apiary.io/#introduction/status-codes
-                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
-                raise traktServerBusy(e)
-            else:
-                raise traktException(e)
-        if 'token' in resp:
-            self.token = resp['token']
+        
+        if refresh:
+            data['grant_type'] = 'refresh_token'
+            data['refresh_token'] = sickbeard.TRAKT_REFRESH_TOKEN
+        else:
+            data['grant_type'] = 'authorization_code'
+            if not None == trakt_pin:
+                data['code'] = trakt_pin
+        
+        headers = {
+            'Content-Type': 'application/json'
+        } 
+ 
+        resp = self.traktRequest('oauth/token', data=data,  headers=headers, url=self.auth_url , method='POST', count=count)
+
+        if 'access_token' in resp:
+            sickbeard.TRAKT_ACCESS_TOKEN  = resp['access_token']
+            if 'refresh_token' in resp:
+                sickbeard.TRAKT_REFRESH_TOKEN = resp['refresh_token']
             return True
         return False
-
-    def traktRequest(self, path, data=None, method='GET'):
-        url = self.api_url + path
-        headers = self.headers
-        if not getattr(self, 'token', None):
-            self.validateAccount()
-        headers['trakt-user-login'] = self.username
-        headers['trakt-user-token'] = self.token
-
-        # request the URL from trakt and parse the result as json
+        
+    def validateAccount(self):
+            
+        resp = self.traktRequest('users/settings')
+        
+        if 'account' in resp:
+            return True
+        return False
+        
+    def traktRequest(self, path, data=None, headers=None, url=None, method='GET',count=0):
+        if None == url:
+            url = self.api_url + path
+        else:
+            url = url + path
+        
+        count = count + 1
+        
+        if None == headers:
+            headers = self.headers
+        
+        if not None == sickbeard.TRAKT_ACCESS_TOKEN:
+            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+        
         try:
             resp = requests.request(method, url, headers=headers, timeout=self.timeout,
                 data=json.dumps(data) if data else [], verify=self.verify)
@@ -79,14 +94,16 @@ class TraktAPI():
                 raise traktException(e)
             elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
-                logger.log(u"Retrying trakt api request: %s" % path, logger.WARNING)
-                return self.traktRequest(path, data, method)
+                logger.log(u'Retrying trakt api request: %s' % path, logger.WARNING)
+                return self.traktRequest(path, data, headers, method)
             elif code == 401:
-                logger.log(u"Unauthorized. Please check your Trakt settings", logger.WARNING)
+                logger.log(u'Unauthorized. Please check your Trakt settings', logger.WARNING)
+                if self.traktToken(refresh=True,count=count):
+                    return self.traktRequest(path, data, url, method)
                 raise traktAuthException(e)
             elif code in (500,501,503,504,520,521,522):
                 #http://docs.trakt.apiary.io/#introduction/status-codes
-                logger.log(u"Trakt may have some issues and it's unavailable. Try again later please", logger.WARNING)
+                logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.WARNING)
                 raise traktServerBusy(e)
             else:
                 raise traktException(e)

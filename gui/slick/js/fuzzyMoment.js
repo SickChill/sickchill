@@ -98,12 +98,12 @@
         moment.lang('en', {
             calendar: {
                 lastDay:dateA + 'Yesterday' + timeA, sameDay:dateA + 'Today' + timeA, nextDay:dateA + 'Tomorrow' + timeA,
-                lastWeek:dateA + 'last] ddd' + timeB, nextWeek:dateA + 'on] ddd' + timeB,
+                lastWeek:dateA + 'Last] ddd' + timeB, nextWeek:dateA + 'On] ddd' + timeB,
                 sameElse:dateA + ']ddd, MMM D YYYY[' + timeA
             },
             relativeTime: {
-                future:'in %s', past:'%s ago', s:'seconds', m:'a minute', mm:'%d minutes', h:'an hour', hh:'%d hours',
-                d:'a day', dd:'%d days', M:'a month', MM:'%d months', y:'a year', yy:'%d years'
+                future:'In %s', past:'%s ago', s:'seconds', m:'A minute', mm:'%d minutes', h:'An hour', hh:'%d hours',
+                d:'A day', dd:'%d days', M:'A month', MM:'%d months', y:'A year', yy:'%d years'
             }
         });
 
@@ -126,11 +126,11 @@
             if (fuzzer)
                 result = result.replace(/\bOn\b/i, 'Next');
 
-        } else if (! /\b((yester|to)day\b|tomo|last\b)/i.test(result)) {
+        } else if (! /\b((Yester|To)day\b|Tomo|Last\b)/i.test(result)) {
             if (14 > day)
                 result = airdate.from(today) + (dateWithTime ? dtGlue + airdatetime.format(timeToken) : '');
             else if (4 > week) {
-                result = (isPast ? '' : 'in ') + (1 == week ? 'a' : week) + ' week' + (1 == week ? '' : 's') + (isPast ? ' ago' : '');
+                result = (isPast ? '' : 'In ') + (1 == week ? 'A' : week) + ' week' + (1 == week ? '' : 's') + (isPast ? ' ago' : '');
                 qTipTime = true;
             } else {
                 result = airdate.from(today);
@@ -141,14 +141,15 @@
             }
             titleThis = true;
         }
+        result = day < 7 ? result.replace(/\bLast \b/i, '') : result;
 
         var n = false; // disable for prod
         $(this).html(result);
-        if (dateWithTime && /(yester|to)day/i.test(result))
+        if (dateWithTime && /(Yester|To)day/i.test(result))
             $(this).find('.fd').attr('title',(n?'1) ':'') + moment.duration(airdatetime.diff(moment(),'seconds'),'seconds').humanize(true)).each(addQTip);
         else if (dateWithTime)
             $(this).find('.fd').attr('title',(n?'2) ':'') + airdate.from(today)).each(addQTip);
-        else if (! /today/i.test(result))
+        else if (! /Today/i.test(result))
             $(this).find('.fd').attr('title',(n?'3) ':'') + airdate.from(today)).each(addQTip);
         else
             titleThis = false;
