@@ -223,6 +223,21 @@ anime_regexes = [
      .*?
      """),
 
+    ('anime_ISLAND',
+     # [ISLAND]One_Piece_679_[VOSTFR]_[V1]_[8bit]_[720p]_[EB7838FC].mp4
+     # [ISLAND]One_Piece_679_[VOSTFR]_[8bit]_[720p]_[EB7838FC].mp4
+     '''
+     ^\[(?P<release_group>ISLAND?)\]                                          # Release Group
+	 (?P<series_name>.+?)[ ._-]+                                              # Show_Name and separator
+	 (?P<ep_ab_num>\d{1,3})[ ._-]+                                            # Episode number
+	 (\[VOSTFR\])
+	 ([ ._-]+\[[vV](?P<version>[0-9])\])*[ ._-]+                              # Version
+	 (\[(8bit|10bit)\])?[ ._-]+
+	 \[(?P<extra_info>(\d{3,4}[xp]?\d{0,4})?[\.\w\s-]*)\][ ._-]+              # Extra info
+	 (\[(?P<crc>\w{8})\])?                                                    # CRC
+	 .*?
+     '''),
+
     ('anime_Kaerizaki-Fansub',
      # [Kaerizaki-Fansub]_One_Piece_679_[VOSTFR][HD_1280x720].mp4
      # [Kaerizaki-Fansub]_One_Piece_681_[VOSTFR][HD_1280x720]_V2.mp4
