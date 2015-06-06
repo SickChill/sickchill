@@ -266,7 +266,7 @@ class DBSanityCheck(object):
 # ===============
 
 def upgradeDatabase(connection, schema):
-    logger.log(u"Checking database structure...", logger.INFO)
+    logger.log(u"Checking database structure..." + connection.filename, logger.DEBUG)
     _processUpgrade(connection, schema)
 
 
@@ -287,7 +287,7 @@ def _processUpgrade(connection, upgradeClass):
     instance = upgradeClass(connection)
     logger.log(u"Checking " + prettyName(upgradeClass.__name__) + " database upgrade", logger.DEBUG)
     if not instance.test():
-        logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.INFO)
+        logger.log(u"Database upgrade required: " + prettyName(upgradeClass.__name__), logger.DEBUG)
         try:
             instance.execute()
         except sqlite3.DatabaseError, e:

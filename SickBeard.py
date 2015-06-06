@@ -457,7 +457,7 @@ class SickRage(object):
         Populates the showList with shows from the database
         """
 
-        logger.log(u"Loading initial show list")
+        logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_shows")
