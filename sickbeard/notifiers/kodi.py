@@ -127,7 +127,7 @@ class KODINotifier:
 
         result = ''
         for curHost in [x.strip() for x in host.split(",")]:
-            logger.log(u"Sending KODI notification to '" + curHost + "' - " + message, logger.INFO)
+            logger.log(u"Sending KODI notification to '" + curHost + "' - " + message, logger.DEBUG)
 
             kodiapi = self._get_kodi_version(curHost, username, password)
             if kodiapi:
@@ -169,27 +169,27 @@ class KODINotifier:
 
         """
 
-        logger.log(u"Sending request to update library for KODI host: '" + host + "'", logger.INFO)
+        logger.log(u"Sending request to update library for KODI host: '" + host + "'", logger.DEBUG)
 
         kodiapi = self._get_kodi_version(host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
         if kodiapi:
             if (kodiapi <= 4):
                 # try to update for just the show, if it fails, do full update if enabled
                 if not self._update_library(host, showName) and sickbeard.KODI_UPDATE_FULL:
-                    logger.log(u"Single show update failed, falling back to full update", logger.WARNING)
+                    logger.log(u"Single show update failed, falling back to full update", logger.DEBUG)
                     return self._update_library(host)
                 else:
                     return True
             else:
                 # try to update for just the show, if it fails, do full update if enabled
                 if not self._update_library_json(host, showName) and sickbeard.KODI_UPDATE_FULL:
-                    logger.log(u"Single show update failed, falling back to full update", logger.WARNING)
+                    logger.log(u"Single show update failed, falling back to full update", logger.DEBUG)
                     return self._update_library_json(host)
                 else:
                     return True
         else:
             logger.log(u"Failed to detect KODI version for '" + host + "', check configuration and try again.",
-                       logger.DEBUG)
+                       logger.WARNING)
             return False
 
         return False
@@ -219,7 +219,7 @@ class KODINotifier:
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
             return False
 
         for key in command:
@@ -269,7 +269,7 @@ class KODINotifier:
         """
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
             return False
 
         logger.log(u"Updating KODI library via HTTP method for host: " + host, logger.DEBUG)
@@ -330,7 +330,7 @@ class KODINotifier:
                     time.sleep(5)
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.INFO)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.DEBUG)
             updateCommand = {'command': 'ExecBuiltIn', 'parameter': 'KODI.updatelibrary(video)'}
             request = self._send_to_kodi(updateCommand, host)
 
@@ -365,7 +365,7 @@ class KODINotifier:
             password = sickbeard.KODI_PASSWORD
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
             return False
 
         command = command.encode('utf-8')
@@ -422,10 +422,10 @@ class KODINotifier:
         """
 
         if not host:
-            logger.log(u'No KODI host passed, aborting update', logger.DEBUG)
+            logger.log(u'No KODI host passed, aborting update', logger.WARNING)
             return False
 
-        logger.log(u"Updating KODI library via JSON method for host: " + host, logger.INFO)
+        logger.log(u"Updating KODI library via JSON method for host: " + host, logger.DEBUG)
 
         # if we're doing per-show
         if showName:
@@ -488,7 +488,7 @@ class KODINotifier:
 
         # do a full update if requested
         else:
-            logger.log(u"Doing Full Library KODI update on host: " + host, logger.INFO)
+            logger.log(u"Doing Full Library KODI update on host: " + host, logger.DEBUG)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}'
             request = self._send_to_kodi_json(updateCommand, host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
 
