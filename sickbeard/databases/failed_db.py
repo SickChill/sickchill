@@ -23,13 +23,14 @@ from sickbeard.common import Quality
 # Add new migrations at the bottom of the list; subclass the previous migration.
 class InitialSchema(db.SchemaUpgrade):
     def test(self):
-        return self.hasTable('failed')
+        return self.hasTable('db_version')
 
     def execute(self):
         queries = [
-            ('CREATE TABLE failed (release TEXT);',),
+            ('CREATE TABLE failed (release TEXT, size NUMERIC, provider TEXT);',),
+            ('CREATE TABLE history (date NUMERIC, size NUMERIC, release TEXT, provider TEXT, old_status NUMERIC DEFAULT (?), showid NUMERIC DEFAULT -1, season NUMERIC DEFAULT -1, episode NUMERIC DEFAULT -1);', Quality.NONE),
             ('CREATE TABLE db_version (db_version INTEGER);',),
-            ('INSERT INTO db_version (db_version) VALUES (?)', 1),
+            ('INSERT INTO db_version (db_version) VALUES (1);',),
         ]
         for query in queries:
             if len(query) == 1:
@@ -43,7 +44,7 @@ class SizeAndProvider(InitialSchema):
         return self.hasColumn('failed', 'size') and self.hasColumn('failed', 'provider')
 
     def execute(self):
-        self.addColumn('failed', 'size')
+        self.addColumn('failed', 'size', 'NUMERIC')
         self.addColumn('failed', 'provider', 'TEXT', '')
 
 
