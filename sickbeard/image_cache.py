@@ -282,7 +282,7 @@ class ImageCache:
 
         if not need_images[self.POSTER] and not need_images[self.BANNER] and not need_images[self.POSTER_THUMB] and not \
         need_images[self.BANNER_THUMB] and not need_images[self.FANART]:
-            logger.log(u"No new cache images needed, not retrieving new ones")
+            logger.log(u"No new cache images needed, not retrieving new ones", logger.DEBUG)
             return
 
         # check the show dir for poster or banner images and use them

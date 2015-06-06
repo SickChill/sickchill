@@ -497,12 +497,12 @@ class PostProcessor(object):
         if none were found.
         """
 
-        logger.log(u"Analyzing name " + repr(name))
-
         to_return = (None, None, [], None, None)
 
         if not name:
             return to_return
+
+        logger.log(u"Analyzing name " + repr(name), logger.DEBUG)
 
         name = helpers.remove_non_release_groups(helpers.remove_extension(name))
 

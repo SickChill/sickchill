@@ -137,7 +137,7 @@ class BacklogSearcher:
     def _get_segments(self, show, fromDate):
         anyQualities, bestQualities = common.Quality.splitQuality(show.quality)  # @UnusedVariable
 
-        logger.log(u"Seeing if we need anything from {show_name}".format(show_name=show.name))
+        logger.log(u"Seeing if we need anything from {show_name}".format(show_name=show.name), logger.DEBUG)
 
         myDB = db.DBConnection()
         if show.air_by_date:
