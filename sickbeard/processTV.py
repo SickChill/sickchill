@@ -164,7 +164,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     nzbNameOriginal = nzbName
 
     if not postpone:
-        result.output += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
+        result.output += logHelper(u"PostProcessing Path: " + path, logger.INFO)
         result.output += logHelper(u"PostProcessing Dirs: " + str(dirs), logger.DEBUG)
 
         rarFiles = filter(helpers.isRarFile, files)
@@ -267,7 +267,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 result.missedfiles.append(processPath + " : Syncfiles found")
                                 
     if result.aggresult:
-        result.output += logHelper(u"Successfully processed")
+        result.output += logHelper(u"Processing completed")
         if result.missedfiles:
             result.output += logHelper(u"I did encounter some unprocessable items: ")
             for missedfile in result.missedfiles:

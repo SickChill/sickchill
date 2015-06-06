@@ -466,7 +466,7 @@ class TVShow(object):
 
     def loadEpisodesFromDB(self):
 
-        logger.log(u"Loading all episodes from the DB")
+        logger.log(u"Loading all episodes from the DB", logger.DEBUG)
 
         myDB = db.DBConnection()
         sql = "SELECT * FROM tv_episodes WHERE showid = ?"
@@ -549,7 +549,7 @@ class TVShow(object):
             return None
 
         logger.log(
-            str(self.indexerid) + u": Loading all episodes from " + sickbeard.indexerApi(self.indexer).name + "..")
+            str(self.indexerid) + u": Loading all episodes from " + sickbeard.indexerApi(self.indexer).name + "..", logger.DEBUG)
 
         scannedEps = {}
 
@@ -841,7 +841,7 @@ class TVShow(object):
 
     def loadFromIndexer(self, cache=True, tvapi=None, cachedSeason=None):
 
-        logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name)
+        logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name, logger.DEBUG)
 
         # There's gotta be a better way of doing this but we don't wanna
         # change the cache value elsewhere
@@ -909,7 +909,7 @@ class TVShow(object):
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
 
         if self.imdbid:
-            logger.log(str(self.indexerid) + u": Loading show info from IMDb")
+            logger.log(str(self.indexerid) + u": Loading show info from IMDb", logger.DEBUG)
 
             imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
 
