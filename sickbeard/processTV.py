@@ -316,9 +316,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
                         ek.ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or dirName.lower() == ek.ek(
                 os.path.realpath, sqlShow["location"]).lower():
             result.output += logHelper(
-                u"You're trying to post process an episode that's already been moved to its show dir, skipping",
+                u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,
                 logger.ERROR)
-            result.missedfiles.append(dirName + " : Already processed")
             return False
 
     # Get the videofile list for the next checks
@@ -383,7 +382,6 @@ def unRAR(path, rarFiles, force, result):
                             u"Archive file already post-processed, extraction skipped: " + file_in_archive,
                             logger.DEBUG)
                         skip_file = True
-                        result.missedfiles.append(archive + " : RAR already processed")
                         break
 
                 if skip_file:
@@ -492,12 +490,11 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
     processor = None
     for cur_video_file in videoFiles:
+        cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
 
         if already_postprocessed(processPath, cur_video_file, force, result):
-            result.missedfiles.append(ek.ek(os.path.join, processPath, cur_video_file) + " : Already processed")
+            result.output += logHelper(u"Already Processed " + cur_video_file_path + " : Skipping", logger.DEBUG)
             continue
-
-        cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)
