@@ -38,6 +38,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_unaired_episodes()
         self.fix_tvrage_show_statues()
         self.fix_episode_statuses()
+        self.fix_invalid_airdates()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -176,6 +177,20 @@ class MainSanityCheck(db.DBSanityCheck):
         else:
             logger.log(u"No MALFORMED episode statuses, check passed", logger.DEBUG)
 
+    def fix_invalid_airdates(self):
+
+        sqlResults = self.connection.select(
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1",
+            [datetime.date.max.toordinal()])
+
+        for bad_airdate in sqlResults:
+            logger.log(u"Bad episode airdate detected! episode_id: " + str(bad_airdate["episode_id"]) + " showid: " + str(
+                bad_airdate["showid"]), logger.DEBUG)
+            logger.log(u"Fixing bad episode airdate for episode_id: " + str(bad_airdate["episode_id"]))
+            self.connection.action("UPDATE tv_episodes SET airdate = '1' WHERE episode_id = ?", [bad_airdate["episode_id"]])
+
+        else:
+            logger.log(u"No bad episode airdates, check passed", logger.DEBUG)
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")
