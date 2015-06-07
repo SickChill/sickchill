@@ -339,7 +339,7 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
             return False
 
-        logger.log(str(self.indexerid) + u": Writing NFOs for show")
+        logger.log(str(self.indexerid) + u": Writing NFOs for show", logger.DEBUG)
         for cur_provider in sickbeard.metadata_provider_dict.values():
             result = cur_provider.create_show_metadata(self) or result
 
@@ -364,7 +364,7 @@ class TVShow(object):
             logger.log(str(self.indexerid) + u": Show dir doesn't exist, skipping NFO generation")
             return
 
-        logger.log(str(self.indexerid) + u": Writing NFOs for all episodes")
+        logger.log(str(self.indexerid) + u": Writing NFOs for all episodes", logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
@@ -405,10 +405,10 @@ class TVShow(object):
     def loadEpisodesFromDir(self):
 
         if not ek.ek(os.path.isdir, self._location):
-            logger.log(str(self.indexerid) + u": Show dir doesn't exist, not loading episodes from disk")
+            logger.log(str(self.indexerid) + u": Show dir doesn't exist, not loading episodes from disk", logger.DEBUG)
             return
 
-        logger.log(str(self.indexerid) + u": Loading all episodes from the show directory " + self._location)
+        logger.log(str(self.indexerid) + u": Loading all episodes from the show directory " + self._location, logger.DEBUG)
 
         # get file list
         mediaFiles = helpers.listMediaFiles(self._location)
@@ -466,7 +466,7 @@ class TVShow(object):
 
     def loadEpisodesFromDB(self):
 
-        logger.log(u"Loading all episodes from the DB")
+        logger.log(u"Loading all episodes from the DB", logger.DEBUG)
 
         myDB = db.DBConnection()
         sql = "SELECT * FROM tv_episodes WHERE showid = ?"
@@ -549,7 +549,7 @@ class TVShow(object):
             return None
 
         logger.log(
-            str(self.indexerid) + u": Loading all episodes from " + sickbeard.indexerApi(self.indexer).name + "..")
+            str(self.indexerid) + u": Loading all episodes from " + sickbeard.indexerApi(self.indexer).name + "..", logger.DEBUG)
 
         scannedEps = {}
 
@@ -760,7 +760,7 @@ class TVShow(object):
 
     def loadFromDB(self, skipNFO=False):
 
-        logger.log(str(self.indexerid) + u": Loading show info from database")
+        logger.log(str(self.indexerid) + u": Loading show info from database", logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_shows WHERE indexer_id = ?", [self.indexerid])
@@ -841,7 +841,7 @@ class TVShow(object):
 
     def loadFromIndexer(self, cache=True, tvapi=None, cachedSeason=None):
 
-        logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name)
+        logger.log(str(self.indexerid) + u": Loading show info from " + sickbeard.indexerApi(self.indexer).name, logger.DEBUG)
 
         # There's gotta be a better way of doing this but we don't wanna
         # change the cache value elsewhere
@@ -909,7 +909,7 @@ class TVShow(object):
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
 
         if self.imdbid:
-            logger.log(str(self.indexerid) + u": Loading show info from IMDb")
+            logger.log(str(self.indexerid) + u": Loading show info from IMDb", logger.DEBUG)
 
             imdbTv = i.get_movie(str(re.sub("[^0-9]", "", self.imdbid)))
 
@@ -1048,7 +1048,7 @@ class TVShow(object):
     def populateCache(self):
         cache_inst = image_cache.ImageCache()
 
-        logger.log(u"Checking & filling cache for show " + self.name)
+        logger.log(u"Checking & filling cache for show " + self.name, logger.DEBUG)
         cache_inst.fill_cache(self)
 
     def refreshDir(self):
@@ -1061,7 +1061,7 @@ class TVShow(object):
         self.loadEpisodesFromDir()
 
         # run through all locations from DB, check that they exist
-        logger.log(str(self.indexerid) + u": Loading all episodes with a location from the database")
+        logger.log(str(self.indexerid) + u": Loading all episodes with a location from the database", logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])

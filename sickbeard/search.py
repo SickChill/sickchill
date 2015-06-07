@@ -329,7 +329,7 @@ def wantedEpisodes(show, fromDate):
     anyQualities, bestQualities = common.Quality.splitQuality(show.quality) # @UnusedVariable
     allQualities = list(set(anyQualities + bestQualities))
 
-    logger.log(u"Seeing if we need anything from " + show.name)
+    logger.log(u"Seeing if we need anything from " + show.name, logger.DEBUG)
     myDB = db.DBConnection()
 
     if show.air_by_date:
@@ -496,10 +496,10 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 break
 
             if search_mode == 'sponly':
-                logger.log(u"FALLBACK EPISODE SEARCH INITIATED ...")
+                logger.log(u"FALLBACK EPISODE SEARCH INITIATED ...", logger.DEBUG)
                 search_mode = 'eponly'
             else:
-                logger.log(u"FALLBACK SEASON PACK SEARCH INITIATED ...")
+                logger.log(u"FALLBACK SEASON PACK SEARCH INITIATED ...", logger.DEBUG)
                 search_mode = 'sponly'
 
         # skip to next provider if we have no results to process

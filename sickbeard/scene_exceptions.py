@@ -239,9 +239,9 @@ def retrieve_exceptions():
 
     # since this could invalidate the results of the cache we clear it out after updating
     if changed_exceptions:
-        logger.log(u"Updated scene exceptions")
+        logger.log(u"Updated scene exceptions", logger.DEBUG)
     else:
-        logger.log(u"No scene exceptions update needed")
+        logger.log(u"No scene exceptions update needed", logger.DEBUG)
 
     # cleanup
     exception_dict.clear()

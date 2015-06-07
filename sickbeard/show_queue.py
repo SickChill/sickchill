@@ -519,7 +519,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         ShowQueueItem.run(self)
 
-        logger.log(u"Beginning update of " + self.show.name)
+        logger.log(u"Beginning update of " + self.show.name, logger.DEBUG)
 
         logger.log(u"Retrieving show info from " + sickbeard.indexerApi(self.show.indexer).name + "", logger.DEBUG)
         try:

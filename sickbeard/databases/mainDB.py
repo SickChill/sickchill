@@ -38,6 +38,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_unaired_episodes()
         self.fix_tvrage_show_statues()
         self.fix_episode_statuses()
+        self.fix_invalid_airdates()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -61,7 +62,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
         else:
-            logger.log(u"No duplicate show, check passed")
+            logger.log(u"No duplicate show, check passed", logger.DEBUG)
 
     def fix_duplicate_episodes(self):
 
@@ -85,7 +86,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [cur_dupe_id["episode_id"]])
 
         else:
-            logger.log(u"No duplicate episode, check passed")
+            logger.log(u"No duplicate episode, check passed", logger.DEBUG)
 
     def fix_orphan_episodes(self):
 
@@ -99,7 +100,7 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [cur_orphan["episode_id"]])
 
         else:
-            logger.log(u"No orphan episodes, check passed")
+            logger.log(u"No orphan episodes, check passed", logger.DEBUG)
 
     def fix_missing_table_indexes(self):
         if not self.connection.select("PRAGMA index_info('idx_indexer_id')"):
@@ -142,7 +143,7 @@ class MainSanityCheck(db.DBSanityCheck):
                                    [common.UNAIRED, cur_unaired["episode_id"]])
 
         else:
-            logger.log(u"No UNAIRED episodes, check passed")
+            logger.log(u"No UNAIRED episodes, check passed", logger.DEBUG)
 
     def fix_tvrage_show_statues(self):
         status_map = {
@@ -174,8 +175,22 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                                    [common.UNKNOWN, cur_ep["episode_id"]])
         else:
-            logger.log(u"No MALFORMED episode statuses, check passed")
+            logger.log(u"No MALFORMED episode statuses, check passed", logger.DEBUG)
 
+    def fix_invalid_airdates(self):
+
+        sqlResults = self.connection.select(
+            "SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1",
+            [datetime.date.max.toordinal()])
+
+        for bad_airdate in sqlResults:
+            logger.log(u"Bad episode airdate detected! episode_id: " + str(bad_airdate["episode_id"]) + " showid: " + str(
+                bad_airdate["showid"]), logger.DEBUG)
+            logger.log(u"Fixing bad episode airdate for episode_id: " + str(bad_airdate["episode_id"]))
+            self.connection.action("UPDATE tv_episodes SET airdate = '1' WHERE episode_id = ?", [bad_airdate["episode_id"]])
+
+        else:
+            logger.log(u"No bad episode airdates, check passed", logger.DEBUG)
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")

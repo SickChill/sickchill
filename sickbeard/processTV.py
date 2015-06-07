@@ -164,7 +164,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
     nzbNameOriginal = nzbName
 
     if not postpone:
-        result.output += logHelper(u"PostProcessing Path: " + path, logger.DEBUG)
+        result.output += logHelper(u"PostProcessing Path: " + path, logger.INFO)
         result.output += logHelper(u"PostProcessing Dirs: " + str(dirs), logger.DEBUG)
 
         rarFiles = filter(helpers.isRarFile, files)
@@ -233,7 +233,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 videoInRar = filter(helpers.isMediaFile, rarContent)
                 notwantedFiles = [x for x in fileList if x not in videoFiles]
                 if notwantedFiles:
-                    result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.INFO)
+                    result.output += logHelper(u"Found unwanted files: " + str(notwantedFiles), logger.DEBUG)
     
                 #Don't Link media when the media is extracted from a rar in the same path
                 if process_method in ('hardlink', 'symlink') and videoInRar:
@@ -267,7 +267,7 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
                 result.missedfiles.append(processPath + " : Syncfiles found")
                                 
     if result.aggresult:
-        result.output += logHelper(u"Successfully processed")
+        result.output += logHelper(u"Processing completed")
         if result.missedfiles:
             result.output += logHelper(u"I did encounter some unprocessable items: ")
             for missedfile in result.missedfiles:
@@ -316,9 +316,8 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
                         ek.ek(os.path.realpath, sqlShow["location"]).lower() + os.sep) or dirName.lower() == ek.ek(
                 os.path.realpath, sqlShow["location"]).lower():
             result.output += logHelper(
-                u"You're trying to post process an episode that's already been moved to its show dir, skipping",
+                u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,
                 logger.ERROR)
-            result.missedfiles.append(dirName + " : Already processed")
             return False
 
     # Get the videofile list for the next checks
@@ -357,7 +356,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
             except (InvalidNameException, InvalidShowException):
                 pass
             
-    result.missedfiles.append(dirName + " : No processable items found in folder")
+    result.output += logHelper(dirName + " : No processable items found in folder", logger.DEBUG)
     return False
 
 def unRAR(path, rarFiles, force, result):
@@ -383,7 +382,6 @@ def unRAR(path, rarFiles, force, result):
                             u"Archive file already post-processed, extraction skipped: " + file_in_archive,
                             logger.DEBUG)
                         skip_file = True
-                        result.missedfiles.append(archive + " : RAR already processed")
                         break
 
                 if skip_file:
@@ -492,12 +490,11 @@ def process_media(processPath, videoFiles, nzbName, process_method, force, is_pr
 
     processor = None
     for cur_video_file in videoFiles:
+        cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
 
         if already_postprocessed(processPath, cur_video_file, force, result):
-            result.missedfiles.append(ek.ek(os.path.join, processPath, cur_video_file) + " : Already processed")
+            result.output += logHelper(u"Already Processed " + cur_video_file_path + " : Skipping", logger.DEBUG)
             continue
-
-        cur_video_file_path = ek.ek(os.path.join, processPath, cur_video_file)
 
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, nzbName, process_method, is_priority)

@@ -401,7 +401,7 @@ class WebRoot(WebHandler):
 
     def setHomeLayout(self, layout):
 
-        if layout not in ('poster', 'small', 'banner', 'simple'):
+        if layout not in ('poster', 'small', 'banner', 'simple', 'coverflow'):
             layout = 'poster'
 
         sickbeard.HOME_LAYOUT = layout

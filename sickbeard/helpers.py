@@ -1388,7 +1388,7 @@ def clearCache(force=False):
 
     # clean out cache directory, remove everything > 12 hours old
     if sickbeard.CACHE_DIR:
-        logger.log(u"Trying to clean cache folder " + sickbeard.CACHE_DIR)
+        logger.log(u"Trying to clean cache folder " + sickbeard.CACHE_DIR, logger.DEBUG)
 
         # Does our cache_dir exists
         if not ek.ek(os.path.isdir, sickbeard.CACHE_DIR):
