@@ -83,7 +83,7 @@ class RarbgProvider(generic.TorrentProvider):
                         'token': '&token={token}',
         }
         
-        self.defaultOptions = self.urlOptions['categories'].format(categories='18;41') + \
+        self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
                                 self.urlOptions['sorting'].format(sorting='last') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json') + \
