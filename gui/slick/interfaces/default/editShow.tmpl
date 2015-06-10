@@ -36,14 +36,10 @@
 <b>Scene Exception:</b><br />
 <input type="text" id="SceneName" class="form-control form-control-inline input-sm input200">
 <input class="btn btn-inline" type="button" value="Add" id="addSceneName"><br />
+This will <b>affect the episode show search</b> on nzb and torrent provider.<br />
+        This list overrides the original name, it doesn't append to it.<br />
 
 <div id="SceneException" >
-    <div>
-        <p>This will <b>affect the episode show search</b> on nzb and torrent provider.<br />
-        This list overrides the original name, it doesn't append to it.<br />
-        </p>
-    </div>
-
     <div class="pull-left" style="text-align:center;">
         <h4>Exceptions List</h4>
         <select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
@@ -51,11 +47,11 @@
                     <option value="$cur_exception">$cur_exception</option>
                 #end for
         </select>
-    <div>
-        <input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/>
+        <div>
+            <input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/>
+        </div>
+        <br />
     </div>
-<br />
-</div>
 </div>
 <div class="clearfix"></div>
 <br />
