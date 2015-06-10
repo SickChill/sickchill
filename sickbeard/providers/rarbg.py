@@ -83,7 +83,7 @@ class RarbgProvider(generic.TorrentProvider):
                         'token': '&token={token}',
         }
         
-        self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
+        self.defaultOptions = self.urlOptions['categories'].format(categories='18;41') + \
                                 self.urlOptions['sorting'].format(sorting='last') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json') + \
@@ -274,6 +274,11 @@ class RarbgProvider(generic.TorrentProvider):
                                 return results
                             logger.log(u'{name} Using new token'.format(name=self.name), logger.DEBUG)
                             continue
+                        if re.search('<div id="error">.*</div>', data):
+                            logger.log(u'{name} {proxy} does not support https.'.format(name=self.name, proxy=self.proxy.getProxyURL()), logger.DEBUG)
+                            searchURL = searchURL.replace(u'https', 'http')
+                            continue
+
                         #No error found break
                         break
                     else:
@@ -283,7 +288,11 @@ class RarbgProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    data_json = json.loads(data)
+                    data = re.search('\[\{\"f\".*\}\]', data)
+                    if data is not None:
+                        data_json = json.loads(data.group())
+                    else:
+                        data_json = {}
                 except Exception as e:
                     logger.log(u'{name} json load failed: {traceback_info}'.format(name=self.name, traceback_info=traceback.format_exc()), logger.DEBUG)
                     logger.log(u'{name} json load failed. Data dump = {data}'.format(name=self.name, data=data), logger.DEBUG)
