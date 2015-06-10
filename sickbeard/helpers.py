@@ -1519,7 +1519,7 @@ def verify_freespace(src, dest, oldfile=None):
 
     if not ek.ek(os.path.isfile, src):
         logger.log("A path to a file is required for the source. " + src + " is not a file.", logger.WARNING)
-        return False
+        return True
     
     try:
         diskfree = disk_usage(dest)
@@ -1555,3 +1555,36 @@ def pretty_time_delta(seconds):
         return '%s%02dm%02ds' % (sign_string, minutes, seconds)
     else:
         return '%s%02ds' % (sign_string, seconds)
+    
+def isFileLocked(file, writeLockCheck=False):
+    '''
+    Checks to see if a file is locked. Performs three checks
+        1. Checks if the file even exists
+        2. Attempts to open the file for reading. This will determine if the file has a write lock.
+            Write locks occur when the file is being edited or copied to, e.g. a file copy destination
+        3. If the readLockCheck parameter is True, attempts to rename the file. If this fails the 
+            file is open by some other process for reading. The file can be read, but not written to
+            or deleted.
+    @param file: the file being checked
+    @param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
+    '''
+    if(not(os.path.exists(file))):
+        return True
+    try:
+        f = open(file, 'r')
+        f.close()
+    except IOError:
+        return True
+    
+    if(writeLockCheck):
+        lockFile = file + ".lckchk"
+        if(os.path.exists(lockFile)):
+            os.remove(lockFile)
+        try:
+            os.rename(file, lockFile)
+            time.sleep(1)
+            os.rename(lockFile, file)
+        except WindowsError:
+            return True
+           
+    return False
