@@ -84,7 +84,7 @@ class RarbgProvider(generic.TorrentProvider):
         }
         
         self.defaultOptions = self.urlOptions['categories'].format(categories='18;41') + \
-                                self.urlOptions['sorting'].format(sorting='last') + \
+                                self.urlOptions['sorting'].format(sorting='seeders') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json') + \
                                 self.urlOptions['ranked'].format(ranked='0')
