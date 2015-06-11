@@ -87,7 +87,7 @@ class RarbgProvider(generic.TorrentProvider):
                                 self.urlOptions['sorting'].format(sorting='last') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json') + \
-                                self.urlOptions['ranked'].format(ranked='1')
+                                self.urlOptions['ranked'].format(ranked='0')
 
         self.next_request = datetime.datetime.now()
 
