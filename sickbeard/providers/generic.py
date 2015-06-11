@@ -146,6 +146,7 @@ class GenericProvider:
         if self.providerType == GenericProvider.TORRENT:
             try:
                 torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
+                torrent_name = re.findall('dn=([^&]+)', result.url)[0]
 
                 if len(torrent_hash) == 32:
                     torrent_hash = b16encode(b32decode(torrent_hash)).upper()
@@ -156,9 +157,8 @@ class GenericProvider:
 
                 urls = [
                     'http://torcache.net/torrent/' + torrent_hash + '.torrent',
-                    #zoink.ch misconfigured, torrage.com domain expired.
-                    #'http://zoink.ch/torrent/' + torrent_hash + '.torrent',
-                    #'http://torrage.com/torrent/' + torrent_hash.lower() + '.torrent',
+                    'http://zoink.ch/torrent/' + torrent_name + '.torrent',
+                    'http://torrage.com/torrent/' + torrent_hash + '.torrent',
                 ]
             except:
                 urls = [result.url]
@@ -184,6 +184,8 @@ class GenericProvider:
 
                 if self._verify_download(filename):
                     return True
+                else:
+                    helpers._remove_file_failed(filename)
 
         logger.log(u"Failed to download result", logger.WARNING)
         return False
@@ -208,7 +210,7 @@ class GenericProvider:
             except Exception as e:
                 logger.log(u"Failed to validate torrent file: " + ex(e), logger.DEBUG)
 
-            logger.log(u"Result is not a valid torrent file", logger.WARNING)
+            logger.log(u"Result is not a valid torrent file", logger.DEBUG)
             return False
 
         return True
