@@ -2388,9 +2388,11 @@ class CMD_ShowPause(ApiCall):
 
         if self.pause:
             showObj.paused = 1
+            showObj.saveToDB()
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been paused")
         else:
             showObj.paused = 0
+            showObj.saveToDB()
             return _responds(RESULT_SUCCESS, msg=str(showObj.name) + " has been unpaused")
 
 class CMD_ShowRefresh(ApiCall):
