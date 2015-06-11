@@ -910,9 +910,13 @@ class PostProcessor(object):
                 logger.DEBUG)
         
         # try to find out if we have enough space to perform the copy or move action.
-        if not verify_freespace(self.file_path, ek.ek(os.path.dirname, ep_obj.show._location), [ep_obj] + ep_obj.relatedEps):
-            self._log("Not enough space to continue PP, exiting")
-            return False
+        if not helpers.isFileLocked(self.file_path, False):
+            if not verify_freespace(self.file_path, ek.ek(os.path.dirname, ep_obj.show._location), [ep_obj] + ep_obj.relatedEps):
+                self._log("Not enough space to continue PP, exiting")
+                return False
+        else:
+            self._log("Unable to determine needed filespace as the source file is locked for access")
+        
 
         # delete the existing file (and company)
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
@@ -1019,15 +1023,21 @@ class PostProcessor(object):
         try:
             # move the episode and associated files to the show dir
             if self.process_method == "copy":
+                if helpers.isFileLocked(self.file_path, False):
+                    raise exceptions.PostProcessingFailed("File is locked for reading")
                 self._copy(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "move":
+                if helpers.isFileLocked(self.file_path, True):
+                    raise exceptions.PostProcessingFailed("File is locked for reading/writing")
                 self._move(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                            sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "hardlink":
                 self._hardlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == "symlink":
+                if helpers.isFileLocked(self.file_path, True):
+                    raise exceptions.PostProcessingFailed("File is locked for reading/writing")
                 self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
