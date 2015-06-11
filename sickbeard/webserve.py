@@ -4478,6 +4478,19 @@ class ConfigProviders(Config):
                 except:
                     curTorrentProvider.confirmed = 0
 
+            if hasattr(curTorrentProvider, 'ranked'):
+                try:
+                    curTorrentProvider.ranked = config.checkbox_to_value(
+                        kwargs[curTorrentProvider.getID() + '_ranked'])
+                except:
+                    curTorrentProvider.ranked = 0
+
+            if hasattr(curTorrentProvider, 'sorting'):
+                try:
+                    curTorrentProvider.sorting = str(kwargs[curTorrentProvider.getID() + '_sorting']).strip()
+                except:
+                     curTorrentProvider.sorting = 'seeders'
+
             if hasattr(curTorrentProvider, 'proxy'):
                 try:
                     curTorrentProvider.proxy.enabled = config.checkbox_to_value(

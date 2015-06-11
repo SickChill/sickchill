@@ -420,6 +420,45 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         </div>
                         #end if
 
+                        #if $hasattr($curTorrentProvider, 'confirmed'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_confirmed">
+                                <span class="component-title">Confirmed download</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" #if $curTorrentProvider.confirmed then "checked=\"checked\"" else ""#/>
+                                    <p>only download torrents from trusted or verified uploaders ?</p>
+                                </span>
+                            </label>
+                        </div>
+                        #end if
+
+                        #if $hasattr($curTorrentProvider, 'ranked'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_ranked">
+                                <span class="component-title">Ranked torrents</span>
+                                <span class="component-desc">
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" #if $curTorrentProvider.ranked then "checked=\"checked\"" else ""#/>
+                                    <p>only download ranked torrents (internal releases)</p>
+                                </span>
+                            </label>
+                        </div>
+                        #end if
+                        
+                        #if $hasattr($curTorrentProvider, 'sorting'):
+                        <div class="field-pair">
+                            <label for="${curTorrentProvider.getID()}_sorting">
+                                <span class="component-title">Sorting results by</span>
+                                <span class="component-desc">
+                                    <select name="${curTorrentProvider.getID()}_sorting" id="${curTorrentProvider.getID()}_sorting" class="form-control input-sm">
+#for $curAction in ('last', 'seeders', 'leechers'):
+    <option value="$curAction" #if $curAction == $curTorrentProvider.sorting then ' selected="selected"' else ''#>$curAction</option>
+#end for
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        #end if
+
                         #if $hasattr($curTorrentProvider, 'proxy'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_proxy">
@@ -445,18 +484,6 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
-                        #end if
-
-                        #if $hasattr($curTorrentProvider, 'confirmed'):
-                        <div class="field-pair">
-                            <label for="${curTorrentProvider.getID()}_confirmed">
-                                <span class="component-title">Confirmed download</span>
-                                <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" #if $curTorrentProvider.confirmed then "checked=\"checked\"" else ""#/>
-                                    <p>only download torrents from trusted or verified uploaders ?</p>
-                                </span>
-                            </label>
-                        </div>
                         #end if
 
                         #if $hasattr($curTorrentProvider, 'freeleech'):

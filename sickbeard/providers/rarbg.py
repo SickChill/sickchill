@@ -58,6 +58,8 @@ class RarbgProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         self.ratio = None
         self.minseed = None
+        self.ranked = None
+        self.sorting = None
         self.minleech = None
         self.token = None
         self.tokenExpireDate = None
@@ -84,10 +86,8 @@ class RarbgProvider(generic.TorrentProvider):
         }
         
         self.defaultOptions = self.urlOptions['categories'].format(categories='18;41') + \
-                                self.urlOptions['sorting'].format(sorting='seeders') + \
                                 self.urlOptions['limit'].format(limit='100') + \
-                                self.urlOptions['format'].format(format='json') + \
-                                self.urlOptions['ranked'].format(ranked='0')
+                                self.urlOptions['format'].format(format='json')
 
         self.next_request = datetime.datetime.now()
 
@@ -226,6 +226,12 @@ class RarbgProvider(generic.TorrentProvider):
 
                 if self.minseed:
                     searchURL += self.urlOptions['seeders'].format(min_seeders=int(self.minseed))
+                    
+                if self.sorting:
+                    searchURL += self.urlOptions['sorting'].format(sorting=self.sorting)
+
+                if self.ranked:
+                    searchURL += self.urlOptions['ranked'].format(ranked=int(self.ranked))
 
                 logger.log(u'{name} search page URL: {url}'.format(name=self.name, url=searchURL), logger.DEBUG)
 
