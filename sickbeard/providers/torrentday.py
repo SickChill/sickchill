@@ -236,8 +236,6 @@ class TorrentDayProvider(generic.TorrentProvider):
         title, url = item[0], item[1]
 
         if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
             title = self._clean_title_from_provider(title)
 
         if url:
