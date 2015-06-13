@@ -214,8 +214,6 @@ class T411Provider(generic.TorrentProvider):
         title, url = item
 
         if title:
-            title += u''
-            title = title.replace(' ', '.')
             title = self._clean_title_from_provider(title)
 
         if url:

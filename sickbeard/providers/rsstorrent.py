@@ -78,8 +78,6 @@ class TorrentRssProvider(generic.TorrentProvider):
 
         title = item.get(self.titleTAG)
         if title:
-            title = u'' + title
-            title = title.replace(' ', '.')
             title = self._clean_title_from_provider(title)
 
         attempt_list = [lambda: item.get('torrent_magneturi'),
