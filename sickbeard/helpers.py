@@ -1613,7 +1613,7 @@ def isFileLocked(file, writeLockCheck=False):
             os.rename(file, lockFile)
             time.sleep(1)
             os.rename(lockFile, file)
-        except WindowsError:
+        except (OSError, IOError):
             return True
            
     return False
