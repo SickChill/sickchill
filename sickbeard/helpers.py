@@ -106,12 +106,41 @@ def remove_non_release_groups(name):
     Remove non release groups from name
     """
 
-    if name and "-" in name:
-        name_group = name.rsplit('-', 1)
-        if name_group[-1].upper() in ["RP", "NZBGEEK"]:
-            name = name_group[0]
+    if not name:
+        return name
 
-    return name
+    # Do not remove all [....] suffixes, or it will break anime releases ## Need to verify this is true now
+    # Check your database for funky release_names and add them here, to improve failed handling, archiving, and history.
+    # select release_name from tv_episodes WHERE LENGTH(release_name);
+    # [eSc], [SSG], [GWC] are valid release groups for non-anime
+    removeWordsList = {'\[rartv\]$':       'searchre',
+                       '\[rarbg\]$':       'searchre',
+                       '\[eztv\]$':        'searchre',
+                       '\[ettv\]$':        'searchre',
+                       '\[vtv\]$':         'searchre',
+                       '\[GloDLS\]$':      'searchre',
+                       '\[silv4\]$':       'searchre',
+                       '\[Seedbox\]$':     'searchre',
+                       '\[AndroidTwoU\]$': 'searchre',
+                       '\.RiPSaLoT$':      'searchre',
+                       '-NZBGEEK$':        'searchre',
+                       '-RP$':             'searchre',
+                       '-20-40$':          'searchre',
+                       '^\[ www\.TorrentDay\.com \] - ': 'searchre',
+                       '^\[ www\.Cpasbien\.pw \] ': 'searchre',
+                      }
+
+    _name = name
+    for remove_string, remove_type in removeWordsList.iteritems():
+        if remove_type == 'search':
+            _name = _name.replace(remove_string, '')
+        elif remove_type == 'searchre':
+            _name = re.sub(r'(?i)' + remove_string, '', _name)
+
+    #if _name != name:
+    #    logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=name, new_name=_name), logger.DEBUG)
+
+    return _name
 
 
 def replaceExtension(filename, newExt):
@@ -1584,7 +1613,7 @@ def isFileLocked(file, writeLockCheck=False):
             os.rename(file, lockFile)
             time.sleep(1)
             os.rename(lockFile, file)
-        except WindowsError:
+        except (OSError, IOError):
             return True
            
     return False

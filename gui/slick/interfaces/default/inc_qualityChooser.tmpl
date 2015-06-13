@@ -36,7 +36,7 @@
 
         <div style="text-align: left; float: left;">
             <h5>Archive</h4>
-            #set $bestQualityList = filter(lambda x: x > $Quality.SDTV and x < $Quality.UNKNOWN, $Quality.qualityStrings)
+            #set $bestQualityList = filter(lambda x: x >= $Quality.SDTV and x < $Quality.UNKNOWN, $Quality.qualityStrings)
             <select id="bestQualities" name="bestQualities" multiple="multiple" size="$len($bestQualityList)" class="form-control form-control-inline input-sm">
             #for $curQuality in sorted($bestQualityList):
                 <option value="$curQuality" #if $curQuality in $bestQualities then "selected=\"selected\"" else ""#>$Quality.qualityStrings[$curQuality]</option>
