@@ -109,10 +109,15 @@ def remove_non_release_groups(name):
     if not name:
         return name
 
+    # Do not remove all [....] suffixes, or it will break anime releases ## Need to verify this is true now
+    # Check your database for funky release_names and add them here, to improve failed handling, archiving, and history.
+    # select release_name from tv_episodes WHERE LENGTH(release_name);
+    # [eSc], [SSG], [GWC] are valid release groups for non-anime
     removeWordsList = {'\[rartv\]$':       'searchre',
                        '\[rarbg\]$':       'searchre',
                        '\[eztv\]$':        'searchre',
                        '\[ettv\]$':        'searchre',
+                       '\[vtv\]$':         'searchre',
                        '\[GloDLS\]$':      'searchre',
                        '\[silv4\]$':       'searchre',
                        '\[Seedbox\]$':     'searchre',
@@ -120,6 +125,9 @@ def remove_non_release_groups(name):
                        '\.RiPSaLoT$':      'searchre',
                        '-NZBGEEK$':        'searchre',
                        '-RP$':             'searchre',
+                       '-20-40$':          'searchre',
+                       '^\[ www\.TorrentDay\.com \] - ': 'searchre',
+                       '^\[ www\.Cpasbien\.pw \] ': 'searchre',
                       }
 
     _name = name
