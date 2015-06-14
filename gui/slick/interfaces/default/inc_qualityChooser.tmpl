@@ -21,11 +21,11 @@
 <div id="customQualityWrapper">
 	<div id="customQuality">
 	    <div class="component-group-desc">
-	        <p>One of the <b>Initial</b> quality selections must be obtained before SickRage will attempt to search and process the <b>Archive</b> selections.</p>
+	        <p><b>Preferred<b> qualities will replace an <b>Allowed<b> quality if found, initially or in the future, even if it is a lower quality</p>
 	    </div>
 
         <div style="padding-right: 40px; text-align: left; float: left;">
-            <h5>Initial</h4>
+            <h5>Allowed</h4>
             #set $anyQualityList = filter(lambda x: x > $Quality.NONE, $Quality.qualityStrings)
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="$len($anyQualityList)" class="form-control form-control-inline input-sm">
             #for $curQuality in sorted($anyQualityList):
@@ -35,7 +35,7 @@
         </div>
 
         <div style="text-align: left; float: left;">
-            <h5>Archive</h4>
+            <h5>Preferred</h4>
             #set $bestQualityList = filter(lambda x: x >= $Quality.SDTV and x < $Quality.UNKNOWN, $Quality.qualityStrings)
             <select id="bestQualities" name="bestQualities" multiple="multiple" size="$len($bestQualityList)" class="form-control form-control-inline input-sm">
             #for $curQuality in sorted($bestQualityList):
