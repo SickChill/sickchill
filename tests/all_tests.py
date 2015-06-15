@@ -29,7 +29,6 @@ sys.path.insert(1, os.path.join(tests_dir, '..'))
 
 class AllTests(unittest.TestCase):
     #Block issue_submitter_tests to avoid issue tracker spam on every build
-    #Block feedparser_tests because http://lolo.sickbeard.com/ has changed api, which makes the test fail
     blacklist = [tests_dir + 'all_tests.py', tests_dir + 'issue_submitter_tests.py']
     def setUp(self):
         self.test_file_strings = [ x for x in glob.glob(tests_dir + '*_tests.py') if not x in self.blacklist ]
