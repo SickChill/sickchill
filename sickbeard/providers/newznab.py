@@ -271,7 +271,7 @@ class NewznabProvider(generic.NZBProvider):
         offset = total = 0
 
         # Limit to 400 results, like Sick Beard does, to prevent throttling
-        while (total > offset) and (offset <= 400):
+        while (total >= offset) and (offset <= 400):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
 
