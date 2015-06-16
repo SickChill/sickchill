@@ -1395,7 +1395,7 @@ def download_file(url, filename, session=None):
         return False
     except EnvironmentError, e:
         _remove_file_failed(filename)
-        logger.log(u"Unable to save the file: " + ex(e), logger.ERROR)
+        logger.log(u"Unable to save the file: " + ex(e), logger.WARNING)
         return False
     except Exception:
         _remove_file_failed(filename)
