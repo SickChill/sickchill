@@ -65,11 +65,11 @@ class RarbgProvider(generic.TorrentProvider):
         self.tokenExpireDate = None
 
         self.urls = {'url': u'https://rarbg.com',
-                     'token': u'https://torrentapi.org/pubapi.php?get_token=get_token&format=json',
-                     'listing': u'https://torrentapi.org/pubapi.php?mode=list',
-                     'search': u'https://torrentapi.org/pubapi.php?mode=search&search_string={search_string}',
-                     'search_tvdb': u'https://torrentapi.org/pubapi.php?mode=search&search_tvdb={tvdb}&search_string={search_string}',
-                     'search_tvrage': u'https://torrentapi.org/pubapi.php?mode=search&search_tvrage={tvrage}&search_string={search_string}',
+                     'token': u'https://torrentapi.org/pubapi_v2.php?get_token=get_token&format=json&app_id=sickrage',
+                     'listing': u'https://torrentapi.org/pubapi_v2.php?mode=list&app_id=sickrage',
+                     'search': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_string={search_string}',
+                     'search_tvdb': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvdb={tvdb}&search_string={search_string}',
+                     'search_tvrage': u'https://torrentapi.org/pubapi_v2.php?mode=search&app_id=sickrage&search_tvrage={tvrage}&search_string={search_string}',
                      'api_spec': u'https://rarbg.com/pubapi/apidocs.txt',
                      }
 
@@ -85,7 +85,7 @@ class RarbgProvider(generic.TorrentProvider):
                         'token': '&token={token}',
         }
         
-        self.defaultOptions = self.urlOptions['categories'].format(categories='18;41') + \
+        self.defaultOptions = self.urlOptions['categories'].format(categories='tv') + \
                                 self.urlOptions['limit'].format(limit='100') + \
                                 self.urlOptions['format'].format(format='json')
 
@@ -294,7 +294,7 @@ class RarbgProvider(generic.TorrentProvider):
                     continue
 
                 try:
-                    data = re.search('\[\{\"f\".*\}\]', data)
+                    data = re.search('\[\{\"filename\".*\}\]', data)
                     if data is not None:
                         data_json = json.loads(data.group())
                     else:
@@ -308,8 +308,8 @@ class RarbgProvider(generic.TorrentProvider):
                 try:
                     for item in data_json:
                         try:
-                            torrent_title = item['f']
-                            torrent_download = item['d']
+                            torrent_title = item['filename']
+                            torrent_download = item['download']
                             if torrent_title and torrent_download:
                                 items[mode].append((torrent_title, torrent_download))
                             else:
