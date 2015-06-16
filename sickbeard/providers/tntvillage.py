@@ -116,6 +116,11 @@ class TNTVillageProvider(generic.TorrentProvider):
             'download' : 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s',
         }
 
+        self.sub_string = [
+                           'sub',
+                           'softsub',
+                          ]
+
         self.url = self.urls['base_url']
 
         self.cache = TNTVillageCache(self)
@@ -146,7 +151,7 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         login_params = {'UserName': self.username,
                         'PassWord': self.password,
-                        'CookieDate': 1,
+                        'CookieDate': 0,
                         'submit': 'Connettiti al Forum',
         }
 
@@ -296,12 +301,28 @@ class TNTVillageProvider(generic.TorrentProvider):
         span_tag = (torrent_rows.find_all('td'))[1].find('b').find('span')
 
         name = str(span_tag)
-        name = name.split('sub')[0] 
 
-        if re.search("ita", name, re.I):
-            logger.log(u"Found Italian release", logger.DEBUG)
-            is_italian=1
+        subFound=0
 
+        for sub in self.sub_string:
+
+            if not re.search(sub, name, re.I):
+                continue
+            else:
+                subFound = 1
+
+            name = name.split(sub)
+
+            if re.search("ita", name[0], re.I):
+                logger.log(u"Found Italian release", logger.DEBUG)
+                is_italian=1
+                break
+
+        if not subFound:
+            if re.search("ita", name, re.I):
+                logger.log(u"Found Italian release", logger.DEBUG)
+                is_italian=1
+        
         return is_italian
 
     def _is_season_pack(self, name):
