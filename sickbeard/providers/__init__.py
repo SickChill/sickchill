@@ -19,7 +19,6 @@
 __all__ = ['womble',
            'btn',
            'thepiratebay',
-           'oldpiratebay',
            'kat',
            'torrentleech',
            'scc',
