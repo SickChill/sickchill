@@ -101,6 +101,14 @@ class OmgwtfnzbsProvider(generic.NZBProvider):
     def _get_title_and_url(self, item):
         return (item['release'], item['getnzb'])
 
+    def _get_size(self, item):
+        try:
+            size = int(item['sizebytes'])
+        except (ValueError, TypeError, AttributeError, KeyError):
+            return -1
+
+        return size
+
     def _doSearch(self, search, search_mode='eponly', epcount=0, retention=0, epObj=None):
 
         self._checkAuth()
