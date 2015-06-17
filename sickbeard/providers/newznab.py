@@ -270,7 +270,8 @@ class NewznabProvider(generic.NZBProvider):
         results = []
         offset = total = 0
 
-        while (total >= offset) and (offset < 1000):
+        # Limit to 400 results, like Sick Beard does, to prevent throttling
+        while (total >= offset) and (offset <= 400):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
 
@@ -300,22 +301,19 @@ class NewznabProvider(generic.NZBProvider):
             # No items found, prevent from doing another search
             if total == 0:
                 break
-                
+
             if offset != params['offset']:
                 logger.log("Tell your newznab provider to fix their bloody newznab responses")
                 break
-            
+
             params['offset'] += params['limit']
-            if (total > int(params['offset'])):
+            if (total > int(params['offset'])) and (int(params['offset']) <= 400):
                 offset = int(params['offset'])
                 # if there are more items available then the amount given in one call, grab some more
-                logger.log(str(
-                    total - int(params['offset'])) + " more items to be fetched from provider. Fetching another " + str(
-                    params['limit']) + " items.", logger.DEBUG)
+                logger.log(u'%d' % (total - offset) + ' more items to be fetched from provider.' +
+                'Fetching another %d' % int(params['limit']) + ' items.', logger.DEBUG)
             else:
-                logger.log(str(
-                    total - int(params['offset'])) + " No more searches needed, could find anything I was looking for! " + str(
-                    params['limit']) + " items.", logger.DEBUG)
+                logger.log(u'No more searches needed.', logger.DEBUG)
                 break
 
             time.sleep(0.2)
@@ -389,8 +387,8 @@ class NewznabCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll newznab providers every 15 minutes max
-        self.minTime = 15
+        # only poll newznab providers every 30 minutes max, doubled so we don't get throttled again.
+        self.minTime = 30
 
     def _getRSSData(self):
 

@@ -214,6 +214,13 @@ class KATProvider(generic.TorrentProvider):
         return [search_string]
 
 
+    def _get_size(self, item):
+        title, url, id, seeders, leechers, size, pubdate = item
+        if not size:
+            return -1
+
+        return size
+
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
 
         results = []
@@ -243,7 +250,7 @@ class KATProvider(generic.TorrentProvider):
                             seeders = int(item['torrent_seeds'])
                             leechers = int(item['torrent_peers'])
                             size = int(item['torrent_contentlength'])
-                        except (AttributeError, TypeError):
+                        except (AttributeError, TypeError, KeyError):
                             continue
 
                         if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):

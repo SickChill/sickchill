@@ -218,7 +218,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                             continue
 
                         try:
-                            title = entries[22].find('a')['title'].strip('History - ').replace('Blu-ray', 'bd50')
+                            title = entries[22].find('a')['title'].replace('History - ','').replace('Blu-ray', 'bd50')
                             url = self.urls['home'] % entries[15].find('a')['href']
                             download_url = self.urls['home'] % entries[15].find('a')['href']
                             id = entries[23].find('div')['id']

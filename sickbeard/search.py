@@ -187,7 +187,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
     return True
 
 
-def pickBestResult(results, show, quality_list=None):
+def pickBestResult(results, show):
     results = results if isinstance(results, list) else [results]
 
     logger.log(u"Picking the best result out of " + str([x.name for x in results]), logger.DEBUG)
@@ -199,18 +199,10 @@ def pickBestResult(results, show, quality_list=None):
         if show and cur_result.show is not show:
             continue
 
-        # filter out possible bad torrents from providers such as ezrss
-        if isinstance(cur_result, sickbeard.classes.SearchResult):
-            if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-                if not cur_result.url.startswith('magnet'):
-                    cur_result.content = cur_result.provider.getURL(cur_result.url)
-                    if not cur_result.content:
-                        continue
-        else:
-            if not cur_result.url.startswith('magnet'):
-                cur_result.content = cur_result.provider.getURL(cur_result.url)
-                if not cur_result.content:
-                    continue
+        if not cur_result.url.startswith('magnet'):
+            cur_result.content = cur_result.provider.getURL(cur_result.url)
+            if not cur_result.content:
+                continue
 
         # build the black And white list
         if show.is_anime:
@@ -219,7 +211,9 @@ def pickBestResult(results, show, quality_list=None):
 
         logger.log("Quality of " + cur_result.name + " is " + Quality.qualityStrings[cur_result.quality])
 
-        if quality_list and cur_result.quality not in quality_list:
+        anyQualities, bestQualities = Quality.splitQuality(show.quality)
+
+        if cur_result.quality not in anyQualities + bestQualities:
             logger.log(cur_result.name + " is a quality we know we don't want, rejecting it", logger.DEBUG)
             continue
 
@@ -244,10 +238,11 @@ def pickBestResult(results, show, quality_list=None):
                 logger.log(cur_result.name + u" has previously failed, rejecting it")
                 continue
 
-        if not bestResult or bestResult.quality < cur_result.quality and cur_result.quality != Quality.UNKNOWN:
+        if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):
             bestResult = cur_result
-
-        elif bestResult.quality == cur_result.quality:
+        elif cur_result.quality in anyQualities and (not bestResult or bestResult not in bestQualities) and (not bestResult or bestResult.quality < cur_result.quality):
+            bestResult = cur_result
+        elif bestResult and bestResult.quality == cur_result.quality:
             if "proper" in cur_result.name.lower() or "repack" in cur_result.name.lower():
                 bestResult = cur_result
             elif "internal" in bestResult.name.lower() and "internal" not in cur_result.name.lower():
@@ -293,14 +288,7 @@ def isFinalResult(result):
         return True
 
     elif best_qualities and result.quality == max(best_qualities):
-
-        # if this is the best redownload but we have a higher initial download then keep looking
-        if any_qualities and result.quality < max(any_qualities):
-            return False
-
-        # if this is the best redownload and we don't have a higher initial download then we're done
-        else:
-            return True
+        return True
 
     # if we got here than it's either not on the lists, they're empty, or it's lower than the highest required
     else:
@@ -506,13 +494,10 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         if not len(foundResults[curProvider.name]):
             continue
 
-        anyQualities, bestQualities = Quality.splitQuality(show.quality)
-
         # pick the best season NZB
         bestSeasonResult = None
         if SEASON_RESULT in foundResults[curProvider.name]:
-            bestSeasonResult = pickBestResult(foundResults[curProvider.name][SEASON_RESULT], show,
-                                           anyQualities + bestQualities)
+            bestSeasonResult = pickBestResult(foundResults[curProvider.name][SEASON_RESULT], show)
 
         highest_quality_overall = 0
         for cur_episode in foundResults[curProvider.name]:
