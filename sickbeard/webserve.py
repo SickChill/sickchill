@@ -1540,7 +1540,7 @@ class Home(WebRoot):
             if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
                 errors.append("Unable to force an update on wanted episode")
 
-        ui.notifications.message('<b>%s</b> has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
+        ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
         
     def deleteShow(self, show=None, full=0):
@@ -1567,7 +1567,7 @@ class Home(WebRoot):
 
         showObj.deleteShow(bool(full))
 
-        ui.notifications.message('<b>%s</b> has been %s %s' %
+        ui.notifications.message('%s has been %s %s' %
                                  (showObj.name,
                                   ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
