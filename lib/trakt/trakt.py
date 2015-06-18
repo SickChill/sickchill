@@ -74,9 +74,12 @@ class TraktAPI():
         if None == headers:
             headers = self.headers
         
-        if not None == sickbeard.TRAKT_ACCESS_TOKEN:
-            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
-        
+        if None == sickbeard.TRAKT_ACCESS_TOKEN:
+            logger.log(u'You must get a Trakt TOKEN. Check your Trakt settings', logger.WARNING)
+            raise traktAuthException(e)
+            
+        headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+
         try:
             resp = requests.request(method, url, headers=headers, timeout=self.timeout,
                 data=json.dumps(data) if data else [], verify=self.verify)
