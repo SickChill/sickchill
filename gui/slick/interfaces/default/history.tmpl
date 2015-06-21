@@ -213,7 +213,7 @@
 					#for $action in sorted($hItem["actions"]):
 						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
 						#if $curStatus == DOWNLOADED:
-							#if $action["provider"] != -1:
+							#if $action["provider"] != "-1":
 								<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$action["provider"]</i></span>
 							#else:
 								<span style="cursor: help;" title="$os.path.basename($action["resource"])"></span>
