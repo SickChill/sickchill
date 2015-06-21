@@ -137,10 +137,7 @@ def remove_non_release_groups(name):
         elif remove_type == 'searchre':
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
-    #if _name != name:
-    #    logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=name, new_name=_name), logger.DEBUG)
-
-    return _name
+    return _name.strip('.- ')
 
 
 def replaceExtension(filename, newExt):
