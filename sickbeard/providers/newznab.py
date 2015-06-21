@@ -23,17 +23,18 @@ import os
 
 import sickbeard
 import generic
-
+from sickbeard.common import Quality
 from sickbeard import classes
 from sickbeard import helpers
 from sickbeard import scene_exceptions
 from sickbeard import encodingKludge as ek
 from sickbeard import logger
 from sickbeard import tvcache
+from sickbeard import db
 from sickbeard.exceptions import AuthException
 
 class NewznabProvider(generic.NZBProvider):
-    def __init__(self, name, url, key='', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
+    def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly', search_fallback=False,
                  enable_daily=False, enable_backlog=False):
 
         generic.NZBProvider.__init__(self, name)
@@ -66,6 +67,7 @@ class NewznabProvider(generic.NZBProvider):
         self.supportsBacklog = True
 
         self.default = False
+        self.last_search = datetime.datetime.now()
 
     def configStr(self):
         return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
@@ -184,7 +186,7 @@ class NewznabProvider(generic.NZBProvider):
         name_exceptions = list(
             set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
         for cur_exception in name_exceptions:
-            params['q'] = helpers.sanitizeSceneName(cur_exception)
+            params['q'] = helpers.sanitizeSceneName(cur_exception) + ' ' + add_string
             to_return.append(params)
         
             if ep_obj.show.anime:
@@ -192,7 +194,8 @@ class NewznabProvider(generic.NZBProvider):
                 # Remove the ?ep=e46 paramater and use add the episode number to the query paramater.
                 # Can be usefull for newznab indexers that do not have the episodes 100% parsed.
                 # Start with only applying the searchstring to anime shows
-                params['q'] = helpers.sanitizeSceneName(cur_exception)
+                params['q'] = helpers.sanitizeSceneName(cur_exception) + ' ' + add_string
+                params['s'] = params['q']
                 paramsNoEp = params.copy()
                 
                 paramsNoEp['q'] = paramsNoEp['q'] + " " + str(paramsNoEp['ep'])
@@ -275,7 +278,12 @@ class NewznabProvider(generic.NZBProvider):
             search_url = self.url + 'api?' + urllib.urlencode(params)
             logger.log(u"Search url: " + search_url, logger.DEBUG)
 
+            while((datetime.datetime.now() - self.last_search).seconds < 5):
+                time.sleep(1)
+
             data = self.cache.getRSSFeed(search_url)
+            #print data
+            self.last_search = datetime.datetime.now()
             if not self._checkAuthFromData(data):
                 break
 
@@ -316,68 +324,33 @@ class NewznabProvider(generic.NZBProvider):
                 logger.log(u'No more searches needed.', logger.DEBUG)
                 break
 
-            time.sleep(0.2)
-
         return results
 
-    def findPropers(self, search_date=None):
+    def findPropers(self, search_date=datetime.datetime.today()):
+        results = []
 
-        search_terms = ['.proper.', '.repack.']
+        myDB = db.DBConnection()
+        sqlResults = myDB.select(
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e' +
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' +
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            ' AND (e.status IN (' + ','.join([str(x) for x in Quality.DOWNLOADED]) + ')' +
+            ' OR (e.status IN (' + ','.join([str(x) for x in Quality.SNATCHED]) + ')))'
+        )
 
-        cache_results = self.cache.listPropers(search_date)
-        results = [classes.Proper(x['name'], x['url'], datetime.datetime.fromtimestamp(x['time']), self.show) for x in
-                   cache_results]
+        if not sqlResults:
+            return []
 
-        index = 0
-        alt_search = ('nzbs_org' == self.getID())
-        term_items_found = False
-        do_search_alt = False
-
-        while index < len(search_terms):
-            search_params = {'q': search_terms[index]}
-            if alt_search:
-
-                if do_search_alt:
-                    index += 1
-
-                if term_items_found:
-                    do_search_alt = True
-                    term_items_found = False
-                else:
-                    if do_search_alt:
-                        search_params['t'] = "search"
-
-                    do_search_alt = (True, False)[do_search_alt]
-
-            else:
-                index += 1
-
-            for item in self._doSearch(search_params, age=4):
-
-                (title, url) = self._get_title_and_url(item)
-
-                try:
-                    result_date = datetime.datetime(*item['published_parsed'][0:6])
-                except (AttributeError, KeyError):
-                    try:
-                        result_date = datetime.datetime(*item['updated_parsed'][0:6])
-                    except (AttributeError, KeyError):
-                        try:
-                            result_date = datetime.datetime(*item['created_parsed'][0:6])
-                        except (AttributeError, KeyError):
-                            try:
-                                result_date = datetime.datetime(*item['date'][0:6])
-                            except (AttributeError, KeyError):
-                                logger.log(u"Unable to figure out the date for entry " + title + ", skipping it")
-                                continue
-
-                if not search_date or result_date > search_date:
-                    search_result = classes.Proper(title, url, result_date, self.show)
-                    results.append(search_result)
-                    term_items_found = True
-                    do_search_alt = False
-
-            time.sleep(0.2)
+        for sqlshow in sqlResults:
+            self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
+            if self.show:
+                curEp = self.show.getEpisode(int(sqlshow["season"]), int(sqlshow["episode"]))
+                searchStrings = self._get_episode_search_strings(curEp, add_string='PROPER|REPACK')
+                for searchString in searchStrings:
+                    for item in self._doSearch(searchString):
+                        title, url = self._get_title_and_url(item)
+                        if(re.match(r'.*(REPACK|PROPER).*', title, re.I)):
+                             results.append(classes.Proper(title, url, datetime.datetime.today(), self.show))
 
         return results
 

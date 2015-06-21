@@ -112,7 +112,7 @@ class RarbgProvider(generic.TorrentProvider):
             response = self.session.get(self.urls['token'], timeout=30, verify=False, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
-        except RequestException as e:
+        except (RequestException, BaseSSLError) as e:
             logger.log(u'Unable to connect to {name} provider: {error}'.format(name=self.name, error=ex(e)), logger.ERROR)
             return False
 
