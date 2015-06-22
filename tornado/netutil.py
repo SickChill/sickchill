@@ -20,7 +20,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import errno
 import os
-import platform
+import sys
 import socket
 import stat
 
@@ -105,7 +105,7 @@ def bind_sockets(port, address=None, family=socket.AF_UNSPEC,
     for res in set(socket.getaddrinfo(address, port, family, socket.SOCK_STREAM,
                                       0, flags)):
         af, socktype, proto, canonname, sockaddr = res
-        if (platform.system() == 'Darwin' and address == 'localhost' and
+        if (sys.platform == 'darwin' and address == 'localhost' and
                 af == socket.AF_INET6 and sockaddr[3] != 0):
             # Mac OS X includes a link-local address fe80::1%lo0 in the
             # getaddrinfo results for 'localhost'.  However, the firewall
@@ -187,6 +187,9 @@ def add_accept_handler(sock, callback, io_loop=None):
     address of the other end of the connection).  Note that this signature
     is different from the ``callback(fd, events)`` signature used for
     `.IOLoop` handlers.
+
+    .. versionchanged:: 4.1
+       The ``io_loop`` argument is deprecated.
     """
     if io_loop is None:
         io_loop = IOLoop.current()
@@ -301,6 +304,9 @@ class ExecutorResolver(Resolver):
     The executor will be shut down when the resolver is closed unless
     ``close_resolver=False``; use this if you want to reuse the same
     executor elsewhere.
+
+    .. versionchanged:: 4.1
+       The ``io_loop`` argument is deprecated.
     """
     def initialize(self, io_loop=None, executor=None, close_executor=True):
         self.io_loop = io_loop or IOLoop.current()
