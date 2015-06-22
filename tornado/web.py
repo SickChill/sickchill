@@ -85,6 +85,7 @@ from tornado import stack_context
 from tornado import template
 from tornado.escape import utf8, _unicode
 from tornado.util import import_object, ObjectDict, raise_exc_info, unicode_type, _websocket_mask
+from tornado.httputil import split_host_and_port
 
 
 try:
@@ -267,6 +268,7 @@ class RequestHandler(object):
         if _has_stream_request_body(self.__class__):
             if not self.request.body.done():
                 self.request.body.set_exception(iostream.StreamClosedError())
+                self.request.body.exception()
 
     def clear(self):
         """Resets all headers and content for this response."""
@@ -839,7 +841,7 @@ class RequestHandler(object):
                 for cookie in self._new_cookie.values():
                     self.add_header("Set-Cookie", cookie.OutputString(None))
 
-            start_line = httputil.ResponseStartLine(self.request.version,
+            start_line = httputil.ResponseStartLine('',
                                                     self._status_code,
                                                     self._reason)
             return self.request.connection.write_headers(
@@ -1119,28 +1121,36 @@ class RequestHandler(object):
         """Convert a cookie string into a the tuple form returned by
         _get_raw_xsrf_token.
         """
-        m = _signed_value_version_re.match(utf8(cookie))
-        if m:
-            version = int(m.group(1))
-            if version == 2:
-                _, mask, masked_token, timestamp = cookie.split("|")
-                mask = binascii.a2b_hex(utf8(mask))
-                token = _websocket_mask(
-                    mask, binascii.a2b_hex(utf8(masked_token)))
-                timestamp = int(timestamp)
-                return version, token, timestamp
+
+        try:
+            m = _signed_value_version_re.match(utf8(cookie))
+
+            if m:
+                version = int(m.group(1))
+                if version == 2:
+                    _, mask, masked_token, timestamp = cookie.split("|")
+
+                    mask = binascii.a2b_hex(utf8(mask))
+                    token = _websocket_mask(
+                        mask, binascii.a2b_hex(utf8(masked_token)))
+                    timestamp = int(timestamp)
+                    return version, token, timestamp
+                else:
+                    # Treat unknown versions as not present instead of failing.
+                    raise Exception("Unknown xsrf cookie version")
             else:
-                # Treat unknown versions as not present instead of failing.
-                return None, None, None
-        else:
-            version = 1
-            try:
-                token = binascii.a2b_hex(utf8(cookie))
-            except (binascii.Error, TypeError):
-                token = utf8(cookie)
-            # We don't have a usable timestamp in older versions.
-            timestamp = int(time.time())
-            return (version, token, timestamp)
+                version = 1
+                try:
+                    token = binascii.a2b_hex(utf8(cookie))
+                except (binascii.Error, TypeError):
+                    token = utf8(cookie)
+                # We don't have a usable timestamp in older versions.
+                timestamp = int(time.time())
+                return (version, token, timestamp)
+        except Exception:
+            # Catch exceptions and return nothing instead of failing.
+            gen_log.debug("Uncaught exception in _decode_xsrf_token", exc_info=True)
+            return None, None, None
 
     def check_xsrf_cookie(self):
         """Verifies that the ``_xsrf`` cookie matches the ``_xsrf`` argument.
@@ -1477,7 +1487,7 @@ def asynchronous(method):
         with stack_context.ExceptionStackContext(
                 self._stack_context_handle_exception):
             result = method(self, *args, **kwargs)
-            if isinstance(result, Future):
+            if is_future(result):
                 # If @asynchronous is used with @gen.coroutine, (but
                 # not @gen.engine), we can automatically finish the
                 # request when the future resolves.  Additionally,
@@ -1518,7 +1528,7 @@ def stream_request_body(cls):
       the entire body has been read.
 
     There is a subtle interaction between ``data_received`` and asynchronous
-    ``prepare``: The first call to ``data_recieved`` may occur at any point
+    ``prepare``: The first call to ``data_received`` may occur at any point
     after the call to ``prepare`` has returned *or yielded*.
     """
     if not issubclass(cls, RequestHandler):
@@ -1729,7 +1739,7 @@ class Application(httputil.HTTPServerConnectionDelegate):
         self.transforms.append(transform_class)
 
     def _get_host_handlers(self, request):
-        host = request.host.lower().split(':')[0]
+        host = split_host_and_port(request.host.lower())[0]
         matches = []
         for pattern, handlers in self.handlers:
             if pattern.match(host):
@@ -1770,9 +1780,9 @@ class Application(httputil.HTTPServerConnectionDelegate):
                 except TypeError:
                     pass
 
-    def start_request(self, connection):
+    def start_request(self, server_conn, request_conn):
         # Modern HTTPServer interface
-        return _RequestDispatcher(self, connection)
+        return _RequestDispatcher(self, request_conn)
 
     def __call__(self, request):
         # Legacy HTTPServer interface
@@ -1845,7 +1855,7 @@ class _RequestDispatcher(httputil.HTTPMessageDelegate):
         handlers = app._get_host_handlers(self.request)
         if not handlers:
             self.handler_class = RedirectHandler
-            self.handler_kwargs = dict(url="http://" + app.default_host + "/")
+            self.handler_kwargs = dict(url="%s://%s/" % (self.request.protocol, app.default_host))
             return
         for spec in handlers:
             match = spec.regex.match(self.request.path)
@@ -1914,8 +1924,10 @@ class _RequestDispatcher(httputil.HTTPMessageDelegate):
         # trapped in the Future it returns (which we are ignoring here).
         # However, that shouldn't happen because _execute has a blanket
         # except handler, and we cannot easily access the IOLoop here to
-        # call add_future.
-        self.handler._execute(transforms, *self.path_args, **self.path_kwargs)
+        # call add_future (because of the requirement to remain compatible
+        # with WSGI)
+        f = self.handler._execute(transforms, *self.path_args, **self.path_kwargs)
+        f.add_done_callback(lambda f: f.exception())
         # If we are streaming the request body, then execute() is finished
         # when the handler has prepared to receive the body.  If not,
         # it doesn't matter when execute() finishes (so we return None)
@@ -2017,7 +2029,6 @@ class RedirectHandler(RequestHandler):
             (r"/oldpath", web.RedirectHandler, {"url": "/newpath"}),
         ])
     """
-
     def initialize(self, url, permanent=True):
         self._url = url
         self._permanent = permanent
@@ -2622,6 +2633,8 @@ class UIModule(object):
     UI modules often execute additional queries, and they can include
     additional CSS and JavaScript that will be included in the output
     page, which is automatically inserted on page render.
+
+    Subclasses of UIModule must override the `render` method.
     """
     def __init__(self, handler):
         self.handler = handler
@@ -2634,31 +2647,43 @@ class UIModule(object):
         return self.handler.current_user
 
     def render(self, *args, **kwargs):
-        """Overridden in subclasses to return this module's output."""
+        """Override in subclasses to return this module's output."""
         raise NotImplementedError()
 
     def embedded_javascript(self):
-        """Returns a JavaScript string that will be embedded in the page."""
+        """Override to return a JavaScript string to be embedded in the page."""
         return None
 
     def javascript_files(self):
-        """Returns a list of JavaScript files required by this module."""
+        """Override to return a list of JavaScript files needed by this module.
+
+        If the return values are relative paths, they will be passed to
+        `RequestHandler.static_url`; otherwise they will be used as-is.
+        """
         return None
 
     def embedded_css(self):
-        """Returns a CSS string that will be embedded in the page."""
+        """Override to return a CSS string that will be embedded in the page."""
         return None
 
     def css_files(self):
-        """Returns a list of CSS files required by this module."""
+        """Override to returns a list of CSS files required by this module.
+
+        If the return values are relative paths, they will be passed to
+        `RequestHandler.static_url`; otherwise they will be used as-is.
+        """
         return None
 
     def html_head(self):
-        """Returns a CSS string that will be put in the <head/> element"""
+        """Override to return an HTML string that will be put in the <head/>
+        element.
+        """
         return None
 
     def html_body(self):
-        """Returns an HTML string that will be put in the <body/> element"""
+        """Override to return an HTML string that will be put at the end of
+        the <body/> element.
+        """
         return None
 
     def render_string(self, path, **kwargs):
