@@ -155,12 +155,13 @@ def processDir(dirName, nzbName=None, process_method=None, force=False, is_prior
 
     path, dirs, files = get_path_dir_files(dirName, nzbName, type)
 
+    files = filter(helpers.notTorNZBFile, files)
     SyncFiles = filter(helpers.isSyncFile, files)
 
     # Don't post process if files are still being synced and option is activated
     if SyncFiles and sickbeard.POSTPONE_IF_SYNC_FILES:
         postpone = True
-        
+
     nzbNameOriginal = nzbName
 
     if not postpone:
