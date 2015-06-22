@@ -160,6 +160,9 @@ def replaceExtension(filename, newExt):
         return sepFile[0] + "." + newExt
 
 
+def notTorNZBFile(filename):
+    return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
+
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
     #if extension == '!sync' or extension == 'lftp-pget-status' or extension == 'part' or extension == 'bts':
