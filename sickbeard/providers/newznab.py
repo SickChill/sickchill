@@ -144,9 +144,9 @@ class NewznabProvider(generic.NZBProvider):
         # search
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
-            cur_return = cur_params.copy()
-            cur_return['rid'] = rid
-            to_return.append(cur_return)
+            cur_params['rid'] = rid
+        elif 'rid' in params:
+            cur_params.pop('rid')
 
         # add new query strings for exceptions
         name_exceptions = list(
@@ -154,6 +154,8 @@ class NewznabProvider(generic.NZBProvider):
         for cur_exception in name_exceptions:
             if 'q' in cur_params:
                 cur_params['q'] = helpers.sanitizeSceneName(cur_exception) + '.' + cur_params['q']
+            else:
+                cur_params['q'] = helpers.sanitizeSceneName(cur_exception)
             to_return.append(cur_params)
 
         return to_return
@@ -178,31 +180,27 @@ class NewznabProvider(generic.NZBProvider):
         # search
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
-            cur_return = params.copy()
-            cur_return['rid'] = rid
-            to_return.append(cur_return)
+            params['rid'] = rid
+        elif 'rid' in params:
+            params.pop('rid')
 
         # add new query strings for exceptions
         name_exceptions = list(
             set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
         for cur_exception in name_exceptions:
-            params['q'] = helpers.sanitizeSceneName(cur_exception) + ' ' + add_string
+            params['q'] = helpers.sanitizeSceneName(cur_exception)
+            if add_string:
+                params['q'] += ' ' + add_string
+
             to_return.append(params)
-        
+
             if ep_obj.show.anime:
-                # Experimental, add a searchstring without search explicitly for the episode!
-                # Remove the ?ep=e46 paramater and use add the episode number to the query paramater.
-                # Can be usefull for newznab indexers that do not have the episodes 100% parsed.
-                # Start with only applying the searchstring to anime shows
-                params['q'] = helpers.sanitizeSceneName(cur_exception) + ' ' + add_string
-                params['s'] = params['q']
                 paramsNoEp = params.copy()
-                
-                paramsNoEp['q'] = paramsNoEp['q'] + " " + str(paramsNoEp['ep'])
+                paramsNoEp['q'] = paramsNoEp['q'] + " " + paramsNoEp['ep']
                 if "ep" in paramsNoEp:
                     paramsNoEp.pop("ep")
                 to_return.append(paramsNoEp)
-        
+
         return to_return
 
     def _doGeneralSearch(self, search_string):
@@ -225,6 +223,8 @@ class NewznabProvider(generic.NZBProvider):
         except:return self._checkAuth()
 
         try:
+            bozo = int(data['bozo'])
+            bozo_exception = data['bozo_exception']
             err_code = int(data['feed']['error']['code'])
             err_desc = data['feed']['error']['description']
             if not err_code or err_desc:
@@ -239,6 +239,8 @@ class NewznabProvider(generic.NZBProvider):
         elif err_code == 102:
             raise AuthException(
                 "Your account isn't allowed to use the API on " + self.name + ", contact the administrator")
+        elif bozo == 1:
+            raise Exception(bozo_exception)
         else:
             logger.log(u"Unknown error given from " + self.name + ": " + err_desc, logger.ERROR)
 
@@ -260,9 +262,8 @@ class NewznabProvider(generic.NZBProvider):
         else:
             params['cat'] = self.catIDs
 
-        # if max_age is set, use it, don't allow it to be missing
-        if age or not params['maxage']:
-            params['maxage'] = age
+        age = (4, age)[age]
+        params['maxage'] = (age, 4)[age > 4]
 
         if search_params:
             params.update(search_params)
@@ -273,17 +274,18 @@ class NewznabProvider(generic.NZBProvider):
         results = []
         offset = total = 0
 
-        # Limit to 400 results, like Sick Beard does, to prevent throttling
-        while (total >= offset) and (offset <= 400):
+        while (total >= offset):
             search_url = self.url + 'api?' + urllib.urlencode(params)
-            logger.log(u"Search url: " + search_url, logger.DEBUG)
 
             while((datetime.datetime.now() - self.last_search).seconds < 5):
                 time.sleep(1)
 
+            logger.log(u"Search url: " + search_url, logger.DEBUG)
+
             data = self.cache.getRSSFeed(search_url)
-            #print data
+
             self.last_search = datetime.datetime.now()
+
             if not self._checkAuthFromData(data):
                 break
 
@@ -315,7 +317,7 @@ class NewznabProvider(generic.NZBProvider):
                 break
 
             params['offset'] += params['limit']
-            if (total > int(params['offset'])) and (int(params['offset']) <= 400):
+            if (total > int(params['offset'])) and (offset < 500):
                 offset = int(params['offset'])
                 # if there are more items available then the amount given in one call, grab some more
                 logger.log(u'%d' % (total - offset) + ' more items to be fetched from provider.' +
@@ -360,23 +362,32 @@ class NewznabCache(tvcache.TVCache):
 
         tvcache.TVCache.__init__(self, provider)
 
-        # only poll newznab providers every 30 minutes max, doubled so we don't get throttled again.
+        # only poll newznab providers every 30 minutes
         self.minTime = 30
+        self.last_search = datetime.datetime.now()
 
     def _getRSSData(self):
 
         params = {"t": "tvsearch",
                   "cat": self.provider.catIDs + ',5060,5070',
-                  "attrs": "rageid"}
+                  "attrs": "rageid",
+                  "maxage": 4,
+                 }
 
         if self.provider.needs_auth and self.provider.key:
             params['apikey'] = self.provider.key
 
         rss_url = self.provider.url + 'api?' + urllib.urlencode(params)
 
-        logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
+        while((datetime.datetime.now() - self.last_search).seconds < 5):
+                time.sleep(1)
 
-        return self.getRSSFeed(rss_url)
+        logger.log(self.provider.name + " cache update URL: " + rss_url, logger.DEBUG)
+        data = self.getRSSFeed(rss_url)
+
+        self.last_search = datetime.datetime.now()
+
+        return data
 
     def _checkAuth(self, data):
         return self.provider._checkAuthFromData(data)
