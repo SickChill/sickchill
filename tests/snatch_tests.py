@@ -83,7 +83,7 @@ def test_generator(tvdbdid, show_name, curData, forceSearch):
             episode.status = c.WANTED
             episode.saveToDB()
 
-        bestResult = search.searchProviders(show, episode.season, episode.episode, forceSearch)
+        bestResult = search.searchProviders(show, episode.episode, forceSearch)
         if not bestResult:
             self.assertEqual(curData["b"], bestResult)
         self.assertEqual(curData["b"], bestResult.name) #first is expected, second is choosen one

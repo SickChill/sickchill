@@ -20,6 +20,7 @@ import urllib
 import time
 import datetime
 import os
+import re
 
 import sickbeard
 import generic
