@@ -132,6 +132,8 @@ class NewznabProvider(generic.NZBProvider):
         to_return = []
         cur_params = {}
 
+        cur_params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
+
         # season
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate).split('-')[0]
@@ -167,6 +169,8 @@ class NewznabProvider(generic.NZBProvider):
 
         if not ep_obj:
             return [params]
+
+        params['maxage'] = (datetime.datetime.now() - datetime.datetime.combine(ep_obj.airdate, datetime.datetime.min.time())).days + 1
 
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             date_str = str(ep_obj.airdate)
@@ -263,8 +267,7 @@ class NewznabProvider(generic.NZBProvider):
         else:
             params['cat'] = self.catIDs
 
-        age = (4, age)[age]
-        params['maxage'] = (age, 4)[age > 4]
+        params['maxage'] = (4, age)[age]
 
         if search_params:
             params.update(search_params)
