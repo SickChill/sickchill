@@ -1315,6 +1315,8 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
         else:
             resp = session.get(url, timeout=timeout)
 
+        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)

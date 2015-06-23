@@ -202,12 +202,12 @@ def pickBestResult(results, show):
         #TODO: Is this the cause of #1579 (Downloading wrong torrent)
         if isinstance(cur_result, sickbeard.classes.SearchResult):
             if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-                if not cur_result.url.startswith('magnet'):
+                if len(cur_result.url) and  not cur_result.url.startswith('magnet'):
                     cur_result.content = cur_result.provider.getURL(cur_result.url)
                     if not cur_result.content:
                         continue
         else:
-            if not cur_result.url.startswith('magnet'):
+            if len(cur_result.url) and not cur_result.url.startswith('magnet'):
                 cur_result.content = cur_result.provider.getURL(cur_result.url)
                 if not cur_result.content:
                     continue
@@ -660,6 +660,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 for epObj in multiResult.episodes:
                     if not multiResult.url.startswith('magnet'):
                         multiResult.content = multiResult.provider.getURL(cur_result.url)
+
                     multiResults[epObj.episode] = multiResult
 
                 # don't bother with the single result if we're going to get it with a multi result
