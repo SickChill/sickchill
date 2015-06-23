@@ -708,7 +708,7 @@ def sanitizeSceneName(name, anime=False):
     """
 
     if not name:
-        return u''
+        return ''
 
     bad_chars = u',:()!?\u2019'
     if not anime:
@@ -716,7 +716,7 @@ def sanitizeSceneName(name, anime=False):
 
     # strip out any bad chars
     for x in bad_chars:
-        name = u'' + name.replace(x, "")
+        name = name.replace(x, "")
 
     # tidy up stuff that doesn't belong in scene names
     name = name.replace("- ", ".").replace(" ", ".").replace("&", "and").replace('/', '.')
