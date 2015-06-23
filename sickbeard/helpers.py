@@ -49,7 +49,7 @@ import subprocess
 
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
-from sickbeard.common import USER_AGENT, mediaExtensions, subtitleExtensions
+from sickbeard.common import USER_AGENT, cpu_presets, mediaExtensions, subtitleExtensions
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
@@ -1314,8 +1314,6 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
             resp = session.post(url, data=post_data, timeout=timeout)
         else:
             resp = session.get(url, timeout=timeout)
-
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
