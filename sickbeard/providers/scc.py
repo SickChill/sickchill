@@ -147,7 +147,10 @@ class SCCProvider(generic.TorrentProvider):
             for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
                 ep_string = show_name_helpers.sanitizeSceneName(show_name) + ' ' + \
                             sickbeard.config.naming_ep_type[2] % {'seasonnumber': ep_obj.scene_season,
-                                                                  'episodenumber': ep_obj.scene_episode} + ' %s' % add_string
+                                                                  'episodenumber': ep_obj.scene_episode}
+
+                if len(add_string):
+                    ep_string += ' %s' % add_string
 
                 search_string['Episode'].append(re.sub('\s+', ' ', ep_string))
 
@@ -188,6 +191,7 @@ class SCCProvider(generic.TorrentProvider):
                     logger.log(u"Search string: " + searchURL, logger.DEBUG)
                     try:
                         data += [x for x in [self.getURL(searchURL)] if x]
+                        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                     except Exception as e:
                         logger.log(u"Unable to fetch data reason: {0}".format(str(e)), logger.WARNING)
 

@@ -199,18 +199,6 @@ def pickBestResult(results, show):
         if show and cur_result.show is not show:
             continue
 
-        #TODO: Is this the cause of #1579 (Downloading wrong torrent)
-        if isinstance(cur_result, sickbeard.classes.SearchResult):
-            if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-                if not cur_result.url.startswith('magnet'):
-                    cur_result.content = cur_result.provider.getURL(cur_result.url)
-                    if not cur_result.content:
-                        continue
-        else:
-            if not cur_result.url.startswith('magnet'):
-                cur_result.content = cur_result.provider.getURL(cur_result.url)
-                if not cur_result.content:
-                    continue
 
         # build the black And white list
         if show.is_anime:
@@ -245,6 +233,14 @@ def pickBestResult(results, show):
                                                                            cur_result.provider.name):
                 logger.log(cur_result.name + u" has previously failed, rejecting it")
                 continue
+
+        # Download the torrent file contents only if it has passed all other checks!
+        # Must be done before setting bestResult
+        if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+            if len(cur_result.url) and  not cur_result.url.startswith('magnet'):
+                cur_result.content = cur_result.provider.getURL(cur_result.url)
+                if not cur_result.content:
+                    continue
 
         if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):
             bestResult = cur_result
@@ -660,6 +656,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 for epObj in multiResult.episodes:
                     if not multiResult.url.startswith('magnet'):
                         multiResult.content = multiResult.provider.getURL(cur_result.url)
+
                     multiResults[epObj.episode] = multiResult
 
                 # don't bother with the single result if we're going to get it with a multi result
