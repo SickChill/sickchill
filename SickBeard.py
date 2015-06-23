@@ -57,6 +57,14 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib'
 if sys.hexversion >= 0x020600F0:
     from multiprocessing import freeze_support  # @UnresolvedImport
 
+
+import certifi
+for env_cert_var in ['REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE']:
+    ca_cert_loc = os.environ.get(env_cert_var)
+    if (not isinstance(ca_cert_loc, basestring)) or (not os.path.isfile(ca_cert_loc)):
+        os.environ[env_cert_var] = certifi.where()
+
+
 if sys.version_info >= (2, 7, 9):
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context

@@ -109,7 +109,7 @@ class RarbgProvider(generic.TorrentProvider):
         resp_json = None
 
         try:
-            response = self.session.get(self.urls['token'], timeout=30, verify=False, headers=self.headers)
+            response = self.session.get(self.urls['token'], timeout=30, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
         except (RequestException, BaseSSLError) as e:

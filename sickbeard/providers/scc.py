@@ -92,7 +92,8 @@ class SCCProvider(generic.TorrentProvider):
         self.session = requests.Session()
 
         try:
-            response = self.session.post(self.urls['login'], data=login_params, headers=self.headers, timeout=30, verify=False)
+            from lib import certifi
+            response = self.session.post(self.urls['login'], data=login_params, headers=self.headers, timeout=30)
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
             logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
