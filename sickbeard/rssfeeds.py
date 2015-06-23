@@ -38,7 +38,7 @@ class RSSFeeds:
             url += urllib.urlencode(post_data)
 
         try:
-            resp = Cache(self.rssDB).fetch(url, force_update=True, request_headers=request_headers, handlers=handlers)
+            resp = Cache(self.rssDB, userAgent=sickbeard.common.USER_AGENT).fetch(url, force_update=True, request_headers=request_headers, handlers=handlers)
         finally:
             self.rssDB.close()
 

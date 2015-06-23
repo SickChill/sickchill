@@ -23,10 +23,7 @@ import re
 import uuid
 
 INSTANCE_ID = str(uuid.uuid1())
-#Use Sick Beard USER_AGENT until they stop throttling us,
-#newznab searching has long been fixed, but we now limit it to 400 results just as they do.
-#USER_AGENT = ('SickRage/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
-USER_AGENT = 'Sick Beard/alpha2-master' + ' (' + platform.system() + ' ' + platform.release() + ')'
+USER_AGENT = ('SickRage/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 
 mediaExtensions = ['avi', 'mkv', 'mpg', 'mpeg', 'wmv',
                    'ogm', 'mp4', 'iso', 'img', 'divx',

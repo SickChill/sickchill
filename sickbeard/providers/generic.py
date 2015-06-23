@@ -174,20 +174,21 @@ class GenericProvider:
             return
 
         for url in urls:
+            logger.log(u"Downloading a result from " + self.name + " at " + url)
             if helpers.download_file(url, filename, session=self.session):
-                logger.log(u"Downloading a result from " + self.name + " at " + url)
-
-                if self.providerType == GenericProvider.TORRENT:
-                    logger.log(u"Saved magnet link to " + filename, logger.INFO)
-                else:
-                    logger.log(u"Saved result to " + filename, logger.INFO)
-
                 if self._verify_download(filename):
+                    if self.providerType == GenericProvider.TORRENT:
+                        logger.log(u"Saved magnet link to " + filename, logger.INFO)
+                    else:
+                        logger.log(u"Saved result to " + filename, logger.INFO)
                     return True
                 else:
+                    logger.log(u"Could not download %s" % url, logger.WARNING)
                     helpers._remove_file_failed(filename)
 
-        logger.log(u"Failed to download result", logger.WARNING)
+        if len(urls):
+            logger.log(u"Failed to download any results", logger.WARNING)
+
         return False
 
     def _verify_download(self, file_name=None):
