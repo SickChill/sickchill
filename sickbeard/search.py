@@ -199,10 +199,18 @@ def pickBestResult(results, show):
         if show and cur_result.show is not show:
             continue
 
-        if not cur_result.url.startswith('magnet'):
-            cur_result.content = cur_result.provider.getURL(cur_result.url)
-            if not cur_result.content:
-                continue
+        #TODO: Is this the cause of #1579 (Downloading wrong torrent)
+        if isinstance(cur_result, sickbeard.classes.SearchResult):
+            if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
+                if not cur_result.url.startswith('magnet'):
+                    cur_result.content = cur_result.provider.getURL(cur_result.url)
+                    if not cur_result.content:
+                        continue
+        else:
+            if not cur_result.url.startswith('magnet'):
+                cur_result.content = cur_result.provider.getURL(cur_result.url)
+                if not cur_result.content:
+                    continue
 
         # build the black And white list
         if show.is_anime:
