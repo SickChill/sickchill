@@ -405,6 +405,11 @@ Transfer-Encoding: chunked
         self.assertEqual(context.exception.response.code, 404)
 
     @gen_test
+    def test_future_http_error_no_raise(self):
+        response = yield self.http_client.fetch(self.get_url('/notfound'), raise_error=False)
+        self.assertEqual(response.code, 404)
+
+    @gen_test
     def test_reuse_request_from_response(self):
         # The response.request attribute should be an HTTPRequest, not
         # a _RequestProxy.
@@ -543,7 +548,7 @@ class SyncHTTPClientTest(unittest.TestCase):
         self.server_ioloop.close(all_fds=True)
 
     def get_url(self, path):
-        return 'http://localhost:%d%s' % (self.port, path)
+        return 'http://127.0.0.1:%d%s' % (self.port, path)
 
     def test_sync_client(self):
         response = self.http_client.fetch(self.get_url('/'))

@@ -213,16 +213,10 @@
 					#for $action in sorted($hItem["actions"]):
 						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
 						#if $curStatus == DOWNLOADED:
-							#set $match = $re.search("\-(\w+)\.\w{3}\Z", $os.path.basename($action["resource"]))
-							#if $match
-								#if $match.group(1).upper() in ("X264", "720P"):
-									#set $match = $re.search("(\w+)\-.*\-"+$match.group(1)+"\.\w{3}\Z", $os.path.basename($hItem["resource"]), re.IGNORECASE)
-								#if $match
-									<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$match.group(1).upper()</i></span>
-								#end if
-								#else:
-									<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$match.group(1).upper()</i></span>
-								#end if
+							#if $action["provider"] != "-1":
+								<span style="cursor: help;" title="$os.path.basename($action["resource"])"><i>$action["provider"]</i></span>
+							#else:
+								<span style="cursor: help;" title="$os.path.basename($action["resource"])"></span>
 							#end if
 						#end if
 					#end for

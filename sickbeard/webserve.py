@@ -1540,7 +1540,7 @@ class Home(WebRoot):
             if not sickbeard.traktRollingScheduler.action.updateWantedList(showObj.indexerid):
                 errors.append("Unable to force an update on wanted episode")
 
-        ui.notifications.message('<b>%s</b> has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
+        ui.notifications.message('%s has been %s' % (showObj.name,('resumed', 'paused')[showObj.paused]))
         return self.redirect("/home/displayShow?show=" + show)
         
     def deleteShow(self, show=None, full=0):
@@ -1567,7 +1567,7 @@ class Home(WebRoot):
 
         showObj.deleteShow(bool(full))
 
-        ui.notifications.message('<b>%s</b> has been %s %s' %
+        ui.notifications.message('%s has been %s %s' %
                                  (showObj.name,
                                   ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
@@ -3680,7 +3680,7 @@ class ConfigGeneral(Config):
     def saveGeneral(self, log_dir=None, log_nr = 5, log_size = 1048576, web_port=None, web_log=None, encryption_version=None, web_ipv6=None,
                     update_shows_on_start=None, update_shows_on_snatch=None, trash_remove_show=None, trash_rotate_logs=None, update_frequency=None,
                     indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
-                    api_key=None, indexer_default=None, timezone_display=None, cpu_preset=None,
+                    api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
                     web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
                     handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,

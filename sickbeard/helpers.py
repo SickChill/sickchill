@@ -137,10 +137,7 @@ def remove_non_release_groups(name):
         elif remove_type == 'searchre':
             _name = re.sub(r'(?i)' + remove_string, '', _name)
 
-    #if _name != name:
-    #    logger.log(u'Change title from {old_name} to {new_name}'.format(old_name=name, new_name=_name), logger.DEBUG)
-
-    return _name
+    return _name.strip('.- ')
 
 
 def replaceExtension(filename, newExt):
@@ -162,6 +159,9 @@ def replaceExtension(filename, newExt):
     else:
         return sepFile[0] + "." + newExt
 
+
+def notTorNZBFile(filename):
+    return not (filename.endswith(".torrent") or filename.endswith(".nzb"))
 
 def isSyncFile(filename):
     extension = filename.rpartition(".")[2].lower()
@@ -1374,13 +1374,17 @@ def download_file(url, filename, session=None):
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return False
 
-        with open(filename, 'wb') as fp:
-            for chunk in resp.iter_content(chunk_size=1024):
-                if chunk:
-                    fp.write(chunk)
-                    fp.flush()
+        try:
+            with open(filename, 'wb') as fp:
+                for chunk in resp.iter_content(chunk_size=1024):
+                    if chunk:
+                        fp.write(chunk)
+                        fp.flush()
 
-        chmodAsParent(filename)
+            chmodAsParent(filename)
+        except:
+            logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
+
     except requests.exceptions.HTTPError, e:
         _remove_file_failed(filename)
         logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)

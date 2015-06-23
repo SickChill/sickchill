@@ -43,7 +43,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.network = "cbs"
         show.genre = "crime"
         show.runtime = 40
-        show.status = "5"
+        show.status = "Ended"
         show.default_ep_status = "5"
         show.airs = "monday"
         show.startyear = 1987
@@ -92,7 +92,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.network = "cbs"
         show.genre = "crime"
         show.runtime = 40
-        show.status = "5"
+        show.status = "Ended"
         show.default_ep_status = "5"
         show.airs = "monday"
         show.startyear = 1987

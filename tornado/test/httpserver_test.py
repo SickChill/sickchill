@@ -195,14 +195,14 @@ class HTTPConnectionTest(AsyncHTTPTestCase):
     def get_app(self):
         return Application(self.get_handlers())
 
-    def raw_fetch(self, headers, body):
+    def raw_fetch(self, headers, body, newline=b"\r\n"):
         with closing(IOStream(socket.socket())) as stream:
             stream.connect(('127.0.0.1', self.get_http_port()), self.stop)
             self.wait()
             stream.write(
-                b"\r\n".join(headers +
-                             [utf8("Content-Length: %d\r\n" % len(body))]) +
-                b"\r\n" + body)
+                newline.join(headers +
+                             [utf8("Content-Length: %d" % len(body))]) +
+                newline + newline + body)
             read_stream_body(stream, self.stop)
             headers, body = self.wait()
             return body
@@ -232,12 +232,19 @@ class HTTPConnectionTest(AsyncHTTPTestCase):
         self.assertEqual(u("\u00f3"), data["filename"])
         self.assertEqual(u("\u00fa"), data["filebody"])
 
+    def test_newlines(self):
+        # We support both CRLF and bare LF as line separators.
+        for newline in (b"\r\n", b"\n"):
+            response = self.raw_fetch([b"GET /hello HTTP/1.0"], b"",
+                                      newline=newline)
+            self.assertEqual(response, b'Hello world')
+
     def test_100_continue(self):
         # Run through a 100-continue interaction by hand:
         # When given Expect: 100-continue, we get a 100 response after the
         # headers, and then the real response after the body.
         stream = IOStream(socket.socket(), io_loop=self.io_loop)
-        stream.connect(("localhost", self.get_http_port()), callback=self.stop)
+        stream.connect(("127.0.0.1", self.get_http_port()), callback=self.stop)
         self.wait()
         stream.write(b"\r\n".join([b"POST /hello HTTP/1.1",
                                    b"Content-Length: 1024",
@@ -374,7 +381,7 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
     def setUp(self):
         super(HTTPServerRawTest, self).setUp()
         self.stream = IOStream(socket.socket())
-        self.stream.connect(('localhost', self.get_http_port()), self.stop)
+        self.stream.connect(('127.0.0.1', self.get_http_port()), self.stop)
         self.wait()
 
     def tearDown(self):
@@ -555,7 +562,7 @@ class UnixSocketTest(AsyncTestCase):
         self.stream.write(b"GET /hello HTTP/1.0\r\n\r\n")
         self.stream.read_until(b"\r\n", self.stop)
         response = self.wait()
-        self.assertEqual(response, b"HTTP/1.0 200 OK\r\n")
+        self.assertEqual(response, b"HTTP/1.1 200 OK\r\n")
         self.stream.read_until(b"\r\n\r\n", self.stop)
         headers = HTTPHeaders.parse(self.wait().decode('latin1'))
         self.stream.read_bytes(int(headers["Content-Length"]), self.stop)
@@ -623,13 +630,13 @@ class KeepAliveTest(AsyncHTTPTestCase):
     # The next few methods are a crude manual http client
     def connect(self):
         self.stream = IOStream(socket.socket(), io_loop=self.io_loop)
-        self.stream.connect(('localhost', self.get_http_port()), self.stop)
+        self.stream.connect(('127.0.0.1', self.get_http_port()), self.stop)
         self.wait()
 
     def read_headers(self):
         self.stream.read_until(b'\r\n', self.stop)
         first_line = self.wait()
-        self.assertTrue(first_line.startswith(self.http_version + b' 200'), first_line)
+        self.assertTrue(first_line.startswith(b'HTTP/1.1 200'), first_line)
         self.stream.read_until(b'\r\n\r\n', self.stop)
         header_bytes = self.wait()
         headers = HTTPHeaders.parse(header_bytes.decode('latin1'))
@@ -808,8 +815,8 @@ class StreamingChunkSizeTest(AsyncHTTPTestCase):
 
     def get_app(self):
         class App(HTTPServerConnectionDelegate):
-            def start_request(self, connection):
-                return StreamingChunkSizeTest.MessageDelegate(connection)
+            def start_request(self, server_conn, request_conn):
+                return StreamingChunkSizeTest.MessageDelegate(request_conn)
         return App()
 
     def fetch_chunk_sizes(self, **kwargs):
@@ -900,7 +907,7 @@ class IdleTimeoutTest(AsyncHTTPTestCase):
 
     def connect(self):
         stream = IOStream(socket.socket())
-        stream.connect(('localhost', self.get_http_port()), self.stop)
+        stream.connect(('127.0.0.1', self.get_http_port()), self.stop)
         self.wait()
         self.streams.append(stream)
         return stream

@@ -34,7 +34,7 @@ except ImportError:
     ssl = None
 
 try:
-    import lib.certifi
+    import certifi
 except ImportError:
     certifi = None
 
@@ -193,12 +193,8 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
             netloc = self.parsed.netloc
             if "@" in netloc:
                 userpass, _, netloc = netloc.rpartition("@")
-            match = re.match(r'^(.+):(\d+)$', netloc)
-            if match:
-                host = match.group(1)
-                port = int(match.group(2))
-            else:
-                host = netloc
+            host, port = httputil.split_host_and_port(netloc)
+            if port is None:
                 port = 443 if self.parsed.scheme == "https" else 80
             if re.match(r'^\[.*\]$', host):
                 # raw ipv6 addresses in urls are enclosed in brackets
@@ -349,7 +345,7 @@ class _HTTPConnection(httputil.HTTPMessageDelegate):
                 decompress=self.request.decompress_response),
             self._sockaddr)
         start_line = httputil.RequestStartLine(self.request.method,
-                                               req_path, 'HTTP/1.1')
+                                               req_path, '')
         self.connection.write_headers(start_line, self.request.headers)
         if self.request.expect_100_continue:
             self._read_response()

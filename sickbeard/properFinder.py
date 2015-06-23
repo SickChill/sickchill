@@ -243,6 +243,7 @@ class ProperFinder():
 
                 # snatch it
                 search.snatchEpisode(result, SNATCHED_PROPER)
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
     def _genericName(self, name):
         return name.replace(".", " ").replace("-", " ").replace("_", " ").lower()

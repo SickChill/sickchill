@@ -184,7 +184,7 @@ class PostProcessor(object):
         base_name = re.sub(r'[\[\]\*\?]', r'[\g<0>]', base_name)
         
         if subfolders: # subfolders are only checked in show folder, so names will always be exactly alike
-            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path),  base_name + '*') # just create the list of all files starting with the basename
+            filelist = ek.ek(recursive_glob, ek.ek(os.path.dirname, file_path), base_name + '*') # just create the list of all files starting with the basename
         else: # this is called when PP, so we need to do the filename check case-insensitive
             filelist = []
             checklist = ek.ek(glob.glob, ek.ek(os.path.join, ek.ek(os.path.dirname, file_path), '*')) # get a list of all the files in the folder

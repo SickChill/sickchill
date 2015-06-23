@@ -380,7 +380,17 @@ def searchForNeededEpisodes():
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-        curFoundResults = curProvider.searchRSS(episodes)
+        curFoundResults = {}
+        try:
+            curFoundResults = curProvider.searchRSS(episodes)
+        except exceptions.AuthException, e:
+            logger.log(u"Authentication error: " + ex(e), logger.ERROR)
+            continue
+        except Exception, e:
+            logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            continue
+
         didSearch = True
 
         # pick a single result for each episode, respecting existing results

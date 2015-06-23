@@ -2500,7 +2500,7 @@ class TVEpisode(object):
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
 
-        return self._format_pattern(name_groups[-1], multi, anime_type)
+        return helpers.sanitizeFileName(self._format_pattern(name_groups[-1], multi, anime_type))
 
     def rename(self):
         """
