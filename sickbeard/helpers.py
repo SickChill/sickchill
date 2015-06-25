@@ -43,6 +43,7 @@ import sickbeard
 import subliminal
 import adba
 from lib import requests
+import certifi
 import xmltodict
 
 import subprocess
@@ -1281,7 +1282,7 @@ def codeDescription(status_code):
         logger.log(u"Unknown error code. Please submit an issue", logger.WARNING)
         return 'unknown'
 
-def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1295,7 +1296,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = False
+    session.verify = certifi.where()
 
     # request session paramaters
     session.params = params
@@ -1353,7 +1354,7 @@ def download_file(url, filename, session=None):
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
     # request session ssl verify
-    session.verify = False
+    session.verify = certifi.where()
 
     # request session streaming
     session.stream = True

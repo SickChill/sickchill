@@ -191,7 +191,7 @@ class CheckVersion():
 
     def getDBcompare(self, branchDest):
         try:
-            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py", verify=False)
+            response = requests.get("https://raw.githubusercontent.com/SICKRAGETV/SickRage/" + str(branchDest) +"/sickbeard/databases/mainDB.py")
             response.raise_for_status()
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})",response.text)
             branchDestDBversion = int(match.group('version'))
