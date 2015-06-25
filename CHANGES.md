@@ -112,6 +112,7 @@
 * Added the ability to browse possible links found in the homepage for the EZTV provider
 * Changed the InitScripts to use variable names and file names referencing SickRage, instead of SickBeard, to prevent conflicts, and improve readability
 * Feature: Add Fanart to local image cache 
+
 ### 4.0.20 (2015-05-10)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.19...v4.0.20)
