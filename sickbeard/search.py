@@ -130,6 +130,9 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if sickbeard.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
+            if not result.content and not result.url.startswith('magnet'):
+                result.content = result.provider.getURL(result.url)
+
             if result.content or result.url.startswith('magnet'):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
@@ -234,13 +237,12 @@ def pickBestResult(results, show):
                 logger.log(cur_result.name + u" has previously failed, rejecting it")
                 continue
 
-        # Download the torrent file contents only if it has passed all other checks!
-        # Must be done before setting bestResult
-        if cur_result.resultType == "torrent" and sickbeard.TORRENT_METHOD != "blackhole":
-            if len(cur_result.url) and  not cur_result.url.startswith('magnet'):
-                cur_result.content = cur_result.provider.getURL(cur_result.url)
-                if not cur_result.content:
-                    continue
+        # Only request HEAD instead of downloading content here, and only after all other checks but before bestresult!
+        # Otherwise we are spamming providers even when searching with cache only. We can validate now, and download later
+        if len(cur_result.url) and cur_result.provider:
+            cur_result.url = cur_result.provider.headURL(cur_result)
+            if not len(cur_result.url):
+                continue
 
         if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):
             bestResult = cur_result
