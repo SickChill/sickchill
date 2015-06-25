@@ -73,9 +73,9 @@ def _update_zoneinfo():
     global sb_timezone
     sb_timezone = tz.tzlocal()
 
-    # TODO `git submodule update`
-    # now check if the zoneinfo needs update form the git submodule
-    loc_zv = 'lib/network_timezones/zoneinfo.txt'
+    # TODO `git subtree pull` commands on updates
+
+    loc_zv = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/zoneinfo.txt'))
 
     # Read version file
     try:
@@ -100,7 +100,7 @@ def _update_zoneinfo():
         return
 
     # now load the new zoneinfo
-    loc_tar = u'lib/network_timezones/%s' % new_zoneinfo
+    loc_tar = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/%s' % new_zoneinfo))
 
     zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), new_zoneinfo))
     zonefile_tmp = re.sub(r'\.tar\.gz$', '.tmp', zonefile)
@@ -152,7 +152,7 @@ def update_network_dict():
     d = {}
 
     # network timezones are stored in a git submodule
-    loc = 'lib/network_timezones/network_timezones.txt'
+    loc = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/network_timezones.txt'))
 
     with open(loc, 'r') as file:
         data = file.read()
