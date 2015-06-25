@@ -1,3 +1,45 @@
+### 4.0.20 (2015-04-26)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.19...v4.0.20)
+
+* Fixed incorrect behaviour in the web API when a show search returns 0 results
+* Fixed funky Quality Names.
+* Fixed the sb.searchindexers function of the web API so it doesn't immediately return after finding no results from the first indexer.
+* Fixed html changes in http://eztv.ch
+* Fixed 'NoneType' object has no attribute 'whitelist 
+* Added flexibility when determine title from link in eztvapi.re:
+* Added missing "The Anime Network" logo.
+* Enable trending shows only if Trakt is enabled
+* Change: SCC doesn't support searching dates with pipe characters. Use '.' instead
+* Change: Move init/upstart scripts to their own folder to organize and clean up the source
+* Change: Replace SSL Error with a url with information. Disable issue submission of such errors
+* Change: Re-enable feedparser test, as lolo.sickbeard.com is operational again.
+* Changed sr_tvrage_scene_exceptions to use SiCKRAGETV repo instead of echel0n's
+* Removed pyOpenSSL from libs. Cryptography is only needed if you use pyOpenSSL 0.14 or newer. Instead `pip install pyopenssl==0.13.1`
+* Removed torrage.com as the domain expired, zoink.ch has nginx misconfigured or service stopped.
+* Updated Regex to be more specific to for replacement
+
+### 4.0.19 (2015-04-26)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.18...v4.0.19)
+
+* Fixed SSL errors
+* Fixed travis reporting failed builds as successful
+* Fix: If re.search returns None due to no match, .group() will cause an exception
+* Fix: Center Search icon on displayShowTable
+* Added pyOpenSSL SNI test
+* Added ndg-httpsclient, pyOpenSSL, and pyasn1 to enable SNI
+* Added some missing Network logos.
+* Enable trending shows only if Trakt is enabled
+* Change: Use included libs
+* Change: Simplify script, replace sickbeard with sickrage to avoid conflicts.
+* Reverted "Update requests library from v2.5.1 to v2.6.2 ff71b25e"
+* Removed reference to readme-FailedDownloads.md, which doesnt exist. 
+* Removed unused libs
+* Updated certifi certificates
+* Updated requests library from v2.5.1 to v2.6.2
+* Updated mainDB.InitialSchema to v42 to prevent db upgrade on a freshly built database
+
 ### 4.0.18 (2015-04-26)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.17...v4.0.18)
