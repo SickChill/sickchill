@@ -1,0 +1,9 @@
+[submodule "lib/network_timezones"]
+	path = lib/network_timezones
+	url = https://github.com/SiCKRAGETV/sb_network_timezones.git
+[submodule "lib/scene_exceptions/tvrage"]
+	path = lib/scene_exceptions/tvrage
+	url = https://github.com/SiCKRAGETV/sr_tvrage_scene_exceptions.git
+[submodule "lib/scene_exceptions/tvdb"]
+	path = lib/scene_exceptions/tvdb
+	url = https://github.com/SiCKRAGETV/sb_tvdb_scene_exceptions.git
