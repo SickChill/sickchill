@@ -43,6 +43,7 @@ import sickbeard
 import subliminal
 import adba
 from lib import requests
+import certifi
 import xmltodict
 
 import subprocess
@@ -1281,7 +1282,62 @@ def codeDescription(status_code):
         logger.log(u"Unknown error code. Please submit an issue", logger.WARNING)
         return 'unknown'
 
-def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+
+def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+    """
+    Checks if URL is valid, without reading it
+    """
+
+    # request session
+    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
+
+    # request session headers
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session.headers.update(headers)
+
+    # request session paramaters
+    session.params = params
+
+    try:
+        # request session proxies
+        if sickbeard.PROXY_SETTING:
+            logger.log("Using proxy for url: " + url, logger.DEBUG)
+            session.proxies = {
+                "http": sickbeard.PROXY_SETTING,
+                "https": sickbeard.PROXY_SETTING,
+            }
+
+        resp = session.head(url)
+
+        if not resp.ok:
+            logger.log(u"Requested url " + url + " returned status code is " + str(
+                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+            return False
+
+        if proxyGlypeProxySSLwarning is not None:
+            if re.search('The site you are attempting to browse is on a secure connection', resp.text):
+                resp = session.get(proxyGlypeProxySSLwarning)
+
+                if not resp.ok:
+                    logger.log(u"GlypeProxySSLwarning: Requested headURL " + url + " returned status code is " + str(
+                        resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+                    return False
+
+        return resp.status_code == 200
+
+    except requests.exceptions.HTTPError, e:
+        logger.log(u"HTTP error " + str(e.errno) + " in headURL " + url, logger.WARNING)
+    except requests.exceptions.ConnectionError, e:
+        logger.log(u"Connection error " + str(e.message) + " in headURL " + url, logger.WARNING)
+    except requests.exceptions.Timeout, e:
+        logger.log(u"Connection timed out " + str(e.message) + " in headURL " + url, logger.WARNING)
+    except Exception:
+        logger.log(u"Unknown exception in headURL " + url + ": " + traceback.format_exc(), logger.WARNING)
+
+    return False
+
+def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
     """
@@ -1295,7 +1351,7 @@ def getURL(url, post_data=None, params=None, headers={}, timeout=30, session=Non
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = False
+    session.verify = certifi.where()
 
     # request session paramaters
     session.params = params
@@ -1353,7 +1409,7 @@ def download_file(url, filename, session=None):
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
     # request session ssl verify
-    session.verify = False
+    session.verify = certifi.where()
 
     # request session streaming
     session.stream = True

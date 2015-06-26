@@ -118,7 +118,7 @@ class NextGenProvider(generic.TorrentProvider):
             self.session = requests.Session()
             self.session.headers.update(
                 {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20130519 Firefox/24.0)'})
-            data = self.session.get(self.urls['login_page'], verify=False)
+            data = self.session.get(self.urls['login_page'])
             with BS4Parser(data.content.decode('iso-8859-1')) as bs:
                 csrfraw = bs.find('form', attrs={'id': 'login'})['action']
                 output = self.session.post(self.urls['base_url'] + csrfraw, data=login_params)

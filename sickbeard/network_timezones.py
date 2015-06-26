@@ -22,6 +22,7 @@ from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
+from sickbeard.exceptions import ex
 from os.path import basename, join, isfile
 import os
 import re
@@ -72,31 +73,34 @@ def _update_zoneinfo():
     global sb_timezone
     sb_timezone = tz.tzlocal()
 
-    # now check if the zoneinfo needs update
-    url_zv = 'http://sickragetv.github.io/sb_network_timezones/zoneinfo.txt'
+    # TODO `git subtree pull` commands on updates
 
+    loc_zv = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/zoneinfo.txt'))
+
+    # Read version file
     try:
-        url_data = helpers.getURL(url_zv)
-        if not url_data:
+        with open(loc_zv, 'r') as file:
+            data = file.read()
+        if not data:
             raise
 
+        # Filename of existing zoneinfo
         if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
             cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
         else:
             cur_zoneinfo = None
 
-        (new_zoneinfo, zoneinfo_md5) = url_data.decode('utf-8').strip().rsplit(u' ')
-    except:
-        # When urlData is None, trouble connecting to github
-        logger.log(u'Loading zoneinfo.txt failed, this can happen from time to time. Unable to get URL: %s' % url_zv,
-                   logger.WARNING)
+        # Filename and hash of new zoneinfo
+        (new_zoneinfo, zoneinfo_md5) = data.decode('utf-8').strip().rsplit(u' ')
+    except Exception as e:
+        logger.log(u'Crazy problem with zoneinfo: %s' % ex(e), logger.ERROR)
         return
 
     if (cur_zoneinfo is not None) and (new_zoneinfo == cur_zoneinfo):
         return
 
     # now load the new zoneinfo
-    url_tar = u'http://sickragetv.github.io/sb_network_timezones/%s' % new_zoneinfo
+    loc_tar = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/%s' % new_zoneinfo))
 
     zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), new_zoneinfo))
     zonefile_tmp = re.sub(r'\.tar\.gz$', '.tmp', zonefile)
@@ -108,7 +112,7 @@ def _update_zoneinfo():
             logger.log(u'Unable to delete: %s' % zonefile_tmp, logger.ERROR)
             return
 
-    if not helpers.download_file(url_tar, zonefile_tmp):
+    if not helpers.copyFile(loc_tar, zonefile_tmp):
         return
 
     if not ek.ek(os.path.exists, zonefile_tmp):
@@ -147,18 +151,19 @@ def update_network_dict():
 
     d = {}
 
-    # network timezones are stored on github pages
-    url = 'http://sickragetv.github.io/sb_network_timezones/network_timezones.txt'
+    # network timezones are stored in a git submodule
+    loc = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/network_timezones.txt'))
 
-    url_data = helpers.getURL(url)
-    if url_data is None:
-        # When urlData is None, trouble connecting to github
-        logger.log(u'Updating network timezones failed, this can happen from time to time. URL: %s' % url, logger.WARNING)
+    with open(loc, 'r') as file:
+        data = file.read()
+
+    if data is None:
+        logger.log(u'Updating network timezones failed', logger.ERROR)
         load_network_dict()
         return
 
     try:
-        for line in url_data.splitlines():
+        for line in data.splitlines():
             (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
             if key is None or val is None:
                 continue
