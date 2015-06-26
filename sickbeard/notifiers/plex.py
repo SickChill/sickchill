@@ -227,6 +227,12 @@ class PLEXNotifier:
                     logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.WARNING)
                     hosts_failed.append(cur_host)
                     continue
+                except Exception as e:
+                    if 'invalid token' in str(e):
+                        logger.log(u'PLEX: Please set TOKEN in Plex settings: ', logger.ERROR)
+                    else:
+                        logger.log(u'PLEX: Error while trying to contact Plex Media Server: ' + ex(e), logger.ERROR)
+                    continue
 
                 sections = media_container.findall('.//Directory')
                 if not sections:
