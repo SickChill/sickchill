@@ -1332,8 +1332,9 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
         logger.log(u"Connection error " + str(e.message) + " in headURL " + url, logger.WARNING)
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out " + str(e.message) + " in headURL " + url, logger.WARNING)
-    except Exception:
-        logger.log(u"Unknown exception in headURL " + url + ": " + traceback.format_exc(), logger.WARNING)
+    except Exception as e:
+        logger.log(u"Unknown exception in headURL " + url + ": " + str(e.message), logger.WARNING)
+        logger.log(traceback.format_exc(), logger.WARNING)
 
     return False
 
@@ -1394,19 +1395,21 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return
-    except Exception:
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+    except Exception as e:
+        logger.log(u"Unknown exception in headURL " + url + ": " + str(e.message), logger.WARNING)
+        logger.log(traceback.format_exc(), logger.WARNING)
         return
 
     return resp.content if not json else resp.json()
 
-def download_file(url, filename, session=None):
+def download_file(url, filename, session=None, headers={}):
     # create session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session.headers.update(headers)
 
     # request session ssl verify
     session.verify = certifi.where()
