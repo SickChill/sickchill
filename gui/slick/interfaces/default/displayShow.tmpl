@@ -218,13 +218,13 @@
                     #if not $show.imdbid
                     #if $show.genre:
                     #for $genre in $show.genre[1:-1].split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
                     #end for
                     #end if
                     #end if
                     #if 'year' in $show.imdb_info:
                     #for $imdbgenre in $show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
                     #end for
                     #end if
                 </ul>
