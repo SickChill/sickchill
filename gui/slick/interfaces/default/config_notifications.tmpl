@@ -1545,13 +1545,22 @@
                                             <p>remove an episode from your watchlist after it is downloaded.</p>
                                         </span>
                                     </label>
-                                 </div>
+                                </div>
                                 <div class="field-pair">
                                     <label for="trakt_remove_serieslist">
                                         <span class="component-title">Remove series:</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" #if $sickbeard.TRAKT_REMOVE_SERIESLIST then "checked=\"checked\"" else ""# />
                                             <p>remove the whole series from your watchlist after any download.</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
+                                    <label for="trakt_remove_show_from_sickrage">
+                                        <span class="component-title">Remove watched show:</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" #if $sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE then "checked=\"checked\"" else ""# />
+                                            <p>remove the show from sickrage if it's ended and completely watched</p>
                                         </span>
                                     </label>
                                 </div>
