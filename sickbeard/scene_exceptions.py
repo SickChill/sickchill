@@ -28,6 +28,7 @@ from sickbeard import name_cache
 from sickbeard import logger
 from sickbeard import db
 from sickbeard import encodingKludge as ek
+import os
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -176,6 +177,7 @@ def retrieve_exceptions():
             if loc.startswith("http"):
                 data = helpers.getURL(loc)
             else:
+                loc = helpers.real_path(ek.ek(os.path.join, ek.ek(os.path.dirname, __file__), loc))
                 with open(loc, 'r') as file:
                     data = file.read()
 
