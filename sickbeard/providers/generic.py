@@ -130,8 +130,11 @@ class GenericProvider:
             self.headers.update({'Referer': self.proxy.getProxyURL()})
             # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
+            url = self.proxy._buildURL(url)
+        else:
+            self.proxyGlypeProxySSLwarning = None
 
-        return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
 
 
@@ -186,9 +189,13 @@ class GenericProvider:
             self.headers.update({'Referer': self.proxy.getProxyURL()})
             # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
+        else:
+            self.proxyGlypeProxySSLwarning = None
 
         for url in urls:
-            if helpers.headURL(self.proxy._buildURL(url), session=self.session, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
+            if self.proxy.isEnabled():
+                url = self.proxy._buildURL(url)
+            if helpers.headURL(url, session=self.session, headers=self.headers, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
                 return url
 
         return u''
@@ -206,7 +213,7 @@ class GenericProvider:
 
         for url in urls:
             logger.log(u"Downloading a result from " + self.name + " at " + url)
-            if helpers.download_file(url, filename, session=self.session):
+            if helpers.download_file(url, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
                     return True
