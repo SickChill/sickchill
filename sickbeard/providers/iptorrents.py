@@ -116,12 +116,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
         if self.show.air_by_date:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
+                            str(ep_obj.airdate).replace('-', ' ')
                 search_string['Episode'].append(ep_string)
         elif self.show.sports:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            str(ep_obj.airdate).replace('-', ' ') + '|' + \
                             ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
         elif self.show.anime:
