@@ -1,8 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # GuessIt - A library for guessing information from filenames
-# Copyright (c) 2012 Nicolas Wack <wackou@gmail.com>
+# Copyright (c) 2013 Nicolas Wack <wackou@gmail.com>
 #
 # GuessIt is free software; you can redistribute it and/or modify it under
 # the terms of the Lesser GNU General Public License as published by
@@ -18,27 +18,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from functools import reduce
+
+from guessit.plugins.transformers import Transformer
 from guessit.textutils import find_first_level_groups
 from guessit.patterns import group_delimiters
-import functools
-import logging
-
-log = logging.getLogger(__name__)
 
 
-def process(mtree):
-    """return the string split into explicit groups, that is, those either
-    between parenthese, square brackets or curly braces, and those separated
-    by a dash."""
-    for c in mtree.children:
-        groups = find_first_level_groups(c.value, group_delimiters[0])
-        for delimiters in group_delimiters:
-            flatten = lambda l, x: l + find_first_level_groups(x, delimiters)
-            groups = functools.reduce(flatten, groups, [])
+class SplitExplicitGroups(Transformer):
+    def __init__(self):
+        Transformer.__init__(self, 250)
 
-        # do not do this at this moment, it is not strong enough and can break other
-        # patterns, such as dates, etc...
-        #groups = functools.reduce(lambda l, x: l + x.split('-'), groups, [])
+    def process(self, mtree, options=None):
+        """split each of those into explicit groups (separated by parentheses or square brackets)
 
-        c.split_on_components(groups)
+        :return: return the string split into explicit groups, that is, those either
+        between parenthese, square brackets or curly braces, and those separated
+        by a dash."""
+        for c in mtree.children:
+            groups = find_first_level_groups(c.value, group_delimiters[0])
+            for delimiters in group_delimiters:
+                flatten = lambda l, x: l + find_first_level_groups(x, delimiters)
+                groups = reduce(flatten, groups, [])
+
+            # do not do this at this moment, it is not strong enough and can break other
+            # patterns, such as dates, etc...
+            # groups = functools.reduce(lambda l, x: l + x.split('-'), groups, [])
+
+            c.split_on_components(groups)
