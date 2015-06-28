@@ -1,15 +1,24 @@
-from lib.requests.adapters import HTTPAdapter
+import functools
+
+from requests.adapters import HTTPAdapter
 
 from .controller import CacheController
 from .cache import DictCache
+from .filewrapper import CallbackFileWrapper
+
 
 class CacheControlAdapter(HTTPAdapter):
     invalidating_methods = set(['PUT', 'DELETE'])
 
-    def __init__(self, cache=None, cache_etags=True, controller_class=None,
-                 serializer=None, *args, **kw):
+    def __init__(self, cache=None,
+                 cache_etags=True,
+                 controller_class=None,
+                 serializer=None,
+                 heuristic=None,
+                 *args, **kw):
         super(CacheControlAdapter, self).__init__(*args, **kw)
         self.cache = cache or DictCache()
+        self.heuristic = heuristic
 
         controller_factory = controller_class or CacheController
         self.controller = controller_factory(
@@ -26,10 +35,13 @@ class CacheControlAdapter(HTTPAdapter):
         if request.method == 'GET':
             cached_response = self.controller.cached_request(request)
             if cached_response:
-                return self.build_response(request, cached_response, from_cache=True)
+                return self.build_response(request, cached_response,
+                                           from_cache=True)
 
             # check for etags and add headers if appropriate
-            request.headers.update(self.controller.conditional_headers(request))
+            request.headers.update(
+                self.controller.conditional_headers(request)
+            )
 
         resp = super(CacheControlAdapter, self).send(request, **kw)
 
@@ -43,6 +55,8 @@ class CacheControlAdapter(HTTPAdapter):
         cached response
         """
         if not from_cache and request.method == 'GET':
+
+            # apply any expiration heuristics
             if response.status == 304:
                 # We must have sent an ETag request. This could mean
                 # that we've been expired already or that we simply
@@ -55,14 +69,34 @@ class CacheControlAdapter(HTTPAdapter):
                 if cached_response is not response:
                     from_cache = True
 
+                # We are done with the server response, read a
+                # possible response body (compliant servers will
+                # not return one, but we cannot be 100% sure) and
+                # release the connection back to the pool.
+                response.read(decode_content=False)
+                response.release_conn()
+
                 response = cached_response
+
+            # We always cache the 301 responses
+            elif response.status == 301:
+                self.controller.cache_response(request, response)
             else:
-                # try to cache the response
-                try:
-                    self.controller.cache_response(request, response)
-                except Exception as e:
-                    # Failed to cache the results
-                    pass
+                # Check for any heuristics that might update headers
+                # before trying to cache.
+                if self.heuristic:
+                    response = self.heuristic.apply(response)
+
+                # Wrap the response file with a wrapper that will cache the
+                #   response when the stream has been consumed.
+                response._fp = CallbackFileWrapper(
+                    response._fp,
+                    functools.partial(
+                        self.controller.cache_response,
+                        request,
+                        response,
+                    )
+                )
 
         resp = super(CacheControlAdapter, self).build_response(
             request, response
@@ -77,3 +111,7 @@ class CacheControlAdapter(HTTPAdapter):
         resp.from_cache = from_cache
 
         return resp
+
+    def close(self):
+        self.cache.close()
+        super(CacheControlAdapter, self).close()

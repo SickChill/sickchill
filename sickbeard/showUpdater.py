@@ -51,9 +51,6 @@ class ShowUpdater():
 
         logger.log(u"Doing full update on all shows")
 
-        # clean out cache directory, remove everything > 12 hours old
-        sickbeard.helpers.clearCache()
-
         # select 10 'Ended' tv_shows updated more than 90 days ago to include in this update
         stale_should_update = []
         stale_update_date = (update_date - datetime.timedelta(days=90)).toordinal()
