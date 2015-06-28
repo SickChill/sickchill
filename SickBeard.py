@@ -376,12 +376,6 @@ class SickRage(object):
         # Fire up all our threads
         sickbeard.start()
 
-        # Build internal name cache
-        name_cache.buildNameCache()
-
-        # refresh network timezones
-        network_timezones.update_network_dict()
-
         # sure, why not?
         if sickbeard.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()

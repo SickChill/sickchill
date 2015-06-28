@@ -66,7 +66,7 @@ class GenericProvider:
 
         self.cache = tvcache.TVCache(self)
 
-        self.session = requests.session()
+        self.session = requests.Session()
 
         self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT}
 

@@ -709,9 +709,6 @@ def initialize(consoleLogging=True):
                 except Exception as e:
                     logger.log(u"Restore: Unable to remove the restore directory: {0}".format(str(e)), logger.ERROR)
 
-        # clean cache folders
-        if CACHE_DIR:
-            helpers.clearCache()
 
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
 

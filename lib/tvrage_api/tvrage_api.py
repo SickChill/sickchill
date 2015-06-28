@@ -327,6 +327,8 @@ class TVRage:
         else:
             raise ValueError("Invalid value for Cache %r (type was %s)" % (cache, type(cache)))
 
+        self.config['session'] = requests.Session()
+
         if self.config['debug_enabled']:
             warnings.warn("The debug argument to tvrage_api.__init__ will be removed in the next version. "
                           "To enable debug messages, use the following code before importing: "
@@ -399,7 +401,7 @@ class TVRage:
 
             # get response from TVRage
             if self.config['cache_enabled']:
-                session = CacheControl(cache=caches.FileCache(self.config['cache_location']))
+                session = CacheControl(sess=self.config['session'], cache=caches.FileCache(self.config['cache_location']), cache_etags=False)
                 if self.config['proxy']:
                     log().debug("Using proxy for URL: %s" % url)
                     session.proxies = {
@@ -407,7 +409,7 @@ class TVRage:
                         "https": self.config['proxy'],
                     }
 
-                resp = session.get(url.strip(), cache_auto=True, params=params)
+                resp = session.get(url.strip(), params=params)
             else:
                 resp = requests.get(url.strip(), params=params)
 
