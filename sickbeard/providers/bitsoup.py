@@ -88,7 +88,7 @@ class BitSoupProvider(generic.TorrentProvider):
         }
 
         if not self.session:
-            self.session = requests.session()
+            self.session = requests.Session()
 
         try:
             response = self.session.post(self.urls['login'], data=login_params, timeout=30)

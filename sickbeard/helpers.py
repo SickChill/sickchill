@@ -57,6 +57,7 @@ from sickbeard import notifiers
 from sickbeard import clients
 
 from lib.cachecontrol import CacheControl, caches
+
 from itertools import izip, cycle
 
 import shutil
@@ -1290,7 +1291,7 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
@@ -1345,7 +1346,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
@@ -1405,7 +1406,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 def download_file(url, filename, session=None, headers={}):
     # create session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})

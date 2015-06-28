@@ -1,5 +1,6 @@
 from lib.tvdb_api.tvdb_api import Tvdb
 from lib.tvrage_api.tvrage_api import TVRage
+import requests
 
 INDEXER_TVDB = 1
 INDEXER_TVRAGE = 2
@@ -25,6 +26,7 @@ indexerConfig[INDEXER_TVDB] = {
                    'language': 'en',
                    'useZip': True,
     },
+    'session': requests.Session()
 }
 
 indexerConfig[INDEXER_TVRAGE] = {
@@ -34,6 +36,7 @@ indexerConfig[INDEXER_TVRAGE] = {
     'api_params': {'apikey': 'Uhewg1Rr0o62fvZvUIZt',
                    'language': 'en',
     },
+    'session': requests.Session()
 }
 
 # TVDB Indexer Settings

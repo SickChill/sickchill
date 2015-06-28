@@ -29,6 +29,7 @@ import urlparse
 import test_lib as test
 from bs4 import BeautifulSoup
 from sickbeard.helpers import getURL
+import requests
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
 
@@ -36,7 +37,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         self.url = 'http://kickass.to/'
         searchURL = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
 
-        html = getURL(searchURL)
+        html = getURL(searchURL, session=requests.Session())
         if not html:
             return
 

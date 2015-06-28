@@ -25,7 +25,7 @@ class GenericClient(object):
         self.response = None
         self.auth = None
         self.last_time = time.time()
-        self.session = requests.session()
+        self.session = requests.Session()
         self.session.auth = (self.username, self.password)
 
     def _request(self, method='get', params={}, data=None, files=None):
