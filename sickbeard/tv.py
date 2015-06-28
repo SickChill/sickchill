@@ -53,7 +53,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from dateutil.tz import *
-from lib.subliminal.exceptions import ServiceError
+from lib.subliminal.exceptions import Error as ServiceError
 
 from sickbeard import encodingKludge as ek
 
