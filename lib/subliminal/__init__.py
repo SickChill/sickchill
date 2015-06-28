@@ -13,5 +13,8 @@ from .providers import Provider, ProviderPool, provider_manager
 from .subtitle import Subtitle
 from .video import VIDEO_EXTENSIONS, SUBTITLE_EXTENSIONS, Video, Episode, Movie, scan_videos, scan_video
 
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())
+logging.getLogger(__name__).addHandler(NullHandler())

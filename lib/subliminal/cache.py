@@ -10,11 +10,13 @@ from dogpile.core.readwrite_lock import ReadWriteMutex  # @UnresolvedImport
 #: Subliminal's cache version
 CACHE_VERSION = 1
 
+EXPIRE_SECONDS = datetime.timedelta(weeks=3)
+
 #: Expiration time for show caching
-SHOW_EXPIRATION_TIME = datetime.timedelta(weeks=3).total_seconds()
+SHOW_EXPIRATION_TIME = EXPIRE_SECONDS.days * 1440 + EXPIRE_SECONDS.seconds
 
 #: Expiration time for episode caching
-EPISODE_EXPIRATION_TIME = datetime.timedelta(days=3).total_seconds()
+EPISODE_EXPIRATION_TIME = EXPIRE_SECONDS.days * 1440 + EXPIRE_SECONDS.seconds
 
 
 def subliminal_key_generator(namespace, fn, to_str=string_type):
