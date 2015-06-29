@@ -60,10 +60,10 @@ class Boxcar2Notifier:
         # send the request to boxcar2
         try:
             req = urllib2.Request(curUrl)
-            handle = urllib2.urlopen(req, data)
+            handle = urllib2.urlopen(req, data,timeout=60)
             handle.close()
 
-        except urllib2.HTTPError, e:
+        except Exception as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
                 logger.log("Boxcar2 notification failed." + ex(e), logger.ERROR)
