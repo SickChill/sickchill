@@ -18,6 +18,7 @@
 
 from sickbeard import helpers
 from sickbeard import logger
+import requests
 
 meta_session = requests.Session()
 def getShowImage(url, imgNum=None):
