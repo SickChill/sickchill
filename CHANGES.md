@@ -1,3 +1,22 @@
+### 4.0.29 (2015-06-26)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.28...v4.0.29)
+
+* Fixed: "Failed to load URL" problems
+* Fixed: Spam and search string in SCC
+* Fixed: Missing import
+* Fixed: Name_cache lock
+* Fixed: Missing import in SCC
+* Fixed: Bad encoding
+* Fixed: ResultType not in class Proper
+* Added: NZB.Cat Provider
+* Added: Sleep between result url hits
+* Added: Scene exceptions as submodules
+* Removed: Verify off in order to fix requests
+* Removed: Https from rarbg token
+* Change: Travis can now cache pip installs between builds
+* Change: Made scene exceptions and network timezones paths be absolute
+
 ### 4.0.28 (2015-06-23)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.27...v4.0.28)
