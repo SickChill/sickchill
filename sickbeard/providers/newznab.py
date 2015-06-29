@@ -254,7 +254,7 @@ class NewznabProvider(generic.NZBProvider):
         self._checkAuth()
 
         params = {"t": "tvsearch",
-                  "maxage": sickbeard.USENET_RETENTION,
+                  "maxage": (4, age)[age],
                   "limit": 100,
                   "attrs": "rageid",
                   "offset": 0}
@@ -267,13 +267,13 @@ class NewznabProvider(generic.NZBProvider):
         else:
             params['cat'] = self.catIDs
 
-        params['maxage'] = (4, age)[age]
-
         if search_params:
             params.update(search_params)
 
         if self.needs_auth and self.key:
             params['apikey'] = self.key
+
+        params['maxage'] = min(params['maxage'], sickbeard.USENET_RETENTION)
 
         results = []
         offset = total = 0
