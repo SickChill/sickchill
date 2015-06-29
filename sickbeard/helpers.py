@@ -41,6 +41,8 @@ import operator
 
 import sickbeard
 import subliminal
+import babelfish
+
 import adba
 from lib import requests
 import certifi
@@ -516,7 +518,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
         # Check if the language extracted from filename is a valid language
         try:
-            language = subliminal.language.Language(sublang, strict=True)
+            language = babelfish.language.Language(sublang, strict=True)
             cur_file_ext = '.' + sublang + cur_file_ext
         except ValueError:
             pass

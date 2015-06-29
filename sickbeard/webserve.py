@@ -58,6 +58,7 @@ from lib import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException
 from versionChecker import CheckVersion
+import babelfish
 
 try:
     import json
@@ -2012,7 +2013,7 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
         # try do download subtitles for that episode
-        previous_subtitles = set(subliminal.language.Language(x) for x in ep_obj.subtitles)
+        previous_subtitles = set(babelfish.language.Language(x) for x in ep_obj.subtitles)
         try:
             ep_obj.subtitles = set(x.language for x in ep_obj.downloadSubtitles().values()[0])
         except:
@@ -2903,7 +2904,7 @@ class Manage(Home, WebRoot):
             result[cur_season][cur_episode]["name"] = cur_result["name"]
 
             result[cur_season][cur_episode]["subtitles"] = ",".join(
-                subliminal.language.Language(subtitle).alpha2 for subtitle in cur_result["subtitles"].split(',')) if not \
+                babelfish.language.Language(subtitle).alpha2 for subtitle in cur_result["subtitles"].split(',')) if not \
                 cur_result["subtitles"] == '' else ''
 
         return json.dumps(result)

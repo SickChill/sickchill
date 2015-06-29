@@ -36,12 +36,12 @@ def sortedServiceList():
     newList = []
 
     # add all services in the priority list, in order
-#    curIndex = 0
-#    for curService in sickbeard.SUBTITLES_SERVICES_LIST:
-#        if curService in servicesMapping:
-#            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1, 'url': __import__(servicesMapping[curService], globals=globals(), locals=locals(), fromlist=['Service'], level=-1).Service.server}
-#            newList.append(curServiceDict)
-#        curIndex += 1
+    curIndex = 0
+    for curService in sickbeard.SUBTITLES_SERVICES_LIST:
+        if curService in servicesMapping:
+            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1, 'api_based': True, 'url': 'null'}
+            newList.append(curServiceDict)
+        curIndex += 1
 
     # add any services that are missing from that list
     for curService in servicesMapping.keys():
