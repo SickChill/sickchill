@@ -46,6 +46,7 @@ except ImportError:
     from lib import simplejson as json
 
 from lib import subliminal
+import babelfish
 
 from tornado.web import RequestHandler
 
@@ -1082,8 +1083,8 @@ class CMD_SubtitleSearch(ApiCall):
         # return the correct json value
         if previous_subtitles != epObj.subtitles:
             status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + subliminal.language.Language(
-                    x).alpha2 + ".png' alt='" + subliminal.language.Language(x).name + "'/>" for x in
+                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + babelfish.language.Language(
+                    x).alpha2 + ".png' alt='" + babelfish.language.Language(x).name + "'/>" for x in
                 sorted(list(set(epObj.subtitles).difference(previous_subtitles)))])
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:

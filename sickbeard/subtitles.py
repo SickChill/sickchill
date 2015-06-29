@@ -27,10 +27,11 @@ from sickbeard import encodingKludge as ek
 from sickbeard import db
 from sickbeard import history
 from lib import subliminal
+from lib import babelfish
 
 SINGLE = 'und'
 def sortedServiceList():
-    servicesMapping = dict([(x.lower(), x) for x in subliminal.core.SERVICES])
+    servicesMapping = dict([(x.split(' = ')[0], x.split(' = ')[1]) for x in subliminal.providers.ProviderManager().registered_providers])
 
     newList = []
 
@@ -38,14 +39,14 @@ def sortedServiceList():
     curIndex = 0
     for curService in sickbeard.SUBTITLES_SERVICES_LIST:
         if curService in servicesMapping:
-            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': servicesMapping[curService], 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1, 'api_based': __import__('lib.subliminal.services.' + curService, globals=globals(), locals=locals(), fromlist=['Service'], level=-1).Service.api_based, 'url': __import__('lib.subliminal.services.' + curService, globals=globals(), locals=locals(), fromlist=['Service'], level=-1).Service.site_url}
+            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1, 'api_based': True, 'url': 'null'}
             newList.append(curServiceDict)
         curIndex += 1
 
     # add any services that are missing from that list
     for curService in servicesMapping.keys():
         if curService not in [x['id'] for x in newList]:
-            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': servicesMapping[curService], 'enabled': False, 'api_based': __import__('lib.subliminal.services.' + curService, globals=globals(), locals=locals(), fromlist=['Service'], level=-1).Service.api_based, 'url': __import__('lib.subliminal.services.' + curService, globals=globals(), locals=locals(), fromlist=['Service'], level=-1).Service.site_url}
+            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': False, 'api_based': True, 'url': 'null'}
             newList.append(curServiceDict)
 
     return newList
@@ -54,10 +55,14 @@ def getEnabledServiceList():
     return [x['name'] for x in sortedServiceList() if x['enabled']]
     
 def isValidLanguage(language):
-    return subliminal.language.language_list(language)
+    try:
+        check = babelfish.Language(language)
+    except:
+        return ''
+    return check
 
 def getLanguageName(selectLang):
-    return subliminal.language.Language(selectLang).name
+    return babelfish.language.Language(selectLang).name
 
 def wantedLanguages(sqlLike = False):
     wantedLanguages = sorted(sickbeard.SUBTITLES_LANGUAGES)
@@ -72,14 +77,14 @@ def subtitlesLanguages(video_path):
     languages = set()
     for subtitle in subtitles:
         if subtitle.language and subtitle.language.alpha2:
-            languages.add(subtitle.language.alpha2)
+            languages.add(babelfish.language.alpha2)
         else:
             languages.add(SINGLE)
     return list(languages)
 
 # Return a list with languages that have alpha2 code
 def subtitleLanguageFilter():
-    return [language for language in subliminal.language.LANGUAGES if language[2] != ""]
+    return [language for language in babelfish.LANGUAGE_MATRIX if language[2] != ""]
 
 class SubtitlesFinder():
     """
