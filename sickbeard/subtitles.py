@@ -72,14 +72,6 @@ def wantedLanguages(sqlLike = False):
 
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
-    #subtitles = subliminal.video.scan_subtitle_languages(video_path)
-    #languages = set()
-    #for subtitle in subtitles:
-    #    if subtitle.language and subtitle.language.alpha2:
-    #        languages.add(subtitle.language.alpha2)
-    #    else:
-    #        languages.add(SINGLE)
-    #return list(languages)
     return subliminal.video.scan_subtitle_languages(video_path)
 
 # Return a list with languages that have alpha2 code
