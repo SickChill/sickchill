@@ -29,40 +29,40 @@ from sickbeard import history
 from lib import subliminal
 from lib import babelfish
 
+subliminal.cache_region.configure('dogpile.cache.memory')
+
 SINGLE = 'und'
 def sortedServiceList():
-    servicesMapping = dict([(x.split(' = ')[0], x.split(' = ')[1]) for x in subliminal.providers.ProviderManager().registered_providers])
-
     newList = []
 
-    # add all services in the priority list, in order
     curIndex = 0
     for curService in sickbeard.SUBTITLES_SERVICES_LIST:
-        if curService in servicesMapping:
-            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1, 'api_based': True, 'url': 'null'}
+        if curService in subliminal.provider_manager.available_providers:
+            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1}
             newList.append(curServiceDict)
         curIndex += 1
 
     # add any services that are missing from that list
-    for curService in servicesMapping.keys():
+    for curService in subliminal.provider_manager.available_providers:
         if curService not in [x['id'] for x in newList]:
-            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': False, 'api_based': True, 'url': 'null'}
+            curServiceDict = {'id': curService, 'image': curService+'.png', 'name': curService, 'enabled': False}
             newList.append(curServiceDict)
 
     return newList
-    
+
+
 def getEnabledServiceList():
     return [x['name'] for x in sortedServiceList() if x['enabled']]
     
 def isValidLanguage(language):
     try:
-        check = babelfish.Language(language)
+        check = babelfish.Language.fromalpha2(language)
     except:
-        return ''
+        return u''
     return check
 
 def getLanguageName(selectLang):
-    return babelfish.language.Language(selectLang).name
+    return babelfish.Language.fromalpha2(selectLang).name
 
 def wantedLanguages(sqlLike = False):
     wantedLanguages = sorted(sickbeard.SUBTITLES_LANGUAGES)
@@ -72,19 +72,19 @@ def wantedLanguages(sqlLike = False):
 
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
-    video = subliminal.videos.Video.from_path(video_path)
-    subtitles = video.scan()
-    languages = set()
-    for subtitle in subtitles:
-        if subtitle.language and subtitle.language.alpha2:
-            languages.add(babelfish.language.alpha2)
-        else:
-            languages.add(SINGLE)
-    return list(languages)
+    #subtitles = subliminal.video.scan_subtitle_languages(video_path)
+    #languages = set()
+    #for subtitle in subtitles:
+    #    if subtitle.language and subtitle.language.alpha2:
+    #        languages.add(subtitle.language.alpha2)
+    #    else:
+    #        languages.add(SINGLE)
+    #return list(languages)
+    return subliminal.video.scan_subtitle_languages(video_path)
 
 # Return a list with languages that have alpha2 code
 def subtitleLanguageFilter():
-    return [language for language in babelfish.LANGUAGE_MATRIX if language[2] != ""]
+    return [language for language in babelfish.LANGUAGE_MATRIX if language.alpha2 != u'']
 
 class SubtitlesFinder():
     """

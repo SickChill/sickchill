@@ -1,7 +1,7 @@
 #from sickbeard import subtitles
 #import sickbeard
 #from sickbeard.helpers import anon_url
-
+#from babelfish import Language
 #set global $title="Config - Subtitles"
 #set global $header="Subtitles"
 
@@ -19,7 +19,7 @@
   	\$(document).ready(function() {
 		\$("#subtitles_languages").tokenInput(
 				[
-	                <%=",\r\n".join("{id: \"" + lang[2] + "\", name: \"" + lang[3] + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
+	                <%=",\r\n".join("{id: \"" + lang.alpha2 + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
 	            ],
 	            {
 					method: "POST",
@@ -29,7 +29,7 @@
 	            		
 		            		[
 		            			<%=
-		            					",\r\n".join("{id: \"" + lang + "\", name: \"" + subtitles.getLanguageName(lang) + "\"}" for lang in sickbeard.SUBTITLES_LANGUAGES) if sickbeard.SUBTITLES_LANGUAGES != '' else ''
+		            					",\r\n".join("{id: \"" + lang + "\", name: \"" + Language.fromalpha2(lang).name + "\"}" for lang in sickbeard.SUBTITLES_LANGUAGES) if sickbeard.SUBTITLES_LANGUAGES != '' else ''
 		            			%>
 		            		]
 	            }
@@ -146,12 +146,11 @@
                             #set $curName = $curService.id
                           <li class="ui-state-default" id="$curName">
                             <input type="checkbox" id="enable_$curName" class="service_enabler" #if $curService.enabled then "checked=\"checked\"" else ""#/>
-                            #set $provider_url = $curService.url
-                            <a href="<%= anon_url(provider_url) %>" class="imgLink" target="_new">
+                            ##set $provider_url = $curService.url
+                            ##<a href="<%= anon_url(provider_url) %>" class="imgLink" target="_new">
                                 <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService.name" title="$curService.name" width="16" height="16" style="vertical-align:middle;"/>
-                            </a>
+                            ##</a>
                             <span style="vertical-align:middle;">$curService.name.capitalize()</span>
-                            #if not $curService.api_based then "*" else ""#
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         #end for
