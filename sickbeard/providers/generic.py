@@ -154,7 +154,8 @@ class GenericProvider:
                     return (urls, filename)
 
                 urls = [
-                    'http://torcache.net/torrent/' + torrent_hash + '.torrent',
+                    #TODO - Fix torcache JS timer preventing direct download
+                    #'http://torcache.net/torrent/' + torrent_hash + '.torrent',
                     'http://zoink.ch/torrent/' + torrent_name + '.torrent',
                     'http://torrage.com/torrent/' + torrent_hash + '.torrent',
                 ]
