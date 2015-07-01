@@ -414,6 +414,7 @@ class TVShow(object):
 
         # get file list
         mediaFiles = helpers.listMediaFiles(self._location)
+        logger.log(str(self.indexerid) + u"Found files: " + str(mediaFiles), logger.DEBUG)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
