@@ -2013,9 +2013,9 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
         # try do download subtitles for that episode
-        previous_subtitles = set(babelfish.language.Language(x) for x in ep_obj.subtitles)
+        previous_subtitles = set(babelfish.Language.fromalpha2(x) for x in ep_obj.subtitles)
         try:
-            ep_obj.subtitles = set(x.language for x in ep_obj.downloadSubtitles().values()[0])
+            ep_obj.subtitles = set(babelfish.Language.fromalpha2(x) for x in ep_obj.downloadSubtitles().values()[0])
         except:
             return json.dumps({'result': 'failure'})
 
@@ -2903,8 +2903,7 @@ class Manage(Home, WebRoot):
 
             result[cur_season][cur_episode]["name"] = cur_result["name"]
 
-            result[cur_season][cur_episode]["subtitles"] = ",".join(
-                babelfish.language.Language(subtitle).alpha2 for subtitle in cur_result["subtitles"].split(',')) if not \
+            result[cur_season][cur_episode]["subtitles"] = ",".join(subtitle.strip() for subtitle in cur_result["subtitles"].split(',')) if not \
                 cur_result["subtitles"] == '' else ''
 
         return json.dumps(result)
@@ -4859,8 +4858,7 @@ class ConfigSubtitles(Config):
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
-        sickbeard.SUBTITLES_LANGUAGES = [lang.alpha2 for lang in subtitles.isValidLanguage(
-            subtitles_languages.replace(' ', '').split(','))] if subtitles_languages != '' else ''
+        sickbeard.SUBTITLES_LANGUAGES = [lang.strip() for lang in subtitles_languages.replace(' ', '').split(',')] if subtitles_languages != '' else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)

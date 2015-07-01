@@ -238,8 +238,7 @@ class ProviderPool(object):
     """
     def __init__(self, providers=None, provider_configs=None):
         self.provider_configs = provider_configs or {}
-        for p in (providers or provider_manager.available_providers):
-            self.providers[p] = provider_manager[p]
+        self.providers = dict([(p, provider_manager[p]) for p in (providers or provider_manager.available_providers)])
         self.initialized_providers = {}
         self.discarded_providers = set()
 
