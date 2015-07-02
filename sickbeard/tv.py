@@ -32,7 +32,7 @@ import xml.etree.cElementTree as etree
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
-from lib import subliminal
+import subliminal
 
 try:
     from lib.send2trash import send2trash
@@ -53,7 +53,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from dateutil.tz import *
-from lib.subliminal.exceptions import Error as ServiceError
+from subliminal.exceptions import Error as ServiceError
 
 from sickbeard import encodingKludge as ek
 

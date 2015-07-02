@@ -45,7 +45,7 @@ try:
 except ImportError:
     from lib import simplejson as json
 
-from lib import subliminal
+import subliminal
 import babelfish
 
 from tornado.web import RequestHandler

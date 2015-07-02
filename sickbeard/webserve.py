@@ -54,7 +54,7 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
 
 from lib.dateutil import tz, parser as dateutil_parser
 from lib.unrar2 import RarFile
-from lib import adba, subliminal
+import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException
 from versionChecker import CheckVersion
