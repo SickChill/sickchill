@@ -414,7 +414,8 @@ class TVShow(object):
 
         # get file list
         mediaFiles = helpers.listMediaFiles(self._location)
-        logger.log(str(self.indexerid) + u"Found files: " + str(mediaFiles), logger.DEBUG)
+        logger.log(u"%s: Found files: %s" %
+                (self.indexerid, mediaFiles), logger.DEBUG)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
@@ -459,8 +460,11 @@ class TVShow(object):
                     except:
                         logger.log(str(self.indexerid) + ": Could not refresh subtitles", logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
-
-                sql_l.append(curEpisode.get_sql())
+                try:
+                    sql_l.append(curEpisode.get_sql())
+                except Exception as e:
+                    logger.log(u"%s: Error loading file %s. Error: %s" %
+                            (self.indexerid, mediaFiles, e), logger.ERROR)
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
