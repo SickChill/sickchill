@@ -1438,47 +1438,35 @@ class TVEpisode(object):
         try:
             languages = set()
             for lang in set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles):
-                languages.add(babelfish.Language.fromalpha2(lang).alpha3)
+                languages.add(babelfish.Language.fromietf(lang))
 
-            video = subliminal.scan_video(self.location, embedded_subtitles=False)
             providers = sickbeard.subtitles.getEnabledServiceList()
-            #logger.log(u"video = %s, languages = %s providers = %s" % (video, languages, providers), logger.DEBUG)
-            foundSubs = subliminal.download_best_subtitles([video], languages, providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=True)
-            if not len(foundSubs):
+            video = subliminal.scan_video(self.location, subtitles=False, embedded_subtitles=False)
+            if len(self.release_name):
+                orig_fname = u'%s.%s' % (self.release_name, self.location.rsplit('.', 1)[1])
+                video_i = subliminal.video.Episode.fromname(orig_fname)
+                video.release_group = video_i.release_group
+
+            foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=True)
+            if not foundSubs:
                 logger.log(u"%s: No subtitles found for S%02dE%02d on any provider" % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            if sickbeard.SUBTITLES_DIR:
-                subs_new_path = ek.ek(os.path.join, os.path.dirname(video.path), sickbeard.SUBTITLES_DIR)
+            if len(sickbeard.SUBTITLES_DIR) > 1:
+                subs_new_path = ek.ek(os.path.join, os.path.dirname(self.location), sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
                     logger.log(u"Unable to create subtitles folder " + subs_new_path, logger.ERROR)
                 else:
                     helpers.chmodAsParent(subs_new_path)
-                subliminal.save_subtitles(foundSubs, directory=subs_new_path)
-
-                for video in downloadedSubs:
-                    for subtitle in downloadedSubs.get(video):
-                        added_subtitles.append(subtitle.language.alpha2)
-                        new_file_path = ek.ek(os.path.join, subs_new_path, os.path.basename(subtitle.path))
-                        helpers.moveFile(subtitle.path, new_file_path)
-                        helpers.chmodAsParent(new_file_path)
             else:
-                subliminal.save_subtitles(foundSubs, single=not sickbeard.SUBTITLES_MULTI)
+                subs_new_path = None
 
-                for video, video_subtitles in foundSubs.items():
-                    saved_languages = set()
-                    for video_subtitle in video_subtitles:
-                        if video_subtitle.language in saved_languages:
-                            continue
-                        saved_languages.add(video_subtitle.language)
-                        try:
-                            added_subtitles.append(video_subtitle.language.alpha2)
-                        except babelfish.LanguageConvertError:
-                            added_subtitles.append(video_subtitle.language.alpha3)
-                        # helpers.chmodAsParent(subtitle.path)
-                        if not sickbeard.SUBTITLES_MULTI:
-                            break
+            subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
+
+            for video, subtitle in foundSubs.items():
+                for sub in subtitle:
+                    added_subtitles.append(sub.language.alpha2)
 
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
@@ -1489,7 +1477,7 @@ class TVEpisode(object):
         else:
             self.subtitles = added_subtitles
 
-        self.subtitles_searchcount = self.subtitles_searchcount + 1 if self.subtitles_searchcount else 1  # added the if because sometime it raise an error
+        self.subtitles_searchcount = self.subtitles_searchcount + 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
 
@@ -1497,21 +1485,18 @@ class TVEpisode(object):
 
         if newsubtitles:
             subtitleList = ", ".join(subliminal.Subtitle(x).language for x in newsubtitles)
-            logger.log(str(self.show.indexerid) + u": Downloaded " + subtitleList + " subtitles for episode " + str(
-                self.season) + "x" + str(self.episode), logger.DEBUG)
+            logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
+                    (self.show.indexerid, subtitleList, self.season, self.episode), logger.DEBUG)
 
             notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
 
         else:
-            logger.log(
-                str(self.show.indexerid) + u": No subtitles downloaded for episode " + str(self.season) + "x" + str(
-                    self.episode), logger.DEBUG)
+            logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
+                    (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            #TODO
-            for video in downloadedSubs:
-                for subtitle in downloadedSubs.get(video):
-                    history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, subtitle)
+            for video, subtitle in foundSubs.items():
+                history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, subtitle.language.name)
 
         return subtitles
 
