@@ -1443,10 +1443,23 @@ class TVEpisode(object):
 
             providers = sickbeard.subtitles.getEnabledServiceList()
             video = subliminal.scan_video(self.location, subtitles=False, embedded_subtitles=False)
-            if len(self.release_name):
+
+            # Let's just bypass this for now, and see if subs are always found from the hash anyways.
+            # We can add container/screensize/resolution/video_codec/audio_codec/tvdb_id/imdb_id/year/release_group/format this way
+            # None of that info is usually available from renamed files, does more information mean better/more matches?
+            if False and len(self.release_name):
                 orig_fname = u'%s.%s' % (self.release_name, self.location.rsplit('.', 1)[1])
-                video_i = subliminal.video.Episode.fromname(orig_fname)
-                video.release_group = video_i.release_group
+                try:
+                    video_i = subliminal.video.Episode.fromname(orig_fname)
+                    if len(video_i.release_group) and not len(video.release_group):
+                        video.release_group = video_i.release_group
+                except ValueError:
+                    try:
+                        video_i = subliminal.video.Episode.fromname(self.release_name)
+                        if len(video_i.release_group) and not len(video.release_group):
+                            video.release_group = video_i.release_group
+                    except ValuError:
+                        pass
 
             foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=True)
             if not foundSubs:
