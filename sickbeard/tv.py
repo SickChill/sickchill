@@ -460,11 +460,9 @@ class TVShow(object):
                     except:
                         logger.log(str(self.indexerid) + ": Could not refresh subtitles", logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
-                try:
-                    sql_l.append(curEpisode.get_sql())
-                except Exception as e:
-                    logger.log(u"%s: Error loading file %s. Error: %s" %
-                            (self.indexerid, mediaFiles, e), logger.ERROR)
+
+                sql_l.append(curEpisode.get_sql())
+
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
@@ -2001,60 +1999,63 @@ class TVEpisode(object):
         forceSave: If True it will create SQL queue even if no data has been changed since the
                     last save (aka if the record is not dirty).
         """
-
-        if not self.dirty and not forceSave:
-            logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
-            return
-
-        myDB = db.DBConnection()
-        rows = myDB.select(
-            'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
-            [self.show.indexerid, self.season, self.episode])
-
-        epID = None
-        if rows:
-            epID = int(rows[0]['episode_id'])
-
-        if epID:
-            # use a custom update method to get the data into the DB for existing records.
-            # Multi or added subtitle or removed subtitles
-            if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
-                return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                    [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
-                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                     self.hastbn,
-                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+        try:
+            if not self.dirty and not forceSave:
+                logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
+                return
+            
+            myDB = db.DBConnection()
+            rows = myDB.select(
+                'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
+                [self.show.indexerid, self.season, self.episode])
+            
+            epID = None
+            if rows:
+                epID = int(rows[0]['episode_id'])
+            
+            if epID:
+                # use a custom update method to get the data into the DB for existing records.
+                # Multi or added subtitle or removed subtitles
+                if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
+                    return [
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
+                         self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                         self.hastbn,
+                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+                else:
+                    # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                    return [
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        [self.indexerid, self.indexer, self.name, self.description,
+                         self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                         self.hastbn,
+                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
             else:
-                # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                # use a custom insert method to get the data into the DB.
                 return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                    [self.indexerid, self.indexer, self.name, self.description,
-                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                     self.hastbn,
-                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
-        else:
-            # use a custom insert method to get the data into the DB.
-            return [
-                "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
-                "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
-                "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-                [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
-                 self.description,
-                 ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
-                 self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-                 self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
-                 self.absolute_number, self.version, self.release_group]]
+                    "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
+                    "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
+                    "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                    "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
+                    ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                    [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
+                     self.description,
+                     ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
+                     self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
+                     self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
+                     self.absolute_number, self.version, self.release_group]]
+        except Exception as e:
+                logger.log(u"Error while updating database: %s" %
+                        (repr(e)), logger.ERROR)
 
     def saveToDB(self, forceSave=False):
         """
