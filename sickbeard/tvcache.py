@@ -144,12 +144,11 @@ class TVCache():
         elif sickbeard.PROXY_SETTING:
             logger.log("Using proxy for url: " + url, logger.DEBUG)
             scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
-            if not scheme:
-                scheme = 'http'
-                address = 'http://' + sickbeard.PROXY_SETTING
-            else:
-                address = sickbeard.PROXY_SETTING
-            handlers = [urllib2.ProxyHandler({scheme: address})]
+            address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
+            handlers = [urllib2.ProxyHandler({'http': address, 'https': address})]
+            self.provider.headers.update({'Referer': address})
+        elif 'Referer' in self.provider.headers:
+            self.provider.headers.pop('Referer')
 
         return RSSFeeds(self.providerID).getFeed(
             self.provider.proxy._buildURL(url),

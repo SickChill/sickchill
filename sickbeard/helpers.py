@@ -38,6 +38,7 @@ import datetime
 import errno
 import ast
 import operator
+from contextlib import closing
 
 import sickbeard
 import subliminal
@@ -1290,35 +1291,55 @@ def codeDescription(status_code):
         return 'unknown'
 
 
-def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+def _setUpSession(session, headers):
     """
-    Checks if URL is valid, without reading it
+    Returns a session initialized with default cache and parameter settings
     """
 
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
 
+    # request session clear residual referer
+    if 'Referer' in session.headers and not 'Referer' in headers:
+        session.headers.pop('Referer')
+
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
     session.headers.update(headers)
 
-    # request session paramaters
+    # request session ssl verify
+    session.verify = certifi.where()
+
+    # request session allow redirects
+    session.allow_redirects = True
+
+    # request session proxies
+    if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
+        logger.log("Using proxy for url: " + url, logger.DEBUG)
+        scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
+        address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
+        session.proxies = {
+            "http": address,
+            "https": address,
+        }
+        session.headers.update({'Referer': address})
+
+    if 'Content-Type' in session.headers:
+       session.headers.pop('Content-Type')
+
+    return session
+
+def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+    """
+    Checks if URL is valid, without reading it
+    """
+
+    session = _setUpSession(session, headers)
     session.params = params
 
     try:
-        # request session proxies
-        if sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            session.proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
-        if 'Content-Type' in session.headers:
-            session.headers.pop('Content-Type')
-
-        resp = session.head(url, timeout=timeout, allow_redirects=True)
+        resp = session.head(url, timeout=timeout)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1348,42 +1369,22 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
     return False
 
+
 def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
     """
 
-    # request session
-    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
-
-    # request session headers
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-    session.headers.update(headers)
-
-    # request session ssl verify
-    session.verify = certifi.where()
-
-    # request session paramaters
+    session = _setUpSession(session, headers)
     session.params = params
 
     try:
-        # request session proxies
-        if sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            session.proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
         # decide if we get or post data to server
         if post_data:
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
             resp = session.post(url, data=post_data, timeout=timeout)
         else:
-            if 'Content-Type' in session.headers:
-                session.headers.pop('Content-Type')
-            resp = session.get(url, timeout=timeout, allow_redirects=True)
+            resp = session.get(url, timeout=timeout)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1415,47 +1416,29 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
     return resp.content if not json else resp.json()
 
+
 def download_file(url, filename, session=None, headers={}):
-    # create session
-    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
 
-    # request session headers
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-    session.headers.update(headers)
-
-    # request session ssl verify
-    session.verify = certifi.where()
-
-    # request session streaming
+    session = _setUpSession(session, headers)
     session.stream = True
 
-    # request session proxies
-    if sickbeard.PROXY_SETTING:
-        logger.log("Using proxy for url: " + url, logger.DEBUG)
-        session.proxies = {
-            "http": sickbeard.PROXY_SETTING,
-            "https": sickbeard.PROXY_SETTING,
-        }
-
     try:
-        resp = session.get(url)
-            
-        if not resp.ok:
-            logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-            return False
+        with closing(session.get(url)) as resp:
+            if not resp.ok:
+                logger.log(u"Requested url " + url + " returned status code is " + str(
+                    resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+                return False
 
-        try:
-            with open(filename, 'wb') as fp:
-                for chunk in resp.iter_content(chunk_size=1024):
-                    if chunk:
-                        fp.write(chunk)
-                        fp.flush()
+            try:
+                with open(filename, 'wb') as fp:
+                    for chunk in resp.iter_content(chunk_size=1024):
+                        if chunk:
+                            fp.write(chunk)
+                            fp.flush()
 
-            chmodAsParent(filename)
-        except:
-            logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
+                chmodAsParent(filename)
+            except:
+                logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
     except requests.exceptions.HTTPError, e:
         _remove_file_failed(filename)
