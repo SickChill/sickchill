@@ -24,6 +24,7 @@ import os
 import re
 import itertools
 import urllib
+import random
 
 import sickbeard
 from lib import requests
@@ -173,6 +174,9 @@ class GenericProvider:
             filename = ek.ek(os.path.join, sickbeard.NZB_DIR,
                              helpers.sanitizeFileName(result.name) + '.' + self.providerType)
 
+        # Try to spread the load around a bit
+        # We might need to extract these strings to a different function that only randomizes thier order on startup
+        random.shuffle(urls)
         return (urls, filename)
 
 
