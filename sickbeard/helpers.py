@@ -1315,7 +1315,10 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
                 "https": sickbeard.PROXY_SETTING,
             }
 
-        resp = session.head(url)
+        if 'Content-Type' in session.headers:
+            session.headers.pop('Content-Type')
+
+        resp = session.head(url, timeout=timeout, allow_redirects=True)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1375,9 +1378,12 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
         # decide if we get or post data to server
         if post_data:
+            session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
             resp = session.post(url, data=post_data, timeout=timeout)
         else:
-            resp = session.get(url, timeout=timeout)
+            if 'Content-Type' in session.headers:
+                session.headers.pop('Content-Type')
+            resp = session.get(url, timeout=timeout, allow_redirects=True)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1403,7 +1409,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
         return
     except Exception as e:
-        logger.log(u"Unknown exception in headURL " + url + ": " + str(e.message), logger.WARNING)
+        logger.log(u"Unknown exception in getURL " + url + ": " + str(e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         return
 

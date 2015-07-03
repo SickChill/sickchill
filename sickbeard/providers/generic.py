@@ -69,7 +69,15 @@ class GenericProvider:
 
         self.session = requests.Session()
 
-        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT}
+        self.headers = {'User-Agent': USER_AGENT}
+
+        self.btCacheURLS = [
+                'http://torcache.net/torrent/{torrent_hash}.torrent',
+                'http://zoink.ch/torrent/{torrent_name}.torrent',
+                'http://torrage.com/torrent/{torrent_hash}.torrent',
+            ]
+
+        random.shuffle(self.btCacheURLS)
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -154,13 +162,7 @@ class GenericProvider:
                     logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
                     return (urls, filename)
 
-                urls = [
-                    #TODO - Fix torcache JS timer preventing direct download
-                    #'http://torcache.net/torrent/' + torrent_hash + '.torrent',
-                    'http://btcache.me/torrent/' + torrent_hash,
-                    'http://zoink.ch/torrent/' + torrent_name + '.torrent',
-                    'http://torrage.com/torrent/' + torrent_hash + '.torrent',
-                ]
+                urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.btCacheURLS]
             except:
                 urls = [result.url]
         else:
@@ -174,9 +176,6 @@ class GenericProvider:
             filename = ek.ek(os.path.join, sickbeard.NZB_DIR,
                              helpers.sanitizeFileName(result.name) + '.' + self.providerType)
 
-        # Try to spread the load around a bit
-        # We might need to extract these strings to a different function that only randomizes thier order on startup
-        random.shuffle(urls)
         return (urls, filename)
 
 
