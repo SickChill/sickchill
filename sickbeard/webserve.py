@@ -2013,24 +2013,23 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
         # try do download subtitles for that episode
-        previous_subtitles = set(babelfish.Language.fromalpha2(x) for x in ep_obj.subtitles)
+        previous_subtitles = ep_obj.subtitles
         try:
-            ep_obj.subtitles = set(babelfish.Language.fromalpha2(x) for x in ep_obj.downloadSubtitles().values()[0])
+            ep_obj.downloadSubtitles()
         except:
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
-        if previous_subtitles != ep_obj.subtitles:
+        newSubtitles = list(set(ep_obj.subtitles.split(',')) - set(previous_subtitles.split(',')))
+        if len(newSubtitles):
+            newLangs = [babelfish.Language.fromietf(x) for x in newSubtitles]
             status = 'New subtitles downloaded: %s' % ' '.join([
                 "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + x.alpha2 +
-                ".png' alt='" + x.name + "'/>" for x in
-                sorted(list(ep_obj.subtitles.difference(previous_subtitles)))])
+                ".png' alt='" + x.name + "'/>" for x in newLangs])
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
-        return json.dumps({'result': status, 'subtitles': ','.join(sorted([x.alpha2 for x in
-                                                                           ep_obj.subtitles.union(
-                                                                               previous_subtitles)]))})
+        return json.dumps({'result': status, 'subtitles': ','.join(sorted(ep_obj.subtitles.split(',')))})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):

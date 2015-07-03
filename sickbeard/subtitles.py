@@ -55,11 +55,7 @@ def getEnabledServiceList():
     return [x['name'] for x in sortedServiceList() if x['enabled']]
     
 def isValidLanguage(language):
-    try:
-        check = babelfish.Language.fromalpha2(language)
-    except:
-        return u''
-    return check
+    return language if language in babelfish.language_converters['alpha2'].codes else u''
 
 def getLanguageName(selectLang):
     return babelfish.Language.fromalpha2(selectLang).name
@@ -72,11 +68,13 @@ def wantedLanguages(sqlLike = False):
 
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
-    return subliminal.video.scan_subtitle_languages(video_path)
+
+    languages = subliminal.video.scan_subtitle_languages(video_path)
+    return u','.join([lang.alpha2 for lang in languages if lang.alpha2 in babelfish.language_converters['alpha2'].codes])
 
 # Return a list with languages that have alpha2 code
 def subtitleLanguageFilter():
-    return [language for language in babelfish.LANGUAGE_MATRIX if language.alpha2 != u'']
+    return [language for language in babelfish.LANGUAGE_MATRIX if language.alpha2 in babelfish.language_converters['alpha2'].codes]
 
 class SubtitlesFinder():
     """
@@ -137,10 +135,14 @@ class SubtitlesFinder():
                 previous_subtitles = epObj.subtitles
                 
                 try:
-                    subtitles = epObj.downloadSubtitles()
+                    epObj.downloadSubtitles()
                 except:
                     logger.log(u'Unable to find subtitles', logger.DEBUG)
                     return
+
+                newSubtitles = list(set(epObj.subtitles) - set(previous_subtitles))
+                if newSubtitles:
+                    logger.log(u'Downloaded subtitles for S%02dE%02d in %s' % (epToSub["season"], epToSub["episode"], ', '.join(newSubtitles)))
 
     def _getRules(self):
         """

@@ -1099,7 +1099,7 @@ class TVShow(object):
                                 episode) + " doesn't exist, removing it and changing our status to " + statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS],
                                        logger.DEBUG)
                             curEp.status = sickbeard.EP_DEFAULT_DELETED_STATUS
-                            curEp.subtitles = list()
+                            curEp.subtitles = u''
                             curEp.subtitles_searchcount = 0
                             curEp.subtitles_lastsearch = str(datetime.datetime.min)
                         curEp.location = ''
@@ -1351,7 +1351,7 @@ class TVEpisode(object):
         self._episode = episode
         self._absolute_number = 0
         self._description = ""
-        self._subtitles = list()
+        self._subtitles = u''
         self._subtitles_searchcount = 0
         self._subtitles_lastsearch = str(datetime.datetime.min)
         self._airdate = datetime.date.fromordinal(1)
@@ -1436,7 +1436,6 @@ class TVEpisode(object):
         logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         previous_subtitles = self.subtitles
-        added_subtitles = []
 
         try:
             languages = set()
@@ -1480,27 +1479,19 @@ class TVEpisode(object):
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
-            for video, subtitle in foundSubs.items():
-                for sub in subtitle:
-                    added_subtitles.append(sub.language.alpha2)
-
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
             return
 
-        if sickbeard.SUBTITLES_MULTI:
-            self.refreshSubtitles()
-        else:
-            self.subtitles = added_subtitles
+        self.refreshSubtitles()
 
         self.subtitles_searchcount = self.subtitles_searchcount + 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
 
-        newsubtitles = set(self.subtitles).difference(set(previous_subtitles))
-
-        if newsubtitles:
-            subtitleList = ", ".join(subliminal.Subtitle(x).language for x in newsubtitles)
+        newSubtitles = list(set(self.subtitles.split(',')) - set(previous_subtitles.split(',')))
+        if len(newSubtitles):
+            subtitleList = ", ".join([babelfish.Language.fromietf(lang).name for lang in newSubtitles])
             logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
                     (self.show.indexerid, subtitleList, self.season, self.episode), logger.DEBUG)
 
@@ -1511,10 +1502,11 @@ class TVEpisode(object):
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            for video, subtitle in foundSubs.items():
-                history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, subtitle.language.name)
+            for vid, sub in foundSubs.items():
+                logger.log(u'history.logSubtitle %s' % sub.language.name, logger.DEBUG)
+                history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub.language.name)
 
-        return subtitles
+        return self.subtitles
 
 
     def checkForMetaFiles(self):
@@ -1598,8 +1590,7 @@ class TVEpisode(object):
             self.description = sqlResults[0]["description"]
             if not self.description:
                 self.description = ""
-            if sqlResults[0]["subtitles"] and sqlResults[0]["subtitles"]:
-                self.subtitles = sqlResults[0]["subtitles"].split(",")
+            self.subtitles = sqlResults[0]["subtitles"] or u''
             self.subtitles_searchcount = sqlResults[0]["subtitles_searchcount"]
             self.subtitles_lastsearch = sqlResults[0]["subtitles_lastsearch"]
             self.airdate = datetime.date.fromordinal(int(sqlResults[0]["airdate"]))
@@ -1934,7 +1925,7 @@ class TVEpisode(object):
             self.name) + "\n"
         toReturn += "location: " + str(self.location) + "\n"
         toReturn += "description: " + str(self.description) + "\n"
-        toReturn += "subtitles: " + str(",".join(self.subtitles)) + "\n"
+        toReturn += "subtitles: " + str(self.subtitles) + "\n"
         toReturn += "subtitles_searchcount: " + str(self.subtitles_searchcount) + "\n"
         toReturn += "subtitles_lastsearch: " + str(self.subtitles_lastsearch) + "\n"
         toReturn += "airdate: " + str(self.airdate.toordinal()) + " (" + str(self.airdate) + ")\n"
@@ -2022,7 +2013,7 @@ class TVEpisode(object):
                         "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                         "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
                         "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                        [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
+                        [self.indexerid, self.indexer, self.name, self.description, self.subtitles,
                          self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
                          self.hastbn,
                          self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
@@ -2048,8 +2039,7 @@ class TVEpisode(object):
                     "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
                     ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
                     [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
-                     self.description,
-                     ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
+                     self.description, self.subtitles, self.subtitles_searchcount, self.subtitles_lastsearch,
                      self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
                      self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
                      self.absolute_number, self.version, self.release_group]]
@@ -2077,7 +2067,7 @@ class TVEpisode(object):
                         "indexer": self.indexer,
                         "name": self.name,
                         "description": self.description,
-                        "subtitles": ",".join([sub for sub in self.subtitles]),
+                        "subtitles": self.subtitles,
                         "subtitles_searchcount": self.subtitles_searchcount,
                         "subtitles_lastsearch": self.subtitles_lastsearch,
                         "airdate": self.airdate.toordinal(),
@@ -2560,6 +2550,7 @@ class TVEpisode(object):
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
             self.location, base_name_only=True, subfolders=True)
 
+        #This is wrong. Cause of pp not moving subs.
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
                                                                                             subtitles_only=True, subfolders=True)

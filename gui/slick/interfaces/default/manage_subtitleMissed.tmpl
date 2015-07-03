@@ -18,7 +18,7 @@
     <h1 class="title">$title</h1>
 #end if
 #if $whichSubs:
-#set subsLanguage = $babelfish.Language.fromalpha2($whichSubs).name if not $whichSubs == 'all' else 'All'
+#set subsLanguage = $babelfish.Language.fromietf($whichSubs).name if not $whichSubs == 'all' else 'All'
 #end if
 #if not $whichSubs or ($whichSubs and not $ep_counts):
 
@@ -30,7 +30,7 @@
 <form action="$sbRoot/manage/subtitleMissed" method="get">
 Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
-#for $sub_lang in [$babelfish.Language.fromalpha2(x.strip()) for x in $sickbeard.SUBTITLES_LANGUAGES]:
+#for $sub_lang in [$babelfish.Language.fromietf(x.strip()) for x in $sickbeard.SUBTITLES_LANGUAGES]:
 #<option value="$sub_lang.alpha2">$sub_lang.name</option>
 #end for
 </select>

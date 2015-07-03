@@ -580,9 +580,9 @@
             </td>
             <td class="col-subtitles" align="center">
             #if $epResult["subtitles"]:
-                #for $sub_lang in [babelfish.Language.fromalpha2(x.strip()) for x in $epResult["subtitles"].split(',') if x != ""]:
+                #for $sub_lang in [babelfish.Language.fromietf(x.strip()) for x in $epResult["subtitles"].split(',') if x.strip() in babelfish.language_converters['alpha2'].codes]:
                     #if $sub_lang.alpha2 != u'':
-                        <img src="$sbRoot/images/flags/${sub_lang.alpha2}.png" width="16" height="11" alt="${sub_lang}" />
+                        <img src="$sbRoot/images/flags/${sub_lang.alpha2}.png" width="16" height="11" alt="${sub_lang.name}" />
                     #else
                         <img src="$sbRoot/images/flags/unknown.png" width="16" height="11" alt="Unknown" />
                     #end if

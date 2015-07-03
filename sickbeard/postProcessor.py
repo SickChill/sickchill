@@ -967,7 +967,7 @@ class PostProcessor(object):
                 else:
                     cur_ep.status = common.Quality.compositeStatus(common.DOWNLOADED, new_ep_quality)
 
-                cur_ep.subtitles = []
+                cur_ep.subtitles = u''
 
                 cur_ep.subtitles_searchcount = 0
 
