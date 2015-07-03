@@ -137,13 +137,13 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
-            # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
-            url = self.proxy._buildURL(url)
         else:
+            if 'Referer' in self.headers:
+                self.headers.pop('Referer')
             self.proxyGlypeProxySSLwarning = None
 
-        return helpers.getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout,
+        return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
 
 
@@ -192,15 +192,15 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
-            # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
         else:
+            if 'Referer' in self.headers:
+                self.headers.pop('Referer')
             self.proxyGlypeProxySSLwarning = None
 
         for url in urls:
-            if self.proxy.isEnabled():
-                url = self.proxy._buildURL(url)
-            if helpers.headURL(url, session=self.session, headers=self.headers, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
+            if helpers.headURL(self.proxy._buildURL(url), session=self.session, headers=self.headers,
+                               proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
                 return url
 
         return u''
@@ -216,9 +216,14 @@ class GenericProvider:
 
         urls, filename = self._makeURL(result)
 
+        if self.proxy.isEnabled():
+            self.headers.update({'Referer': self.proxy.getProxyURL()})
+        elif 'Referer' in self.headers:
+            self.headers.pop('Referer')
+
         for url in urls:
             logger.log(u"Downloading a result from " + self.name + " at " + url)
-            if helpers.download_file(url, filename, session=self.session, headers=self.headers):
+            if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
                     return True

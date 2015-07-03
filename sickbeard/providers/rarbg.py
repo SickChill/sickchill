@@ -54,7 +54,6 @@ class RarbgProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Rarbg")
 
         self.enabled = False
-        self.session = None
         self.supportsBacklog = True
         self.ratio = None
         self.minseed = None
@@ -105,14 +104,13 @@ class RarbgProvider(generic.TorrentProvider):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
-        self.session = requests.Session()
         resp_json = None
 
         try:
             response = self.session.get(self.urls['token'], timeout=30, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
-        except (RequestException, BaseSSLError) as e:
+        except (RequestException) as e:
             logger.log(u'Unable to connect to {name} provider: {error}'.format(name=self.name, error=ex(e)), logger.ERROR)
             return False
 
