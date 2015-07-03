@@ -32,7 +32,7 @@ from sickbeard import helpers, logger
 from sickbeard import search
 from sickbeard import history
 
-from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality
+from sickbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
