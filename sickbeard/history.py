@@ -77,11 +77,12 @@ def logDownload(episode, filename, new_ep_quality, release_group=None, version=-
 
 
 def logSubtitle(showid, season, episode, status, subtitleResult):
-    resource = subtitleResult.path
-    provider = subtitleResult.service
+    resource = subtitleResult
+    provider = subtitleResult
     status, quality = Quality.splitCompositeStatus(status)
     action = Quality.compositeStatus(SUBTITLED, quality)
 
+    # FIXME: Broken with new subliminal
     _logHistoryItem(action, showid, season, episode, quality, resource, provider)
 
 

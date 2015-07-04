@@ -37,7 +37,7 @@ from sickbeard import notifiers
 from sickbeard import show_name_helpers
 from sickbeard import failed_history
 from sickbeard import name_cache
-
+from sickbeard import subtitles
 from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 
@@ -300,7 +300,7 @@ class PostProcessor(object):
             # check if file have subtitles language
             if os.path.splitext(cur_extension)[1][1:] in common.subtitleExtensions:
                 cur_lang = os.path.splitext(cur_extension)[0]
-                if cur_lang in sickbeard.SUBTITLES_LANGUAGES:
+                if cur_lang in subtitles.wantedSubtitles():
                     cur_extension = cur_lang + os.path.splitext(cur_extension)[1]
 
             # replace .nfo with .nfo-orig to avoid conflicts

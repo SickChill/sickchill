@@ -2020,16 +2020,16 @@ class Home(WebRoot):
             return json.dumps({'result': 'failure'})
 
         # return the correct json value
-        newSubtitles = list(set(ep_obj.subtitles.split(',')) - set(previous_subtitles.split(',')))
-        if len(newSubtitles):
-            newLangs = [babelfish.Language.fromietf(x) for x in newSubtitles]
+        newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
+        if newSubtitles:
+            newLangs = [babelfish.Language.fromietf(newSub) for newSub in newSubtitles]
             status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + x.alpha2 +
-                ".png' alt='" + x.name + "'/>" for x in newLangs])
+                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + newLang.alpha3 +
+                ".png' alt='" + newLang.name + "'/>" for newLang in newLangs])
         else:
             status = 'No subtitles downloaded'
         ui.notifications.message('Subtitles Search', status)
-        return json.dumps({'result': status, 'subtitles': ','.join(sorted(ep_obj.subtitles.split(',')))})
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
                           sceneEpisode=None, sceneAbsolute=None):
@@ -2885,10 +2885,9 @@ class Manage(Home, WebRoot):
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
-                if len(set(cur_result["subtitles"].split(',')).intersection(set(subtitles.wantedLanguages()))) >= len(
-                        subtitles.wantedLanguages()):
+                if not frozenset(subtitles.wantedLanguages()).difference(cur_result["subtitles"].split(',')):
                     continue
-            elif whichSubs in cur_result["subtitles"].split(','):
+            elif whichSubs in cur_result["subtitles"]:
                 continue
 
             cur_season = int(cur_result["season"])
@@ -2902,8 +2901,7 @@ class Manage(Home, WebRoot):
 
             result[cur_season][cur_episode]["name"] = cur_result["name"]
 
-            result[cur_season][cur_episode]["subtitles"] = ",".join(subtitle.strip() for subtitle in cur_result["subtitles"].split(',')) if not \
-                cur_result["subtitles"] == '' else ''
+            result[cur_season][cur_episode]["subtitles"] = cur_result["subtitles"]
 
         return json.dumps(result)
 
@@ -2919,17 +2917,19 @@ class Manage(Home, WebRoot):
 
         myDB = db.DBConnection()
         status_results = myDB.select(
-            "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles FROM tv_episodes, tv_shows WHERE tv_shows.subtitles = 1 AND tv_episodes.status LIKE '%4' AND tv_episodes.season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
+            "SELECT show_name, tv_shows.indexer_id as indexer_id, tv_episodes.subtitles subtitles " +
+            "FROM tv_episodes, tv_shows " +
+            "WHERE tv_shows.subtitles = 1 AND tv_episodes.status LIKE '%4' AND tv_episodes.season != 0 " +
+            "AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name")
 
         ep_counts = {}
         show_names = {}
         sorted_show_ids = []
         for cur_status_result in status_results:
             if whichSubs == 'all':
-                if len(set(cur_status_result["subtitles"].split(',')).intersection(
-                        set(subtitles.wantedLanguages()))) >= len(subtitles.wantedLanguages()):
+                if not frozenset(subtitles.wantedLanguages()).difference(cur_status_result["subtitles"].split(',')):
                     continue
-            elif whichSubs in cur_status_result["subtitles"].split(','):
+            elif whichSubs in cur_status_result["subtitles"]:
                 continue
 
             cur_indexer_id = int(cur_status_result["indexer_id"])
@@ -3367,33 +3367,33 @@ class Manage(Home, WebRoot):
                 sickbeard.showQueueScheduler.action.downloadSubtitles(showObj)
                 subtitles.append(showObj.name)
 
-        if len(errors) > 0:
+        if errors:
             ui.notifications.error("Errors encountered",
                                    '<br >\n'.join(errors))
 
         messageDetail = ""
 
-        if len(updates) > 0:
+        if updates:
             messageDetail += "<br /><b>Updates</b><br /><ul><li>"
             messageDetail += "</li><li>".join(updates)
             messageDetail += "</li></ul>"
 
-        if len(refreshes) > 0:
+        if refreshes:
             messageDetail += "<br /><b>Refreshes</b><br /><ul><li>"
             messageDetail += "</li><li>".join(refreshes)
             messageDetail += "</li></ul>"
 
-        if len(renames) > 0:
+        if renames:
             messageDetail += "<br /><b>Renames</b><br /><ul><li>"
             messageDetail += "</li><li>".join(renames)
             messageDetail += "</li></ul>"
 
-        if len(subtitles) > 0:
+        if subtitles:
             messageDetail += "<br /><b>Subtitles</b><br /><ul><li>"
             messageDetail += "</li><li>".join(subtitles)
             messageDetail += "</li></ul>"
 
-        if len(updates + refreshes + renames + subtitles) > 0:
+        if updates + refreshes + renames + subtitles:
             ui.notifications.message("The following actions were queued:",
                                      messageDetail)
 
@@ -4857,7 +4857,7 @@ class ConfigSubtitles(Config):
         config.change_SUBTITLES_FINDER_FREQUENCY(subtitles_finder_frequency)
         config.change_USE_SUBTITLES(use_subtitles)
 
-        sickbeard.SUBTITLES_LANGUAGES = [lang.strip() for lang in subtitles_languages.replace(' ', '').split(',')] if subtitles_languages != '' else []
+        sickbeard.SUBTITLES_LANGUAGES = [lang.strip() for lang in subtitles_languages.split(',') if subtitles.isValidLanguage(lang.strip())] if subtitles_languages else []
         sickbeard.SUBTITLES_DIR = subtitles_dir
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
