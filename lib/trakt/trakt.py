@@ -81,7 +81,7 @@ class TraktAPI():
         headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
 
         try:
-            resp = session.request(method, url + path, headers=headers, timeout=self.timeout,
+            resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,
                 data=json.dumps(data) if data else [], verify=self.verify)
 
             # check for http errors and raise if any are present
