@@ -358,7 +358,7 @@ class GitUpdateManager(UpdateManager):
         output = err = exit_status = None
 
         if not git_path:
-            logger.log(u"No git specified, can't use git commands", logger.ERROR)
+            logger.log(u"No git specified, can't use git commands", logger.WARNING)
             exit_status = 1
             return (output, err, exit_status)
 
@@ -490,7 +490,7 @@ class GitUpdateManager(UpdateManager):
         sickbeard.NEWEST_VERSION_STRING = None
 
         if self._num_commits_ahead:
-            logger.log(u"Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.ERROR)
+            logger.log(u"Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.WARNING)
             newest_text = "Local branch is ahead of " + self.branch + ". Automatic update not possible."
 
         elif self._num_commits_behind > 0:
@@ -525,7 +525,7 @@ class GitUpdateManager(UpdateManager):
             try:
                 self._check_github_for_update()
             except Exception, e:
-                logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.ERROR)
+                logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.WARNING)
                 return False
 
             if self._num_commits_behind > 0:
@@ -619,7 +619,7 @@ class SourceUpdateManager(UpdateManager):
         try:
             self._check_github_for_update()
         except Exception, e:
-            logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.ERROR)
+            logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.WARNING)
             return False
 
         if self.branch != self._find_installed_branch():
@@ -719,7 +719,7 @@ class SourceUpdateManager(UpdateManager):
             urllib.urlretrieve(tar_download_url, tar_download_path)
 
             if not ek.ek(os.path.isfile, tar_download_path):
-                logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.ERROR)
+                logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.WARNING)
                 return False
 
             if not ek.ek(tarfile.is_tarfile, tar_download_path):
