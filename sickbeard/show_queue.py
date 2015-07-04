@@ -282,8 +282,8 @@ class QueueItemAdd(ShowQueueItem):
                 self._finishEarly()
                 return
         except Exception, e:
-            logger.log(u"Unable to find show ID:" + str(self.indexer_id) + " on Indexer: " + str(
-                sickbeard.indexerApi(self.indexer).name), logger.ERROR)
+            logger.log(u"Show name with ID %s don't exist in %s anymore. Please change/delete your local .nfo file or remove it from your TRAKT watchlist" %
+                (self.indexer_id,sickbeard.indexerApi(self.indexer).name) , logger.ERROR)
             ui.notifications.error("Unable to add show",
                                    "Unable to look up the show in " + self.showDir + " on " + str(sickbeard.indexerApi(
                                        self.indexer).name) + " using ID " + str(
