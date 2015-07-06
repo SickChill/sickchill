@@ -166,10 +166,6 @@ class SubtitlesFinder():
                 if isinstance(epObj, str):
                     logger.log(u'Episode not found', logger.DEBUG)
                     return
-                
-                epObj.refreshSubtitles()
-                if not frozenset(wantedLanguages()).difference(epObj.subtitles):
-                    continue
 
                 previous_subtitles = epObj.subtitles
                 
