@@ -58,10 +58,10 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
         self.urls = {'base_url': 'https://hdts.ru/index.php',
                      'login': 'https://hdts.ru/login.php',
-                     'detail': 'https://www.hdts.ru/details.php?id=%s',
+                     'detail': 'https://hdts.ru/details.php?id=%s',
                      'search': 'https://hdts.ru/torrents.php?search=%s&active=1&options=0%s',
-                     'download': 'https://www.sceneaccess.eu/%s',
-                     'home': 'https://www.hdts.ru/%s'
+                     'download': 'https://hdts.ru/%s',
+                     'home': 'https://hdts.ru/%s'
         }
 
         self.url = self.urls['base_url']
