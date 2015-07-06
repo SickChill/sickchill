@@ -40,7 +40,7 @@ except ImportError:
     pass
 
 from lib.imdb import imdb
-
+import logging
 from sickbeard import db
 from sickbeard import helpers, exceptions, logger
 from sickbeard.exceptions import ex
@@ -1435,8 +1435,12 @@ class TVEpisode(object):
 
         logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
-        self.refreshSubtitles()
         previous_subtitles = self.subtitles
+
+        #logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
+        #logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
+        #logging.getLogger('subliminal').addHandler(logging.StreamHandler())
+        #logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
         try:
             languages = set()
@@ -1448,27 +1452,29 @@ class TVEpisode(object):
                 return
 
             providers = sickbeard.subtitles.getEnabledServiceList()
-            video = subliminal.scan_video(self.location, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+            videos = subliminal.scan_videos([self.location], subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
 
-            # Let's just bypass this for now, and see if subs are always found from the hash anyways.
-            # We can add container/screensize/resolution/video_codec/audio_codec/tvdb_id/imdb_id/year/release_group/format this way
-            # None of that info is usually available from renamed files, does more information mean better/more matches?
-            if False and len(self.release_name):
+            if videos:
+                videos[0].tvdb_id = self.show.indexerid
+                videos[0].imdb_id = self.show.imdbid
+
+            if self.release_name:
                 orig_fname = u'%s.%s' % (self.release_name, self.location.rsplit('.', 1)[1])
                 try:
-                    video_i = subliminal.video.Episode.fromname(orig_fname)
-                    if len(video_i.release_group) and not len(video.release_group):
-                        video.release_group = video_i.release_group
+                    video = subliminal.video.Episode.fromname(orig_fname)
                 except ValueError:
                     try:
-                        video_i = subliminal.video.Episode.fromname(self.release_name)
-                        if len(video_i.release_group) and not len(video.release_group):
-                            video.release_group = video_i.release_group
+                        video = subliminal.video.Episode.fromname(self.release_name)
                     except ValuError:
                         pass
 
+                if video:
+                    video.tvdb_id = self.show.indexerid
+                    video.imdb_id = self.show.imdbid
+                    videos.extend([video])
+
             # TODO: Add gui option for hearing_impaired parameter ?
-            foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=True)
+            foundSubs = subliminal.download_best_subtitles(videos, languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=False)
             if not foundSubs:
                 logger.log(u"%s: No subtitles found for S%02dE%02d on any provider" % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
@@ -1499,7 +1505,7 @@ class TVEpisode(object):
 
         self.refreshSubtitles()
 
-        self.subtitles_searchcount = self.subtitles_searchcount + 1
+        self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
 
@@ -1510,13 +1516,15 @@ class TVEpisode(object):
                 (self.show.indexerid, subtitleList, self.season, self.episode), logger.DEBUG)
 
             notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
-            if sickbeard.SUBTITLES_HISTORY:
-                for newSub in newSubtitles:
-                    logger.log(u'history.logSubtitle %s' % babelfish.Language.fromietf(newSub).name, logger.DEBUG)
-                    history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, newSub)
         else:
             logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+
+        if sickbeard.SUBTITLES_HISTORY:
+            for video, subs in foundSubs.items():
+                for sub in subs:
+                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
+                    history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)
 
         return self.subtitles
 

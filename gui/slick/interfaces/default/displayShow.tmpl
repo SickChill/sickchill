@@ -599,7 +599,7 @@
                         <a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     #end if
                 #end if
-                #if $sickbeard.USE_SUBTITLES and $show.subtitles and $epResult["location"] and frozenset($subtitles.wantedLanguages()).difference($epResult["subtitles"])
+                #if $sickbeard.USE_SUBTITLES and $show.subtitles and $epResult["location"] and frozenset($subtitles.wantedLanguages()).difference($epResult["subtitles"].split(',')):
                     <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 #end if
             </td>
