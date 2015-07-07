@@ -1458,6 +1458,7 @@ class TVEpisode(object):
                 videos[0].tvdb_id = self.show.indexerid
                 videos[0].imdb_id = self.show.imdbid
 
+            # Lets create a second video object without hash, but with quality and release group
             if self.release_name:
                 orig_fname = u'%s.%s' % (self.release_name, self.location.rsplit('.', 1)[1])
                 try:
@@ -1469,6 +1470,8 @@ class TVEpisode(object):
                         pass
 
                 if video:
+                    # Make the name the same as the real video, for saving
+                    video.name = videos[0].name
                     video.tvdb_id = self.show.indexerid
                     video.imdb_id = self.show.imdbid
                     videos.extend([video])
