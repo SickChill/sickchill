@@ -49,8 +49,7 @@ class SNI_Tests(unittest.TestCase):
             print
         else:
             for provider in [ torrentday, rarbg, sceneaccess ]:
-                #print 'Checking ' + provider.name
-                self.assertEqual(requests.get(provider.url).status_code, 200)
+                self.assertTrue(requests.get(provider.url).ok)
 
 
 if __name__ == "__main__":
