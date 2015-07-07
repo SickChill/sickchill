@@ -44,8 +44,6 @@ __all__ = ['womble',
            'rarbg',
            'tntvillage',
            'binsearch',
-           'bluetigers',
-           'fnt',
            'scenetime',
 ]
 
