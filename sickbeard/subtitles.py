@@ -132,11 +132,12 @@ class SubtitlesFinder():
         # you have 5 minutes to understand that one. Good luck
         myDB = db.DBConnection()
 
-        sqlResults = myDB.select('SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, e.subtitles_searchcount AS searchcount, e.subtitles_lastsearch AS lastsearch, e.location, (? - e.airdate) AS airdate_daydiff ' +
+        sqlResults = myDB.select('SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, ' +
+        'e.subtitles_searchcount AS searchcount, e.subtitles_lastsearch AS lastsearch, e.location, (? - e.airdate) AS airdate_daydiff ' +
         'FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) ' +
         'WHERE s.subtitles = 1 AND e.subtitles NOT LIKE (?) ' +
-        'AND ((e.subtitles_searchcount <= 2 AND (? - e.airdate) > 7) OR (e.subtitles_searchcount <= 7 AND (? - e.airdate) <= 7)) ' +
-        'AND (e.status IN (?) OR (e.status IN (?) AND e.location != ""))', [today, wantedLanguages(True), today, today, str(Quality.DOWNLOADED), ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER])])
+        'AND (e.subtitles_searchcount <= 2 OR (e.subtitles_searchcount <= 7 AND airdate_daydiff <= 7)) ' +
+        'AND e.location != ""', [today, wantedLanguages(True)])
 
         if len(sqlResults) == 0:
             logger.log('No subtitles to download', logger.INFO)
