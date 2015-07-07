@@ -48,9 +48,9 @@ class FNTProvider(generic.TorrentProvider):
         self.enabled = False
         self.username = None
         self.password = None
-        self.ratio = None
-        self.token = None
-        self.tokenLastUpdate = None
+        self.ratio = None        
+        self.minseed = None
+        self.minleech = None
 
         self.cache = FNTCache(self)
 
@@ -61,7 +61,7 @@ class FNTProvider(generic.TorrentProvider):
         }
 
         self.url = self.urls['base_url']
-        self.categories = "&afficher=1&c118=1&c129=1&c119=1&c120=1&c121=1&c126=1&c137=1&c138=1&c146=1&c122=1&c110=1&c109=1&c135=1&c148=1&c153=1&c149=1&c150=1&c154=1&c155=1&c156=1&c114=1&visible=1&freeleech=0&nuke=0&3D=0"
+        self.categories = "&afficher=1&c118=1&c129=1&c119=1&c120=1&c121=1&c126=1&c137=1&c138=1&c146=1&c122=1&c110=1&c109=1&c135=1&c148=1&c153=1&c149=1&c150=1&c154=1&c155=1&c156=1&c114=1&visible=1&freeleech=0&nuke=1&3D=0&sort=size&order=desc"
 
     def isEnabled(self):
         return self.enabled
@@ -202,8 +202,24 @@ class FNTProvider(generic.TorrentProvider):
 
                                    if not title or not download_url:
                                       continue
-
-                                   item = title, download_url
+                                      
+                                   try:                                       
+                                      id = download_url.replace(self.urls['base_url'] + "/" + 'download.php?id=', '').replace('&amp;dl=oui', '').replace('&dl=oui', '')    
+                                      logger.log(u"FNT id du torrent  " + str(id), logger.DEBUG)            
+                                      defailseedleech = link['mtcontent']                                                                                                                
+                                      seeders =  int(defailseedleech.split("<font color='#00b72e'>")[1].split("</font>")[0]) 
+                                      logger.log(u"FNT seeders :  " + str(seeders), logger.DEBUG)
+                                      leechers = int(defailseedleech.split("<font color='red'>")[1].split("</font>")[0]) 
+                                      logger.log(u"FNT leechers :  " + str(leechers), logger.DEBUG)                                                                                                     
+                                   except:
+                                      logger.log(u"Unable to parse torrent id & seeders leechers  " + self.name + " Traceback: " + traceback.format_exc(), logger.DEBUG)
+                                      continue
+                                   
+                                   #Filter unseeded torrent
+                                   if mode != 'RSS' and (seeders < self.minseed or leechers < self.minleech):
+                                      continue
+                                 
+                                   item = title, download_url , id, seeders, leechers
                                    logger.log(u"Found result: " + title.replace(' ','.') + " (" + download_url + ")", logger.DEBUG)
 
                                    items[mode].append(item)
@@ -216,8 +232,8 @@ class FNTProvider(generic.TorrentProvider):
         return results
 
     def _get_title_and_url(self, item):
-
-        title, url = item
+        
+        title, url, id, seeders, leechers = item
 
         if title:
             title = self._clean_title_from_provider(title)
