@@ -94,13 +94,12 @@ class DailySearcher():
                 elif ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
+                elif sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
+                    ep.status = common.SKIPPED
+                    UpdateWantedList = 1
                 else:
-                    if not sickbeard.TRAKT_USE_ROLLING_DOWNLOAD or not sickbeard.USE_TRAKT:
-                        logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
-                        ep.status = common.WANTED
-                    else:
-                        ep.status = common.SKIPPED
-                        UpdateWantedList = 1
+                    logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
+                    ep.status = common.WANTED
 
                 sql_l.append(ep.get_sql())
         else:
