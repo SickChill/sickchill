@@ -1473,7 +1473,16 @@ class TVEpisode(object):
                 logger.log(u'%s: No release name for S%02dE%02d, using existing file name' %
                       (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
-            video = subliminal.scan_video(vname, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+            video = None
+            try:
+                video = subliminal.scan_video(vname, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+            except Exception:
+                logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
+                    (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+                if create_link and vname is not self.location:
+                    ek.ek(os.unlink, vname)
+                return
+                pass
 
             if create_link and vname is not self.location:
                 ek.ek(os.unlink, vname)
