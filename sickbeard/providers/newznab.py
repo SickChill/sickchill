@@ -118,6 +118,7 @@ class NewznabProvider(generic.NZBProvider):
         try:
             for category in data.feed.categories:
                 if category.get('name') == 'TV':
+                        return_categories.append(category)
                         for subcat in category.subcats:
                             return_categories.append(subcat)
         except:
