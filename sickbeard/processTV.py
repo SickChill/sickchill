@@ -437,10 +437,6 @@ def already_postprocessed(dirName, videofile, force, result):
     if force:
         return False
 
-    #Needed for accessing DB with a unicode DirName
-    if not isinstance(dirName, unicode):
-        dirName = unicode(dirName, 'utf_8')
-
     # Avoid processing the same dir again if we use a process method <> move
     myDB = db.DBConnection()
     sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [dirName])
@@ -449,10 +445,6 @@ def already_postprocessed(dirName, videofile, force, result):
         return True
 
     else:
-        # This is needed for video whose name differ from dirName
-        if not isinstance(videofile, unicode):
-            videofile = unicode(videofile, 'utf_8')
-
         sqlResult = myDB.select("SELECT * FROM tv_episodes WHERE release_name = ?", [videofile.rpartition('.')[0]])
         if sqlResult:
             #result.output += logHelper(u"You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
