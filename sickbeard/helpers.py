@@ -1358,13 +1358,13 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
         return resp.status_code == 200
 
     except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " in headURL " + url, logger.WARNING)
+        logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " in headURL " + url, logger.WARNING)
+        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " in headURL " + url, logger.WARNING)
+        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
     except Exception as e:
-        logger.log(u"Unknown exception in headURL " + url + ": " + str(e.message), logger.WARNING)
+        logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
 
     return False
@@ -1401,16 +1401,16 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                     return
 
     except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"HTTP error in getURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
         return
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
     except Exception as e:
-        logger.log(u"Unknown exception in getURL " + url + ": " + str(e.message), logger.WARNING)
+        logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         return
 
