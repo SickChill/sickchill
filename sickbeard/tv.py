@@ -1458,7 +1458,7 @@ class TVEpisode(object):
                 try:
                     dir, name = ek.ek(os.path.split, self.location)
                     tmp = ek.ek(os.path.join, dir, self.release_name)
-                    if not len(ek.ek(os.path.splitext, tmp)[-1]):
+                    if ek.ek(os.path.splitext, tmp)[-1] is not ek.ek(os.path.splitext, self.location)[-1]:
                         tmp += ek.ek(os.path.splitext, self.location)[-1]
 
                     create_link = not ek.ek(os.path.exists, tmp)
