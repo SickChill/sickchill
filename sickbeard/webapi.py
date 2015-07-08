@@ -28,6 +28,7 @@ import traceback
 
 import sickbeard
 
+from versionChecker import CheckVersion
 from sickbeard import db, logger, exceptions, history, ui, helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import search_queue
@@ -753,7 +754,7 @@ class CMD_ComingEpisodes(ApiCall):
         # Safety Measure to convert rows in sql_results to dict.
         # This should not be required as the DB connections should only be returning dict results not sqlite3.row_type
         dict_results = [dict(row) for row in sql_results]
-        
+
         for ep in dict_results:
             """
                 Missed:   yesterday... (less than 1week)
@@ -1483,6 +1484,35 @@ class CMD_SickBeardAddRootDir(ApiCall):
         sickbeard.ROOT_DIRS = root_dirs_new
         return _responds(RESULT_SUCCESS, _getRootDirs(), msg="Root directories updated")
 
+class CMD_SickBeardCheckVersion(ApiCall):
+    _help = {"desc": "check if a new version of SickRage is available"}
+
+    def __init__(self, args, kwargs):
+        # required
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        checkversion = CheckVersion()
+        needs_update = checkversion.check_for_new_version()
+
+        data = {
+            "current_version": {
+                "branch": checkversion.get_branch(),
+                "commit": checkversion.updater.get_cur_commit_hash(),
+                "version": checkversion.updater.get_cur_version(),
+            },
+            "latest_version": {
+                "branch": checkversion.get_branch(),
+                "commit": checkversion.updater.get_newest_commit_hash(),
+                "version": checkversion.updater.get_newest_version(),
+            },
+            "commits_offset": checkversion.updater.get_num_commits_behind(),
+            "needs_update": needs_update,
+        }
+
+        return _responds(RESULT_SUCCESS, data)
 
 class CMD_SickBeardCheckScheduler(ApiCall):
     _help = {"desc": "query the scheduler"}
@@ -1869,6 +1899,27 @@ class CMD_SickBeardShutdown(ApiCall):
         sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
         return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
 
+class CMD_SickBeardUpdate(ApiCall):
+    _help = {"desc": "update SickRage to the latest version available"}
+
+    def __init__(self, args, kwargs):
+        # required
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        checkversion = CheckVersion()
+
+        if checkversion.check_for_new_version():
+            if checkversion.run_backup_if_safe():
+                checkversion.update()
+
+                return _responds(RESULT_SUCCESS, msg="SickRage is updating ...")
+
+            return _responds(RESULT_FAILURE, msg="SickRage could not backup config ...")
+
+        return _responds(RESULT_FAILURE, msg="SickRage is already up to date")
 
 class CMD_Show(ApiCall):
     _help = {"desc": "display information for a given show",
@@ -2868,6 +2919,7 @@ _functionMaper = {"help": CMD_Help,
                   "sb": CMD_SickBeard,
                   "postprocess": CMD_PostProcess,
                   "sb.addrootdir": CMD_SickBeardAddRootDir,
+                  "sb.checkversion": CMD_SickBeardCheckVersion,
                   "sb.checkscheduler": CMD_SickBeardCheckScheduler,
                   "sb.deleterootdir": CMD_SickBeardDeleteRootDir,
                   "sb.getdefaults": CMD_SickBeardGetDefaults,
@@ -2880,6 +2932,7 @@ _functionMaper = {"help": CMD_Help,
                   "sb.searchtvdb": CMD_SickBeardSearchTVDB,
                   "sb.searchtvrage": CMD_SickBeardSearchTVRAGE,
                   "sb.setdefaults": CMD_SickBeardSetDefaults,
+                  "sb.update": CMD_SickBeardUpdate,
                   "sb.shutdown": CMD_SickBeardShutdown,
                   "show": CMD_Show,
                   "show.addexisting": CMD_ShowAddExisting,

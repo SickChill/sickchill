@@ -68,7 +68,7 @@ class CheckVersion():
                 if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
-                    if self.safe_to_update() == True and self._runbackup() == True:
+                    if self.run_backup_if_safe() is True:
                         if sickbeard.versionCheckScheduler.action.update():
                             logger.log(u"Update was successful!")
                             ui.notifications.message('Update was successful')
@@ -76,6 +76,9 @@ class CheckVersion():
                         else:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
+
+    def run_backup_if_safe(self):
+        return self.safe_to_update() is True and self._runbackup() is True
 
     def _runbackup(self):
         # Do a system backup before update
@@ -299,6 +302,21 @@ class GitUpdateManager(UpdateManager):
         self._newest_commit_hash = None
         self._num_commits_behind = 0
         self._num_commits_ahead = 0
+
+    def get_cur_commit_hash(self):
+        return self._cur_commit_hash
+
+    def get_newest_commit_hash(self):
+        return self._newest_commit_hash
+
+    def get_cur_version(self):
+        return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
+
+    def get_newest_version(self):
+        return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+
+    def get_num_commits_behind(self):
+        return self._num_commits_behind
 
     def _git_error(self):
         error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
@@ -613,7 +631,22 @@ class SourceUpdateManager(UpdateManager):
             return "master"
         else:
             return sickbeard.CUR_COMMIT_BRANCH
-        
+
+    def get_cur_commit_hash(self):
+        return self._cur_commit_hash
+
+    def get_newest_commit_hash(self):
+        return self._newest_commit_hash
+
+    def get_cur_version(self):
+        return ""
+
+    def get_newest_version(self):
+        return ""
+
+    def get_num_commits_behind(self):
+        return self._num_commits_behind
+
     def need_update(self):
         # need this to run first to set self._newest_commit_hash
         try:
