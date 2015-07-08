@@ -1616,22 +1616,22 @@ def isFileLocked(file, writeLockCheck=False):
     @param file: the file being checked
     @param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     '''
-    if(not(os.path.exists(file))):
+    if not ek.ek(os.path.exists, file):
         return True
     try:
-        f = open(file, 'r')
+        f = ek.ek(open, file, 'r')
         f.close()
     except IOError:
         return True
     
     if(writeLockCheck):
         lockFile = file + ".lckchk"
-        if(os.path.exists(lockFile)):
-            os.remove(lockFile)
+        if ek.ek(os.path.exists, lockFile):
+            ek.ek(os.remove, lockFile)
         try:
-            os.rename(file, lockFile)
+            ek.ek(os.rename, file, lockFile)
             time.sleep(1)
-            os.rename(lockFile, file)
+            ek.ek(os.rename, lockFile, file)
         except (OSError, IOError):
             return True
            
