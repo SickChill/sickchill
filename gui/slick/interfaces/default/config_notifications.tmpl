@@ -911,6 +911,16 @@
                                     <span class="component-desc"><a href="<%= anon_url('https://pushover.net/apps/clone/sickrage') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</span>
                                 </label>
                             </div>
+                            <div class="field-pair">
+                                <label for="pushover_device">
+                                    <span class="component-title">Pushover devices</span>
+                                    <input type="text" name="pushover_device" id="pushover_device" value="$sickbeard.PUSHOVER_DEVICE" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">comma separated list of pushover devices you want to send notifications to</span>
+                                </label>
+                            </div>
                             <div class="testNotification" id="testPushover-result">Click below to test.</div>
                             <input  class="btn" type="button" value="Test Pushover" id="testPushover" />
                             <input type="submit" class="config_submitter btn" value="Save Changes" />
