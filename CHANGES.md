@@ -1,3 +1,35 @@
+### 4.0.30 (2015-07-09)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.29...v4.0.30)
+
+* Fixed: Misc. Trakt problems
+* Fixed: Search strings with airdate
+* Fixed: PP issues
+* Fixed: Glob issue
+* Fixed: Kodi single show library update
+* Fixed: HDTorrents provider (and some others)
+* Fixed: Maxage not honored for NZB, resulting in dead snatches
+* Fixed: Encoding problems and unicode conversion errors
+* Fixed: Proxy and session
+* Fixed: Manage of unaired episode according to trakt rolling download if enabled
+* Added: API methods to check for update and run potential update
+* Added: BTDigg, FNT, BlueTigers torrent providers
+* Added: Babelfish (Dependency of Guessit)
+* Added: Device parameter for pushover notifications
+* Added: Log message when ignoring result from provider
+* Added: itorrents.org torrent caching website
+* Removed: www from HDT
+* Change: Torrent caching site urls are now selected at random
+* Change: Enable SSL certificate verification
+* Changed default episode status,it is auto set to wanted after add to show, change it to whatever you want then.
+* Changed errors to warnings in updater, when commit is newer than master or network unavailable
+* Updated: Provider icons
+* Updated: Subliminal to 0.8.0
+* Updated: Guessit
+* Updated: Cachecontrol
+* Updated: Enzyme
+* Updated: Subtitle provider icons
+
 ### 4.0.29 (2015-06-26)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.28...v4.0.29)
