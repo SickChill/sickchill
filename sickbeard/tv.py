@@ -1527,7 +1527,7 @@ class TVEpisode(object):
                         path = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
                         if subs_new_path:
                             path = ek.ek(os.path.join, subs_new_path, ek.ek(os.path.split, path)[1])
-                        new_path = path.replace(ek.ek(os.path.splitext, release_name)[0], 
+                        new_path = path.replace(ek.ek(os.path.splitext, self.release_name)[0],
                         ek.ek(os.path.splitext, ek.ek(os.path.basename, self.location))[0])
                         if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, newpath):
                             ek.ek(os.rename, path, newpath)
