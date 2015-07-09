@@ -1458,7 +1458,7 @@ class Home(WebRoot):
             showObj.sports = sports
             showObj.subtitles = subtitles
             showObj.air_by_date = air_by_date
-            #showObj.default_ep_status = int(defaultEpStatus)
+            showObj.default_ep_status = int(defaultEpStatus)
 
             if not directCall:
                 showObj.lang = indexer_lang
