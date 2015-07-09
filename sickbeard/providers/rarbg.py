@@ -26,8 +26,8 @@ import datetime
 import json
 import time
 
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
@@ -40,7 +40,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.exceptions import ex
 from sickbeard.helpers import sanitizeSceneName
-from lib.requests.exceptions import RequestException
+from requests.exceptions import RequestException
 from sickbeard.indexers.indexer_config import INDEXER_TVDB,INDEXER_TVRAGE
 
 

@@ -21,8 +21,8 @@ import traceback
 import datetime
 import sickbeard
 import generic
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 import urllib
 
 from sickbeard.common import Quality

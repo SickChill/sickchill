@@ -39,8 +39,8 @@ from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
 from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from lib.unidecode import unidecode
 
 

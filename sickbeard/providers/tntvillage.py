@@ -30,8 +30,8 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
 from sickbeard import clients
-from lib import requests
-from lib.requests.exceptions import RequestException
+import requests
+from requests.exceptions import RequestException
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName

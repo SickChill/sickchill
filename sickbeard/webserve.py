@@ -81,7 +81,7 @@ from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
 route_locks = {}
-
+import chardet
 
 class html_entities(CheetahFilter):
     def filter(self, val, **dummy_kw):
@@ -91,13 +91,23 @@ class html_entities(CheetahFilter):
             filtered = ''
         elif isinstance(val, str):
             try:
-                filtered = val.decode(sickbeard.SYS_ENCODING).encode('ascii', 'xmlcharrefreplace')
-            except UnicodeDecodeError as e:
-                logger.log(u'Unable to decode using {0}, trying utf-8. Error is: {1}'.format(sickbeard.SYS_ENCODING, ex(e)),logger.DEBUG)
+                filtered = unicode(val).encode('ascii', 'xmlcharrefreplace')
+            except UnicodeDecodeError, UnicodeEncodeError:
                 try:
-                    filtered = val.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
-                except UnicodeDecodeError as e:
-                    logger.log(u'Unable to decode using utf-8, Error is {0}.'.format(ex(e)),logger.ERROR)
+                    filtered = unicode(val, chardet.detect(val).get('encoding')).encode('ascii', 'xmlcharrefreplace')
+                except (UnicodeDecodeError, UnicodeEncodeError) as e:
+                    try:
+                        filtered = unicode(val, sickbeard.SYS_ENCODING).encode('ascii', 'xmlcharrefreplace')
+                    except (UnicodeDecodeError, UnicodeEncodeError) as e:
+                        logger.log(u'Unable to decode using {0}, trying utf-8. Error is: {1}'.format(sickbeard.SYS_ENCODING, ex(e)), logger.DEBUG)
+                        try:
+                            filtered = unicode(val, 'utf-8').encode('ascii', 'xmlcharrefreplace')
+                        except (UnicodeDecodeError, UnicodeEncodeError) as e:
+                            try:
+                                logger.log(u'Unable to decode using utf-8, trying latin-1. Error is: {1}'.format(ex(e)), logger.DEBUG)
+                                filtered = unicode(val, 'latin-1').encode('ascii', 'xmlcharrefreplace')
+                            except UnicodeDecodeError, UnicodeEncodeError:
+                                logger.log(u'Unable to decode using latin-1, Error is {0}.'.format(ex(e)),logger.ERROR)
         else:
             filtered = self.filter(str(val))
 

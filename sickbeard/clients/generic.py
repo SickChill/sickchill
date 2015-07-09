@@ -8,8 +8,8 @@ from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard.clients import http_error_code
 from lib.bencode import bencode, bdecode
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from lib.bencode.BTL import BTFailure
 
 class GenericClient(object):

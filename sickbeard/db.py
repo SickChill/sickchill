@@ -23,7 +23,7 @@ import re
 import sqlite3
 import time
 import threading
-
+import chardet
 import sickbeard
 
 from sickbeard import encodingKludge as ek
@@ -229,9 +229,22 @@ class DBConnection(object):
 
     def _unicode_text_factory(self, x):
         try:
-            return unicode(x, 'utf-8')
-        except:
-            return unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
+            x = unicode(x)
+        except UnicodeDecodeError:
+            try:
+                x = unicode(x, chardet.detect(x).get('encoding'))
+            except UnicodeDecodeError:
+                try:
+                    x = unicode(x, sickbeard.SYS_ENCODING)
+                except UnicodeDecodeError:
+                    try:
+                        x = unicode(x, 'utf-8')
+                    except UnicodeDecodeError:
+                        try:
+                            x = unicode(x, 'latin-1')
+                        except UnicodeDecodeError:
+                            x = unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
+        return x
 
     def _dict_factory(self, cursor, row):
         d = {}

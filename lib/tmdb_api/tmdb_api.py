@@ -7,7 +7,7 @@ Created by Celia Oakley on 2013-10-31.
 """
 
 import json
-import lib.requests as requests
+import requests
 
 class TMDB:
     def __init__(self, api_key, version=3):

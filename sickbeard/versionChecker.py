@@ -33,8 +33,8 @@ from sickbeard import ui
 from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
-from lib import requests
-from lib.requests.exceptions import RequestException
+import requests
+from requests.exceptions import RequestException
 
 import shutil
 import lib.shutil_custom

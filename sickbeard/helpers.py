@@ -45,7 +45,7 @@ import subliminal
 import babelfish
 
 import adba
-from lib import requests
+import requests
 import certifi
 import xmltodict
 

@@ -28,7 +28,7 @@ from sickbeard import logger
 from sickbeard import tvcache
 from sickbeard.exceptions import ex
 
-from lib import requests
+import requests
 from lib.bencode import bdecode
 
 
