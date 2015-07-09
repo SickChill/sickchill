@@ -27,7 +27,7 @@ import urllib
 import random
 
 import sickbeard
-from lib import requests
+import requests
 
 from sickbeard import helpers, classes, logger, db
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT

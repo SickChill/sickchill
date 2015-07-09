@@ -57,7 +57,7 @@ from sickbeard.helpers import ex
 
 from lib.configobj import ConfigObj
 
-from lib import requests
+import requests
 requests.packages.urllib3.disable_warnings()
 
 PID = None

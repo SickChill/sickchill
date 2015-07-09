@@ -1,6 +1,6 @@
 import json
 import os
-from lib import requests
+import requests
 from fanart.core import Request
 from fanart.immutable import Immutable
 

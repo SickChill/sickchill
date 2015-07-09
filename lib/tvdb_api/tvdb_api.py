@@ -21,8 +21,8 @@ import warnings
 import logging
 import zipfile
 import datetime as dt
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 import xmltodict
 
 try:
