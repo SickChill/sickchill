@@ -63,16 +63,14 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
 <br />
 
-<!--
 <b>Default Episode Status:</b><br />
-(this will set a default status of already aired episodes)<br />
+(this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
     #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED]:
     <option value="$curStatus" #if $curStatus == $show.default_ep_status then 'selected="selected"' else ''#>$statusStrings[$curStatus]</option>
     #end for
 </select><br />
 <br />
--->
 
 <b>Info Language:</b><br />
 (this will only affect the language of the retrieved metadata file contents and episode filenames)<br />

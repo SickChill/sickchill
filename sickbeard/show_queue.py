@@ -420,6 +420,9 @@ class QueueItemAdd(ShowQueueItem):
                                                                                    self.show.indexer):
             self.show.scene = 1
 
+        # After initial add, set back to WANTED.
+        self.show.default_ep_status = WANTED
+
         self.finish()
 
     def _finishEarly(self):

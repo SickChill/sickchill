@@ -99,7 +99,7 @@ class DailySearcher():
                     UpdateWantedList = 1
                 else:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to WANTED")
-                    ep.status = common.WANTED
+                    ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
         else:
