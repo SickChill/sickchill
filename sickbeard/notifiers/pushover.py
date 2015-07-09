@@ -57,17 +57,22 @@ class PushoverNotifier:
 
         # send the request to pushover
         try:
+            args = {
+                    "token": apiKey,
+                    "user": userKey,
+                    "title": title.encode('utf-8'),
+                    "message": msg.encode('utf-8'),
+                    "timestamp": int(time.time()),
+                    "retry": 60,
+                    "expire": 3600,
+                   }
+
+            if sickbeard.PUSHOVER_DEVICE:
+                args["device"] = sickbeard.PUSHOVER_DEVICE
+
             conn = httplib.HTTPSConnection("api.pushover.net:443")
             conn.request("POST", "/1/messages.json",
-                         urllib.urlencode({
-                             "token": apiKey,
-                             "user": userKey,
-                             "title": title.encode('utf-8'),
-                             "message": msg.encode('utf-8'),
-                             'timestamp': int(time.time()),
-                             "retry": 60,
-                             "expire": 3600,
-                         }), {"Content-type": "application/x-www-form-urlencoded"})
+                         urllib.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
 
         except urllib2.HTTPError, e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
@@ -142,7 +147,6 @@ class PushoverNotifier:
 
         logger.log("Sending notification for " + message, logger.DEBUG)
 
-        # self._sendPushover(message, title, userKey, apiKey)
         return self._sendPushover(message, title, userKey, apiKey)
 
 

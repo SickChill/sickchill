@@ -4651,7 +4651,7 @@ class ConfigNotifications(Config):
                           use_boxcar2=None, boxcar2_notify_onsnatch=None, boxcar2_notify_ondownload=None,
                           boxcar2_notify_onsubtitledownload=None, boxcar2_accesstoken=None,
                           use_pushover=None, pushover_notify_onsnatch=None, pushover_notify_ondownload=None,
-                          pushover_notify_onsubtitledownload=None, pushover_userkey=None, pushover_apikey=None,
+                          pushover_notify_onsubtitledownload=None, pushover_userkey=None, pushover_apikey=None, pushover_device=None,
                           use_libnotify=None, libnotify_notify_onsnatch=None, libnotify_notify_ondownload=None,
                           libnotify_notify_onsubtitledownload=None,
                           use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
@@ -4750,6 +4750,7 @@ class ConfigNotifications(Config):
         sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
         sickbeard.PUSHOVER_USERKEY = pushover_userkey
         sickbeard.PUSHOVER_APIKEY = pushover_apikey
+        sickbeard.PUSHOVER_DEVICE = pushover_device
 
         sickbeard.USE_LIBNOTIFY = config.checkbox_to_value(use_libnotify)
         sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
