@@ -302,6 +302,9 @@ class TNTVillageProvider(generic.TorrentProvider):
 
         name = str(span_tag)
 
+        if not name:
+            return 0
+
         subFound=0
 
         for sub in self.sub_string:
