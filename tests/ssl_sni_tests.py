@@ -22,36 +22,29 @@ import sys, os.path
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from lib import requests
-from sickbeard.providers.torrentday import provider as torrentday
-from sickbeard.providers.rarbg import provider as rarbg
-from sickbeard.providers.scc import provider as sceneaccess
-
-enabled_sni = True
-if sys.version_info < (2, 7, 9):
-    try:
-        import cryptography
-    except ImportError:
-        try:
-            from OpenSSL.version import __version__ as pyOpenSSL_Version
-            if int(pyOpenSSL_Version.replace('.', '')[:3]) > 13:
-                raise ImportError
-        except ImportError:
-            enabled_sni = False
-
+import requests
+import sickbeard.providers as providers
+import certifi
+from sickbeard.exceptions import ex
 
 class SNI_Tests(unittest.TestCase):
     def test_SNI_URLS(self):
-        if not enabled_sni:
-            print('\nSNI is disabled with pyOpenSSL >= 0.14 when the cryptography module is missing,\n' +
-                    'you will encounter SSL errors with HTTPS! To fix this issue:\n' +
-                    'pip install pyopenssl==0.13.1 (easy) or pip install cryptography (pita)')
-            print
-        else:
-            for provider in [ torrentday, rarbg, sceneaccess ]:
-                #print 'Checking ' + provider.name
-                self.assertEqual(requests.get(provider.url).status_code, 200)
-
+        print ''
+        #Just checking all providers - we should make this error on non-existent urls.
+        for provider in providers.makeProviderList():
+            print 'Checking %s' % provider.name
+            try:
+                requests.head(provider.url, verify=certifi.where(), timeout=5)
+            except requests.exceptions.Timeout:
+                pass
+            except requests.exceptions.SSLError as error:
+                if u'SSL3_GET_SERVER_CERTIFICATE' not in ex(error.message):
+                    print 'SSLError on %s: %s' % (provider.name, ex(error.message))
+                    raise
+                else:
+                    print  'Cannot verify certificate for %s' % provider.name
+            except Exception:
+                pass
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(SNI_Tests)

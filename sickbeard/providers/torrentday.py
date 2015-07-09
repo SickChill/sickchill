@@ -29,8 +29,8 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
 from sickbeard import clients
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from sickbeard.helpers import sanitizeSceneName
 
 

@@ -29,6 +29,7 @@ from sickbeard import logger
 from sickbeard import db
 from sickbeard import encodingKludge as ek
 import os
+import requests
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -175,7 +176,7 @@ def retrieve_exceptions():
 
             loc = sickbeard.indexerApi(indexer).config['scene_loc']
             if loc.startswith("http"):
-                data = helpers.getURL(loc)
+                data = helpers.getURL(loc, session=sickbeard.indexerApi(indexer).session)
             else:
                 loc = helpers.real_path(ek.ek(os.path.join, ek.ek(os.path.dirname, __file__), loc))
                 with open(loc, 'r') as file:
@@ -293,8 +294,11 @@ def _anidb_exceptions_fetcher():
     return anidb_exception_dict
 
 
+xem_session = requests.Session()
+
 def _xem_exceptions_fetcher():
     global xem_exception_dict
+    global xem_session
 
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
@@ -303,7 +307,7 @@ def _xem_exceptions_fetcher():
             url = "http://thexem.de/map/allNames?origin=%s&seasonNumbers=1" % sickbeard.indexerApi(indexer).config[
                 'xem_origin']
 
-            parsedJSON = helpers.getURL(url, json=True)
+            parsedJSON = helpers.getURL(url, session=xem_session, json=True)
             if not parsedJSON:
                 logger.log(u"Check scene exceptions update failed for " + sickbeard.indexerApi(
                     indexer).name + ", Unable to get URL: " + url, logger.ERROR)

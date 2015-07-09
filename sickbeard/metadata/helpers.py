@@ -18,8 +18,9 @@
 
 from sickbeard import helpers
 from sickbeard import logger
+import requests
 
-
+meta_session = requests.Session()
 def getShowImage(url, imgNum=None):
     image_data = None  # @UnusedVariable
 
@@ -34,7 +35,7 @@ def getShowImage(url, imgNum=None):
 
     logger.log(u"Fetching image from " + tempURL, logger.DEBUG)
 
-    image_data = helpers.getURL(tempURL)
+    image_data = helpers.getURL(tempURL, session=meta_session)
     if image_data is None:
         logger.log(u"There was an error trying to retrieve the image, aborting", logger.WARNING)
         return

@@ -39,7 +39,7 @@
                     </div>
                     <fieldset class="component-group-list">
                         <div class="field-pair">
-                            <label class="cleafix" for="use_kodi">
+                            <label class="clearfix" for="use_kodi">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
                                     <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" #if $sickbeard.USE_KODI then "checked=\"checked\"" else ""# />
@@ -911,6 +911,16 @@
                                     <span class="component-desc"><a href="<%= anon_url('https://pushover.net/apps/clone/sickrage') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</span>
                                 </label>
                             </div>
+                            <div class="field-pair">
+                                <label for="pushover_device">
+                                    <span class="component-title">Pushover devices</span>
+                                    <input type="text" name="pushover_device" id="pushover_device" value="$sickbeard.PUSHOVER_DEVICE" class="form-control input-sm input250" />
+                                </label>
+                                <label>
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">comma separated list of pushover devices you want to send notifications to</span>
+                                </label>
+                            </div>
                             <div class="testNotification" id="testPushover-result">Click below to test.</div>
                             <input  class="btn" type="button" value="Test Pushover" id="testPushover" />
                             <input type="submit" class="config_submitter btn" value="Save Changes" />
@@ -1462,7 +1472,7 @@
                             <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />                            
                             <div class="field-pair">
                                 <label for="trakt_disable_ssl_verify">
-                                    <span class="component-title">Disable SSL Verification:</span>
+                                    <span class="component-title">Disable SSL Verification</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_disable_ssl_verify" id="trakt_disable_ssl_verify" #if $sickbeard.TRAKT_DISABLE_SSL_VERIFY then "checked=\"checked\"" else ""# />
                                         <p>Disable SSL certificate verification for broken SSL installs (like QNAP NAS)</p>
@@ -1471,7 +1481,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_timeout">
-                                    <span class="component-title">API Timeout:</span>
+                                    <span class="component-title">API Timeout</span>
                                     <input type="text" name="trakt_timeout" id="trakt_timeout" value="$sickbeard.TRAKT_TIMEOUT" class="form-control input-sm input75" />
                                 </label>
                                 <p>
@@ -1482,7 +1492,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_default_indexer">
-                                    <span class="component-title">Default indexer:</span>
+                                    <span class="component-title">Default indexer</span>
                                     <span class="component-desc">
                                         <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm">
                                             #for $indexer in $sickbeard.indexerApi().indexers
@@ -1494,7 +1504,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_sync">
-                                    <span class="component-title">Sync libraries:</span>
+                                    <span class="component-title">Sync libraries</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" #if $sickbeard.TRAKT_SYNC then "checked=\"checked\"" else ""# />
                                         <p>sync your SickRage show library with your trakt show library.</p>
@@ -1504,7 +1514,7 @@
                             <div id="content_trakt_sync">
                                 <div class="field-pair">
                                     <label for="trakt_sync_remove">
-                                        <span class="component-title">Remove Episodes From Collection:</span>
+                                        <span class="component-title">Remove Episodes From Collection</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" #if $sickbeard.TRAKT_SYNC_REMOVE then "checked=\"checked\"" else ""# />
                                             <p>Remove an Episode from your Trakt Collection if it is not in your SickRage Library.</p>
@@ -1514,7 +1524,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_sync_watchlist">
-                                    <span class="component-title">Sync watchlist:</span>
+                                    <span class="component-title">Sync watchlist</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" #if $sickbeard.TRAKT_SYNC_WATCHLIST then "checked=\"checked\"" else ""# />
                                         <p>sync your SickRage show watchlist with your trakt show watchlist (either Show and Episode).</p>
@@ -1525,7 +1535,7 @@
                             <div id="content_trakt_sync_watchlist">
                                 <div class="field-pair">
                                     <label for="trakt_method_add">
-                                        <span class="component-title">Watchlist add method:</span>
+                                        <span class="component-title">Watchlist add method</span>
                                            <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm">
                                             <option value="0" #if $sickbeard.TRAKT_METHOD_ADD == 0 then "selected=\"selected\"" else ""#>Skip All</option>
                                             <option value="1" #if $sickbeard.TRAKT_METHOD_ADD == 1 then "selected=\"selected\"" else ""#>Download Pilot Only</option>
@@ -1539,16 +1549,16 @@
                                 </div>
                                 <div class="field-pair">
                                     <label for="trakt_remove_watchlist">
-                                        <span class="component-title">Remove episode:</span>
+                                        <span class="component-title">Remove episode</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" #if $sickbeard.TRAKT_REMOVE_WATCHLIST then "checked=\"checked\"" else ""# />
                                             <p>remove an episode from your watchlist after it is downloaded.</p>
                                         </span>
                                     </label>
-                                 </div>
+                                </div>
                                 <div class="field-pair">
                                     <label for="trakt_remove_serieslist">
-                                        <span class="component-title">Remove series:</span>
+                                        <span class="component-title">Remove series</span>
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" #if $sickbeard.TRAKT_REMOVE_SERIESLIST then "checked=\"checked\"" else ""# />
                                             <p>remove the whole series from your watchlist after any download.</p>
@@ -1556,18 +1566,34 @@
                                     </label>
                                 </div>
                                 <div class="field-pair">
+                                    <label for="trakt_remove_show_from_sickrage">
+                                        <span class="component-title">Remove watched show:</span>
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" #if $sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE then "checked=\"checked\"" else ""# />
+                                            <p>remove the show from sickrage if it's ended and completely watched</p>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="field-pair">
                                     <label for="trakt_start_paused">
-                                        <span class="component-title">Start paused:</span>
+                                        <span class="component-title">Start paused</span>
+#if not $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD
                                         <span class="component-desc">
                                             <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #if $sickbeard.TRAKT_START_PAUSED then "checked=\"checked\"" else ""# />
                                             <p>show's grabbed from your trakt watchlist start paused.</p>
                                         </span>
+#else
+                                        <span class="component-desc">
+                                            <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" #if $sickbeard.TRAKT_START_PAUSED then "checked=\"checked\"" else ""# disabled="disable"/>
+                                            <p>show's grabbed from your trakt watchlist start paused.</p>
+                                        </span>
+#end if
                                     </label>
                                 </div>
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_blacklist_name">
-                                    <span class="component-title">Trakt blackList name:</span>
+                                    <span class="component-title">Trakt blackList name</span>
                                     <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="$sickbeard.TRAKT_BLACKLIST_NAME" class="form-control input-sm input150" />
                                 </label>
                                 <label>
@@ -1577,7 +1603,7 @@
                             </div>
                             <div class="field-pair">
                                 <label for="trakt_use_rolling_download">
-                                    <span class="component-title">Use rolling download:</span>
+                                    <span class="component-title">Use rolling download</span>
                                     <span class="component-desc">
                                         <input type="checkbox" class="enabler" name="trakt_use_rolling_download" id="trakt_use_rolling_download" #if $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD then "checked=\"checked\"" else ""# />
                                         <p>Collect defined number of episodes after last watched one</p>
@@ -1587,18 +1613,18 @@
                             <div id="content_trakt_use_rolling_download">
                                   <div class="field-pair">
                                     <label for="trakt_rolling_num_ep">
-                                        <span class="component-title">Number of Episode:</span>
+                                        <span class="component-title">Number of episodes</span>
                                         <span class="component-desc">
                                         <input type="number" name="trakt_rolling_num_ep" id="trakt_rolling_num_ep" value="$sickbeard.TRAKT_ROLLING_NUM_EP" class="form-control input-sm input75"/>
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">numebr of episode that SickBeard try to download fron last watched episode</span>
+                                        <span class="component-desc">Episodes that Sickrage will download based on the last watched episode</span>
                                     </label>    
                                 </div>
                                 <div class="field-pair">
                                     <label for="trakt_rolling_frequency">
-                                        <span class="component-title">Rolling frequency check:</span>
+                                        <span class="component-title">Rolling frequency check</span>
                                         <input type="text" name="trakt_rolling_frequency" id="trakt_rolling_frequency" value="$sickbeard.TRAKT_ROLLING_FREQUENCY" class="form-control input-sm input250" />
                                     </label>
                                     <p>
@@ -1607,13 +1633,13 @@
                                 </div>
                                   <div class="field-pair">
                                     <label for="trakt_rolling_add_paused">
-                                        <span class="component-title">Should new show to be added paused?:</span>
+                                        <span class="component-title">Add new show as paused</span>
                                         <span class="component-desc">
                                         <input type="checkbox" name="trakt_rolling_add_paused" id="trakt_rolling_add_paused" #if $sickbeard.TRAKT_ROLLING_ADD_PAUSED then "checked=\"checked\"" else ""# />
                                     </label>
                                     <label>
                                         <span class="component-title">&nbsp;</span>
-                                        <span class="component-desc">This feauture will try to snatch <i>number of episode</i> if the show is active. Whould you like to add new show in paused mode(this override previous choice)?</span>
+                                        <span class="component-desc">Stop rolling download to start to download episode.</span>
                                     </label>    
                                 </div>
                             </div>

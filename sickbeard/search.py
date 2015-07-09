@@ -242,6 +242,7 @@ def pickBestResult(results, show):
         if len(cur_result.url) and cur_result.provider:
             cur_result.url = cur_result.provider.headURL(cur_result)
             if not len(cur_result.url):
+                logger.log('Skipping %s, URL check failed. Bad result from provider.' % cur_result.name,logger.INFO) 
                 continue
 
         if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):

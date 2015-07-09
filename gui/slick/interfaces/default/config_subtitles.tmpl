@@ -1,7 +1,7 @@
 #from sickbeard import subtitles
 #import sickbeard
 #from sickbeard.helpers import anon_url
-
+#from babelfish import Language
 #set global $title="Config - Subtitles"
 #set global $header="Subtitles"
 
@@ -19,7 +19,7 @@
   	\$(document).ready(function() {
 		\$("#subtitles_languages").tokenInput(
 				[
-	                <%=",\r\n".join("{id: \"" + lang[2] + "\", name: \"" + lang[3] + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
+	                <%=",\r\n".join("{id: \"" + lang.alpha3 + "\", name: \"" + lang.name + "\"}" for lang in subtitles.subtitleLanguageFilter())%>
 	            ],
 	            {
 					method: "POST",
@@ -29,7 +29,7 @@
 	            		
 		            		[
 		            			<%=
-		            					",\r\n".join("{id: \"" + lang + "\", name: \"" + subtitles.getLanguageName(lang) + "\"}" for lang in sickbeard.SUBTITLES_LANGUAGES) if sickbeard.SUBTITLES_LANGUAGES != '' else ''
+		            					",\r\n".join("{id: \"" + Language.fromietf(lang).alpha3 + "\", name: \"" + Language.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''
 		            			%>
 		            		]
 	            }
@@ -143,20 +143,17 @@
                     <fieldset class="component-group-list" style="margin-left: 50px; margin-top:36px">
                         <ul id="service_order_list">
                         #for $curService in $sickbeard.subtitles.sortedServiceList():
-                            #set $curName = $curService.id
-                          <li class="ui-state-default" id="$curName">
-                            <input type="checkbox" id="enable_$curName" class="service_enabler" #if $curService.enabled then "checked=\"checked\"" else ""#/>
-                            #set $provider_url = $curService.url
-                            <a href="<%= anon_url(provider_url) %>" class="imgLink" target="_new">
-                                <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService.name" title="$curService.name" width="16" height="16" style="vertical-align:middle;"/>
-                            </a>
-                            <span style="vertical-align:middle;">$curService.name.capitalize()</span>
-                            #if not $curService.api_based then "*" else ""#
+                            <li class="ui-state-default" id="$curService['name']">
+                                <input type="checkbox" id="enable_$curService['name']" class="service_enabler" #if $curService['enabled'] then "checked=\"checked\"" else ""#/>
+                                <a href="<%= anon_url(curService['url']) %>" class="imgLink" target="_new">
+                                    <img src="$sbRoot/images/subtitles/$curService.image" alt="$curService['url']" title="$curService['url']" width="16" height="16" style="vertical-align:middle;"/>
+                                </a>
+                            <span style="vertical-align:middle;">$curService['name'].capitalize()</span>
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         #end for
                         </ul>
-                        <input type="hidden" name="service_order" id="service_order" value="<%=" ".join([x.get('id')+':'+str(int(x.get('enabled'))) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
+                        <input type="hidden" name="service_order" id="service_order" value="<%=" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
                         
                         <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>

@@ -131,13 +131,9 @@
 				<td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
 				<td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
 				#if $curStatus == SUBTITLED:
-				    #if $sickbeard.SUBTITLES_MULTI:
-					    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= hItem["resource"][len(hItem["resource"])-6:len(hItem["resource"])-4]+'.png'%>" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
-					#else
-					    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/unknown.png">
-					#end if
-				#end if    
-					<span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem["resource"])">$statusStrings[$curStatus]</span>
+					<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
+				#end if
+					<span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem['resource'])">$statusStrings[$curStatus]</span>
 				</td>
 				<td align="center">
 				#if $curStatus == DOWNLOADED:
@@ -153,11 +149,11 @@
 							#else:
 								<img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
 							#end if
-							#else:
-								<img src="$sbRoot/images/subtitles/<%=hItem["provider"]+'.png' %>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;"><%=hItem["provider"].capitalize()%></span>
-							#end if
+						#else:
+								<img src="$sbRoot/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;"><%=hItem["provider"].capitalize()%></span>
 						#end if
 					#end if
+				#end if
 				</td>
 				<span style="display: none;">$curQuality</span>
 				<td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
@@ -226,9 +222,9 @@
 					#for $action in sorted($hItem["actions"]):
 						#set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
 						#if $curStatus == SUBTITLED:
-							<img src="$sbRoot/images/subtitles/<%=action["provider"]+'.png' %>" width="16" height="16" style="vertical-align:middle;" alt="$action["provider"]" title="<%=action["provider"].capitalize()%>: $os.path.basename($action["resource"])"/>
+							<img src="$sbRoot/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="$action["provider"]" title="<%=action["provider"].capitalize()%>: $os.path.basename($action["resource"])"/>
 							<span style="vertical-align:middle;"> / </span> 
-							<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/<%= action["resource"][len(action["resource"])-6:len(action["resource"])-4]+'.png'%>" style="vertical-align: middle !important;">
+							<img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/${action['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';" style="vertical-align: middle !important;">
 							&nbsp;
 						#end if    
 					#end for

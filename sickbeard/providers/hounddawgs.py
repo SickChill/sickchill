@@ -33,8 +33,8 @@ from sickbeard import show_name_helpers
 from sickbeard.common import Overview
 from sickbeard.exceptions import ex
 from sickbeard import clients
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName

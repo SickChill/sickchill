@@ -34,8 +34,8 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex, AuthException
 from sickbeard import clients
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -116,12 +116,12 @@ class IPTorrentsProvider(generic.TorrentProvider):
         if self.show.air_by_date:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|')
+                            str(ep_obj.airdate).replace('-', ' ')
                 search_string['Episode'].append(ep_string)
         elif self.show.sports:
             for show_name in set(allPossibleShowNames(self.show)):
                 ep_string = sanitizeSceneName(show_name) + ' ' + \
-                            str(ep_obj.airdate).replace('-', '|') + '|' + \
+                            str(ep_obj.airdate).replace('-', ' ') + '|' + \
                             ep_obj.airdate.strftime('%b')
                 search_string['Episode'].append(ep_string)
         elif self.show.anime:

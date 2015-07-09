@@ -26,8 +26,8 @@ import datetime
 import json
 import time
 
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 
 import sickbeard
 from sickbeard.common import Quality, USER_AGENT
@@ -40,7 +40,7 @@ from sickbeard import helpers
 from sickbeard import classes
 from sickbeard.exceptions import ex
 from sickbeard.helpers import sanitizeSceneName
-from lib.requests.exceptions import RequestException
+from requests.exceptions import RequestException
 from sickbeard.indexers.indexer_config import INDEXER_TVDB,INDEXER_TVRAGE
 
 
@@ -54,7 +54,6 @@ class RarbgProvider(generic.TorrentProvider):
         generic.TorrentProvider.__init__(self, "Rarbg")
 
         self.enabled = False
-        self.session = None
         self.supportsBacklog = True
         self.ratio = None
         self.minseed = None
@@ -105,14 +104,13 @@ class RarbgProvider(generic.TorrentProvider):
         if self.token and self.tokenExpireDate and datetime.datetime.now() < self.tokenExpireDate:
             return True
 
-        self.session = requests.Session()
         resp_json = None
 
         try:
             response = self.session.get(self.urls['token'], timeout=30, headers=self.headers)
             response.raise_for_status()
             resp_json = response.json()
-        except (RequestException, BaseSSLError) as e:
+        except (RequestException) as e:
             logger.log(u'Unable to connect to {name} provider: {error}'.format(name=self.name, error=ex(e)), logger.ERROR)
             return False
 

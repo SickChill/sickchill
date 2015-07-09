@@ -32,7 +32,7 @@ import xml.etree.cElementTree as etree
 
 from name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
-from lib import subliminal
+import subliminal
 
 try:
     from lib.send2trash import send2trash
@@ -40,7 +40,7 @@ except ImportError:
     pass
 
 from lib.imdb import imdb
-
+import logging
 from sickbeard import db
 from sickbeard import helpers, exceptions, logger
 from sickbeard.exceptions import ex
@@ -53,7 +53,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard import sbdatetime
 from sickbeard import network_timezones
 from dateutil.tz import *
-from lib.subliminal.exceptions import ServiceError
+from subliminal.exceptions import Error as ServiceError
 
 from sickbeard import encodingKludge as ek
 
@@ -65,6 +65,8 @@ from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMIN
 
 import shutil
 import lib.shutil_custom
+
+import babelfish
 
 shutil.copyfile = lib.shutil_custom.copyfile_custom
 
@@ -412,6 +414,8 @@ class TVShow(object):
 
         # get file list
         mediaFiles = helpers.listMediaFiles(self._location)
+        logger.log(u"%s: Found files: %s" %
+                (self.indexerid, mediaFiles), logger.DEBUG)
 
         # create TVEpisodes from each media file (if possible)
         sql_l = []
@@ -454,12 +458,13 @@ class TVShow(object):
                     try:
                         curEpisode.refreshSubtitles()
                     except:
-                        logger.log(str(self.indexerid) + ": Could not refresh subtitles", logger.ERROR)
+                        logger.log("%s: Could not refresh subtitles" % self.indexerid, logger.ERROR)
                         logger.log(traceback.format_exc(), logger.DEBUG)
 
                 sql_l.append(curEpisode.get_sql())
 
-        if len(sql_l) > 0:
+
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
@@ -1109,21 +1114,22 @@ class TVShow(object):
                     with curEp.lock:
                         curEp.airdateModifyStamp()
 
-        if len(sql_l) > 0:
+        if sql_l:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
 
     def downloadSubtitles(self, force=False):
+        # TODO: Add support for force option
         if not ek.ek(os.path.isdir, self._location):
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, can't download subtitles", logger.DEBUG)
             return
 
-        logger.log(str(self.indexerid) + ": Downloading subtitles", logger.DEBUG)
+        logger.log("%s: Downloading subtitles" % self.indexerid, logger.DEBUG)
 
         try:
             episodes = self.getAllEpisodes(has_location=True)
-            if not len(episodes) > 0:
-                logger.log(str(self.indexerid) + ": No episodes to download subtitles for " + self.name, logger.DEBUG)
+            if not episodes:
+                logger.log("%s: No episodes to download subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
                 return
 
             for episode in episodes:
@@ -1422,79 +1428,139 @@ class TVEpisode(object):
         self.subtitles = subtitles.subtitlesLanguages(self.location)
 
     def downloadSubtitles(self, force=False):
-        # TODO: Add support for force option
         if not ek.ek(os.path.isfile, self.location):
-            logger.log(
-                str(self.show.indexerid) + ": Episode file doesn't exist, can't download subtitles for episode " + str(
-                    self.season) + "x" + str(self.episode), logger.DEBUG)
+            logger.log(u"%s: Episode file doesn't exist, can't download subtitles for S%02dE%02d" %
+                    (self.show.indexerid, self.season, self.episode), logger.DEBUG)
             return
-        logger.log(str(self.show.indexerid) + ": Downloading subtitles for episode " + str(self.season) + "x" + str(
-            self.episode), logger.DEBUG)
+
+        logger.log(u"%s: Downloading subtitles for S%02dE%02d" % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         previous_subtitles = self.subtitles
-        added_subtitles = []
+
+        #logging.getLogger('subliminal.api').addHandler(logging.StreamHandler())
+        #logging.getLogger('subliminal.api').setLevel(logging.DEBUG)
+        #logging.getLogger('subliminal').addHandler(logging.StreamHandler())
+        #logging.getLogger('subliminal').setLevel(logging.DEBUG)
 
         try:
-            need_languages = set(sickbeard.SUBTITLES_LANGUAGES) - set(self.subtitles)
-            subtitles = subliminal.download_subtitles([self.location], languages=need_languages,
-                                                      services=sickbeard.subtitles.getEnabledServiceList(), force=force,
-                                                      multi=sickbeard.SUBTITLES_MULTI, cache_dir=sickbeard.CACHE_DIR)
+            languages = set()
+            for language in frozenset(subtitles.wantedLanguages()).difference(self.subtitles):
+                languages.add(babelfish.Language.fromietf(language))
 
-            if sickbeard.SUBTITLES_DIR:
-                for video in subtitles:
-                    subs_new_path = ek.ek(os.path.join, os.path.dirname(video.path), sickbeard.SUBTITLES_DIR)
-                    dir_exists = helpers.makeDir(subs_new_path)
-                    if not dir_exists:
-                        logger.log(u"Unable to create subtitles folder " + subs_new_path, logger.ERROR)
-                    else:
-                        helpers.chmodAsParent(subs_new_path)
+            if not languages:
+                logger.log(u'%s: No missing subtitles for S%02dE%02d' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+                return
 
-                    for subtitle in subtitles.get(video):
-                        added_subtitles.append(subtitle.language.alpha2)
-                        new_file_path = ek.ek(os.path.join, subs_new_path, os.path.basename(subtitle.path))
-                        helpers.moveFile(subtitle.path, new_file_path)
-                        helpers.chmodAsParent(new_file_path)
+            providers = sickbeard.subtitles.getEnabledServiceList()
+            vname = self.location
+            create_link = False
+            if self.release_name:
+                try:
+                    dir, name = ek.ek(os.path.split, self.location)
+                    tmp = ek.ek(os.path.join, dir, self.release_name)
+                    if ek.ek(os.path.splitext, tmp)[-1] is not ek.ek(os.path.splitext, self.location)[-1]:
+                        tmp += ek.ek(os.path.splitext, self.location)[-1]
+
+                    create_link = not ek.ek(os.path.exists, tmp)
+                    if create_link:
+                        ek.ek(helpers.link, self.location, tmp)
+                    vname = tmp
+                except Exception:
+                    create_link = False
+                    vname = self.location
+                    pass
             else:
-                for video in subtitles:
-                    for subtitle in subtitles.get(video):
-                        added_subtitles.append(subtitle.language.alpha2)
-                        helpers.chmodAsParent(subtitle.path)
-        except ServiceError as e:
-            logger.log("Service is unavailable: {0}".format(str(e)), logger.INFO)
-            return
+                logger.log(u'%s: No release name for S%02dE%02d, using existing file name' %
+                      (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+
+            video = None
+            try:
+                video = subliminal.scan_video(vname, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
+            except Exception:
+                logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
+                    (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+                if create_link and vname is not self.location:
+                    ek.ek(os.unlink, vname)
+                return
+                pass
+
+            if create_link and vname is not self.location:
+                ek.ek(os.unlink, vname)
+
+            video.tvdb_id = self.show.indexerid
+            video.imdb_id = self.show.imdbid
+            if not video.title and self.name:
+                video.title = u'' + self.name
+            if not video.release_group and self.release_group:
+                video.release_group = self.release_group
+
+            # TODO: Add gui option for hearing_impaired parameter ?
+            foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=False)
+            if not foundSubs:
+                logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
+                return
+
+            if len(sickbeard.SUBTITLES_DIR):
+                # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
+                if ek.ek(os.path.isdir, sickbeard.SUBTITLES_DIR):
+                    subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.title)
+                    dir_exists = True
+                else:
+                    # relative to the folder the episode is in - sillyness?
+                    subs_new_path = ek.ek(os.path.join, os.path.dirname(self.location), sickbeard.SUBTITLES_DIR)
+                    dir_exists = helpers.makeDir(subs_new_path)
+
+                if not dir_exists:
+                    logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
+                else:
+                    helpers.chmodAsParent(subs_new_path)
+            else:
+                # let subliminal save the subtitles next to the episode
+                subs_new_path = None
+
+            subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
+
+            # rename the subtitles if needed
+            if create_link:
+                for video, subs in foundSubs.items():
+                    for sub in subs:
+                        path = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
+                        if subs_new_path:
+                            path = ek.ek(os.path.join, subs_new_path, ek.ek(os.path.split, path)[1])
+                        new_path = path.replace(ek.ek(os.path.splitext, release_name)[0], 
+                        ek.ek(os.path.splitext, ek.ek(os.path.basename, self.location))[0])
+                        if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, newpath):
+                            ek.ek(os.rename, path, newpath)
+
         except Exception as e:
-            logger.log("Error occurred when downloading subtitles: " + str(e), logger.ERROR)
+            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
             return
 
-        if sickbeard.SUBTITLES_MULTI:
-            self.refreshSubtitles()
-        else:
-            self.subtitles = added_subtitles
+        self.refreshSubtitles()
 
-        self.subtitles_searchcount = self.subtitles_searchcount + 1 if self.subtitles_searchcount else 1  # added the if because sometime it raise an error
+        self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.saveToDB()
 
-        newsubtitles = set(self.subtitles).difference(set(previous_subtitles))
-
-        if newsubtitles:
-            subtitleList = ", ".join(subliminal.language.Language(x).name for x in newsubtitles)
-            logger.log(str(self.show.indexerid) + u": Downloaded " + subtitleList + " subtitles for episode " + str(
-                self.season) + "x" + str(self.episode), logger.DEBUG)
+        newSubtitles = frozenset(self.subtitles).difference(previous_subtitles)
+        if newSubtitles:
+            subtitleList = ", ".join([babelfish.Language.fromietf(newSub).name for newSub in newSubtitles])
+            logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
+                (self.show.indexerid, subtitleList, self.season, self.episode), logger.DEBUG)
 
             notifiers.notify_subtitle_download(self.prettyName(), subtitleList)
-
         else:
-            logger.log(
-                str(self.show.indexerid) + u": No subtitles downloaded for episode " + str(self.season) + "x" + str(
-                    self.episode), logger.DEBUG)
+            logger.log(u"%s: No subtitles downloaded for S%02dE%02d" %
+                    (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            for video in subtitles:
-                for subtitle in subtitles.get(video):
-                    history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, subtitle)
+            for video, subs in foundSubs.items():
+                for sub in subs:
+                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
+                    history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)
 
-        return subtitles
+        return self.subtitles
+
 
     def checkForMetaFiles(self):
 
@@ -1978,60 +2044,62 @@ class TVEpisode(object):
         forceSave: If True it will create SQL queue even if no data has been changed since the
                     last save (aka if the record is not dirty).
         """
+        try:
+            if not self.dirty and not forceSave:
+                logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
+                return
 
-        if not self.dirty and not forceSave:
-            logger.log(str(self.show.indexerid) + u": Not creating SQL queue - record is not dirty", logger.DEBUG)
-            return
+            myDB = db.DBConnection()
+            rows = myDB.select(
+                'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
+                [self.show.indexerid, self.season, self.episode])
 
-        myDB = db.DBConnection()
-        rows = myDB.select(
-            'SELECT episode_id, subtitles FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?',
-            [self.show.indexerid, self.season, self.episode])
+            epID = None
+            if rows:
+                epID = int(rows[0]['episode_id'])
 
-        epID = None
-        if rows:
-            epID = int(rows[0]['episode_id'])
-
-        if epID:
-            # use a custom update method to get the data into the DB for existing records.
-            # Multi or added subtitle or removed subtitles
-            if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
-                return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                    [self.indexerid, self.indexer, self.name, self.description, ",".join([sub for sub in self.subtitles]),
-                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                     self.hastbn,
-                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+            if epID:
+                # use a custom update method to get the data into the DB for existing records.
+                # Multi or added subtitle or removed subtitles
+                if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
+                    return [
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        [self.indexerid, self.indexer, self.name, self.description, ",".join(self.subtitles),
+                         self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                         self.hastbn,
+                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
+                else:
+                    # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                    return [
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        [self.indexerid, self.indexer, self.name, self.description,
+                         self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
+                         self.hastbn,
+                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
             else:
-                # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                # use a custom insert method to get the data into the DB.
                 return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                    [self.indexerid, self.indexer, self.name, self.description,
-                     self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                     self.hastbn,
-                     self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
-                     self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
-        else:
-            # use a custom insert method to get the data into the DB.
-            return [
-                "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
-                "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
-                "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-                [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
-                 self.description,
-                 ",".join([sub for sub in self.subtitles]), self.subtitles_searchcount, self.subtitles_lastsearch,
-                 self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
-                 self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
-                 self.absolute_number, self.version, self.release_group]]
+                    "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
+                    "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
+                    "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                    "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
+                    ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                    [self.show.indexerid, self.season, self.episode, self.indexerid, self.indexer, self.name,
+                     self.description, ",".join(self.subtitles), self.subtitles_searchcount, self.subtitles_lastsearch,
+                     self.airdate.toordinal(), self.hasnfo, self.hastbn, self.status, self.location, self.file_size,
+                     self.release_name, self.is_proper, self.show.indexerid, self.season, self.episode,
+                     self.absolute_number, self.version, self.release_group]]
+        except Exception as e:
+                logger.log(u"Error while updating database: %s" %
+                        (repr(e)), logger.ERROR)
 
     def saveToDB(self, forceSave=False):
         """
@@ -2053,7 +2121,7 @@ class TVEpisode(object):
                         "indexer": self.indexer,
                         "name": self.name,
                         "description": self.description,
-                        "subtitles": ",".join([sub for sub in self.subtitles]),
+                        "subtitles": ",".join(self.subtitles),
                         "subtitles_searchcount": self.subtitles_searchcount,
                         "subtitles_lastsearch": self.subtitles_lastsearch,
                         "airdate": self.airdate.toordinal(),
@@ -2536,6 +2604,7 @@ class TVEpisode(object):
         related_files = postProcessor.PostProcessor(self.location).list_associated_files(
             self.location, base_name_only=True, subfolders=True)
 
+        #This is wrong. Cause of pp not moving subs.
         if self.show.subtitles and sickbeard.SUBTITLES_DIR != '':
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(sickbeard.SUBTITLES_DIR,
                                                                                             subtitles_only=True, subfolders=True)

@@ -24,9 +24,10 @@ import os
 import re
 import itertools
 import urllib
+import random
 
 import sickbeard
-from lib import requests
+import requests
 
 from sickbeard import helpers, classes, logger, db
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
@@ -66,9 +67,18 @@ class GenericProvider:
 
         self.cache = tvcache.TVCache(self)
 
-        self.session = requests.session()
+        self.session = requests.Session()
 
-        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT}
+        self.headers = {'User-Agent': USER_AGENT}
+
+        self.btCacheURLS = [
+                'http://torcache.net/torrent/{torrent_hash}.torrent',
+                'http://zoink.ch/torrent/{torrent_name}.torrent',
+                'http://torrage.com/torrent/{torrent_hash}.torrent',
+                'http://itorrents.org/torrent/{torrent_hash}.torrent',
+            ]
+
+        random.shuffle(self.btCacheURLS)
 
     def getID(self):
         return GenericProvider.makeID(self.name)
@@ -128,8 +138,11 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
-            # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
+        else:
+            if 'Referer' in self.headers:
+                self.headers.pop('Referer')
+            self.proxyGlypeProxySSLwarning = None
 
         return helpers.getURL(self.proxy._buildURL(url), post_data=post_data, params=params, headers=self.headers, timeout=timeout,
                               session=self.session, json=json, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning)
@@ -150,11 +163,7 @@ class GenericProvider:
                     logger.log("Unable to extract torrent hash from link: " + ex(result.url), logger.ERROR)
                     return (urls, filename)
 
-                urls = [
-                    'http://torcache.net/torrent/' + torrent_hash + '.torrent',
-                    'http://zoink.ch/torrent/' + torrent_name + '.torrent',
-                    'http://torrage.com/torrent/' + torrent_hash + '.torrent',
-                ]
+                urls = [x.format(torrent_hash=torrent_hash, torrent_name=torrent_name) for x in self.btCacheURLS]
             except:
                 urls = [result.url]
         else:
@@ -184,11 +193,15 @@ class GenericProvider:
 
         if self.proxy.isEnabled():
             self.headers.update({'Referer': self.proxy.getProxyURL()})
-            # GlypeProxy SSL warning message
             self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
+        else:
+            if 'Referer' in self.headers:
+                self.headers.pop('Referer')
+            self.proxyGlypeProxySSLwarning = None
 
         for url in urls:
-            if helpers.headURL(self.proxy._buildURL(url), session=self.session, proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
+            if helpers.headURL(self.proxy._buildURL(url), session=self.session, headers=self.headers,
+                               proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
                 return url
 
         return u''
@@ -204,9 +217,14 @@ class GenericProvider:
 
         urls, filename = self._makeURL(result)
 
+        if self.proxy.isEnabled():
+            self.headers.update({'Referer': self.proxy.getProxyURL()})
+        elif 'Referer' in self.headers:
+            self.headers.pop('Referer')
+
         for url in urls:
             logger.log(u"Downloading a result from " + self.name + " at " + url)
-            if helpers.download_file(url, filename, session=self.session):
+            if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
                     logger.log(u"Saved result to " + filename, logger.INFO)
                     return True

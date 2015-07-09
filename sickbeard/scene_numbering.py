@@ -496,7 +496,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                     {'indexer_id': indexer_id})
 
         try:
-            parsedJSON = sickbeard.helpers.getURL(url, json=True)
+            from .scene_exceptions import xem_session
+            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
             if not parsedJSON or parsedJSON == '':
                 logger.log(u'No XEM data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return

@@ -3,11 +3,12 @@
 #import sickbeard.helpers
 #from sickbeard.common import *
 #from sickbeard.helpers import anon_url
-#from lib import subliminal
+#import subliminal
 #import os.path, os
 #import datetime
 #import urllib
 #import ntpath
+#import babelfish
 
 #set global $title=$show.name
 ##set global $header = '<a></a>' % 
@@ -131,7 +132,7 @@
         #end if
 
         #if not $sickbeard.DISPLAY_SHOW_SPECIALS and $season_special:
-            $seasonResults.pop(-1)
+            #$seasonResults.pop(-1)
         #end if
 
         <span class="h2footer displayspecials pull-right">
@@ -218,13 +219,13 @@
                     #if not $show.imdbid
                     #if $show.genre:
                     #for $genre in $show.genre[1:-1].split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
                     #end for
                     #end if
                     #end if
                     #if 'year' in $show.imdb_info:
                     #for $imdbgenre in $show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
                     #end for
                     #end if
                 </ul>
@@ -285,9 +286,10 @@
                 </table>
             
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
-                    <tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/flags/${show.lang}.png" width="16" height="11" alt="$show.lang" title="$show.lang" /></td></tr>
+                    #set $info_flag = $babelfish.Language.fromietf($show.lang).alpha3 if $subtitles.isValidLanguage($show.lang) else 'unknown'
+                    <tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/flags/${info_flag}.png" width="16" height="11" alt="$show.lang" title="$show.lang" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';"/></td></tr>
                     #if $sickbeard.USE_SUBTITLES
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if int($show.subtitles) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
+                    <tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if $show.subtitles then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
                     #end if
                     <tr><td class="showLegend">Flat Folders: </td><td><img src="$sbRoot/images/#if $show.flatten_folders == 1 or $sickbeard.NAMING_FORCE_FOLDERS then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
 					<tr><td class="showLegend">Paused: </td><td><img src="$sbRoot/images/#if int($show.paused) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
@@ -578,15 +580,10 @@
                 #end if
             </td>
             <td class="col-subtitles" align="center">
-            #if $epResult["subtitles"]:
-                #for $sub_lang in subliminal.language.language_list([x.strip() for x in $epResult["subtitles"].split(',') if x != ""]):
-                    #if sub_lang.alpha2 != ""
-                        <img src="$sbRoot/images/flags/${sub_lang.alpha2}.png" width="16" height="11" alt="${sub_lang}" />
-                    #else
-                        <img src="$sbRoot/images/flags/unknown.png" width="16" height="11" alt="Unknown" />
-                    #end if
-                #end for
-            #end if
+            #for $sub_lang in [babelfish.Language.fromietf(x) for x in $epResult["subtitles"].split(',') if $epResult["subtitles"]]:
+                #set $flag = $sub_lang.alpha3 if $hasattr($sub_lang, 'alpha3') and $sub_lang.alpha3 else $sub_lang.alpha2 if $hasattr($sub_lang, 'alpha2') and $sub_lang.alpha2 else 'unknown'
+                <img src="$sbRoot/images/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';" />
+            #end for
             </td>
             #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($epResult["status"]))
                 #if $curQuality != Quality.NONE:   
@@ -602,7 +599,7 @@
                         <a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                     #end if
                 #end if
-                #if $sickbeard.USE_SUBTITLES and $show.subtitles and len(set(str($epResult["subtitles"]).split(',')).intersection(set($subtitles.wantedLanguages()))) < len($subtitles.wantedLanguages()) and $epResult["location"]
+                #if $sickbeard.USE_SUBTITLES and $show.subtitles and $epResult["location"] and frozenset($subtitles.wantedLanguages()).difference($epResult["subtitles"].split(',')):
                     <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                 #end if
             </td>

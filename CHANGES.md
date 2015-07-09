@@ -1,3 +1,179 @@
+### 4.0.29 (2015-06-26)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.28...v4.0.29)
+
+* Fixed: "Failed to load URL" problems
+* Fixed: Spam and search string in SCC
+* Fixed: Missing import
+* Fixed: Name_cache lock
+* Fixed: Missing import in SCC
+* Fixed: Bad encoding
+* Fixed: ResultType not in class Proper
+* Added: NZB.Cat Provider
+* Added: Sleep between result url hits
+* Added: Scene exceptions as submodules
+* Removed: Verify off in order to fix requests
+* Removed: Https from rarbg token
+* Change: Travis can now cache pip installs between builds
+* Change: Made scene exceptions and network timezones paths be absolute
+
+### 4.0.28 (2015-06-23)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.27...v4.0.28)
+
+* Fixed: SiCKRAGETV/sickrage-issues#1747
+* Fixed: torrentday
+* Fixed: Release group sometimes not showing in compact history
+* Fixed: Results from cache not honoring ignored/required words
+* Fixed: Newznab limmiting/fixes
+* Fixed: Missed import
+* Fixed: Missing import for show_name_helpers
+* Added: Trakt empty token error message
+* Added: Build caching for travis. 
+* Disabled: feedparser test
+* Cleaned: Name cache
+* Change: Strip ". -" from names after removeWords
+* Change: Propers code for newznab
+* Change: Use womble for feedparser test
+* Change: Make sure we are cleaning up destination filenames before renaming
+* Change: Set maxage to today-airdate to limit results to relevant results
+* Change: Test for write/permissions problems and warn
+* Change: Filter .torrent and .nzb from pp list of files
+* Change: Sleep between proper snatches
+* Change: Change USER_AGENT back to SR
+* Changed cpu_presets
+* Updated: webserve.py
+* Updated: tornado to 4.1.0 from 4.1.0dev1 
+
+### 4.0.27 (2015-06-18)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.26...v4.0.27)
+
+* Fixed: webapi CMD_ShowPause not updating database
+* Fixed: HDT removing first letter of the file
+* Fixed: Searches not running at all
+* Fixed: Properly import sickbeard.exceptions.ex
+* Fixed: Remove default ep status
+* Fixed: Fixed /SiCKRAGETV/sickrage-issues#1814 & /SiCKRAGETV/sickrage-issues#1743
+* Added: alt.binaries.teevee
+* Change: Try to get the best quality from the best/archived list on first snatch, but accept the highest from the any/allowed list otherwise
+* Change: Limit newznab searches to 400 results & clean up its logging
+* Change: Warn on bad gzip header response, instead of error
+* Removed eztv and ezrss due to general scene skepticism about the shady nature of their takeover
+* Removed OldPirateBay provider
+* Removed "Default Episode Status"
+* Updated RARBG to the new API (v2)
+
+### 4.0.26 (2015-06-14)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.25...v4.0.26)
+
+* Fixed: RemoveWords, ignoreWords, requiredWords fixes
+* Fixed: WindowsError undefined on linux, but WindowsError and IOError are just alias' of OSError
+* Added: '[vtv]' and '-20-40' to non-rlsgroups, Strip '[ www.TorrentDay.com ] - ' and '[ www.Cpasbien.pw ] ' release_name prefixes
+* Change: Allow SD as archive quality in custom qualities, SD is better than Unknown
+* Change: Allow select SDTV for Best/Archive quality in MassEdit
+
+### 4.0.25 (2015-06-12)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.24...v4.0.25)
+
+* Fixed: Verify_freespace check and return False on isFileLocked check
+* Fixed: SQLite3 on Debian8
+* Fixed: Torrage and zoink.ch, because torcache has a timer and returns html instead of a torrent
+* Added: Check for locked files when PPing
+* Added ranked and sorting options to RARBG
+* Change: Return all results from rarbg, not only internal.
+* Change: Log regex mode only on error, disable unnecessary pp messages.
+* Change: Sort rarbg results by seeders, not by newest
+* Updated thepiratebay url
+* Updated RARBG category to 'tv'
+
+### 4.0.24 (2015-06-08)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.23...v4.0.24)
+
+* Fixed: Potential bad episode airdates preventing SR from starting
+* Added: Small change for additional layout.Change: Cleaned up logging
+* Removed the dropdown menu under "Shows"
+* Updated the initial schema for failed.db and cache.db
+
+### 4.0.23 (2015-06-02)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.22...v4.0.23)
+
+* Changed image download issue from error to warning
+* Changed urls to use http github.io pages from our repos
+* Updated regexes.py
+
+### 4.0.22 (2015-05-28)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.21...v4.0.22)
+
+* Fixed: 'utf8' codec can't decode byte while reading the DB
+* Fixed SiCKRAGETV/sickrage-issues#1691
+* Added failed option to PP API
+* Added Add size attribute in providers.generic for nzb providers
+* Feature: Trakt PIN Auth 
+* Revert: "Update template"
+* Change: Also catch BadStatusLine
+* Change: Lowercase date fuzzies were ugly, and the 'last' keyword suggests > 7 days ago
+* Change: Uppercase 'in' and 'a' in fuzzy dates
+* Updated both requests to 2.6.0
+
+### 4.0.21 (2015-05-17)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.20...v4.0.21)
+
+* Fixed quality colors on history and displayShow pages
+* Fixed manual adding of group to black or white list
+* Added several network logos
+* Added the ability to browse possible links found in the homepage for the EZTV provider
+* Changed the InitScripts to use variable names and file names referencing SickRage, instead of SickBeard, to prevent conflicts, and improve readability
+* Feature: Add Fanart to local image cache 
+
+### 4.0.20 (2015-05-10)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.19...v4.0.20)
+
+* Fixed incorrect behaviour in the web API when a show search returns 0 results
+* Fixed funky Quality Names
+* Fixed the sb.searchindexers function of the web API so it doesn't immediately return after finding no results from the first indexer
+* Fixed html changes in http://eztv.ch
+* Fixed 'NoneType' object has no attribute 'whitelist 
+* Added flexibility when determine title from link in eztvapi.re 
+* Added missing "The Anime Network" logo
+* Enable trending shows only if Trakt is enabled
+* Change: SCC doesn't support searching dates with pipe characters. Use '.' instead
+* Change: Move init/upstart scripts to their own folder to organize and clean up the source
+* Change: Replace SSL Error with a url with information. Disable issue submission of such errors
+* Change: Re-enable feedparser test, as lolo.sickbeard.com is operational again
+* Changed sr_tvrage_scene_exceptions to use SiCKRAGETV repo instead of echel0n's
+* Removed pyOpenSSL from libs. Cryptography is only needed if you use pyOpenSSL 0.14 or newer. Instead `pip install pyopenssl==0.13.1`
+* Removed torrage.com as the domain expired, zoink.ch has nginx misconfigured or service stopped
+* Updated Regex to be more specific to for replacement
+
+### 4.0.19 (2015-05-04)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.18...v4.0.19)
+
+* Fixed SSL errors
+* Fixed travis reporting failed builds as successful
+* Fix: If re.search returns None due to no match, .group() will cause an exception
+* Fix: Center Search icon on displayShowTable
+* Added pyOpenSSL SNI test
+* Added ndg-httpsclient, pyOpenSSL, and pyasn1 to enable SNI
+* Added some missing Network logos.
+* Enable trending shows only if Trakt is enabled
+* Change: Use included libs
+* Change: Simplify script, replace sickbeard with sickrage to avoid conflicts
+* Reverted "Update requests library from v2.5.1 to v2.6.2 ff71b25e"
+* Removed reference to readme-FailedDownloads.md, which doesnt exist
+* Removed unused libs
+* Updated certifi certificates
+* Updated requests library from v2.5.1 to v2.6.2
+* Updated mainDB.InitialSchema to v42 to prevent db upgrade on a freshly built database
+
 ### 4.0.18 (2015-04-26)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.17...v4.0.18)

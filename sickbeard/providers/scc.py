@@ -35,8 +35,8 @@ from sickbeard import helpers
 from sickbeard import show_name_helpers
 from sickbeard.exceptions import ex
 from sickbeard import clients
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
 from lib.unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
@@ -191,7 +191,10 @@ class SCCProvider(generic.TorrentProvider):
 
                     #Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log(u'The Data returned from %s%s does not contain any torrent' % (self.name, ('', ' (%s)' % html.title)[html.title]), logger.DEBUG)
+                        info = u'The Data returned from %s does not contain any torrent' % self.name
+                        if html.title:
+                            info += ' (%s)' % html.title
+                        logger.log(info, logger.DEBUG)
                         continue
 
                     for result in torrent_table.find_all('tr')[1:]:

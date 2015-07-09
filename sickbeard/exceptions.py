@@ -33,18 +33,15 @@ def ex(e):
         if arg is not None:
             if isinstance(arg, (str, unicode)):
                 fixed_arg = ek.ss(arg)
-
             else:
                 try:
                     fixed_arg = u"error " + ek.ss(str(arg))
-
                 except:
                     fixed_arg = None
 
             if fixed_arg:
                 if not e_message:
                     e_message = fixed_arg
-
                 else:
                     e_message = e_message + " : " + fixed_arg
 

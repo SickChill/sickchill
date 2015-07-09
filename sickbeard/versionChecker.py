@@ -33,8 +33,8 @@ from sickbeard import ui
 from sickbeard import logger, helpers
 from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
-from lib import requests
-from lib.requests.exceptions import RequestException
+import requests
+from requests.exceptions import RequestException
 
 import shutil
 import lib.shutil_custom
@@ -68,7 +68,7 @@ class CheckVersion():
                 if sickbeard.AUTO_UPDATE:
                     logger.log(u"New update found for SickRage, starting auto-updater ...")
                     ui.notifications.message('New update found for SickRage, starting auto-updater')
-                    if self.safe_to_update() == True and self._runbackup() == True:
+                    if self.run_backup_if_safe() is True:
                         if sickbeard.versionCheckScheduler.action.update():
                             logger.log(u"Update was successful!")
                             ui.notifications.message('Update was successful')
@@ -76,6 +76,9 @@ class CheckVersion():
                         else:
                             logger.log(u"Update failed!")
                             ui.notifications.message('Update failed!')
+
+    def run_backup_if_safe(self):
+        return self.safe_to_update() is True and self._runbackup() is True
 
     def _runbackup(self):
         # Do a system backup before update
@@ -293,14 +296,27 @@ class GitUpdateManager(UpdateManager):
         self.github_org = self.get_github_org()
         self.github_repo = self.get_github_repo()
 
-        self.branch = sickbeard.BRANCH
-        if sickbeard.BRANCH == '':
-            self.branch = self._find_installed_branch()
+        sickbeard.BRANCH = self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = None
         self._newest_commit_hash = None
         self._num_commits_behind = 0
         self._num_commits_ahead = 0
+
+    def get_cur_commit_hash(self):
+        return self._cur_commit_hash
+
+    def get_newest_commit_hash(self):
+        return self._newest_commit_hash
+
+    def get_cur_version(self):
+        return self._run_git(self._git_path, "describe --abbrev=0 " + self._cur_commit_hash)[0]
+
+    def get_newest_version(self):
+        return self._run_git(self._git_path, "describe --abbrev=0 " + self._newest_commit_hash)[0]
+
+    def get_num_commits_behind(self):
+        return self._num_commits_behind
 
     def _git_error(self):
         error_message = 'Unable to find your git executable - Shutdown SickRage and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates.'
@@ -360,7 +376,7 @@ class GitUpdateManager(UpdateManager):
         output = err = exit_status = None
 
         if not git_path:
-            logger.log(u"No git specified, can't use git commands", logger.ERROR)
+            logger.log(u"No git specified, can't use git commands", logger.WARNING)
             exit_status = 1
             return (output, err, exit_status)
 
@@ -393,7 +409,7 @@ class GitUpdateManager(UpdateManager):
             exit_status = 1
 
         elif exit_status == 128 or 'fatal:' in output or err:
-            logger.log(cmd + u" returned : " + str(output), logger.ERROR)
+            logger.log(cmd + u" returned : " + str(output), logger.WARNING)
             exit_status = 128
 
         else:
@@ -429,6 +445,7 @@ class GitUpdateManager(UpdateManager):
         if exit_status == 0 and branch_info:
             branch = branch_info.strip().replace('refs/heads/', '', 1)
             if branch:
+                sickbeard.BRANCH = branch
                 return branch
                 
         return ""
@@ -491,7 +508,7 @@ class GitUpdateManager(UpdateManager):
         sickbeard.NEWEST_VERSION_STRING = None
 
         if self._num_commits_ahead:
-            logger.log(u"Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.ERROR)
+            logger.log(u"Local branch is ahead of " + self.branch + ". Automatic update not possible.", logger.WARNING)
             newest_text = "Local branch is ahead of " + self.branch + ". Automatic update not possible."
 
         elif self._num_commits_behind > 0:
@@ -526,7 +543,7 @@ class GitUpdateManager(UpdateManager):
             try:
                 self._check_github_for_update()
             except Exception, e:
-                logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.ERROR)
+                logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.WARNING)
                 return False
 
             if self._num_commits_behind > 0:
@@ -585,6 +602,7 @@ class GitUpdateManager(UpdateManager):
     def list_remote_branches(self):
         # update remote origin url
         self.update_remote_origin()
+        sickbeard.BRANCH = self._find_installed_branch()
 
         branches, err, exit_status = self._run_git(self._git_path, 'ls-remote --heads %s' % sickbeard.GIT_REMOTE)  # @UnusedVariable
         if exit_status == 0 and branches:
@@ -593,7 +611,7 @@ class GitUpdateManager(UpdateManager):
         return []
 
     def update_remote_origin(self):
-        self._run_git(self._git_path, 'config remote.origin.url %s' % sickbeard.GIT_REMOTE_URL)
+        self._run_git(self._git_path, 'config remote.%s.url %s' % (sickbeard.GIT_REMOTE, sickbeard.GIT_REMOTE_URL))
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
@@ -613,13 +631,28 @@ class SourceUpdateManager(UpdateManager):
             return "master"
         else:
             return sickbeard.CUR_COMMIT_BRANCH
-        
+
+    def get_cur_commit_hash(self):
+        return self._cur_commit_hash
+
+    def get_newest_commit_hash(self):
+        return self._newest_commit_hash
+
+    def get_cur_version(self):
+        return ""
+
+    def get_newest_version(self):
+        return ""
+
+    def get_num_commits_behind(self):
+        return self._num_commits_behind
+
     def need_update(self):
         # need this to run first to set self._newest_commit_hash
         try:
             self._check_github_for_update()
         except Exception, e:
-            logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.ERROR)
+            logger.log(u"Unable to contact github, can't check for update: " + repr(e), logger.WARNING)
             return False
 
         if self.branch != self._find_installed_branch():
@@ -719,7 +752,7 @@ class SourceUpdateManager(UpdateManager):
             urllib.urlretrieve(tar_download_url, tar_download_path)
 
             if not ek.ek(os.path.isfile, tar_download_path):
-                logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.ERROR)
+                logger.log(u"Unable to retrieve new version from " + tar_download_url + ", can't update", logger.WARNING)
                 return False
 
             if not ek.ek(tarfile.is_tarfile, tar_download_path):

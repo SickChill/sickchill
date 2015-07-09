@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # GuessIt - A library for guessing information from filenames
@@ -18,54 +18,64 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import unicode_literals
-from guessit.transfo import SingleNodeGuesser
-from guessit.patterns import find_properties
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import re
-import logging
 
-log = logging.getLogger(__name__)
+from guessit.plugins.transformers import Transformer
+from guessit.matcher import GuessFinder
 
 
-def guess_properties(string):
-    try:
-        prop, value, pos, end = find_properties(string)[0]
-        return { prop: value }, (pos, end)
-    except IndexError:
+_DIGIT = 0
+_LETTER = 1
+_OTHER = 2
+
+
+class GuessIdnumber(Transformer):
+    def __init__(self):
+        Transformer.__init__(self, 220)
+
+    def supported_properties(self):
+        return ['idNumber']
+
+    _idnum = re.compile(r'(?P<idNumber>[a-zA-Z0-9-]{20,})')  # 1.0, (0, 0))
+
+    def guess_idnumber(self, string, node=None, options=None):
+        match = self._idnum.search(string)
+        if match is not None:
+            result = match.groupdict()
+            switch_count = 0
+            switch_letter_count = 0
+            letter_count = 0
+            last_letter = None
+
+            last = _LETTER
+            for c in result['idNumber']:
+                if c in '0123456789':
+                    ci = _DIGIT
+                elif c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                    ci = _LETTER
+                    if c != last_letter:
+                        switch_letter_count += 1
+                    last_letter = c
+                    letter_count += 1
+                else:
+                    ci = _OTHER
+
+                if ci != last:
+                    switch_count += 1
+
+                last = ci
+
+            switch_ratio = float(switch_count) / len(result['idNumber'])
+            letters_ratio = (float(switch_letter_count) / letter_count) if letter_count > 0 else 1
+
+            # only return the result as probable if we alternate often between
+            # char type (more likely for hash values than for common words)
+            if switch_ratio > 0.4 and letters_ratio > 0.4:
+                return result, match.span()
+
         return None, None
 
-_idnum = re.compile(r'(?P<idNumber>[a-zA-Z0-9-]{10,})') # 1.0, (0, 0))
-
-def guess_idnumber(string):
-    match = _idnum.search(string)
-    if match is not None:
-        result = match.groupdict()
-        switch_count = 0
-        DIGIT = 0
-        LETTER = 1
-        OTHER = 2
-        last = LETTER
-        for c in result['idNumber']:
-            if c in '0123456789':
-                ci = DIGIT
-            elif c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ':
-                ci = LETTER
-            else:
-                ci = OTHER
-
-            if ci != last:
-                switch_count += 1
-
-            last = ci
-
-        switch_ratio = float(switch_count) / len(result['idNumber'])
-
-        # only return the result as probable if we alternate often between
-        # char type (more likely for hash values than for common words)
-        if switch_ratio > 0.4:
-            return result, match.span()
-
-    return None, None
-
-def process(mtree):
-    SingleNodeGuesser(guess_idnumber, 0.4, log).process(mtree)
+    def process(self, mtree, options=None):
+        GuessFinder(self.guess_idnumber, 0.4, self.log, options).process_nodes(mtree.unidentified_leaves())

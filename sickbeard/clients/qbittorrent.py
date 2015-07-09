@@ -19,8 +19,8 @@
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-from lib import requests
-from lib.requests.auth import HTTPDigestAuth
+import requests
+from requests.auth import HTTPDigestAuth
 
 class qbittorrentAPI(GenericClient):
     def __init__(self, host=None, username=None, password=None):

@@ -1,8 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # GuessIt - A library for guessing information from filenames
-# Copyright (c) 2012 Nicolas Wack <wackou@gmail.com>
+# Copyright (c) 2013 Nicolas Wack <wackou@gmail.com>
 #
 # GuessIt is free software; you can redistribute it and/or modify it under
 # the terms of the Lesser GNU General Public License as published by
@@ -18,21 +18,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import unicode_literals
-from guessit.transfo import SingleNodeGuesser
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from guessit.plugins.transformers import Transformer
+from guessit.matcher import GuessFinder
 from guessit.date import search_date
-import logging
-
-log = logging.getLogger(__name__)
 
 
-def guess_date(string):
-    date, span = search_date(string)
-    if date:
-        return { 'date': date }, span
-    else:
-        return None, None
+class GuessDate(Transformer):
+    def __init__(self):
+        Transformer.__init__(self, 50)
 
+    def register_arguments(self, opts, naming_opts, output_opts, information_opts, webservice_opts, other_options):
+        naming_opts.add_argument('-Y', '--date-year-first', action='store_true', dest='date_year_first', default=None,
+                                 help='If short date is found, consider the first digits as the year.')
+        naming_opts.add_argument('-D', '--date-day-first', action='store_true', dest='date_day_first', default=None,
+                                 help='If short date is found, consider the second digits as the day.')
 
-def process(mtree):
-    SingleNodeGuesser(guess_date, 1.0, log).process(mtree)
+    def supported_properties(self):
+        return ['date']
+
+    @staticmethod
+    def guess_date(string, node=None, options=None):
+        date, span = search_date(string, options.get('date_year_first') if options else False, options.get('date_day_first') if options else False)
+        if date:
+            return {'date': date}, span
+        else:
+            return None, None
+
+    def process(self, mtree, options=None):
+        GuessFinder(self.guess_date, 1.0, self.log, options).process_nodes(mtree.unidentified_leaves())

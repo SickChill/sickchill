@@ -8,8 +8,8 @@ from sickbeard import logger
 from sickbeard.exceptions import ex
 from sickbeard.clients import http_error_code
 from lib.bencode import bencode, bdecode
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 from lib.bencode.BTL import BTFailure
 
 class GenericClient(object):
@@ -25,7 +25,7 @@ class GenericClient(object):
         self.response = None
         self.auth = None
         self.last_time = time.time()
-        self.session = requests.session()
+        self.session = requests.Session()
         self.session.auth = (self.username, self.password)
 
     def _request(self, method='get', params={}, data=None, files=None):

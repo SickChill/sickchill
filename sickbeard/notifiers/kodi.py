@@ -429,23 +429,39 @@ class KODINotifier:
 
         # if we're doing per-show
         if showName:
+            showName = urllib.unquote_plus(showName)
             tvshowid = -1
+            path = ''
+
             logger.log(u"Updating library in KODI via JSON method for show " + showName, logger.DEBUG)
 
+            # let's try letting kodi filter the shows
+            showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"filter":{"field":"title","operator":"is","value":"%s"},"properties":["title",]},"id":"SickRage"}'
+
             # get tvshowid by showName
-            showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","id":1}'
-            showsResponse = self._send_to_kodi_json(showsCommand, host)
+            showsResponse = self._send_to_kodi_json(showsCommand % showName, host)
 
             if showsResponse and "result" in showsResponse and "tvshows" in showsResponse["result"]:
                 shows = showsResponse["result"]["tvshows"]
             else:
-                logger.log(u"KODI: No tvshows in KODI TV show list", logger.DEBUG)
-                return False
+                # fall back to retrieving the entire show list
+                showsCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","id":1}'
+                showsResponse = self._send_to_kodi_json(showsCommand, host)
+
+                if showsResponse and "result" in showsResponse and "tvshows" in showsResponse["result"]:
+                    shows = showsResponse["result"]["tvshows"]
+                else:
+                    logger.log(u"KODI: No tvshows in KODI TV show list", logger.DEBUG)
+                    return False
 
             for show in shows:
-                if (show["label"] == showName):
+                if ("label" in show and show["label"] == showName) or ("title" in show and show["title"] == showName):
                     tvshowid = show["tvshowid"]
-                    break  # exit out of loop otherwise the label and showname will not match up
+                    # set the path is we have it already
+                    if "file" in show:
+                        path = show["file"]
+
+                    break
 
             # this can be big, so free some memory
             del shows
@@ -455,16 +471,19 @@ class KODINotifier:
                 logger.log(u'Exact show name not matched in KODI TV show list', logger.DEBUG)
                 return False
 
-            # lookup tv-show path
-            pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (
-                tvshowid)
-            pathResponse = self._send_to_kodi_json(pathCommand, host)
 
-            path = pathResponse["result"]["tvshowdetails"]["file"]
+            # lookup tv-show path if we don't already know it
+            if not len(path):
+                pathCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":{"tvshowid":%d, "properties": ["file"]},"id":1}' % (
+                    tvshowid)
+                pathResponse = self._send_to_kodi_json(pathCommand, host)
+
+                path = pathResponse["result"]["tvshowdetails"]["file"]
+
             logger.log(u"Received Show: " + showName + " with ID: " + str(tvshowid) + " Path: " + path,
                        logger.DEBUG)
 
-            if (len(path) < 1):
+            if not len(path):
                 logger.log(u"No valid path found for " + showName + " with ID: " + str(tvshowid) + " on " + host,
                            logger.WARNING)
                 return False
@@ -490,7 +509,7 @@ class KODINotifier:
         else:
             logger.log(u"Doing Full Library KODI update on host: " + host, logger.DEBUG)
             updateCommand = '{"jsonrpc":"2.0","method":"VideoLibrary.Scan","id":1}'
-            request = self._send_to_kodi_json(updateCommand, host, sickbeard.KODI_USERNAME, sickbeard.KODI_PASSWORD)
+            request = self._send_to_kodi_json(updateCommand, host)
 
             if not request:
                 logger.log(u"KODI Full Library update failed on: " + host, logger.ERROR)

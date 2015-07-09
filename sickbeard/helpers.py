@@ -38,11 +38,14 @@ import datetime
 import errno
 import ast
 import operator
+from contextlib import closing
 
 import sickbeard
 import subliminal
+import babelfish
+
 import adba
-from lib import requests
+import requests
 import certifi
 import xmltodict
 
@@ -57,6 +60,7 @@ from sickbeard import notifiers
 from sickbeard import clients
 
 from lib.cachecontrol import CacheControl, caches
+
 from itertools import izip, cycle
 
 import shutil
@@ -66,6 +70,10 @@ shutil.copyfile = lib.shutil_custom.copyfile_custom
 
 urllib._urlopener = classes.SickBeardURLopener()
 
+
+def fixGlob(path):
+    path = re.sub(r'\[', '[[]', path)
+    return re.sub(r'(?<!\[)\]', '[]]', path)
 
 def indentXML(elem, level=0):
     '''
@@ -511,7 +519,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
         # Check if the language extracted from filename is a valid language
         try:
-            language = subliminal.language.Language(sublang, strict=True)
+            language = babelfish.language.Language(sublang, strict=True)
             cur_file_ext = '.' + sublang + cur_file_ext
         except ValueError:
             pass
@@ -1283,32 +1291,55 @@ def codeDescription(status_code):
         return 'unknown'
 
 
-def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+def _setUpSession(session, headers):
     """
-    Checks if URL is valid, without reading it
+    Returns a session initialized with default cache and parameter settings
     """
 
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
+    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
+
+    # request session clear residual referer
+    if 'Referer' in session.headers and not 'Referer' in headers:
+        session.headers.pop('Referer')
 
     # request session headers
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
     session.headers.update(headers)
 
-    # request session paramaters
+    # request session ssl verify
+    session.verify = certifi.where()
+
+    # request session allow redirects
+    session.allow_redirects = True
+
+    # request session proxies
+    if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
+        logger.log("Using proxy for url: " + url, logger.DEBUG)
+        scheme, address = urllib2.splittype(sickbeard.PROXY_SETTING)
+        address = sickbeard.PROXY_SETTING if scheme else 'http://' + sickbeard.PROXY_SETTING
+        session.proxies = {
+            "http": address,
+            "https": address,
+        }
+        session.headers.update({'Referer': address})
+
+    if 'Content-Type' in session.headers:
+       session.headers.pop('Content-Type')
+
+    return session
+
+def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
+    """
+    Checks if URL is valid, without reading it
+    """
+
+    session = _setUpSession(session, headers)
     session.params = params
 
     try:
-        # request session proxies
-        if sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            session.proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
-        resp = session.head(url)
+        resp = session.head(url, timeout=timeout)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1327,46 +1358,30 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
         return resp.status_code == 200
 
     except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " in headURL " + url, logger.WARNING)
+        logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " in headURL " + url, logger.WARNING)
+        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " in headURL " + url, logger.WARNING)
-    except Exception:
-        logger.log(u"Unknown exception in headURL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+    except Exception as e:
+        logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(traceback.format_exc(), logger.WARNING)
 
     return False
+
 
 def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """
     Returns a byte-string retrieved from the url provider.
     """
 
-    # request session
-    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
-
-    # request session headers
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-    session.headers.update(headers)
-
-    # request session ssl verify
-    session.verify = certifi.where()
-
-    # request session paramaters
+    session = _setUpSession(session, headers)
     session.params = params
 
     try:
-        # request session proxies
-        if sickbeard.PROXY_SETTING:
-            logger.log("Using proxy for url: " + url, logger.DEBUG)
-            session.proxies = {
-                "http": sickbeard.PROXY_SETTING,
-                "https": sickbeard.PROXY_SETTING,
-            }
-
         # decide if we get or post data to server
         if post_data:
+            session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
             resp = session.post(url, data=post_data, timeout=timeout)
         else:
             resp = session.get(url, timeout=timeout)
@@ -1386,60 +1401,44 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                     return
 
     except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"HTTP error in getURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
         return
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
-    except Exception:
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+    except Exception as e:
+        logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(traceback.format_exc(), logger.WARNING)
         return
 
     return resp.content if not json else resp.json()
 
-def download_file(url, filename, session=None):
-    # create session
-    cache_dir = sickbeard.CACHE_DIR or _getTempDir()
-    session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')))
 
-    # request session headers
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+def download_file(url, filename, session=None, headers={}):
 
-    # request session ssl verify
-    session.verify = certifi.where()
-
-    # request session streaming
+    session = _setUpSession(session, headers)
     session.stream = True
 
-    # request session proxies
-    if sickbeard.PROXY_SETTING:
-        logger.log("Using proxy for url: " + url, logger.DEBUG)
-        session.proxies = {
-            "http": sickbeard.PROXY_SETTING,
-            "https": sickbeard.PROXY_SETTING,
-        }
-
     try:
-        resp = session.get(url)
-            
-        if not resp.ok:
-            logger.log(u"Requested url " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-            return False
+        with closing(session.get(url)) as resp:
+            if not resp.ok:
+                logger.log(u"Requested url " + url + " returned status code is " + str(
+                    resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
+                return False
 
-        try:
-            with open(filename, 'wb') as fp:
-                for chunk in resp.iter_content(chunk_size=1024):
-                    if chunk:
-                        fp.write(chunk)
-                        fp.flush()
+            try:
+                with open(filename, 'wb') as fp:
+                    for chunk in resp.iter_content(chunk_size=1024):
+                        if chunk:
+                            fp.write(chunk)
+                            fp.flush()
 
-            chmodAsParent(filename)
-        except:
-            logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
+                chmodAsParent(filename)
+            except:
+                logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
     except requests.exceptions.HTTPError, e:
         _remove_file_failed(filename)
@@ -1464,39 +1463,6 @@ def download_file(url, filename, session=None):
 
     return True
 
-
-def clearCache(force=False):
-    update_datetime = datetime.datetime.now()
-
-    # clean out cache directory, remove everything > 12 hours old
-    if sickbeard.CACHE_DIR:
-        logger.log(u"Trying to clean cache folder " + sickbeard.CACHE_DIR, logger.DEBUG)
-
-        # Does our cache_dir exists
-        if not ek.ek(os.path.isdir, sickbeard.CACHE_DIR):
-            logger.log(u"Can't clean " + sickbeard.CACHE_DIR + " if it doesn't exist", logger.WARNING)
-        else:
-            max_age = datetime.timedelta(hours=12)
-
-            # Get all our cache files
-            exclude = ['rss', 'images']
-            for cache_root, cache_dirs, cache_files in os.walk(sickbeard.CACHE_DIR, topdown=True):
-                cache_dirs[:] = [d for d in cache_dirs if d not in exclude]
-
-                for file in cache_files:
-                    cache_file = ek.ek(os.path.join, cache_root, file)
-
-                    if ek.ek(os.path.isfile, cache_file):
-                        cache_file_modified = datetime.datetime.fromtimestamp(
-                            ek.ek(os.path.getmtime, cache_file))
-
-                        if force or (update_datetime - cache_file_modified > max_age):
-                            try:
-                                ek.ek(os.remove, cache_file)
-                            except OSError, e:
-                                logger.log(u"Unable to clean " + cache_root + ": " + repr(e) + " / " + str(e),
-                                           logger.WARNING)
-                                break
 
 def get_size(start_path='.'):
 
@@ -1650,22 +1616,22 @@ def isFileLocked(file, writeLockCheck=False):
     @param file: the file being checked
     @param writeLockCheck: when true will check if the file is locked for writing (prevents move operations)
     '''
-    if(not(os.path.exists(file))):
+    if not ek.ek(os.path.exists, file):
         return True
     try:
-        f = open(file, 'r')
+        f = ek.ek(open, file, 'r')
         f.close()
     except IOError:
         return True
     
     if(writeLockCheck):
         lockFile = file + ".lckchk"
-        if(os.path.exists(lockFile)):
-            os.remove(lockFile)
+        if ek.ek(os.path.exists, lockFile):
+            ek.ek(os.remove, lockFile)
         try:
-            os.rename(file, lockFile)
+            ek.ek(os.rename, file, lockFile)
             time.sleep(1)
-            os.rename(lockFile, file)
+            ek.ek(os.rename, lockFile, file)
         except (OSError, IOError):
             return True
            
