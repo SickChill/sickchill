@@ -1,7 +1,6 @@
 #from sickbeard import subtitles
 #import sickbeard
 #from sickbeard.helpers import anon_url
-#from babelfish import Language
 #set global $title="Config - Subtitles"
 #set global $header="Subtitles"
 
@@ -29,7 +28,7 @@
 	            		
 		            		[
 		            			<%=
-		            					",\r\n".join("{id: \"" + Language.fromietf(lang).alpha3 + "\", name: \"" + Language.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''
+		            					",\r\n".join("{id: \"" + subtitles.fromietf(lang).alpha3 + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''
 		            			%>
 		            		]
 	            }

@@ -1445,7 +1445,7 @@ class TVEpisode(object):
         try:
             languages = set()
             for language in frozenset(subtitles.wantedLanguages()).difference(self.subtitles):
-                languages.add(babelfish.Language.fromietf(language))
+                languages.add(subtitles.fromietf(language))
 
             if not languages:
                 logger.log(u'%s: No missing subtitles for S%02dE%02d' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
@@ -1544,7 +1544,7 @@ class TVEpisode(object):
 
         newSubtitles = frozenset(self.subtitles).difference(previous_subtitles)
         if newSubtitles:
-            subtitleList = ", ".join([babelfish.Language.fromietf(newSub).name for newSub in newSubtitles])
+            subtitleList = ", ".join([subtitles.fromietf(newSub).name for newSub in newSubtitles])
             logger.log(u"%s: Downloaded %s subtitles for S%02dE%02d" %
                 (self.show.indexerid, subtitleList, self.season, self.episode), logger.DEBUG)
 
