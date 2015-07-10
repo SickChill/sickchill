@@ -28,6 +28,7 @@ import tempfile
 import time
 import traceback
 import urllib
+import urllib2
 import hashlib
 import httplib
 import urlparse
