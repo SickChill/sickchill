@@ -22,7 +22,6 @@ import sickbeard
 from sickbeard.common import *
 from sickbeard import notifiers
 from sickbeard import logger
-from sickbeard import helpers
 from sickbeard import encodingKludge as ek
 from sickbeard import db
 from sickbeard import history
@@ -162,7 +161,7 @@ class SubtitlesFinder():
                 (epToSub['airdate_daydiff'] <= 7 and epToSub['searchcount'] < 7 and now - datetime.datetime.strptime(epToSub['lastsearch'], '%Y-%m-%d %H:%M:%S') > datetime.timedelta(hours=rules['new'][epToSub['searchcount']]))):
                 logger.log('Downloading subtitles for episode %dx%d of show %s' % (epToSub['season'], epToSub['episode'], epToSub['show_name']), logger.DEBUG)
                 
-                showObj = helpers.findCertainShow(sickbeard.showList, int(epToSub['showid']))
+                showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(epToSub['showid']))
                 if not showObj:
                     logger.log(u'Show not found', logger.DEBUG)
                     return
