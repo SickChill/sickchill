@@ -150,7 +150,7 @@ class KODINotifier:
                 if sickbeard.KODI_ALWAYS_ON or force:
                     logger.log(
                         u"Failed to detect KODI version for '" + curHost + "', check configuration and try again.",
-                        logger.ERROR)
+                        logger.WARNING)
                 result += curHost + ':False'
 
         return result
@@ -576,7 +576,7 @@ class KODINotifier:
                     if sickbeard.KODI_ALWAYS_ON:
                         logger.log(
                             u"Failed to detect KODI version for '" + host + "', check configuration and try again.",
-                            logger.ERROR)
+                            logger.WARNING)
                     result = result + 1
 
             # needed for the 'update kodi' submenu command
