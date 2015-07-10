@@ -149,9 +149,6 @@ def update_network_dict():
     _remove_old_zoneinfo()
     _update_zoneinfo()
 
-    d = {}
-
-    # network timezones are stored in a git submodule
     loc = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/network_timezones.txt'))
 
     with open(loc, 'r') as file:
@@ -162,6 +159,7 @@ def update_network_dict():
         load_network_dict()
         return
 
+    d = {}
     try:
         for line in data.splitlines():
             (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
@@ -173,31 +171,25 @@ def update_network_dict():
 
     my_db = db.DBConnection('cache.db')
 
-    # load current network timezones
-    old_d = dict(my_db.select('SELECT * FROM network_timezones'))
+    network_list = dict(my_db.select('SELECT * FROM network_timezones'))
 
-    # list of sql commands to update the network_timezones table
-    cl = []
-    for cur_d, cur_t in d.iteritems():
-        h_k = old_d.has_key(cur_d)
-        if h_k and cur_t != old_d[cur_d]:
-            # update old record
-            cl.append(
-                ['UPDATE network_timezones SET network_name=?, timezone=? WHERE network_name=?', [cur_d, cur_t, cur_d]])
-        elif not h_k:
-            # add new record
-            cl.append(['INSERT INTO network_timezones (network_name, timezone) VALUES (?,?)', [cur_d, cur_t]])
-        if h_k:
-            del old_d[cur_d]
+    queries = []
+    for network, timezone in d.iteritems():
+        existing = network_list.has_key(network)
+        if not existing:
+            queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?)', [network, timezone]])
+        elif network_list[network] is not timezone:
+            queries.append(['UPDATE OR IGNORE network_timezones SET timezone = ? WHERE network_name = ?', [timezone, network]])
 
-    # remove deleted records
-    if len(old_d) > 0:
-        old_items = list(va for va in old_d)
-        cl.append(['DELETE FROM network_timezones WHERE network_name IN (%s)' % ','.join(['?'] * len(old_items)), old_items])
+        if existing:
+            del network_list[network]
 
-    # change all network timezone infos at once (much faster)
-    if len(cl) > 0:
-        my_db.mass_action(cl)
+    if network_list:
+        purged = list(x for x in network_list)
+        queries.append(['DELETE FROM network_timezones WHERE network_name IN (%s)' % ','.join(['?'] * len(purged)), purged])
+
+    if queries:
+        my_db.mass_action(queries)
         load_network_dict()
 
 
