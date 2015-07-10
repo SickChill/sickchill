@@ -198,7 +198,7 @@ class NewznabProvider(generic.NZBProvider):
             if add_string:
                 params['q'] += ' ' + add_string
 
-            to_return.append(params)
+            to_return.append(dict(params))
 
             if ep_obj.show.anime:
                 paramsNoEp = params.copy()
