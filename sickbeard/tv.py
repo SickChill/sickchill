@@ -1529,8 +1529,8 @@ class TVEpisode(object):
                             path = ek.ek(os.path.join, subs_new_path, ek.ek(os.path.split, path)[1])
                         new_path = path.replace(ek.ek(os.path.splitext, self.release_name)[0],
                         ek.ek(os.path.splitext, ek.ek(os.path.basename, self.location))[0])
-                        if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, newpath):
-                            ek.ek(os.rename, path, newpath)
+                        if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, new_path):
+                            ek.ek(os.rename, path, new_path)
 
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
