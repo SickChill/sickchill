@@ -42,8 +42,6 @@ import operator
 from contextlib import closing
 
 import sickbeard
-import subliminal
-import babelfish
 
 import adba
 import requests
@@ -59,7 +57,7 @@ from sickbeard import db
 from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
 from sickbeard import clients
-
+from sickbeard.subtitles import isValidLanguage
 from lib.cachecontrol import CacheControl, caches
 
 from itertools import izip, cycle
@@ -519,11 +517,8 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
         sublang = os.path.splitext(cur_file_name)[1][1:]
 
         # Check if the language extracted from filename is a valid language
-        try:
-            language = babelfish.language.Language(sublang, strict=True)
+        if isValidLanguage(sublang):
             cur_file_ext = '.' + sublang + cur_file_ext
-        except ValueError:
-            pass
 
     # put the extension on the incoming file
     new_path += cur_file_ext
