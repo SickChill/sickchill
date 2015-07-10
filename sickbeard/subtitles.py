@@ -66,15 +66,19 @@ def sortedServiceList():
 def getEnabledServiceList():
     return [x['name'] for x in sortedServiceList() if x['enabled']]
 
+#Hack around this for now.
+def fromietf(language):
+    return babelfish.Language.fromietf(language if language not in 'pb' else 'pt-BR')
+
 def isValidLanguage(language):
     try:
-        langObj = babelfish.Language.fromietf(language)
+        langObj = fromietf(language)
     except:
         return False
     return True
 
 def getLanguageName(language):
-    return babelfish.Language.fromietf(language).name
+    return fromietf(language ).name
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):

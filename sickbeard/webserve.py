@@ -2032,7 +2032,7 @@ class Home(WebRoot):
         # return the correct json value
         newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if newSubtitles:
-            newLangs = [babelfish.Language.fromietf(newSub) for newSub in newSubtitles]
+            newLangs = [subtitles.fromietf(newSub) for newSub in newSubtitles]
             status = 'New subtitles downloaded: %s' % ' '.join([
                 "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + newLang.alpha3 +
                 ".png' alt='" + newLang.name + "'/>" for newLang in newLangs])

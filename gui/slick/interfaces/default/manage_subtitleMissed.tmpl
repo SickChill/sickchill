@@ -1,6 +1,4 @@
 #from sickbeard import subtitles
-#import subliminal
-#import babelfish
 #import datetime
 #import sickbeard
 #from sickbeard import common
@@ -19,7 +17,7 @@
     <h1 class="title">$title</h1>
 #end if
 #if $whichSubs:
-#set subsLanguage = $babelfish.Language.fromietf($whichSubs).name if not $whichSubs == 'all' else 'All'
+#set subsLanguage = $subtitles.fromietf($whichSubs).name if not $whichSubs == 'all' else 'All'
 #end if
 #if not $whichSubs or ($whichSubs and not $ep_counts):
 
@@ -31,7 +29,7 @@
 <form action="$sbRoot/manage/subtitleMissed" method="get">
 Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
-#for $sub_lang in [$babelfish.Language.fromietf(x) for x in $subtitles.wantedLanguages]:
+#for $sub_lang in [$subtitles.fromietf(x) for x in $subtitles.wantedLanguages]:
 <option value="$sub_lang.alpha3">$sub_lang.name</option>
 #end for
 </select>
