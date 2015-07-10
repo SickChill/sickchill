@@ -1503,7 +1503,7 @@ class TVEpisode(object):
             if len(sickbeard.SUBTITLES_DIR):
                 # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
                 if ek.ek(os.path.isdir, sickbeard.SUBTITLES_DIR):
-                    subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.title)
+                    subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.name)
                     dir_exists = True
                 else:
                     # relative to the folder the episode is in - sillyness?
