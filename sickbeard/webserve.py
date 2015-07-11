@@ -59,6 +59,7 @@ from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException
 from versionChecker import CheckVersion
 import babelfish
+import requests
 
 try:
     import json
@@ -2143,6 +2144,18 @@ class Home(WebRoot):
             return json.dumps({'result': 'success', 'groups': groups})
 
         return json.dumps({'result': 'failure'})            
+
+@route('/news(/?.*)')
+class HomeNews(Home):
+    def __init__(self, *args, **kwargs):
+        super(HomeNews, self).__init__(*args, **kwargs)
+
+    def index(self):
+        t = PageTemplate(rh=self, file="news.tmpl")
+        t.submenu = self.HomeMenu()
+        response = requests.get("https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/CHANGES.md", verify=False)
+        t.newsdata = response.text
+        return t.respond()
 
 @route('/home/postprocess(/?.*)')
 class HomePostProcess(Home):
