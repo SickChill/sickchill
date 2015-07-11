@@ -40,13 +40,13 @@ provider_urls = {'addic7ed': 'http://www.addic7ed.com',
 SINGLE = 'und'
 def sortedServiceList():
     newList = []
-    lmgtfy = 'http://lmgtfy.com/?q='
+    lmgtfy = 'http://lmgtfy.com/?q=%s'
 
     curIndex = 0
     for curService in sickbeard.SUBTITLES_SERVICES_LIST:
         if curService in subliminal.provider_manager.available_providers:
             newList.append({'name': curService,
-                            'url': provider_urls[curService] if curService in provider_urls else (lmgtfy % curService),
+                            'url': provider_urls[curService] if curService in provider_urls else lmgtfy % curService,
                             'image': curService + '.png',
                             'enabled': sickbeard.SUBTITLES_SERVICES_ENABLED[curIndex] == 1
                            })
@@ -55,7 +55,7 @@ def sortedServiceList():
     for curService in subliminal.provider_manager.available_providers:
         if curService not in [x['name'] for x in newList]:
             newList.append({'name': curService,
-                            'url': provider_urls[curService] if curService in provider_urls else (lmgtfy % curService),
+                            'url': provider_urls[curService] if curService in provider_urls else lmgtfy % curService,
                             'image': curService + '.png',
                             'enabled': False,
                            })
