@@ -155,6 +155,9 @@
 			#if $sbLogin:
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
+						<li id="NAVnews">
+                            <a href="$sbRoot/news/">News</a>
+                        </li>
 						<li id="NAVhome">
                             <a href="$sbRoot/home/">Shows</a>
                         </li>
@@ -227,7 +230,7 @@
                                 <li><a href="$sbRoot/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
 							</ul>
 						</li>
-			            <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
+			            <li id="donate"><a href="http://sr-upgrade.appspot.com" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
 					</ul>
 			#end if
 				</div><!-- /.navbar-collapse -->
