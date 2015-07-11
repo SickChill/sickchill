@@ -40,6 +40,8 @@ class DailySearcher():
         self.amActive = False
 
     def run(self, force=False):
+        if self.amActive:
+            return
 
         self.amActive = True
 
