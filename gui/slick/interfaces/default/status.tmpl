@@ -62,11 +62,11 @@
 			#for $schedulerName, $scheduler in $schedulerList.iteritems()
 				#set service = getattr($sickbeard, $scheduler)
 			<tr>
-				<td>#echo $schedulerName #</td>
+				<td>$schedulerName</td>
 				#if $service.isAlive()
-				<td style="background-color:green">#echo $service.isAlive() #</td>
+				<td style="background-color:green">$service.isAlive()</td>
 				#else
-				<td style="background-color:red">#echo $service.isAlive() #</td>
+				<td style="background-color:red">$service.isAlive()</td>
 				#end if
 				#if $scheduler == 'backlogSearchScheduler'
 					#set searchQueue = getattr($sickbeard, 'searchQueueScheduler')
@@ -75,10 +75,10 @@
 					#if $BLSpaused
 				<td>Paused</td>
 					#else
-				<td>#echo $service.enable #</td>
+				<td>$service.enable</td>
 					#end if
 				#else
-				<td>#echo $service.enable #</td>
+				<td>$service.enable</td>
 				#end if
 				#if $scheduler == 'backlogSearchScheduler'
 					#set searchQueue = getattr($sickbeard, 'searchQueueScheduler')
@@ -89,7 +89,7 @@
 					#else
 						#try
 						#set amActive = $service.action.amActive
-				<td>#echo $amActive #</td>
+				<td>$amActive</td>
 						#except Exception
 				<td>N/A</td>
 						#end try
@@ -97,22 +97,22 @@
 				#else
 					#try
 					#set amActive = $service.action.amActive
-				<td>#echo $amActive #</td>
+				<td>$amActive</td>
 					#except Exception
 				<td>N/A</td>
 					#end try
 				#end if
-				<td>#echo $service.start_time #</td>
+				<td align="right">$service.start_time</td>
 				#set $cycleTime = ($service.cycleTime.microseconds + ($service.cycleTime.seconds + $service.cycleTime.days * 24 * 3600) * 10**6) / 10**6
-				<td>#echo $helpers.pretty_time_delta($cycleTime) #</td>
+				<td align="right">$helpers.pretty_time_delta($cycleTime)</td>
 				#if $service.enable
 					#set $timeLeft = ($service.timeLeft().microseconds + ($service.timeLeft().seconds + $service.timeLeft().days * 24 * 3600) * 10**6) / 10**6
-				<td>#echo $helpers.pretty_time_delta($timeLeft) #</td>
+				<td align="right">$helpers.pretty_time_delta($timeLeft)</td>
 				#else
 				<td></td>
 				#end if
-				<td>#echo $service.lastRun.strftime("%Y-%m-%d %H:%M:%S") #</td>
-				<td>#echo $service.silent #</td>
+				<td>$service.lastRun.strftime("%Y-%m-%d %H:%M:%S")</td>
+				<td>$service.silent</td>
 			</tr>
 			#del service
 			#end for
