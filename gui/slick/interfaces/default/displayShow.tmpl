@@ -130,7 +130,7 @@
         #end if
 
         #if not $sickbeard.DISPLAY_SHOW_SPECIALS and $season_special:
-            #$seasonResults.pop(-1)
+            #set lastSeason = $seasonResults.pop(-1); del lastSeason
         #end if
 
         <span class="h2footer displayspecials pull-right">
