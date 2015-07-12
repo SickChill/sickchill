@@ -2033,12 +2033,10 @@ class Home(WebRoot):
         newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
         if newSubtitles:
             newLangs = [subtitles.fromietf(newSub) for newSub in newSubtitles]
-            status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + newLang.alpha3 +
-                ".png' alt='" + newLang.name + "'/>" for newLang in newLangs])
+            status = 'New subtitles downloaded: %s' % ', '.join([newLang.name for newLang in newLangs])
         else:
             status = 'No subtitles downloaded'
-        ui.notifications.message('Subtitles Search', status)
+        ui.notifications.message(ep_obj.show.name, status)
         return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None,
