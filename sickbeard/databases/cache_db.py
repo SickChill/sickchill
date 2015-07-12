@@ -24,15 +24,14 @@ class InitialSchema(db.SchemaUpgrade):
         return self.hasTable("db_version")
 
     def execute(self):
-
         queries = [
-            ("CREATE TABLE db_version (db_version INTEGER);",),
             ("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT, season NUMERIC DEFAULT -1, custom NUMERIC DEFAULT 0);",),
             ("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);",),
             ("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT);",),
             ("CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER);",),
+            ("CREATE TABLE db_version (db_version INTEGER);",),
             ("INSERT INTO db_version(db_version) VALUES (1);",),
         ]
         for query in queries:
@@ -48,14 +47,14 @@ class AddSceneExceptions(InitialSchema):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT)")
+            "CREATE TABLE scene_exceptions (exception_id INTEGER PRIMARY KEY, indexer_id INTEGER KEY, show_name TEXT);")
 
 class AddSceneNameCache(AddSceneExceptions):
     def test(self):
         return self.hasTable("scene_names")
 
     def execute(self):
-        self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT)")
+        self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);")
 
 
 class AddNetworkTimezones(AddSceneNameCache):
@@ -63,16 +62,16 @@ class AddNetworkTimezones(AddSceneNameCache):
         return self.hasTable("network_timezones")
 
     def execute(self):
-        self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT)")
+        self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT);")
 
 class AddLastSearch(AddNetworkTimezones):
     def test(self):
         return self.hasTable("lastSearch")
 
     def execute(self):
-        self.connection.action("CREATE TABLE lastSearch (provider TEXT, time NUMERIC)")
+        self.connection.action("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);")
 
-class AddSceneExceptionsSeasons(AddSceneNameCache):
+class AddSceneExceptionsSeasons(AddLastSearch):
     def test(self):
         return self.hasColumn("scene_exceptions", "season")
 
@@ -92,4 +91,4 @@ class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):
 
     def execute(self):
         self.connection.action(
-            "CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER)")
+            "CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER);")
