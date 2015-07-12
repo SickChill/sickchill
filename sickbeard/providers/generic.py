@@ -62,6 +62,8 @@ class GenericProvider:
 
         self.search_mode = None
         self.search_fallback = False
+
+        self.enabled = False
         self.enable_daily = False
         self.enable_backlog = False
 

@@ -4404,6 +4404,7 @@ class ConfigProviders(Config):
             if curProvider.getID() not in finishedNames:
                 sickbeard.torrentRssProviderList.remove(curProvider)
 
+        disabled_list = []
         # do the enable/disable
         for curProviderStr in provider_str_list:
             curProvider, curEnabled = curProviderStr.split(':')
@@ -4414,11 +4415,17 @@ class ConfigProviders(Config):
             if curProvObj:
                 curProvObj[0].enabled = bool(curEnabled)
 
-            provider_list.append(curProvider)
+            if curEnabled:
+                provider_list.append(curProvider)
+            else:
+                disabled_list.append(curProvider)
+
             if curProvider in newznabProviderDict:
                 newznabProviderDict[curProvider].enabled = bool(curEnabled)
             elif curProvider in torrentRssProviderDict:
                 torrentRssProviderDict[curProvider].enabled = bool(curEnabled)
+
+        provider_list = provider_list + disabled_list
 
         # dynamically load provider settings
         for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if
