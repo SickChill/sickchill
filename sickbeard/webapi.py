@@ -85,7 +85,7 @@ class ApiHandler(RequestHandler):
 
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
-        for arg, value in kwargs.items():
+        for arg, value in kwargs.iteritems():
             if len(value) == 1:
                 kwargs[arg] = value[0]
 
@@ -1025,7 +1025,7 @@ class CMD_EpisodeSetStatus(ApiCall):
 
         extra_msg = ""
         if start_backlog:
-            for season, segment in segments.items():
+            for season, segment in segments.iteritems():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 

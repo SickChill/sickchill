@@ -965,7 +965,7 @@ class TVShow(object):
 
             # Rename dict keys without spaces for DB upsert
             self.imdb_info = dict(
-                (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
+                (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.iteritems())
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
@@ -1453,46 +1453,17 @@ class TVEpisode(object):
 
             providers = sickbeard.subtitles.getEnabledServiceList()
             vname = self.location
-            create_link = False
-            if self.release_name:
-                try:
-                    dir, name = ek.ek(os.path.split, self.location)
-                    tmp = ek.ek(os.path.join, dir, self.release_name)
-                    if ek.ek(os.path.splitext, tmp)[-1] is not ek.ek(os.path.splitext, self.location)[-1]:
-                        tmp += ek.ek(os.path.splitext, self.location)[-1]
-
-                    create_link = not ek.ek(os.path.exists, tmp)
-                    if create_link:
-                        ek.ek(helpers.link, self.location, tmp)
-                    vname = tmp
-                except Exception:
-                    create_link = False
-                    vname = self.location
-                    pass
-            else:
-                logger.log(u'%s: No release name for S%02dE%02d, using existing file name' %
-                      (self.show.indexerid, self.season, self.episode), logger.DEBUG)
-
             video = None
             try:
                 video = subliminal.scan_video(vname, subtitles=not force, embedded_subtitles=not sickbeard.EMBEDDED_SUBTITLES_ALL or not force)
             except Exception:
                 logger.log(u'%s: Exception caught in subliminal.scan_video for S%02dE%02d' %
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
-                if create_link and vname is not self.location:
-                    ek.ek(os.unlink, vname)
                 return
                 pass
 
-            if create_link and vname is not self.location:
-                ek.ek(os.unlink, vname)
-
-            #video.tvdb_id = self.show.indexerid
-            #video.imdb_id = self.show.imdbid
-            #if not video.title and self.name:
-            #    video.title = self.name
-            #if not video.release_group and self.release_group:
-            #    video.release_group = self.release_group
+            if not video:
+                return
 
             # TODO: Add gui option for hearing_impaired parameter ?
             foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=False)
@@ -1504,34 +1475,19 @@ class TVEpisode(object):
                 # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
                 if ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
                     subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.name)
-                    dir_exists = True
                 else:
                     # relative to the folder the episode is in - sillyness?
-                    subs_new_path = ek.ek(os.path.join, os.path.dirname(self.location), sickbeard.SUBTITLES_DIR)
+                    subs_new_path = ek.ek(os.path.join, ek.ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
                     dir_exists = helpers.makeDir(subs_new_path)
 
-                if not dir_exists:
-                    logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
-                else:
-                    helpers.chmodAsParent(subs_new_path)
+                    if not dir_exists:
+                        logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
+                    else:
+                        helpers.chmodAsParent(subs_new_path)
             else:
-                # let subliminal save the subtitles next to the episode
                 subs_new_path = None
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
-
-            # rename the subtitles if needed
-            if create_link:
-                for video, subs in foundSubs.items():
-                    for sub in subs:
-                        path = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
-                        if subs_new_path:
-                            path = ek.ek(os.path.join, subs_new_path, ek.ek(os.path.split, path)[1])
-
-                        new_path = path.replace(ek.ek(os.path.splitext, vname)[0],
-                        ek.ek(os.path.splitext, ek.ek(os.path.basename, self.location))[0])
-                        if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, new_path):
-                            ek.ek(os.rename, path, new_path)
 
         except Exception as e:
             logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
@@ -1555,7 +1511,7 @@ class TVEpisode(object):
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            for video, subs in foundSubs.items():
+            for video, subs in foundSubs.iteritems():
                 for sub in subs:
                     logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)

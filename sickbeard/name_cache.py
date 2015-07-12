@@ -77,7 +77,7 @@ def clearCache(indexerid=0):
 def saveNameCacheToDb():
     cacheDB = db.DBConnection('cache.db')
 
-    for name, indexer_id in nameCache.items():
+    for name, indexer_id in nameCache.iteritems():
         cacheDB.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 

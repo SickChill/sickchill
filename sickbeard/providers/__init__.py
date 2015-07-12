@@ -68,6 +68,11 @@ def sortedProviderList(randomize=False):
         if curModule in providerDict:
             newList.append(providerDict[curModule])
 
+    # add all enabled providers first
+    for curModule in providerDict:
+        if providerDict[curModule] not in newList and providerDict[curModule].isEnabled():
+            newList.append(providerDict[curModule])
+
     # add any modules that are missing from that list
     for curModule in providerDict:
         if providerDict[curModule] not in newList:

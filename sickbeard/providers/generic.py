@@ -62,6 +62,8 @@ class GenericProvider:
 
         self.search_mode = None
         self.search_fallback = False
+
+        self.enabled = False
         self.enable_daily = False
         self.enable_backlog = False
 
@@ -375,7 +377,7 @@ class GenericProvider:
                     else:
                         items[quality].append(item)
 
-            itemList = list(itertools.chain(*[v for (k, v) in sorted(items.items(), reverse=True)]))
+            itemList = list(itertools.chain(*[v for (k, v) in sorted(items.iteritems(), reverse=True)]))
             itemList += itemsUnknown if itemsUnknown else []
 
         # filter results
