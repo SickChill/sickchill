@@ -2154,7 +2154,8 @@ class HomeNews(Home):
         t = PageTemplate(rh=self, file="news.tmpl")
         t.submenu = self.HomeMenu()
         response = requests.get("https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/CHANGES.md", verify=False)
-        t.newsdata = response.text
+        import markdown2
+        t.newsdata = markdown2.markdown(response.text)
         return t.respond()
 
 @route('/home/postprocess(/?.*)')
