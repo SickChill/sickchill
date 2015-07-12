@@ -99,7 +99,7 @@ class BacklogSearcher:
 
             segments = self._get_segments(curShow, fromDate)
 
-            for season, segment in segments.items():
+            for season, segment in segments.iteritems():
                 self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)

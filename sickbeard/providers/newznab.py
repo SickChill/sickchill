@@ -107,9 +107,9 @@ class NewznabProvider(generic.NZBProvider):
             data = self.cache.getRSSFeed("%s/api?%s" % (self.url, urllib.urlencode(params)))
         except:
             logger.log(u"Error getting html for [%s]" % 
-                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items())) ), logger.DEBUG)
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.iteritems())) ), logger.DEBUG)
             return (False, return_categories, "Error getting html for [%s]" % 
-                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.items()) )))
+                    ("%s/api?%s" % (self.url, '&'.join("%s=%s" % (x,y) for x,y in params.iteritems()) )))
 
         if not self._checkAuthFromData(data):
             logger.log(u"Error parsing xml for [%s]" % (self.name), logger.DEBUG)

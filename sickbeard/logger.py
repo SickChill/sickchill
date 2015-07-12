@@ -58,7 +58,7 @@ class CensoredFormatter(logging.Formatter, object):
 
     def format(self, record):
         msg = super(CensoredFormatter, self).format(record)
-        for k, v in censoredItems.items():
+        for k, v in censoredItems.iteritems():
             if v and len(v) > 0 and v in msg:
                 msg = msg.replace(v, len(v) * '*')
         # Needed because Newznab apikey isn't stored as key=value in a section.
