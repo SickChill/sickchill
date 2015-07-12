@@ -1487,12 +1487,12 @@ class TVEpisode(object):
             if create_link and vname is not self.location:
                 ek.ek(os.unlink, vname)
 
-            video.tvdb_id = self.show.indexerid
-            video.imdb_id = self.show.imdbid
-            if not video.title and self.name:
-                video.title = u'' + self.name
-            if not video.release_group and self.release_group:
-                video.release_group = self.release_group
+            #video.tvdb_id = self.show.indexerid
+            #video.imdb_id = self.show.imdbid
+            #if not video.title and self.name:
+            #    video.title = self.name
+            #if not video.release_group and self.release_group:
+            #    video.release_group = self.release_group
 
             # TODO: Add gui option for hearing_impaired parameter ?
             foundSubs = subliminal.download_best_subtitles([video], languages=languages, providers=providers, single=not sickbeard.SUBTITLES_MULTI, hearing_impaired=False)
@@ -1502,7 +1502,7 @@ class TVEpisode(object):
 
             if len(sickbeard.SUBTITLES_DIR):
                 # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
-                if ek.ek(os.path.isdir, sickbeard.SUBTITLES_DIR):
+                if ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
                     subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.name)
                     dir_exists = True
                 else:
@@ -1527,7 +1527,8 @@ class TVEpisode(object):
                         path = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
                         if subs_new_path:
                             path = ek.ek(os.path.join, subs_new_path, ek.ek(os.path.split, path)[1])
-                        new_path = path.replace(ek.ek(os.path.splitext, self.release_name)[0],
+
+                        new_path = path.replace(ek.ek(os.path.splitext, vname)[0],
                         ek.ek(os.path.splitext, ek.ek(os.path.basename, self.location))[0])
                         if ek.ek(os.path.exists, path) and not ek.ek(os.path.exists, new_path):
                             ek.ek(os.rename, path, new_path)
