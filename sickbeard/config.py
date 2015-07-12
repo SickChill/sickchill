@@ -511,7 +511,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, silent=True, censor_
             config[cfg_name] = {}
             config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if censor_log or (cfg_name, item_name) in logger.censoredItems.items():
+    if censor_log or (cfg_name, item_name) in logger.censoredItems.iteritems():
         logger.censoredItems[cfg_name, item_name] = my_val
 
     if not silent:

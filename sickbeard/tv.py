@@ -965,7 +965,7 @@ class TVShow(object):
 
             # Rename dict keys without spaces for DB upsert
             self.imdb_info = dict(
-                (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.items())
+                (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in imdb_info.iteritems())
             logger.log(str(self.indexerid) + u": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
 
     def nextEpisode(self):
@@ -1522,7 +1522,7 @@ class TVEpisode(object):
 
             # rename the subtitles if needed
             if create_link:
-                for video, subs in foundSubs.items():
+                for video, subs in foundSubs.iteritems():
                     for sub in subs:
                         path = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
                         if subs_new_path:
@@ -1555,7 +1555,7 @@ class TVEpisode(object):
                     (self.show.indexerid, self.season, self.episode), logger.DEBUG)
 
         if sickbeard.SUBTITLES_HISTORY:
-            for video, subs in foundSubs.items():
+            for video, subs in foundSubs.iteritems():
                 for sub in subs:
                     logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)

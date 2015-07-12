@@ -162,7 +162,7 @@ class MainSanityCheck(db.DBSanityCheck):
             '': 'Unknown',
         }
 
-        for old_status, new_status in status_map.items():
+        for old_status, new_status in status_map.iteritems():
             self.connection.action("UPDATE tv_shows SET status = ? WHERE LOWER(status) = ?", [new_status, old_status])
 
     def fix_episode_statuses(self):

@@ -262,7 +262,7 @@ class WebHandler(BaseHandler):
     def async_call(self, function):
         try:
             kwargs = self.request.arguments
-            for arg, value in kwargs.items():
+            for arg, value in kwargs.iteritems():
                 if len(value) == 1:
                     kwargs[arg] = value[0]
 
@@ -1784,7 +1784,7 @@ class Home(WebRoot):
             msg = "Backlog was automatically started for the following seasons of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
 
-            for season, segment in segments.items():
+            for season, segment in segments.iteritems():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(showObj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
@@ -1803,7 +1803,7 @@ class Home(WebRoot):
             msg = "Retrying Search was automatically started for the following season of <b>" + showObj.name + "</b>:<br />"
             msg += '<ul>'
 
-            for season, segment in segments.items():
+            for season, segment in segments.iteritems():
                 cur_failed_queue_item = search_queue.FailedQueueItem(showObj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
@@ -2235,7 +2235,7 @@ class HomeAddShows(Home):
 
         map(final_results.extend,
             ([[sickbeard.indexerApi(id).name, id, sickbeard.indexerApi(id).config["show_url"], int(show['id']),
-               show['seriesname'], show['firstaired']] for show in shows] for id, shows in results.items()))
+               show['seriesname'], show['firstaired']] for show in shows] for id, shows in results.iteritems()))
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id})
