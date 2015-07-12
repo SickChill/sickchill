@@ -174,6 +174,10 @@ class TVShow(object):
         else:
             return False
 
+    @property
+    def network_logo_name(self):
+        return self.network.replace(u'\u00C9', 'e').replace(u'\u00E9', 'e').lower()
+
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
         if sickbeard.CREATE_MISSING_SHOW_DIRS:
