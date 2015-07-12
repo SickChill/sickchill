@@ -171,22 +171,22 @@ def update_network_dict():
 
     my_db = db.DBConnection('cache.db')
 
-    network_list = dict(my_db.select('SELECT * FROM network_timezones'))
+    network_list = dict(my_db.select('SELECT * FROM network_timezones;'))
 
     queries = []
     for network, timezone in d.iteritems():
         existing = network_list.has_key(network)
         if not existing:
-            queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?)', [network, timezone]])
+            queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])
         elif network_list[network] is not timezone:
-            queries.append(['UPDATE OR IGNORE network_timezones SET timezone = ? WHERE network_name = ?', [timezone, network]])
+            queries.append(['UPDATE OR IGNORE network_timezones SET timezone = ? WHERE network_name = ?;', [timezone, network]])
 
         if existing:
             del network_list[network]
 
     if network_list:
         purged = list(x for x in network_list)
-        queries.append(['DELETE FROM network_timezones WHERE network_name IN (%s)' % ','.join(['?'] * len(purged)), purged])
+        queries.append(['DELETE FROM network_timezones WHERE network_name IN (%s);' % ','.join(['?'] * len(purged)), purged])
 
     if queries:
         my_db.mass_action(queries)
@@ -197,10 +197,10 @@ def update_network_dict():
 def load_network_dict():
     try:
         my_db = db.DBConnection('cache.db')
-        cur_network_list = my_db.select('SELECT * FROM network_timezones')
+        cur_network_list = my_db.select('SELECT * FROM network_timezones;')
         if cur_network_list is None or len(cur_network_list) < 1:
             update_network_dict()
-            cur_network_list = my_db.select('SELECT * FROM network_timezones')
+            cur_network_list = my_db.select('SELECT * FROM network_timezones;')
         d = dict(cur_network_list)
     except:
         d = {}
