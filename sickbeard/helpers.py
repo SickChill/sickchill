@@ -622,7 +622,8 @@ def chmodAsParent(childPath):
         logger.log(u"Setting permissions for %s to %o as parent directory has %o" % (childPath, childMode, parentMode),
                    logger.DEBUG)
     except OSError:
-        logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.ERROR)
+        logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.DEBUG)
+        pass
 
 
 def fixSetGroupID(childPath):
