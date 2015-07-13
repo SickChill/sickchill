@@ -14,9 +14,9 @@
 				$.each(subtitles,function(index, language){
 					if (language != "" && language != "und") {
 						if (index != subtitles.length - 1) {
-							subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
+							subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
 					  	} else {
-					  		subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
+					  		subtitles_td.append($("<img/>").attr({"src": sbRoot+"/images/subtitles/flags/"+language+".png", "alt": language, "width": 16, "height": 11}));
 					  	}
 					}
 				});			
