@@ -549,16 +549,16 @@ class ParseResult(object):
         else:
             to_return = u''
         if self.season_number != None:
-            to_return += 'S' + str(self.season_number)
+            to_return += 'S' + str(self.season_number).zfill(2)
         if self.episode_numbers and len(self.episode_numbers):
             for e in self.episode_numbers:
-                to_return += 'E' + str(e)
+                to_return += 'E' + str(e).zfill(2)
 
         if self.is_air_by_date:
             to_return += str(self.air_date)
         if self.ab_episode_numbers:
             to_return += ' [ABS: ' + str(self.ab_episode_numbers) + ']'
-        if self.version:
+        if self.version and self.is_anime is True:
             to_return += ' [ANIME VER: ' + str(self.version) + ']'
 
         if self.release_group:
