@@ -116,10 +116,7 @@ class TNTVillageProvider(generic.TorrentProvider):
             'download' : 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s',
         }
 
-        self.sub_string = [
-                           'sub',
-                           'softsub',
-                          ]
+        self.sub_string = ['sub', 'softsub']
 
         self.url = self.urls['base_url']
 
@@ -294,39 +291,29 @@ class TNTVillageProvider(generic.TorrentProvider):
         else:
             return Quality.UNKNOWN
 
-    def _is_italian(self,torrent_rows):
+    def _is_italian(self, torrent_rows):
 
-        is_italian = 0
+        name = str(torrent_rows.find_all('td')[1].find('b').find('span'))
+        if not name or name is 'None':
+            return False
 
-        span_tag = (torrent_rows.find_all('td'))[1].find('b').find('span')
-
-        name = str(span_tag)
-
-        if not name:
-            return 0
-
-        subFound=0
-
+        subFound = italian = False
         for sub in self.sub_string:
-
-            if not re.search(sub, name, re.I):
-                continue
+            if re.search(sub, name, re.I):
+                subFound = True
             else:
-                subFound = 1
+                continue
 
-            name = name.split(sub)
-
-            if re.search("ita", name[0], re.I):
+            if re.search("ita", name.split(sub)[0], re.I):
                 logger.log(u"Found Italian release", logger.DEBUG)
-                is_italian=1
+                italian = True
                 break
 
-        if not subFound:
-            if re.search("ita", name, re.I):
-                logger.log(u"Found Italian release", logger.DEBUG)
-                is_italian=1
+        if not subFound and re.search("ita", name, re.I):
+            logger.log(u"Found Italian release", logger.DEBUG)
+            italian = True
         
-        return is_italian
+        return italian
 
     def _is_season_pack(self, name):
 
