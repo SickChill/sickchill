@@ -77,7 +77,7 @@ class GenericProvider:
                 'http://torcache.net/torrent/{torrent_hash}.torrent',
                 'http://zoink.ch/torrent/{torrent_name}.torrent',
                 'http://torrage.com/torrent/{torrent_hash}.torrent',
-                'http://itorrents.org/torrent/{torrent_hash}.torrent',
+                #'http://itorrents.org/torrent/{torrent_hash}.torrent',
             ]
 
         random.shuffle(self.btCacheURLS)
