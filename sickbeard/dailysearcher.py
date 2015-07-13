@@ -92,7 +92,7 @@ class DailySearcher():
             ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
             with ep.lock:
                 if ep.show.paused:
-                    ep.status = common.SKIPPED
+                    ep.status = ep.show.default_ep_status
                 elif ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
