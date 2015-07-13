@@ -74,7 +74,7 @@ result_type_map = {RESULT_SUCCESS: "success",
 
 class ApiHandler(RequestHandler):
     """ api class that returns json results """
-    version = 5  # use an int since float-point is unpredictible
+    version = 5  # use an int since float-point is unpredictable
     intent = 4
 
     def __init__(self, *args, **kwargs):
@@ -254,6 +254,8 @@ class ApiHandler(RequestHandler):
         # Redirect initial poster/banner thumb to default images
         if which[0:6] == 'poster':
             default_image_name = 'poster.png'
+        elif which[0:6] == 'fanart':
+            default_image_name = 'fanart.png'
         else:
             default_image_name = 'banner.png'
 
@@ -271,11 +273,27 @@ class ApiHandler(RequestHandler):
                 image_file_name = cache_obj.banner_path(show)
             if which == 'banner_thumb':
                 image_file_name = cache_obj.banner_thumb_path(show)
+            if which == 'fanart':
+                if not cache_obj.has_fanart(show):
+                    cache_obj.fill_cache(sickbeard.helpers.findCertainShow(sickbeard.showList, int(show)))
+                image_file_name = cache_obj.fanart_path(show)
 
             if ek.ek(os.path.isfile, image_file_name):
                 static_image_path = os.path.normpath(image_file_name.replace(sickbeard.CACHE_DIR, '/cache'))
 
         static_image_path = sickbeard.WEB_ROOT + static_image_path.replace('\\', '/')
+        return self.redirect(static_image_path)
+
+    def showNetworkLogo(self, show=None):
+        show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+        if show:
+            image_file_name = show.network_logo_name
+        else:
+            image_file_name = 'nonetwork'
+
+        static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
+
         return self.redirect(static_image_path)
 
 class ApiCall(ApiHandler):
@@ -2411,6 +2429,39 @@ class CMD_ShowGetBanner(ApiCall):
         """ get the banner for a show in sickrage """
         return {'outputType': 'image', 'image': self.rh.showPoster(self.indexerid, 'banner')}
 
+class CMD_ShowGetNetworkLogo(ApiCall):
+    _help = {
+        "desc": "Get the network logo stored for a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {
+                "desc": "Unique id of a show",
+            },
+        },
+        "optionalParameters": {
+            "tvdbid": {
+                "desc": "TheTVDB.com unique id of a show",
+            },
+            "tvrageid": {
+                "desc": "TVRage.con unique id of a show",
+            },
+        },
+    }
+
+    def __init__(self, args, kwargs):
+        # required
+        self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        """
+        :return: The network logo for a show in SickRage
+        """
+        return {
+            'outputType': 'image',
+            'image': self.rh.showNetworkLogo(self.indexerid)
+        }
 
 class CMD_ShowPause(ApiCall):
     _help = {"desc": "set a show's paused state in sickrage",
@@ -2942,6 +2993,7 @@ _functionMaper = {"help": CMD_Help,
                   "show.getquality": CMD_ShowGetQuality,
                   "show.getposter": CMD_ShowGetPoster,
                   "show.getbanner": CMD_ShowGetBanner,
+                  "show.getnetworklogo": CMD_ShowGetNetworkLogo,
                   "show.pause": CMD_ShowPause,
                   "show.refresh": CMD_ShowRefresh,
                   "show.seasonlist": CMD_ShowSeasonList,

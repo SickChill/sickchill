@@ -410,6 +410,18 @@ class WebRoot(WebHandler):
         static_image_path = static_image_path.replace('\\', '/')
         return self.redirect(static_image_path)
 
+    def showNetworkLogo(self, show=None):
+        show = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
+
+        if show:
+            image_file_name = show.network_logo_name
+        else:
+            image_file_name = 'nonetwork'
+
+        static_image_path = '%s/images/network/%s.png' % (sickbeard.WEB_ROOT, image_file_name)
+
+        return self.redirect(static_image_path)
+
     def setHomeLayout(self, layout):
 
         if layout not in ('poster', 'small', 'banner', 'simple', 'coverflow'):
