@@ -359,16 +359,8 @@ class SickRage(object):
         }
 
         # start web server
-        try:
-            self.webserver = SRWebServer(self.web_options)
-            self.webserver.start()
-        except IOError:
-            logger.log(u"Unable to start web server, is something else running on port %d?" % self.startPort,
-                       logger.ERROR)
-            if sickbeard.LAUNCH_BROWSER and not self.runAsDaemon:
-                logger.log(u"Launching browser and exiting", logger.ERROR)
-                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.startPort, sickbeard.WEB_ROOT)
-            os._exit(1)
+        self.webserver = SRWebServer(self.web_options)
+        self.webserver.start()
 
         if self.consoleLogging:
             print "Starting up SickRage " + sickbeard.BRANCH + " from " + sickbeard.CONFIG_FILE

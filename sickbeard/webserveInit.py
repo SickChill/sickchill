@@ -138,11 +138,11 @@ class SRWebServer(threading.Thread):
         try:
             self.server.listen(self.options['port'], self.options['host'])
         except:
-            etype, evalue, etb = sys.exc_info()
-            logger.log(
-                "Could not start webserver on %s. Excpeption: %s, Error: %s" % (self.options['port'], etype, evalue),
-                logger.ERROR)
-            return
+            if sickbeard.LAUNCH_BROWSER and not self.daemon:
+                sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
+                logger.log(u"Launching browser and exiting")
+            logger.log(u"Could not start webserver on port %s, already in use!" % self.options['port'])
+            os._exit(1)
 
         try:
             self.io_loop.start()
