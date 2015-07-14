@@ -1475,21 +1475,7 @@ class TVEpisode(object):
                 logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            if len(sickbeard.SUBTITLES_DIR):
-                # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
-                if ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-                    subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.name)
-                else:
-                    # relative to the folder the episode is in - sillyness?
-                    subs_new_path = ek.ek(os.path.join, ek.ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
-                    dir_exists = helpers.makeDir(subs_new_path)
-
-                    if not dir_exists:
-                        logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
-                    else:
-                        helpers.chmodAsParent(subs_new_path)
-            else:
-                subs_new_path = None
+            subs_new_path = sickbeard.SUBTITLES_DIR if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR) else None
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
