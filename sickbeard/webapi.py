@@ -1356,7 +1356,6 @@ class CMD_Logs(ApiCall):
 
         for x in reversed(data):
 
-            x = x.decode('utf-8')
             match = re.match(regex, x)
 
             if match:
