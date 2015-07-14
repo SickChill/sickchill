@@ -58,7 +58,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
 from sickbeard import clients
 from sickbeard.subtitles import isValidLanguage
-from lib.cachecontrol import CacheControl, caches
+from cachecontrol import CacheControl, caches
 
 from itertools import izip, cycle
 
