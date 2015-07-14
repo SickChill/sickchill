@@ -104,12 +104,12 @@ class DailySearcher():
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
-        else:
-            logger.log(u"No new released episodes found ...")
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+        else:
+            logger.log(u"No new released episodes found ...")
 
         sickbeard.traktRollingScheduler.action.updateWantedList()
 
