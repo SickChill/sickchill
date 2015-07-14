@@ -47,7 +47,7 @@ class TraktNotifier:
         """
 
         trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
-        trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
             try:
@@ -100,7 +100,7 @@ class TraktNotifier:
         update: type o action add or remove
         """
 
-        trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
 

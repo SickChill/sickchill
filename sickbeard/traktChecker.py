@@ -62,7 +62,7 @@ def setEpisodeToWanted(show, s, e):
 class TraktChecker():
 
     def __init__(self):
-        self.trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        self.trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         self.todoBacklog = []
         self.todoWanted = []        
         self.ShowWatchlist = {}
@@ -644,7 +644,7 @@ class TraktChecker():
 class TraktRolling():
 
     def __init__(self):
-        self.trakt_api = TraktAPI(sickbeard.TRAKT_DISABLE_SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        self.trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         self.EpisodeWatched = []
 
     def run(self, force=False):
