@@ -1469,16 +1469,7 @@
                                     <span class="component-desc">PIN code to authorize SickRage to access Trakt on your behalf.</span>
                                 </p>
                             </div>
-                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />                            
-                            <div class="field-pair">
-                                <label for="trakt_disable_ssl_verify">
-                                    <span class="component-title">Disable SSL Verification</span>
-                                    <span class="component-desc">
-                                        <input type="checkbox" class="enabler" name="trakt_disable_ssl_verify" id="trakt_disable_ssl_verify" #if $sickbeard.TRAKT_DISABLE_SSL_VERIFY then "checked=\"checked\"" else ""# />
-                                        <p>Disable SSL certificate verification for broken SSL installs (like QNAP NAS)</p>
-                                    </span>
-                                </label>
-                            </div>
+                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />
                             <div class="field-pair">
                                 <label for="trakt_timeout">
                                     <span class="component-title">API Timeout</span>

@@ -1311,7 +1311,7 @@ def _setUpSession(session, headers):
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = certifi.where()
+    session.verify = certifi.where() if sickbeard.SSL_VERIFY else None
 
     # request session proxies
     if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
