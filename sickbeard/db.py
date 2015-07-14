@@ -230,19 +230,20 @@ class DBConnection(object):
     def _unicode_text_factory(self, x):
         try:
             x = unicode(x)
-        except UnicodeDecodeError:
+        except Exception:
             try:
-                x = unicode(x, chardet.detect(x).get('encoding'))
-            except UnicodeDecodeError:
+                x = unicode(x, sickbeard.SYS_ENCODING)
+            except Exception:
                 try:
-                    x = unicode(x, sickbeard.SYS_ENCODING)
-                except UnicodeDecodeError:
+                    x = unicode(x, 'utf-8')
+                except Exception:
                     try:
-                        x = unicode(x, 'utf-8')
-                    except UnicodeDecodeError:
+                        x = unicode(x, 'latin-1')
+                    except Exception:
                         try:
-                            x = unicode(x, 'latin-1')
-                        except UnicodeDecodeError:
+                            # Chardet can be wrong, so try it before ignoring
+                            x = unicode(x, chardet.detect(x).get('encoding'))
+                        except Exception:
                             x = unicode(x, sickbeard.SYS_ENCODING, errors="ignore")
         return x
 

@@ -91,23 +91,24 @@ class html_entities(CheetahFilter):
             filtered = ''
         elif isinstance(val, str):
             try:
-                filtered = unicode(val).encode('ascii', 'xmlcharrefreplace')
-            except UnicodeDecodeError, UnicodeEncodeError:
+                filtered = unicode(val)
+            except Exception:
                 try:
-                    filtered = unicode(val, chardet.detect(val).get('encoding')).encode('ascii', 'xmlcharrefreplace')
-                except (UnicodeDecodeError, UnicodeEncodeError) as e:
+                    filtered = unicode(val, sickbeard.SYS_ENCODING)
+                except Exception:
                     try:
-                        filtered = unicode(val, sickbeard.SYS_ENCODING).encode('ascii', 'xmlcharrefreplace')
-                    except (UnicodeDecodeError, UnicodeEncodeError) as e:
-                        logger.log(u'Unable to decode using {0}, trying utf-8. Error is: {1}'.format(sickbeard.SYS_ENCODING, ex(e)), logger.DEBUG)
+                        filtered = unicode(val, 'utf-8')
+                    except Exception:
                         try:
-                            filtered = unicode(val, 'utf-8').encode('ascii', 'xmlcharrefreplace')
-                        except (UnicodeDecodeError, UnicodeEncodeError) as e:
-                            try:
-                                logger.log(u'Unable to decode using utf-8, trying latin-1. Error is: {1}'.format(ex(e)), logger.DEBUG)
-                                filtered = unicode(val, 'latin-1').encode('ascii', 'xmlcharrefreplace')
-                            except UnicodeDecodeError, UnicodeEncodeError:
-                                logger.log(u'Unable to decode using latin-1, Error is {0}.'.format(ex(e)),logger.ERROR)
+                            filtered = unicode(val, 'latin-1')
+                        except Exception:
+                            logger.log(u'Unable to decode using %s, utf-8, or latin-1. Falling back to chardet!' %
+                                    sickbeard.SYS_ENCODING, logger.ERROR)
+                            filtered = unicode(val, chardet.detect(val).get('encoding'))
+            try:
+                filtered = filtered.encode('ascii', 'xmlcharrefreplace')
+            except Exception:
+                logger.log(u'Unable to encode to ascii using xmlcharrefreplace.', logger.ERROR)
         else:
             filtered = self.filter(str(val))
 
