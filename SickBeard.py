@@ -367,6 +367,9 @@ class SickRage(object):
 
         # Fire up all our threads
         sickbeard.start()
+        
+        # Build internal name cache
+        name_cache.buildNameCache()
 
         # Prepopulate network timezones, it isn't thread safe
         network_timezones.update_network_dict()
