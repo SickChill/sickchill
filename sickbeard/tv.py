@@ -1232,7 +1232,7 @@ class TVShow(object):
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
-        logger.log(u"Checking if found episode " + str(season) + "x" + str(episode) + " is wanted at quality " +
+        logger.log(u"Checking if found episode " + "S" + str(season).zfill(2) + "E" + str(episode).zfill(2) + " is wanted at quality " +
                    Quality.qualityStrings[quality], logger.DEBUG)
 
         # if the quality isn't one we want under any circumstances then just say no
