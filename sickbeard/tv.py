@@ -1517,7 +1517,7 @@ class TVEpisode(object):
         if sickbeard.SUBTITLES_HISTORY:
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
-                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
+                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.opensubtitles), logger.DEBUG)
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)
 
         return self.subtitles

@@ -67,7 +67,7 @@ def getEnabledServiceList():
 
 #Hack around this for now.
 def fromietf(language):
-    return babelfish.Language.fromietf(language if language not in 'pb' else 'pt-BR')
+    return babelfish.Language.fromopensubtitles(language)
 
 def isValidLanguage(language):
     try:
@@ -81,7 +81,7 @@ def getLanguageName(language):
 
 # TODO: Filter here for non-languages in sickbeard.SUBTITLES_LANGUAGES
 def wantedLanguages(sqlLike = False):
-    wantedLanguages = sorted(sickbeard.SUBTITLES_LANGUAGES)
+    wantedLanguages = [x for x in sorted(sickbeard.SUBTITLES_LANGUAGES) if x in babelfish.language_converters['opensubtitles'].codes]
     if sqlLike:
         return '%' + ','.join(wantedLanguages) + '%'
     return wantedLanguages
@@ -92,8 +92,10 @@ def subtitlesLanguages(video_path):
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
     for language in languages:
-        if hasattr(language, 'alpha3') and language.alpha3:
-                resultList.append(language.alpha3)
+        if hasattr(language, 'opensubtitles') and language.opensubtitles:
+            resultList.append(language.opensubtitles)
+        elif hasattr(language, 'alpha3') and language.alpha3:
+            resultList.append(language.alpha3)
         elif hasattr(language, 'alpha2') and language.alpha2:
             resultList.append(language.alpha2)
 
@@ -101,11 +103,14 @@ def subtitlesLanguages(video_path):
     if len(resultList) is 1 and len(defaultLang) is 1:
         return defaultLang
 
+    if ('pob' in defaultLang or 'pb' in defaultLang) and ('pt' not in defaultLang and 'por' not in defaultLang):
+            resultList = [x if not x in ['por', 'pt'] else u'pob' for x in resultList]
+
     return sorted(resultList)
 
 # TODO: Return only languages our providers allow
 def subtitleLanguageFilter():
-    return [language for language in babelfish.LANGUAGE_MATRIX if hasattr(language, 'alpha2') and language.alpha2]
+    return [babelfish.Language.fromopensubtitles(language) for language in babelfish.language_converters['opensubtitles'].codes if len(language) == 3]
 
 class SubtitlesFinder():
     """

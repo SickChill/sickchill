@@ -15,7 +15,7 @@ $(document).ready(function() {
         	subtitles = subtitles.split(',')
         	for (i in subtitles)
         	{
-        		row += '   <img src="/images/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
+        		row += '   <img src="/images/subtitles/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
         	}
         row += '  </td>';
         row += ' </tr>'
