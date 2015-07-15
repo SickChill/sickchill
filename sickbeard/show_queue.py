@@ -133,13 +133,13 @@ class ShowQueue(generic_queue.GenericQueue):
         return queueItemObj
 
     def addShow(self, indexer, indexer_id, showDir, default_status=None, quality=None, flatten_folders=None,
-                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None):
+                lang=None, subtitles=None, anime=None, scene=None, paused=None, blacklist=None, whitelist=None, default_status_after=None):
 
         if lang is None:
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         queueItemObj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang,
-                                    subtitles, anime, scene, paused, blacklist, whitelist)
+                                    subtitles, anime, scene, paused, blacklist, whitelist, default_status_after)
 
         self.add_item(queueItemObj)
 
@@ -196,7 +196,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 class QueueItemAdd(ShowQueueItem):
     def __init__(self, indexer, indexer_id, showDir, default_status, quality, flatten_folders, lang, subtitles, anime,
-                 scene, paused, blacklist, whitelist):
+                 scene, paused, blacklist, whitelist, default_status_after):
 
         self.indexer = indexer
         self.indexer_id = indexer_id
@@ -211,6 +211,7 @@ class QueueItemAdd(ShowQueueItem):
         self.paused = paused
         self.blacklist = blacklist
         self.whitelist = whitelist
+        self.default_status_after = default_status_after
 
         if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
@@ -420,8 +421,8 @@ class QueueItemAdd(ShowQueueItem):
                                                                                    self.show.indexer):
             self.show.scene = 1
 
-        # After initial add, set back to WANTED.
-        self.show.default_ep_status = WANTED
+        # After initial add, set to default_status_after.
+        self.show.default_ep_status = self.default_status_after
 
         self.finish()
 
