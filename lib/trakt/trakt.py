@@ -8,9 +8,9 @@ from sickbeard import logger
 from exceptions import traktException, traktAuthException, traktServerBusy
 
 class TraktAPI():
-    def __init__(self, disable_ssl_verify=False, timeout=30):
+    def __init__(self, ssl_verify=True, timeout=30):
         self.session = requests.Session()
-        self.verify = certifi.where() if not disable_ssl_verify else False
+        self.verify = certifi.where() if ssl_verify else None
         self.timeout = timeout if timeout else None
         self.auth_url = sickbeard.TRAKT_OAUTH_URL
         self.api_url = sickbeard.TRAKT_API_URL

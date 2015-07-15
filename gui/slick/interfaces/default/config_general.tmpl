@@ -566,7 +566,15 @@
 								</span>
 							</label>
 						</div>
-						
+	                                        <div class="field-pair">
+                                                    <label for="ssl_verify">
+                                                        <span class="component-title">Verify SSL Certs</span>
+                                                            <span class="component-desc">
+                                                                <input type="checkbox" name="ssl_verify" id="ssl_verify" #if $sickbeard.SSL_VERIFY then 'checked="checked"' else ''#/>
+                                                                <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
+                                                            </span>
+                                                    </label>
+                                                </div>
 						<div class="field-pair">
 							<label for="no_restart">
 								<span class="component-title">No Restart</span>

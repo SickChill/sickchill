@@ -30,7 +30,7 @@
 Manage episodes without <select name="whichSubs" class="form-control form-control-inline input-sm">
 <option value="all">All</option>
 #for $sub_lang in [$subtitles.fromietf(x) for x in $subtitles.wantedLanguages]:
-<option value="$sub_lang.alpha3">$sub_lang.name</option>
+<option value="$sub_lang.opensubtitles">$sub_lang.name</option>
 #end for
 </select>
 subtitles

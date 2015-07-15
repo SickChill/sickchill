@@ -92,7 +92,7 @@ class DailySearcher():
             ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
             with ep.lock:
                 if ep.show.paused:
-                    ep.status = common.SKIPPED
+                    ep.status = ep.show.default_ep_status
                 elif ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
@@ -104,12 +104,12 @@ class DailySearcher():
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
-        else:
-            logger.log(u"No new released episodes found ...")
 
         if len(sql_l) > 0:
             myDB = db.DBConnection()
             myDB.mass_action(sql_l)
+        else:
+            logger.log(u"No new released episodes found ...")
 
         sickbeard.traktRollingScheduler.action.updateWantedList()
 

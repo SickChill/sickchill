@@ -6,7 +6,14 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width">
+
+		<!-- These values come from css/dark.css and css/light.css -->
+		#if $sickbeard.THEME_NAME == "dark":
+		<meta name="theme-color" content="#15528F">
+		#elif $sickbeard.THEME_NAME == "light":
+		<meta name="theme-color" content="#333333">
+		#end if
 	
 		<title>SickRage - BRANCH:[$sickbeard.BRANCH] - $title</title>
 	

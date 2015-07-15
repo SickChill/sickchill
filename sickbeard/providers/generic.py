@@ -156,7 +156,11 @@ class GenericProvider:
         if result.url.startswith('magnet'):
             try:
                 torrent_hash = re.findall('urn:btih:([\w]{32,40})', result.url)[0].upper()
-                torrent_name = re.findall('dn=([^&]+)', result.url)[0]
+
+                try:
+                    torrent_name = re.findall('dn=([^&]+)', result.url)[0]
+                except:
+                    torrent_name = 'NO_DOWNLOAD_NAME'
 
                 if len(torrent_hash) == 32:
                     torrent_hash = b16encode(b32decode(torrent_hash)).upper()
@@ -203,6 +207,8 @@ class GenericProvider:
             self.proxyGlypeProxySSLwarning = None
 
         for url in urls:
+            if 'NO_DOWNLOAD_NAME' in url:
+                continue
             if helpers.headURL(self.proxy._buildURL(url), session=self.session, headers=self.headers,
                                proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
                 return url
@@ -226,6 +232,9 @@ class GenericProvider:
             self.headers.pop('Referer')
 
         for url in urls:
+            if 'NO_DOWNLOAD_NAME' in url:
+                continue
+
             logger.log(u"Downloading a result from " + self.name + " at " + url)
             if helpers.download_file(self.proxy._buildURL(url), filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):

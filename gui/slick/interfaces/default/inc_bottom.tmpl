@@ -65,7 +65,7 @@
                 %>
                 &nbsp;/&nbsp;<span class="footerhighlight">$ep_total</span> Episodes Downloaded $ep_percentage       
         | Daily Search: <span class="footerhighlight"><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></span> 
-        | Backlog Search: <span class="footerhighlight">$sbdatetime.sbdatetime.sbfdate($sickbeard.backlogSearchScheduler.nextRun())</span>
+        | Backlog Search: <span class="footerhighlight"><%=str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]%></span>
 
 	</div>
 		<!-- 

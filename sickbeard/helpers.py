@@ -58,7 +58,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard import notifiers
 from sickbeard import clients
 from sickbeard.subtitles import isValidLanguage
-from lib.cachecontrol import CacheControl, caches
+from cachecontrol import CacheControl, caches
 
 from itertools import izip, cycle
 
@@ -134,7 +134,11 @@ def remove_non_release_groups(name):
                        '-NZBGEEK$':        'searchre',
                        '-RP$':             'searchre',
                        '-20-40$':          'searchre',
+                       '\.\[www\.usabit\.com\]$': 'searchre',
                        '\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
+                       '- \[ www\.torrentday\.com \]$': 'searchre',
+                       '- \{ www\.SceneTime\.com \}$': 'searchre',
+                       '^\{ www\.SceneTime\.com \} - ': 'searchre',
                        '^\[ www\.TorrentDay\.com \] - ': 'searchre',
                        '^\[ www\.Cpasbien\.pw \] ': 'searchre',
                       }
@@ -150,7 +154,7 @@ def remove_non_release_groups(name):
 
 
 def replaceExtension(filename, newExt):
-    '''
+    """
     >>> replaceExtension('foo.avi', 'mkv')
     'foo.mkv'
     >>> replaceExtension('.vimrc', 'arglebargle')
@@ -161,7 +165,7 @@ def replaceExtension(filename, newExt):
     ''
     >>> replaceExtension('foo.bar', '')
     'foo.'
-    '''
+    """
     sepFile = filename.rpartition(".")
     if sepFile[0] == "":
         return filename
@@ -221,7 +225,7 @@ def isBeingWritten(filepath):
 
 
 def sanitizeFileName(name):
-    '''
+    """
     >>> sanitizeFileName('a/b/c')
     'a-b-c'
     >>> sanitizeFileName('abc')
@@ -230,7 +234,7 @@ def sanitizeFileName(name):
     'ab'
     >>> sanitizeFileName('.a.b..')
     'a.b'
-    '''
+    """
 
     # remove bad chars from the filename
     name = re.sub(r'[\\/\*]', '-', name)
@@ -356,7 +360,7 @@ def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
 
 
 def sizeof_fmt(num):
-    '''
+    """
     >>> sizeof_fmt(2)
     '2.0 bytes'
     >>> sizeof_fmt(1024)
@@ -367,7 +371,7 @@ def sizeof_fmt(num):
     '1.0 MB'
     >>> sizeof_fmt(1234567)
     '1.2 MB'
-    '''
+    """
     for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
         if num < 1024.0:
             return "%3.1f %s" % (num, x)
@@ -618,7 +622,8 @@ def chmodAsParent(childPath):
         logger.log(u"Setting permissions for %s to %o as parent directory has %o" % (childPath, childMode, parentMode),
                    logger.DEBUG)
     except OSError:
-        logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.ERROR)
+        logger.log(u"Failed to set permission for %s to %o" % (childPath, childMode), logger.DEBUG)
+        pass
 
 
 def fixSetGroupID(childPath):
@@ -1306,7 +1311,7 @@ def _setUpSession(session, headers):
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = certifi.where()
+    session.verify = certifi.where() if sickbeard.SSL_VERIFY else None
 
     # request session proxies
     if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
@@ -1589,15 +1594,19 @@ def pretty_time_delta(seconds):
     days, seconds = divmod(seconds, 86400)
     hours, seconds = divmod(seconds, 3600)
     minutes, seconds = divmod(seconds, 60)
+    time_delta = sign_string
+
     if days > 0:
-        return '%s%dd%02dh%02dm%02ds' % (sign_string, days, hours, minutes, seconds)
-    elif hours > 0:
-        return '%s%02dh%02dm%02ds' % (sign_string, hours, minutes, seconds)
-    elif minutes > 0:
-        return '%s%02dm%02ds' % (sign_string, minutes, seconds)
-    else:
-        return '%s%02ds' % (sign_string, seconds)
-    
+        time_delta += ' %dd' % days
+    if hours > 0:
+        time_delta += ' %dh' % hours
+    if minutes > 0:
+        time_delta += ' %dm' % minutes
+    if seconds > 0:
+        time_delta += ' %ds' % seconds
+
+    return time_delta
+
 def isFileLocked(file, writeLockCheck=False):
     '''
     Checks to see if a file is locked. Performs three checks

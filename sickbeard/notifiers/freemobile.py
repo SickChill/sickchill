@@ -50,7 +50,7 @@ class FreeMobileNotifier:
 
         # build up the URL and parameters
         msg = msg.strip()
-        msg_quoted = urllib2.quote(title + ": " + msg)
+        msg_quoted = urllib2.quote(title.encode('utf-8') + ": " + msg.encode('utf-8'))
         URL = "https://smsapi.free-mobile.fr/sendmsg?user=" + id + "&pass=" + apiKey + "&msg=" + msg_quoted
         
         req = urllib2.Request(URL)
@@ -75,7 +75,11 @@ class FreeMobileNotifier:
                     message = "Server error. Please retry in few moment."
                     logger.log(message, logger.ERROR)
                     return False, message
-                    
+        except Exception, e:
+                message = u"Error while sending SMS: {0}".format(e)
+                logger.log(message, logger.ERROR)
+                return False, message
+
         message = "Free Mobile SMS successful."
         logger.log(message, logger.INFO)
         return True, message

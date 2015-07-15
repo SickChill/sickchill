@@ -174,6 +174,10 @@ class TVShow(object):
         else:
             return False
 
+    @property
+    def network_logo_name(self):
+        return self.network.replace(u'\u00C9', 'e').replace(u'\u00E9', 'e').lower()
+
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
         if sickbeard.CREATE_MISSING_SHOW_DIRS:
@@ -1228,7 +1232,7 @@ class TVShow(object):
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
-        logger.log(u"Checking if found episode " + str(season) + "x" + str(episode) + " is wanted at quality " +
+        logger.log(u"Checking if found episode " + "S" + str(season).zfill(2) + "E" + str(episode).zfill(2) + " is wanted at quality " +
                    Quality.qualityStrings[quality], logger.DEBUG)
 
         # if the quality isn't one we want under any circumstances then just say no
@@ -1471,21 +1475,7 @@ class TVEpisode(object):
                 logger.log(u'%s: No subtitles found for S%02dE%02d on any provider' % (self.show.indexerid, self.season, self.episode), logger.DEBUG)
                 return
 
-            if len(sickbeard.SUBTITLES_DIR):
-                # absolute path (GUI 'Browse' button, or typed absolute path) - sillyness?
-                if ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
-                    subs_new_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, self.show.name)
-                else:
-                    # relative to the folder the episode is in - sillyness?
-                    subs_new_path = ek.ek(os.path.join, ek.ek(os.path.dirname, self.location), sickbeard.SUBTITLES_DIR)
-                    dir_exists = helpers.makeDir(subs_new_path)
-
-                    if not dir_exists:
-                        logger.log(u'Unable to create subtitles folder ' + subs_new_path, logger.ERROR)
-                    else:
-                        helpers.chmodAsParent(subs_new_path)
-            else:
-                subs_new_path = None
+            subs_new_path = sickbeard.SUBTITLES_DIR if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR) else None
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
@@ -1513,7 +1503,7 @@ class TVEpisode(object):
         if sickbeard.SUBTITLES_HISTORY:
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
-                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.alpha3), logger.DEBUG)
+                    logger.log(u'history.logSubtitle %s, %s' % (sub.provider_name, sub.language.opensubtitles), logger.DEBUG)
                     history.logSubtitle(self.show.indexerid, self.season, self.episode, self.status, sub)
 
         return self.subtitles
