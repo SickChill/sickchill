@@ -254,7 +254,7 @@ class TVCache():
                 showObj = helpers.findCertainShow(sickbeard.showList, indexer_id)
 
             try:
-                myParser = NameParser(showObj=showObj, convert=True)
+                myParser = NameParser(showObj=showObj)
                 parse_result = myParser.parse(name)
             except InvalidNameException:
                 logger.log(u"Unable to parse the filename " + name + " into a valid episode", logger.DEBUG)

@@ -36,14 +36,12 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, tryIndexers=False, trySceneExceptions=False, convert=False,
-                 naming_pattern=False):
+    def __init__(self, file_name=True, showObj=None, tryIndexers=False, trySceneExceptions=False, naming_pattern=False):
 
         self.file_name = file_name
         self.showObj = showObj
         self.tryIndexers = tryIndexers
         self.trySceneExceptions = trySceneExceptions
-        self.convert = convert
         self.naming_pattern = naming_pattern
 
         if self.showObj and not self.showObj.is_anime:
@@ -253,7 +251,7 @@ class NameParser(object):
                     s = season_number
                     e = epNo
 
-                    if self.convert:
+                    if bestResult.show.is_scene:
                         (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
                                                                        bestResult.show.indexer,
                                                                        season_number,
@@ -266,7 +264,7 @@ class NameParser(object):
                 for epAbsNo in bestResult.ab_episode_numbers:
                     a = epAbsNo
 
-                    if self.convert:
+                    if bestResult.show.is_scene:
                         a = scene_numbering.get_indexer_absolute_numbering(bestResult.show.indexerid,
                                                                            bestResult.show.indexer, epAbsNo,
                                                                            True, scene_season)
@@ -282,7 +280,7 @@ class NameParser(object):
                     s = bestResult.season_number
                     e = epNo
 
-                    if self.convert:
+                    if bestResult.show.is_scene:
                         (s, e) = scene_numbering.get_indexer_numbering(bestResult.show.indexerid,
                                                                        bestResult.show.indexer,
                                                                        bestResult.season_number,
@@ -321,7 +319,7 @@ class NameParser(object):
                 bestResult.episode_numbers = new_episode_numbers
                 bestResult.season_number = new_season_numbers[0]
 
-            if self.convert:
+            if bestResult.show.is_scene:
                 logger.log(
                     u"Converted parsed result " + bestResult.original_name + " into " + str(bestResult).decode('utf-8',
                                                                                                                'xmlcharrefreplace'),
