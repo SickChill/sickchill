@@ -110,13 +110,11 @@ class TraktAPI():
             elif code in (500,501,503,504,520,521,522):
                 #http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.WARNING)
-                return {}
             elif code is 404:
                 logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.WARNING)
-                return {}
             else:
                 logger.log(u'Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)
-                return {}
+            return {}
 
         # check and confirm trakt call did not fail
         if isinstance(resp, dict) and resp.get('status', False) == 'failure':
