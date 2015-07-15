@@ -92,18 +92,21 @@ class TraktAPI():
         except requests.RequestException as e:
             code = getattr(e.response, 'status_code', None)
             if not code:
+                if 'timed out' in e:
+                    logger.log(u'Timeout connecting to Trakt. Try to increase timeout value in Trakt settings', logger.WARNING)                      
                 # This is pretty much a fatal error if there is no status_code
-                # It means there basically was no response at all
-                raise traktException(e)
+                # It means there basically was no response at all                    
+                else:
+                    logger.log(u'Could not connect to Trakt. Error: {0}'.format(e), logger.WARNING)                
             elif code is 502:
                 # Retry the request, cloudflare had a proxying issue
                 logger.log(u'Retrying trakt api request: %s' % path, logger.WARNING)
                 return self.traktRequest(path, data, headers, url, method)
             elif code is 401:
-                logger.log(u'Unauthorized. Please check your Trakt settings', logger.WARNING)
                 if self.traktToken(refresh=True, count=count):
                     return self.traktRequest(path, data, headers, url, method)
-                raise traktAuthException(e)
+                else:
+                    logger.log(u'Unauthorized. Please check your Trakt settings', logger.WARNING)
             elif code in (500,501,503,504,520,521,522):
                 #http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.WARNING)
@@ -112,7 +115,8 @@ class TraktAPI():
                 logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.WARNING)
                 return {}
             else:
-                raise traktException(e)
+                logger.log(u'Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)
+                return {}
 
         # check and confirm trakt call did not fail
         if isinstance(resp, dict) and resp.get('status', False) == 'failure':
