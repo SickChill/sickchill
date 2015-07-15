@@ -264,7 +264,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
     def headURL(self, result):
         """
         Check if URL is valid and the file exists at URL.
-		Original function overwritten because FrenchTorrentDB links only support one request
+        Original function overwritten because FrenchTorrentDB links only support one request
         """
 
         # check for auth
