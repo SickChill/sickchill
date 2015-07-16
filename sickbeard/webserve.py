@@ -281,7 +281,7 @@ class WebHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if self.get_current_user():
-            self.redirect('/home/')
+            self.redirect('/news/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
             self.finish(t.respond())
@@ -304,7 +304,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)    
 
-        self.redirect('/home/')
+        self.redirect('/news/')
 
 
 class LogoutHandler(BaseHandler):
@@ -339,7 +339,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/home/')
+        return self.redirect('/news/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -2164,7 +2164,7 @@ class HomeNews(Home):
     def index(self):
         t = PageTemplate(rh=self, file="news.tmpl")
         t.submenu = self.HomeMenu()
-        response = requests.get("https://raw.githubusercontent.com/SiCKRAGETV/SickRage/add-news/news.md", verify=False)
+        response = requests.get("http://rawgit.com/SiCKRAGETV/SickRage/develop/news.md")
         import markdown2
         t.newsdata = markdown2.markdown(response.text)
         return t.respond()

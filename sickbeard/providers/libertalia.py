@@ -1,6 +1,6 @@
 # -*- coding: latin-1 -*-
 # Authors: Raver2046 
-#          adaur 
+#          adaur
 # based on tpi.py
 # URL: http://code.google.com/p/sickbeard/
 #
@@ -26,13 +26,11 @@ import time
 from requests.auth import AuthBase
 import sickbeard
 import generic
-import urllib
 
-import urllib2
 import requests
 import json
 import cookielib
-import random
+import urllib
 
 from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
@@ -56,16 +54,11 @@ class LibertaliaProvider(generic.TorrentProvider):
         self.supportsBacklog = True
         
         self.cj = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
         
         self.url = "https://libertalia.me"
         self.urlsearch = "https://libertalia.me/torrents.php?name=%s%s"
         
         self.categories = "&cat%5B%5D=9"
-        
-        self.login_done = False
-        self.failed_login_logged = False
-        self.successful_login_logged = False
         
         self.enabled = False
         self.username = None
@@ -133,34 +126,35 @@ class LibertaliaProvider(generic.TorrentProvider):
         return quality
     
     def _doLogin(self):
-
-        listeUserAgents = [ 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_5; fr-fr) AppleWebKit/525.18 (KHTML, like Gecko) Version/3.1.2 Safari/525.20.1',
-                                                'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.186 Safari/535.1',
-                                                'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13',
-                                                'Mozilla/5.0 (X11; U; Linux x86_64; en-us) AppleWebKit/528.5+ (KHTML, like Gecko, Safari/528.5+) midori',
-                                                'Mozilla/5.0 (Windows NT 6.0) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.107 Safari/535.1',
-                                                'Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/312.1 (KHTML, like Gecko) Safari/312',
-                                                'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.12 Safari/535.11',
-                                                'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.8 (KHTML, like Gecko) Chrome/17.0.940.0 Safari/535.8' ]
-
-        self.opener.addheaders = [('User-agent', random.choice(listeUserAgents))] 
-                                       
-        data = urllib.urlencode({'username': self.username, 'password' :  self.password, 'submit' : 'login'})
+ 
+        if any(requests.utils.dict_from_cookiejar(self.session.cookies).values()):
+            return True
+            
+        header = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.8 (KHTML, like Gecko) Chrome/17.0.940.0 Safari/535.8'}
         
-     
-        r = self.opener.open(self.url + '/login.php',data)
-        
-        for index, cookie in enumerate(self.cj):
-            if (cookie.name == "session"):
-                self.login_done = True
-                                
-        if not self.login_done and not self.failed_login_logged:
-            logger.log(u"Unable to login to Libertalia. Please check username and password.", logger.WARNING) 
+        login_params = {'username': self.username,
+                            'password': self.password
+        }
+
+        if not self.session:
+            self.session = requests.Session()
+
+        logger.log('Performing authentication to Libertalia', logger.DEBUG)
+        try:
+            response = self.session.post(self.url + '/login.php', data=login_params, timeout=30, headers=header)
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+            logger.log(u'Unable to connect to ' + self.name + ' provider: ' + ex(e), logger.ERROR)
             return False
-        
-        if self.login_done and not self.successful_login_logged:
-            logger.log(u"Login to Libertalia successful", logger.DEBUG) 
-            return True      
+
+        if re.search('upload.php', response.text):
+            logger.log(u'Login to ' + self.name + ' was successful.', logger.DEBUG)
+            return True                
+        else:
+            logger.log(u'Login to ' + self.name + ' was unsuccessful.', logger.DEBUG)                
+            return False
+
+        return True
+            
 
     def _doSearch(self, search_params, search_mode='eponly', epcount=0, age=0, epObj=None):
     
@@ -184,11 +178,14 @@ class LibertaliaProvider(generic.TorrentProvider):
          
                 logger.log(u"Search string: " + searchURL, logger.DEBUG)
                 
-                r = self.opener.open( searchURL )
-                with BS4Parser(r, features=["html5lib", "permissive"]) as html:
+                data = self.getURL(searchURL)
+                if not data:
+                    continue
+                
+                with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                     resultsTable = html.find("table", { "class" : "torrent_table"  })
                     if resultsTable:
-                        logger.log(u"Libertalia found resulttable ! " , logger.DEBUG)  
+                        logger.log(u"Libertalia found result table ! " , logger.DEBUG)  
                         rows = resultsTable.findAll("tr" ,  {"class" : "torrent_row  new  "}  )  # torrent_row new
                         
                         for row in rows:
@@ -202,13 +199,11 @@ class LibertaliaProvider(generic.TorrentProvider):
                             if link:               
                                 title = link.text
                                 recherched=searchURL.replace(".","(.*)").replace(" ","(.*)").replace("'","(.*)")
-                                logger.log(u"Libertalia TITLE : " + title, logger.DEBUG)  
-                                logger.log(u"Libertalia CHECK MATCH : " + recherched, logger.DEBUG)                                        
-                                #downloadURL =  self.url + "/" + row.find("a",href=re.compile("torrent_pass"))['href']
-                                if re.match(recherched,title , re.IGNORECASE):              
-                                    downloadURL =  row.find("a",href=re.compile("torrent_pass"))['href']                
-                                    item = title, downloadURL
-                                    items[mode].append(item)
+                                logger.log(u"Libertalia title : " + title, logger.DEBUG)                                 
+                                downloadURL =  row.find("a",href=re.compile("torrent_pass"))['href']   
+                                logger.log(u"Libertalia download URL : " + downloadURL, logger.DEBUG)                                   
+                                item = title, downloadURL
+                                items[mode].append(item)
             results += items[mode]
          
         return results
