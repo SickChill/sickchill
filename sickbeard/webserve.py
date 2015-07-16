@@ -304,7 +304,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)    
 
-        self.redirect('/home/')
+        self.redirect('/news/')
 
 
 class LogoutHandler(BaseHandler):
@@ -339,7 +339,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/home/')
+        return self.redirect('/news/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
