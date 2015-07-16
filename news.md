@@ -1,5 +1,6 @@
 **Default Episode Status**: 
 We recently fixed this feature so you need  to:
+
 - Edit your shows and set the default status to wanted instead of skipped (if you want unaired episodes to be downloaded)
 - Set the ones that were marked skipped before that to wanted.
 
