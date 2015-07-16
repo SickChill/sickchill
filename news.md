@@ -5,7 +5,7 @@
 We recently fixed this feature so you need  to:
 
 - Edit your shows via 'Mass update' and set the default status to WANTED instead of SKIPPED (if you want unaired episodes to be downloaded)
-- Set all news episodes that were marked SKIPPED before that to WANTED. You can check all of them at "Episode Status Management" selecting "SKIPPED" in "Manage episodes with status". Be carefull with this! Make sure you have a backup of your database. Be advised!
+- Set all new episodes that were marked SKIPPED before that to WANTED. You can check all of them at "Episode Status Management" selecting "SKIPPED" in "Manage episodes with status". Be carefull with this! Make sure you have a backup of your database. Be advised!
 
 Now when you will add a **NEW** show you will be asked for two status settings: already aired episodes and unaired episodes.
 
