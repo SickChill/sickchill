@@ -9,7 +9,7 @@ We recently fixed this feature so you need  to:
 
 Now when you will add a **NEW** show you will be asked for two status settings: already aired episodes and unaired episodes.
 
-<img src="https://cloud.githubusercontent.com/assets/2620870/8724471/3cb943f4-2ba6-11e5-99cd-d645fb9e824f.png" width="200">
+<img src="https://cloud.githubusercontent.com/assets/2620870/8724471/3cb943f4-2ba6-11e5-99cd-d645fb9e824f.png" width="300">
 
 
 
@@ -18,4 +18,6 @@ Now when you will add a **NEW** show you will be asked for two status settings: 
 - Sick beard index and Womble provider are blocking SR application so avoid use them
 
 **Develop branch**
-- We are upgrading Subliminal module and this may and will break your installation. Please avoid use  develop branch until we fully tested everything unless you know what you are doing
+- We are upgrading Subliminal module and this may and will break your installation.
+- Please avoid using the develop branch until we fully tested everything unless you know what you are doing
+
