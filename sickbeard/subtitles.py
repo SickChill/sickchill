@@ -89,6 +89,10 @@ def wantedLanguages(sqlLike = False):
 def subtitlesLanguages(video_path):
     """Return a list detected subtitles for the given video file"""
     resultList = []
+
+    if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+        video_path = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, video_path))
+
     languages = subliminal.video.scan_subtitle_languages(video_path)
 
     for language in languages:
