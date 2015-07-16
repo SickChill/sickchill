@@ -26,6 +26,8 @@ from sickbeard import db, common, helpers, logger
 from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
+from babelfish import language_converters
+
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 42
 
@@ -39,6 +41,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_tvrage_show_statues()
         self.fix_episode_statuses()
         self.fix_invalid_airdates()
+        self.fix_subtitles_codes()
 
     def fix_duplicate_shows(self, column='indexer_id'):
 
@@ -191,6 +194,33 @@ class MainSanityCheck(db.DBSanityCheck):
 
         else:
             logger.log(u"No bad episode airdates, check passed", logger.DEBUG)
+
+    def fix_subtitles_codes(self):
+
+        sqlResults = self.connection.select(
+            "SELECT subtitles, episode_id FROM tv_episodes WHERE subtitles != '' AND subtitles_lastsearch < ?;",
+                [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime("%Y-%m-%d %H:%M:%S")])
+
+        if not sqlResults:
+            return
+
+        for sqlResult in sqlResults:
+            langs = []
+
+            logger.log("Checking subtitle codes for episode_id: %s, codes: %s" %
+                (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
+
+            for subcode in sqlResult['subtitles'].split(','):
+                if not len(subcode) is 3 or not subcode in language_converters['opensubtitles'].codes:
+                    logger.log("Fixing subtitle codes for episode_id: %s, invalid code: %s" %
+                        (sqlResult['episode_id'], subcode), logger.DEBUG)
+                    continue
+
+                langs.append(subcode)
+
+            self.connection.action("UPDATE tv_episodes SET subtitles = ?, subtitles_lastsearch = ? WHERE episode_id = ?;",
+                [','.join(langs), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), sqlResult['episode_id']])
+
 
 def backupDatabase(version):
     logger.log(u"Backing up database before upgrade")

@@ -460,7 +460,7 @@ class SickRage(object):
         logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_shows")
+        sqlResults = myDB.select("SELECT * FROM tv_shows;")
 
         sickbeard.showList = []
         for sqlShow in sqlResults:
@@ -473,6 +473,7 @@ class SickRage(object):
                     u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
                     logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
+
 
     def restoreDB(self, srcDir, dstDir):
         try:
