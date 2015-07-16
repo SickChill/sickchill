@@ -1,3 +1,6 @@
+## News from SickRage developers
+
+
 **Default Episode Status**: 
 We recently fixed this feature so you need  to:
 
