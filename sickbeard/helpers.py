@@ -1358,13 +1358,20 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
     except requests.exceptions.HTTPError, e:
         logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
+        pass
     except requests.exceptions.ConnectionError, e:
         logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        pass
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        pass
+    except requests.exceptions.ContentDecodingError:
+        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
+        pass
     except Exception as e:
         logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
+        pass
 
     return False
 
@@ -1407,6 +1414,9 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         return
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        return
+    except requests.exceptions.ContentDecodingError:
+        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
         return
     except Exception as e:
         logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
