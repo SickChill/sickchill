@@ -460,7 +460,7 @@ class SickRage(object):
         logger.log(u"Loading initial show list", logger.DEBUG)
 
         myDB = db.DBConnection()
-        sqlResults = myDB.select("SELECT * FROM tv_shows")
+        sqlResults = myDB.select("SELECT * FROM tv_shows;")
 
         sickbeard.showList = []
         for sqlShow in sqlResults:
@@ -473,6 +473,33 @@ class SickRage(object):
                     u"There was an error creating the show in " + sqlShow["location"] + ": " + str(e).decode('utf-8'),
                     logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
+
+        self.fix_subtitles_codes()
+
+
+    def fix_subtitles_codes(self):
+        myDB = db.DBConnection()
+        sqlResults = myDB.select(
+            "SELECT showid, subtitles_lastsearch, season, episode FROM tv_episodes " +
+            "WHERE subtitles != '' AND subtitles_lastsearch < ?;",
+                [datetime.datetime(2015, 7, 15, 17, 20, 44, 326380).strftime("%Y-%m-%d %H:%M:%S")])
+
+        if not sqlResults:
+            return
+
+        logger.log("Fixing old subtitle codes")
+        for sqlResult in sqlResults:
+            showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(sqlResult['showid']))
+            if not showObj:
+                continue
+
+            epObj = showObj.getEpisode(int(sqlResult["season"]), int(sqlResult["episode"]))
+            if isinstance(epObj, str):
+                continue
+
+            epObj.refreshSubtitles()
+            epObj.subtitles_lastsearch = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            epObj.saveToDB()
 
     def restoreDB(self, srcDir, dstDir):
         try:
