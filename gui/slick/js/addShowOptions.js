@@ -17,7 +17,8 @@ $(document).ready(function () {
             defaultFlattenFolders: $('#flatten_folders').prop('checked'),
             subtitles: $('#subtitles').prop('checked'),
             anime: $('#anime').prop('checked'),
-            scene: $('#scene').prop('checked')
+            scene: $('#scene').prop('checked'),
+            defaultStatusAfter: $('#statusSelectAfter').val()
         });
 
         $(this).attr('disabled', true);
@@ -28,7 +29,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime').change(function () {
+    $('#statusSelect, #qualityPreset, #flatten_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').change(function () {
         $('#saveDefaultsButton').attr('disabled', false);
     });
 
