@@ -26,7 +26,7 @@ from sickbeard import db, common, helpers, logger
 from sickbeard import encodingKludge as ek
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
-from babelfish import Language
+from babelfish import language_converters
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 42
@@ -211,9 +211,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 (sqlResult['episode_id'], sqlResult['subtitles']), logger.DEBUG)
 
             for subcode in sqlResult['subtitles'].split(','):
-                try:
-                    Language.fromopensubtitles(subcode)
-                except Exception:
+                if not len(subcode) is 3 or not subcode in language_converters['opensubtitles'].codes:
                     logger.log("Fixing subtitle codes for episode_id: %s, invalid code: %s" %
                         (sqlResult['episode_id'], subcode), logger.DEBUG)
                     continue
