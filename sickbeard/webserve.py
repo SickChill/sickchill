@@ -58,8 +58,9 @@ import adba, subliminal
 from lib.trakt import TraktAPI
 from lib.trakt.exceptions import traktException
 from versionChecker import CheckVersion
-import babelfish
+
 import requests
+import markdown2
 
 try:
     import json
@@ -281,7 +282,7 @@ class WebHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
         if self.get_current_user():
-            self.redirect('/news/')
+            self.redirect('/home/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
             self.finish(t.respond())
@@ -304,7 +305,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)    
 
-        self.redirect('/news/')
+        self.redirect('/home/')
 
 
 class LogoutHandler(BaseHandler):
@@ -339,7 +340,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/news/')
+        return self.redirect('/home/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -2162,12 +2163,34 @@ class HomeNews(Home):
         super(HomeNews, self).__init__(*args, **kwargs)
 
     def index(self):
-        t = PageTemplate(rh=self, file="news.tmpl")
-        t.submenu = self.HomeMenu()
-        with open("news.md", "r") as newsfile:
+        with open(ek.ek(os.path.join, sickbeard.PROG_DIR, "news.md"), "r") as newsfile:
             news = newsfile.read()
-        import markdown2
-        t.newsdata = markdown2.markdown(news)
+
+        t = PageTemplate(rh=self, file="markdown.tmpl")
+        t.submenu = self.HomeMenu()
+        t.title = "News"
+        t.header = "News"
+        t.topmenu = "news"
+        t.data = markdown2.markdown(news)
+
+        return t.respond()
+
+@route('/changes(/?.*)')
+class HomeChangeLog(Home):
+    def __init__(self, *args, **kwargs):
+        super(HomeChangeLog, self).__init__(*args, **kwargs)
+
+    def index(self):
+        with open(ek.ek(os.path.join, sickbeard.PROG_DIR, "CHANGES.md"), "r") as changesfile:
+            changes = changesfile.read()
+
+        t = PageTemplate(rh=self, file="markdown.tmpl")
+        t.submenu = self.HomeMenu()
+        t.title = "Changelog"
+        t.header = "Changelog"
+        t.topmenu = "changes"
+        t.data = markdown2.markdown(changes)
+
         return t.respond()
 
 @route('/home/postprocess(/?.*)')
