@@ -175,12 +175,10 @@ def retrieve_exceptions():
             logger.log(u"Checking for scene exception updates for " + sickbeard.indexerApi(indexer).name + "")
 
             loc = sickbeard.indexerApi(indexer).config['scene_loc']
-            if loc.startswith("http"):
+            try:
                 data = helpers.getURL(loc, session=sickbeard.indexerApi(indexer).session)
-            else:
-                loc = helpers.real_path(ek.ek(os.path.join, ek.ek(os.path.dirname, __file__), loc))
-                with open(loc, 'r') as file:
-                    data = file.read()
+            except Exception:
+                continue
 
             if data is None:
                 # When data is None, trouble connecting to github, or reading file failed
