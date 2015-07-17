@@ -1311,7 +1311,7 @@ def _setUpSession(session, headers):
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = certifi.where() if sickbeard.SSL_VERIFY else None
+    session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
 
     # request session proxies
     if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
@@ -1338,7 +1338,7 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
     session.params = params
 
     try:
-        resp = session.head(url, timeout=timeout, allow_redirects=True)
+        resp = session.head(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1347,7 +1347,7 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.head(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True)
+                resp = session.head(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested headURL " + url + " returned status code is " + str(
@@ -1388,9 +1388,9 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         # decide if we get or post data to server
         if post_data:
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True)
+            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify)
         else:
-            resp = session.get(url, timeout=timeout, allow_redirects=True)
+            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1399,7 +1399,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True)
+                resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
@@ -1432,7 +1432,7 @@ def download_file(url, filename, session=None, headers={}):
     session.stream = True
 
     try:
-        with closing(session.get(url, allow_redirects=True)) as resp:
+        with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
                 logger.log(u"Requested url " + url + " returned status code is " + str(
                     resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
