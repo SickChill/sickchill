@@ -1140,7 +1140,8 @@ class TVShow(object):
                 episode.downloadSubtitles(force=force)
 
         except Exception:
-            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.DEBUG)
+            logger.log("%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+            logger.log(traceback.format_exc(), logger.ERROR)            
 
     def saveToDB(self, forceSave=False):
 
