@@ -1,6 +1,12 @@
 ## News from SickRage developers
 
 
+####2015-07-17####
+
+- Added new sub-menu called "Changelog". You can check what has changed in SickRage in each release
+
+####2015-07-16####
+
 **Default Episode Status**: 
 We recently fixed this feature so you need  to:
 
@@ -18,6 +24,6 @@ Now when you will add a **NEW** show you will be asked for two status settings: 
 - Sick beard index and Womble provider are blocking SR application so avoid use them
 
 **Develop branch**
-- We are upgrading Subliminal module and this may and will break your installation.
+- We are upgrading Subliminal module and this may and will break your installation
 - Please avoid using the develop branch until we fully tested everything unless you know what you are doing
 
