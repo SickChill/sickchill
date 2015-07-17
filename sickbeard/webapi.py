@@ -44,7 +44,7 @@ import codecs
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 import subliminal
 import babelfish
@@ -104,7 +104,7 @@ class ApiHandler(RequestHandler):
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
         if 'profile' in kwargs:
-            from lib.profilehooks import profile
+            from profilehooks import profile
 
             _call_dispatcher = profile(_call_dispatcher, immediate=True)
             del kwargs["profile"]

@@ -1,6 +1,6 @@
-import lib.jsonrpclib
-from lib.jsonrpclib import Fault
-from lib.jsonrpclib.jsonrpc import USE_UNIX_SOCKETS
+import jsonrpclib
+from jsonrpclib import Fault
+from jsonrpclib.jsonrpc import USE_UNIX_SOCKETS
 import SimpleXMLRPCServer
 import SocketServer
 import socket

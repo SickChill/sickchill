@@ -32,13 +32,13 @@ from sickbeard import common
 
 from sickbeard import failedProcessor
 
-from lib.unrar2 import RarFile, RarInfo
-from lib.unrar2.rar_exceptions import *
+from unrar2 import RarFile, RarInfo
+from unrar2.rar_exceptions import *
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 
 class ProcessResult:

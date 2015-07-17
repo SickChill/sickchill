@@ -1,7 +1,7 @@
-from lib.hachoir_core.tools import (humanDatetime, humanDuration,
+from hachoir_core.tools import (humanDatetime, humanDuration,
     timestampUNIX, timestampMac32, timestampUUID60,
     timestampWin64, durationWin64)
-from lib.hachoir_core.field import Bits, FieldSet
+from hachoir_core.field import Bits, FieldSet
 from datetime import datetime
 
 class GenericTimestamp(Bits):

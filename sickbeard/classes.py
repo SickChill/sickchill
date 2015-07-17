@@ -23,7 +23,7 @@ import sickbeard
 
 import urllib
 import datetime
-from lib.dateutil import parser
+from dateutil import parser
 
 from common import USER_AGENT, Quality
 

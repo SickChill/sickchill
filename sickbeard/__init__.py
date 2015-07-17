@@ -25,9 +25,9 @@ import os
 import re
 import os.path
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 from threading import Lock
 import sys
@@ -55,7 +55,7 @@ from sickbeard.common import SD, SKIPPED, WANTED, NAMING_REPEAT
 from sickbeard.databases import mainDB, cache_db, failed_db
 from sickbeard.helpers import ex
 
-from lib.configobj import ConfigObj
+from configobj import ConfigObj
 
 import requests
 requests.packages.urllib3.disable_warnings()

@@ -1,4 +1,4 @@
-from lib.hachoir_metadata.timezone import UTC
+from hachoir_metadata.timezone import UTC
 from datetime import date, datetime
 
 # Year in 1850..2030

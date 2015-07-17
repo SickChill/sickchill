@@ -1,6 +1,5 @@
-from lib.tvdb_api.tvdb_api import Tvdb
-from lib.tvrage_api.tvrage_api import TVRage
-from scene_exceptions import TVDB_EXCEPTIONS, TVRAGE_EXCEPTIONS
+from tvdb_api.tvdb_api import Tvdb
+from tvrage_api.tvrage_api import TVRage
 import requests
 
 INDEXER_TVDB = 1

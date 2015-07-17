@@ -38,11 +38,12 @@ class SNI_Tests(unittest.TestCase):
             except requests.exceptions.Timeout:
                 pass
             except requests.exceptions.SSLError as error:
-                if u'SSL3_GET_SERVER_CERTIFICATE' not in ex(error.message):
+                if u'SSL3_GET_SERVER_CERTIFICATE' not in ex(error):
                     print 'SSLError on %s: %s' % (provider.name, ex(error.message))
                     raise
                 else:
                     print  'Cannot verify certificate for %s' % provider.name
+                    pass
             except Exception:
                 pass
 

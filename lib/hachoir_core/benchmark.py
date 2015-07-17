@@ -1,5 +1,5 @@
-from lib.hachoir_core.tools import humanDurationNanosec
-from lib.hachoir_core.i18n import _
+from hachoir_core.tools import humanDurationNanosec
+from hachoir_core.i18n import _
 from math import floor
 from time import time
 

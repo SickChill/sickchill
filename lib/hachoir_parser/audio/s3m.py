@@ -9,15 +9,15 @@ Author: Christophe GISQUET <christophe.gisquet@free.fr>
 Creation: 11th February 2007
 """
 
-from lib.hachoir_parser import Parser
-from lib.hachoir_core.field import (StaticFieldSet, FieldSet, Field,
+from hachoir_parser import Parser
+from hachoir_core.field import (StaticFieldSet, FieldSet, Field,
     Bit, Bits,
     UInt32, UInt16, UInt8, Enum,
     PaddingBytes, RawBytes, NullBytes,
     String, GenericVector, ParserError)
-from lib.hachoir_core.endian import LITTLE_ENDIAN
-from lib.hachoir_core.text_handler import textHandler, hexadecimal
-from lib.hachoir_core.tools import alignValue
+from hachoir_core.endian import LITTLE_ENDIAN
+from hachoir_core.text_handler import textHandler, hexadecimal
+from hachoir_core.tools import alignValue
 
 class Chunk:
     def __init__(self, cls, name, offset, size, *args):

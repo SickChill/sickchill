@@ -1,7 +1,7 @@
 import sickbeard
 
 from sickbeard import logger, common
-from lib.pynma import pynma
+from pynma import pynma
 
 
 class NMA_Notifier:

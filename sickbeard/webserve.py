@@ -52,11 +52,11 @@ from sickbeard.scene_numbering import get_scene_numbering, set_scene_numbering, 
     get_xem_numbering_for_show, get_scene_absolute_numbering_for_show, get_xem_absolute_numbering_for_show, \
     get_scene_absolute_numbering
 
-from lib.dateutil import tz, parser as dateutil_parser
-from lib.unrar2 import RarFile
+from dateutil import tz, parser as dateutil_parser
+from unrar2 import RarFile
 import adba, subliminal
-from lib.trakt import TraktAPI
-from lib.trakt.exceptions import traktException
+from libtrakt import TraktAPI
+from libtrakt.exceptions import traktException
 from versionChecker import CheckVersion
 
 import requests
@@ -65,7 +65,7 @@ import markdown2
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 try:
     import xml.etree.cElementTree as etree

@@ -34,7 +34,7 @@ from sickbeard import tvcache
 from sickbeard import show_name_helpers
 from sickbeard import db
 from sickbeard import helpers
-from lib.unidecode import unidecode
+from unidecode import unidecode
 from sickbeard import classes
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.exceptions import ex

@@ -1,6 +1,6 @@
-from lib.hachoir_core.field import Bytes
-from lib.hachoir_core.tools import makePrintable, humanFilesize
-from lib.hachoir_core.stream import InputIOStream
+from hachoir_core.field import Bytes
+from hachoir_core.tools import makePrintable, humanFilesize
+from hachoir_core.stream import InputIOStream
 
 class SubFile(Bytes):
     """

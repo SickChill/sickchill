@@ -31,8 +31,8 @@ from sickbeard import db
 from sickbeard import notifiers
 from sickbeard.common import SNATCHED, SNATCHED_PROPER, DOWNLOADED, SKIPPED, UNAIRED, IGNORED, ARCHIVED, WANTED, UNKNOWN, FAILED
 from common import Quality, qualityPresetStrings, statusStrings
-from lib.trakt import *
-from trakt.exceptions import traktException
+from libtrakt import *
+from libtrakt.exceptions import traktException
 
 
 def setEpisodeToWanted(show, s, e):

@@ -36,7 +36,7 @@ import requests
 from requests import exceptions
 from bs4 import BeautifulSoup as soup
 #from sickbeard.bs4_parser import BS4Parser
-from lib.unidecode import unidecode
+from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from requests.auth import AuthBase
 from datetime import datetime

@@ -4,11 +4,11 @@ Tar archive parser.
 Author: Victor Stinner
 """
 
-from lib.hachoir_parser import Parser
-from lib.hachoir_core.field import (FieldSet,
+from hachoir_parser import Parser
+from hachoir_core.field import (FieldSet,
     Enum, UInt8, SubFile, String, NullBytes)
-from lib.hachoir_core.tools import humanFilesize, paddingSize, timestampUNIX
-from lib.hachoir_core.endian import BIG_ENDIAN
+from hachoir_core.tools import humanFilesize, paddingSize, timestampUNIX
+from hachoir_core.endian import BIG_ENDIAN
 import re
 
 class FileEntry(FieldSet):
