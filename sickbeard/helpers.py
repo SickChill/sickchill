@@ -1297,7 +1297,6 @@ def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
     """
-
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
