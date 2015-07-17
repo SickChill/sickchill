@@ -137,7 +137,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                 client = clients.getClientIstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
-                logger.log(u"Torrent file content is empty", logger.ERROR)
+                logger.log(u"Torrent file content is empty", logger.WARNING)
                 dlResult = False
     else:
         logger.log(u"Unknown result type, unable to download it", logger.ERROR)
