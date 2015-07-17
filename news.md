@@ -21,9 +21,11 @@ Now when you will add a **NEW** show you will be asked for two status settings: 
 
 
 **Providers**
+
 - Sick beard index and Womble provider are blocking SR application so avoid use them
 
 **Develop branch**
+
 - We are upgrading Subliminal module and this may and will break your installation
 - Please avoid using the develop branch until we fully tested everything unless you know what you are doing
 
