@@ -11,13 +11,13 @@ Documents:
    section. Revised Dec 21 1998, added missing Document Properties (section).
 """
 
-from lib.hachoir_parser import Parser
-from lib.hachoir_core.field import (FieldSet,
+from hachoir_parser import Parser
+from hachoir_core.field import (FieldSet,
     Bit, Bits,
     UInt8, Int16, UInt16, UInt32, Int32,
     NullBytes, RawBytes, PascalString16,
     DateTimeMSDOS32)
-from lib.hachoir_core.endian import LITTLE_ENDIAN
+from hachoir_core.endian import LITTLE_ENDIAN
 
 TIMESTAMP = DateTimeMSDOS32
 

@@ -1,4 +1,4 @@
-from lib.hachoir_core.error import HachoirError
+from hachoir_core.error import HachoirError
 
 class StreamError(HachoirError):
     pass

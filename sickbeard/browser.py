@@ -27,7 +27,7 @@ from sickbeard import logger
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 # this is for the drive letter code, it only works on windows
 if os.name == 'nt':

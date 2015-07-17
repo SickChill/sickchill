@@ -11,9 +11,9 @@ import googlecode_upload
 from distutils.core import setup
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 try:
     import py2exe

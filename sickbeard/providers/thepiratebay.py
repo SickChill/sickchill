@@ -41,7 +41,7 @@ from sickbeard.exceptions import ex
 from sickbeard import encodingKludge as ek
 import requests
 from requests import exceptions
-from lib.unidecode import unidecode
+from unidecode import unidecode
 
 
 class ThePirateBayProvider(generic.TorrentProvider):

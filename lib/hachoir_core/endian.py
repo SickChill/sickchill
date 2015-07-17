@@ -2,7 +2,7 @@
 Constant values about endian.
 """
 
-from lib.hachoir_core.i18n import _
+from hachoir_core.i18n import _
 
 BIG_ENDIAN = "ABCD"
 LITTLE_ENDIAN = "DCBA"

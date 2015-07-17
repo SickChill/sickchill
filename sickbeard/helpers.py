@@ -63,9 +63,9 @@ from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 urllib._urlopener = classes.SickBeardURLopener()
 
@@ -777,7 +777,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
     try:
         from OpenSSL import crypto  # @UnresolvedImport
-        from lib.certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
+        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
     except Exception, e:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)
@@ -1297,7 +1297,6 @@ def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
     """
-
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)

@@ -21,8 +21,7 @@ import socket
 import sickbeard
 from sickbeard import logger, common
 from sickbeard.exceptions import ex
-from lib.growl import gntp
-
+from libgrowl import gntp
 
 class GrowlNotifier:
     sr_logo_url = 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'

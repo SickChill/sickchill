@@ -33,7 +33,7 @@ from sickbeard import encodingKludge as ek
 from sickbeard.exceptions import ex
 from sickbeard.show_name_helpers import allPossibleShowNames
 
-from lib.tmdb_api.tmdb_api import TMDB
+from tmdb_api.tmdb_api import TMDB
 
 import fanart
 from fanart.core import Request as fanartRequest

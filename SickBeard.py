@@ -29,10 +29,13 @@ import sys
 import subprocess
 import traceback
 
-import shutil
-import lib.shutil_custom
+import os
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+import shutil
+import shutil_custom
+
+shutil.copyfile = shutil_custom.copyfile_custom
 
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
@@ -48,10 +51,6 @@ except ValueError:
 except:
     print "The Python module Cheetah is required"
     sys.exit(1)
-
-import os
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
 # We only need this for compiling an EXE and I will just always do that on 2.6+
 if sys.hexversion >= 0x020600F0:
@@ -93,7 +92,7 @@ from sickbeard.tv import TVShow
 from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
-from lib.configobj import ConfigObj
+from configobj import ConfigObj
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 

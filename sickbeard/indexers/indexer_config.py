@@ -1,6 +1,5 @@
-from lib.tvdb_api.tvdb_api import Tvdb
-from lib.tvrage_api.tvrage_api import TVRage
-from scene_exceptions import TVDB_EXCEPTIONS, TVRAGE_EXCEPTIONS
+from tvdb_api.tvdb_api import Tvdb
+from tvrage_api.tvrage_api import TVRage
 import requests
 
 INDEXER_TVDB = 1
@@ -44,7 +43,7 @@ indexerConfig[INDEXER_TVRAGE] = {
 indexerConfig[INDEXER_TVDB]['trakt_id'] = 'tvdb_id'
 indexerConfig[INDEXER_TVDB]['xem_origin'] = 'tvdb'
 indexerConfig[INDEXER_TVDB]['icon'] = 'thetvdb16.png'
-indexerConfig[INDEXER_TVDB]['scene_loc'] = TVDB_EXCEPTIONS
+indexerConfig[INDEXER_TVDB]['scene_loc'] = 'http://sickragetv.github.io/sb_tvdb_scene_exceptions/exceptions.txt'
 indexerConfig[INDEXER_TVDB]['show_url'] = 'http://thetvdb.com/?tab=series&id='
 indexerConfig[INDEXER_TVDB]['base_url'] = 'http://thetvdb.com/api/%(apikey)s/series/' % indexerConfig[INDEXER_TVDB]['api_params']
 
@@ -52,6 +51,6 @@ indexerConfig[INDEXER_TVDB]['base_url'] = 'http://thetvdb.com/api/%(apikey)s/ser
 indexerConfig[INDEXER_TVRAGE]['trakt_id'] = 'tvrage_id'
 indexerConfig[INDEXER_TVRAGE]['xem_origin'] = 'rage'
 indexerConfig[INDEXER_TVRAGE]['icon'] = 'tvrage16.png'
-indexerConfig[INDEXER_TVRAGE]['scene_loc'] = TVRAGE_EXCEPTIONS
+indexerConfig[INDEXER_TVRAGE]['scene_loc'] = 'http://sickragetv.github.io/sr_tvrage_scene_exceptions/exceptions.txt'
 indexerConfig[INDEXER_TVRAGE]['show_url'] = 'http://tvrage.com/shows/id-'
 indexerConfig[INDEXER_TVRAGE]['base_url'] = 'http://tvrage.com/showinfo.php?key=%(apikey)s&sid=' % indexerConfig[INDEXER_TVRAGE]['api_params']

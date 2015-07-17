@@ -37,9 +37,9 @@ import requests
 from requests.exceptions import RequestException
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 
 class CheckVersion():

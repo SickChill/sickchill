@@ -37,7 +37,7 @@ except ImportError:
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 
 class OmgwtfnzbsProvider(generic.NZBProvider):

@@ -36,9 +36,9 @@ from sickbeard.databases import cache_db, failed_db
 from sickbeard.tv import TVEpisode
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 #=================
 # test globals

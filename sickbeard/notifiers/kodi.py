@@ -38,8 +38,7 @@ except ImportError:
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
-
+    import simplejson as json
 
 class KODINotifier:
     sr_logo_url = 'https://raw.githubusercontent.com/SiCKRAGETV/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'

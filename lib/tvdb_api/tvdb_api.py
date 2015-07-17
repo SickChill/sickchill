@@ -35,8 +35,8 @@ try:
 except ImportError:
     gzip = None
 
-from lib.dateutil.parser import parse
-from lib.cachecontrol import CacheControl, caches
+from dateutil.parser import parse
+from cachecontrol import CacheControl, caches
 
 from tvdb_ui import BaseUI, ConsoleUI
 from tvdb_exceptions import (tvdb_error, tvdb_userabort, tvdb_shownotfound, tvdb_showincomplete,
