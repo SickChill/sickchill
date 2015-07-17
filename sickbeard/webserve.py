@@ -2164,9 +2164,10 @@ class HomeNews(Home):
     def index(self):
         t = PageTemplate(rh=self, file="news.tmpl")
         t.submenu = self.HomeMenu()
-        response = requests.get("http://rawgit.com/SiCKRAGETV/SickRage/develop/news.md")
+        with open("news.md", "r") as newsfile:
+            news = newsfile.read()
         import markdown2
-        t.newsdata = markdown2.markdown(response.text)
+        t.newsdata = markdown2.markdown(news)
         return t.respond()
 
 @route('/home/postprocess(/?.*)')
