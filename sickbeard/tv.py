@@ -1481,7 +1481,8 @@ class TVEpisode(object):
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
         except Exception as e:
-            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
+            logger.log("Error occurred when downloading subtitles for: %s" % self.location)
+            logger.log(traceback.format_exc(), logger.ERROR)
             return
 
         self.refreshSubtitles()
