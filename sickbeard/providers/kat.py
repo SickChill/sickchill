@@ -37,7 +37,7 @@ from sickbeard import db
 from sickbeard import classes
 from sickbeard.show_name_helpers import allPossibleShowNames, sanitizeSceneName
 from sickbeard.bs4_parser import BS4Parser
-from lib.unidecode import unidecode
+from unidecode import unidecode
 
 
 class KATProvider(generic.TorrentProvider):

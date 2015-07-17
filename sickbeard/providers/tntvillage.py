@@ -33,7 +33,7 @@ from sickbeard import clients
 import requests
 from requests.exceptions import RequestException
 from sickbeard.bs4_parser import BS4Parser
-from lib.unidecode import unidecode
+from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 

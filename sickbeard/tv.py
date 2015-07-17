@@ -35,11 +35,11 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 import subliminal
 
 try:
-    from lib.send2trash import send2trash
+    from send2trash import send2trash
 except ImportError:
     pass
 
-from lib.imdb import imdb
+from imdb import imdb
 import logging
 from sickbeard import db
 from sickbeard import helpers, exceptions, logger
@@ -64,11 +64,11 @@ from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMIN
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
 import babelfish
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 
 def dirty_setter(attr_name):

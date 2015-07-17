@@ -3,7 +3,7 @@ import inspect
 import re
 import traceback
 
-from lib.jsonrpclib import config
+from jsonrpclib import config
 
 iter_types = [
     types.DictType,

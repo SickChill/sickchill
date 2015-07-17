@@ -30,7 +30,7 @@ import sickbeard
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 from sickbeard import logger
 from sickbeard import db

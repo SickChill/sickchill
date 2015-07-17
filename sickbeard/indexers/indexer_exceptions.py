@@ -10,11 +10,11 @@
 __author__ = "echel0n"
 __version__ = "1.0"
 
-from lib.tvrage_api.tvrage_exceptions import \
+from tvrage_api.tvrage_exceptions import \
     tvrage_exception, tvrage_attributenotfound, tvrage_episodenotfound, tvrage_error, \
     tvrage_seasonnotfound, tvrage_shownotfound, tvrage_showincomplete, tvrage_userabort
 
-from lib.tvdb_api.tvdb_exceptions import \
+from tvdb_api.tvdb_exceptions import \
     tvdb_exception, tvdb_attributenotfound, tvdb_episodenotfound, tvdb_error, \
     tvdb_seasonnotfound, tvdb_shownotfound, tvdb_showincomplete, tvdb_userabort
 

@@ -43,7 +43,7 @@ from sickbeard.exceptions import ex
 
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 
-from lib import adba
+import adba
 from sickbeard.helpers import verify_freespace
 
 

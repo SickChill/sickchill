@@ -22,7 +22,7 @@ import traceback
 
 import sickbeard
 
-from lib.imdb import _exceptions as imdb_exceptions
+from imdb import _exceptions as imdb_exceptions
 from sickbeard.common import SKIPPED, WANTED
 from sickbeard.tv import TVShow
 from sickbeard import exceptions, logger, ui, db, notifiers

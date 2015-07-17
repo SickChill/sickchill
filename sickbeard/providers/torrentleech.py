@@ -37,7 +37,7 @@ from sickbeard import clients
 import requests
 from requests import exceptions
 from sickbeard.bs4_parser import BS4Parser
-from lib.unidecode import unidecode
+from unidecode import unidecode
 from sickbeard.helpers import sanitizeSceneName
 
 
