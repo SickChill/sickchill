@@ -284,7 +284,7 @@
                 </table>
             
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
-                    #set $info_flag = $subtitles.fromietf($show.lang).opensubtitles
+                    #set $info_flag = $subtitles.fromietf($show.lang).opensubtitles if $show.lang else ''
                     <tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="$show.lang" title="$show.lang" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';"/></td></tr>
                     #if $sickbeard.USE_SUBTITLES
                     <tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if $show.subtitles then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
