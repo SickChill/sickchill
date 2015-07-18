@@ -1,5 +1,5 @@
-from lib.hachoir_core.field import Field, FieldSet, ParserError, Bytes, MissingField
-from lib.hachoir_core.stream import FragmentedStream
+from hachoir_core.field import Field, FieldSet, ParserError, Bytes, MissingField
+from hachoir_core.stream import FragmentedStream
 
 
 class Link(Field):

@@ -6,11 +6,11 @@ from base64 import b16encode, b32decode
 import sickbeard
 from sickbeard import logger
 from sickbeard.exceptions import ex
-from sickbeard.clients import http_error_code
-from lib.bencode import bencode, bdecode
+from . import http_error_code
+from bencode import bencode, bdecode
 import requests
 from requests import exceptions
-from lib.bencode.BTL import BTFailure
+from bencode.BTL import BTFailure
 
 class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):

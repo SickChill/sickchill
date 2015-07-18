@@ -35,7 +35,7 @@ from sickbeard import db
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
 from sickbeard.common import Quality
 
-from lib import jsonrpclib
+import jsonrpclib
 from datetime import datetime
 
 

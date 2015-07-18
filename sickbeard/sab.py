@@ -23,13 +23,13 @@ import datetime
 
 import sickbeard
 
-from lib import MultipartPostHandler
+import MultipartPostHandler
 import urllib2, cookielib
 
 try:
     import json
 except ImportError:
-    from lib import simplejson as json
+    import simplejson as json
 
 from sickbeard.common import USER_AGENT
 from sickbeard import logger

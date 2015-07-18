@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickRage.  If not, see <http://www.gnu.org/licenses/>.
 
-from lib.dateutil import tz
-import lib.dateutil.zoneinfo
+from dateutil import tz
+from dateutil import zoneinfo
+
 from sickbeard import db
 from sickbeard import helpers
 from sickbeard import logger
@@ -27,6 +28,7 @@ from os.path import basename, join, isfile
 import os
 import re
 import datetime
+import requests
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(\d{1,2})(([:.](\d{2,2}))? ?([PA][. ]? ?M)|[:.](\d{2,2}))\b', flags=re.IGNORECASE)
@@ -48,15 +50,13 @@ def _remove_zoneinfo_failed(filename):
 
 # helper to remove old unneeded zoneinfo files
 def _remove_old_zoneinfo():
-    if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
-        cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
+    if zoneinfo.ZONEINFOFILE is not None:
+        cur_zoneinfo = ek.ek(basename, zoneinfo.ZONEINFOFILE)
     else:
         return
 
-    cur_file = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
-
-    for (path, dirs, files) in ek.ek(os.walk,
-                                     helpers.real_path(ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__))):
+    cur_file = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
+    for (path, dirs, files) in ek.ek(os.walk, helpers.real_path(ek.ek(os.path.dirname, zoneinfo.__file__))):
         for filename in files:
             if filename.endswith('.tar.gz'):
                 file_w_path = ek.ek(join, path, filename)
@@ -65,58 +65,53 @@ def _remove_old_zoneinfo():
                         ek.ek(os.remove, file_w_path)
                         logger.log(u'Delete unneeded old zoneinfo File: %s' % file_w_path)
                     except:
-                        logger.log(u'Unable to delete: %s' % file_w_path, logger.ERROR)
+                        logger.log(u'Unable to delete: %s' % file_w_path, logger.WARNING)
 
 
 # update the dateutil zoneinfo
 def _update_zoneinfo():
     global sb_timezone
     sb_timezone = tz.tzlocal()
-
-    # TODO `git subtree pull` commands on updates
-
-    loc_zv = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/zoneinfo.txt'))
-
-    # Read version file
+    url_zv = 'http://sickragetv.github.io/sb_network_timezones/zoneinfo.txt'
     try:
-        with open(loc_zv, 'r') as file:
-            data = file.read()
-        if not data:
+        url_data = helpers.getURL(url_zv, session=requests.Session())
+        if not url_data:
             raise
 
         # Filename of existing zoneinfo
-        if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
-            cur_zoneinfo = ek.ek(basename, lib.dateutil.zoneinfo.ZONEINFOFILE)
+        if zoneinfo.ZONEINFOFILE is not None:
+            cur_zoneinfo = ek.ek(basename, zoneinfo.ZONEINFOFILE)
         else:
             cur_zoneinfo = None
 
         # Filename and hash of new zoneinfo
-        (new_zoneinfo, zoneinfo_md5) = data.decode('utf-8').strip().rsplit(u' ')
+        (new_zoneinfo, zoneinfo_md5) = url_data.strip().rsplit(u' ')
     except Exception as e:
-        logger.log(u'Crazy problem with zoneinfo: %s' % ex(e), logger.ERROR)
+        logger.log(u'Loading zoneinfo.txt failed, this can happen from time to time. Unable to get URL: %s' %
+                url_zv, logger.WARNING)
         return
 
     if (cur_zoneinfo is not None) and (new_zoneinfo == cur_zoneinfo):
         return
 
     # now load the new zoneinfo
-    loc_tar = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/%s' % new_zoneinfo))
+    url_tar = u'http://sickragetv.github.io/sb_network_timezones/%s' % new_zoneinfo
 
-    zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), new_zoneinfo))
+    zonefile = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), new_zoneinfo))
     zonefile_tmp = re.sub(r'\.tar\.gz$', '.tmp', zonefile)
 
     if ek.ek(os.path.exists, zonefile_tmp):
         try:
             ek.ek(os.remove, zonefile_tmp)
         except:
-            logger.log(u'Unable to delete: %s' % zonefile_tmp, logger.ERROR)
+            logger.log(u'Unable to delete: %s' % zonefile_tmp, logger.WARNING)
             return
 
-    if not helpers.copyFile(loc_tar, zonefile_tmp):
+    if not helpers.download_file(url_tar, zonefile_tmp, session=requests.Session()):
         return
 
     if not ek.ek(os.path.exists, zonefile_tmp):
-        logger.log(u'Download of %s failed.' % zonefile_tmp, logger.ERROR)
+        logger.log(u'Download of %s failed.' % zonefile_tmp, logger.WARNING)
         return
 
     new_hash = str(helpers.md5_for_file(zonefile_tmp))
@@ -127,20 +122,20 @@ def _update_zoneinfo():
             # remove the old zoneinfo file
             if cur_zoneinfo is not None:
                 old_file = helpers.real_path(
-                    ek.ek(join, ek.ek(os.path.dirname, lib.dateutil.zoneinfo.__file__), cur_zoneinfo))
+                    ek.ek(join, ek.ek(os.path.dirname, zoneinfo.__file__), cur_zoneinfo))
                 if ek.ek(os.path.exists, old_file):
                     ek.ek(os.remove, old_file)
             # rename downloaded file
             ek.ek(os.rename, zonefile_tmp, zonefile)
             # load the new zoneinfo
-            reload(lib.dateutil.zoneinfo)
+            reload(zoneinfo)
             sb_timezone = tz.tzlocal()
         except:
             _remove_zoneinfo_failed(zonefile_tmp)
             return
     else:
         _remove_zoneinfo_failed(zonefile_tmp)
-        logger.log(u'MD5 hash does not match: %s File: %s' % (zoneinfo_md5.upper(), new_hash.upper()), logger.ERROR)
+        logger.log(u'MD5 hash does not match: %s File: %s' % (zoneinfo_md5.upper(), new_hash.upper()), logger.WARNING)
         return
 
 
@@ -149,19 +144,16 @@ def update_network_dict():
     _remove_old_zoneinfo()
     _update_zoneinfo()
 
-    loc = helpers.real_path(ek.ek(join, ek.ek(os.path.dirname, __file__), u'../lib/network_timezones/network_timezones.txt'))
-
-    with open(loc, 'r') as file:
-        data = file.read()
-
-    if data is None:
-        logger.log(u'Updating network timezones failed', logger.ERROR)
+    url = 'http://sickragetv.github.io/sb_network_timezones/network_timezones.txt'
+    url_data = helpers.getURL(url, session=requests.Session())
+    if url_data is None:
+        logger.log(u'Updating network timezones failed, this can happen from time to time. URL: %s' % url, logger.WARNING)
         load_network_dict()
         return
 
     d = {}
     try:
-        for line in data.splitlines():
+        for line in url_data.splitlines():
             (key, val) = line.decode('utf-8').strip().rsplit(u':', 1)
             if key is None or val is None:
                 continue
@@ -214,7 +206,7 @@ def get_network_timezone(network, network_dict):
         return sb_timezone
 
     try:
-        if lib.dateutil.zoneinfo.ZONEINFOFILE is not None:
+        if zoneinfo.ZONEINFOFILE is not None:
             try:
                 n_t = tz.gettz(network_dict[network])
             except:

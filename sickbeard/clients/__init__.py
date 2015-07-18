@@ -111,7 +111,7 @@ def getClientModule(name):
     name = name.lower()
     prefix = "sickbeard.clients."
 
-    return __import__(prefix + name, fromlist=__all__)
+    return __import__(prefix + name + '_client', fromlist=__all__)
 
 
 def getClientIstance(name):

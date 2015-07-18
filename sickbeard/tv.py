@@ -35,11 +35,11 @@ from name_parser.parser import NameParser, InvalidNameException, InvalidShowExce
 import subliminal
 
 try:
-    from lib.send2trash import send2trash
+    from send2trash import send2trash
 except ImportError:
     pass
 
-from lib.imdb import imdb
+from imdb import imdb
 import logging
 from sickbeard import db
 from sickbeard import helpers, exceptions, logger
@@ -64,11 +64,11 @@ from common import NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMIN
     NAMING_LIMITED_EXTEND_E_PREFIXED
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
 import babelfish
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 
 def dirty_setter(attr_name):
@@ -1140,7 +1140,8 @@ class TVShow(object):
                 episode.downloadSubtitles(force=force)
 
         except Exception:
-            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.DEBUG)
+            logger.log("%s: Error occurred when downloading subtitles for %s" % (self.indexerid, self.name), logger.DEBUG)
+            logger.log(traceback.format_exc(), logger.ERROR)            
 
     def saveToDB(self, forceSave=False):
 
@@ -1480,7 +1481,8 @@ class TVEpisode(object):
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
         except Exception as e:
-            logger.log("Error occurred when downloading subtitles: " + traceback.format_exc(), logger.ERROR)
+            logger.log("Error occurred when downloading subtitles for: %s" % self.location)
+            logger.log(traceback.format_exc(), logger.ERROR)
             return
 
         self.refreshSubtitles()
@@ -1786,7 +1788,7 @@ class TVEpisode(object):
 
             # if it hasn't aired yet set the status to UNAIRED
             if self.airdate >= datetime.date.today() and self.status in [SKIPPED, UNAIRED, UNKNOWN, WANTED]:
-                logger.log(u"Episode airs in the future, marking it " + str(UNAIRED), logger.DEBUG)
+                logger.log(u"Episode airs in the future, marking it UNAIRED", logger.DEBUG)
                 self.status = UNAIRED
 
             # if there's no airdate then set it to skipped (and respect ignored)
@@ -1794,8 +1796,8 @@ class TVEpisode(object):
                 if self.status == IGNORED:
                     logger.log(u"Episode has no air date, but it's already marked as ignored", logger.DEBUG)
                 else:
-                    logger.log(u"Episode has no air date, automatically marking it skipped", logger.DEBUG)
-                    self.status = SKIPPED
+                    logger.log(u"Episode has no air date, automatically marking it unaired", logger.DEBUG)
+                    self.status = UNAIRED
 
             # if we don't have the file and the airdate is in the past
             else:

@@ -66,3 +66,8 @@ class indexerApi(object):
     @property
     def indexers(self):
         return dict((int(x['id']), x['name']) for x in indexerConfig.values())
+
+    @property
+    def session(self):
+        if self.indexerID:
+            return indexerConfig[self.indexerID]['session']

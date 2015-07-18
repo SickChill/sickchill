@@ -10,7 +10,7 @@ from exceptions import traktException, traktAuthException, traktServerBusy
 class TraktAPI():
     def __init__(self, ssl_verify=True, timeout=30):
         self.session = requests.Session()
-        self.verify = certifi.where() if ssl_verify else None
+        self.verify = certifi.where() if ssl_verify else False
         self.timeout = timeout if timeout else None
         self.auth_url = sickbeard.TRAKT_OAUTH_URL
         self.api_url = sickbeard.TRAKT_API_URL

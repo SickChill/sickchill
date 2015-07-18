@@ -5,11 +5,11 @@ Creation date: 8 january 2006
 Author: Victor Stinner
 """
 
-from lib.hachoir_parser import Parser
-from lib.hachoir_core.field import (FieldSet,
+from hachoir_parser import Parser
+from hachoir_core.field import (FieldSet,
     UInt16, UInt32, String, NullBytes, Enum, RawBytes)
-from lib.hachoir_core.endian import BIG_ENDIAN
-from lib.hachoir_parser.image.photoshop_metadata import Photoshop8BIM
+from hachoir_core.endian import BIG_ENDIAN
+from hachoir_parser.image.photoshop_metadata import Photoshop8BIM
 
 class Config(FieldSet):
     def __init__(self, *args):

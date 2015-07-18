@@ -23,8 +23,8 @@ import datetime
 import sickbeard
 import generic
 
-from lib import requests
-from lib.requests import exceptions
+import requests
+from requests import exceptions
 
 from sickbeard.common import USER_AGENT, Quality, cpu_presets
 from sickbeard import logger

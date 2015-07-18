@@ -63,9 +63,9 @@ from cachecontrol import CacheControl, caches
 from itertools import izip, cycle
 
 import shutil
-import lib.shutil_custom
+import shutil_custom
 
-shutil.copyfile = lib.shutil_custom.copyfile_custom
+shutil.copyfile = shutil_custom.copyfile_custom
 
 urllib._urlopener = classes.SickBeardURLopener()
 
@@ -777,7 +777,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
     try:
         from OpenSSL import crypto  # @UnresolvedImport
-        from lib.certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
+        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
     except Exception, e:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)
@@ -1297,7 +1297,6 @@ def _setUpSession(session, headers):
     """
     Returns a session initialized with default cache and parameter settings
     """
-
     # request session
     cache_dir = sickbeard.CACHE_DIR or _getTempDir()
     session = CacheControl(sess=session, cache=caches.FileCache(os.path.join(cache_dir, 'sessions')), cache_etags=False)
@@ -1311,7 +1310,7 @@ def _setUpSession(session, headers):
     session.headers.update(headers)
 
     # request session ssl verify
-    session.verify = certifi.where() if sickbeard.SSL_VERIFY else None
+    session.verify = certifi.where() if sickbeard.SSL_VERIFY else False
 
     # request session proxies
     if not 'Referer' in session.headers and sickbeard.PROXY_SETTING:
@@ -1338,7 +1337,7 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
     session.params = params
 
     try:
-        resp = session.head(url, timeout=timeout, allow_redirects=True)
+        resp = session.head(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1347,7 +1346,7 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.head(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True)
+                resp = session.head(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested headURL " + url + " returned status code is " + str(
@@ -1358,13 +1357,20 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
     except requests.exceptions.HTTPError, e:
         logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
+        pass
     except requests.exceptions.ConnectionError, e:
         logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        pass
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        pass
+    except requests.exceptions.ContentDecodingError:
+        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
+        pass
     except Exception as e:
         logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
+        pass
 
     return False
 
@@ -1381,9 +1387,9 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         # decide if we get or post data to server
         if post_data:
             session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True)
+            resp = session.post(url, data=post_data, timeout=timeout, allow_redirects=True, verify=session.verify)
         else:
-            resp = session.get(url, timeout=timeout, allow_redirects=True)
+            resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
             logger.log(u"Requested url " + url + " returned status code is " + str(
@@ -1392,7 +1398,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True)
+                resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
                     logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
@@ -1408,6 +1414,9 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
     except requests.exceptions.Timeout, e:
         logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
+    except requests.exceptions.ContentDecodingError:
+        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
+        return
     except Exception as e:
         logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
@@ -1422,7 +1431,7 @@ def download_file(url, filename, session=None, headers={}):
     session.stream = True
 
     try:
-        with closing(session.get(url, allow_redirects=True)) as resp:
+        with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
                 logger.log(u"Requested url " + url + " returned status code is " + str(
                     resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)

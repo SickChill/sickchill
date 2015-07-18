@@ -7,10 +7,10 @@ Author: Cyril Zorin
 Creation date: 1 January 2007
 """
 
-from lib.hachoir_parser import Parser
-from lib.hachoir_core.field import (FieldSet,
+from hachoir_parser import Parser
+from hachoir_core.field import (FieldSet,
         UInt8, UInt16, UInt32, GenericVector)
-from lib.hachoir_core.endian import LITTLE_ENDIAN
+from hachoir_core.endian import LITTLE_ENDIAN
 
 class CharData(FieldSet):
   def __init__(self, chars, *args):

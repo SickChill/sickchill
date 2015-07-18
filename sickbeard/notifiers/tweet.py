@@ -27,8 +27,8 @@ try:
 except:
     from cgi import parse_qsl  #@Reimport
 
-import lib.oauth2 as oauth
-import lib.pythontwitter as twitter
+import oauth2 as oauth
+import pythontwitter as twitter
 
 
 class TwitterNotifier:
