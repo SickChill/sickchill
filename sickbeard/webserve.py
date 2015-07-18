@@ -2163,8 +2163,12 @@ class HomeNews(Home):
         super(HomeNews, self).__init__(*args, **kwargs)
 
     def index(self):
-        with open(ek.ek(os.path.join, sickbeard.PROG_DIR, "news.md"), "r") as newsfile:
-            news = newsfile.read()
+
+        try:
+            news = helpers.getURL('http://sickragetv.github.io/sickrage-news/news.md', session=requests.Session())
+        except Exception:
+            logger.log(u'Could not load news from repo, giving a link!', logger.DEBUG)
+            news = 'Could not load news from the repo. [Click here for news.md](http://sickragetv.github.io/sickrage-news/news.md)'
 
         t = PageTemplate(rh=self, file="markdown.tmpl")
         t.submenu = self.HomeMenu()
@@ -2181,8 +2185,11 @@ class HomeChangeLog(Home):
         super(HomeChangeLog, self).__init__(*args, **kwargs)
 
     def index(self):
-        with open(ek.ek(os.path.join, sickbeard.PROG_DIR, "CHANGES.md"), "r") as changesfile:
-            changes = changesfile.read()
+        try:
+            changes = helpers.getURL('http://sickragetv.github.io/sickrage-news/CHANGES.md', session=requests.Session())
+        except Exception:
+            logger.log(u'Could not load changes from repo, giving a link!', logger.DEBUG)
+            changes = 'Could not load changes from the repo. [Click here for CHANGES.md](http://sickragetv.github.io/sickrage-news/CHANGES.md)'
 
         t = PageTemplate(rh=self, file="markdown.tmpl")
         t.submenu = self.HomeMenu()
