@@ -21,7 +21,7 @@ import traceback
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.clients.generic import GenericClient
+from .generic import GenericClient
 from rtorrent import RTorrent
 from rtorrent.err import MethodError
 

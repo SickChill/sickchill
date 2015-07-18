@@ -21,7 +21,7 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 import sickbeard
-from sickbeard.clients.generic import GenericClient
+from .generic import GenericClient
 
 class DownloadStationAPI(GenericClient):
 
