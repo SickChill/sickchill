@@ -131,6 +131,7 @@ def remove_non_release_groups(name):
                        '\[Seedbox\]$':     'searchre',
                        '\[AndroidTwoU\]$': 'searchre',
                        '\.RiPSaLoT$':      'searchre',
+                       '\.GiuseppeTnT$':      'searchre',
                        '-NZBGEEK$':        'searchre',
                        '-RP$':             'searchre',
                        '-20-40$':          'searchre',
