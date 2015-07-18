@@ -1787,8 +1787,8 @@ class TVEpisode(object):
         if not ek.ek(os.path.isfile, self.location):
 
             # if it hasn't aired yet set the status to UNAIRED
-            if self.airdate >= datetime.date.today() and self.status in [SKIPPED, UNAIRED, UNKNOWN, WANTED]:
-                logger.log(u"Episode airs in the future, marking it " + str(UNAIRED), logger.DEBUG)
+            if (self.airdate >= datetime.date.today() or self.airdate == 1 ) and self.status in [SKIPPED, UNAIRED, UNKNOWN, WANTED]:
+                logger.log(u"Episode airs in the future, marking it UNAIRED", logger.DEBUG)
                 self.status = UNAIRED
 
             # if there's no airdate then set it to skipped (and respect ignored)
