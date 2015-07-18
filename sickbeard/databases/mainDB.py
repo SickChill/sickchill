@@ -64,8 +64,6 @@ class MainSanityCheck(db.DBSanityCheck):
                         cur_dupe_id["show_id"]))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
-        else:
-            logger.log(u"No duplicate show, check passed", logger.DEBUG)
 
     def fix_duplicate_episodes(self):
 
@@ -88,9 +86,6 @@ class MainSanityCheck(db.DBSanityCheck):
                 logger.log(u"Deleting duplicate episode with episode_id: " + str(cur_dupe_id["episode_id"]))
                 self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [cur_dupe_id["episode_id"]])
 
-        else:
-            logger.log(u"No duplicate episode, check passed", logger.DEBUG)
-
     def fix_orphan_episodes(self):
 
         sqlResults = self.connection.select(
@@ -101,9 +96,6 @@ class MainSanityCheck(db.DBSanityCheck):
                 cur_orphan["showid"]), logger.DEBUG)
             logger.log(u"Deleting orphan episode with episode_id: " + str(cur_orphan["episode_id"]))
             self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [cur_orphan["episode_id"]])
-
-        else:
-            logger.log(u"No orphan episodes, check passed", logger.DEBUG)
 
     def fix_missing_table_indexes(self):
         if not self.connection.select("PRAGMA index_info('idx_indexer_id')"):
@@ -135,18 +127,13 @@ class MainSanityCheck(db.DBSanityCheck):
         curDate = datetime.date.today()
 
         sqlResults = self.connection.select(
-            "SELECT episode_id, showid FROM tv_episodes WHERE airdate > ? AND status in (?,?)",
+            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?)",
             [curDate.toordinal(), common.SKIPPED, common.WANTED])
 
         for cur_unaired in sqlResults:
-            logger.log(u"UNAIRED episode detected! episode_id: " + str(cur_unaired["episode_id"]) + " showid: " + str(
-                cur_unaired["showid"]), logger.DEBUG)
-            logger.log(u"Fixing unaired episode status with episode_id: " + str(cur_unaired["episode_id"]))
+            logger.log(u"Fixing unaired episode status for episode_id: %s" % cur_unaired["episode_id"])
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                                    [common.UNAIRED, cur_unaired["episode_id"]])
-
-        else:
-            logger.log(u"No UNAIRED episodes, check passed", logger.DEBUG)
 
     def fix_tvrage_show_statues(self):
         status_map = {
@@ -177,8 +164,6 @@ class MainSanityCheck(db.DBSanityCheck):
             logger.log(u"Fixing malformed episode status with episode_id: " + str(cur_ep["episode_id"]))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?",
                                    [common.UNKNOWN, cur_ep["episode_id"]])
-        else:
-            logger.log(u"No MALFORMED episode statuses, check passed", logger.DEBUG)
 
     def fix_invalid_airdates(self):
 
@@ -191,9 +176,6 @@ class MainSanityCheck(db.DBSanityCheck):
                 bad_airdate["showid"]), logger.DEBUG)
             logger.log(u"Fixing bad episode airdate for episode_id: " + str(bad_airdate["episode_id"]))
             self.connection.action("UPDATE tv_episodes SET airdate = '1' WHERE episode_id = ?", [bad_airdate["episode_id"]])
-
-        else:
-            logger.log(u"No bad episode airdates, check passed", logger.DEBUG)
 
     def fix_subtitles_codes(self):
 
