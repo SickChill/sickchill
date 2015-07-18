@@ -18,7 +18,7 @@
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.clients.generic import GenericClient
+from .generic import GenericClient
 import requests
 from requests.auth import HTTPDigestAuth
 
