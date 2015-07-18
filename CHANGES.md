@@ -1,3 +1,107 @@
+### 4.0.39 (2015-07-18)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.38...v4.0.39)
+
+* Fixed: Template issue when no lang was set for show info
+* Fixed: Download client import
+
+### 4.0.38 (2015-07-18)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.37...v4.0.38)
+
+* Fixed: URL with double http://
+* Added: Fox Crime logo
+* Added: Better log message when error downloading subs* Change: Improved log line for guessit/subliminal errors
+* Change: Use repo for network timezones and scene exceptions again
+* Change: Add file name to error when subs download fails
+* Updated: readme.md & news.md
+
+### 4.0.37 (2015-07-17)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.36...v4.0.37)
+
+* Fixed: Path for news.md
+* Fixed: SSL certificate verification error for IPT
+* Added: Changelog page (under the check for updates menu item)
+
+### 4.0.36 (2015-07-16)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.35...v4.0.36)
+
+* Fixed: Bug where already downloaded subtitles were not found if using a custom subtitles directory
+* Change: Catch a requests excetion when content-encoding is gzip but content is not
+
+### 4.0.35(2015-07-16)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.34...v4.0.35)
+
+* Added: Cpasbien provider
+* Added: Missing flags* Change: Libertalia provider now uses requests
+* Change: news.md url
+
+### 4.0.34 (2015-07-16)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.33...v4.0.34)
+
+* Fixed: Bug in PP where non-scene was not possible if xem had a mapping
+* Fixed: Flags on history page and info lang
+* Added: "News" page with vital info
+* Added: FrenchTorrentDB, and Libertailia providers
+* Added: Performance improvement in subtitles code check
+
+### 4.0.33 (2015-07-15)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.32...v4.0.33)
+
+* Fixed: Exceptions in Trakt requests 
+* Added: Auto fix bad subtitle codes
+* Added: Several missing subtitle flags
+* Added: Option in add show settings to pick what status for all future episodes, in addition to previous episodes
+
+### 4.0.32 (2015-07-15)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.31...v4.0.32)
+
+* Fixed: Debug code being added to shows page
+* Fixed: Parser log
+* Fixed: Initial scale on mobile device [more info](https://github.com/SiCKRAGETV/sickrage-issues/issues/2079)
+* Fixed: Magnets without title
+* Fixed: SR not auto exiting if another instance is running
+* Fixed: Missing guessit test files
+* Fixed: Failing TokyoToshoKan
+* Fixed: Log message showing 'no released episodes'
+* Fixed: Cache log message
+* Added: Better integration on Chrome for android [more info](https://github.com/SiCKRAGETV/SickRage/pull/2089)
+* Added: API method to get a network logo
+* Added: New provider icons
+* Added: New sufixes and prefixes to removeWordsList
+* Added: New option in config/general advanced settings (SSL Verify)
+* Added: enum34 dependancy for chardet
+* Removed: Disable TRAKT SSL Verify - absorbed by new setting
+* Change: Small visual improvement in server status page [more info](https://github.com/SiCKRAGETV/SickRage/pull/2091)
+* Change: Disabled itorrent
+* Change: Encode freemobile message and title with utf-8
+* Change: Move subtitles flags to their own directory
+* Change: To use only opensubtitles codes
+* Change: Try SYS_ENCODING first, then utf-8, then latin-1, then chardet
+* Change: Re-added namecache creation to SickBeard.py
+* Change: Only notify plex if there's title and update_text
+* Change: Use SxxExx pattern in log message
+* Updated: Chardet to improve guesses
+
+### 4.0.31 (2015-07-12)
+
+[full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.30...v4.0.31)
+
+* Fixed: Memory, disk, and processor usage when updating scene exceptions
+* Fixed: Trakt exception on 404 to only show warning
+* Fixed: TypeError on TNTVillage provider
+* Fixed: Incorrect permissions on multiple files
+* Added: Workaround for 'pb' (pt_BR language) subtitles
+* Added: [NO-RAR] - [ www.torrentday.com ] to removeWordsList
+* Removed: Hardlinking videos when searching subtitles
+* Change: Enabled providers are now at the top of the provider list
+
 ### 4.0.30 (2015-07-09)
 
 [full changelog](https://github.com/SiCKRAGETV/SickRage/compare/v4.0.29...v4.0.30)
