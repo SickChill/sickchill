@@ -1117,7 +1117,7 @@ def makeZip(fileList, archive):
     'archive' is the file name for the archive with a full path
     """
     try:
-        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
+        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
             a.write(f)
         a.close()
