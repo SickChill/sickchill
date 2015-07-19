@@ -1807,8 +1807,8 @@ class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
 
 
     def __init__(self, args, kwargs):
-        self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
+        self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
 
 class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
@@ -1820,8 +1820,8 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
+        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
 
 
 class CMD_SickBeardSetDefaults(ApiCall):
