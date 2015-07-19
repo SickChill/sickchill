@@ -135,8 +135,6 @@ class Logger(object):
         # pass exception information if debugging enabled
 
         if level == ERROR:
-            #Replace the SSL error with a link to information about how to fix it.
-            message = re.sub(r'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', r'See: http://git.io/vJrkM', message)
             self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
 
