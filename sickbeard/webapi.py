@@ -175,7 +175,7 @@ class ApiHandler(RequestHandler):
                     cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
 
                 logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
-                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')):  # skip these cmd while chaining
+                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner', 'show.getnetworklogo')):  # skip these cmd while chaining
                     try:
                         if cmd in _functionMaper:
                             # map function
