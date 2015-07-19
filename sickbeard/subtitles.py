@@ -20,6 +20,7 @@ import time
 import datetime
 import sickbeard
 from sickbeard.common import *
+from sickbeard.exceptions import ex
 from sickbeard import notifiers
 from sickbeard import logger
 from sickbeard import encodingKludge as ek
@@ -27,6 +28,7 @@ from sickbeard import db
 from sickbeard import history
 import subliminal
 import babelfish
+import subprocess
 
 subliminal.cache_region.configure('dogpile.cache.memory')
 
@@ -200,3 +202,32 @@ class SubtitlesFinder():
         - the number of searches done so far (searchcount), represented by the index of the list
         """
         return {'old': [0, 24], 'new': [0, 4, 8, 4, 16, 24, 24]}
+
+
+def run_subs_extra_scripts(epObj, foundSubs):
+
+    for curScriptName in sickbeard.SUBTITLES_EXTRA_SCRIPTS:
+        script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", curScriptName) if piece.strip()]
+        script_cmd[0] = ek.ek(os.path.abspath, script_cmd[0])
+        logger.log(u"Absolute path to script: " + script_cmd[0], logger.DEBUG)
+
+        for video, subs in foundSubs.iteritems():
+            subpaths = []
+            for sub in subs:
+                subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
+                if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                    subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
+
+                inner_cmd = script_cmd + [video.name] + [subpath] + [sub.language.opensubtitles] + [epObj.show.name] + \
+                                         [epObj.season] + [epObj.episode] + [epObj.name]
+
+                # use subprocess to run the command and capture output
+                logger.log(u"Executing command: %s" % inner_cmd)
+                try:
+                    p = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR)
+                    out, err = p.communicate()  # @UnusedVariable
+                    logger.log(u"Script result: %s" % out, logger.DEBUG)
+
+                except Exception as e:
+                    logger.log(u"Unable to run subs_extra_script: " + ex(e))
