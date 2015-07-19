@@ -121,7 +121,11 @@ class CpasbienProvider(generic.TorrentProvider):
             for search_string in search_params[mode]:
         
                 searchURL = self.url + '/recherche/'+search_string.replace('.','-')+'.html'
-                data = self.getURL(searchURL)        
+                data = self.getURL(searchURL)
+
+                if not data:
+                    continue
+
                 try:
                     with BS4Parser(data, features=["html5lib", "permissive"]) as html:
                         
