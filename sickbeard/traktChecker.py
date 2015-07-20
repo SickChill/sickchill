@@ -46,7 +46,7 @@ def setEpisodeToWanted(show, s, e):
             if epObj.status != SKIPPED or epObj.airdate == datetime.date.fromordinal(1):
                 return
 
-            logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to wanted")
+            logger.log(u"Setting episode %s S%02dE%02d to wanted" %(show.name, s, e))
             # figure out what segment the episode is in and remember it so we can backlog it
 
             epObj.status = WANTED
@@ -55,8 +55,7 @@ def setEpisodeToWanted(show, s, e):
         cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [epObj])
         sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
-        logger.log(u"Starting backlog for " + show.name + " season " + str(
-                s) + " episode " + str(e) + " because some eps were set to wanted")
+        logger.log(u"Starting backlog search for %s S%02dE%02d because some episodes were set to wanted" % (show.name, s, e))
 
 
 class TraktChecker():
@@ -192,7 +191,8 @@ class TraktChecker():
                     trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
                     if self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"]), List='Collection'):
                         if cur_episode["location"] == '':
-                            logger.log(u"Removing Episode: Indexer %s %s - %s - S%sE%s from Collection" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)
+                            logger.log(u"Removing Episode %s S%02dE%02d from collection" %
+                            (cur_episode["show_name"],cur_episode["season"],cur_episode["episode"]), logger.DEBUG)
                             trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
 
             if len(trakt_data):
@@ -214,7 +214,8 @@ class TraktChecker():
                 for cur_episode in episodes:
                     trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
                     if not self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"]), List='Collection'):
-                        logger.log(u"Adding Episode: Indexer %s %s - %s - S%sE%s to Collection" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)                   
+                        logger.log(u"Adding Episode %s S%02dE%02d to collection" %
+                        (cur_episode["show_name"],cur_episode["season"],cur_episode["episode"]), logger.DEBUG)
                         trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
 
                 if len(trakt_data):
@@ -252,7 +253,8 @@ class TraktChecker():
                     trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
                     if self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"])):
                         if cur_episode["status"] not in Quality.SNATCHED + Quality.SNATCHED_PROPER + [UNKNOWN] + [WANTED]:
-                            logger.log(u"Removing Episode: Indexer %s %s - %s - S%sE%s from Watchlist" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)
+                            logger.log(u"Removing Episode %s S%02dE%02d from watchlist" %
+                            (cur_episode["show_name"],cur_episode["season"],cur_episode["episode"]), logger.DEBUG)
                             trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
 
             if len(trakt_data):
@@ -274,7 +276,8 @@ class TraktChecker():
                 for cur_episode in episodes:
                     trakt_id = sickbeard.indexerApi(cur_episode["indexer"]).config['trakt_id']
                     if not self._checkInList(trakt_id,str(cur_episode["showid"]),str(cur_episode["season"]),str(cur_episode["episode"])):
-                        logger.log(u"Adding Episode: Indexer %s %s - %s - S%sE%s to Watchlist" % (trakt_id,str(cur_episode["showid"]), cur_episode["show_name"],str(cur_episode["season"]),str(cur_episode["episode"])), logger.DEBUG)                     
+                        logger.log(u"Adding Episode %s S%02dE%02d to watchlist" %
+                        (cur_episode["show_name"],cur_episode["season"],cur_episode["episode"]), logger.DEBUG)                     
                         trakt_data.append((cur_episode["showid"],cur_episode["indexer"],cur_episode["show_name"],cur_episode["startyear"],cur_episode["season"], cur_episode["episode"]))
 
                 if len(trakt_data):
@@ -786,7 +789,7 @@ class TraktRolling():
                 if epObj.status != SKIPPED:
                     return
 
-                logger.log(u"Setting episode s" + str(s) + "e" + str(e) + " of show " + show.name + " to " + statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS])
+                logger.log(u"Setting episode %s S%02dE%02d to %s " % (show.name, s, e, statusStrings[sickbeard.EP_DEFAULT_DELETED_STATUS] ))
 
                 epObj.status = sickbeard.EP_DEFAULT_DELETED_STATUS
                 epObj.saveToDB()
