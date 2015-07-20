@@ -260,6 +260,9 @@ class NewznabProvider(generic.NZBProvider):
                   "attrs": "rageid",
                   "offset": 0}
 
+        if search_params:
+            params.update(search_params)
+
         # category ids
         if self.show and self.show.is_sports:
             params['cat'] = self.catIDs + ',5060'
@@ -267,9 +270,6 @@ class NewznabProvider(generic.NZBProvider):
             params['cat'] = self.catIDs + ',5070'
         else:
             params['cat'] = self.catIDs
-
-        if search_params:
-            params.update(search_params)
 
         if self.needs_auth and self.key:
             params['apikey'] = self.key
