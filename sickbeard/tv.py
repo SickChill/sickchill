@@ -645,7 +645,7 @@ class TVShow(object):
 
         if not len(parse_result.episode_numbers):
             logger.log("parse_result: " + str(parse_result))
-            logger.log(u"No episode number found in " + file + ", ignoring it", logger.ERROR)
+            logger.log(u"No episode number found in " + file + ", ignoring it", logger.WARNING)
             return None
 
         # for now lets assume that any episode in the show dir belongs to that show
