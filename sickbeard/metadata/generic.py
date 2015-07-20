@@ -708,11 +708,11 @@ class GenericMetadata():
             logger.log(u"Image already exists, not downloading", logger.DEBUG)
             return False
 
-        if not image_data:
-            logger.log(u"Unable to retrieve image, skipping", logger.WARNING)
-            return False
-
         image_dir = ek.ek(os.path.dirname, image_path)
+        
+        if not image_data:
+            logger.log(u"Unable to retrieve image to save in {0}, skipping".format(str(image_dir)), logger.WARNING)
+            return False
 
         try:
             if not ek.ek(os.path.isdir, image_dir):
