@@ -3,6 +3,8 @@ python:
   - 2.6
   - 2.7
 
+sudo: false
+
 branches:
   except:
     - master
