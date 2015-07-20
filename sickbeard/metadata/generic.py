@@ -711,7 +711,7 @@ class GenericMetadata():
         image_dir = ek.ek(os.path.dirname, image_path)
         
         if not image_data:
-            logger.log(u"Unable to retrieve image to save in {0}, skipping".format(str(image_dir)), logger.WARNING)
+            logger.log(u"Unable to retrieve image to save in %s, skipping" % ek.ss(image_dir), logger.WARNING)
             return False
 
         try:
