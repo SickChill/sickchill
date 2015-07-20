@@ -2139,7 +2139,8 @@ class CMD_ShowAddNew(ApiCall):
                  "lang": {"desc": "the 2 letter lang abbreviation id"},
                  "subtitles": {"desc": "allow search episode subtitle"},
                  "anime": {"desc": "set show to anime"},
-                 "scene": {"desc": "show searches episodes by scene numbering"}
+                 "scene": {"desc": "show searches episodes by scene numbering"},
+                 "future_status": {"desc": "status of future episodes"}
              }
     }
 
@@ -2160,7 +2161,7 @@ class CMD_ShowAddNew(ApiCall):
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
                                                        str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False,
                                                        "bool", [])
-        self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
+        self.status, args = self.check_params(args, kwargs, "status", sickbeard.STATUS_DEFAULT, False, "string",
                                               ["wanted", "skipped", "archived", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
@@ -2173,6 +2174,8 @@ class CMD_ShowAddNew(ApiCall):
         self.scene, args = self.check_params(args, kwargs, "scene", int(sickbeard.SCENE_DEFAULT), False,
                                              "int",
             [])
+        self.future_status, args = self.check_params(args, kwargs, "future_status", sickbeard.STATUS_DEFAULT_AFTER, False, "string",
+                                              ["wanted", "skipped", "archived", "ignored"])
 
         # super, missing, help
         ApiCall.__init__(self, args, kwargs)
@@ -2233,9 +2236,25 @@ class CMD_ShowAddNew(ApiCall):
             if not self.status in statusStrings.statusStrings:
                 raise ApiError("Invalid Status")
             # only allow the status options we want
-            if int(self.status) not in (3, 5, 6, 7):
+            if int(self.status) not in (WANTED, SKIPPED, ARCHIVED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             newStatus = self.status
+
+        # use default status as a failsafe
+        default_ep_status_after = sickbeard.STATUS_DEFAULT_AFTER
+        if self.future_status:
+            # convert the string status to a int
+            for status in statusStrings.statusStrings:
+                if statusStrings[status].lower() == str(self.future_status).lower():
+                    self.future_status = status
+                    break
+            # TODO: check if obsolete
+            if not self.future_status in statusStrings.statusStrings:
+                raise ApiError("Invalid Status")
+            # only allow the status options we want
+            if int(self.future_status) not in (WANTED, SKIPPED, ARCHIVED, IGNORED):
+                return _responds(RESULT_FAILURE, msg="Status prohibited")
+            default_ep_status_after = self.future_status
 
         indexerName = None
         indexerResult = CMD_SickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
@@ -2270,7 +2289,7 @@ class CMD_ShowAddNew(ApiCall):
         sickbeard.showQueueScheduler.action.addShow(int(indexer), int(self.indexerid), showPath, newStatus,
                                                     newQuality,
                                                     int(self.flatten_folders), self.lang, self.subtitles, self.anime,
-                                                    self.scene)  # @UndefinedVariable
+                                                    self.scene, default_status_after=default_ep_status_after)  # @UndefinedVariable
 
         return _responds(RESULT_SUCCESS, {"name": indexerName}, indexerName + " has been queued to be added")
 
