@@ -1780,44 +1780,19 @@ class TVEpisode(object):
             return
 
         if self.location:
-            logger.log(str(self.show.indexerid) + u": Setting status for " + str(season) + "x" + str(
-                episode) + " based on status " + str(self.status) + " and existence of " + self.location, logger.DEBUG)
+            logger.log(u"%s: Setting status for S%02dE%02d based on status %s and location %s" %
+                    (self.show.indexerid, season, episode, statusStrings[self.status], self.location), logger.DEBUG)
 
-        # if we don't have the file
         if not ek.ek(os.path.isfile, self.location):
-
-            # if it hasn't aired yet set the status to UNAIRED
-            if self.airdate >= datetime.date.today() and self.status in [SKIPPED, UNAIRED, UNKNOWN, WANTED]:
-                logger.log(u"Episode airs in the future, marking it UNAIRED", logger.DEBUG)
-                self.status = UNAIRED
-
-            # if there's no airdate then set it to skipped (and respect ignored)
-            elif self.airdate == datetime.date.fromordinal(1):
-                if self.status == IGNORED:
-                    logger.log(u"Episode has no air date, but it's already marked as ignored", logger.DEBUG)
-                else:
-                    logger.log(u"Episode has no air date, automatically marking it unaired", logger.DEBUG)
-                    self.status = UNAIRED
-
-            # if we don't have the file and the airdate is in the past
+            if  self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
+                logger.log(u"Episode airs in the future or has no airdate, marking it %s" % statusStrings[UNAIRED], logger.DEBUG)
+                self.status = UNAIRED if self.season > 0 else SKIPPED # Some specials have no airdate
+            elif self.status in [UNAIRED, UNKNOWN]:
+                # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
+                logger.log(u"Episode has already aired, marking it %s" % statusStrings[self.show.default_ep_status], logger.DEBUG)
+                self.status = self.show.default_ep_status if self.season > 0 else SKIPPED # auto-skip specials
             else:
-                if self.status == UNAIRED:
-                    if self.season > 0:
-                        self.status = WANTED
-                    else:
-                        self.status = SKIPPED
-
-                # if we somehow are still UNKNOWN then just use the shows defined default status or SKIPPED
-                elif self.status == UNKNOWN:
-                    if self.season > 0: #If it's not a special
-                        self.status = self.show.default_ep_status
-                    else:
-                        self.status = SKIPPED
-
-                else:
-                    logger.log(
-                        u"Not touching status because we have no ep file, the airdate is in the past, and the status is " + str(
-                            self.status), logger.DEBUG)
+                logger.log(u"Not touching status [ %s ] It could be skipped/ignored/snatched/archived" % statusStrings[self.status], logger.DEBUG)
 
         # if we have a media file then it's downloaded
         elif sickbeard.helpers.isMediaFile(self.location):

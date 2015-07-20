@@ -175,7 +175,7 @@ class ApiHandler(RequestHandler):
                     cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
 
                 logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
-                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner')):  # skip these cmd while chaining
+                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner', 'show.getnetworklogo')):  # skip these cmd while chaining
                     try:
                         if cmd in _functionMaper:
                             # map function
@@ -1807,8 +1807,8 @@ class CMD_SickBeardSearchTVDB(CMD_SickBeardSearchIndexers):
 
 
     def __init__(self, args, kwargs):
-        self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
+        self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
 
 class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
@@ -1820,8 +1820,8 @@ class CMD_SickBeardSearchTVRAGE(CMD_SickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
         CMD_SickBeardSearchIndexers.__init__(self, args, kwargs)
+        self.indexerid, args = self.check_params(args, kwargs, "tvrageid", None, False, "int", [])
 
 
 class CMD_SickBeardSetDefaults(ApiCall):
