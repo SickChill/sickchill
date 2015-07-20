@@ -1223,8 +1223,7 @@ class TVShow(object):
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
-        logger.log(u"Checking if found episode " + "S" + str(season).zfill(2) + "E" + str(episode).zfill(2) + " is wanted at quality " +
-                   Quality.qualityStrings[quality], logger.DEBUG)
+        logger.log(u"Checking if found episode %s S%02dE%02d is wanted at quality %s" % (self.show.name, season, episode, Quality.qualityStrings[quality]) , logger.DEBUG)
 
         # if the quality isn't one we want under any circumstances then just say no
         anyQualities, bestQualities = Quality.splitQuality(self.quality)
@@ -1555,7 +1554,7 @@ class TVEpisode(object):
                         raise exceptions.EpisodeNotFoundException("Couldn't find episode S%02dE%02d" % (season, episode))
 
     def loadFromDB(self, season, episode):
-        logger.log(u"%s: Loading episode details from DB for episode S%02dE%02d" % (self.show.indexerid, season, episode), logger.DEBUG)
+        logger.log(u"%s: Loading episode details from DB for episode %s S%02dE%02d" % (self.show.indexerid, self.show.name, season, episode), logger.DEBUG)
 
         myDB = db.DBConnection()
         sqlResults = myDB.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
