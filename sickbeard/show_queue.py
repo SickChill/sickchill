@@ -216,13 +216,13 @@ class QueueItemAdd(ShowQueueItem):
         if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
 
-        # Process add show in priority
-        self.priority = generic_queue.QueuePriorities.HIGH
-
         self.show = None
 
         # this will initialize self.show to None
         ShowQueueItem.__init__(self, ShowQueueActions.ADD, self.show)
+
+        # Process add show in priority
+        self.priority = generic_queue.QueuePriorities.HIGH
 
     def _getName(self):
         """
