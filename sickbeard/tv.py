@@ -1477,6 +1477,9 @@ class TVEpisode(object):
                     helpers.chmodAsParent(subpath)
                     helpers.fixSetGroupID(subpath)
 
+            if not sickbeard.EMBEDDED_SUBTITLES_ALL and sickbeard.SUBTITLES_EXTRA_SCRIPTS and self.location.endswith(('mkv','mp4')):
+                subtitles.run_subs_extra_scripts(self, foundSubs)
+
         except Exception as e:
             logger.log("Error occurred when downloading subtitles for: %s" % self.location)
             logger.log(traceback.format_exc(), logger.ERROR)
