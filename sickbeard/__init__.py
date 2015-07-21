@@ -119,7 +119,7 @@ NOTIFY_ON_UPDATE = False
 CUR_COMMIT_HASH = None
 BRANCH = ''
 
-GIT_RESET = False
+GIT_RESET = True
 GIT_REMOTE = ''
 GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
@@ -650,7 +650,7 @@ def initialize(consoleLogging=True):
             logger.log('Unable to setup github properly, github will not be available. Error: {0}'.format(ex(e)),logger.WARNING)
 
         # git reset on update
-        GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
+        GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))
 
         # current git branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
