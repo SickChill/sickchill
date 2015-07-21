@@ -192,7 +192,7 @@ class Logger(object):
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
                         title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ek.ss(str(curError.message))).group(1)
-                    if len(title_Error) > 1024:
+                    if len(title_Error.encode('utf-8')) > 1024:
                         title_Error = title_Error[0:1024]
                 except Exception as e:
                     self.log("Unable to get error title : " + sickbeard.exceptions.ex(e), ERROR)
