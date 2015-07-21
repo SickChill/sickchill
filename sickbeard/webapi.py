@@ -2161,7 +2161,7 @@ class CMD_ShowAddNew(ApiCall):
         self.flatten_folders, args = self.check_params(args, kwargs, "flatten_folders",
                                                        str(sickbeard.FLATTEN_FOLDERS_DEFAULT), False,
                                                        "bool", [])
-        self.status, args = self.check_params(args, kwargs, "status", sickbeard.STATUS_DEFAULT, False, "string",
+        self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "archived", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
@@ -2174,7 +2174,7 @@ class CMD_ShowAddNew(ApiCall):
         self.scene, args = self.check_params(args, kwargs, "scene", int(sickbeard.SCENE_DEFAULT), False,
                                              "int",
             [])
-        self.future_status, args = self.check_params(args, kwargs, "future_status", sickbeard.STATUS_DEFAULT_AFTER, False, "string",
+        self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                               ["wanted", "skipped", "archived", "ignored"])
 
         # super, missing, help
