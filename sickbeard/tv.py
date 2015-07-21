@@ -1469,6 +1469,14 @@ class TVEpisode(object):
 
             subliminal.save_subtitles(foundSubs, directory=subs_new_path, single=not sickbeard.SUBTITLES_MULTI)
 
+            for video, subs in foundSubs.iteritems():
+                for sub in subs:
+                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
+                    if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
+                        subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
+                    helpers.chmodAsParent(subpath)
+                    helpers.fixSetGroupID(subpath)
+
         except Exception as e:
             logger.log("Error occurred when downloading subtitles for: %s" % self.location)
             logger.log(traceback.format_exc(), logger.ERROR)
