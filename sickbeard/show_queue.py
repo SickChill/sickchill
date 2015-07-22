@@ -597,6 +597,8 @@ class QueueItemUpdate(ShowQueueItem):
             logger.log(u"Launching backlog for this show since we found missing episodes")
             sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
 
+        logger.log(u"Finished update of " + self.show.name, logger.DEBUG)
+
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
 
 class QueueItemForceUpdate(QueueItemUpdate):
