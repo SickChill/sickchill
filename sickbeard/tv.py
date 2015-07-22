@@ -1659,7 +1659,8 @@ class TVEpisode(object):
         if episode is None:
             episode = self.episode
 
-        logger.log(u"%s: Loading episode details from %s for episode S%02dE%02d" % (sickbeard.indexerApi(self.show.indexer).name, season, episode) , logger.DEBUG)
+        logger.log(u"%s: Loading episode details from %s for episode S%02dE%02d" %
+                (self.show.indexerid, sickbeard.indexerApi(self.show.indexer).name, season, episode) , logger.DEBUG)
 
         indexer_lang = self.show.lang
 
@@ -1836,7 +1837,8 @@ class TVEpisode(object):
                     if epDetails.findtext('season') is None or int(epDetails.findtext('season')) != self.season or \
                                     epDetails.findtext('episode') is None or int(
                             epDetails.findtext('episode')) != self.episode:
-                        logger.log(u": NFO has an <episodedetails> block for a different episode - wanted S%02dE%02d but got S%02dE%02d" % (self.show.indexerid, self.season, self.episode, epDetails.findtext('season'), epDetails.findtext('episode') ), logger.DEBUG)
+                        logger.log(u"%s: NFO has an <episodedetails> block for a different episode - wanted S%02dE%02d but got S%02dE%02d" %
+                                (self.show.indexerid, self.season, self.episode, epDetails.findtext('season'), epDetails.findtext('episode') ), logger.DEBUG)
                         continue
 
                     if epDetails.findtext('title') is None or epDetails.findtext('aired') is None:
@@ -1926,7 +1928,7 @@ class TVEpisode(object):
 
     def deleteEpisode(self):
 
-        logger.log(u"Deleting %s S%02dE%02dfrom the DB" % (self.show.name, self.season, self.episode), logger.DEBUG)
+        logger.log(u"Deleting %s S%02dE%02d from the DB" % (self.show.name, self.season, self.episode), logger.DEBUG)
 
         # remove myself from the show dictionary
         if self.show.getEpisode(self.season, self.episode, noCreate=True) == self:
