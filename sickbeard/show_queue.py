@@ -112,6 +112,8 @@ class ShowQueue(generic_queue.GenericQueue):
 
         queueItemObj = QueueItemRefresh(show, force=force)
 
+        logger.log(u"Queueing show refresh for " + show.name, logger.DEBUG)
+
         self.add_item(queueItemObj)
 
         return queueItemObj
