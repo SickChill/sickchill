@@ -53,10 +53,6 @@ class XthorProvider(generic.TorrentProvider):
         self.url = "https://xthor.bz"
         self.urlsearch = "https://xthor.bz/browse.php?search=%s%s"
         self.categories = "&searchin=title&incldead=0"
-        
-        self.login_done = False
-        self.failed_login_logged = False
-        self.successful_login_logged = False
 
         self.enabled = False
         self.username = None
