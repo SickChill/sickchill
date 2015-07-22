@@ -93,6 +93,7 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
+from sickbeard import encodingKludge as ek
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -148,7 +149,7 @@ class SickRage(object):
 
         return help_msg
         
-    def fix_clients_nonsense():
+    def fix_clients_nonsense(self):
     
         files = ["sickbeard/clients/download_station.py",
                  "sickbeard/clients/utorrent.py",
