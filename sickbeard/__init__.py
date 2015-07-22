@@ -119,7 +119,7 @@ NOTIFY_ON_UPDATE = False
 CUR_COMMIT_HASH = None
 BRANCH = ''
 
-GIT_RESET = False
+GIT_RESET = True
 GIT_REMOTE = ''
 GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
@@ -500,7 +500,7 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
-FILTER_ROW = False
+FILTER_ROW = True
 
 USE_SUBTITLES = False
 SUBTITLES_LANGUAGES = []
@@ -511,6 +511,7 @@ SUBTITLES_HISTORY = False
 EMBEDDED_SUBTITLES_ALL = False
 SUBTITLES_FINDER_FREQUENCY = 1
 SUBTITLES_MULTI = False
+SUBTITLES_EXTRA_SCRIPTS = []
 
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
@@ -583,7 +584,7 @@ def initialize(consoleLogging=True):
             GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, COMING_EPS_MISSED_RANGE, DISPLAY_FILESIZE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, FILTER_ROW, \
             POSTER_SORTBY, POSTER_SORTDIR, \
             METADATA_WDTV, METADATA_TIVO, METADATA_MEDE8ER, IGNORE_WORDS, REQUIRE_WORDS, CALENDAR_UNPROTECTED, NO_RESTART, CREATE_MISSING_SHOW_DIRS, \
-            ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, EMBEDDED_SUBTITLES_ALL, subtitlesFinderScheduler, \
+            ADD_SHOWS_WO_DIR, USE_SUBTITLES, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, subtitlesFinderScheduler, \
             USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, TMDB_API_KEY, DEBUG, PROXY_SETTING, PROXY_INDEXERS, \
             AUTOPOSTPROCESSER_FREQUENCY, SHOWUPDATE_HOUR, DEFAULT_AUTOPOSTPROCESSER_FREQUENCY, MIN_AUTOPOSTPROCESSER_FREQUENCY, \
             ANIME_DEFAULT, NAMING_ANIME, ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, \
@@ -650,7 +651,7 @@ def initialize(consoleLogging=True):
             logger.log('Unable to setup github properly, github will not be available. Error: {0}'.format(ex(e)),logger.WARNING)
 
         # git reset on update
-        GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 0))
+        GIT_RESET = bool(check_setting_int(CFG, 'General', 'git_reset', 1))
 
         # current git branch
         BRANCH = check_setting_str(CFG, 'General', 'branch', '')
@@ -1101,6 +1102,9 @@ def initialize(consoleLogging=True):
         SUBTITLES_FINDER_FREQUENCY = check_setting_int(CFG, 'Subtitles', 'subtitles_finder_frequency', 1)
         SUBTITLES_MULTI = bool(check_setting_int(CFG, 'Subtitles', 'subtitles_multi', 1))
 
+        SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in check_setting_str(CFG, 'Subtitles', 'subtitles_extra_scripts', '').split('|') if
+                         x.strip()]
+
         USE_FAILED_DOWNLOADS = bool(check_setting_int(CFG, 'FailedDownloads', 'use_failed_downloads', 0))
         DELETE_FAILED = bool(check_setting_int(CFG, 'FailedDownloads', 'delete_failed', 0))
 
@@ -1149,7 +1153,7 @@ def initialize(consoleLogging=True):
         TIMEZONE_DISPLAY = check_setting_str(CFG, 'GUI', 'timezone_display', 'network')
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1)
-        FILTER_ROW =  bool(check_setting_int(CFG, 'GUI', 'filter_row', 0))
+        FILTER_ROW =  bool(check_setting_int(CFG, 'GUI', 'filter_row', 1))
         DISPLAY_ALL_SEASONS = bool(check_setting_int(CFG, 'General', 'display_all_seasons', 1))
 
         # initialize NZB and TORRENT providers
@@ -2094,6 +2098,7 @@ def save_config():
     new_config['Subtitles']['embedded_subtitles_all'] = int(EMBEDDED_SUBTITLES_ALL)
     new_config['Subtitles']['subtitles_finder_frequency'] = int(SUBTITLES_FINDER_FREQUENCY)
     new_config['Subtitles']['subtitles_multi'] = int(SUBTITLES_MULTI)
+    new_config['Subtitles']['subtitles_extra_scripts'] = '|'.join(SUBTITLES_EXTRA_SCRIPTS)
 
     new_config['FailedDownloads'] = {}
     new_config['FailedDownloads']['use_failed_downloads'] = int(USE_FAILED_DOWNLOADS)

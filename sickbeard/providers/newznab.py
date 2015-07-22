@@ -279,6 +279,9 @@ class NewznabProvider(generic.NZBProvider):
         results = []
         offset = total = 0
 
+        if 'lolo.sickbeard.com' in self.url and params['maxage'] < 33:
+            params['maxage'] = 33
+
         while (total >= offset):
             search_url = self.url + 'api?' + urllib.urlencode(params)
 
@@ -378,6 +381,9 @@ class NewznabCache(tvcache.TVCache):
                   "attrs": "rageid",
                   "maxage": 4,
                  }
+
+        if 'lolo.sickbeard.com' in self.provider.url:
+            params['maxage'] = 33
 
         if self.provider.needs_auth and self.provider.key:
             params['apikey'] = self.provider.key

@@ -175,7 +175,7 @@ class ApiHandler(RequestHandler):
                     cmd, cmdIndex = cmd.split("_")  # this gives us the clear cmd and the index
 
                 logger.log(u"API :: " + cmd + ": curKwargs " + str(curKwargs), logger.DEBUG)
-                if not (multiCmds and cmd in ('show.getposter', 'show.getbanner', 'show.getnetworklogo')):  # skip these cmd while chaining
+                if not (multiCmds and cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter')):  # skip these cmd while chaining
                     try:
                         if cmd in _functionMaper:
                             # map function
@@ -1100,11 +1100,10 @@ class CMD_SubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         # return the correct json value
-        if previous_subtitles != epObj.subtitles:
-            status = 'New subtitles downloaded: %s' % ' '.join([
-                "<img src='" + sickbeard.WEB_ROOT + "/images/flags/" + babelfish.language.Language(
-                    x).alpha2 + ".png' alt='" + babelfish.language.Language(x).name + "'/>" for x in
-                sorted(list(set(epObj.subtitles).difference(previous_subtitles)))])
+        newSubtitles = frozenset(ep_obj.subtitles).difference(previous_subtitles)
+        if newSubtitles:
+            newLangs = [subtitles.fromietf(newSub) for newSub in newSubtitles]
+            status = 'New subtitles downloaded: %s' % ', '.join([newLang.name for newLang in newLangs])
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
             status = 'No subtitles downloaded'
@@ -2447,6 +2446,7 @@ class CMD_ShowGetBanner(ApiCall):
         """ get the banner for a show in sickrage """
         return {'outputType': 'image', 'image': self.rh.showPoster(self.indexerid, 'banner')}
 
+
 class CMD_ShowGetNetworkLogo(ApiCall):
     _help = {
         "desc": "Get the network logo stored for a show in SickRage",
@@ -2480,6 +2480,34 @@ class CMD_ShowGetNetworkLogo(ApiCall):
             'outputType': 'image',
             'image': self.rh.showNetworkLogo(self.indexerid)
         }
+
+
+class CMD_ShowGetFanArt(ApiCall):
+    _help = {
+        "desc": "Get the fan art stored for a show in SickRage",
+        "requiredParameters": {
+            "indexerid": {"desc": "Unique id of a show"}
+        },
+        "optionalParameters": {
+            "tvdbid": {"desc": "thetvdb.com unique id of a show"},
+            "tvrageid": {"desc": "tvrage.com unique id of a show"},
+        },
+    }
+
+    def __init__(self, args, kwargs):
+        # required
+        self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        # optional
+        # super, missing, help
+        ApiCall.__init__(self, args, kwargs)
+
+    def run(self):
+        """ Get the fan art for a show in SickRage """
+        return {
+            'outputType': 'image',
+            'image': self.rh.showPoster(self.indexerid, 'fanart')
+        }
+
 
 class CMD_ShowPause(ApiCall):
     _help = {"desc": "set a show's paused state in sickrage",
@@ -3012,6 +3040,7 @@ _functionMaper = {"help": CMD_Help,
                   "show.getposter": CMD_ShowGetPoster,
                   "show.getbanner": CMD_ShowGetBanner,
                   "show.getnetworklogo": CMD_ShowGetNetworkLogo,
+                  "show.getfanart": CMD_ShowGetFanArt,
                   "show.pause": CMD_ShowPause,
                   "show.refresh": CMD_ShowRefresh,
                   "show.seasonlist": CMD_ShowSeasonList,

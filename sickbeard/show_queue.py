@@ -216,13 +216,13 @@ class QueueItemAdd(ShowQueueItem):
         if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             self.paused = sickbeard.TRAKT_ROLLING_ADD_PAUSED
 
-        # Process add show in priority
-        self.priority = generic_queue.QueuePriorities.HIGH
-
         self.show = None
 
         # this will initialize self.show to None
         ShowQueueItem.__init__(self, ShowQueueActions.ADD, self.show)
+
+        # Process add show in priority
+        self.priority = generic_queue.QueuePriorities.HIGH
 
     def _getName(self):
         """
@@ -319,12 +319,12 @@ class QueueItemAdd(ShowQueueItem):
                     self.show.release_groups.set_white_keywords(self.whitelist)
                     
             # be smartish about this
-            if self.show.genre and "talk show" in self.show.genre.lower():
-                self.show.air_by_date = 1
-            if self.show.genre and "documentary" in self.show.genre.lower():
-                self.show.air_by_date = 0
-            if self.show.classification and "sports" in self.show.classification.lower():
-                self.show.sports = 1
+            #if self.show.genre and "talk show" in self.show.genre.lower():
+            #    self.show.air_by_date = 1
+            #if self.show.genre and "documentary" in self.show.genre.lower():
+            #    self.show.air_by_date = 0
+            #if self.show.classification and "sports" in self.show.classification.lower():
+            #    self.show.sports = 1
 
         except sickbeard.indexer_exception, e:
             logger.log(
@@ -438,7 +438,7 @@ class QueueItemRefresh(ShowQueueItem):
         ShowQueueItem.__init__(self, ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
-        self.priority = generic_queue.QueuePriorities.HIGH
+        self.priority = generic_queue.QueuePriorities.NORMAL
 
         # force refresh certain items
         self.force = force
