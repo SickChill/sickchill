@@ -1341,9 +1341,11 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
         resp = session.head(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
-            logger.log(u"Requested url " + url + " returned status code is " + str(
+            logger.log(u"Requested headURL " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return False
+        else:
+            logger.log(u"Requested headURL " + url + " returned status code is " + str(resp.status_code) , logger.DEBUG)
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
@@ -1360,13 +1362,13 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
         logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
         pass
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Connection error to headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         pass
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Connection timed out accessing headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         pass
     except requests.exceptions.ContentDecodingError:
-        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
+        logger.log(u"Content-Encoding was gzip, but content was not compressed. headURL: %s" % url, logger.DEBUG)
         pass
     except Exception as e:
         logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
@@ -1393,16 +1395,18 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
             resp = session.get(url, timeout=timeout, allow_redirects=True, verify=session.verify)
 
         if not resp.ok:
-            logger.log(u"Requested url " + url + " returned status code is " + str(
+            logger.log(u"Requested getURL " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return
+        else:
+            logger.log(u"Requested getURL " + url + " returned status code is " + str(resp.status_code), logger.DEBUG)
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
                 resp = session.get(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
 
                 if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested url " + url + " returned status code is " + str(
+                    logger.log(u"GlypeProxySSLwarning: Requested getURL " + url + " returned status code is " + str(
                         resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
                     return
 
@@ -1410,13 +1414,13 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         logger.log(u"HTTP error in getURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
         return
     except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error to {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Connection error to getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
     except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out accessing {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Connection timed out accessing getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
         return
     except requests.exceptions.ContentDecodingError:
-        logger.log(u"Content-Encoding was gzip, but content was not compressed", logger.WARNING)
+        logger.log(u"Content-Encoding was gzip, but content was not compressed. getURL: %s" % url, logger.DEBUG)
         return
     except Exception as e:
         logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
@@ -1434,7 +1438,7 @@ def download_file(url, filename, session=None, headers={}):
     try:
         with closing(session.get(url, allow_redirects=True, verify=session.verify)) as resp:
             if not resp.ok:
-                logger.log(u"Requested url " + url + " returned status code is " + str(
+                logger.log(u"Requested download url " + url + " returned status code is " + str(
                     resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
                 return False
 
@@ -1451,15 +1455,15 @@ def download_file(url, filename, session=None, headers={}):
 
     except requests.exceptions.HTTPError, e:
         _remove_file_failed(filename)
-        logger.log(u"HTTP error " + str(e.errno) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"HTTP error " + str(e.errno) + " while loading download URL " + url, logger.WARNING)
         return False
     except requests.exceptions.ConnectionError, e:
         _remove_file_failed(filename)
-        logger.log(u"Connection error " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection error " + str(e.message) + " while loading download URL " + url, logger.WARNING)
         return False
     except requests.exceptions.Timeout, e:
         _remove_file_failed(filename)
-        logger.log(u"Connection timed out " + str(e.message) + " while loading URL " + url, logger.WARNING)
+        logger.log(u"Connection timed out " + str(e.message) + " while loading download URL " + url, logger.WARNING)
         return False
     except EnvironmentError, e:
         _remove_file_failed(filename)
@@ -1467,7 +1471,7 @@ def download_file(url, filename, session=None, headers={}):
         return False
     except Exception:
         _remove_file_failed(filename)
-        logger.log(u"Unknown exception while loading URL " + url + ": " + traceback.format_exc(), logger.WARNING)
+        logger.log(u"Unknown exception while loading download URL " + url + ": " + traceback.format_exc(), logger.WARNING)
         return False
 
     return True
