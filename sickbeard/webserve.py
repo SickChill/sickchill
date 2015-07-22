@@ -2157,6 +2157,20 @@ class Home(WebRoot):
 
         return json.dumps({'result': 'failure'})            
 
+@route('/IRC(/?.*)')
+class HomeIRC(Home):
+    def __init__(self, *args, **kwargs):
+        super(HomeIRC, self).__init__(*args, **kwargs)
+
+    def index(self):
+
+        t = PageTemplate(rh=self, file="IRC.tmpl")
+        t.submenu = self.HomeMenu()
+        t.title = "IRC"
+        t.header = "IRC"
+        t.topmenu = "IRC"
+        return t.respond()
+
 @route('/news(/?.*)')
 class HomeNews(Home):
     def __init__(self, *args, **kwargs):
