@@ -153,7 +153,6 @@ class SickRage(object):
     
         files = ["sickbeard/clients/download_station.py",
                  "sickbeard/clients/utorrent.py",
-                 "sickbeard/clients/generic.py",
                  "sickbeard/clients/qbittorrent.py",
                  "sickbeard/clients/transmission.py",
                  "sickbeard/clients/deluge.py",
