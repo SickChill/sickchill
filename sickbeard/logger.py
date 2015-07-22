@@ -135,8 +135,6 @@ class Logger(object):
         # pass exception information if debugging enabled
 
         if level == ERROR:
-            #Replace the SSL error with a link to information about how to fix it.
-            message = re.sub(r'error \[Errno 1\] _ssl.c:\d{3}: error:\d{8}:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error', r'See: http://git.io/vJrkM', message)
             self.logger.exception(message, *args, **kwargs)
             classes.ErrorViewer.add(classes.UIError(message))
 
@@ -194,8 +192,11 @@ class Logger(object):
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
                         title_Error = re.match("^[A-Z0-9\-\[\] :]+::\s*(.*)$", ek.ss(str(curError.message))).group(1)
-                    if len(title_Error) > 1024:
-                        title_Error = title_Error[0:1024]
+
+                    # if len(title_Error) > (1024 - len(u"[APP SUBMITTED]: ")):
+                    # 1000 just looks better than 1007 and adds some buffer
+                    if len(title_Error) > 1000:
+                        title_Error = title_Error[0:1000]
                 except Exception as e:
                     self.log("Unable to get error title : " + sickbeard.exceptions.ex(e), ERROR)
 

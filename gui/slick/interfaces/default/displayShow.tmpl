@@ -547,9 +547,10 @@
                 #if $epResult['location']
                     #set $filename = $epResult['location']
                     #for $rootDir in $sickbeard.ROOT_DIRS.split('|')
-                        #if $rootDir.startswith('/')
-                            #set $filename = ntpath.basename($filename)
+                        #if not $rootDir.startswith('/')
+                            #set $filename = $filename.replace('\\','\\\\')
                         #end if
+                        #set $filename = ntpath.basename($filename)   
                     #end for
                     $filename
                 #end if    

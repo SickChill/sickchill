@@ -2157,6 +2157,20 @@ class Home(WebRoot):
 
         return json.dumps({'result': 'failure'})            
 
+@route('/IRC(/?.*)')
+class HomeIRC(Home):
+    def __init__(self, *args, **kwargs):
+        super(HomeIRC, self).__init__(*args, **kwargs)
+
+    def index(self):
+
+        t = PageTemplate(rh=self, file="IRC.tmpl")
+        t.submenu = self.HomeMenu()
+        t.title = "IRC"
+        t.header = "IRC"
+        t.topmenu = "IRC"
+        return t.respond()
+
 @route('/news(/?.*)')
 class HomeNews(Home):
     def __init__(self, *args, **kwargs):
@@ -4928,7 +4942,7 @@ class ConfigSubtitles(Config):
 
     def saveSubtitles(self, use_subtitles=None, subtitles_plugins=None, subtitles_languages=None, subtitles_dir=None,
                       service_order=None, subtitles_history=None, subtitles_finder_frequency=None,
-                      subtitles_multi=None, embedded_subtitles_all=None):
+                      subtitles_multi=None, embedded_subtitles_all=None, subtitles_extra_scripts=None):
 
         results = []
 
@@ -4940,6 +4954,7 @@ class ConfigSubtitles(Config):
         sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
         sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
         sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
+        sickbeard.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 
         # Subtitles services
         services_str_list = service_order.split()

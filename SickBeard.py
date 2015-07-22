@@ -93,6 +93,7 @@ from sickbeard.webserveInit import SRWebServer
 from sickbeard.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 from sickbeard.event_queue import Events
 from configobj import ConfigObj
+from sickbeard import encodingKludge as ek
 
 throwaway = datetime.datetime.strptime('20110101', '%Y%m%d')
 
@@ -147,6 +148,29 @@ class SickRage(object):
         help_msg += "                --noresize          Prevent resizing of the banner/posters even if PIL is installed\n"
 
         return help_msg
+        
+    def fix_clients_nonsense(self):
+    
+        files = ["sickbeard/clients/download_station.py",
+                 "sickbeard/clients/utorrent.py",
+                 "sickbeard/clients/qbittorrent.py",
+                 "sickbeard/clients/transmission.py",
+                 "sickbeard/clients/deluge.py",
+                 "sickbeard/clients/rtorrent.py"
+                ]
+                
+        for file in files:
+            file = ek.ek(os.path.join, sickbeard.PROG_DIR, file)
+            try:
+                if ek.ek(os.path.exists, file):
+                    ek.ek(os.remove, file)
+            except:
+                pass
+            try:
+                if ek.ek(os.path.exists, file + "c"):
+                    ek.ek(os.remove, file + "c")
+            except:
+                pass
 
     def start(self):
         # do some preliminary stuff
@@ -317,6 +341,9 @@ class SickRage(object):
 
         # Get PID
         sickbeard.PID = os.getpid()
+        
+        # Fix clients old files
+        self.fix_clients_nonsense()
 
         # Build from the DB to start with
         self.loadShowsFromDB()

@@ -9,6 +9,7 @@
 
 var _disable_empty_list=false;
 var _hide_empty_list=false;
+var _image_commands=['?cmd=show.getbanner', '?cmd=show.getfanart', '?cmd=show.getnetworklogo', '?cmd=show.getposter']
 
 function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
     var html, GlobalOptions = "";
@@ -25,8 +26,8 @@ function goListGroup(apikey, L7, L6, L5, L4, L3, L2, L1){
         }
     });
 
-    // handle the show.getposter / show.getbanner differently as they return an image and not json
-    if (L1 == "?cmd=show.getposter" || L1 == "?cmd=show.getbanner") {
+    // Some commands return an image instead of JSON
+    if ($.inArray(L1, _image_commands) > -1) {
         var imgcache = sbRoot + "/api/" + apikey + "/" + L1 + L2 + GlobalOptions;
         html = imgcache + '<br/><br/><img src="' + sbRoot + '/images/loading16.gif" id="imgcache">';
         $('#apiResponse').html(html);

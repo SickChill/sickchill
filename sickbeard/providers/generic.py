@@ -75,8 +75,9 @@ class GenericProvider:
 
         self.btCacheURLS = [
                 'http://torcache.net/torrent/{torrent_hash}.torrent',
-                'http://zoink.ch/torrent/{torrent_name}.torrent',
-                'http://torrage.com/torrent/{torrent_hash}.torrent',
+                'http://thetorrent.org/torrent/{torrent_hash}.torrent',
+                'http://btdig.com/torrent/{torrent_hash}.torrent',
+                #'http://torrage.com/torrent/{torrent_hash}.torrent',
                 #'http://itorrents.org/torrent/{torrent_hash}.torrent',
             ]
 
