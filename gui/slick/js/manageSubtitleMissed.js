@@ -5,21 +5,21 @@ $(document).ready(function() {
             var checked = ' checked';
         else
             var checked = '';
-        
+
         var row = '';
-        row += ' <tr class="good">';
+        row += ' <tr class="good show-' + indexer_id + '">';
         row += '  <td align="center"><input type="checkbox" class="'+indexer_id+'-epcheck" name="'+indexer_id+'-'+season+'x'+episode+'"'+checked+'></td>';
         row += '  <td style="width: 1%;">'+season+'x'+episode+'</td>';
         row += '  <td>'+name+'</td>';
         row += '  <td style="float: right;">'; 
         	subtitles = subtitles.split(',')
-        	for (i in subtitles)
+        	for (var i in subtitles)
         	{
         		row += '   <img src="/images/subtitles/flags/'+subtitles[i]+'.png" width="16" height="11" alt="'+subtitles[i]+'" />&nbsp;';
         	}
         row += '  </td>';
         row += ' </tr>'
-        
+
         return row;
     }
 
@@ -32,21 +32,35 @@ $(document).ready(function() {
         var cur_indexer_id = $(this).attr('id');
         var checked = $('#allCheck-'+cur_indexer_id).prop('checked');
         var last_row = $('tr#'+cur_indexer_id);
-        
-        $.getJSON(sbRoot+'/manage/showSubtitleMissed',
+        var clicked = $(this).attr('data-clicked');
+        var action = $(this).attr('value');
+
+        if (!clicked) {
+            $.getJSON(sbRoot + '/manage/showSubtitleMissed',
                   {
                    indexer_id: cur_indexer_id,
                    whichSubs: $('#selectSubLang').val()
                   },
                   function (data) {
-                      $.each(data, function(season,eps){
+                      $.each(data, function(season, eps) {
                           $.each(eps, function(episode, data) {
                               //alert(season+'x'+episode+': '+name);
                               last_row.after(make_row(cur_indexer_id, season, episode, data.name, data.subtitles, checked));
                           });
                       });
                   });
-        $(this).hide();
+            $(this).attr('data-clicked', 1);
+            $(this).prop('value', 'Collapse');
+        } else {
+            if (action === 'Collapse') {
+                $('table tr').filter('.show-' + cur_indexer_id).hide();
+                $(this).prop('value', 'Expand');
+            }
+            else if (action === 'Expand') {
+                $('table tr').filter('.show-' + cur_indexer_id).show();
+                $(this).prop('value', 'Collapse');
+            }
+        }
     });
 
     // selects all visible episode checkboxes.
@@ -68,5 +82,4 @@ $(document).ready(function() {
                 this.checked = false;
         });
     });
-
 });
