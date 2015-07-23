@@ -1477,7 +1477,7 @@ class TVEpisode(object):
 
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
-                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
+                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
                     if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
                         subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
                     helpers.chmodAsParent(subpath)
