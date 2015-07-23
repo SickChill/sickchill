@@ -149,7 +149,7 @@ class NewznabProvider(generic.NZBProvider):
         rid = helpers.mapIndexersToShow(ep_obj.show)[2]
         if rid:
             cur_params['rid'] = rid
-        elif 'rid' in params:
+        elif 'rid' in cur_params:
             cur_params.pop('rid')
 
         # add new query strings for exceptions
