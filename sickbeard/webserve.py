@@ -432,7 +432,7 @@ class WebRoot(WebHandler):
             layout = 'poster'
 
         sickbeard.HOME_LAYOUT = layout
-
+        #Dont redirect to default page so user can see new layout
         return self.redirect("/home/")
 
     def setPosterSortBy(self, sort):
@@ -1116,7 +1116,7 @@ class Home(WebRoot):
 
     def shutdown(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            return self.redirect("/home/")
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
         sickbeard.events.put(sickbeard.events.SystemEvent.SHUTDOWN)
 
@@ -1127,7 +1127,7 @@ class Home(WebRoot):
 
     def restart(self, pid=None):
         if str(pid) != str(sickbeard.PID):
-            return self.redirect("/home/")
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
         t = PageTemplate(rh=self, file="restart.tmpl")
         t.submenu = self.HomeMenu()
@@ -1143,7 +1143,7 @@ class Home(WebRoot):
 
         sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
 
-        return self.redirect('/home/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def update(self, pid=None):
         
@@ -1165,7 +1165,7 @@ class Home(WebRoot):
                 return self._genericMessage("Update Failed",
                                             "Update wasn't successful, not restarting. Check your log for more information.")
         else:
-            return self.redirect('/home/')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def branchCheckout(self, branch):
         if sickbeard.BRANCH != branch:
@@ -1174,7 +1174,7 @@ class Home(WebRoot):
             return self.update(sickbeard.PID)
         else:
             ui.notifications.message('Already on branch: ', branch)
-            return self.redirect('/home')
+            return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def getDBcompare(self, branchDest=None):
 
@@ -1598,7 +1598,8 @@ class Home(WebRoot):
                                  (showObj.name,
                                   ('deleted', 'trashed')[sickbeard.TRASH_REMOVE_SHOW],
                                   ('(media untouched)', '(with all related media)')[bool(full)]))
-        return self.redirect("/home/")
+        #Dont redirect to default page so user can confirm show was deleted
+        return self.redirect('/home/')
 
 
     def refreshShow(self, show=None):
@@ -2707,6 +2708,7 @@ class HomeAddShows(Home):
                 logger.log(u"Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
                 ui.notifications.error("Unable to add show",
                                        "Unable to create the folder " + show_dir + ", can't add the show")
+                #Dont redirect to default page because user wants to see the new show
                 return self.redirect("/home/")
             else:
                 helpers.chmodAsParent(show_dir)
