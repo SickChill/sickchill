@@ -484,10 +484,12 @@ class TVShow(object):
 
         if self.lang:
             lINDEXER_API_PARMS['language'] = self.lang
+            logger.log(u"Using language: " + str(self.lang), logger.DEBUG)
 
         if self.dvdorder != 0:
             lINDEXER_API_PARMS['dvdorder'] = True
 
+        logger.log(u"lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
         t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
 
         cachedShow = t[self.indexerid]
@@ -495,6 +497,7 @@ class TVShow(object):
 
         for curResult in sqlResults:
 
+            logger.log(u"loadEpisodesFromDB curResult: " + str(curResult), logger.DEBUG)
             deleteEp = False
 
             curSeason = int(curResult["season"])
@@ -509,6 +512,7 @@ class TVShow(object):
                     deleteEp = True
 
             if not curSeason in scannedEps:
+                logger.log(u"Not curSeason in scannedEps", logger.DEBUG)
                 scannedEps[curSeason] = {}
 
             logger.log(u"Loading episode S%02dE%02d from the DB" % (curSeason, curEpisode), logger.DEBUG)
@@ -529,6 +533,8 @@ class TVShow(object):
                 logger.log(u"Tried loading an episode from the DB that should have been deleted, skipping it",
                            logger.DEBUG)
                 continue
+
+        logger.log(u"Finished loading all episodes from the DB", logger.DEBUG)
 
         return scannedEps
 
@@ -1471,7 +1477,7 @@ class TVEpisode(object):
 
             for video, subs in foundSubs.iteritems():
                 for sub in subs:
-                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language)
+                    subpath = subliminal.subtitle.get_subtitle_path(video.name, sub.language if sickbeard.SUBTITLES_MULTI else None)
                     if sickbeard.SUBTITLES_DIR and ek.ek(os.path.exists, sickbeard.SUBTITLES_DIR):
                         subpath = ek.ek(os.path.join, sickbeard.SUBTITLES_DIR, ek.ek(os.path.basename, subpath))
                     helpers.chmodAsParent(subpath)

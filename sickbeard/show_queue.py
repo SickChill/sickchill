@@ -112,6 +112,8 @@ class ShowQueue(generic_queue.GenericQueue):
 
         queueItemObj = QueueItemRefresh(show, force=force)
 
+        logger.log(u"Queueing show refresh for " + show.name, logger.DEBUG)
+
         self.add_item(queueItemObj)
 
         return queueItemObj
@@ -596,6 +598,8 @@ class QueueItemUpdate(ShowQueueItem):
         if foundMissingEps and self.show.default_ep_status == WANTED:
             logger.log(u"Launching backlog for this show since we found missing episodes")
             sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
+
+        logger.log(u"Finished update of " + self.show.name, logger.DEBUG)
 
         sickbeard.showQueueScheduler.action.refreshShow(self.show, self.force)
 

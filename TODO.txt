@@ -11,9 +11,6 @@
 -Add 'add show and add another show' button to add show page
 -Change the hardcoded global ignore words to optional
 
-2014-10-08
-VAdd login page for http auth as opposed to browser dialog box
-
 2014-10-13
 -Fix broken backlog
 -Fix season searches

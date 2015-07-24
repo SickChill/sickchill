@@ -281,8 +281,9 @@ class WebHandler(BaseHandler):
 
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
+
         if self.get_current_user():
-            self.redirect('/home/')
+            self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
             self.finish(t.respond())
@@ -301,11 +302,11 @@ class LoginHandler(BaseHandler):
         if api_key:
             remember_me = int(self.get_argument('remember_me', default=0) or 0)
             self.set_secure_cookie('sickrage_user', api_key, expires_days=30 if remember_me > 0 else None)
-            logger.log('User logged into the SickRage web interface from IP: ' + self.request.remote_ip, logger.INFO)
+            logger.log('User logged into the SickRage web interface', logger.INFO)
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)    
 
-        self.redirect('/home/')
+        self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
 
 class LogoutHandler(BaseHandler):
@@ -340,7 +341,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/home/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -3768,7 +3769,7 @@ class ConfigGeneral(Config):
                     proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
                     calendar_unprotected=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
                     filter_row=None, fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-                    indexer_timeout=None, download_url=None, rootDir=None, theme_name=None,
+                    indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None,
                     git_reset=None, git_username=None, git_password=None, git_autoissues=None, display_all_seasons=None):
 
         results = []
@@ -3858,6 +3859,8 @@ class ConfigGeneral(Config):
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
+        
+        sickbeard.DEFAULT_PAGE = default_page
 
         sickbeard.save_config()
 

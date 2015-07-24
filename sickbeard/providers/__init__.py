@@ -50,6 +50,7 @@ __all__ = ['womble',
            'bluetigers',
            'cpasbien',
            'fnt',
+           'xthor',
            'scenetime',
            'btdigg',
 ]

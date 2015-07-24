@@ -318,7 +318,7 @@ def validateDir(path, dirName, nzbNameOriginal, failed, result):
                 os.path.realpath, sqlShow["location"]).lower():
             result.output += logHelper(
                 u"Cannot process an episode that's already been moved to its show dir, skipping " + dirName,
-                logger.ERROR)
+                logger.WARNING)
             return False
 
     # Get the videofile list for the next checks
