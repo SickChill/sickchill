@@ -5060,9 +5060,6 @@ class ErrorLogs(WebRoot):
 
     def viewlog(self, minLevel=logger.INFO, logFilter="<NONE>",logSearch=None, maxLines=500):
         
-        if sickbeard.DEBUG == 1:
-            minLevel = logger.DEBUG
-        
         def Get_Data(Levelmin, data_in, lines_in, regex, Filter, Search, mlines):
             
             lastLine = False
