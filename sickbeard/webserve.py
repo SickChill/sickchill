@@ -96,13 +96,13 @@ class html_entities(CheetahFilter):
                 filtered = unicode(val)
             except Exception:
                 try:
-                    filtered = unicode(val, sickbeard.SYS_ENCODING)
+                    filtered = unicode(val, 'utf-8')
                 except Exception:
                     try:
-                        filtered = unicode(val, 'utf-8')
+                        filtered = unicode(val, 'latin-1')
                     except Exception:
                         try:
-                            filtered = unicode(val, 'latin-1')
+                            filtered = unicode(val, sickbeard.SYS_ENCODING)
                         except Exception:
                             logger.log(u'Unable to decode using %s, utf-8, or latin-1. Falling back to chardet!' %
                                     sickbeard.SYS_ENCODING, logger.ERROR)
