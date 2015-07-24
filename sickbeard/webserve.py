@@ -3807,7 +3807,9 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
         sickbeard.GIT_USERNAME = git_username
         sickbeard.GIT_PASSWORD = git_password
-        sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        #sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        #Force GIT_RESET
+        sickbeard.GIT_RESET = 1        
         sickbeard.GIT_AUTOISSUES = config.checkbox_to_value(git_autoissues)
         sickbeard.GIT_PATH = git_path
         sickbeard.GIT_REMOTE = git_remote
