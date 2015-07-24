@@ -144,6 +144,7 @@ def remove_non_release_groups(name):
                        '^\[ www\.Cpasbien\.pw \] ': 'searchre',
                        '^\[ www\.Cpasbien\.com \] ': 'searchre',
                        '^\[www\.Cpasbien\.com\] ': 'searchre',
+                       '^\[www\.Cpasbien\.pe\] ': 'searchre',
                       }
 
     _name = name
