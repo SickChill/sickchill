@@ -1699,7 +1699,7 @@ class Home(WebRoot):
 
     def setStatus(self, show=None, eps=None, status=None, direct=False):
 
-        if show is None or eps is None or status is None:
+        if not all([show, eps, status]):
             errMsg = "You must specify a show and at least one episode"
             if direct:
                 ui.notifications.error('Error', errMsg)
@@ -1717,7 +1717,7 @@ class Home(WebRoot):
 
         showObj = sickbeard.helpers.findCertainShow(sickbeard.showList, int(show))
 
-        if showObj is None:
+        if not showObj:
             errMsg = "Error", "Show not in show list"
             if direct:
                 ui.notifications.error('Error', errMsg)
@@ -1727,18 +1727,25 @@ class Home(WebRoot):
 
         segments = {}
         trakt_data = []
-        if eps is not None:
+        if eps:
 
             sql_l = []
             for curEp in eps.split('|'):
+
+                if not curEp:
+                    logger.log(u"curEp was empty when trying to setStatus", logger.DEBUG)
 
                 logger.log(u"Attempting to set status on episode " + curEp + " to " + status, logger.DEBUG)
 
                 epInfo = curEp.split('x')
 
+                if not all(epInfo):
+                    logger.log(u"Something went wrong when trying to setStatus, epInfo[0]: %s, epInfo[1]: %s" % (epInfo[0], epInfo[1]), logger.DEBUG)
+                    continue
+
                 epObj = showObj.getEpisode(int(epInfo[0]), int(epInfo[1]))
 
-                if epObj is None:
+                if not epObj:
                     return self._genericMessage("Error", "Episode couldn't be retrieved")
 
                 if int(status) in [WANTED, FAILED]:
@@ -1754,16 +1761,14 @@ class Home(WebRoot):
                         logger.log(u"Refusing to change status of " + curEp + " because it is UNAIRED", logger.ERROR)
                         continue
 
-                    if int(
-                            status) in Quality.DOWNLOADED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + [
+                    if int(status) in Quality.DOWNLOADED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED + [
                         IGNORED] and not ek.ek(os.path.isfile, epObj.location):
                         logger.log(
                             u"Refusing to change status of " + curEp + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
                         continue
 
-                    if int(
-                            status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED:
+                    if int(status) == FAILED and epObj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.DOWNLOADED:
                         logger.log(
                             u"Refusing to change status of " + curEp + " to FAILED because it's not SNATCHED/DOWNLOADED",
                             logger.ERROR)
