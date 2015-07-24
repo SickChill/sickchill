@@ -427,7 +427,7 @@ def hardlinkFile(srcFile, destFile):
     try:
         ek.ek(link, srcFile, destFile)
         fixSetGroupID(destFile)
-    except Exception, e:
+    except Exception as e:
         logger.log(u"Failed to create hardlink of " + srcFile + " at " + destFile + ": " + ex(e) + ". Copying instead",
                    logger.ERROR)
         copyFile(srcFile, destFile)
@@ -459,16 +459,16 @@ def make_dirs(path):
     parents
     """
 
-    logger.log(u"Checking if the path " + path + " already exists", logger.DEBUG)
+    logger.log(u"Checking if the path %s already exists" % path, logger.DEBUG)
 
     if not ek.ek(os.path.isdir, path):
         # Windows, create all missing folders
         if os.name == 'nt' or os.name == 'ce':
             try:
-                logger.log(u"Folder " + path + " didn't exist, creating it", logger.DEBUG)
+                logger.log(u"Folder %s didn't exist, creating it" % path, logger.DEBUG)
                 ek.ek(os.makedirs, path)
-            except (OSError, IOError), e:
-                logger.log(u"Failed creating " + path + " : " + ex(e), logger.ERROR)
+            except (OSError, IOError) as e:
+                logger.log(u"Failed creating %s : %s" % (path, ex(e)), logger.ERROR)
                 return False
 
         # not Windows, create all missing folders and set permissions
@@ -485,14 +485,14 @@ def make_dirs(path):
                     continue
 
                 try:
-                    logger.log(u"Folder " + sofar + " didn't exist, creating it", logger.DEBUG)
+                    logger.log(u"Folder %s didn't exist, creating it" % sofar, logger.DEBUG)
                     ek.ek(os.mkdir, sofar)
                     # use normpath to remove end separator, otherwise checks permissions against itself
                     chmodAsParent(ek.ek(os.path.normpath, sofar))
                     # do the library update for synoindex
                     notifiers.synoindex_notifier.addFolder(sofar)
-                except (OSError, IOError), e:
-                    logger.log(u"Failed creating " + sofar + " : " + ex(e), logger.ERROR)
+                except (OSError, IOError) as e:
+                    logger.log(u"Failed creating %s : %s" % (sofar, ex(e)), logger.ERROR)
                     return False
 
     return True
@@ -533,10 +533,10 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     # move the file
     try:
-        logger.log(u"Renaming file from " + cur_path + " to " + new_path)
+        logger.log(u"Renaming file from %s to %s" % (cur_path, new_path))
         ek.ek(shutil.move, cur_path, new_path)
-    except (OSError, IOError), e:
-        logger.log(u"Failed renaming " + cur_path + " to " + new_path + ": " + ex(e), logger.ERROR)
+    except (OSError, IOError) as e:
+        logger.log(u"Failed renaming %s to %s : %s" % (cur_path, new_path, ex(e)), logger.ERROR)
         return False
 
     # clean up any old folders that are empty
@@ -571,7 +571,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 ek.ek(os.rmdir, check_empty_dir)
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
-            except OSError, e:
+            except OSError as e:
                 logger.log(u"Unable to delete " + check_empty_dir + ": " + repr(e) + " / " + str(e), logger.WARNING)
                 break
             check_empty_dir = ek.ek(os.path.dirname, check_empty_dir)
@@ -780,7 +780,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto  # @UnresolvedImport
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA, \
             serial  # @UnresolvedImport
-    except Exception, e:
+    except Exception as e:
         logger.log(u"pyopenssl module missing, please install for https access", logger.WARNING)
         return False
 
@@ -811,22 +811,22 @@ def backupVersionedFile(old_file, version):
 
     while not ek.ek(os.path.isfile, new_file):
         if not ek.ek(os.path.isfile, old_file):
-            logger.log(u"Not creating backup, " + old_file + " doesn't exist", logger.DEBUG)
+            logger.log(u"Not creating backup, %s doesn't exist" % old_file, logger.DEBUG)
             break
 
         try:
-            logger.log(u"Trying to back up " + old_file + " to " + new_file, logger.DEBUG)
+            logger.log(u"Trying to back up %s to %s" % (old_file, new_file), logger.DEBUG)
             shutil.copy(old_file, new_file)
             logger.log(u"Backup done", logger.DEBUG)
             break
-        except Exception, e:
-            logger.log(u"Error while trying to back up " + old_file + " to " + new_file + " : " + ex(e), logger.WARNING)
+        except Exception as e:
+            logger.log(u"Error while trying to back up %s to %s : %s" % (old_file, new_file, ex(e)), logger.WARNING)
             numTries += 1
             time.sleep(1)
             logger.log(u"Trying again.", logger.DEBUG)
 
         if numTries >= 10:
-            logger.log(u"Unable to back up " + old_file + " to " + new_file + " please do it manually.", logger.ERROR)
+            logger.log(u"Unable to back up %s to %s please do it manually." % (old_file, new_file), logger.ERROR)
             return False
 
     return True
@@ -839,7 +839,7 @@ def restoreVersionedFile(backup_file, version):
     restore_file = new_file + '.' + 'v' + str(version)
 
     if not ek.ek(os.path.isfile, new_file):
-        logger.log(u"Not restoring, " + new_file + " doesn't exist", logger.DEBUG)
+        logger.log(u"Not restoring, %s doesn't exist" % new_file, logger.DEBUG)
         return False
 
     try:
@@ -847,7 +847,7 @@ def restoreVersionedFile(backup_file, version):
             u"Trying to backup " + new_file + " to " + new_file + "." + "r" + str(version) + " before restoring backup",
             logger.DEBUG)
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
-    except Exception, e:
+    except Exception as e:
         logger.log(
             u"Error while trying to backup DB file " + restore_file + " before proceeding with restore: " + ex(e),
             logger.WARNING)
@@ -863,7 +863,7 @@ def restoreVersionedFile(backup_file, version):
             shutil.copy(restore_file, new_file)
             logger.log(u"Restore done", logger.DEBUG)
             break
-        except Exception, e:
+        except Exception as e:
             logger.log(u"Error while trying to restore " + restore_file + ": " + ex(e), logger.WARNING)
             numTries += 1
             time.sleep(1)
@@ -1258,9 +1258,9 @@ def touchFile(fname, atime=None):
             if e.errno == errno.ENOSYS:
                 logger.log(u"File air date stamping not available on your OS", logger.DEBUG)
             elif e.errno == errno.EACCES:
-                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: {0}".format(fname), logger.ERROR)
+                logger.log(u"File air date stamping failed(Permission denied). Check permissions for file: %s" % fname, logger.ERROR)
             else:
-                logger.log(u"File air date stamping failed. The error is: {0} and the message is: {1}.".format(e.errno, e.strerror), logger.ERROR)
+                logger.log(u"File air date stamping failed. The error is: %s." % ex(e), logger.ERROR)
             pass
 
     return False
@@ -1358,20 +1358,21 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
 
         return resp.status_code == 200
 
-    except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error in headURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
+    except requests.exceptions.HTTPError as e:
+        logger.log(u"HTTP error in headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
         pass
-    except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error to headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+    except requests.exceptions.ConnectionError as e:
+        logger.log(u"Connection error in headURL %s. Error: %s " % (url, ex(e)), logger.WARNING)
         pass
-    except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out accessing headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+    except requests.exceptions.Timeout as e:
+        logger.log(u"Connection timed out accessing headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
         pass
     except requests.exceptions.ContentDecodingError:
         logger.log(u"Content-Encoding was gzip, but content was not compressed. headURL: %s" % url, logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         pass
     except Exception as e:
-        logger.log(u"Unknown exception in headURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Unknown exception in headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         pass
 
@@ -1410,20 +1411,21 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
                         resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
                     return
 
-    except requests.exceptions.HTTPError, e:
-        logger.log(u"HTTP error in getURL {0}. Error: {1}".format(url,e.errno), logger.WARNING)
+    except requests.exceptions.HTTPError as e:
+        logger.log(u"HTTP error in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         return
-    except requests.exceptions.ConnectionError, e:
-        logger.log(u"Connection error to getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+    except requests.exceptions.ConnectionError as e:
+        logger.log(u"Connection error to getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         return
-    except requests.exceptions.Timeout, e:
-        logger.log(u"Connection timed out accessing getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+    except requests.exceptions.Timeout as e:
+        logger.log(u"Connection timed out accessing getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         return
     except requests.exceptions.ContentDecodingError:
         logger.log(u"Content-Encoding was gzip, but content was not compressed. getURL: %s" % url, logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return
     except Exception as e:
-        logger.log(u"Unknown exception in getURL {0}. Error: {1}".format(url,e.message), logger.WARNING)
+        logger.log(u"Unknown exception in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         return
 
@@ -1453,19 +1455,19 @@ def download_file(url, filename, session=None, headers={}):
             except:
                 logger.log(u"Problem setting permissions or writing file to: %s" % filename, logger.WARNING)
 
-    except requests.exceptions.HTTPError, e:
+    except requests.exceptions.HTTPError as e:
         _remove_file_failed(filename)
-        logger.log(u"HTTP error " + str(e.errno) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"HTTP error " + ex(e) + " while loading download URL " + url, logger.WARNING)
         return False
-    except requests.exceptions.ConnectionError, e:
+    except requests.exceptions.ConnectionError as e:
         _remove_file_failed(filename)
-        logger.log(u"Connection error " + str(e.message) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"Connection error " + ex(e) + " while loading download URL " + url, logger.WARNING)
         return False
-    except requests.exceptions.Timeout, e:
+    except requests.exceptions.Timeout as e:
         _remove_file_failed(filename)
-        logger.log(u"Connection timed out " + str(e.message) + " while loading download URL " + url, logger.WARNING)
+        logger.log(u"Connection timed out " + ex(e) + " while loading download URL " + url, logger.WARNING)
         return False
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         _remove_file_failed(filename)
         logger.log(u"Unable to save the file: " + ex(e), logger.WARNING)
         return False
@@ -1486,7 +1488,7 @@ def get_size(start_path='.'):
             try:
                 total_size += ek.ek(os.path.getsize, fp)
             except OSError as e:
-                logger.log('Unable to get size for file {filePath}. Error msg is: {errorMsg}'.format(filePath=fp, errorMsg=str(e)), logger.ERROR)
+                logger.log('Unable to get size for file %s Error: %s' % (fp, ex(e)), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
     return total_size
 
