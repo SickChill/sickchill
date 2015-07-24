@@ -142,6 +142,8 @@ def remove_non_release_groups(name):
                        '^\{ www\.SceneTime\.com \} - ': 'searchre',
                        '^\[ www\.TorrentDay\.com \] - ': 'searchre',
                        '^\[ www\.Cpasbien\.pw \] ': 'searchre',
+                       '^\[ www\.Cpasbien\.com \] ': 'searchre',
+                       '^\[www\.Cpasbien\.com\] ': 'searchre',
                       }
 
     _name = name
