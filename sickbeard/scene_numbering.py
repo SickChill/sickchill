@@ -463,15 +463,11 @@ def xem_refresh(indexer_id, indexer, force=False):
     
     @param indexer_id: int
     """
-    if indexer_id is None:
+    if not indexer_id or indexer_id < 1:
         return
 
     indexer_id = int(indexer_id)
     indexer = int(indexer)
-
-    # XEM API URL
-    url = "http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % (
-    indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
 
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
@@ -497,41 +493,48 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             from .scene_exceptions import xem_session
+
+            # XEM MAP URL
+            url = "http://thexem.de/map/havemap?origin=%s" % sickbeard.indexerApi(indexer).config['xem_origin']
             parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
-            if not parsedJSON or parsedJSON == '':
+            if not parsedJSON or 'result' not in parsedJSON or 'success' not in parsedJSON['result'] or 'data' not in parsedJSON or indexer_id not in parsedJSON['data']:
+                return
+
+            # XEM API URL
+            url = "http://thexem.de/map/all?id=%s&origin=%s&destination=scene" % indexer_id, sickbeard.indexerApi(indexer).config['xem_origin']
+
+            parsedJSON = sickbeard.helpers.getURL(url, session=xem_session, json=True)
+            if not parsedJSON or not 'result' in parsedJSON or not 'success' in parsedJSON['result']:
                 logger.log(u'No XEM data for show "%s on %s"' % (indexer_id, sickbeard.indexerApi(indexer).name,), logger.INFO)
                 return
 
-            if 'success' in parsedJSON['result']:
-                cl = []
-                for entry in parsedJSON['data']:
-                    if 'scene' in entry:
-                        cl.append([
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [entry['scene']['season'],
-                             entry['scene']['episode'],
-                             entry['scene']['absolute'],
-                             indexer_id,
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                            ]])
-                    if 'scene_2' in entry:  # for doubles
-                        cl.append([
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [entry['scene_2']['season'],
-                             entry['scene_2']['episode'],
-                             entry['scene_2']['absolute'],
-                             indexer_id,
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                             entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
-                            ]])
+            cl = []
+            for entry in parsedJSON['data']:
+                if 'scene' in entry:
+                    cl.append([
+                        "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
+                        [entry['scene']['season'],
+                         entry['scene']['episode'],
+                         entry['scene']['absolute'],
+                         indexer_id,
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
+                        ]])
+                if 'scene_2' in entry:  # for doubles
+                    cl.append([
+                        "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
+                        [entry['scene_2']['season'],
+                         entry['scene_2']['episode'],
+                         entry['scene_2']['absolute'],
+                         indexer_id,
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
+                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']
+                        ]])
 
-                if len(cl) > 0:
-                    myDB = db.DBConnection()
-                    myDB.mass_action(cl)
-            else:
-                logger.log(u"Empty lookup result - no XEM data for show %s on %s" % (
-                    indexer_id, sickbeard.indexerApi(indexer).name,), logger.DEBUG)
+            if len(cl) > 0:
+                myDB = db.DBConnection()
+                myDB.mass_action(cl)
+
         except Exception, e:
             logger.log(
                 u"Exception while refreshing XEM data for show " + str(indexer_id) + " on " + sickbeard.indexerApi(
