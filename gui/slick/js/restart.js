@@ -38,7 +38,7 @@ $(document).ready(function() {
 					$('#restart_loading').hide();
 					$('#restart_success').show();
 					$('#refresh_message').show();
-					setTimeout(function(){window.location = sbRoot + '/home/';}, 5000);
+					setTimeout(function(){window.location = sbRoot + '/' + sbDefaultPage + '/';}, 5000);
 				}
 			}
 			

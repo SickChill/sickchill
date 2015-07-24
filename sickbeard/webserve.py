@@ -129,6 +129,7 @@ class PageTemplate(CheetahTemplate):
         self.sbHttpsEnabled = sickbeard.ENABLE_HTTPS
         self.sbHandleReverseProxy = sickbeard.HANDLE_REVERSE_PROXY
         self.sbThemeName = sickbeard.THEME_NAME
+        self.sbDefaultPage = sickbeard.DEFAULT_PAGE
         self.sbLogin = rh.get_current_user()
 
         if rh.request.headers['Host'][0] == '[':
