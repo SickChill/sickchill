@@ -33,7 +33,7 @@ from sickbeard.exceptions import ex, AuthException
 from sickbeard.common import MULTI_EP_RESULT, SEASON_RESULT, USER_AGENT
 from sickbeard import db
 from sickbeard.name_parser.parser import NameParser, InvalidNameException, InvalidShowException
-from sickbeard.common import Quality
+from sickbeard.common import Quality, cpu_presets
 
 import jsonrpclib
 from datetime import datetime
@@ -144,6 +144,7 @@ class BTNProvider(generic.TorrentProvider):
 
         try:
             parsedJSON = server.getTorrents(apikey, params, int(results_per_page), int(offset))
+            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError, error:
             if error.message == 'Call Limit Exceeded':
