@@ -282,10 +282,8 @@ class WebHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self, *args, **kwargs):
 
-        default_page = sickbeard.DEFAULT_PAGE
-
         if self.get_current_user():
-            self.redirect('/' + default_page +'/')
+            self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
         else:
             t = PageTemplate(rh=self, file="login.tmpl")
             self.finish(t.respond())
@@ -296,7 +294,6 @@ class LoginHandler(BaseHandler):
 
         username = sickbeard.WEB_USERNAME
         password = sickbeard.WEB_PASSWORD
-        default_page = sickbeard.DEFAULT_PAGE
 
         if (self.get_argument('username') == username or not username) \
                 and (self.get_argument('password') == password or not password):
@@ -309,7 +306,7 @@ class LoginHandler(BaseHandler):
         else:
             logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)    
 
-        self.redirect('/' + default_page +'/')
+        self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
 
 class LogoutHandler(BaseHandler):
@@ -344,8 +341,7 @@ class WebRoot(WebHandler):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        default_page = sickbeard.DEFAULT_PAGE
-        return self.redirect('/' + default_page +'/')
+        return self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
 
     def robots_txt(self):
         """ Keep web crawlers out """
