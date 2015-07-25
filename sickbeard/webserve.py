@@ -458,6 +458,15 @@ class WebRoot(WebHandler):
 
         return self.redirect("/history/")
 
+    def setHistoryLimit(self, history_limit):
+
+        if not int(history_limit):
+            history_limit = 100
+
+        sickbeard.HISTORY_LIMIT = history_limit
+
+        return self.redirect("/history/")
+
     def toggleDisplayShowSpecials(self, show):
 
         sickbeard.DISPLAY_SHOW_SPECIALS = not sickbeard.DISPLAY_SHOW_SPECIALS
