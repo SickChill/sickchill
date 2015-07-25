@@ -216,22 +216,23 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def run(self):
         generic_queue.QueueItem.run(self)
 
-        try:
-            logger.log("Beginning backlog search for: [" + self.show.name + "]")
-            searchResult = search.searchProviders(self.show, self.segment, False)
+        if not self.show.paused:
+            try:
+                logger.log("Beginning backlog search for: [" + self.show.name + "]")
+                searchResult = search.searchProviders(self.show, self.segment, False)
 
-            if searchResult:
-                for result in searchResult:
-                    # just use the first result for now
-                    logger.log(u"Downloading " + result.name + " from " + result.provider.name)
-                    search.snatchEpisode(result)
+                if searchResult:
+                    for result in searchResult:
+                        # just use the first result for now
+                        logger.log(u"Downloading " + result.name + " from " + result.provider.name)
+                        search.snatchEpisode(result)
 
-                    # give the CPU a break
-                    time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
-            else:
-                logger.log(u"No needed episodes found during backlog search for: [" + self.show.name + "]")
-        except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+                        # give the CPU a break
+                        time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
+                else:
+                    logger.log(u"No needed episodes found during backlog search for: [" + self.show.name + "]")
+            except Exception:
+                logger.log(traceback.format_exc(), logger.DEBUG)
 
         self.finish()
 

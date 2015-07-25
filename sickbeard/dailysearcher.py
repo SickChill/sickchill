@@ -70,7 +70,7 @@ class DailySearcher():
                     show = helpers.findCertainShow(sickbeard.showList, int(sqlEp["showid"]))
 
                 # for when there is orphaned series in the database but not loaded into our showlist
-                if not show:
+                if not show or show.paused:
                     continue
 
             except exceptions.MultipleShowObjectsException:
@@ -91,9 +91,7 @@ class DailySearcher():
             UpdateWantedList = 0
             ep = show.getEpisode(int(sqlEp["season"]), int(sqlEp["episode"]))
             with ep.lock:
-                if ep.show.paused:
-                    ep.status = ep.show.default_ep_status
-                elif ep.season == 0:
+                if ep.season == 0:
                     logger.log(u"New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 elif sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
