@@ -61,7 +61,6 @@ $statusList.remove($int($whichStatus))
 $statusList.append($common.FAILED)
 #end if
 
-<select>
 #for $curStatus in $statusList:
 <option value="$curStatus">$common.statusStrings[$curStatus]</option>
 #end for
