@@ -18,11 +18,12 @@ sbHttpPort = "$curSBHttpPort";
 sbHttpsEnabled = "$curSBHttpsEnabled";
 sbHandleReverseProxy = "$curSBHandleReverseProxy";
 sbHost = "$curSBHost";
+sbDefaultPage = "$sbDefaultPage";
 //-->
 </script>
 
 <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.11.2.min.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/restart.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/restart.js?$sbPID&$sbDefaultPage"></script>
 
 #set themeSpinner = '-dark' if 'dark' == themeSpinner else ''
 <h2>Performing Restart</h2>
@@ -41,7 +42,7 @@ Waiting for SickRage to start again:
 </div>
 
 <div id="refresh_message" style="display: none;">
-Loading the home page:
+Loading the default page:
 <img src="$sbRoot/images/loading16${themeSpinner}.gif" height="16" width="16" id="refresh_loading" />
 </div>
 

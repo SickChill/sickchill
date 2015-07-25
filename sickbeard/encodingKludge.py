@@ -26,16 +26,19 @@ def _toUnicode(x):
             x = unicode(x)
         except Exception:
             try:
-                x = unicode(x, sickbeard.SYS_ENCODING)
+                x = unicode(x, 'utf-8')
             except Exception:
                 try:
-                   x = unicode(x, 'utf-8')
+                   x = unicode(x, 'latin-1')
                 except Exception:
                     try:
-                        x = unicode(x, 'latin-1')
+                        x = unicode(x, sickbeard.SYS_ENCODING)
                     except Exception:
-                        # Chardet can be wrong, so try it last
-                        x = unicode(x, chardet.detect(x).get('encoding'))
+                        try:
+                            # Chardet can be wrong, so try it last
+                            x = unicode(x, chardet.detect(x).get('encoding'))
+                        except Exception:
+                            x = unicode(x, sickbeard.SYS_ENCODING, 'replace')
     return x
 
 def ss(x):

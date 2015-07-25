@@ -145,6 +145,7 @@ def remove_non_release_groups(name):
                        '^\[ www\.Cpasbien\.com \] ': 'searchre',
                        '^\[www\.Cpasbien\.com\] ': 'searchre',
                        '^\[www\.Cpasbien\.pe\] ': 'searchre',
+                       '^\[www\.frenchtorrentdb\.com\] ': 'searchre',
                       }
 
     _name = name
@@ -1347,8 +1348,6 @@ def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, 
             logger.log(u"Requested headURL " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return False
-        else:
-            logger.log(u"Requested headURL " + url + " returned status code is " + str(resp.status_code) , logger.DEBUG)
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
@@ -1402,8 +1401,6 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
             logger.log(u"Requested getURL " + url + " returned status code is " + str(
                 resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
             return
-        else:
-            logger.log(u"Requested getURL " + url + " returned status code is " + str(resp.status_code), logger.DEBUG)
 
         if proxyGlypeProxySSLwarning is not None:
             if re.search('The site you are attempting to browse is on a secure connection', resp.text):
