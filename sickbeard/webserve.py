@@ -2197,7 +2197,7 @@ class HomeNews(Home):
         t.title = "News"
         t.header = "News"
         t.topmenu = "news"
-        t.data = markdown2.markdown(news)
+        t.data = markdown2.markdown(news if news else "The was a problem connecting to github, please refresh and try again")
 
         return t.respond()
 
@@ -2218,7 +2218,7 @@ class HomeChangeLog(Home):
         t.title = "Changelog"
         t.header = "Changelog"
         t.topmenu = "changes"
-        t.data = markdown2.markdown(changes)
+        t.data = markdown2.markdown(changes if changes else "The was a problem connecting to github, please refresh and try again")
 
         return t.respond()
 
