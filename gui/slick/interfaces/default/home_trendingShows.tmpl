@@ -86,9 +86,9 @@
 </script>
 
 #if $varExists('header')
-	<h1 class="header">$header</h1>
+    <h1 class="header">$header</h1>
 #else
-	<h1 class="title">$title</h1>
+    <h1 class="title">$title</h1>
 #end if
 
 <div id="tabs">
@@ -104,20 +104,20 @@
     </div>
     <br>
 
-	<span>Sort By:</span>
-	<select id="showsort" class="form-control form-control-inline input-sm">
-		<option value="name">Name</option>
-		<option value="original" selected="selected">Original</option>
-		<option value="votes">Votes</option>
-		<option value="rating">% Rating</option>
-		<option value="rating_votes">% Rating > Votes</option>
-	</select>
+    <span>Sort By:</span>
+    <select id="showsort" class="form-control form-control-inline input-sm">
+        <option value="name">Name</option>
+        <option value="original" selected="selected">Original</option>
+        <option value="votes">Votes</option>
+        <option value="rating">% Rating</option>
+        <option value="rating_votes">% Rating > Votes</option>
+    </select>
 
-	<span style="margin-left:12px">Sort Order:</span>
-	<select id="showsortdirection" class="form-control form-control-inline input-sm">
-		<option value="asc" selected="selected">Asc</option>
-		<option value="desc">Desc</option>
-	</select>
+    <span style="margin-left:12px">Sort Order:</span>
+    <select id="showsortdirection" class="form-control form-control-inline input-sm">
+        <option value="asc" selected="selected">Asc</option>
+        <option value="desc">Desc</option>
+    </select>
 </div>
 
 <br />

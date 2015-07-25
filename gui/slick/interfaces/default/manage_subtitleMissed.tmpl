@@ -11,9 +11,9 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 <div id="content960">
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 #if $whichSubs:
@@ -34,7 +34,7 @@ Manage episodes without <select name="whichSubs" class="form-control form-contro
 #end for
 </select>
 subtitles
-<input class="btn" type="submit" value="Manage" /> 
+<input class="btn" type="submit" value="Manage" />
 </form>
 
 #else
@@ -47,8 +47,8 @@ subtitles
 <br />
 Download missed subtitles for selected episodes <input class="btn btn-inline" type="submit" value="Go" />
 <div>
-	<button type="button" class="btn btn-xs selectAllShows">Select all</a></button> 
-	<button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
+    <button type="button" class="btn btn-xs selectAllShows">Select all</a></button>
+    <button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
 <br />
 <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">

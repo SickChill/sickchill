@@ -10,10 +10,10 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
-   #if $varExists('header') 
-   	<h1 class="header">$header</h1>
-   #else 
-   	<h1 class="title">$title</h1>
+   #if $varExists('header')
+       <h1 class="header">$header</h1>
+   #else
+       <h1 class="title">$title</h1>
    #end if
 
 $info_download_station

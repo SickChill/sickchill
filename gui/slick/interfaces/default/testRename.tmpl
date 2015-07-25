@@ -9,10 +9,10 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#if $varExists('header') 
-	<h1 class="header">$header</h1>
-#else 
-	<h1 class="title">$title</h1>
+#if $varExists('header')
+    <h1 class="header">$header</h1>
+#else
+    <h1 class="title">$title</h1>
 #end if
 
 <input type="hidden" id="showID" value="$show.indexerid" />
@@ -35,18 +35,18 @@
 
 
 <table id="SelectAllTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
-	<thead>
-		<tr class="seasonheader" id="season-all">
+    <thead>
+        <tr class="seasonheader" id="season-all">
             <td colspan="4">
                 <h2>All Seasons</h2>
             </td>
         </tr>
-		<tr class="seasoncols" id="selectall">
-    	    <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll" /></th>
-        	<th align="left" valign="top" class="nowrap">Select All</th>
-        	<th width="100%" class="col-name" style="visibility:hidden;"></th>
-		</tr>
-	</thead>
+        <tr class="seasoncols" id="selectall">
+            <th class="col-checkbox"><input type="checkbox" class="seriesCheck" id="SelectAll" /></th>
+            <th align="left" valign="top" class="nowrap">Select All</th>
+            <th width="100%" class="col-name" style="visibility:hidden;"></th>
+        </tr>
+    </thead>
 </table>
 
 <br/>
@@ -63,7 +63,7 @@
     <thead>
         <tr class="seasonheader" id="season-$cur_ep_obj.season">
             <td colspan="4">
-            	 <br/>
+                 <br/>
                 <h2>#if int($cur_ep_obj.season) == 0 then "Specials" else "Season "+str($cur_ep_obj.season)#</h2>
             </td>
         </tr>
@@ -83,7 +83,7 @@
 #if len($epList) > 1:
     #set $epList = [$min($epList), $max($epList)]
 #end if
-        <tr class="season-$curSeason 
+        <tr class="season-$curSeason
             #if $curLoc == $newLoc:
                 good
             #else
@@ -91,9 +91,9 @@
             #end if
         seasonstyle">
             <td class="col-checkbox">
-			#if $curLoc != $newLoc:
+            #if $curLoc != $newLoc:
                 <input type="checkbox" class="epCheck" id="<%=str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)%>" name="<%=str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode) %>" />
-			#end if
+            #end if
             </td>
             <td align="center" valign="top" class="nowrap"><%= "-".join(map(str, epList)) %></td>
             <td width="50%" class="col-name">$curLoc</td>

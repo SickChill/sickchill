@@ -11,16 +11,16 @@
 
 <script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
 <div id="content800">
-   #if $varExists('header') 
-   	<h1 class="header">$header</h1>
-   #else 
-   	<h1 class="title">$title</h1>
+   #if $varExists('header')
+       <h1 class="header">$header</h1>
+   #else
+       <h1 class="title">$title</h1>
    #end if
 
 <div id="summary2" class="align-left">
 <h3>Backlog Search:</h3>
 <a class="btn" href="$sbRoot/manage/manageSearches/forceBacklog"><i class="icon-exclamation-sign"></i> Force</a>
-<a class="btn" href="$sbRoot/manage/manageSearches/pauseBacklog?paused=#if $backlogPaused then "0" else "1"#"><i class="#if $backlogPaused then "icon-play" else "icon-pause"#"></i> #if $backlogPaused then "Unpause" else "Pause"#</a> 
+<a class="btn" href="$sbRoot/manage/manageSearches/pauseBacklog?paused=#if $backlogPaused then "0" else "1"#"><i class="#if $backlogPaused then "icon-play" else "icon-pause"#"></i> #if $backlogPaused then "Unpause" else "Pause"#</a>
 #if not $backlogRunning:
 Not in progress<br />
 #else:

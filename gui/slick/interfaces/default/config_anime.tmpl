@@ -13,25 +13,25 @@
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <div id="content960">
 #if $varExists('header')
-	<h1 class="header">$header</h1>
+    <h1 class="header">$header</h1>
 #else
-	<h1 class="title">$title</h1>
+    <h1 class="title">$title</h1>
 #end if
 <div id="config">
-	<div id="config-content">
+    <div id="config-content">
 
-		<form id="configForm" action="saveAnime" method="post">
+        <form id="configForm" action="saveAnime" method="post">
 
             <div id="config-components">
 
-			    <ul>
-                	<li><a href="#core-component-group1">AnimeDB Settings</a></li>
-					<li><a href="#core-component-group2">Look & Feel</a></li>
+                <ul>
+                    <li><a href="#core-component-group1">AnimeDB Settings</a></li>
+                    <li><a href="#core-component-group2">Look & Feel</a></li>
                 </ul>
-			
+
                 <div id="core-component-group1" class="tab-pane active component-group">
                     <div class="component-group-desc">
-						<img class="notifier-icon" src="$sbRoot/images/anidb24.png" alt="AniDB" title="AniDB" width="24" height="24" />
+                        <img class="notifier-icon" src="$sbRoot/images/anidb24.png" alt="AniDB" title="AniDB" width="24" height="24" />
                         <h3><a href="<%= anon_url('http://anidb.info') %>" onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
                         <p>AniDB is non-profit database of anime information that is freely open to the public</p>
                     </div>
@@ -44,42 +44,42 @@
                                 <span class="component-desc">Should Sick Beard use data from AniDB?</span>
                             </label>
                         </div>
-						
-						<div id="content_use_anidb">
-	                        <div class="field-pair">
-	                            <label class="nocheck">
-	                                <span class="component-title">AniDB Username</span>
-	                                <input type="text" name="anidb_username" id="anidb_username" value="$sickbeard.ANIDB_USERNAME" class="form-control input-sm input350" />
-	                            </label>
-	                            <label class="nocheck">
-	                                <span class="component-title">&nbsp;</span>
-	                                <span class="component-desc">Username of your AniDB account</span>
-	                            </label>
-	                        </div>
-	
-	                        <div class="field-pair">
-	                            <label class="nocheck">
-	                                <span class="component-title">AniDB Password</span>
-	                                <input type="password" name="anidb_password" id="anidb_password" value="$sickbeard.ANIDB_PASSWORD" class="form-control input-sm input350" />
-	                            </label>
-	                            <label class="nocheck">
-	                                <span class="component-title">&nbsp;</span>
-	                                <span class="component-desc">Password of your AniDB account</span>
-	                            </label>
-	                        </div>
-	                        <div class="field-pair">
-								<input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" #if $sickbeard.ANIDB_USE_MYLIST then "checked=\"checked\"" else ""# />
-	                            <label>
-	                                <span class="component-title">AniDB MyList</span>
-	                                <span class="component-desc">Do you want to add the PostProcessed Episodes to the MyList ?</span>
-	                            </label>
-	                        </div>
-						</div>
+
+                        <div id="content_use_anidb">
+                            <div class="field-pair">
+                                <label class="nocheck">
+                                    <span class="component-title">AniDB Username</span>
+                                    <input type="text" name="anidb_username" id="anidb_username" value="$sickbeard.ANIDB_USERNAME" class="form-control input-sm input350" />
+                                </label>
+                                <label class="nocheck">
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Username of your AniDB account</span>
+                                </label>
+                            </div>
+
+                            <div class="field-pair">
+                                <label class="nocheck">
+                                    <span class="component-title">AniDB Password</span>
+                                    <input type="password" name="anidb_password" id="anidb_password" value="$sickbeard.ANIDB_PASSWORD" class="form-control input-sm input350" />
+                                </label>
+                                <label class="nocheck">
+                                    <span class="component-title">&nbsp;</span>
+                                    <span class="component-desc">Password of your AniDB account</span>
+                                </label>
+                            </div>
+                            <div class="field-pair">
+                                <input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist" #if $sickbeard.ANIDB_USE_MYLIST then "checked=\"checked\"" else ""# />
+                                <label>
+                                    <span class="component-title">AniDB MyList</span>
+                                    <span class="component-desc">Do you want to add the PostProcessed Episodes to the MyList ?</span>
+                                </label>
+                            </div>
+                        </div>
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                     </fieldset>
 
                 </div><!-- /component-group //-->
-				
+
                 <div id="core-component-group2" class="tab-pane component-group">
 
                     <div class="component-group-desc">
@@ -96,13 +96,13 @@
                         <input type="submit" class="btn config_submitter" value="Save Changes" />
                    </fieldset>
                 </div><!-- /component-group //-->
-				
-				<br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
 
-			</div><!-- /config-components //-->
+                <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
 
-		</form>
-	</div>
+            </div><!-- /config-components //-->
+
+        </form>
+    </div>
 </div>
 
 

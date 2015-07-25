@@ -2,7 +2,7 @@
 #from sickbeard.common import *
 #from sickbeard import subtitles
 
-		#if $sickbeard.USE_SUBTITLES:
+        #if $sickbeard.USE_SUBTITLES:
         <br><div class="field-pair">
             <label for="subtitles" class="clearfix">
                 <span class="component-title">Subtitles</span>
@@ -13,7 +13,7 @@
             </label>
         </div>
         #end if
-        
+
         <div class="field-pair">
             <label for="statusSelect">
                 <span class="component-title">Status for previously aired episodes</span>
@@ -49,7 +49,7 @@
         </div>
 
 #if $enable_anime_options
-		<div class="field-pair alt">
+        <div class="field-pair alt">
             <label for="anime" class="clearfix">
                 <span class="component-title">Anime</span>
                 <span class="component-desc">
@@ -66,7 +66,7 @@
                 <span class="component-title">Scene Numbering</span>
                 <span class="component-desc">
                     <input type="checkbox" name="scene" id="scene" #if $sickbeard.SCENE_DEFAULT then "checked=\"checked\"" else ""# />
-				    <p>Is this show scene numbered?</p>
+                    <p>Is this show scene numbered?</p>
                 </span>
             </label>
         </div>
@@ -75,8 +75,8 @@
         #set global $anyQualities = $qualities[0]
         #set global $bestQualities = $qualities[1]
         #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
-		
-		<br>
+
+        <br>
         <div class="field-pair alt">
             <label for="saveDefaultsButton" class="nocheck clearfix">
                 <span class="component-title"><input class="btn btn-inline" type="button" id="saveDefaultsButton" value="Save Defaults" disabled="disabled" /></span>
@@ -86,9 +86,9 @@
             </label>
         </div><br>
 
-#if $enable_anime_options        
+#if $enable_anime_options
 #import sickbeard.blackandwhitelist
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
 #else
-		<input type="hidden" name="anime" id="anime" value="0" />
+        <input type="hidden" name="anime" id="anime" value="0" />
 #end if
