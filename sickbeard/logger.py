@@ -232,7 +232,7 @@ class Logger(object):
                 message += u"_STAFF NOTIFIED_: @SiCKRAGETV/owners @SiCKRAGETV/moderators"
 
                 title_Error = u"[APP SUBMITTED]: " + title_Error
-                reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues()
+                reports = gh.get_organization(gh_org).get_repo(gh_repo).get_issues(state="all")
 
                 issue_found = False
                 issue_id = 0
