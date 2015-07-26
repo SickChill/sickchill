@@ -232,7 +232,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
                 except (AttributeError, TypeError, KeyError, ValueError):
                     continue
 
-                if not title or not url or not seeders or not leechers or not size or \
+                if not title or not url or not seeders or leechers is None or not size or \
                         seeders < self.minseed or leechers < self.minleech:
                     continue
 
