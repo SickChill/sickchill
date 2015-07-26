@@ -57,7 +57,13 @@ class DBConnection(object):
                 db_locks[self.filename] = threading.Lock()
 
                 self.connection = sqlite3.connect(dbFilename(self.filename, self.suffix), 20, check_same_thread=False)
-                self.connection.text_factory = self._unicode_text_factory
+
+                # Lets test without this for awhile. If non-unicode data is getting to the DB, fix it at the source.
+                # There are too many places we convert when we don't need to, 
+                # sqlite, browsers, python, everything understands unicode
+
+                #self.connection.text_factory = self._unicode_text_factory
+
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]

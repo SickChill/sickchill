@@ -183,11 +183,6 @@ class Logger(object):
 
             # parse and submit errors to issue tracker
             for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
-                #Skip SSL Error, we pointed them to a URL.
-                if re.search('http://git.io/vJrkM', curError.message):
-                    classes.ErrorViewer.errors.remove(curError)
-                    continue
-
                 try:
                     title_Error = str(curError.title)
                     if not len(title_Error) or title_Error == 'None':
