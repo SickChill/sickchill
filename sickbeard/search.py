@@ -397,6 +397,10 @@ def searchForNeededEpisodes():
 
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
+            if not curEp.show or curEp.show.paused:
+                logger.log(u"Skipping %s because the show is paused " % curEp.prettyName(), logger.DEBUG)
+                continue
+
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
             # if all results were rejected move on to the next episode
