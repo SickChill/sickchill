@@ -344,7 +344,6 @@
 
 <table #if not $show.is_anime then "id=\"showTable\"" else "id=\"animeTable\""# class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
 #set $curSeason = -1
-#set $seasonCount = 0
 #set $odd = 0
     #for $epResult in $sqlResults:
         #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
@@ -408,10 +407,25 @@
                 <th data-sorter="false" class="col-search">Search</th>        
         </tr>
     </thead>            
-    <tbody class="tablesorter-no-sort">      
-        <tr>
-            <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;">          
-                <h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+    <tbody class="tablesorter-no-sort">
+        <tr style="height: 60px;">
+            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
+                <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
+                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
+                    <script type="text/javascript">
+                    <!--
+                        \$(function() {
+                            \$('#collapseSeason-$epResult['season']').on('hide.bs.collapse', function () {
+                                \$('#showseason-$epResult['season']').text('Show Episodes');
+                            })
+                            \$('#collapseSeason-$epResult['season']').on('show.bs.collapse', function () {
+                                \$('#showseason-$epResult['season']').text('Hide Episodes');
+                            })
+                        });
+                    //-->
+                    </script>
+                #end if
             </th>
         </tr>
     </tbody>
@@ -435,28 +449,25 @@
         </tr>
             #else:
     </tbody>
-    <tbody class="tablesorter-no-sort">       
-        <tr>
-                <th class="row-seasonheader displayShowTable" colspan="13" style="width: auto;">
-                    <div class="pull-left"> <h3><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3></div>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False and $seasonCount >= 1:
-                    <div class="pull-right">
-                        <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']"><span class="sgicon-arrowdown"></span> Show Episodes</button>
+    <tbody class="tablesorter-no-sort">
+        <tr style="height: 60px;">
+            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
+                <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
+                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
                     <script type="text/javascript">
                     <!--
                         \$(function() {
                             \$('#collapseSeason-$epResult['season']').on('hide.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').html('<span class="sgicon-arrowdown"></span> Show Episodes');
+                                \$('#showseason-$epResult['season']').text('Show Episodes');
                             })
                             \$('#collapseSeason-$epResult['season']').on('show.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').html('<span class="sgicon-arrowup"></span> Hide Episodes');
+                                \$('#showseason-$epResult['season']').text('Hide Episodes');
                             })
                         });
                     //-->
                     </script>
-                    </div>                    
                 #end if
-
             </th>
         </tr>
     </tbody>
@@ -480,9 +491,8 @@
         </tr>                    
             #end if
     </tbody>
-                #set $seasonCount = $seasonCount + 1
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False and $seasonCount >= 2:
-    <tbody class="collapse" id="collapseSeason-$epResult['season']">
+                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
+    <tbody class="collapse#if $curSeason == -1 then ' in' else ''#" id="collapseSeason-$epResult['season']">
                 #else
     <tbody>
                 #end if  
