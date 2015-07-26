@@ -365,7 +365,7 @@ class GenericProvider:
                 # get season search results
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
-            else:
+            elif search_mode == 'eponly':
                 # get single episode search results
                 for curString in self._get_episode_search_strings(epObj):
                     itemList += self._doSearch(curString, 'eponly', len(episodes), epObj=epObj)
