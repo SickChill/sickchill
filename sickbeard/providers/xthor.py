@@ -57,6 +57,7 @@ class XthorProvider(generic.TorrentProvider):
         self.enabled = False
         self.username = None
         self.password = None
+        self.ratio = None
         
     def isEnabled(self):
         return self.enabled
