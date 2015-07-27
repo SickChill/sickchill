@@ -178,7 +178,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
 
         # check for auth
         if not self._doLogin():
-            return False
+            return results
 
         for mode in search_params.keys():
 
@@ -244,7 +244,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
         )
 
         if not sqlResults:
-            return []
+            return results
 
         for sqlshow in sqlResults:
             self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
@@ -261,23 +261,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
     def seedRatio(self):
         return self.ratio
 
-    def headURL(self, result):
-        """
-        Check if URL is valid and the file exists at URL.
-        Original function overwritten because FrenchTorrentDB links only support one request
-        """
 
-        # check for auth
-        if not self._doLogin():
-            return False
-
-        urls, filename = self._makeURL(result)
-
-        for url in urls:
-                return url
-
-        return u''
-        
     def _get_season_search_strings(self, ep_obj):
 
         search_string = {'Season': []}

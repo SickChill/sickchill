@@ -165,7 +165,7 @@ class LibertaliaProvider(generic.TorrentProvider):
         
         # check for auth
         if not self._doLogin():
-            return False
+            return results
             
         for mode in search_params.keys():
 

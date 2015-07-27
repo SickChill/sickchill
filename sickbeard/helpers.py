@@ -1333,53 +1333,6 @@ def _setUpSession(session, headers):
 
     return session
 
-def headURL(url, params=None, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
-    """
-    Checks if URL is valid, without reading it
-    """
-
-    session = _setUpSession(session, headers)
-    session.params = params
-
-    try:
-        resp = session.head(url, timeout=timeout, allow_redirects=True, verify=session.verify)
-
-        if not resp.ok:
-            logger.log(u"Requested headURL " + url + " returned status code is " + str(
-                resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-            return False
-
-        if proxyGlypeProxySSLwarning is not None:
-            if re.search('The site you are attempting to browse is on a secure connection', resp.text):
-                resp = session.head(proxyGlypeProxySSLwarning, timeout=timeout, allow_redirects=True, verify=session.verify)
-
-                if not resp.ok:
-                    logger.log(u"GlypeProxySSLwarning: Requested headURL " + url + " returned status code is " + str(
-                        resp.status_code) + ': ' + codeDescription(resp.status_code), logger.DEBUG)
-                    return False
-
-        return resp.status_code == 200
-
-    except requests.exceptions.HTTPError as e:
-        logger.log(u"HTTP error in headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
-        pass
-    except requests.exceptions.ConnectionError as e:
-        logger.log(u"Connection error in headURL %s. Error: %s " % (url, ex(e)), logger.WARNING)
-        pass
-    except requests.exceptions.Timeout as e:
-        logger.log(u"Connection timed out accessing headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
-        pass
-    except requests.exceptions.ContentDecodingError:
-        logger.log(u"Content-Encoding was gzip, but content was not compressed. headURL: %s" % url, logger.DEBUG)
-        logger.log(traceback.format_exc(), logger.DEBUG)
-        pass
-    except Exception as e:
-        logger.log(u"Unknown exception in headURL %s. Error: %s" % (url, ex(e)), logger.WARNING)
-        logger.log(traceback.format_exc(), logger.WARNING)
-        pass
-
-    return False
-
 
 def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None, json=False, proxyGlypeProxySSLwarning=None):
     """

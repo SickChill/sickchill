@@ -188,34 +188,6 @@ class GenericProvider:
         return (urls, filename)
 
 
-    def headURL(self, result):
-        """
-        Check if URL is valid and the file exists at URL
-        """
-
-        # check for auth
-        if not self._doLogin():
-            return False
-
-        urls, filename = self._makeURL(result)
-
-        if self.proxy.isEnabled():
-            self.headers.update({'Referer': self.proxy.getProxyURL()})
-            self.proxyGlypeProxySSLwarning = self.proxy.getProxyURL() + 'includes/process.php?action=sslagree&submit=Continue anyway...'
-        else:
-            if 'Referer' in self.headers:
-                self.headers.pop('Referer')
-            self.proxyGlypeProxySSLwarning = None
-
-        for url in urls:
-            if 'NO_DOWNLOAD_NAME' in url:
-                continue
-            if helpers.headURL(self.proxy._buildURL(url), session=self.session, headers=self.headers,
-                               proxyGlypeProxySSLwarning=self.proxyGlypeProxySSLwarning):
-                return url
-
-        return u''
-
     def downloadResult(self, result):
         """
         Save the result to disk.
@@ -365,7 +337,7 @@ class GenericProvider:
                 # get season search results
                 for curString in self._get_season_search_strings(epObj):
                     itemList += self._doSearch(curString, search_mode, len(episodes), epObj=epObj)
-            else:
+            elif search_mode == 'eponly':
                 # get single episode search results
                 for curString in self._get_episode_search_strings(epObj):
                     itemList += self._doSearch(curString, 'eponly', len(episodes), epObj=epObj)
@@ -488,7 +460,7 @@ class GenericProvider:
                 logger.log(
                     u"Ignoring result " + title + " because we don't want an episode that is " +
                     Quality.qualityStrings[
-                        quality], logger.DEBUG)
+                        quality], logger.INFO)
 
                 continue
 
