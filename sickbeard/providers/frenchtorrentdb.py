@@ -178,7 +178,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
 
         # check for auth
         if not self._doLogin():
-            return False
+            return results
 
         for mode in search_params.keys():
 
@@ -244,7 +244,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
         )
 
         if not sqlResults:
-            return []
+            return results
 
         for sqlshow in sqlResults:
             self.show = helpers.findCertainShow(sickbeard.showList, int(sqlshow["showid"]))
@@ -269,7 +269,7 @@ class FrenchTorrentDBProvider(generic.TorrentProvider):
 
         # check for auth
         if not self._doLogin():
-            return False
+            return u''
 
         urls, filename = self._makeURL(result)
 
