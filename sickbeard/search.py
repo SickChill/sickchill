@@ -237,14 +237,6 @@ def pickBestResult(results, show):
                 logger.log(cur_result.name + u" has previously failed, rejecting it")
                 continue
 
-        # Only request HEAD instead of downloading content here, and only after all other checks but before bestresult!
-        # Otherwise we are spamming providers even when searching with cache only. We can validate now, and download later
-        if len(cur_result.url) and cur_result.provider:
-            cur_result.url = cur_result.provider.headURL(cur_result)
-            if not len(cur_result.url):
-                logger.log('Skipping %s, URL check failed. Bad result from provider.' % cur_result.name,logger.INFO) 
-                continue
-
         if cur_result.quality in bestQualities and (not bestResult or bestResult.quality < cur_result.quality or bestResult not in bestQualities):
             bestResult = cur_result
         elif cur_result.quality in anyQualities and (not bestResult or bestResult not in bestQualities) and (not bestResult or bestResult.quality < cur_result.quality):
