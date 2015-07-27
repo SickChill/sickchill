@@ -287,7 +287,7 @@ class IPTorrentsProvider(generic.TorrentProvider):
                 logger.log(
                     u"Ignoring result " + title + " because we don't want an episode that is " +
                     Quality.qualityStrings[
-                        quality], logger.DEBUG)
+                        quality], logger.INFO)
 
                 continue
 
