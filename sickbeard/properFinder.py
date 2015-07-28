@@ -21,6 +21,8 @@ import datetime
 import operator
 import threading
 import traceback
+import re
+
 from search import pickBestResult
 
 import sickbeard
