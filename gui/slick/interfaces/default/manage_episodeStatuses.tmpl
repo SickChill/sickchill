@@ -11,10 +11,10 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 <div id="content960">
-#if $varExists('header') 
-	<h1 class="header">$header</h1>
-#else 
-	<h1 class="title">$title</h1>
+#if $varExists('header')
+    <h1 class="header">$header</h1>
+#else
+    <h1 class="title">$title</h1>
 #end if
 
 #if not $whichStatus or ($whichStatus and not $ep_counts):
@@ -30,7 +30,7 @@ Manage episodes with status <select name="whichStatus" class="form-control form-
 <option value="$curStatus">$common.statusStrings[$curStatus]</option>
 #end for
 </select>
-<input class="btn btn-inline" type="submit" value="Manage" /> 
+<input class="btn btn-inline" type="submit" value="Manage" />
 </form>
 
 #else
@@ -68,8 +68,8 @@ $statusList.append($common.FAILED)
 <input class="btn btn-inline" type="submit" value="Go" />
 
 <div>
-	<button type="button" class="btn btn-xs selectAllShows">Select all</a></button> 
-	<button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
+    <button type="button" class="btn btn-xs selectAllShows">Select all</a></button>
+    <button type="button" class="btn btn-xs unselectAllShows">Clear all</a></button>
 </div>
 <br />
 

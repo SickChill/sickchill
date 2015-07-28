@@ -12,10 +12,10 @@
 
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#if $varExists('header') 
-	<h1 class="header">$header</h1>
-#else 
-	<h1 class="title">$title</h1>
+#if $varExists('header')
+    <h1 class="header">$header</h1>
+#else
+    <h1 class="title">$title</h1>
 #end if
 
 <div id="addShowPortal">
@@ -28,8 +28,8 @@
         </div>
     </a>
 
-	<br/><br/>
-    #if $sickbeard.USE_TRAKT == True:	
+    <br/><br/>
+    #if $sickbeard.USE_TRAKT == True:
     <a href="$sbRoot/home/addShows/trendingShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addtrendingshow"></div></div>
         <div class="buttontext">
@@ -40,7 +40,7 @@
 
     <br/><br/>
 
-	<a href="$sbRoot/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
+    <a href="$sbRoot/home/addShows/recommendedShows/" id="btnNewShow" class="btn btn-large">
         <div class="button"><div class="icon-addrecommendedshow"></div></div>
         <div class="buttontext">
             <h3>Add Recommended Shows</h3>
@@ -49,7 +49,7 @@
     </a>
 
     <br/><br/>
-	#end if
+    #end if
     <a href="$sbRoot/home/addShows/existingShows/" id="btnExistingShow" class="btn btn-large">
         <div class="button"><div class="icon-addexistingshow"></div></div>
         <div class="buttontext">

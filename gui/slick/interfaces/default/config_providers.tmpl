@@ -12,9 +12,9 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 <script type="text/javascript" src="$sbRoot/js/configProviders.js?$sbPID"></script>
@@ -58,9 +58,9 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                   #end if
                   #if $sickbeard.USE_TORRENTS
                     <li><a href="#core-component-group4">Configure Custom Torrent Providers</a></li>
-                  #end if                  
+                  #end if
                 </ul>
-                
+
                 <div id="core-component-group1" class="component-group" style='min-height: 550px;'>
 
                     <div class="component-group-desc">
@@ -112,7 +112,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <p>Configure individual provider settings here.</p>
                         <p>Check with provider's website on how to obtain an API key if needed.</p>
                     </div>
-                    
+
                     <fieldset class="component-group-list">
                         <div class="field-pair">
                             <label for="editAProvider" id="provider-list">
@@ -128,7 +128,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                         $provider_config_list.append($curProvider)
                                     #end for
 
-                                    #if $provider_config_list:                                        
+                                    #if $provider_config_list:
                                     <select id="editAProvider" class="form-control input-sm">
                                         #for $cur_provider in $provider_config_list:
                                             <option value="$cur_provider.getID()">$cur_provider.name</option>
@@ -175,7 +175,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
-                        
+
                         #if $hasattr($curNewznabProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_enable_backlog">
@@ -208,7 +208,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                     <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
                                 </span>
                             </label>
-                            <label> 
+                            <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
@@ -262,7 +262,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
-                        
+
                         #if $hasattr($curNzbProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_enable_backlog">
@@ -295,13 +295,13 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                     <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
                                 </span>
                             </label>
-                            <label> 
+                            <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" #if $curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
                                 </span>
                             </label>
-                            <label> 
+                            <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" #if $curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
@@ -443,7 +443,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
-                        
+
                         #if $hasattr($curTorrentProvider, 'sorting'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_sorting">
@@ -509,7 +509,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                         </div>
                         #end if
-                        
+
                         #if $hasattr($curTorrentProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_enable_backlog">
@@ -542,13 +542,13 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                     <p>when searching for complete seasons you can choose to have it look for season packs only, or choose to have it build a complete season from just single episodes.</p>
                                 </span>
                             </label>
-                            <label> 
+                            <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
                                 </span>
                             </label>
-                            <label> 
+                            <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
                                     <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" #if $curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
@@ -591,7 +591,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                     <!-- end div for editing providers -->
 
                     <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
-            
+
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
@@ -639,7 +639,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 <span class="component-desc">(if not required, type 0)</span>
                             </label>
                         </div>
-                        
+
                         <div class="field-pair" id="newznabcapdiv">
                             <label>
                                 <span class="component-title">Newznab search categories:</span>
@@ -648,7 +648,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">(select your Newznab categories on the left, and click the "update categories" button to use them for searching.) <b>don't forget to to save the form!</b></span>                                
+                                <span class="component-desc">(select your Newznab categories on the left, and click the "update categories" button to use them for searching.) <b>don't forget to to save the form!</b></span>
                             </label>
                             <label>
                                 <span class="component-title">&nbsp;</span>
@@ -657,13 +657,13 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 </span>
                             </label>
                         </div>
-                        
+
                         <div id="newznab_add_div">
                             <input class="btn" type="button" class="newznab_save" id="newznab_add" value="Add" />
                         </div>
                         <div id="newznab_update_div" style="display: none;">
                             <input class="btn btn-danger newznab_delete" type="button" class="newznab_delete" id="newznab_delete" value="Delete" />
-                        </div> 
+                        </div>
                     </div>
 
                     </fieldset>
@@ -737,7 +737,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
             #end if
 
             <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
-                
+
             </div><!-- /config-components //-->
 
         </form>
