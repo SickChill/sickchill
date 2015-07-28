@@ -215,21 +215,12 @@ def log_found_guess(guess, logger=None):
                               (k, v, guess.raw(k), guess.confidence(k)))
 
 
-def _get_split_spans(node, span):
-    partition_spans = node.get_partition_spans(span)
-    for to_remove_span in partition_spans:
-        if to_remove_span[0] == span[0] and to_remove_span[1] in [span[1], span[1] + 1]:
-            partition_spans.remove(to_remove_span)
-            break
-    return partition_spans
-
-
 class GuessFinder(object):
     def __init__(self, guess_func, confidence=None, logger=None, options=None):
         self.guess_func = guess_func
         self.confidence = confidence
         self.logger = logger or log
-        self.options = options
+        self.options = options or {}
 
     def process_nodes(self, nodes):
         for node in nodes:
@@ -242,67 +233,71 @@ class GuessFinder(object):
             value = node.value
         string = ' %s ' % value  # add sentinels
 
-        if not self.options:
-            matcher_result = self.guess_func(string, node)
+        matcher_result = self.guess_func(string, node, self.options)
+        if not matcher_result:
+            return
+
+        if not isinstance(matcher_result, Guess):
+            result, span = matcher_result
         else:
-            matcher_result = self.guess_func(string, node, self.options)
+            result, span = matcher_result, matcher_result.metadata().span
+            #log.error('span2 %s' % (span,))
 
-        if matcher_result:
-            if not isinstance(matcher_result, Guess):
-                result, span = matcher_result
-            else:
-                result, span = matcher_result, matcher_result.metadata().span
+        if not result:
+            return
 
-            if result:
-                # readjust span to compensate for sentinels
-                span = (span[0] - 1, span[1] - 1)
+        if span[1] == len(string):
+            # somehow, the sentinel got included in the span. Remove it
+            span = (span[0], span[1] - 1)
 
-                # readjust span to compensate for partial_span
-                if partial_span:
-                    span = (span[0] + partial_span[0], span[1] + partial_span[0])
+        # readjust span to compensate for sentinels
+        span = (span[0] - 1, span[1] - 1)
 
-                partition_spans = None
-                if self.options and 'skip_nodes' in self.options:
-                    skip_nodes = self.options.get('skip_nodes')
-                    for skip_node in skip_nodes:
-                        if skip_node.parent.node_idx == node.node_idx[:len(skip_node.parent.node_idx)] and\
-                            skip_node.span == span or\
-                                skip_node.span == (span[0] + skip_node.offset, span[1] + skip_node.offset):
-                            if partition_spans is None:
-                                partition_spans = _get_split_spans(node, skip_node.span)
-                            else:
-                                new_partition_spans = []
-                                for partition_span in partition_spans:
-                                    tmp_node = MatchTree(value, span=partition_span, parent=node)
-                                    tmp_partitions_spans = _get_split_spans(tmp_node, skip_node.span)
-                                    new_partition_spans.extend(tmp_partitions_spans)
-                                partition_spans.extend(new_partition_spans)
+        # readjust span to compensate for partial_span
+        if partial_span:
+            span = (span[0] + partial_span[0], span[1] + partial_span[0])
 
-                if not partition_spans:
-                    # restore sentinels compensation
-
-                    if isinstance(result, Guess):
-                        guess = result
-                    else:
-                        guess = Guess(result, confidence=self.confidence, input=string, span=span)
-
-                    if not iterative:
-                        found_guess(node, guess, logger=self.logger)
-                    else:
-                        absolute_span = (span[0] + node.offset, span[1] + node.offset)
-                        node.partition(span)
-                        if node.is_leaf():
-                            found_guess(node, guess, logger=self.logger)
-                        else:
-                            found_child = None
-                            for child in node.children:
-                                if child.span == absolute_span:
-                                    found_guess(child, guess, logger=self.logger)
-                                    found_child = child
-                                    break
-                            for child in node.children:
-                                if child is not found_child:
-                                    self.process_node(child)
-                else:
+        skip_nodes = self.options.get('skip_nodes')
+        if skip_nodes:
+            # if we guessed a node that we need to skip, recurse down the tree and ignore that node
+            for skip_node in skip_nodes:
+                skip_node_relative_span = (skip_node.span[0] - node.offset, skip_node.span[1] - node.offset)
+                if skip_node_relative_span == span:
+                    partition_spans = [s for s in node.get_partition_spans(span) if s != skip_node.span]
                     for partition_span in partition_spans:
-                        self.process_node(node, partial_span=partition_span)
+                        relative_span = (partition_span[0] - node.offset, partition_span[1] - node.offset)
+                        self.process_node(node, partial_span=relative_span)
+                    return
+
+
+        # restore sentinels compensation
+        if isinstance(result, Guess):
+            guess = result
+        else:
+            guess = Guess(result, confidence=self.confidence, input=string, span=span)
+
+        if not iterative:
+            found_guess(node, guess, logger=self.logger)
+        else:
+            absolute_span = (span[0] + node.offset, span[1] + node.offset)
+            node.partition(span)
+
+            if node.is_leaf():
+                # FIXME: this seems like it is dead code...
+                found_guess(node, guess, logger=self.logger)
+
+            else:
+                found_child = None
+
+                for child in node.children:
+                    if child.span == absolute_span:
+                        # if we have a match on one of our children, mark it as such...
+                        found_guess(child, guess, logger=self.logger)
+                        found_child = child
+                        break
+
+                # ...and only then recurse on the other children
+                for child in node.children:
+                    if child is not found_child:
+                        self.process_node(child)
+
