@@ -111,7 +111,7 @@ $(document).ready(function () {
 		var target = $( this ).attr('href');
 		$.confirm({
 			'title'		: 'Submit Errors',
-			'message'	: 'Are you sure you want to submit these errors ?<br /><br /><span class="red-text">You should trigger this error with debug enabled before submitting</span>',
+			'message'	: 'Are you sure you want to submit these errors ?<br /><br /><span class="red-text">Make sure SickRage is updated and trigger<br /> this error with debug enabled before submitting</span>',
 			'buttons'	: {
 				'Yes'	: {
 					'class' : 'green',
