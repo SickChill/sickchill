@@ -1779,7 +1779,7 @@ class TVEpisode(object):
         if not ek.ek(os.path.isfile, self.location):
             if  self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
                 logger.log(u"Episode airs in the future or has no airdate, marking it %s" % statusStrings[UNAIRED], logger.DEBUG)
-                self.status = UNAIRED if self.season > 0 else SKIPPED # Some specials have no airdate
+                self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
                 logger.log(u"Episode has already aired, marking it %s" % statusStrings[self.show.default_ep_status], logger.DEBUG)
