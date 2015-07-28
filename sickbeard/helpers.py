@@ -1396,7 +1396,7 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         return
 
     attempts = 0
-    while(gzip and len(response.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3):
+    while(gzip and len(resp.content) > 1 and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3):
         attempts += 1
         resp._content = gzip.GzipFile(fileobj=_StringIO(resp.content)).read()
 
