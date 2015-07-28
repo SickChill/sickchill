@@ -9,11 +9,11 @@
 
         <script type="text/javascript" charset="utf-8">
         <!--
-            sbRoot = "$sbRoot";
+            sbRoot = '${sbRoot}';
         //-->
         </script>
-        <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.11.2.min.js?$sbPID"></script>
-        <script type="text/javascript" src="$sbRoot/js/apibuilder.js?$sbPID"></script>
+        <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
+        <script type="text/javascript" src="${sbRoot}/js/apibuilder.js?${sbPID}"></script>
 
         <style type="text/css">
         <!--
@@ -80,9 +80,9 @@ addList("Command", "Shows", "?cmd=shows", "shows");
 addOption("Command", "Shows.Stats", "?cmd=shows.stats", "", "", "action");
 
 // addOption("indexerid", "Optional Param", "", 1);
-#for $curShow in $sortedShowList:
-addOption("indexerid", "$curShow.name", "&indexerid=$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addOption("indexerid", "${curShow.name}", "&indexerid=${curShow.indexerid}");
+% endfor
 
 addOption("logs", "Optional Param", "", 1);
 addOption("logs", "Debug", "&min_level=debug");
@@ -180,20 +180,20 @@ addOption("sb.searchindexers-lang", "Spanish", "&lang=es");   // 16
 addOption("sb.searchindexers-lang", "Swedish", "&lang=sv");   // 8
 addOption("sb.searchindexers-lang", "Turkish", "&lang=tr");   // 21
 
-#for $curShow in $sortedShowList:
-addList("seasons", "$curShow.name", "&indexerid=$curShow.indexerid", "seasons-$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addList("seasons", "${curShow.name}", "&indexerid=${curShow.indexerid}", "seasons-${curShow.indexerid}");
+% endfor
 
-#for $curShow in $sortedShowList:
-addList("show.seasonlist", "$curShow.name", "&indexerid=$curShow.indexerid", "show.seasonlist-sort");
-#end for
+% for curShow in sortedShowList:
+addList("show.seasonlist", "${curShow.name}", "&indexerid=${curShow.indexerid}", "show.seasonlist-sort");
+% endfor
 
 addOption("show.seasonlist-sort", "Optional Param", "", 1);
 addOption("show.seasonlist-sort", "Sort by Ascending", "&sort=asc");
 
-#for $curShow in $sortedShowList:
-addList("show.setquality", "$curShow.name", "&indexerid=$curShow.indexerid", "quality");
-#end for
+% for curShow in sortedShowList:
+addList("show.setquality", "${curShow.name}", "&indexerid=${curShow.indexerid}", "quality");
+% endfor
 
 //build out generic quality options
 addOptGroup("quality", "Quality Templates");
@@ -237,59 +237,59 @@ addList("quality-archive", "720p Web-DL/720p BluRay", "&archive=hdwebdl|hdbluray
 endOptGroup("quality-archive");
 
 // build out each show's season list for season cmd
-#for $curShow in $seasonSQLResults:
+% for curShow in seasonSQLResults:
 addOption("seasons-$curShow", "Optional Param", "", 1);
-    #for $curShowSeason in $seasonSQLResults[$curShow]:
-addOption("seasons-$curShow", "$curShowSeason.season", "&season=$curShowSeason.season");
-    #end for
-#end for
+    % for curShowSeason in seasonSQLResults[curShow]:
+addOption("seasons-${curShow}", "${curShowSeason.season}", "&season=${curShowSeason.season}");
+    % endfor
+% endfor
 
-#for $curShow in $sortedShowList:
-addList("episode", "$curShow.name", "&indexerid=$curShow.indexerid", "episode-$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addList("episode", "${curShow.name}", "&indexerid=${curShow.indexerid}", "episode-${curShow.indexerid}");
+% endfor
 
 // build out each show's season+episode list for episode cmd
-#for $curShow in $episodeSQLResults:
-    #for $curShowSeason in $episodeSQLResults[$curShow]:
-addList("episode-$curShow", "$curShowSeason.season x $curShowSeason.episode", "&season=$curShowSeason.season&episode=$curShowSeason.episode", "episode-$curShow-full");
-    #end for
-addOption("episode-$curShow-full", "Optional Param", "", 1);
-addOption("episode-$curShow-full", "Show Full Path", "&full_path=1");
-#end for
+% for curShow in episodeSQLResults:
+    % for curShowSeason in episodeSQLResults[curShow]:
+addList("episode-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}", "episode-${curShow}-full");
+    % endfor
+addOption("episode-${curShow}-full", "Optional Param", "", 1);
+addOption("episode-${curShow}-full", "Show Full Path", "&full_path=1");
+% endfor
 
 // build out tvshow list for episode.search
-#for $curShow in $sortedShowList:
-addList("episode.search", "$curShow.name", "&indexerid=$curShow.indexerid", "episode.search-$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addList("episode.search", "${curShow.name}", "&indexerid=${curShow.indexerid}", "episode.search-${curShow.indexerid}");
+% endfor
 
 // build out each show's season+episode list for episode.search cmd
-#for $curShow in $episodeSQLResults:
-    #for $curShowSeason in $episodeSQLResults[$curShow]:
-addOption("episode.search-$curShow", "$curShowSeason.season x $curShowSeason.episode", "&season=$curShowSeason.season&episode=$curShowSeason.episode");
-    #end for
-#end for
+% for curShow in episodeSQLResults:
+    % for curShowSeason in episodeSQLResults[curShow]:
+addOption("episode.search-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}");
+    % endfor
+% endfor
 
 // build out tvshow list for episode.setstatus
-#for $curShow in $sortedShowList:
-addList("episode.setstatus", "$curShow.name", "&indexerid=$curShow.indexerid", "episode.setstatus-$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addList("episode.setstatus", "${curShow.name}", "&indexerid=${curShow.indexerid}", "episode.setstatus-${curShow.indexerid}");
+% endfor
 
 // build out each show's season+episode list for episode.setstatus cmd
-#for $curShow in $episodeSQLResults:
-    #set $curSeason = -1
-    #for $curShowSeason in $episodeSQLResults[$curShow]:
-        #if $curShowSeason.season != $curSeason and $curShowSeason.season != 0:
+% for curShow in episodeSQLResults:
+    <% curSeason = -1 %>
+    % for curShowSeason in episodeSQLResults[curShow]:
+        % if curShowSeason.season != curSeason and curShowSeason.season != 0:
             // insert just the season as the ep number is now optional
-            addList("episode.setstatus-$curShow", "Season $curShowSeason.season", "&season=$curShowSeason.season", "episode-status-$curShow");
-        #end if
-        #set $curSeason = int($curShowSeason.season)
-addList("episode.setstatus-$curShow", "$curShowSeason.season x $curShowSeason.episode", "&season=$curShowSeason.season&episode=$curShowSeason.episode", "episode-status-$curShow");
-    #end for
-addList("episode-status-$curShow", "Wanted", "&status=wanted", "force");
-addList("episode-status-$curShow", "Skipped", "&status=skipped", "force");
-addList("episode-status-$curShow", "Archived", "&status=archived", "force");
-addList("episode-status-$curShow", "Ignored", "&status=ignored", "force");
-#end for
+            addList("episode.setstatus-${curShow}", "Season ${curShowSeason.season}", "&season=${curShowSeason.season}", "episode-status-${curShow}");
+        % endif
+        <% curSeason = int(curShowSeason.season) %>
+addList("episode.setstatus-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}", "episode-status-${curShow}");
+    % endfor
+addList("episode-status-${curShow}", "Wanted", "&status=wanted", "force");
+addList("episode-status-${curShow}", "Skipped", "&status=skipped", "force");
+addList("episode-status-${curShow}", "Archived", "&status=archived", "force");
+addList("episode-status-${curShow}", "Ignored", "&status=ignored", "force");
+% endfor
 
 addOption("force", "Optional Param", "", 1);
 addOption("force", "Replace Downloaded EP", "&force=1");
@@ -331,9 +331,9 @@ addOption("history-limit", "Show Only Downloaded", "&type=downloaded");
 addOption("history-limit", "Show Only Snatched", "&type=snatched");
 
 addOption("exceptions", "Optional Param", "", 1);
-#for $curShow in $sortedShowList:
-addOption("exceptions", "$curShow.name", "&indexerid=$curShow.indexerid");
-#end for
+% for curShow in sortedShowList:
+addOption("exceptions", "${curShow.name}", "&indexerid=8$curShow.indexerid}");
+% endfor
 
 addOption("sb.pausebacklog", "Optional Param", "", 1);
 addOption("sb.pausebacklog", "Pause", "&pause=1");
@@ -351,16 +351,16 @@ addOption("sb.deleterootdir", "C:\\Temp", "&location=C:\\Temp", "", 1);
 addOption("sb.deleterootdir", "/usr/bin", "&location=/usr/bin/");
 addOption("sb.deleterootdir", "S:\\Invalid_Location", "&location=S:\\Invalid_Location");
 
-#for $curShow in $sortedShowList:
-addList("show.pause", "$curShow.name", "&indexerid=$curShow.indexerid", "show.pause-opt");
-#end for
+% for curShow in sortedShowList:
+addList("show.pause", "${curShow.name}", "&indexerid=${curShow.indexerid}", "show.pause-opt");
+% endfor
 addOption("show.pause-opt", "Optional Param", "", 1);
 addOption("show.pause-opt", "Unpause", "&pause=0");
 addOption("show.pause-opt", "Pause", "&pause=1");
 
-#for $curShow in $sortedShowList:
-addList("show.delete", "$curShow.name", "&indexerid=$curShow.indexerid", "show.delete-opt");
-#end for
+% for curShow in sortedShowList:
+addList("show.delete", "${curShow.name}", "&indexerid=${curShow.indexerid}", "show.delete-opt");
+% endfor
 addOption("show.delete-opt", "Remove Files", "&removefiles=1");
 addOption("show.delete-opt", "Don't Remove Files", "&removefiles=0");
 
@@ -373,7 +373,7 @@ addOption("show.delete-opt", "Don't Remove Files", "&removefiles=0");
 <table align="center">
     <tr>
         <td>
-            <input type="text" size="40" id="apikey" name="apikey" value="$apikey">
+            <input type="text" size="40" id="apikey" name="apikey" value="${apikey}">
             <input type="checkbox" id="debug" class="global"><label for="debug"> Debug?</label>
             <input type="checkbox" id="profile" class="global"><label for="profile"> Profile?</label>
             <input type="checkbox" id="jsonp" class="global"><label for="jsonp"> JSONP?</label>
