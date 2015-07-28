@@ -15,9 +15,9 @@
 #set $sort = $sickbeard.COMING_EPS_SORT
 <script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
 #if $varExists('header')
-	<h1 class="header">$header</h1>
+    <h1 class="header">$header</h1>
 #else
-	<h1 class="title">$title</h1>
+    <h1 class="title">$title</h1>
 #end if
 
 <style type="text/css">
@@ -26,43 +26,43 @@
 </style>
 
 <div class="h2footer pull-right">
-	<span>Layout:
-		<select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-			<option value="$sbRoot/setComingEpsLayout/?layout=poster" #if 'poster' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Poster</option>
-			<option value="$sbRoot/setComingEpsLayout/?layout=calendar" #if 'calendar' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Calendar</option>
-			<option value="$sbRoot/setComingEpsLayout/?layout=banner" #if 'banner' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Banner</option>
-			<option value="$sbRoot/setComingEpsLayout/?layout=list" #if 'list' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>List</option>
-		</select>
-	</span>
-	&nbsp;
+    <span>Layout:
+        <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="$sbRoot/setComingEpsLayout/?layout=poster" #if 'poster' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Poster</option>
+            <option value="$sbRoot/setComingEpsLayout/?layout=calendar" #if 'calendar' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Calendar</option>
+            <option value="$sbRoot/setComingEpsLayout/?layout=banner" #if 'banner' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Banner</option>
+            <option value="$sbRoot/setComingEpsLayout/?layout=list" #if 'list' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>List</option>
+        </select>
+    </span>
+    &nbsp;
 
-	<span>Sort By:
-		<select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-			<option value="$sbRoot/setComingEpsSort/?sort=date" #if 'date' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Date</option>
-			<option value="$sbRoot/setComingEpsSort/?sort=network" #if 'network' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Network</option>
-			<option value="$sbRoot/setComingEpsSort/?sort=show" #if 'show' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Show</option>
-		</select>
-	</span>
-	&nbsp;
+    <span>Sort By:
+        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="$sbRoot/setComingEpsSort/?sort=date" #if 'date' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Date</option>
+            <option value="$sbRoot/setComingEpsSort/?sort=network" #if 'network' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Network</option>
+            <option value="$sbRoot/setComingEpsSort/?sort=show" #if 'show' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Show</option>
+        </select>
+    </span>
+    &nbsp;
 
-	<span>View Paused:
-		<select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-			<option value="$sbRoot/toggleComingEpsDisplayPaused"<%= (' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Hidden</option>
-			<option value="$sbRoot/toggleComingEpsDisplayPaused"<%= ('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Shown</option>
-		</select>
-	</span>
+    <span>View Paused:
+        <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
+            <option value="$sbRoot/toggleComingEpsDisplayPaused"<%= (' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Hidden</option>
+            <option value="$sbRoot/toggleComingEpsDisplayPaused"<%= ('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Shown</option>
+        </select>
+    </span>
 </div>
 
 <div class="key pull-right">
 #if 'calendar' != $layout:
-	<b>Key:</b>
-	<span class="listing-key listing-overdue">Missed</span>
-	<span class="listing-key listing-current">Current</span>
-	<span class="listing-key listing-default">Future</span>
-	<span class="listing-key listing-toofar">Distant</span>
+    <b>Key:</b>
+    <span class="listing-key listing-overdue">Missed</span>
+    <span class="listing-key listing-current">Current</span>
+    <span class="listing-key listing-default">Future</span>
+    <span class="listing-key listing-toofar">Distant</span>
 #end if
-	<a class="btn btn-inline forceBacklog" href="webcal://$sbHost:$sbHttpPort/calendar">
-	<i class="icon-calendar icon-white"></i>Subscribe</a>
+    <a class="btn btn-inline forceBacklog" href="webcal://$sbHost:$sbHttpPort/calendar">
+    <i class="icon-calendar icon-white"></i>Subscribe</a>
 </div>
 
 <br>
@@ -162,20 +162,20 @@
 
 <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
 
-	<thead>
-		<tr>
-			<th>Airdate</th>
-			<th>Show</th>
-			<th nowrap="nowrap">Next Ep</th>
-			<th>Next Ep Name</th>
-			<th>Network</th>
-			<th>Quality</th>
-			<th>Indexers</th>
-			<th>Search</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th>Airdate</th>
+            <th>Show</th>
+            <th nowrap="nowrap">Next Ep</th>
+            <th>Next Ep Name</th>
+            <th>Network</th>
+            <th>Quality</th>
+            <th>Indexers</th>
+            <th>Search</th>
+        </tr>
+    </thead>
 
-	<tbody style="text-shadow:none;">
+    <tbody style="text-shadow:none;">
 
 #for $cur_result in $sql_results:
     #set $cur_indexer = int($cur_result['indexer'])
@@ -202,64 +202,64 @@
         #end if
     #end if
 
-		<!-- start $cur_result['show_name'] //-->
-		<tr class="$show_div">
-			## forced to use a div to wrap airdate, the column sort went crazy with a span
-			<td align="center" nowrap="nowrap">
-				<div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result['localtime'].timetuple())</span>
-			</td>
+        <!-- start $cur_result['show_name'] //-->
+        <tr class="$show_div">
+            ## forced to use a div to wrap airdate, the column sort went crazy with a span
+            <td align="center" nowrap="nowrap">
+                <div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result['localtime'].timetuple())</span>
+            </td>
 
-			<td class="tvShow" nowrap="nowrap"><a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']</a>
+            <td class="tvShow" nowrap="nowrap"><a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']</a>
 #if int($cur_result['paused']):
-				<span class="pause">[paused]</span>
+                <span class="pause">[paused]</span>
 #end if
-			</td>
+            </td>
 
-			<td nowrap="nowrap" align="center">
-				<%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %>
-			</td>
+            <td nowrap="nowrap" align="center">
+                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %>
+            </td>
 
-			<td>
+            <td>
 #if $cur_result['description']:
-				<img alt='' src='$sbRoot/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_<%= '%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode'])) %>" />
+                <img alt='' src='$sbRoot/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_<%= '%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode'])) %>" />
 #else:
-				<img alt="" src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone"  />
+                <img alt="" src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 #end if
-				$cur_result['name']
-			</td>
+                $cur_result['name']
+            </td>
 
-			<td align="center">
-				$cur_result['network']
-			</td>
+            <td align="center">
+                $cur_result['network']
+            </td>
 
-			<td align="center">
+            <td align="center">
 #if int($cur_result['quality']) in $qualityPresets:
-				<span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
+                <span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
 #else:
-				<span class="quality Custom">Custom</span>
+                <span class="quality Custom">Custom</span>
 #end if
-			</td>
+            </td>
 
-			<td align="center" style="vertical-align: middle;">
+            <td align="center" style="vertical-align: middle;">
 #if $cur_result['imdb_id']:
-				<a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" />
+                <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" />
 #end if
-				<a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
-			</td>
+                <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
+            </td>
 
-			<td align="center">
-				<a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
-			</td>
-		</tr>
-		<!-- end $cur_result['show_name'] //-->
+            <td align="center">
+                <a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+            </td>
+        </tr>
+        <!-- end $cur_result['show_name'] //-->
 #end for
-	</tbody>
+    </tbody>
 
-	<tfoot>
-		<tr>
-			<th rowspan="1" colspan="10" align="center">&nbsp</th>
-		</tr>
-	</tfoot>
+    <tfoot>
+        <tr>
+            <th rowspan="1" colspan="10" align="center">&nbsp</th>
+        </tr>
+    </tfoot>
 
 </table>
 <!-- end list view //-->
@@ -272,15 +272,15 @@
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
-	\$('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
-	\$('.ep_summary').hide();
-	\$('.ep_summaryTrigger').click(function() {
-		\$(this).next('.ep_summary').slideToggle('normal', function() {
-			\$(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
-				return \$(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
-			});
-		});
-	});
+    \$('#sbRoot').ajaxEpSearch({'size': 16, 'loadingImage': 'loading16' + themeSpinner + '.gif'});
+    \$('.ep_summary').hide();
+    \$('.ep_summaryTrigger').click(function() {
+        \$(this).next('.ep_summary').slideToggle('normal', function() {
+            \$(this).prev('.ep_summaryTrigger').attr('src', function(i, src) {
+                return \$(this).next('.ep_summary').is(':visible') ? src.replace('plus','minus') : src.replace('minus','plus')
+            });
+        });
+    });
 
     #set $fuzzydate = 'airdate'
     #if $sickbeard.FUZZY_DATING:
@@ -306,7 +306,7 @@
 #set $show_div = 'ep_listing listing-default'
 
 #if 'show' == $sort:
-	<br /><br />
+    <br /><br />
 #end if
 
 #for $cur_result in $sql_results:
@@ -323,8 +323,8 @@
     #if 'network' == $sort:
         #set $show_network = $cur_result['network'] if $cur_result['network'] else 'no network'
         #if $cur_segment != $show_network:
-			<div class="comingepheader">
-				<br><h2 class="network">$show_network</h2>
+            <div class="comingepheader">
+                <br><h2 class="network">$show_network</h2>
             #set $cur_segment = $cur_result['network']
         #end if
         #set $cur_ep_airdate = $cur_result['localtime'].date()
@@ -351,17 +351,17 @@
             #if $runtime:
                 #set $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
                 #if $cur_ep_enddate < $today and $cur_ep_airdate != $today.date() and not $missed_header:
-						<br /><h2 class="day">Missed</h2>
+                        <br /><h2 class="day">Missed</h2>
                 #set $missed_header = True
                 #elif $cur_ep_airdate >= $next_week.date() and not $too_late_header:
-						<br /><h2 class="day">Later</h2>
+                        <br /><h2 class="day">Later</h2>
                 #set $too_late_header = True
                 #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
                     #if $cur_ep_airdate == $today.date():
-						<br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
-					#set $today_header = True
+                        <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+                    #set $today_header = True
                     #else:
-						<br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</h2>
+                        <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</h2>
                     #end if
                 #end if
             #end if
@@ -369,8 +369,8 @@
         #end if
 
         #if $cur_ep_airdate == $today.date() and not $today_header:
-			<div class="comingepheader">
-			<br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+            <div class="comingepheader">
+            <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
             #set $today_header = True
         #end if
         #if $runtime:
@@ -407,67 +407,67 @@
         #end if
 
 <div class="$show_div" id="listing-${cur_result['showid']}">
-	<div class="tvshowDiv">
-		<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<th #if 'banner' == $layout then 'class="nobg"' else 'rowspan="2"'# valign="top">
-				<a href="$sbRoot/home/displayShow?show=${cur_result['showid']}"><img alt="" class="#if 'banner' == $layout then 'bannerThumb' else 'posterThumb'#" src="$sbRoot/showPoster/?show=${cur_result['showid']}&amp;which=#if 'poster' == $layout then 'poster_thumb' else $layout#" /></a>
-			</th>
+    <div class="tvshowDiv">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <th #if 'banner' == $layout then 'class="nobg"' else 'rowspan="2"'# valign="top">
+                <a href="$sbRoot/home/displayShow?show=${cur_result['showid']}"><img alt="" class="#if 'banner' == $layout then 'bannerThumb' else 'posterThumb'#" src="$sbRoot/showPoster/?show=${cur_result['showid']}&amp;which=#if 'poster' == $layout then 'poster_thumb' else $layout#" /></a>
+            </th>
 #if 'banner' == $layout:
-		</tr>
-		<tr>
+        </tr>
+        <tr>
 #end if
 
-			<td class="next_episode">
-				<div class="clearfix">
-					<span class="tvshowTitle">
-						<a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']
-					#if int($cur_result['paused']):
-						<span class="pause">[paused]</span>
-					#end if
-					</a></span>
+            <td class="next_episode">
+                <div class="clearfix">
+                    <span class="tvshowTitle">
+                        <a href="$sbRoot/home/displayShow?show=${cur_result['showid']}">$cur_result['show_name']
+                    #if int($cur_result['paused']):
+                        <span class="pause">[paused]</span>
+                    #end if
+                    </a></span>
 
-					<span class="tvshowTitleIcons">
+                    <span class="tvshowTitleIcons">
 #if $cur_result['imdb_id']:
-						<a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" />
+                        <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" />
 #end if
-						<a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
-						<span><a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
-					</span>
-				</div>
+                        <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
+                        <span><a href="$sbRoot/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
+                    </span>
+                </div>
 
-				<span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']</span>
+                <span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']</span>
 
-				<div class="clearfix">
+                <div class="clearfix">
 
-					<span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
-				</div>
+                    <span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
+                </div>
 
-				<div class="clearfix">
-					<span class="title">Quality:</span>
-					#if int($cur_result['quality']) in $qualityPresets:
-						<span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
-					#else:
-						<span class="quality Custom">Custom</span>
-					#end if
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td style="vertical-align: top;">
-				<div>
+                <div class="clearfix">
+                    <span class="title">Quality:</span>
+                    #if int($cur_result['quality']) in $qualityPresets:
+                        <span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
+                    #else:
+                        <span class="quality Custom">Custom</span>
+                    #end if
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">
+                <div>
 #if $cur_result['description']:
-						<span class="title" style="vertical-align:middle;">Plot:</span>
-						<img class="ep_summaryTrigger" src="$sbRoot/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">$cur_result['description']</div>
+                        <span class="title" style="vertical-align:middle;">Plot:</span>
+                        <img class="ep_summaryTrigger" src="$sbRoot/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">$cur_result['description']</div>
 #else:
-						<span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
-						<img class="ep_summaryTriggerNone" src="$sbRoot/images/plus.png" height="16" width="16" alt="" />
+                        <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
+                        <img class="ep_summaryTriggerNone" src="$sbRoot/images/plus.png" height="16" width="16" alt="" />
 #end if
-				</div>
-		</td>
-		</tr>
-		</table>
-	</div>
+                </div>
+        </td>
+        </tr>
+        </table>
+    </div>
 </div>
 
 <!-- end $cur_result['show_name'] //-->
@@ -487,9 +487,9 @@
 <input type="hidden" id="sbRoot" value="$sbRoot" />
     #for $day in $dates
     #set $tbl_day += 1
-		<table class="sickbeardTable tablesorter calendarTable <%= 'cal-%s' % (('even', 'odd')[1 == tbl_day % 2]) %>" cellspacing="0" border="0" cellpadding="0">
-		<thead><tr><th>$day.strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
-		<tbody>
+        <table class="sickbeardTable tablesorter calendarTable <%= 'cal-%s' % (('even', 'odd')[1 == tbl_day % 2]) %>" cellspacing="0" border="0" cellpadding="0">
+        <thead><tr><th>$day.strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
+        <tbody>
         #set $day_has_show = False
         #for $cur_result in $sql_results:
             #if int($cur_result['paused']) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
@@ -511,22 +511,22 @@
                     #set $airtime = "Invalid"
                 #end try
 
-				<tr>
-					<td class="calendarShow">
-						<div class="poster">
-							<a title="${cur_result['show_name']}" href="$sbRoot/home/displayShow?show=${cur_result['showid']}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result['showid']}&amp;which=poster_thumb" /></a>
-						</div>
-						<div class="text">
-							<span class="airtime">
-								${airtime} on $cur_result["network"]
-							</span>
-							<span class="episode-title" title="$cur_result['name']">
-								<%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']
-							</span>
-						</div>
-					</td> <!-- end $cur_result['show_name'] -->
-				</tr>
-			#end if
+                <tr>
+                    <td class="calendarShow">
+                        <div class="poster">
+                            <a title="${cur_result['show_name']}" href="$sbRoot/home/displayShow?show=${cur_result['showid']}"><img alt="" src="$sbRoot/showPoster/?show=${cur_result['showid']}&amp;which=poster_thumb" /></a>
+                        </div>
+                        <div class="text">
+                            <span class="airtime">
+                                ${airtime} on $cur_result["network"]
+                            </span>
+                            <span class="episode-title" title="$cur_result['name']">
+                                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']
+                            </span>
+                        </div>
+                    </td> <!-- end $cur_result['show_name'] -->
+                </tr>
+            #end if
 
         #end for
         #if not $day_has_show:
