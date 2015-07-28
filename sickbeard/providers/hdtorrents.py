@@ -121,7 +121,7 @@ class HDTorrentsProvider(generic.TorrentProvider):
 
     def _get_episode_search_strings(self, ep_obj, add_string=''):
         if not ep_obj:
-            return search_strings
+            return []
 
         search_strings = []
         for show_name in set(show_name_helpers.allPossibleShowNames(self.show)):
