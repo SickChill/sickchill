@@ -50,6 +50,19 @@ import xmltodict
 
 import subprocess
 
+try:
+    from io import BytesIO as _StringIO
+except ImportError:
+    try:
+        from cStringIO import StringIO as _StringIO
+    except ImportError:
+        from StringIO import StringIO as _StringIO
+
+try:
+    import gzip
+except ImportError:
+    gzip = None
+
 from sickbeard.exceptions import MultipleShowObjectsException, ex
 from sickbeard import logger, classes
 from sickbeard.common import USER_AGENT, cpu_presets, mediaExtensions, subtitleExtensions
@@ -1381,6 +1394,11 @@ def getURL(url, post_data=None, params={}, headers={}, timeout=30, session=None,
         logger.log(u"Unknown exception in getURL %s Error: %s" % (url, ex(e)), logger.WARNING)
         logger.log(traceback.format_exc(), logger.WARNING)
         return
+
+    attempts = 0
+    while(gzip and resp.content[0] == '\x1f' and resp.content[1] == '\x8b' and attempts < 3):
+        attempts += 1
+        resp._content = gzip.GzipFile(fileobj=_StringIO(resp.content)).read()
 
     return resp.content if not json else resp.json()
 
