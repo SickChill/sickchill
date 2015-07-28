@@ -152,9 +152,22 @@ class Logger(object):
             sys.exit(1)
 
     def submit_errors(self):
-        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and len(classes.ErrorViewer.errors) > 0):
-            self.log('Please set your GitHub username and password in the config, unable to submit issue ticket to GitHub!')
+        if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEBUG and len(classes.ErrorViewer.errors) > 0):
+            self.log('Please set your GitHub username and password in the config and enable debug. Unable to submit issue ticket to GitHub!')
             return
+          
+        try:
+            from versionChecker import CheckVersion
+            checkversion = CheckVersion()
+            needs_update = checkversion.check_for_new_version()
+            commits_behind = checkversion.updater.get_num_commits_behind()
+        except:
+            self.log('Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!')
+            return
+
+        if commits_behind is None or commits_behind > 0:
+            self.log('Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!')
+            return          
 
         if self.submitter_running:
             return 'RUNNING'
