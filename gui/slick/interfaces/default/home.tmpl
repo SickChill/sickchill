@@ -63,7 +63,7 @@
             return (s || '').replace(/^(The|A|An)\s/i,'');
         #else:
             return (s || '');
-        #end if    
+        #end if
     },
     type: 'text'
 });
@@ -73,16 +73,16 @@
     is: function(s) {
         return false;
     },
-    format: function(s) { 
+    format: function(s) {
         return s.replace('hd1080p',5).replace('hd720p',4).replace('hd',3).replace('sd',2).replace('any',1).replace('custom',7);
     },
     type: 'numeric'
 });
 
-\$.tablesorter.addParser({ 
+\$.tablesorter.addParser({
     id: 'eps',
     is: function(s) {
-        return false; 
+        return false;
     },
     format: function(s) {
         match = s.match(/^(.*)/);
@@ -113,8 +113,8 @@
 });
 
 
-\$(document).ready(function(){ 
-    
+\$(document).ready(function(){
+
     \$("img#network").on('error', function(){
         \$(this).parent().text(\$(this).attr('alt'));
         \$(this).remove();
@@ -158,22 +158,22 @@
                                 if (result[1] === "<") {
                                     if (pct < parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === "<=") {
                                     if (pct <= parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === ">=") {
                                     if (pct >= parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === ">") {
                                     if (pct > parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 }
                             }
-                            
+
                             var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
                             if (result) {
                                 if ((result[2] === "-") || (result[2] === "to")) {
@@ -182,7 +182,7 @@
                                     }
                                 }
                             }
-                            
+
                             var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
                             if (result) {
                                 if ((result[1] === "=") || (result[3] === "=")) {
@@ -191,17 +191,17 @@
                                     }
                                 }
                             }
-                            
+
                             if (!isNaN(parseFloat(f)) && isFinite(f)) {
                                 if (parseInt(f) === pct) {
                                     test = true;
                                 }
-                            }                            
+                            }
                         }
                         return test;
                     },
                 },
-            #else 
+            #else
                 filter_columnFilters: false,
             #end if
             filter_reset: '.resetshows',
@@ -210,7 +210,7 @@
         sortStable: true,
         sortAppend: [[2,0]]
     });
-    
+
     \$("#showListTableAnime:has(tbody tr)").tablesorter({
         sortList: [[6,1],[2,0]],
         textExtraction: {
@@ -249,22 +249,22 @@
                                 if (result[1] === "<") {
                                     if (pct < parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === "<=") {
                                     if (pct <= parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === ">=") {
                                     if (pct >= parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 } else if (result[1] === ">") {
                                     if (pct > parseInt(result[2])) {
                                         test = true;
-                                    }                            
+                                    }
                                 }
                             }
-                            
+
                             var result = f.match(/(\d+)\s(-|to)\s(\d+)/i);
                             if (result) {
                                 if ((result[2] === "-") || (result[2] === "to")) {
@@ -273,7 +273,7 @@
                                     }
                                 }
                             }
-                            
+
                             var result = f.match(/(=)?\s?(\d+)\s?(=)?/i);
                             if (result) {
                                 if ((result[1] === "=") || (result[3] === "=")) {
@@ -282,17 +282,17 @@
                                     }
                                 }
                             }
-                            
+
                             if (!isNaN(parseFloat(f)) && isFinite(f)) {
                                 if (parseInt(f) === pct) {
                                     test = true;
                                 }
-                            }                            
+                            }
                         }
                         return test;
                     },
                 },
-            #else 
+            #else
                 filter_columnFilters: false,
             #end if
             filter_reset: '.resetanime',
@@ -304,12 +304,12 @@
 
     if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
         \$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
-    
+
     #if $sickbeard.ANIME_SPLIT_HOME:
         if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
     #end if
-    
+
     #set $fuzzydate = 'airdate'
     #if $sickbeard.FUZZY_DATING:
     fuzzyMoment({
@@ -321,9 +321,9 @@
         trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
     });
     #end if
-    
+
     var \$container = [\$('#container'), \$('#container-anime')];
-    
+
     jQuery.each(\$container, function (j) {
         this.isotope({
             itemSelector: '.show',
@@ -335,13 +335,13 @@
                 isFitWidth: true
             },
             getSortData: {
-                name: function( itemElem ) { 
+                name: function( itemElem ) {
                     var name = \$( itemElem ).attr('data-name');
                     #if not $sickbeard.SORT_ARTICLE:
                         return (name || '').replace(/^(The|A|An)\s/i,'');
                     #else:
                         return (name || '');
-                    #end if    
+                    #end if
                 },
                 network: '[data-network]',
                 date: function( itemElem ) {
@@ -362,7 +362,7 @@
         \$('#container-anime').isotope({ sortBy: sortValue });
         \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
-    
+
     \$('#postersortdirection').on( 'change', function() {
         var sortDirection = this.value;
         sortDirection = sortDirection == 'true';
@@ -370,7 +370,7 @@
         \$('#container-anime').isotope({ sortAscending: sortDirection });
         \$.get(this.options[this.selectedIndex].getAttribute('data-sort'));
     });
-    
+
     \$('#popover')
         .popover({
           placement: 'bottom',
@@ -385,15 +385,15 @@
             \$.tablesorter.columnSelector.attachTo( \$('#showListTableAnime'), '#popover-target');
           #end if
         });
-    
+
 });
 
 //-->
 </script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -401,7 +401,7 @@
     #if $layout != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Column</button>
     #end if
-    <span> Layout: 
+    <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
             <option value="$sbRoot/setHomeLayout/?layout=poster" #if $sickbeard.HOME_LAYOUT == "poster" then "selected=\"selected\"" else ""#>Poster</option>
             <option value="$sbRoot/setHomeLayout/?layout=small" #if $sickbeard.HOME_LAYOUT == "small" then "selected=\"selected\"" else ""#>Small Poster</option>
@@ -414,10 +414,10 @@
             <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
         #end if
     </span>
-    
+
     #if $layout == 'poster':
     &nbsp;
-    <span> Sort By: 
+    <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
             <option value="name" data-sort="$sbRoot/setPosterSortBy/?sort=name" #if $sickbeard.POSTER_SORTBY == "name" then "selected=\"selected\"" else ""#>Name</option>
             <option value="date" data-sort="$sbRoot/setPosterSortBy/?sort=date" #if $sickbeard.POSTER_SORTBY == "date" then "selected=\"selected\"" else ""#>Next Episode</option>
@@ -426,7 +426,7 @@
         </select>
     </span>
     &nbsp;
-    <span> Sort Order: 
+    <span> Sort Order:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
             <option value="true" data-sort="$sbRoot/setPosterSortDir/?direction=1" #if $sickbeard.POSTER_SORTDIR == 1 then "selected=\"selected\"" else ""#>Asc</option>
             <option value="false" data-sort="$sbRoot/setPosterSortDir/?direction=0" #if $sickbeard.POSTER_SORTDIR == 0 then "selected=\"selected\"" else ""#>Desc</option>
@@ -452,7 +452,7 @@
     #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
     #continue
     #end if
-    
+
     #if $curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
             <img alt="" title="$curLoadingShow.show_name" class="show-image" style="border-bottom: 1px solid #111;" src="$sbRoot/images/poster.png" />
@@ -462,7 +462,7 @@
         </div>
 
     #end if
-    
+
 #end for
 
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
@@ -522,7 +522,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #end if
 
     #set $progressbar_percent = $nom * 100 / $den
-    
+
 #set $data_date = '6000000000.0'
 #if $cur_airs_next:
     #set $data_date = $calendar.timegm($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)).timetuple())
@@ -539,7 +539,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         <div class="show-image">
             <a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
         </div>
-        
+
         <div id="progressbar$curShow.indexerid"></div>
             <script type="text/javascript">
             <!--
@@ -566,7 +566,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                 });
             //-->
             </script>
-            
+
         <div class="show-title">
             $curShow.name
         </div>
@@ -599,9 +599,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                 <td class="show-table">
                     <span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
                 </td>
-                
+
                 <td class="show-table">
-                    #if $layout != 'simple':    
+                    #if $layout != 'simple':
                         #if $curShow.network:
                             <span title="$curShow.network"><img class="show-network-image" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
                         #else:
@@ -609,9 +609,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                         #end if
                     #else:
                         <span title="$curShow.network">$curShow.network</span>
-                    #end if    
+                    #end if
                 </td>
-                
+
                 <td class="show-table">
                     #if $curShow.quality in $qualityPresets:
                         <span class="show-quality">$qualityPresetStrings[$curShow.quality]</span>
@@ -621,14 +621,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                 </td>
             </tr>
         </table>
-        
-    </div>
-  
 
-    
-#end for    
-</div> 
-</div> 
+    </div>
+
+
+
+#end for
+</div>
+</div>
 
 #else
 
@@ -646,7 +646,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             <th>Status</th>
         </tr>
     </thead>
-    
+
     <tfoot>
         <tr>
             <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">Add Show</a></th>
@@ -659,7 +659,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             <th>&nbsp;</th>
         </tr>
     </tfoot>
-    
+
 
 #if $sickbeard.showQueueScheduler.action.loadingShowList
     <tbody class="tablesorter-infoOnly">
@@ -703,7 +703,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #if $curShow.indexerid in $show_stat:
         #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
         #set $cur_airs_prev = $show_stat[$curShow.indexerid]['ep_airs_prev']
-        
+
 
         #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
         #if not $cur_snatched:
@@ -744,7 +744,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #set $progressbar_percent = $nom * 100 / $den
 
     <tr>
-    
+
     #if $cur_airs_next
     #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
         #try
@@ -798,7 +798,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
     #end if
 
-    #if $layout != 'simple':    
+    #if $layout != 'simple':
         <td align="center">
         #if $curShow.network:
             <span title="$curShow.network"><img id="network" width="54" height="27" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
@@ -810,14 +810,14 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         <td>
             <span title="$curShow.network">$curShow.network</span>
         </td>
-    #end if        
+    #end if
 
     #if $curShow.quality in $qualityPresets:
         <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
     #else:
         <td align="center"><span class="quality Custom">Custom</span></td>
     #end if
-    
+
         <td align="center"><span style="display: none;">$download_stat</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
             <script type="text/javascript">
             <!--
@@ -846,7 +846,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             //-->
             </script>
         </td>
-    
+
         <td align="center">
 #if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
             <img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
@@ -854,7 +854,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             <img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
 #end if
         </td>
-        
+
         <td align="center">
 #set $display_status = $curShow.status
 #if None is not $display_status
@@ -868,7 +868,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         $display_status
 
         </td>
-        
+
     </tr>
 
 #end for

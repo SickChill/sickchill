@@ -14,11 +14,11 @@
 <script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/addExistingShow.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script> 
+<script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--
-\$(document).ready(function(){ 
+\$(document).ready(function(){
     \$( "#tabs" ).tabs({
         collapsible: true,
         selected: #if $sickbeard.ROOT_DIRS then '-1' else '0'#
@@ -27,9 +27,9 @@
 //-->
 </script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 

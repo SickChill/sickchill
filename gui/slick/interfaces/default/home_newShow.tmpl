@@ -19,12 +19,12 @@
 <script type="text/javascript" src="$sbRoot/js/addShowOptions.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
 
-   #if $varExists('header') 
+   #if $varExists('header')
        <h1 class="header">$header</h1>
-   #else 
+   #else
        <h1 class="title">$title</h1>
    #end if
-   
+
 <div id="newShowPortal">
     <div id="config-components">
         <ul>
@@ -32,7 +32,7 @@
         </ul>
 
     <div id="core-component-group1" class="tab-pane active component-group">
-                
+
     <div id="displayText">aoeu</div>
     <br />
 
@@ -51,7 +51,7 @@
                 <input type="hidden" id="providedIndexer" name="providedIndexer" value="$provided_indexer" />
                 <input type="hidden" id="providedName" value="$provided_indexer_name" />
             #else:
-                
+
                 <input type="text" id="nameToSearch" value="$default_show_name" class="form-control form-control-inline input-sm input350" />
                 &nbsp;&nbsp;
                 <select name="indexerLang" id="indexerLangSelect" class="form-control form-control-inline input-sm bfh-languages" data-language="#echo $sickbeard.INDEXER_DEFAULT_LANGUAGE#" data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#">
@@ -66,7 +66,7 @@
                 </select>
                 &nbsp;
                 <input class="btn btn-inline" type="button" id="searchName" value="Search" />
-                
+
                 <br /><br />
                 <b>*</b> This will only affect the language of the retrieved metadata file contents and episode filenames.<br />
                 This <b>DOES NOT</b> allow SickRage to download non-english TV episodes!<br />

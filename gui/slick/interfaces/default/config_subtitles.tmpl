@@ -25,7 +25,7 @@
                     hintText: "Write to search a language and select it",
                     preventDuplicates: true,
                     prePopulate:
-                        
+
                             [
                                 <%=
                                         ",\r\n".join("{id: \"" + subtitles.fromietf(lang).opensubtitles + "\", name: \"" + subtitles.fromietf(lang).name + "\"}" for lang in subtitles.wantedLanguages()) if subtitles.wantedLanguages() else ''
@@ -36,9 +36,9 @@
     });
 </script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -52,14 +52,14 @@
                     <li><a href="#core-component-group4">Subtitles Search</a></li>
                     <li><a href="#core-component-group2">Subtitles Plugin</a></li>
                 </ul>
-                
+
                 <div id="core-component-group4" class="component-group">
 
                     <div class="component-group-desc">
                         <h3>Subtitles Search</h3>
                         <p>Settings that dictate how SickRage handles subtitles search results.</p>
                     </div>
-                    
+
                     <fieldset class="component-group-list">
                         <div class="field-pair">
                             <label for="use_subtitles" class="clearfix">
@@ -105,7 +105,7 @@
                                             <p>Log downloaded Subtitle on History page?</p>
                                         </span>
                                     </label>
-                                </div>                                
+                                </div>
                                 <div class="field-pair">
                                     <label class="clearfix" for="subtitles_multi">
                                         <span class="component-title">Subtitles Multi-Language</span>
@@ -179,7 +179,7 @@
                         #end for
                         </ul>
                         <input type="hidden" name="service_order" id="service_order" value="<%=" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
-                        
+
                         <br/><input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>
                 </div><!-- /component-group2 //-->
@@ -196,7 +196,7 @@
 <script type="text/javascript" charset="utf-8">
 <!--
     jQuery('#config-components').tabs();
-    jQuery('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });    
+    jQuery('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
 //-->
 </script>
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")

@@ -19,8 +19,8 @@ function(){
     \$('#minLevel,#logFilter,#logSearch').change(function(){
         if ( \$('#logSearch').val().length > 0 ) {
             \$('#logSearch').prop('disabled', true);
-            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
-            \$('#minLevel option[value=5]').prop('selected', true); 
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true);
+            \$('#minLevel option[value=5]').prop('selected', true);
         }
         \$('#minLevel').prop('disabled', true);
         \$('#logFilter').prop('disabled', true);
@@ -37,19 +37,19 @@ function(){
             \$('#minLevel').prop('disabled', false);
             \$('#logFilter').prop('disabled', false);
             \$('#logSearch').prop('disabled', false);
-        } else { 
+        } else {
             \$('#minLevel').prop('disabled', true);
             \$('#logFilter').prop('disabled', true);
             \$('#logSearch').prop('disabled', false);
-        } 
+        }
 
          document.body.style.cursor='default';
     });
 
     \$('#logSearch').keyup(function() {
         if ( \$('#logSearch').val().length == 0 ) {
-            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true); 
-            \$('#minLevel option[value=20]').prop('selected', true); 
+            \$('#logFilter option[value=\\<NONE\\>]').prop('selected', true);
+            \$('#minLevel option[value=20]').prop('selected', true);
             \$('#minLevel').prop('disabled', false);
             \$('#logFilter').prop('disabled', false);
             url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
@@ -63,9 +63,9 @@ function(){
 //-->
 </script>
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 

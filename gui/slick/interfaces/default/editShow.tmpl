@@ -15,9 +15,9 @@
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -145,34 +145,34 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 <script type="text/javascript" charset="utf-8">
 <!--
     var all_exceptions = new Array;
-    
+
     jQuery('#location').fileBrowser({ title: 'Select Show Location' });
-   
+
     \$('#submit').click(function(){
         all_exceptions = []
 
         \$("#exceptions_list option").each  ( function() {
             all_exceptions.push( \$(this).val() );
         });
-        
+
         \$("#exceptions_list").val(all_exceptions);
-  
+
         #if $show.is_anime:
             generate_bwlist()
-            
+
         #end if
         });
     \$('#addSceneName').click(function() {
         var scene_ex = \$('#SceneName').val()
         var option = \$("<option>")
         all_exceptions = []
-            
+
         \$("#exceptions_list option").each  ( function() {
            all_exceptions.push( \$(this).val() )
         });
-        
+
         \$('#SceneName').val('')
-        
+
         if (jQuery.inArray(scene_ex, all_exceptions) > -1 || (scene_ex == ''))
             return
 
@@ -182,20 +182,20 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
         option.html(scene_ex)
         return option.appendTo('#exceptions_list');
     });
-    
+
     \$('#removeSceneName').click(function() {
         \$('#exceptions_list option:selected').remove();
-        
+
         \$(this).toggle_SceneException()
     });
-    
+
    $.fn.toggle_SceneException = function() {
         all_exceptions = []
-        
+
         \$("#exceptions_list option").each  ( function() {
             all_exceptions.push( \$(this).val() );
         });
-        
+
         if (all_exceptions == '')
             \$("#SceneException").hide();
         else
