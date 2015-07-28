@@ -173,8 +173,9 @@ LNG_COMMON_WORDS = frozenset([
     'is', 'it', 'am', 'mad', 'men', 'man', 'run', 'sin', 'st', 'to',
     'no', 'non', 'war', 'min', 'new', 'car', 'day', 'bad', 'bat', 'fan',
     'fry', 'cop', 'zen', 'gay', 'fat', 'one', 'cherokee', 'got', 'an', 'as',
-    'cat', 'her', 'be', 'hat', 'sun', 'may', 'my', 'mr', 'rum', 'pi', 'bb', 'bt',
-    'tv', 'aw', 'by', 'md', 'mp', 'cd', 'lt', 'gt', 'in', 'ad', 'ice', 'ay', 'at',
+    'cat', 'her', 'be', 'hat', 'sun', 'may', 'my', 'mr', 'rum', 'pi', 'bb',
+    'bt', 'tv', 'aw', 'by', 'md', 'mp', 'cd', 'lt', 'gt', 'in', 'ad', 'ice',
+    'ay', 'at', 'star',
     # french words
     'bas', 'de', 'le', 'son', 'ne', 'ca', 'ce', 'et', 'que',
     'mal', 'est', 'vol', 'or', 'mon', 'se', 'je', 'tu', 'me',
@@ -185,7 +186,7 @@ LNG_COMMON_WORDS = frozenset([
     'la', 'el', 'del', 'por', 'mar', 'al',
     # other
     'ind', 'arw', 'ts', 'ii', 'bin', 'chan', 'ss', 'san', 'oss', 'iii',
-    'vi', 'ben', 'da', 'lt', 'ch',
+    'vi', 'ben', 'da', 'lt', 'ch', 'sr',
     # new from babelfish
     'mkv', 'avi', 'dmd', 'the', 'dis', 'cut', 'stv', 'des', 'dia', 'and',
     'cab', 'sub', 'mia', 'rim', 'las', 'une', 'par', 'srt', 'ano', 'toy',
@@ -197,7 +198,7 @@ LNG_COMMON_WORDS = frozenset([
     'bs',  # Bosnian
     'kz',
     # countries
-    'gt', 'lt',
+    'gt', 'lt', 'im',
     # part/pt
     'pt'
     ])
@@ -239,7 +240,7 @@ def find_possible_languages(string, allowed_languages=None):
         for prefix in lang_prefixes:
             if lang_word.startswith(prefix):
                 lang_word = lang_word[len(prefix):]
-        if lang_word not in common_words:
+        if lang_word not in common_words and word.lower() not in common_words:
             try:
                 lang = Language.fromguessit(lang_word)
                 if allowed_languages:
