@@ -19,10 +19,13 @@
 #
 
 from __future__ import absolute_import, division, print_function, unicode_literals
+from functools import wraps
 
 import logging
 import sys
 import os
+
+log = logging.getLogger(__name__)
 
 GREEN_FONT = "\x1B[0;32m"
 YELLOW_FONT = "\x1B[0;33m"
@@ -87,3 +90,27 @@ def setup_logging(colored=True, with_time=False, with_thread=False, filename=Non
             ch.setFormatter(SimpleFormatter(with_time, with_thread))
 
     logging.getLogger().addHandler(ch)
+
+
+def trace_func_call(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        is_method = (f.__name__ != f.__qualname__)  # method is still not bound, we need to get around it
+        if is_method:
+            no_self_args = args[1:]
+        else:
+            no_self_args = args
+
+        args_str = ', '.join(repr(arg) for arg in no_self_args)
+        kwargs_str = ', '.join('{}={}'.format(k, v) for k, v in kwargs.items())
+        if not args_str:
+            args_str = kwargs_str
+        elif not kwargs_str:
+            args_str = args_str
+        else:
+            args_str = '{}, {}'.format(args_str, kwargs_str)
+
+        log.debug('Calling {}({})'.format(f.__name__, args_str))
+        return f(*args, **kwargs)
+
+    return wrapper

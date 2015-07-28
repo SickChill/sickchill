@@ -89,10 +89,10 @@ from guessit.guess import Guess, smart_merge
 from guessit.language import Language
 from guessit.matcher import IterativeMatcher
 from guessit.textutils import clean_default, is_camel, from_camel
+from copy import deepcopy
 import babelfish
 import os.path
 import logging
-from copy import deepcopy
 
 log = logging.getLogger(__name__)
 
@@ -117,7 +117,7 @@ def _build_filename_mtree(filename, options=None, **kwargs):
     mtree = IterativeMatcher(filename, options=options, **kwargs)
     second_pass_options = mtree.second_pass_options
     if second_pass_options:
-        log.debug("Running 2nd pass")
+        log.debug('Running 2nd pass with options: %s' % second_pass_options)
         merged_options = dict(options)
         merged_options.update(second_pass_options)
         mtree = IterativeMatcher(filename, options=merged_options, **kwargs)

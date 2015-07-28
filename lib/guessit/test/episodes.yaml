@@ -282,12 +282,6 @@
   episodeNumber: 1
   title: The Impossible Astronaut
 
-? Parks and Recreation - [04x12] - Ad Campaign.avi
-: series: Parks and Recreation
-  season: 4
-  episodeNumber: 12
-  title: Ad Campaign
-
 ? The Sopranos - [05x07] - In Camelot.mp4
 : series: The Sopranos
   season: 5
@@ -1186,3 +1180,10 @@
   videoCodec: h264
   releaseGroup: BS
   format: WEB-DL
+
+? How to Make It in America - S02E06 - I'm Sorry, Who's Yosi?.mkv
+: series: How to Make It in America
+  season: 2
+  episodeNumber: 6
+  title: I'm Sorry, Who's Yosi?
+

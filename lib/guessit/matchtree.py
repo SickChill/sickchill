@@ -147,6 +147,10 @@ class BaseMatchTree(UnicodeMixin):
         string defined by splitting this node at the given indices (relative
         to this node)"""
         indices = sorted(indices)
+        if indices[-1] > len(self.value):
+            log.error('Filename: {}'.format(self.string))
+            log.error('Invalid call to get_partitions_spans, indices are too high: {}, len({}) == {:d}'
+                      .format(indices, self.value, len(self.value)))
         if indices[0] != 0:
             indices.insert(0, 0)
         if indices[-1] != len(self.value):
@@ -155,7 +159,8 @@ class BaseMatchTree(UnicodeMixin):
         spans = []
         for start, end in zip(indices[:-1], indices[1:]):
             spans.append((self.offset + start,
-                     self.offset + end))
+                          self.offset + end))
+
         return spans
 
     def partition(self, indices):

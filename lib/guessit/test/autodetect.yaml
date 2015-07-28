@@ -525,3 +525,29 @@
   screenSize: 720p
   season: 5
   series: Game of Thrones
+
+? Parks and Recreation - [04x12] - Ad Campaign.avi
+: type: episode
+  series: Parks and Recreation
+  season: 4
+  episodeNumber: 12
+  title: Ad Campaign
+
+? Star Trek Into Darkness (2013)/star.trek.into.darkness.2013.720p.web-dl.h264-publichd.mkv
+: type: movie
+  title: Star Trek Into Darkness
+  year: 2013
+  screenSize: 720p
+  format: WEB-DL
+  videoCodec: h264
+  releaseGroup: PublicHD
+
+? /var/medias/series/The Originals/Season 02/The.Originals.S02E15.720p.HDTV.X264-DIMENSION.mkv
+: type: episode
+  series: The Originals
+  season: 2
+  episodeNumber: 15
+  screenSize: 720p
+  format: HDTV
+  videoCodec: h264
+  releaseGroup: DIMENSION

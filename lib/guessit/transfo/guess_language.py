@@ -68,8 +68,10 @@ class GuessLanguage(Transformer):
         title_ends = {}
 
         for unidentified_node in mtree.unidentified_leaves():
-            unidentified_starts[unidentified_node.span[0]] = unidentified_node
-            unidentified_ends[unidentified_node.span[1]] = unidentified_node
+            if len(unidentified_node.clean_value) > 1:
+                # only consider unidentified leaves that have some meaningful content
+                unidentified_starts[unidentified_node.span[0]] = unidentified_node
+                unidentified_ends[unidentified_node.span[1]] = unidentified_node
 
         for property_node in mtree.leaves_containing('year'):
             property_starts[property_node.span[0]] = property_node
@@ -79,19 +81,20 @@ class GuessLanguage(Transformer):
             title_starts[title_node.span[0]] = title_node
             title_ends[title_node.span[1]] = title_node
 
-        return node.span[0] in title_ends.keys() and (node.span[1] in unidentified_starts.keys() or node.span[1] + 1 in property_starts.keys()) or\
-            node.span[1] in title_starts.keys() and (node.span[0] == node.group_node().span[0] or node.span[0] in unidentified_ends.keys() or node.span[0] in property_ends.keys())
+        return (node.span[0] in title_ends.keys() and (node.span[1] in unidentified_starts.keys() or
+                                                 node.span[1] + 1 in property_starts.keys()) or
+                node.span[1] in title_starts.keys() and (node.span[0] == node.group_node().span[0] or
+                                                         node.span[0] in unidentified_ends.keys() or
+                                                         node.span[0] in property_ends.keys()))
 
     def second_pass_options(self, mtree, options=None):
         m = mtree.matched()
-        to_skip_language_nodes = []
+        to_skip_langs = set()
 
         for lang_key in ('language', 'subtitleLanguage'):
-            langs = {}
             lang_nodes = set(mtree.leaves_containing(lang_key))
 
             for lang_node in lang_nodes:
-                lang = lang_node.guess.get(lang_key, None)
                 if self._skip_language_on_second_pass(mtree, lang_node):
                     # Language probably split the title. Add to skip for 2nd pass.
 
@@ -99,38 +102,19 @@ class GuessLanguage(Transformer):
                     # the extension, then it is likely a subtitle language
                     parts = mtree.clean_string(lang_node.root.value).split()
                     if m.get('type') in ['moviesubtitle', 'episodesubtitle']:
-                        if lang_node.value in parts and \
-                                (parts.index(lang_node.value) == len(parts) - 2):
+                        if (lang_node.value in parts and parts.index(lang_node.value) == len(parts) - 2):
                             continue
-                    to_skip_language_nodes.append(lang_node)
-                elif lang not in langs:
-                    langs[lang] = lang_node
-                else:
-                    # The same language was found. Keep the more confident one,
-                    # and add others to skip for 2nd pass.
-                    existing_lang_node = langs[lang]
-                    to_skip = None
-                    if (existing_lang_node.guess.confidence('language') >=
-                        lang_node.guess.confidence('language')):
-                        # lang_node is to remove
-                        to_skip = lang_node
-                    else:
-                        # existing_lang_node is to remove
-                        langs[lang] = lang_node
-                        to_skip = existing_lang_node
-                    to_skip_language_nodes.append(to_skip)
 
-        if to_skip_language_nodes:
+                    to_skip_langs.add(lang_node.value)
+
+        if to_skip_langs:
             # Also skip same value nodes
-            skipped_values = [skip_node.value for skip_node in to_skip_language_nodes]
+            lang_nodes = (set(mtree.leaves_containing('language')) |
+                          set(mtree.leaves_containing('subtitleLanguage')))
 
-            for lang_key in ('language', 'subtitleLanguage'):
-                lang_nodes = set(mtree.leaves_containing(lang_key))
+            to_skip = [node for node in lang_nodes if node.value in to_skip_langs]
+            return {'skip_nodes': to_skip}
 
-                for lang_node in lang_nodes:
-                    if lang_node not in to_skip_language_nodes and lang_node.value in skipped_values:
-                        to_skip_language_nodes.append(lang_node)
-            return {'skip_nodes': to_skip_language_nodes}
         return None
 
     def should_process(self, mtree, options=None):
