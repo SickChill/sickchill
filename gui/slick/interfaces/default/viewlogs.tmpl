@@ -41,7 +41,7 @@ function(){
             \$('#minLevel').prop('disabled', true);
             \$('#logFilter').prop('disabled', true);
             \$('#logSearch').prop('disabled', false);
-	    } 
+        } 
 
          document.body.style.cursor='default';
     });
@@ -64,18 +64,18 @@ function(){
 </script>
 
 #if $varExists('header') 
-	<h1 class="header">$header</h1>
+    <h1 class="header">$header</h1>
 #else 
-	<h1 class="title">$title</h1>
+    <h1 class="title">$title</h1>
 #end if
 
 <div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
 #set $levels = $reverseNames.keys()
 $levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
 #for $level in $levels:
-	#if not $sickbeard.DEBUG and ($level == 'DEBUG' or $level == 'DB')
-		#continue
-	#end if
+    #if not $sickbeard.DEBUG and ($level == 'DEBUG' or $level == 'DB')
+        #continue
+    #end if
 <option value="$reverseNames[$level]" #if $minLevel == $reverseNames[$level] then "selected=\"selected\"" else ""#>$level.title()</option>
 #end for
 </select>
