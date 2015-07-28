@@ -3674,7 +3674,10 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
     if f and data and http_headers:
         if gzip and 'gzip' in http_headers.get('content-encoding', ''):
             try:
-                data = gzip.GzipFile(fileobj=_StringIO(data)).read()
+                attempts = 0
+                while(data[0] == '\x1f' and data[1] == '\x8b' and attempts < 3):
+                    attempts += 1
+                    data = gzip.GzipFile(fileobj=_StringIO(data)).read()
             except (IOError, struct.error), e:
                 # IOError can occur if the gzip header is bad.
                 # struct.error can occur if the data is damaged.

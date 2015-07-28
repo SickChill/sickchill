@@ -239,7 +239,7 @@ class ThePirateBayProvider(generic.TorrentProvider):
                 if not data:
                     continue
 
-                re_title_url = self.proxy._buildRE(self.re_title_url)
+                re_title_url = self.proxy._buildRE(self.re_title_url).replace('&amp;f=norefer', '')
                 matches = re.compile(re_title_url, re.DOTALL).finditer(urllib.unquote(data))
                 for torrent in matches:
                     title = torrent.group('title').replace('_',

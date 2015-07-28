@@ -105,5 +105,25 @@ $(document).ready(function () {
 			}
 		});
 	});
-	
+
+	$('a.submiterrors').bind("click",function(e) {
+		e.preventDefault();
+		var target = $( this ).attr('href');
+		$.confirm({
+			'title'		: 'Submit Errors',
+			'message'	: 'Are you sure you want to submit these errors ?<br /><br /><span class="red-text">You should trigger this error with debug enabled before submitting</span>',
+			'buttons'	: {
+				'Yes'	: {
+					'class' : 'green',
+					'action': function(){
+						location.href = target;
+					}
+				},
+				'No'	: {
+					'class' : 'red',
+					'action': function(){}  // Nothing to do in this case. You can as well omit the action property.
+				}
+			}
+		});
+	});
 });
