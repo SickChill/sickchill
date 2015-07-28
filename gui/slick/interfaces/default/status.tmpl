@@ -9,9 +9,9 @@
 #set global $topmenu="config"#
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -29,17 +29,17 @@
 }
 
 <script type="text/javascript">
-    \$(document).ready(function() { 
+    \$(document).ready(function() {
         \$("#schedulerStatusTable").tablesorter({
-            widgets: ['saveSort', 'zebra'] 
-        }); 
-    }); 
-    \$(document).ready(function() { 
+            widgets: ['saveSort', 'zebra']
+        });
+    });
+    \$(document).ready(function() {
         \$("#queueStatusTable").tablesorter({
             widgets: ['saveSort', 'zebra'],
             sortList: [[3,0], [4,0], [2,1]]
-        }); 
-    }); 
+        });
+    });
 </script>
 
 <div id="config-content">

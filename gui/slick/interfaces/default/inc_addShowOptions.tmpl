@@ -13,7 +13,7 @@
             </label>
         </div>
         #end if
-        
+
         <div class="field-pair">
             <label for="statusSelect">
                 <span class="component-title">Status for previously aired episodes</span>
@@ -75,7 +75,7 @@
         #set global $anyQualities = $qualities[0]
         #set global $bestQualities = $qualities[1]
         #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
-        
+
         <br>
         <div class="field-pair alt">
             <label for="saveDefaultsButton" class="nocheck clearfix">
@@ -86,7 +86,7 @@
             </label>
         </div><br>
 
-#if $enable_anime_options        
+#if $enable_anime_options
 #import sickbeard.blackandwhitelist
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
 #else

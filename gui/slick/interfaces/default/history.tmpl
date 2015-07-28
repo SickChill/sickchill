@@ -34,8 +34,8 @@
     type: 'numeric'
 });
 
-\$(document).ready(function() 
-{ 
+\$(document).ready(function()
+{
     \$("#historyTable:has(tbody tr)").tablesorter({
         widgets: ['zebra', 'filter'],
         sortList: [[0,1]],
@@ -60,7 +60,7 @@
           5: { sorter: 'quality' }
         #end if
       }
-        
+
     });
     \$('#limit').change(function(){
         url = '$sbRoot/history/?limit='+\$(this).val()
@@ -82,12 +82,12 @@
 });
 //-->
 </script>
-#if $varExists('header') 
+#if $varExists('header')
   <h1 class="header">$header</h1>
-#else 
+#else
   <h1 class="title">$title</h1>
 #end if
-<div class="h2footer pull-right"><b>Limit:</b> 
+<div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
         <option value="$sbRoot/setHistoryLimit/?history_limit=100" #if $history_limit == "100" then "selected=\"selected\"" else ""#>100</option>
         <option value="$sbRoot/setHistoryLimit/?history_limit=250" #if $history_limit == "250" then "selected=\"selected\"" else ""#>250</option>
@@ -96,7 +96,7 @@
     </select>
 
 
-    <span> Layout: 
+    <span> Layout:
         <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
             <option value="$sbRoot/setHistoryLayout/?layout=compact" #if $sickbeard.HISTORY_LAYOUT == "compact" then "selected=\"selected\"" else ""#>Compact</option>
             <option value="$sbRoot/setHistoryLayout/?layout=detailed" #if $sickbeard.HISTORY_LAYOUT == "detailed" then "selected=\"selected\"" else ""#>Detailed</option>
@@ -116,13 +116,13 @@
                 <th>Quality</th>
             </tr>
         </thead>
-        
+
         <tfoot>
             <tr>
                 <th class="nowrap" colspan="5">&nbsp;</th>
             </tr>
         </tfoot>
-    
+
         <tbody>
         #for $hItem in $historyResults:
             #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($hItem["action"]))
@@ -138,14 +138,14 @@
                 </td>
                 <td align="center">
                 #if $curStatus == DOWNLOADED:
-                    #if $hItem["provider"] != "-1": 
+                    #if $hItem["provider"] != "-1":
                         <span style="vertical-align:middle;"><i>$hItem["provider"]</i></span>
                     #end if
                 #else
                     #if $hItem["provider"] > 0
                         #if $curStatus in [SNATCHED, FAILED]:
                             #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
-                            #if $provider != None: 
+                            #if $provider != None:
                                 <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">$provider.name</span>
                             #else:
                                 <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
@@ -172,19 +172,19 @@
                 <th>Episode</th>
                 <th>Snatched</th>
                 <th>Downloaded</th>
-            #if sickbeard.USE_SUBTITLES 
+            #if sickbeard.USE_SUBTITLES
                 <th>Subtitled</th>
             #end if
                 <th>Quality</th>
             </tr>
         </thead>
-        
+
         <tfoot>
             <tr>
                 <th class="nowrap" colspan="6">&nbsp;</th>
             </tr>
         </tfoot>
-        
+
         <tbody>
         #for $hItem in $compactResults:
             <tr>
@@ -198,14 +198,14 @@
                         #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
                         #if $curStatus in [SNATCHED, FAILED]:
                             #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($action["provider"]))
-                            #if $provider != None: 
-                                <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" alt="$provider.name" style="cursor: help;" title="$provider.name: $os.path.basename($action["resource"])"/> 
+                            #if $provider != None:
+                                <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" alt="$provider.name" style="cursor: help;" title="$provider.name: $os.path.basename($action["resource"])"/>
                             #else:
                                 <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
                             #end if
-                        #end if    
+                        #end if
                     #end for
-                </td> 
+                </td>
                 <td align="center">
                     #for $action in sorted($hItem["actions"]):
                         #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
@@ -224,10 +224,10 @@
                         #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($action["action"]))
                         #if $curStatus == SUBTITLED:
                             <img src="$sbRoot/images/subtitles/${action['provider']}.png" width="16" height="16" style="vertical-align:middle;" alt="$action["provider"]" title="<%=action["provider"].capitalize()%>: $os.path.basename($action["resource"])"/>
-                            <span style="vertical-align:middle;"> / </span> 
+                            <span style="vertical-align:middle;"> / </span>
                             <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/flags/${action['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';" style="vertical-align: middle !important;">
                             &nbsp;
-                        #end if    
+                        #end if
                     #end for
                 </td>
                 #end if

@@ -14,9 +14,9 @@
         #elif $sickbeard.THEME_NAME == "light":
         <meta name="theme-color" content="#333333">
         #end if
-    
+
         <title>SickRage - BRANCH:[$sickbeard.BRANCH] - $title</title>
-    
+
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -73,7 +73,7 @@
         <script type="text/javascript" src="$sbRoot/js/lib/jquery.confirm.js?$sbPID"></script>
         <script type="text/javascript" src="$sbRoot/js/script.js?$sbPID"></script>
 
-        
+
         #if $sickbeard.FUZZY_DATING:
         <script type="text/javascript" src="$sbRoot/js/moment/moment.min.js?$sbPID"></script>
         <script type="text/javascript" src="$sbRoot/js/fuzzyMoment.js?$sbPID"></script>
@@ -127,18 +127,18 @@
                 \$("#SubMenu a:contains('Update show in KODI')").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update show in KODI');
                 \$("#SubMenu a[href$='/home/updateKODI/']").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update KODI');
                 \$("#SubMenu a:contains('Pause')").addClass('btn').html('<span class="ui-icon ui-icon-pause pull-left"></span> Pause');
-                \$("#SubMenu a:contains('Resume')").addClass('btn').html('<span class="ui-icon ui-icon-play pull-left"></span> Resume');                
-                
+                \$("#SubMenu a:contains('Resume')").addClass('btn').html('<span class="ui-icon ui-icon-play pull-left"></span> Resume');
+
             }
-        
+
             \$(document).ready(function() {
-                
+
                 initActions();
-                
+
                 \$("#NAV$topmenu").addClass("active");
-                
+
                 \$('.dropdown-toggle').dropdownHover();
-                
+
             });
         //-->
         </script>
@@ -171,15 +171,15 @@
                         <li id="NAVhome">
                             <a href="$sbRoot/home/">Shows</a>
                         </li>
-                        
+
                         <li id="NAVcomingEpisodes">
                             <a href="$sbRoot/comingEpisodes/">Coming Episodes</a>
                         </li>
-                        
+
                         <li id="NAVhistory">
                             <a href="$sbRoot/history/">History</a>
                         </li>
-                        
+
                         <li id="NAVmanage" class="dropdown">
                             <a href="$sbRoot/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -192,7 +192,7 @@
                             #end if
                             #if $sickbeard.USE_KODI and $sickbeard.KODI_HOST != "":
                                 <li><a href="$sbRoot/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
-                            #end if    
+                            #end if
                             #if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
                             and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \
                             or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):
@@ -206,7 +206,7 @@
                             #end if
                             </ul>
                         </li>
-                        
+
                         <li id="NAVerrorlogs" class="dropdown">
                             <a href="$sbRoot/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">$logPageTitle <b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -214,7 +214,7 @@
                                 <li><a href="$sbRoot/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
                             </ul>
                         </li>
-                        
+
                         <li id="NAVconfig" class="dropdown">
                             <a href="$sbRoot/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="$sbRoot/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
@@ -229,7 +229,7 @@
                                 <li><a href="$sbRoot/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
                             </ul>
                         </li>
-                        
+
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="$sbRoot/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
                             <ul class="dropdown-menu">
@@ -253,7 +253,7 @@
         <span>
         #set $first = True
         #for $menuItem in $submenu:
-            #if 'requires' not in $menuItem or $menuItem.requires():      
+            #if 'requires' not in $menuItem or $menuItem.requires():
                   #if type($menuItem.path) == dict:
                       #if $first then "" else "</span><span>"#<b>$menuItem.title</b>
                       #set $first = False
@@ -271,14 +271,14 @@
         </span>
         </div>
         #end if
-          
+
           #if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER and $sbLogin
         <div class="alert alert-danger upgrade-notification" role="alert">
             <span>You're using the $sickbeard.BRANCH branch. Please use 'master' unless specifically asked</span>
         </div>
         #end if
-        
-        #if $sickbeard.NEWEST_VERSION_STRING and $sbLogin    
+
+        #if $sickbeard.NEWEST_VERSION_STRING and $sbLogin
         <div class="alert alert-success upgrade-notification" role="alert">
             <span>$sickbeard.NEWEST_VERSION_STRING</span>
         </div>

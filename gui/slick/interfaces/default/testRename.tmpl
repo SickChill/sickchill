@@ -9,9 +9,9 @@
 #import os.path
 #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 
@@ -83,7 +83,7 @@
 #if len($epList) > 1:
     #set $epList = [$min($epList), $max($epList)]
 #end if
-        <tr class="season-$curSeason 
+        <tr class="season-$curSeason
             #if $curLoc == $newLoc:
                 good
             #else

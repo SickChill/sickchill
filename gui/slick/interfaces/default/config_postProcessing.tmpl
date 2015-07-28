@@ -17,9 +17,9 @@
 <script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?$sbPID"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <div id="content960">
-#if $varExists('header') 
+#if $varExists('header')
     <h1 class="header">$header</h1>
-#else 
+#else
     <h1 class="title">$title</h1>
 #end if
 <div id="config">
@@ -33,7 +33,7 @@
                     <li><a href="#core-component-group2">Episode Naming</a></li>
                     <li><a href="#core-component-group3">Metadata</a></li>
                 </ul>
-                
+
                 <div id="core-component-group1" class="component-group">
 
                     <div class="component-group-desc">
@@ -64,7 +64,7 @@
                                 <span class="component-desc">Or if SABnzbd+ and SickRage are on different PCs.</span>
                             </label>
                         </div>
-       
+
                         <div class="field-pair">
                             <label class="nocheck" for="process_method">
                                 <span class="component-title">Process Episode Method:</span>
@@ -79,7 +79,7 @@
                                           #end if
                                         <option value="$curAction" $process_method>$process_method_text[$curAction]</option>
                                         #end for
-                                    </select>                                
+                                    </select>
                                 </span>
                             </label>
                             <label class="nocheck">
@@ -92,7 +92,7 @@
                             <label for="del_rar_contents">
                                 <span class="component-title">Delete RAR contents</span>
                                 <span class="component-desc">Delete content of RAR files, even if Process Method not set to move?</span>
-                            </label>    
+                            </label>
                         </div>
                         <div class="field-pair">
                             <input type="checkbox" name="skip_removed_files" id="skip_removed_files" #if $sickbeard.SKIP_REMOVED_FILES == True then "checked=\"checked\"" else ""# />
@@ -103,7 +103,7 @@
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
                                 <span class="component-desc"><b>NOTE:</b> This may mean SickRage misses renames as well</span>
-                            </label>    
+                            </label>
                         </div>
                         <div class="field-pair">
                             <label class="nocheck">
@@ -197,9 +197,9 @@
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
                                 <span class="component-desc">eg. NZBMedia w/ NZBGET, sabToSickbeard w/ SABnzbd+!</span>
-                            </label>                            
+                            </label>
                         </div>
-                        
+
                         <div class="field-pair">
                             <input type="checkbox" name="no_delete" id="no_delete" #if $sickbeard.NO_DELETE == True then "checked=\"checked\"" else ""# />
                             <label for="no_delete">
@@ -234,7 +234,7 @@
                                 <span class="component-desc"><b>NOTE:</b> Only working with RAR archive</span>
                             </label>
                         </div>
-                    
+
                         <div class="field-pair">
                             <input id="use_failed_downloads" type="checkbox" class="enabler" name="use_failed_downloads" #if $sickbeard.USE_FAILED_DOWNLOADS == True then "checked=\"checked\"" else ""# />
                             <label for="use_failed_downloads">
@@ -245,7 +245,7 @@
                                 <span class="component-title">&nbsp;</span>
                             </label>
                         </div>
-                        
+
                         <div id="content_use_failed_downloads">
                             <div class="field-pair">
                                 <input id="delete_failed" type="checkbox" name="delete_failed" #if $sickbeard.DELETE_FAILED == True then "checked=\"checked\"" else ""# />
@@ -431,7 +431,7 @@
                                   <br/>
                             </div>
                         </div>
-                        
+
                         <div class="field-pair">
                             <label class="nocheck" for="naming_multi_ep">
                                 <span class="component-title">Multi-Episode Style:</span>
@@ -461,16 +461,16 @@
                             <br/>
                         </div>
 
-                        <div class="field-pair">                                                                                                                          
-                            <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" #if $sickbeard.NAMING_STRIP_YEAR then "checked=\"checked\"" else ""#/> 
-                            <label for="naming_strip_year">                                                                                              
-                                <span class="component-title">Strip Show Year</span>                                                                                      
-                                <span class="component-desc">Remove the TV show's year when renaming the file?</span>                                                     
-                            </label>                                                                                                                                      
-                            <label class="nocheck">                                                                                                              
-                                <span class="component-title">&nbsp;</span>                                                                                               
-                                <span class="component-desc">Only applies to shows that have year inside parentheses</span>                                         
-                            </label>                                                                                                                                      
+                        <div class="field-pair">
+                            <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" #if $sickbeard.NAMING_STRIP_YEAR then "checked=\"checked\"" else ""#/>
+                            <label for="naming_strip_year">
+                                <span class="component-title">Strip Show Year</span>
+                                <span class="component-desc">Remove the TV show's year when renaming the file?</span>
+                            </label>
+                            <label class="nocheck">
+                                <span class="component-title">&nbsp;</span>
+                                <span class="component-desc">Only applies to shows that have year inside parentheses</span>
+                            </label>
                         </div>
 
                         <div class="field-pair">
@@ -639,7 +639,7 @@
                                       <br/>
                                 </div>
                             </div><!-- /naming_abd_custom -->
-                            
+
                             <div id="naming_abd_example_div">
                                 <h3>Sample:</h3>
                                 <div class="example">
@@ -816,7 +816,7 @@
                                       <br/>
                                 </div>
                             </div><!-- /naming_sports_custom -->
-                            
+
                             <div id="naming_sports_example_div">
                                 <h3>Sample:</h3>
                                 <div class="example">
@@ -1086,7 +1086,7 @@
                             <span>Toggle the metadata options that you wish to be created. <b>Multiple targets may be used.</b></span>
                         </div>
 
-                        #for ($cur_name, $cur_generator) in $m_dict.items(): 
+                        #for ($cur_name, $cur_generator) in $m_dict.items():
                         #set $cur_metadata_inst = $sickbeard.metadata_provider_dict[$cur_generator.name]
                         #set $cur_id = $cur_generator.get_id()
                         <div class="metadataDiv" id="$cur_id">
@@ -1125,11 +1125,11 @@
                         #end for
 
                         <div class="clearfix"></div><br/>
-                        
+
                         <input type="submit" class="btn config_submitter" value="Save Changes" /><br/>
                     </fieldset>
                 </div><!-- /component-group3 //-->
-                
+
                 <br/>
                 <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
