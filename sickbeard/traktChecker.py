@@ -324,7 +324,7 @@ class TraktChecker():
                             logger.log(u"Could not connect to Trakt service: %s" % ex(e), logger.WARNING)
                             return
 
-                        if progress['aired'] == progress['completed']:
+                        if 'aired' in progress and 'completed' in progress and progress['aired'] == progress['completed']:
                             show.deleteShow(full=True)
                             logger.log(u"Show: " + show.name + " has been removed from SickRage", logger.DEBUG)
 
