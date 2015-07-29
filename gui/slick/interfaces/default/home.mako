@@ -1,51 +1,53 @@
-#import sickbeard
-#import calendar
-#import datetime
-#from sickbeard.common import *
-#from sickbeard import db, sbdatetime, network_timezones
+<%!
+    import sickbeard
+    import calendar
+    import datetime
+    from sickbeard.common import *
+    from sickbeard import db, sbdatetime, network_timezones
 
-#set global $title="Home"
-#set global $header="Show List"
+    global $title="Home"
+    global $header="Show List"
 
-#set global $sbPath = ".."
+    global $sbPath = ".."
 
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global $topmenu="home"
+    import os.path
+    include $os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
-#set $myDB = $db.DBConnection()
-#set $today = str($datetime.date.today().toordinal())
-#set $layout = $sickbeard.HOME_LAYOUT
+    myDB = $db.DBConnection()
+    today = str($datetime.date.today().toordinal())
+    layout = $sickbeard.HOME_LAYOUT
 
-#set status_quality = '(' + ','.join([str(x) for x in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
-#set status_download = '(' + ','.join([str(x) for x in $Quality.DOWNLOADED + [$ARCHIVED]]) + ')'
+    status_quality = '(' + ','.join([str(x) for x in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
+    status_download = '(' + ','.join([str(x) for x in $Quality.DOWNLOADED + [$ARCHIVED]]) + ')'
 
-#set $sql_statement = 'SELECT showid, '
+    sql_statement = 'SELECT showid, '
 
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_quality + ') AS ep_snatched, '
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_quality + ') AS ep_snatched, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
 
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
-#set $sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str($SKIPPED) + ' OR status = ' + str($WANTED) + ' OR status = ' + str($FAILED) + ')) '
-#set $sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
+    sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str($SKIPPED) + ' OR status = ' + str($WANTED) + ' OR status = ' + str($FAILED) + ')) '
+    sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
-#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str($UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
-#set $sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str($UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
+    sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-#set $sql_result = $myDB.select($sql_statement)
+    sql_result = $myDB.select($sql_statement)
 
-#set $show_stat = {}
-#set $max_download_count = 1000
+    show_stat = {}
+    max_download_count = 1000
 
-#for $cur_result in $sql_result:
-    #set $show_stat[$cur_result['showid']] = $cur_result
-    #if $cur_result['ep_total'] > $max_download_count:
-        #set $max_download_count = $cur_result['ep_total']
-    #end if
-#end for
+    for cur_result in sql_result:
+        show_stat[cur_result['showid']] = cur_result
+        if cur_result['ep_total'] > max_download_count:
+            max_download_count = cur_result['ep_total']
+        endif
+    endfor
 
-#set $max_download_count = $max_download_count * 100
+    max_download_count = max_download_count * 100
+%>
 
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -59,11 +61,11 @@
         if (s.indexOf('Loading...') == 0)
           return s.replace('Loading...','000');
         else
-        #if not $sickbeard.SORT_ARTICLE:
+        % ifnot $sickbeard.SORT_ARTICLE:
             return (s || '').replace(/^(The|A|An)\s/i,'');
-        #else:
+        % else:
             return (s || '');
-        #end if
+        % endif
     },
     type: 'text'
 });
@@ -142,7 +144,7 @@
                 #end if
         },
         widgetOptions : {
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
                 filter_saveFilters : true,
@@ -201,9 +203,9 @@
                         return test;
                     },
                 },
-            #else
+            % else
                 filter_columnFilters: false,
-            #end if
+            endif
             filter_reset: '.resetshows',
             columnSelector_mediaquery: false,
         },
@@ -233,7 +235,7 @@
             #end if
         },
         widgetOptions : {
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
                 filter_saveFilters : true,
@@ -292,9 +294,9 @@
                         return test;
                     },
                 },
-            #else
+            % else
                 filter_columnFilters: false,
-            #end if
+            % endif
             filter_reset: '.resetanime',
             columnSelector_mediaquery: false,
         },
@@ -305,20 +307,20 @@
     if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
         \$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
 
-    #if $sickbeard.ANIME_SPLIT_HOME:
+    % if $sickbeard.ANIME_SPLIT_HOME:
         if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
-    #end if
+    % end if
 
-    #set $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
+    % fuzzydate = 'airdate'
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
-        dtInline : #if $layout == 'poster' then "true" else "false"#,
+        dtInline : ${('true', 'false')[sickbeard.layout == 'poster']},
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
     });
     #end if
 
@@ -327,8 +329,8 @@
     jQuery.each(\$container, function (j) {
         this.isotope({
             itemSelector: '.show',
-            sortBy : '$sickbeard.POSTER_SORTBY',
-            sortAscending: $sickbeard.POSTER_SORTDIR,
+            sortBy : '${sickbeard.POSTER_SORTBY}',
+            sortAscending: ${sickbeard.POSTER_SORTDIR},
             layoutMode: 'masonry',
             masonry: {
                 columnWidth: 13,
@@ -337,11 +339,11 @@
             getSortData: {
                 name: function( itemElem ) {
                     var name = \$( itemElem ).attr('data-name');
-                    #if not $sickbeard.SORT_ARTICLE:
+                    % ifnot sickbeard.SORT_ARTICLE:
                         return (name || '').replace(/^(The|A|An)\s/i,'');
-                    #else:
+                    % else:
                         return (name || '');
-                    #end if
+                    % endif
                 },
                 network: '[data-network]',
                 date: function( itemElem ) {
@@ -381,9 +383,9 @@
         .on('shown.bs.popover', function () {
           // call this function to copy the column selection code into the popover
           \$.tablesorter.columnSelector.attachTo( \$('#showListTableShows'), '#popover-target');
-          #if $sickbeard.ANIME_SPLIT_HOME:
+          % if sickbeard.ANIME_SPLIT_HOME:
             \$.tablesorter.columnSelector.attachTo( \$('#showListTableAnime'), '#popover-target');
-          #end if
+          % endif
         });
 
 });
@@ -391,45 +393,45 @@
 //-->
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% end if
 
 <div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
-    #if $layout != 'poster':
+    % if layout != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Column</button>
-    #end if
+    % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="$sbRoot/setHomeLayout/?layout=poster" #if $sickbeard.HOME_LAYOUT == "poster" then "selected=\"selected\"" else ""#>Poster</option>
-            <option value="$sbRoot/setHomeLayout/?layout=small" #if $sickbeard.HOME_LAYOUT == "small" then "selected=\"selected\"" else ""#>Small Poster</option>
-            <option value="$sbRoot/setHomeLayout/?layout=banner" #if $sickbeard.HOME_LAYOUT == "banner" then "selected=\"selected\"" else ""#>Banner</option>
-            <option value="$sbRoot/setHomeLayout/?layout=simple" #if $sickbeard.HOME_LAYOUT == "simple" then "selected=\"selected\"" else ""#>Simple</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=small" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
         </select>
-        #if $layout != 'poster':
+        % if layout != 'poster':
         Search:
             <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
             <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
-        #end if
+        % endif
     </span>
 
-    #if $layout == 'poster':
+    % if layout == 'poster':
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
-            <option value="name" data-sort="$sbRoot/setPosterSortBy/?sort=name" #if $sickbeard.POSTER_SORTBY == "name" then "selected=\"selected\"" else ""#>Name</option>
-            <option value="date" data-sort="$sbRoot/setPosterSortBy/?sort=date" #if $sickbeard.POSTER_SORTBY == "date" then "selected=\"selected\"" else ""#>Next Episode</option>
-            <option value="network" data-sort="$sbRoot/setPosterSortBy/?sort=network" #if $sickbeard.POSTER_SORTBY == "network" then "selected=\"selected\"" else ""#>Network</option>
-            <option value="progress" data-sort="$sbRoot/setPosterSortBy/?sort=progress" #if $sickbeard.POSTER_SORTBY == "progress" then "selected=\"selected\"" else ""#>Progress</option>
+            <option value="name" data-sort="${sbRoot}/setPosterSortBy/?sort=name" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
+            <option value="date" data-sort="${sbRoot}/setPosterSortBy/?sort=date" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
+            <option value="network" data-sort="${sbRoot}/setPosterSortBy/?sort=network" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
+            <option value="progress" data-sort="${sbRoot}/setPosterSortBy/?sort=progress" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
         </select>
     </span>
     &nbsp;
     <span> Sort Order:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="$sbRoot/setPosterSortDir/?direction=1" #if $sickbeard.POSTER_SORTDIR == 1 then "selected=\"selected\"" else ""#>Asc</option>
-            <option value="false" data-sort="$sbRoot/setPosterSortDir/?direction=0" #if $sickbeard.POSTER_SORTDIR == 0 then "selected=\"selected\"" else ""#>Desc</option>
+            <option value="true" data-sort="${sbRoot}/setPosterSortDir/?direction=1" ${(' selected="selected"', '')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
+            <option value="false" data-sort="${sbRoot}/setPosterSortDir/?direction=0" ${(' selected="selected"', '')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
         </select>
     </span>
     &nbsp;
@@ -455,7 +457,7 @@
 
     #if $curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="$curLoadingShow.show_name" class="show-image" style="border-bottom: 1px solid #111;" src="$sbRoot/images/poster.png" />
+            <img alt="" title="$curLoadingShow.show_name" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
             <div class="show-details">
                 <div class="show-add">Loading... ($curLoadingShow.show_name)</div>
             </div>
@@ -537,7 +539,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #end if
     <div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
         <div class="show-image">
-            <a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
         </div>
 
         <div id="progressbar$curShow.indexerid"></div>
@@ -603,9 +605,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                 <td class="show-table">
                     #if $layout != 'simple':
                         #if $curShow.network:
-                            <span title="$curShow.network"><img class="show-network-image" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
+                            <span title="$curShow.network"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
                         #else:
-                            <span title="No Network"><img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
                         #end if
                     #else:
                         <span title="$curShow.network">$curShow.network</span>
@@ -649,7 +651,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
     <tfoot>
         <tr>
-            <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">Add Show</a></th>
+            <th rowspan="1" colspan="1" align="center"><a href="${sbRoot}/home/addShows/">Add Show</a></th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
@@ -780,30 +782,30 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #if $layout == 'small':
         <td class="tvShow">
             <div class="imgsmallposter $layout">
-                <a href="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=$layout" rel="dialog" title="$curShow.name">
-                    <img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" class="$layout" alt="$curShow.indexerid"/>
+                <a href="${sbRoot}/showPoster/?show=$curShow.indexerid&amp;which=$layout" rel="dialog" title="$curShow.name">
+                    <img src="${sbRoot}/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" class="$layout" alt="$curShow.indexerid"/>
                 </a>
-                <a href="$sbRoot/home/displayShow?show=$curShow.indexerid" style="vertical-align: middle;">$curShow.name</a>
+                <a href="${sbRoot}/home/displayShow?show=$curShow.indexerid" style="vertical-align: middle;">$curShow.name</a>
             </div>
         </td>
     #else if $layout == 'banner':
         <td>
             <span style="display: none;">$curShow.name</span>
             <div class="imgbanner $layout">
-                <a href="$sbRoot/home/displayShow?show=$curShow.indexerid">
-                <img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=banner" class="$layout" alt="$curShow.indexerid" title="$curShow.name"/>
+                <a href="${sbRoot}/home/displayShow?show=$curShow.indexerid">
+                <img src="${sbRoot}/showPoster/?show=$curShow.indexerid&amp;which=banner" class="$layout" alt="$curShow.indexerid" title="$curShow.name"/>
             </div>
         </td>
     #else if $layout == 'simple':
-        <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
+        <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
     #end if
 
     #if $layout != 'simple':
         <td align="center">
         #if $curShow.network:
-            <span title="$curShow.network"><img id="network" width="54" height="27" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
+            <span title="$curShow.network"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
         #else:
-            <span title="No Network"><img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
         #end if
         </td>
     #else:
@@ -849,9 +851,9 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
         <td align="center">
 #if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
-            <img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
+            <img src="${sbRoot}/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
 #else
-            <img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
+            <img src="${sbRoot}/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
 #end if
         </td>
 
