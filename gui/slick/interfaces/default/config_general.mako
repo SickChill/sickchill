@@ -10,13 +10,13 @@
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard.helpers import anon_url
 
-    global $title  = 'Config - General'
-    global $header = 'General Configuration'
+    global title  = 'Config - General'
+    global header = 'General Configuration'
 
-    global $sbPath = '../..'
+    global sbPath = '../..'
 
-    global $topmenu = 'config'
-    include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+    global topmenu = 'config'
+    include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
 %>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -29,9 +29,9 @@
     % indexer = $sickbeard.INDEXER_DEFAULT
 % endif
 
-<script type="text/javascript" src="${sbRoot}/js/config.js?$sbPID"></script>
-<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
     <!--
@@ -80,7 +80,7 @@
                             <label for="indexerDefaultLang">
                                 <span class="component-title">Default Indexer Language</span>
                                 <span class="component-desc">
-                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select>
+                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="#echo ','.join(${sickbeard.indexerApi().config['valid_languages']})#"></select>
                                     <span>for adding shows and metadata providers</span>
                                 </span>
                             </label>
@@ -213,7 +213,7 @@
                                 <span class="component-title">Show root directories</span>
                                 <span class="component-desc">
                                     <p>where the files of shows are located</p>
-                                    % include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.tmpl')
+                                    % include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.mako')
                                 </span>
                             </label>
                         </div>
@@ -688,25 +688,25 @@
                                 <span class="component-title">Branch version:</span>
                                 <span class="component-desc">
                                     <select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-                                    % $gh_branch = $sickbeard.versionCheckScheduler.action.list_remote_branches()
-                                    % if $gh_branch:
-                                        % for $cur_branch in $gh_branch:
-                                            % if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $sickbeard.DEVELOPER == 1
-                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
-                                            % elseif $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $cur_branch in ['master', 'develop']
-                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
-                                            % elseif $cur_branch == 'master'
-                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                    % gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches()
+                                    % if gh_branch:
+                                        % for cur_branch in gh_branch:
+                                            % if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and sickbeard.DEVELOPER == 1
+                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % elseif sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD and cur_branch in ['master', 'develop']
+                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % elseif cur_branch == 'master'
+                                                <option value="${cur_branch}" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
                                             % endif
                                         % endfor
                                     % endif
                                     </select>
-                                    % if not $gh_branch
+                                    % if not gh_branch
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
                                     % else
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
                                     % endif
-                                    % if not $gh_branch
+                                    % if not gh_branch
                                        <div class="clear-left" style="color:#FF0000"><p>Error: No branches found.</p></div>
                                     % else
                                        <div class="clear-left"><p>select branch to use (restart required)</p></div>
@@ -801,4 +801,4 @@
 //-->
 </script>
 
-% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
