@@ -370,9 +370,9 @@
 
                                     <select class="form-control input-sm #if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
                                         <option value="%x" #if "%x" == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>Use System Default</option>
-                                        #for $cur_preset in $date_presets:
+                                        % for cur_preset in date_presets:
                                             <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
-                                        #end for
+                                        % endfor
                                     </select>
                                 </span>
                             </label>
@@ -383,9 +383,9 @@
                                 <span class="component-title">Time style:</span>
                                 <span class="component-desc">
                                     <select id="time_presets" name="time_preset" class="form-control input-sm">
-                                         % for $cur_preset in $time_presets:
-                                            <option value="$cur_preset" <% if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else '' %>>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
-                                         % end for
+                                         % for cur_preset in time_presets:
+                                            <option value="${cur_preset}" <% if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else '' %>>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
+                                         % endfor
                                     </select>
                                     <span><b>note:</b> seconds are only shown on the History page</span>
                                 </span>
@@ -556,8 +556,8 @@
                                 <span class="component-title">CPU throttling:</span>
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
-                                    % for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" <% if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else '' %>>$cur_preset.capitalize()</option>
+                                    % for cur_preset in cpu_presets:
+                                        <option value="$cur_preset" <% if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else '' %>>${cur_preset.capitalize()}</option>
                                     % endfor
                                     </select>
                                     <span>Normal (default). High is lower and Low is higher CPU use</span>
@@ -652,7 +652,7 @@
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
-% if not $sickbeard.SKIP_REMOVED_FILES or ($sickbeard.USE_TRAKT and $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
+% if not sickbeard.SKIP_REMOVED_FILES or (sickbeard.USE_TRAKT and sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
                                         % for defStatus in [$ARCHIVED, $IGNORED]:
                                             <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
