@@ -16,10 +16,10 @@
     set $sort = $sickbeard.COMING_EPS_SORT
 %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?$sbPID"></script>
-% if $varExists('header')
-    <h1 class="header">$header</h1>
+% if varExists('header')
+    <h1 class="header">${header}</h1>
 % else
-    <h1 class="title">$title</h1>
+    <h1 class="title">${title}</h1>
 % endif
 
 <style type="text/css">
