@@ -8,7 +8,7 @@
     global $sbPath="../.."
 
     global $topmenu="config"#
-    include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
 
 <script type="text/javascript" src="${sbRoot}/js/configAnime.js?${sbPID}"></script>
@@ -108,4 +108,4 @@
 </div>
 
 
-% include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+% include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")

@@ -8,15 +8,15 @@
     from sickbeard import config
     from sickbeard import metadata
     from sickbeard.metadata.generic import GenericMetadata
-    global $title  = "Config - Backup/Restore"
-    global $header = "Backup/Restore"
+    global title  = "Config - Backup/Restore"
+    global header = "Backup/Restore"
 
-    global $sbPath="../.."
+    global sbPath="../.."
 
-    global $topmenu="config"#
-    include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="config"#
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
-<script type="text/javascript" src="$sbRoot/js/configBackupRestore.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -25,11 +25,11 @@
 % endif
 
 % $indexer = 0
-% if $sickbeard.INDEXER_DEFAULT
-    % $indexer = $sickbeard.INDEXER_DEFAULT
+% if sickbeard.INDEXER_DEFAULT
+    % indexer = sickbeard.INDEXER_DEFAULT
 % end if
 
-<script type="text/javascript" src="${sbRoot}/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
 <div id="config">
     <div id="config-content">
@@ -100,4 +100,4 @@
 //-->
 </script>
 
-% include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")

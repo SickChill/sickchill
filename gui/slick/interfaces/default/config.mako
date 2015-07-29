@@ -14,7 +14,7 @@
     global sbPath=".."
 
     global topmenu="config"
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -81,4 +81,4 @@
 </table>
 </div>
 
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
