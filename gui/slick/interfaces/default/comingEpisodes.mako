@@ -400,23 +400,23 @@
                 % elif cur_ep_airdate >= next_week.date():
                     % show_div = 'ep_listing listing-toofar listingradius'
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
-                    % if $cur_ep_airdate == $today.date():
-                        % $show_div = 'ep_listing listing-current listingradius'
+                    % if cur_ep_airdate == today.date():
+                        % show_div = 'ep_listing listing-current listingradius'
                     % else:
-                        % $show_div = 'ep_listing listing-default listingradius'
+                        % show_div = 'ep_listing listing-default listingradius'
                     % endif
                 % endif
             % endif
         % endif
 
-<div class="$show_div" id="listing-${cur_result['showid']}">
+<div class="${show_div}" id="listing-${cur_result['showid']}">
     <div class="tvshowDiv">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <th #if 'banner' == $layout then 'class="nobg"' else 'rowspan="2"'# valign="top">
                 <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="#if 'banner' == $layout then 'bannerThumb' else 'posterThumb'#" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=#if 'poster' == $layout then 'poster_thumb' else $layout#" /></a>
             </th>
-% if 'banner' == $layout:
+% if 'banner' == layout:
         </tr>
         <tr>
 % endif
@@ -425,13 +425,13 @@
                 <div class="clearfix">
                     <span class="tvshowTitle">
                         <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
-                    % if int($cur_result['paused']):
+                    % if int(cur_result['paused']):
                         <span class="pause">[paused]</span>
                     % endif
                     </a></span>
 
                     <span class="tvshowTitleIcons">
-% if $cur_result['imdb_id']:
+% if cur_result['imdb_id']:
                         <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
                         <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
@@ -439,18 +439,18 @@
                     </span>
                 </div>
 
-                <span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']</span>
+                <span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}</span>
 
                 <div class="clearfix">
 
-                    <span class="title">Airs: </span><span class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($cur_result['localtime']).decode($sickbeard.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
+                    <span class="title">Airs: </span><span class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
                 </div>
 
                 <div class="clearfix">
                     <span class="title">Quality:</span>
-                    #if int($cur_result['quality']) in $qualityPresets:
-                        <span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
-                    #else:
+                    % if int(cur_result['quality']) in qualityPresets:
+                        <span class="quality ${qualityPresetStrings[int(cur_result['quality'])}]">${qualityPresetStrings[int(cur_result['quality'])]}</span>
+                    % else:
                         <span class="quality Custom">Custom</span>
                     % endif
                 </div>
@@ -459,9 +459,9 @@
         <tr>
             <td style="vertical-align: top;">
                 <div>
-% if $cur_result['description']:
+% if cur_result['description']:
                         <span class="title" style="vertical-align:middle;">Plot:</span>
-                        <img class="ep_summaryTrigger" src="${sbRoot}/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">$cur_result['description']</div>
+                        <img class="ep_summaryTrigger" src="${sbRoot}/images/plus.png" height="16" width="16" alt="" title="Toggle Summary" /><div class="ep_summary">${cur_result['description']}</div>
 % else:
                         <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">Plot:</span>
                         <img class="ep_summaryTriggerNone" src="${sbRoot}/images/plus.png" height="16" width="16" alt="" />
@@ -473,46 +473,46 @@
     </div>
 </div>
 
-<!-- end $cur_result['show_name'] //-->
+<!-- end ${cur_result['show_name']} //-->
 % endfor
 
 <!-- end non list view //-->
 % endif
 
-% if 'calendar' == $layout:
+% if 'calendar' == layout:
 
-% $today = datetime.date.today()
-% $dates = [$today + datetime.timedelta(days = $i) for $i in range(7)]
-% $tbl_day = 0
+% today = datetime.date.today()
+% dates = [today + datetime.timedelta(days = i) for i in range(7)]
+% tbl_day = 0
 <br>
 <br>
 <div class="calendarWrapper">
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
-    % for $day in $dates
-    % $tbl_day += 1
+    % for day in dates
+    % tbl_day += 1
         <table class="sickbeardTable tablesorter calendarTable <%= 'cal-%s' % (('even', 'odd')[1 == tbl_day % 2]) %>" cellspacing="0" border="0" cellpadding="0">
-        <thead><tr><th>$day.strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</th></tr></thead>
+        <thead><tr><th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th></tr></thead>
         <tbody>
-        % $day_has_show = False
-        % for $cur_result in $sql_results:
-            % if int($cur_result['paused']) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
-                #continue
+        % day_has_show = False
+        % for cur_result in sql_results:
+            % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                % continue
             % endif
 
-            % $cur_indexer = int($cur_result['indexer'])
-            % $runtime = $cur_result['runtime']
-            % $airday = $cur_result['localtime'].date()
+            % cur_indexer = int(cur_result['indexer'])
+            % runtime = cur_result['runtime']
+            % airday = cur_result['localtime'].date()
 
-            % if $airday == $day:
+            % if airday == day:
                 % try
-                    % $day_has_show = True
-                    % $airtime = $sbdatetime.sbdatetime.fromtimestamp($time.mktime($cur_result['localtime'].timetuple())).sbftime().decode($sickbeard.SYS_ENCODING)
-                    % if $sickbeard.TRIM_ZERO:
-                    % $airtime = re.sub(r'0(\d:\d\d)', r'\1', $airtime, 0, re.IGNORECASE | re.MULTILINE)
+                    % day_has_show = True
+                    % airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime().decode(sickbeard.SYS_ENCODING)
+                    % if sickbeard.TRIM_ZERO:
+                    % airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE)
                     % endif
                 % except OverflowError
-                    % $airtime = "Invalid"
-                % end try
+                    % airtime = "Invalid"
+                % endtry
 
                 <tr>
                     <td class="calendarShow">
@@ -521,18 +521,18 @@
                         </div>
                         <div class="text">
                             <span class="airtime">
-                                ${airtime} on $cur_result["network"]
+                                ${airtime} on ${cur_result["network"]}
                             </span>
                             <span class="episode-title" title="$cur_result['name']">
-                                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']
+                                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}
                             </span>
                         </div>
                     </td> <!-- end $cur_result['show_name'] -->
                 </tr>
             % endif
 
-        % end for
-        % if not $day_has_show:
+        % endfor
+        % if not day_has_show:
             <tr><td class="calendarShow"><span class="show-status">No shows for this day</span></td></tr>
         % endif
         </tbody>
@@ -551,4 +551,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
+% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
