@@ -14,7 +14,7 @@
 <script type="text/javascript" src="${sbRoot}/js/configAnime.js?${sbPID}"></script>
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 <div id="content960">
-% if varExists('header')
+% if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else
     <h1 class="title">${title}</h1>

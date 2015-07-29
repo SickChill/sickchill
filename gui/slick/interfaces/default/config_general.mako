@@ -18,7 +18,7 @@
     global $topmenu = 'config'
     include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 %>
-% if varExists('header')
+% if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else
     <h1 class="title">${title}</h1>

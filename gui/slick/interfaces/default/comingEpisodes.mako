@@ -16,7 +16,7 @@
     set $sort = $sickbeard.COMING_EPS_SORT
 %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?$sbPID"></script>
-% if varExists('header')
+% if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else
     <h1 class="title">${title}</h1>
