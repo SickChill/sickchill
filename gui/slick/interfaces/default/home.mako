@@ -61,7 +61,7 @@
         if (s.indexOf('Loading...') == 0)
           return s.replace('Loading...','000');
         else
-        % ifnot $sickbeard.SORT_ARTICLE:
+        % if not $sickbeard.SORT_ARTICLE:
             return (s || '').replace(/^(The|A|An)\s/i,'');
         % else:
             return (s || '');
@@ -339,7 +339,7 @@
             getSortData: {
                 name: function( itemElem ) {
                     var name = \$( itemElem ).attr('data-name');
-                    % ifnot sickbeard.SORT_ARTICLE:
+                    % if not sickbeard.SORT_ARTICLE:
                         return (name || '').replace(/^(The|A|An)\s/i,'');
                     % else:
                         return (name || '');
@@ -439,114 +439,119 @@
     #end if
 </div>
 
-#for $curShowlist in $showlists:
-#set $curListType = $curShowlist[0]
-#set $myShowList = $list($curShowlist[1])
-#if $curListType == "Anime":
+<%
+    curShowlist in showlists:
+    curListType = curShowlist[0]
+    myShowList = list(curShowlist[1])
+%>
+% if curListType == "Anime":
 <h1 class="header">Anime List</h1>
-#end if
+% endif
 
-#if $layout == 'poster':
+% if layout == 'poster':
 <div id=#if $curListType == "Anime" and $layout == 'poster' then "container-anime" else "container"# class="clearfix">
 <div class="posterview">
-#for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
+% for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-    #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
+    % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
     #continue
-    #end if
+    % endif
 
-    #if $curLoadingShow.show == None:
+    % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="$curLoadingShow.show_name" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
             <div class="show-details">
-                <div class="show-add">Loading... ($curLoadingShow.show_name)</div>
+                <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
         </div>
 
-    #end if
+    % endif
 
-#end for
+% endfor
 
-$myShowList.sort(lambda x, y: cmp(x.name, y.name))
-#for $curShow in $myShowList:
+% myShowList.sort(lambda x, y: cmp(x.name, y.name))
+%for curShow in myShowList:
 
-    #set $cur_airs_next = ''
-    #set $cur_snatched = 0
-    #set $cur_downloaded = 0
-    #set $cur_total = 0
-    #set $download_stat_tip = ''
-    #set $display_status = $curShow.status
-    #if None is not $display_status
-        #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-            #set $display_status = 'Continuing'
-        #else if re.search(r'(?i)(?:nded)', $curShow.status)
-            #set $display_status = 'Ended'
-        #end if
-    #end if
+<%
+        cur_airs_next = ''
+        cur_snatched = 0
+        cur_downloaded = 0
+        cur_total = 0
+        download_stat_tip = ''
+        display_status = curShow.status
 
-    #if $curShow.indexerid in $show_stat:
-        #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
+        if None is not display_status
+            if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+                display_status = 'Continuing'
+            else if re.search(r'(?i)(?:nded)', $curShow.status)
+                display_status = 'Ended'
+            endif
+        endif
 
-        #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
-        #if not $cur_snatched:
-            #set $cur_snatched = 0
-        #end if
+        if curShow.indexerid in show_stat:
+            cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
 
-        #set $cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
-        #if not $cur_downloaded:
-            #set $cur_downloaded = 0
-        #end if
+            cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
+            if not cur_snatched:
+                cur_snatched = 0
+            endif
 
-        #set $cur_total = $show_stat[$curShow.indexerid]['ep_total']
-        #if not $cur_total:
-            #set $cur_total = 0
-        #end if
-    #end if
+            cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
+            if not cur_downloaded:
+                cur_downloaded = 0
+            end if
 
-    #if $cur_total != 0:
-        #set $download_stat = str($cur_downloaded)
-        #set $download_stat_tip = "Downloaded: " + str($cur_downloaded)
-        #if $cur_snatched > 0:
-            #set $download_stat = download_stat
-            #set $download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
-        #end if
-        #set $download_stat = download_stat + " / " + str($cur_total)
-        #set $download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str($cur_total)
-    #else
-        #set $download_stat = '?'
-        #set $download_stat_tip = "no data"
-    #end if
+            cur_total = $show_stat[$curShow.indexerid]['ep_total']
+            if not $cur_total:
+                cur_total = 0
+            endif
+        endif
 
-    #set $nom = $cur_downloaded
-    #set $den = $cur_total
-    #if $den == 0:
-        #set $den = 1
-    #end if
+    if cur_total != 0:
+        download_stat = str(cur_downloaded)
+        download_stat_tip = "Downloaded: " + str(cur_downloaded)
+        if cur_snatched > 0:
+            download_stat = download_stat
+            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+        endif
+        download_stat = download_stat + " / " + str(cur_total)
+        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
+    else
+        download_stat = '?'
+        download_stat_tip = "no data"
+    endif
 
-    #set $progressbar_percent = $nom * 100 / $den
+    nom = cur_downloaded
+    den = cur_total
+    if den == 0:
+        den = 1
+    endif
 
-#set $data_date = '6000000000.0'
-#if $cur_airs_next:
-    #set $data_date = $calendar.timegm($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)).timetuple())
-#else if None is not $display_status
-    #if 'nded' not in $display_status and 1 == int($curShow.paused)
-        #set $data_date = '5000000500.0'
-    #else if 'ontinu' in $display_status
-        #set $data_date = '5000000000.0'
-    #else if 'nded' in $display_status
-        #set $data_date = '5000000100.0'
-    #end if
-#end if
-    <div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
+    progressbar_percent = nom * 100 / den
+
+    data_date = '6000000000.0'
+    if cur_airs_next:
+        data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
+    else if None is not display_status
+        if 'nded' not in display_status and 1 == int(curShow.paused)
+            data_date = '5000000500.0'
+        else if 'ontinu' in display_status
+            data_date = '5000000000.0'
+        else if 'nded' in display_status
+            data_date = '5000000100.0'
+        endif
+    endif
+%>
+    <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
-            <a href="${sbRoot}/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar$curShow.indexerid"></div>
+        <div id="progressbar${curShow.indexerid}"></div>
             <script type="text/javascript">
             <!--
                 \$(function() {
-                    \$("\#progressbar$curShow.indexerid").progressbar({
+                    \$("\#progressbar${curShow.indexerid}").progressbar({
                     value: $progressbar_percent });
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
@@ -570,56 +575,58 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             </script>
 
         <div class="show-title">
-            $curShow.name
+            ${curShow.name}
         </div>
 
         <div class="show-date">
-#if $cur_airs_next
-    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
+% if cur_airs_next
+    % ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
             <span class="${fuzzydate}">
-                #try
-                    $sbdatetime.sbdatetime.sbfdate($ldatetime)
-                #except ValueError
-                    Invalid date
-                #end try
+                <%
+                    try
+                        sbdatetime.sbdatetime.sbfdate($ldatetime)
+                    except ValueError
+                        Invalid date
+                    endtry
+                %>
             </span>
-#else
-    #set $output_html = '?'
-    #if None is not $display_status
-        #if 'nded' not in $display_status and 1 == int($curShow.paused)
-            #set $output_html = 'Paused'
-        #else if $display_status
-            #set $output_html = $display_status
-        #end if
-    #end if
-    $output_html
-#end if
+% else
+    % output_html = '?'
+    % if None is not display_status
+        % if 'nded' not in display_status and 1 == int(curShow.paused)
+            output_html = 'Paused'
+        % else if display_status
+            output_html = display_status
+        % endif
+    % endif
+    ${output_html}
+% end if
         </div>
 
         <table width="100%" cellspacing="1" border="0" cellpadding="0">
             <tr>
                 <td class="show-table">
-                    <span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
+                    <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
                 </td>
 
                 <td class="show-table">
-                    #if $layout != 'simple':
-                        #if $curShow.network:
-                            <span title="$curShow.network"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
-                        #else:
+                    % if layout != 'simple':
+                        % if curShow.network:
+                            <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+                        % else:
                             <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
-                        #end if
-                    #else:
-                        <span title="$curShow.network">$curShow.network</span>
-                    #end if
+                        % endif
+                    % else:
+                        <span title="${curShow.network}">${curShow.network}</span>
+                    % endif
                 </td>
 
                 <td class="show-table">
-                    #if $curShow.quality in $qualityPresets:
-                        <span class="show-quality">$qualityPresetStrings[$curShow.quality]</span>
-                    #else:
+                    % if curShow.quality in qualityPresets:
+                        <span class="show-quality">${qualityPresetStrings[curShow.quality]}</span>
+                    % else:
                         <span class="show-quality">Custom</span>
-                    #end if
+                    % endif
                 </td>
             </tr>
         </table>
@@ -628,13 +635,13 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
 
 
-#end for
+% end for
 </div>
 </div>
 
-#else
+% else
 
-<table id="showListTable$curListType" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
+<table id="showListTable${curListType}" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
 
     <thead>
         <tr>
@@ -663,95 +670,95 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     </tfoot>
 
 
-#if $sickbeard.showQueueScheduler.action.loadingShowList
+% if sickbeard.showQueueScheduler.action.loadingShowList
     <tbody class="tablesorter-infoOnly">
-#for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
+% for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-  #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
-    #continue
-  #end if
+  % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+    % continue
+  % end if
 
   <tr>
     <td align="center">(loading)</td>
     <td></td>
     <td>
-    #if $curLoadingShow.show == None:
-    <span title="">Loading... ($curLoadingShow.show_name)</span>
-    #else:
-    <a href="displayShow?show=$curLoadingShow.show.indexerid">$curLoadingShow.show.name</a>
-    #end if
+    % if curLoadingShow.show == None:
+    <span title="">Loading... (${curLoadingShow.show_name})</span>
+    % else:
+    <a href="displayShow?show=${curLoadingShow.show.indexerid}">${curLoadingShow.show.name}</a>
+    % endif
     </td>
     <td></td>
     <td></td>
     <td></td>
     <td></td>
   </tr>
-#end for
+% endfor
     </tbody>
-#end if
+% endif
 
     <tbody>
 
 $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 #for $curShow in $myShowList:
 
-    #set $cur_airs_next = ''
-    #set $cur_airs_prev = ''
-    #set $cur_snatched = 0
-    #set $cur_downloaded = 0
-    #set $cur_total = 0
-    #set $download_stat_tip = ''
+    cur_airs_next = ''
+    cur_airs_prev = ''
+    cur_snatched = 0
+    cur_downloaded = 0
+    cur_total = 0
+    download_stat_tip = ''
 
     #if $curShow.indexerid in $show_stat:
-        #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
-        #set $cur_airs_prev = $show_stat[$curShow.indexerid]['ep_airs_prev']
+        cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
+        cur_airs_prev = $show_stat[$curShow.indexerid]['ep_airs_prev']
 
 
-        #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
+        cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
         #if not $cur_snatched:
-            #set $cur_snatched = 0
+            cur_snatched = 0
         #end if
 
-        #set $cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
+        cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
         #if not $cur_downloaded:
-            #set $cur_downloaded = 0
+            cur_downloaded = 0
         #end if
 
-        #set $cur_total = $show_stat[$curShow.indexerid]['ep_total']
+        cur_total = $show_stat[$curShow.indexerid]['ep_total']
         #if not $cur_total:
-            #set $cur_total = 0
+            cur_total = 0
         #end if
     #end if
 
     #if $cur_total != 0:
-        #set $download_stat = str($cur_downloaded)
-        #set $download_stat_tip = "Downloaded: " + str($cur_downloaded)
+        download_stat = str($cur_downloaded)
+        download_stat_tip = "Downloaded: " + str($cur_downloaded)
         #if $cur_snatched > 0:
-            #set $download_stat = download_stat + "+" + str($cur_snatched)
-            #set $download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
+            download_stat = download_stat + "+" + str($cur_snatched)
+            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
         #end if
-        #set $download_stat = download_stat + " / " + str($cur_total)
-        #set $download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str($cur_total)
+        download_stat = download_stat + " / " + str($cur_total)
+        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str($cur_total)
     #else
-        #set $download_stat = '?'
-        #set $download_stat_tip = "no data"
+        download_stat = '?'
+        download_stat_tip = "no data"
     #end if
 
-    #set $nom = $cur_downloaded
-    #set $den = $cur_total
+    nom = $cur_downloaded
+    den = $cur_total
     #if $den == 0:
-        #set $den = 1
+        den = 1
     #end if
 
-    #set $progressbar_percent = $nom * 100 / $den
+    progressbar_percent = $nom * 100 / $den
 
     <tr>
 
     #if $cur_airs_next
-    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
+    ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
         #try
-            #set $temp_sbfdate_next = $sbdatetime.sbdatetime.sbfdate($ldatetime)
-            #set $temp_timegm_next = $calendar.timegm($ldatetime.timetuple())
+            temp_sbfdate_next = $sbdatetime.sbdatetime.sbfdate($ldatetime)
+            temp_timegm_next = $calendar.timegm($ldatetime.timetuple())
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">$temp_sbfdate_next</div>
                 <span class="sort_data">$temp_timegm_next</span>
@@ -764,10 +771,10 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     #end if
 
     #if $cur_airs_prev
-    #set $pdatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_prev,$curShow.airs,$curShow.network))
+    pdatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_prev,$curShow.airs,$curShow.network))
         #try
-            #set $temp_sbfdate_prev = $sbdatetime.sbdatetime.sbfdate($pdatetime)
-            #set $temp_timegm_prev = $calendar.timegm($pdatetime.timetuple())
+            temp_sbfdate_prev = $sbdatetime.sbdatetime.sbfdate($pdatetime)
+            temp_timegm_prev = $calendar.timegm($pdatetime.timetuple())
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">$temp_sbfdate_prev</div>
                 <span class="sort_data">$temp_timegm_prev</span>
@@ -858,12 +865,12 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
         </td>
 
         <td align="center">
-#set $display_status = $curShow.status
+display_status = $curShow.status
 #if None is not $display_status
     #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-        #set $display_status = 'Continuing'
+        display_status = 'Continuing'
     #else if re.search(r'(?i)(?:nded)', $curShow.status)
-        #set $display_status = 'Ended'
+        display_status = 'Ended'
     #end if
 #end if
 
