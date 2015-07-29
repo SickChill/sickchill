@@ -1,25 +1,27 @@
-#import sickbeard
-#from sickbeard import clients
-#set global $title = 'Config - Episode Search'
-#set global $header = 'Search Settings'
+<%!
+    import sickbeard
+    from sickbeard import clients
+    global $title = 'Config - Episode Search'
+    global $header = 'Search Settings'
 
-#set global $sbPath = '../..'
+    global $sbPath = '../..'
 
-#set global $topmenu = 'config'
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+    global $topmenu = 'config'
+    import os.path
+    include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+%>
 
-<script type="text/javascript" src="$sbRoot/js/configSearch.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/configSearch.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if $varExists('header')
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% end if
 
-#set $html_selected = ' selected="selected"'
-#set $html_checked = 'checked="checked" '
+% $html_selected = 'selected="selected"'
+% $html_checked = 'checked="checked" '
 
 <div id="config">
     <div id="config-content">
@@ -38,7 +40,7 @@
 
                     <div class="component-group-desc">
                         <h3>Episode Search</h3>
-                        <p>How to manage searching with <a href="$sbRoot/config/providers">providers</a>.</p>
+                        <p>How to manage searching with <a href="${sbRoot}/config/providers">providers</a>.</p>
                     </div>
 
                     <fieldset class="component-group-list">
@@ -66,11 +68,11 @@
                                     <span class="component-title">Check propers every:</span>
                                     <span class="component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm">
-#set $check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"}
-#for $curInterval in ('daily', '4h', '90m', '45m', '15m'):
-    #set $selected = $html_selected if $sickbeard.CHECK_PROPERS_INTERVAL == $curInterval else ''
-                                            <option value="$curInterval"$selected>$check_propers_interval_text[$curInterval]</option>
-#end for
+% $check_propers_interval_text = {'daily': "24 hours", '4h': "4 hours", '90m': "90 mins", '45m': "45 mins", '15m': "15 mins"}
+% for $curInterval in ('daily', '4h', '90m', '45m', '15m'):
+    % $selected = $html_selected if $sickbeard.CHECK_PROPERS_INTERVAL == $curInterval else ''
+                                            <option value="${curInterval}" ${selected}>${check_propers_interval_text[$curInterval]}</option>
+% endfor
                                         </select>
                                     </span>
                                 </label>
@@ -81,8 +83,8 @@
                             <label>
                                 <span class="component-title">Backlog search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="backlog_frequency" value="$sickbeard.BACKLOG_FREQUENCY" class="form-control input-sm input75" />
-                                    <p>time in minutes between searches (min. $sickbeard.MIN_BACKLOG_FREQUENCY)</p>
+                                    <input type="text" name="backlog_frequency" value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75" />
+                                    <p>time in minutes between searches (min. ${sickbeard.MIN_BACKLOG_FREQUENCY})</p>
                                 </span>
                             </label>
                         </div>
@@ -91,8 +93,8 @@
                             <label>
                                 <span class="component-title">Daily search frequency</span>
                                 <span class="component-desc">
-                                    <input type="text" name="dailysearch_frequency" value="$sickbeard.DAILYSEARCH_FREQUENCY" class="form-control input-sm input75" />
-                                    <p>time in minutes between searches (min. $sickbeard.MIN_DAILYSEARCH_FREQUENCY)</p>
+                                    <input type="text" name="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}" class="form-control input-sm input75" />
+                                    <p>time in minutes between searches (min. ${sickbeard.MIN_DAILYSEARCH_FREQUENCY})</p>
                                     </span>
                             </label>
                         </div>
@@ -101,7 +103,7 @@
                             <label>
                                 <span class="component-title">Usenet retention</span>
                                 <span class="component-desc">
-                                    <input type="text" name="usenet_retention" value="$sickbeard.USENET_RETENTION" class="form-control input-sm input75" />
+                                    <input type="text" name="usenet_retention" value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75" />
                                     <p>age limit in days for usenet articles to be used (e.g. 500)</p>
                                 </span>
                             </label>
@@ -111,7 +113,7 @@
                             <label>
                                 <span class="component-title">Ignore words</span>
                                 <span class="component-desc">
-                                    <input type="text" name="ignore_words" value="$sickbeard.IGNORE_WORDS" class="form-control input-sm input350" />
+                                    <input type="text" name="ignore_words" value="${sickbeard.IGNORE_WORDS}" class="form-control input-sm input350" />
                                     <div class="clear-left">results with one or more word from this list will be ignored<br />
                                     separate words with a comma, e.g. "word1,word2,word3"
                                     </div>
@@ -123,7 +125,7 @@
                             <label>
                                 <span class="component-title">Require words</span>
                                 <span class="component-desc">
-                                    <input type="text" name="require_words" value="$sickbeard.REQUIRE_WORDS" class="form-control input-sm input350" />
+                                    <input type="text" name="require_words" value="${sickbeard.REQUIRE_WORDS}" class="form-control input-sm input350" />
                                     <div class="clear-left">results with no word from this list will be ignored<br />
                                     separate words with a comma, e.g. "word1,word2,word3"
                                     </div>
@@ -216,11 +218,11 @@
                                 <span class="component-title">Send .nzb files to:</span>
                                 <span class="component-desc">
                                     <select name="nzb_method" id="nzb_method" class="form-control input-sm">
-#set $nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"}
-#for $curAction in ('sabnzbd', 'blackhole', 'nzbget'):
-    #set $selected = $html_selected if $sickbeard.NZB_METHOD == $curAction else ''
-                                    <option value="$curAction"$selected>$nzb_method_text[$curAction]</option>
-#end for
+% $nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget"}
+% for $curAction in ('sabnzbd', 'blackhole', 'nzbget'):
+    % $selected = $html_selected if $sickbeard.NZB_METHOD == $curAction else ''
+                                    <option value="${curAction}" $selected>${nzb_method_text}[$curAction]</option>
+% endfor
                                     </select>
                                 </span>
                             </label>
@@ -231,7 +233,7 @@
                                 <label>
                                     <span class="component-title">Black hole folder location</span>
                                     <span class="component-desc">
-                                        <input type="text" name="nzb_dir" id="nzb_dir" value="$sickbeard.NZB_DIR" class="form-control input-sm input350" />
+                                        <input type="text" name="nzb_dir" id="nzb_dir" value="${sickbeard.NZB_DIR}" class="form-control input-sm input350" />
                                         <div class="clear-left"><p><b>.nzb</b> files are stored at this location for external software to find and use</p></div>
                                     </span>
                                 </label>
@@ -243,7 +245,7 @@
                                 <label>
                                     <span class="component-title">SABnzbd server URL</span>
                                     <span class="component-desc">
-                                        <input type="text" id="sab_host" name="sab_host" value="$sickbeard.SAB_HOST" class="form-control input-sm input350" />
+                                        <input type="text" id="sab_host" name="sab_host" value="${sickbeard.SAB_HOST}" class="form-control input-sm input350" />
                                         <div class="clear-left"><p>URL to your SABnzbd server (e.g. http://localhost:8080/)</p></div>
                                     </span>
                                 </label>
@@ -253,7 +255,7 @@
                                 <label>
                                     <span class="component-title">SABnzbd username</span>
                                     <span class="component-desc">
-                                        <input type="text" name="sab_username" id="sab_username" value="$sickbeard.SAB_USERNAME" class="form-control input-sm input200" />
+                                        <input type="text" name="sab_username" id="sab_username" value="${sickbeard.SAB_USERNAME}" class="form-control input-sm input200" />
                                         <p>(blank for none)</p>
                                     </span>
                                 </label>
@@ -263,7 +265,7 @@
                                 <label>
                                     <span class="component-title">SABnzbd password</span>
                                     <span class="component-desc">
-                                        <input type="password" name="sab_password" id="sab_password" value="$sickbeard.SAB_PASSWORD" class="form-control input-sm input200" />
+                                        <input type="password" name="sab_password" id="sab_password" value="${sickbeard.SAB_PASSWORD}" class="form-control input-sm input200" />
                                         <p>(blank for none)</p>
                                     </span>
                                 </label>
@@ -273,7 +275,7 @@
                                 <label>
                                     <span class="component-title">SABnzbd API key</span>
                                     <span class="component-desc">
-                                        <input type="text" name="sab_apikey" id="sab_apikey" value="$sickbeard.SAB_APIKEY" class="form-control input-sm input350" />
+                                        <input type="text" name="sab_apikey" id="sab_apikey" value="${sickbeard.SAB_APIKEY}" class="form-control input-sm input350" />
                                         <div class="clear-left"><p>locate at... SABnzbd Config -> General -> API Key</p></div>
                                     </span>
                                 </label>
@@ -283,7 +285,7 @@
                                 <label>
                                     <span class="component-title">Use SABnzbd category</span>
                                     <span class="component-desc">
-                                        <input type="text" name="sab_category" id="sab_category" value="$sickbeard.SAB_CATEGORY" class="form-control input-sm input200" />
+                                        <input type="text" name="sab_category" id="sab_category" value="${sickbeard.SAB_CATEGORY}" class="form-control input-sm input200" />
                                         <p>add downloads to this category (e.g. TV)</p>
                                     </span>
                                 </label>
@@ -293,7 +295,7 @@
                                 <label>
                                     <span class="component-title">Use SABnzbd category for anime</span>
                                     <span class="component-desc">
-                                        <input type="text" name="sab_category_anime" id="sab_category_anime" value="$sickbeard.SAB_CATEGORY_ANIME" class="form-control input-sm input200" />
+                                        <input type="text" name="sab_category_anime" id="sab_category_anime" value="${sickbeard.SAB_CATEGORY_ANIME}" class="form-control input-sm input200" />
                                         <p>add anime downloads to this category (e.g. anime)</p>
                                     </span>
                                 </label>
@@ -326,7 +328,7 @@
                                 <label>
                                     <span class="component-title">NZBget host:port</span>
                                     <span class="component-desc">
-                                        <input type="text" name="nzbget_host" id="nzbget_host" value="$sickbeard.NZBGET_HOST" class="form-control input-sm input350" />
+                                        <input type="text" name="nzbget_host" id="nzbget_host" value="${sickbeard.NZBGET_HOST}" class="form-control input-sm input350" />
                                         <p>(e.g. localhost:6789)</p>
                                         <div class="clear-left"><p>NZBget RPC host name and port number (not NZBgetweb!)</p></div>
                                     </span>
@@ -337,7 +339,7 @@
                                 <label>
                                     <span class="component-title">NZBget username</span>
                                     <span class="component-desc">
-                                        <input type="text" name="nzbget_username" value="$sickbeard.NZBGET_USERNAME" class="form-control input-sm input200" />
+                                        <input type="text" name="nzbget_username" value="${sickbeard.NZBGET_USERNAME}" class="form-control input-sm input200" />
                                         <p>locate in nzbget.conf (default:nzbget)</p>
                                     </span>
                                 </label>
@@ -347,7 +349,7 @@
                                 <label>
                                     <span class="component-title">NZBget password</span>
                                     <span class="component-desc">
-                                        <input type="password" name="nzbget_password" id="nzbget_password" value="$sickbeard.NZBGET_PASSWORD" class="form-control input-sm input200" />
+                                        <input type="password" name="nzbget_password" id="nzbget_password" value="${sickbeard.NZBGET_PASSWORD}" class="form-control input-sm input200" />
                                         <p>locate in nzbget.conf (default:tegbzn6789)</p>
                                     </span>
                                 </label>
@@ -357,7 +359,7 @@
                                 <label>
                                     <span class="component-title">Use NZBget category</span>
                                     <span class="component-desc">
-                                        <input type="text" name="nzbget_category" id="nzbget_category" value="$sickbeard.NZBGET_CATEGORY" class="form-control input-sm input200" />
+                                        <input type="text" name="nzbget_category" id="nzbget_category" value="${sickbeard.NZBGET_CATEGORY}" class="form-control input-sm input200" />
                                         <p>send downloads marked this category (e.g. TV)</p>
                                     </span>
                                 </label>
@@ -367,33 +369,35 @@
                                 <label>
                                     <span class="component-title">Use NZBget category for anime</span>
                                     <span class="component-desc">
-                                        <input type="text" name="nzbget_category_anime" id="nzbget_category_anime" value="$sickbeard.NZBGET_CATEGORY_ANIME" class="form-control input-sm input200" />
+                                        <input type="text" name="nzbget_category_anime" id="nzbget_category_anime" value="${sickbeard.NZBGET_CATEGORY_ANIME}" class="form-control input-sm input200" />
                                         <p>send anime downloads marked this category (e.g. anime)</p>
                                     </span>
                                 </label>
                             </div>
 
-#set $prio_verylow = ''
-#set $prio_low = ''
-#set $prio_normal = ''
-#set $prio_high = ''
-#set $prio_veryhigh = ''
-#set $prio_force = ''
-#if -100 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_verylow = $html_selected
-#elif -50 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_low = $html_selected
-#elif 0 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_normal = $html_selected
-#elif 50 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_high = $html_selected
-#elif 100 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_veryhigh = $html_selected
-#elif 900 == $sickbeard.NZBGET_PRIORITY:
-    #set $prio_force = $html_selected
-#else:
-    #set $prio_normal = $html_selected
-#end if
+<%!
+    $prio_verylow = ''
+    $prio_low = ''
+    $prio_normal = ''
+    $prio_high = ''
+    $prio_veryhigh = ''
+    $prio_force = ''
+    if -100 == $sickbeard.NZBGET_PRIORITY:
+        $prio_verylow = $html_selected
+    elif -50 == $sickbeard.NZBGET_PRIORITY:
+        $prio_low = $html_selected
+    elif 0 == $sickbeard.NZBGET_PRIORITY:
+        $prio_normal = $html_selected
+    elif 50 == $sickbeard.NZBGET_PRIORITY:
+        $prio_high = $html_selected
+    elif 100 == $sickbeard.NZBGET_PRIORITY:
+        $prio_veryhigh = $html_selected
+    elif 900 == $sickbeard.NZBGET_PRIORITY:
+        $prio_force = $html_selected
+    else:
+        $prio_normal = $html_selected
+    endif
+%>
                             <div class="field-pair">
                                 <label>
                                     <span class="component-title">NZBget priority</span>
@@ -447,11 +451,11 @@
                                 <span class="component-title">Send .torrent files to:</span>
                                 <span class="component-desc">
                                 <select name="torrent_method" id="torrent_method" class="form-control input-sm">
-#set $torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"}
-#for $curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
-    #set $selected = $html_selected if $sickbeard.TORRENT_METHOD == $curAction else ''
-                                <option value="$curAction"$selected>$torrent_method_text[$curAction]</option>
-#end for
+% $torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission", 'deluge': "Deluge", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent"}
+% for $curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'download_station', 'rtorrent', 'qbittorrent'):
+    % $selected = $html_selected if $sickbeard.TORRENT_METHOD == $curAction else ''
+                                <option value="${curAction}" ${selected}>${torrent_method_text[$curAction]}</option>
+% endfor
                                 </select>
                             </label>
 
@@ -460,7 +464,7 @@
                                 <label>
                                     <span class="component-title">Black hole folder location</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_dir" id="torrent_dir" value="$sickbeard.TORRENT_DIR" class="form-control input-sm input350" />
+                                        <input type="text" name="torrent_dir" id="torrent_dir" value="${sickbeard.TORRENT_DIR}" class="form-control input-sm input350" />
                                         <div class="clear-left"><p><b>.torrent</b> files are stored at this location for external software to find and use</p></div>
                                     </span>
                                 </label>
@@ -476,7 +480,7 @@
                                 <label>
                                     <span class="component-title" id="host_title">Torrent host:port</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_host" id="torrent_host" value="$sickbeard.TORRENT_HOST" class="form-control input-sm input350" />
+                                        <input type="text" name="torrent_host" id="torrent_host" value="${sickbeard.TORRENT_HOST}" class="form-control input-sm input350" />
                                         <div class="clear-left">
                                             <p id="host_desc_torrent">URL to your torrent client (e.g. http://localhost:8000/)</p>
                                         </div>
@@ -488,7 +492,7 @@
                                 <label>
                                     <span class="component-title" id="rpcurl_title">Torrent RPC URL</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_rpcurl" id="torrent_rpcurl" value="$sickbeard.TORRENT_RPCURL" class="form-control input-sm input350"/>
+                                        <input type="text" name="torrent_rpcurl" id="torrent_rpcurl" value="${sickbeard.TORRENT_RPCURL}" class="form-control input-sm input350"/>
                                         <div class="clear-left">
                                             <p id="rpcurl_desc_">The path without leading and trailing slashes (e.g. transmission)</p>
                                         </div>
@@ -501,11 +505,11 @@
                                     <span class="component-title">Http Authentication</span>
                                     <span class="component-desc">
                                         <select name="torrent_auth_type" id="torrent_auth_type" class="form-control input-sm">
-                                        #set $http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"}
-                                        #for $authvalue,$authname in $http_authtype.items():
-                                        #set $selected = $html_selected if $sickbeard.TORRENT_AUTH_TYPE == $authvalue else ''
-                                            <option id="torrent_auth_type_value" value="$authvalue"$selected>$authname</option>
-                                        #end for
+                                        % $http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"}
+                                        % for $authvalue,$authname in $http_authtype.items():
+                                        % $selected = $html_selected if $sickbeard.TORRENT_AUTH_TYPE == $authvalue else ''
+                                            <option id="torrent_auth_type_value" value="${authvalue}" ${selected}>${authname}</option>
+                                        % endfor
                                         </select>
                                         <p></p>
                                     </span>
@@ -527,7 +531,7 @@
                                 <label>
                                     <span class="component-title" id="username_title">Client username</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_username" id="torrent_username" value="$sickbeard.TORRENT_USERNAME" class="form-control input-sm input200" />
+                                        <input type="text" name="torrent_username" id="torrent_username" value="${sickbeard.TORRENT_USERNAME}" class="form-control input-sm input200" />
                                         <p>(blank for none)</p>
                                     </span>
                                 </label>
@@ -537,7 +541,7 @@
                                 <label>
                                     <span class="component-title" id="password_title">Client password</span>
                                     <span class="component-desc">
-                                        <input type="password" name="torrent_password" id="torrent_password" value="$sickbeard.TORRENT_PASSWORD" class="form-control input-sm input200" />
+                                        <input type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD}" class="form-control input-sm input200" />
                                         <p>(blank for none)</p>
                                     </span>
                                 </label>
@@ -547,7 +551,7 @@
                                 <label>
                                     <span class="component-title">Add label to torrent</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_label" id="torrent_label" value="$sickbeard.TORRENT_LABEL" class="form-control input-sm input200" />
+                                        <input type="text" name="torrent_label" id="torrent_label" value="${sickbeard.TORRENT_LABEL}" class="form-control input-sm input200" />
                                         <span id="label_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
                                             <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
                                         </span>
@@ -559,7 +563,7 @@
                                 <label>
                                     <span class="component-title">Add label to torrent for anime</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_label_anime" id="torrent_label_anime" value="$sickbeard.TORRENT_LABEL_ANIME" class="form-control input-sm input200" />
+                                        <input type="text" name="torrent_label_anime" id="torrent_label_anime" value="${sickbeard.TORRENT_LABEL_ANIME}" class="form-control input-sm input200" />
                                         <span id="label_anime_warning_deluge" style="display:none"><p>(blank spaces are not allowed)</p>
                                             <div class="clear-left"><p>note: label plugin must be enabled in Deluge clients</p></div>
                                         </span>
@@ -571,7 +575,7 @@
                                 <label>
                                     <span class="component-title" id="directory_title">Downloaded files location</span>
                                     <span class="component-desc">
-                                        <input type="text" name="torrent_path" id="torrent_path" value="$sickbeard.TORRENT_PATH" class="form-control input-sm input350" />
+                                        <input type="text" name="torrent_path" id="torrent_path" value="${sickbeard.TORRENT_PATH}" class="form-control input-sm input350" />
                                         <div class="clear-left"><p>where <span id="torrent_client">the torrent client</span> will save downloaded files (blank for client default)
                                             <span id="path_synology"> <b>note:</b> the destination has to be a shared folder for Synology DS</span></p>
                                         </div>
@@ -616,7 +620,7 @@
                 </div><!-- /component-group3 //-->
 
                 <br/>
-                <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </h6>
+                <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
 
             </div><!-- /config-components //-->
@@ -637,4 +641,4 @@
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
