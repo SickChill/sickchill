@@ -1153,7 +1153,7 @@ def extractZip(archive, targetDir):
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
 
-        zip_file = zipfile.ZipFile(archive, 'r')
+        zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
         for member in zip_file.namelist():
             filename = os.path.basename(member)
             # skip directories
@@ -1175,7 +1175,7 @@ def extractZip(archive, targetDir):
 
 def backupConfigZip(fileList, archive, arcname = None):
     try:
-        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
+        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
             a.write(f, os.path.relpath(f, arcname))
         a.close()
@@ -1197,7 +1197,7 @@ def restoreConfigZip(archive, targetDir):
             bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
             shutil.move(targetDir, os.path.join(ntpath.dirname(targetDir), bakFilename))
 
-        zip_file = zipfile.ZipFile(archive, 'r')
+        zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
         for member in zip_file.namelist():
             zip_file.extract(member, targetDir)
         zip_file.close()
