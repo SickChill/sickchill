@@ -249,7 +249,7 @@
             </div><!-- /.container-fluid -->
         </nav>
 
-        % if $varExists('submenu'):
+        % if not submenu is UNDEFINED:
         <div id="SubMenu">
         <span>
         <% first = True %>
@@ -263,7 +263,7 @@
                       %>
                       % for cur_link in menuItem.path:
                           ${"" if inner_first else "&middot; "}#<a class="inner" href="${sbRoot}/${menuItem.path[cur_link]}">${cur_link}</a>
-                          #set $inner_first = False
+                          % inner_first = False
                       % endfor
                   % else:
                       % if first then "" else ""#<a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %> #>${menuItem.title}</a>
