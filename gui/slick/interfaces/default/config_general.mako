@@ -384,7 +384,7 @@
                                 <span class="component-desc">
                                     <select id="time_presets" name="time_preset" class="form-control input-sm">
                                          #for $cur_preset in $time_presets:
-                                            <option value="$cur_preset" #if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else ''#>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
+                                            <option value="$cur_preset" <% if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else '' %>>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
                                          #end for
                                     </select>
                                     <span><b>note:</b> seconds are only shown on the History page</span>
@@ -407,13 +407,13 @@
 
                         <div class="field-pair">
                             <label for="download_url">
-                                    <span class="component-title">Download url</span>
-                                    <input type="text" name="download_url" id="download_url" value="$sickbeard.DOWNLOAD_URL" size="35" />
-                                </label>
-                                <label>
-                                    <span class="component-title">&nbsp;</span>
-                                <span class="component-desc">URL where the shows can be downloaded.</span>
-                                </label>
+                                <span class="component-title">Download url</span>
+                                <input type="text" name="download_url" id="download_url" value="${sickbeard.DOWNLOAD_URL}" size="35" />
+                            </label>
+                            <label>
+                                <span class="component-title">&nbsp;</span>
+                            <span class="component-desc">URL where the shows can be downloaded.</span>
+                            </label>
                         </div>
 
 
@@ -437,7 +437,7 @@
                             <label for="api_key">
                                 <span class="component-title">API key</span>
                                 <span class="component-desc">
-                                    <input type="text" name="api_key" id="api_key" value="$sickbeard.API_KEY" class="form-control input-sm input300" readonly="readonly" />
+                                    <input type="text" name="api_key" id="api_key" value="${sickbeard.API_KEY}" class="form-control input-sm input300" readonly="readonly" />
                                     <input class="btn btn-inline" type="button" id="generate_new_apikey" value="Generate">
                                     <div class="clear-left"><p>used to give 3rd party programs limited access to SickRage</p></div>
                                 </span>
@@ -448,7 +448,7 @@
                             <label for="web_log">
                                 <span class="component-title">HTTP logs</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="web_log" id="web_log" #if $sickbeard.WEB_LOG then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="web_log" id="web_log" <% if $sickbeard.WEB_LOG then 'checked="checked"' else '' %>/>
                                     <p>enable logs from the internal Tornado web server</p>
                                 </span>
                             </label>
@@ -458,7 +458,7 @@
                             <label for="web_username">
                                 <span class="component-title">HTTP username</span>
                                 <span class="component-desc">
-                                    <input type="text" name="web_username" id="web_username" value="$sickbeard.WEB_USERNAME" class="form-control input-sm input300" />
+                                    <input type="text" name="web_username" id="web_username" value="${sickbeard.WEB_USERNAME}" class="form-control input-sm input300" />
                                     <p>set blank for no login</p>
                                 </span>
                             </label>
@@ -468,7 +468,7 @@
                             <label for="web_password">
                                 <span class="component-title">HTTP password</span>
                                 <span class="component-desc">
-                                    <input type="password" name="web_password" id="web_password" value="$sickbeard.WEB_PASSWORD" class="form-control input-sm input300" />
+                                    <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" />
                                     <p>blank = no authentication</span>
                             </label>
                         </div>
@@ -477,7 +477,7 @@
                             <label for="web_port">
                                 <span class="component-title">HTTP port</span>
                                 <span class="component-desc">
-                                    <input type="text" name="web_port" id="web_port" value="$sickbeard.WEB_PORT" class="form-control input-sm input100" />
+                                    <input type="text" name="web_port" id="web_port" value="${sickbeard.WEB_PORT}" class="form-control input-sm input100" />
                                     <p>web port to browse and access SickRage (default:8081)</p>
                                 </span>
                             </label>
@@ -487,7 +487,7 @@
                             <label for="web_ipv6">
                                 <span class="component-title">Listen on IPv6</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" #if $sickbeard.WEB_IPV6 then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="web_ipv6" id="web_ipv6" <% if $sickbeard.WEB_IPV6 then 'checked="checked"' else '' %>/>
                                     <p>attempt binding to any available IPv6 address</p>
                                 </span>
                             </label>
@@ -497,7 +497,7 @@
                             <label for="enable_https">
                                 <span class="component-title">Enable HTTPS</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" #if $sickbeard.ENABLE_HTTPS then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="enable_https" class="enabler" id="enable_https" <% if $sickbeard.ENABLE_HTTPS then 'checked="checked"' else '' %>/>
                                     <p>enable access to the web interface using a HTTPS address</p>
                                 </span>
                             </label>
@@ -507,7 +507,7 @@
                                 <label for="https_cert">
                                     <span class="component-title">HTTPS certificate</span>
                                     <span class="component-desc">
-                                        <input type="text" name="https_cert" id="https_cert" value="$sickbeard.HTTPS_CERT" class="form-control input-sm input300" />
+                                        <input type="text" name="https_cert" id="https_cert" value="${sickbeard.HTTPS_CERT}" class="form-control input-sm input300" />
                                         <div class="clear-left"><p>file name or path to HTTPS certificate</p></div>
                                     </span>
                                 </label>
@@ -516,7 +516,7 @@
                                 <label for="https_key">
                                     <span class="component-title">HTTPS key</span>
                                     <span class="component-desc">
-                                        <input type="text" name="https_key" id="https_key" value="$sickbeard.HTTPS_KEY" class="form-control input-sm input300" />
+                                        <input type="text" name="https_key" id="https_key" value="${sickbeard.HTTPS_KEY}" class="form-control input-sm input300" />
                                         <div class="clear-left"><p>file name or path to HTTPS key</p></div>
                                     </span>
                                 </label>
@@ -527,7 +527,7 @@
                             <label for="handle_reverse_proxy">
                                 <span class="component-title">Reverse proxy headers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" #if $sickbeard.HANDLE_REVERSE_PROXY then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" <% if $sickbeard.HANDLE_REVERSE_PROXY then 'checked="checked"' else '' %>/>
                                     <p>accept the following reverse proxy headers (advanced)...<br />(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)</p>
                                 </span>
                             </label>
@@ -556,9 +556,9 @@
                                 <span class="component-title">CPU throttling:</span>
                                 <span class="component-desc">
                                     <select id="cpu_presets" name="cpu_preset" class="form-control input-sm">
-                                    #for $cur_preset in $cpu_presets:
-                                        <option value="$cur_preset" #if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else ''#>$cur_preset.capitalize()</option>
-                                    #end for
+                                    % for $cur_preset in $cpu_presets:
+                                        <option value="$cur_preset" <% if $cur_preset == $sickbeard.CPU_PRESET then 'selected="selected"' else '' %>>$cur_preset.capitalize()</option>
+                                    % endfor
                                     </select>
                                     <span>Normal (default). High is lower and Low is higher CPU use</span>
                                 </span>
@@ -569,7 +569,7 @@
                             <label>
                                 <span class="component-title">Anonymous redirect</span>
                                 <span class="component-desc">
-                                    <input type="text" name="anon_redirect" value="$sickbeard.ANON_REDIRECT" class="form-control input-sm input300" />
+                                    <input type="text" name="anon_redirect" value="${sickbeard.ANON_REDIRECT}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>backlink protection via anonymizer service, must end in "?"</p></div>
                                 </span>
                             </label>
@@ -579,25 +579,27 @@
                             <label for="debug">
                                 <span class="component-title">Enable debug</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="debug" id="debug" #if $sickbeard.DEBUG then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="debug" id="debug" <% if $sickbeard.DEBUG then 'checked="checked"' else '' %>/>
                                     <p>Enable debug logs<p>
                                 </span>
                             </label>
                         </div>
-                                            <div class="field-pair">
-                                                    <label for="ssl_verify">
-                                                        <span class="component-title">Verify SSL Certs</span>
-                                                            <span class="component-desc">
-                                                                <input type="checkbox" name="ssl_verify" id="ssl_verify" #if $sickbeard.SSL_VERIFY then 'checked="checked"' else ''#/>
-                                                                <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
-                                                            </span>
-                                                    </label>
-                                                </div>
+
+                        <div class="field-pair">
+                            <label for="ssl_verify">
+                                <span class="component-title">Verify SSL Certs</span>
+                                    <span class="component-desc">
+                                        <input type="checkbox" name="ssl_verify" id="ssl_verify" <% if $sickbeard.SSL_VERIFY then 'checked="checked"' else '' %>/>
+                                        <p>Verify SSL Certificates (Disable this for broken SSL installs (Like QNAP)<p>
+                                    </span>
+                            </label>
+                        </div>
+
                         <div class="field-pair">
                             <label for="no_restart">
                                 <span class="component-title">No Restart</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="no_restart" id="no_restart" #if $sickbeard.NO_RESTART then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="no_restart" id="no_restart" <% if $sickbeard.NO_RESTART then 'checked="checked"' else '' %>/>
                                     <p>Only shutdown when restarting SR.
                                     Only select this when you have external software restarting SR automatically when it stops (like FireDaemon)</p>
                                 </span>
@@ -609,7 +611,7 @@
                             <label for="encryption_version">
                                 <span class="component-title">Encrypt passwords</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="encryption_version" id="encryption_version" #if $sickbeard.ENCRYPTION_VERSION then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="encryption_version" id="encryption_version" <% if $sickbeard.ENCRYPTION_VERSION then 'checked="checked"' else '' %>/>
                                     <p>in the <code>config.ini</code> file.
                                     <b>Warning:</b> Passwords must only contain <a target="_blank" href="<%= anon_url('http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters') %>">ASCII characters</a></p>
                                 </span>
@@ -620,7 +622,7 @@
                             <label for="calendar_unprotected">
                                 <span class="component-title">Unprotected calendar</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" #if $sickbeard.CALENDAR_UNPROTECTED then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" <% if $sickbeard.CALENDAR_UNPROTECTED then 'checked="checked"' else '' %>/>
                                     <p>allow subscribing to the calendar without user and password.
                                     Some services like Google Calendar only work this way</p>
                                 </span>
@@ -632,7 +634,7 @@
                             <label>
                                 <span class="component-title">Proxy host</span>
                                 <span class="component-desc">
-                                    <input type="text" name="proxy_setting" value="$sickbeard.PROXY_SETTING" class="form-control input-sm input300" />
+                                    <input type="text" name="proxy_setting" value="${sickbeard.PROXY_SETTING}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>blank to disable or proxy to use when connecting to providers</p></div>
                             </label>
                         </div>
@@ -641,7 +643,7 @@
                             <label for="proxy_indexers">
                                 <span class="component-title">Use proxy for indexers</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="proxy_indexers" id="proxy_indexers" #if True == $sickbeard.PROXY_INDEXERS then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="proxy_indexers" id="proxy_indexers" <% if True == $sickbeard.PROXY_INDEXERS then 'checked="checked"' else '' %>/>
                                     <p>use proxy host for connecting to indexers (thetvdb, tvrage)</p>
                                 </span>
                             </label>
@@ -650,20 +652,20 @@
                             <label for="ep_default_deleted_status">
                                 <span class="component-title">Default deleted episode status:</span>
                                     <span class="component-desc">
-#if not $sickbeard.SKIP_REMOVED_FILES or ($sickbeard.USE_TRAKT and $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
+% if not $sickbeard.SKIP_REMOVED_FILES or ($sickbeard.USE_TRAKT and $sickbeard.TRAKT_USE_ROLLING_DOWNLOAD)
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm">
-                                        #for $defStatus in [$ARCHIVED, $IGNORED]:
-                                            <option value="$defStatus" #if $defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
-                                        #end for
+                                        % for defStatus in [$ARCHIVED, $IGNORED]:
+                                            <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
+                                        % endfor
                                         </select>
-#else
+% else
                                         <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm" disabled="disabled">
-                                        #for $defStatus in [$ARCHIVED, $IGNORED]:
-                                            <option value="$defStatus" #if $defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else ''#>$statusStrings[$defStatus]</option>
-                                        #end for
+                                        % for defStatus in [$ARCHIVED, $IGNORED]:
+                                            <option value="${defStatus}" <% if defStatus == $sickbeard.EP_DEFAULT_DELETED_STATUS then 'selected="selected"' else '' %>>${statusStrings[defStatus]}</option>
+                                        % endfor
                                         </select>
-                                        <input type="hidden" name="ep_default_deleted_status" value="$sickbeard.EP_DEFAULT_DELETED_STATUS" />
-#end if
+                                        <input type="hidden" name="ep_default_deleted_status" value="${sickbeard.EP_DEFAULT_DELETED_STATUS}" />
+% endif
                                     <span>Define the status to be set for media file that has been deleted.</span>
                                 </span>
                             </label>
@@ -686,29 +688,29 @@
                                 <span class="component-title">Branch version:</span>
                                 <span class="component-desc">
                                     <select id="branchVersion" class="form-control form-control-inline input-sm pull-left">
-                                    #set $gh_branch = $sickbeard.versionCheckScheduler.action.list_remote_branches()
-                                    #if $gh_branch:
-                                        #for $cur_branch in $gh_branch:
-                                            #if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $sickbeard.DEVELOPER == 1
-                                                <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
-                                            #else if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $cur_branch in ['master', 'develop']
-                                                <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
-                                            #else if $cur_branch == 'master'
-                                                <option value="$cur_branch" #if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else ''#>$cur_branch</option>
-                                            #end if
-                                        #end for
-                                    #end if
+                                    % $gh_branch = $sickbeard.versionCheckScheduler.action.list_remote_branches()
+                                    % if $gh_branch:
+                                        % for $cur_branch in $gh_branch:
+                                            % if $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $sickbeard.DEVELOPER == 1
+                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % elseif $sickbeard.GIT_USERNAME and $sickbeard.GIT_PASSWORD and $cur_branch in ['master', 'develop']
+                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % elseif $cur_branch == 'master'
+                                                <option value="$cur_branch" <% if $cur_branch == $sickbeard.BRANCH then 'selected="selected"' else '' %>>${cur_branch}</option>
+                                            % endif
+                                        % endfor
+                                    % endif
                                     </select>
-                                    #if not $gh_branch
+                                    % if not $gh_branch
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                    #else
+                                    % else
                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-                                    #end if
-                                    #if not $gh_branch
+                                    % endif
+                                    % if not $gh_branch
                                        <div class="clear-left" style="color:#FF0000"><p>Error: No branches found.</p></div>
-                                    #else
+                                    % else
                                        <div class="clear-left"><p>select branch to use (restart required)</p></div>
-                                    #end if
+                                    % endif
                                 </span>
                             </label>
                         </div>
@@ -717,7 +719,7 @@
                             <label for="git_username">
                                 <span class="component-title">GitHub username</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_username" id="git_username" value="$sickbeard.GIT_USERNAME" class="form-control input-sm input300" />
+                                    <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
                                 </span>
                             </label>
@@ -727,7 +729,7 @@
                             <label for="git_password">
                                 <span class="component-title">GitHub password</span>
                                 <span class="component-desc">
-                                    <input type="password" name="git_password" id="git_password" value="$sickbeard.GIT_PASSWORD" class="form-control input-sm input300" />
+                                    <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>*** (REQUIRED FOR SUBMITTING ISSUES) ***</p></div>
                                 </span>
                             </label>
@@ -737,7 +739,7 @@
                             <label for="git_remote">
                                 <span class="component-title">GitHub remote for branch</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_remote" id="git_remote" value="$sickbeard.GIT_REMOTE" class="form-control input-sm input300" />
+                                    <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>default:origin. Access repo configured remotes (save then refresh browser)</p></div>
                                 </span>
                             </label>
@@ -747,7 +749,7 @@
                             <label>
                                 <span class="component-title">Git executable path</span>
                                 <span class="component-desc">
-                                    <input type="text" name="git_path" value="$sickbeard.GIT_PATH" class="form-control input-sm input300" />
+                                    <input type="text" name="git_path" value="${sickbeard.GIT_PATH}" class="form-control input-sm input300" />
                                     <div class="clear-left"><p>only needed if OS is unable to locate git from env</p></div>
                                 </span>
                             </label>
@@ -757,7 +759,7 @@
                             <label for="git_reset">
                                 <span class="component-title">Git reset</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="git_reset" id="git_reset" #if True == $sickbeard.GIT_RESET then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="git_reset" id="git_reset" <% if True == $sickbeard.GIT_RESET then 'checked="checked"' else '' %>/>
                                     <p>removes untracked files and performs a hard reset on git branch automatically to help resolve update issues</p>
                                 </span>
                             </label>
@@ -767,7 +769,7 @@
                             <label for="git_autoissues">
                                 <span class="component-title">Git auto-issues submit</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="git_autoissues" id="git_autoissues" #if True == $sickbeard.GIT_AUTOISSUES then 'checked="checked"' else ''# disable/>
+                                    <input type="checkbox" name="git_autoissues" id="git_autoissues" <% if True == $sickbeard.GIT_AUTOISSUES then 'checked="checked"' else '' %> disable/>
                                     <p>automatically submit bug/issue reports to our issue tracker when errors are logged</p>
                                 </span>
                             </label>
@@ -781,7 +783,7 @@
                 </div><!-- /component-group3 //-->
 
                 <br/>
-                <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">$sickbeard.DATA_DIR</span></b> </h6>
+                <h6 class="pull-right"><b>All non-absolute folder locations are relative to <span class="path">${sickbeard.DATA_DIR}</span></b> </h6>
                 <input type="submit" class="btn pull-left config_submitter button" value="Save Changes" />
 
             </div><!-- /config-components -->
@@ -799,4 +801,4 @@
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
