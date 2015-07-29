@@ -1,21 +1,24 @@
-#import sickbeard
+<%
+    import sickbeard
+
+    if sickbeard.ROOT_DIRS:
+        backend_pieces = sickbeard.ROOT_DIRS.split('|')
+        backend_default = 'rd-' + backend_pieces[0]
+        backend_dirs = backend_pieces[1:]
+    else:
+        backend_default = ''
+        backend_dirs = []
+    endif
+%>
+
 <span id="sampleRootDir"></span>
 
-#if $sickbeard.ROOT_DIRS:
-#set $backend_pieces = $sickbeard.ROOT_DIRS.split('|')
-#set $backend_default = 'rd-' + $backend_pieces[0]
-#set $backend_dirs = $backend_pieces[1:]
-#else:
-#set $backend_default = ''
-#set $backend_dirs = []
-#end if
-
-<input type="hidden" id="whichDefaultRootDir" value="$backend_default" />
+<input type="hidden" id="whichDefaultRootDir" value="${backend_default}" />
 <div class="rootdir-selectbox">
     <select name="rootDir" id="rootDirs" size="6">
-    #for $cur_dir in $backend_dirs:
-        <option value="$cur_dir">$cur_dir</option>
-    #end for
+    % for cur_dir in backend_dirs:
+        <option value="${cur_dir}">${cur_dir}</option>
+    % endfor
     </select>
 </div>
 <div id="rootDirsControls" class="rootdir-controls">
