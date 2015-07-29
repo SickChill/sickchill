@@ -1,36 +1,37 @@
-#import os.path
-#import datetime
-#import locale
-#import sickbeard
-#from sickbeard.common import *
-#from sickbeard.sbdatetime import *
-#from sickbeard import config
-#from sickbeard import metadata
-#from sickbeard.metadata.generic import GenericMetadata
-#from sickbeard.helpers import anon_url
+<%!
+    import os.path
+    import datetime
+    import locale
+    import sickbeard
+    from sickbeard.common import *
+    from sickbeard.sbdatetime import *
+    from sickbeard import config
+    from sickbeard import metadata
+    from sickbeard.metadata.generic import GenericMetadata
+    from sickbeard.helpers import anon_url
 
-#set global $title  = 'Config - General'
-#set global $header = 'General Configuration'
+    global $title  = 'Config - General'
+    global $header = 'General Configuration'
 
-#set global $sbPath = '../..'
+    global $sbPath = '../..'
 
-#set global $topmenu = 'config'
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
-
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
+    global $topmenu = 'config'
+    include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+%>
+% if varExists('header')
+    <h1 class="header">${header}</h1>
+% else
     <h1 class="title">$title</h1>
-#end if
+% endif
 
-#set $indexer = 0
-#if $sickbeard.INDEXER_DEFAULT
-    #set $indexer = $sickbeard.INDEXER_DEFAULT
-#end if
+% $indexer = 0
+% if $sickbeard.INDEXER_DEFAULT
+    % $indexer = $sickbeard.INDEXER_DEFAULT
+% endif
 
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
 
 <script type="text/javascript" charset="utf-8">
     <!--
@@ -79,7 +80,7 @@
                             <label for="indexerDefaultLang">
                                 <span class="component-title">Default Indexer Language</span>
                                 <span class="component-desc">
-                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=$sickbeard.INDEXER_DEFAULT_LANGUAGE data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select>
+                                    <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="#echo ','.join($sickbeard.indexerApi().config['valid_languages'])#"></select>
                                     <span>for adding shows and metadata providers</span>
                                 </span>
                             </label>
@@ -88,7 +89,7 @@
                             <label for="launch_browser">
                                 <span class="component-title">Launch browser</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="launch_browser" id="launch_browser" #if $sickbeard.LAUNCH_BROWSER then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="launch_browser" id="launch_browser" <% if $sickbeard.LAUNCH_BROWSER then 'checked="checked"' else '' %>/>
                                     <p>open the SickRage home page on startup</p>
                                 </span>
                             </label>
@@ -98,11 +99,11 @@
                                 <span class="component-title">Initial page</span>
                                 <span class="component-desc">
                                     <select id="default_page" name="default_page" class="form-control input-sm">
-                                        <option value="news" #if $sickbeard.DEFAULT_PAGE == 'news' then 'selected="selected"' else ''#>News</option>
-                                        <option value="home" #if $sickbeard.DEFAULT_PAGE == 'home' then 'selected="selected"' else ''#>Home</option>
-                                        <option value="comingEpisodes" #if $sickbeard.DEFAULT_PAGE == 'comingEpisodes' then 'selected="selected"' else ''#>Coming Episodes</option>
-                                        <option value="history" #if $sickbeard.DEFAULT_PAGE == 'history' then 'selected="selected"' else ''#>History</option>
-                                        <option value="IRC" #if $sickbeard.DEFAULT_PAGE == 'IRC' then 'selected="selected"' else ''#>IRC</option>
+                                        <option value="news" <% if $sickbeard.DEFAULT_PAGE == 'news' then 'selected="selected"' else '' %>>News</option>
+                                        <option value="home" <% if $sickbeard.DEFAULT_PAGE == 'home' then 'selected="selected"' else '' %>>Home</option>
+                                        <option value="comingEpisodes" <% if $sickbeard.DEFAULT_PAGE == 'comingEpisodes' then 'selected="selected"' else '' %>>Coming Episodes</option>
+                                        <option value="history" <% if $sickbeard.DEFAULT_PAGE == 'history' then 'selected="selected"' else '' %>>History</option>
+                                        <option value="IRC" <% if $sickbeard.DEFAULT_PAGE == 'IRC' then 'selected="selected"' else '' %>>IRC</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
                                 </span>
@@ -112,7 +113,7 @@
                             <label for="showupdate_hour">
                                 <span class="component-title">When to update shows</span>
                                 <span class="component-desc">
-                                    <input type="text" name="showupdate_hour" id="showupdate_hour" value="$sickbeard.SHOWUPDATE_HOUR" class="form-control input-sm input75" />
+                                    <input type="text" name="showupdate_hour" id="showupdate_hour" value="${sickbeard.SHOWUPDATE_HOUR}" class="form-control input-sm input75" />
                                     <p>with information such as next air dates, show ended, etc. Use 15 for 3pm, 4 for 4am etc. Anything over 23 or under 0 will be set to 0 (12am)</p>
                                 </span>
                             </label>
@@ -122,7 +123,7 @@
                             <label for="update_shows_on_start">
                                 <span class="component-title">Update shows on startup</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" #if $sickbeard.UPDATE_SHOWS_ON_START then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" <% if $sickbeard.UPDATE_SHOWS_ON_START then 'checked="checked"' else '' %>/>
                                     <p>with information such as next air dates, show ended, etc. Disable for a faster startup as show info is sheduled to update in the background anyway</p>
                                 </span>
                             </label>
@@ -132,7 +133,7 @@
                             <label for="update_shows_on_snatch">
                                 <span class="component-title">Update shows on snatch</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_snatch" id="update_shows_on_snatch" #if $sickbeard.UPDATE_SHOWS_ON_SNATCH then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="update_shows_on_snatch" id="update_shows_on_snatch" <% if $sickbeard.UPDATE_SHOWS_ON_SNATCH then 'checked="checked"' else '' %>/>
                                     <p>with information such as next air dates, show ended, etc.</p>
                                 </span>
                             </label>
@@ -142,11 +143,11 @@
                             <span class="component-title">Send to trash for actions</span>
                             <span class="component-desc">
                                 <label for="trash_remove_show" class="nextline-block">
-                                    <input type="checkbox" name="trash_remove_show" id="trash_remove_show" #if $sickbeard.TRASH_REMOVE_SHOW then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="trash_remove_show" id="trash_remove_show" <% if $sickbeard.TRASH_REMOVE_SHOW then 'checked="checked"' else '' %>/>
                                     <p>when using show "Remove" and delete files</p>
                                 </label>
                                 <label for="trash_rotate_logs" class="nextline-block">
-                                    <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" #if $sickbeard.TRASH_ROTATE_LOGS then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" <% if $sickbeard.TRASH_ROTATE_LOGS then 'checked="checked"' else '' %>/>
                                     <p>on scheduled deletes of the oldest log files</p>
                                 </label>
                                 <div class="clear-left"><p>selected actions use trash (recycle bin) instead of the default permanent delete</p></div>
@@ -157,7 +158,7 @@
                             <label for="log_dir">
                                 <span class="component-title">Log file folder location</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_dir" id="log_dir" value="$sickbeard.ACTUAL_LOG_DIR" class="form-control input-sm input350" />
+                                    <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
@@ -166,7 +167,7 @@
                             <label for="log_nr">
                                 <span class="component-title">Number of Log files saved</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_nr" id="log_nr" value="$sickbeard.LOG_NR" class="form-control input-sm input75" />
+                                    <input type="text" name="log_nr" id="log_nr" value="${sickbeard.LOG_NR}" class="form-control input-sm input75" />
                                     <p>number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)</p>
                                 </span>
                             </label>
@@ -176,7 +177,7 @@
                             <label for="log_size">
                                 <span class="component-title">Size of Log files saved</span>
                                 <span class="component-desc">
-                                    <input type="text" name="log_size" id="log_size" value="$sickbeard.LOG_SIZE" class="form-control input-sm input75" />
+                                    <input type="text" name="log_size" id="log_size" value="${sickbeard.LOG_SIZE}" class="form-control input-sm input75" />
                                     <p>maximum size of a log file saved (default: 1048576 (1MB)) (REQUIRES RESTART)</p>
                                 </span>
                             </label>
@@ -187,10 +188,10 @@
                                 <span class="component-title">Use initial indexer set to</span>
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                        <option value="0" #if $indexer == 0 then 'selected="selected"' else ''#>All Indexers</option>
-                                        #for $indexer in $sickbeard.indexerApi().indexers
-                                        <option value="$indexer" #if $indexer == $sickbeard.INDEXER_DEFAULT then 'selected="selected"' else ''#>$sickbeard.indexerApi().indexers[$indexer]</option>
-                                        #end for
+                                        <option value="0" <% if $indexer == 0 then 'selected="selected"' else '' %>>All Indexers</option>
+                                        % for $indexer in $sickbeard.indexerApi().indexers
+                                        <option value="$indexer" <% if $indexer == $sickbeard.INDEXER_DEFAULT then 'selected="selected"' else '' %>>${sickbeard.indexerApi().indexers[$indexer]}</option>
+                                        % endfor
                                     </select>
                                     <span>as the default selection when adding new shows</span>
                                 </span>
@@ -201,7 +202,7 @@
                             <label for="indexer_timeout">
                                 <span class="component-title">Timeout show indexer at</span>
                                 <span class="component-desc">
-                                    <input type="text" name="indexer_timeout" id="indexer_timeout" value="$sickbeard.INDEXER_TIMEOUT" class="form-control input-sm input75" />
+                                    <input type="text" name="indexer_timeout" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}" class="form-control input-sm input75" />
                                     <p>seconds of inactivity when finding new shows (default:10)</p>
                                 </span>
                             </label>
@@ -212,7 +213,7 @@
                                 <span class="component-title">Show root directories</span>
                                 <span class="component-desc">
                                     <p>where the files of shows are located</p>
-                                    #include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.tmpl')
+                                    % include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_rootDirs.tmpl')
                                 </span>
                             </label>
                         </div>
@@ -232,7 +233,7 @@
                             <label for="version_notify">
                                 <span class="component-title">Check software updates</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="version_notify" id="version_notify" #if $sickbeard.VERSION_NOTIFY then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="version_notify" id="version_notify" <% if $sickbeard.VERSION_NOTIFY then 'checked="checked"' else '' %>/>
                                     <p>and display notifications when updates are available.
                                     Checks are run on startup and at the frequency set below*</p>
                                 </span>
@@ -243,7 +244,7 @@
                             <label for="auto_update">
                                 <span class="component-title">Automatically update</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="auto_update" id="auto_update" #if $sickbeard.AUTO_UPDATE then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="auto_update" id="auto_update" <% if $sickbeard.AUTO_UPDATE then 'checked="checked"' else '' %>/>
                                     <p>fetch and install software updates.
                                     Updates are run on startup and in the background at the frequency set below*</p>
                                 </span>
@@ -254,7 +255,7 @@
                             <label>
                                 <span class="component-title">Check the server every*</span>
                                 <span class="component-desc">
-                                    <input type="text" name="update_frequency" id="update_frequency" value="$sickbeard.UPDATE_FREQUENCY" class="form-control input-sm input75" />
+                                    <input type="text" name="update_frequency" id="update_frequency" value="${sickbeard.UPDATE_FREQUENCY}" class="form-control input-sm input75" />
                                     <p>hours for software updates (default:12)</p>
                                 </span>
                             </label>
@@ -264,7 +265,7 @@
                             <label for="notify_on_update">
                                 <span class="component-title">Notify on software update</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="notify_on_update" id="notify_on_update" #if $sickbeard.NOTIFY_ON_UPDATE then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="notify_on_update" id="notify_on_update" <% if $sickbeard.NOTIFY_ON_UPDATE then 'checked="checked"' else '' %>/>
                                     <p>send a message to all enabled notifiers when SickRage has been updated</p>
                                 </span>
                             </label>
@@ -292,8 +293,8 @@
                                 <span class="component-title">Display theme:</span>
                                 <span class="component-desc">
                                     <select id="theme_name" name="theme_name" class="form-control input-sm">
-                                        <option value="dark" #if $sickbeard.THEME_NAME == 'dark' then 'selected="selected"' else ''#>Dark</option>
-                                        <option value="light" #if $sickbeard.THEME_NAME == 'light' then 'selected="selected"' else ''#>Light</option>
+                                        <option value="dark" <% if $sickbeard.THEME_NAME == 'dark' then 'selected="selected"' else '' %>>Dark</option>
+                                        <option value="light" <% if $sickbeard.THEME_NAME == 'light' then 'selected="selected"' else '' %>>Light</option>
                                     </select>
                                     <span class="red-text">for appearance to take effect, save then refresh your browser</span>
                                 </span>
@@ -303,7 +304,7 @@
                             <label for="display_all_seasons">
                                 <span class="component-title">Show all seasons</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" #if $sickbeard.DISPLAY_ALL_SEASONS then 'checked="checked"' else ''#>
+                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" <% if $sickbeard.DISPLAY_ALL_SEASONS then 'checked="checked"' else '' %>>
                                     <p>on the show summary page</p>
                                 </span>
                             </label>
@@ -312,7 +313,7 @@
                             <label for="sort_article">
                                 <span class="component-title">Sort with "The", "A", "An"</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="sort_article" id="sort_article" #if $sickbeard.SORT_ARTICLE then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="sort_article" id="sort_article" <% if $sickbeard.SORT_ARTICLE then 'checked="checked"' else '' %>/>
                                     <p>include articles ("The", "A", "An") when sorting show lists</p>
                                 </span>
                             </label>
@@ -321,7 +322,7 @@
                             <label for="filter_row">
                                 <span class="component-title">Filter Row</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="filter_row" id="filter_row" #if $sickbeard.FILTER_ROW == True then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="filter_row" id="filter_row" <% if $sickbeard.FILTER_ROW == True then 'checked="checked"' else '' %>/>
                                     <p>Add a filter row to the show display on the home page</p>
                                     <p>Supports =, >, >=, <=, <, xx to yy , xx - yy</p>
                                     <p><b>Note:</b> =, >, >=, <=, < should be first, followed by a space, then the value.</p>
@@ -333,7 +334,7 @@
                             <label for="coming_eps_missed_range">
                                 <span class="component-title">Missed episodes range</span>
                                 <span class="component-desc">
-                                    <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="$sickbeard.COMING_EPS_MISSED_RANGE" class="form-control input-sm input75" />
+                                    <input type="number" step="1" min="7" name="coming_eps_missed_range" id="coming_eps_missed_range" value="${sickbeard.COMING_EPS_MISSED_RANGE}" class="form-control input-sm input75" />
                                     <p>Set the range in days of the missed episodes in the Coming Episode page</p>
                                 </span>
                             </label>
@@ -342,16 +343,16 @@
                             <label for="fuzzy_dating">
                                 <span class="component-title">Display fuzzy dates</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" #if $sickbeard.FUZZY_DATING == True then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" <% if $sickbeard.FUZZY_DATING == True then 'checked="checked"' else '' %>/>
                                     <p>move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"</p>
                                 </span>
                             </label>
                         </div>
-                        <div class="field-pair show_if_fuzzy_dating#if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#">
+                        <div class="field-pair show_if_fuzzy_dating<% if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv' %>">
                             <label for="trim_zero">
                                 <span class="component-title">Trim zero padding</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="trim_zero" id="trim_zero" #if True == $sickbeard.TRIM_ZERO then 'checked="checked"' else ''#/>
+                                    <input type="checkbox" name="trim_zero" id="trim_zero" <% if True == $sickbeard.TRIM_ZERO then 'checked="checked"' else '' %>/>
                                     <p>remove the leading number "0" shown on hour of day, and date of month</p>
                                 </span>
                             </label>
@@ -361,7 +362,7 @@
                             <label for="date_presets">
                                 <span class="component-title">Date style:</span>
                                 <span class="component-desc">
-                                    <select class="form-control input-sm #if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
+                                    <select class="form-control input-sm <% if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv' %>" id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
                                         #for $cur_preset in $date_presets:
                                             <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
                                         #end for
