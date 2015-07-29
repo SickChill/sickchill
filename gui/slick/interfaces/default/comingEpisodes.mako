@@ -315,7 +315,7 @@
 % for cur_result in sql_results:
     % cur_indexer = int(cur_result['indexer'])
 
-<!-- start $cur_result['show_name'] //-->
+<!-- start ${cur_result['show_name']} //-->
 
     % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         % continue
@@ -332,74 +332,74 @@
         % endif
         % cur_ep_airdate = cur_result['localtime'].date()
 
-        % if $runtime:
-            % $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
-            % if $cur_ep_enddate < $today:
-                % $show_div = 'ep_listing listing-overdue'
-            % elif $cur_ep_airdate >= $next_week.date():
-                % $show_div = 'ep_listing listing-toofar'
-            % elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+        % if runtime:
+            % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+            % if cur_ep_enddate < today:
+                % show_div = 'ep_listing listing-overdue'
+            % elif cur_ep_airdate >= next_week.date():
+                % show_div = 'ep_listing listing-toofar'
+            % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                 % if $cur_ep_airdate == $today.date():
                 % $show_div = 'ep_listing listing-current'
                     % else:
-                        % $show_div = 'ep_listing listing-default'
+                        % show_div = 'ep_listing listing-default'
                     % endif
                 % endif
             % endif
 
-    % elif 'date' == $sort:
-        % $cur_ep_airdate = $cur_result['localtime'].date()
+    % elif 'date' == sort:
+        % cur_ep_airdate = cur_result['localtime'].date()
 
-        % if $cur_segment != $cur_ep_airdate:
-            % if $runtime:
-                % $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
-                % if $cur_ep_enddate < $today and $cur_ep_airdate != $today.date() and not $missed_header:
+        % if cur_segment != cur_ep_airdate:
+            % if runtime:
+                % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+                % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
-                % $missed_header = True
-                % elif $cur_ep_airdate >= $next_week.date() and not $too_late_header:
+                % missed_header = True
+                % elif cur_ep_airdate >= next_week.date() and not too_late_header:
                         <br /><h2 class="day">Later</h2>
-                % $too_late_header = True
-                % elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                    % if $cur_ep_airdate == $today.date():
-                        <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
-                    % $today_header = True
+                % too_late_header = True
+                % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
+                    % if cur_ep_airdate == today.date():
+                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+                    % today_header = True
                     % else:
-                        <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize()</h2>
+                        <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</h2>
                     % endif
                 % endif
             % endif
-                % $cur_segment = $cur_ep_airdate
+                % cur_segment = cur_ep_airdate
         % endif
 
-        % if $cur_ep_airdate == $today.date() and not $today_header:
+        % if cur_ep_airdate == today.date() and not today_header:
             <div class="comingepheader">
-            <br /><h2 class="day">$datetime.date.fromordinal($cur_ep_airdate.toordinal).strftime('%A').decode($sickbeard.SYS_ENCODING).capitalize() <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
-            % $today_header = True
+            <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
+            % today_header = True
         % endif
-        % if $runtime:
-            % if $cur_ep_enddate < $today:
-                % $show_div = 'ep_listing listing-overdue'
-            % elif $cur_ep_airdate >= $next_week.date():
-                % $show_div = 'ep_listing listing-toofar'
-            % elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
-                % if $cur_ep_airdate == $today.date():
-                    % $show_div = 'ep_listing listing-current'
+        % if runtime:
+            % if cur_ep_enddate < today:
+                % show_div = 'ep_listing listing-overdue'
+            % elif cur_ep_airdate >= next_week.date():
+                % show_div = 'ep_listing listing-toofar'
+            % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
+                % if cur_ep_airdate == today.date():
+                    % show_div = 'ep_listing listing-current'
                 % else:
-                    % $show_div = 'ep_listing listing-default'
+                    % show_div = 'ep_listing listing-default'
                 % endif
             % endif
         % endif
 
-        % elif 'show' == $sort:
-            % $cur_ep_airdate = $cur_result['localtime'].date()
+        % elif 'show' == sort:
+            % cur_ep_airdate = cur_result['localtime'].date()
 
-            % if $runtime:
-                % $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
-                % if $cur_ep_enddate < $today:
-                    % $show_div = 'ep_listing listing-overdue listingradius'
-                % elif $cur_ep_airdate >= $next_week.date():
-                    % $show_div = 'ep_listing listing-toofar listingradius'
-                % elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date():
+            % if runtime:
+                % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+                % if cur_ep_enddate < today:
+                    % show_div = 'ep_listing listing-overdue listingradius'
+                % elif cur_ep_airdate >= next_week.date():
+                    % show_div = 'ep_listing listing-toofar listingradius'
+                % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if $cur_ep_airdate == $today.date():
                         % $show_div = 'ep_listing listing-current listingradius'
                     % else:
