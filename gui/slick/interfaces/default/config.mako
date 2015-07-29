@@ -12,7 +12,7 @@ useLegacyImportMode = False
 
     global sbPath=".."
 
-    global topmenu="config"#
+    global topmenu="config"
     include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 %>
 % if not header is UNDEFINED:

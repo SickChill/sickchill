@@ -1,27 +1,28 @@
-#import os.path
-#import sickbeard
-#from sickbeard.common import *
-#from sickbeard import config
-#from sickbeard import metadata
-#from sickbeard.metadata.generic import GenericMetadata
-#from sickbeard import naming
+<%
+    import os.path
+    import sickbeard
+    from sickbeard.common import *
+    from sickbeard import config
+    from sickbeard import metadata
+    from sickbeard.metadata.generic import GenericMetadata
+    from sickbeard import naming
 
-#set global $title  = "Config - Post Processing"
-#set global $header = "Post Processing"
+    global title  = "Config - Post Processing"
+    global header = "Post Processing"
+    global sbPath="../.."
+    global topmenu="config"#
 
-#set global $sbPath="../.."
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+%>
 
-#set global $topmenu="config"#
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-<script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?${sbPID}"></script>
 <script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
 <div id="content960">
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 <div id="config">
 <div id="config-content">
 
@@ -45,7 +46,7 @@
                         <div class="field-pair">
                             <label class="nocheck" for="tv_download_dir">
                                 <span class="component-title">TV Download Dir</span>
-                                <input type="text" name="tv_download_dir" id="tv_download_dir" value="$sickbeard.TV_DOWNLOAD_DIR" class="form-control input-sm input350" />
+                                <input type="text" name="tv_download_dir" id="tv_download_dir" value="${sickbeard.TV_DOWNLOAD_DIR}" class="form-control input-sm input350" />
                             </label>
                             <label class="nocheck">
                                 <span class="component-title">&nbsp;</span>
@@ -70,15 +71,15 @@
                                 <span class="component-title">Process Episode Method:</span>
                                 <span class="component-desc">
                                     <select name="process_method" id="process_method" class="form-control input-sm">
-                                        #set $process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
-                                        #for $curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                                          #if $sickbeard.PROCESS_METHOD == $curAction:
-                                            #set $process_method = "selected=\"selected\""
-                                          #else
-                                            #set $process_method = ""
-                                          #end if
-                                        <option value="$curAction" $process_method>$process_method_text[$curAction]</option>
-                                        #end for
+                                        % process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
+                                        % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
+                                          % if sickbeard.PROCESS_METHOD == curAction:
+                                            % process_method = "selected=\"selected\""
+                                          % else
+                                            % process_method = ""
+                                          % endif
+                                        <option value="${curAction}" ${process_method}>${process_method_text[curAction]}</option>
+                                        % endfor
                                     </select>
                                 </span>
                             </label>
@@ -280,15 +281,15 @@
                                 <span class="component-title">Name Pattern:</span>
                                 <span class="component-desc">
                                     <select id="name_presets" class="form-control input-sm">
-                                        #set is_custom = True
-                                        #for $cur_preset in $naming.name_presets:
-                                            #set $tmp = $naming.test_name($cur_preset, anime_type=3)
-                                            #if $cur_preset == $sickbeard.NAMING_PATTERN:
-                                                #set is_custom = False
-                                            #end if
-                                            <option id="$cur_preset" #if $cur_preset == $sickbeard.NAMING_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
-                                        #end for
-                                        <option id="$sickbeard.NAMING_PATTERN" #if $is_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                        % is_custom = True
+                                        % for cur_preset in naming.name_presets:
+                                            % tmp = naming.test_name(cur_preset, anime_type=3)
+                                            % if cur_preset == sickbeard.NAMING_PATTERN:
+                                                %  is_custom = False
+                                            % endif
+                                            <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                        % endfor
+                                        <option id="${sickbeard.NAMING_PATTERN}" #if $is_custom then "selected=\"selected\"" else ""#>Custom...</option>
                                     </select>
                                 </span>
                             </label>
@@ -301,8 +302,8 @@
                                         &nbsp;
                                     </span>
                                     <span class="component-desc">
-                                        <input type="text" name="naming_pattern" id="naming_pattern" value="$sickbeard.NAMING_PATTERN" class="form-control input-sm input350" />
-                                        <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
+                                        <input type="text" name="naming_pattern" id="naming_pattern" value="${sickbeard.NAMING_PATTERN}" class="form-control input-sm input350" />
+                                        <img src="${sbRoot}/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_key" title="Toggle Naming Legend" class="legend" class="legend" />
                                     </span>
                                 </label>
                                 <label class="nocheck">
@@ -437,9 +438,9 @@
                                 <span class="component-title">Multi-Episode Style:</span>
                                 <span class="component-desc">
                                     <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm">
-                                    #for $cur_multi_ep in sorted($multiEpStrings.items(), key=lambda x: x[1]):
-                                        <option value="$cur_multi_ep[0]" #if $cur_multi_ep[0] == $sickbeard.NAMING_MULTI_EP then "selected=\"selected\" class=\"selected\"" else ""#>$cur_multi_ep[1]</option>
-                                    #end for
+                                    % for cur_multi_ep in sorted(multiEpStrings.items(), key=lambda x: x[1]):
+                                        <option value="${cur_multi_ep[0]}" #if $cur_multi_ep[0] == $sickbeard.NAMING_MULTI_EP then "selected=\"selected\" class=\"selected\"" else ""#>$cur_multi_ep[1]</option>
+                                    % endfor
                                     </select>
                                 </span>
                             </label>
@@ -487,15 +488,15 @@
                                     <span class="component-title">Name Pattern:</span>
                                     <span class="component-desc">
                                         <select id="name_abd_presets" class="form-control input-sm">
-                                            #set is_abd_custom = True
-                                            #for $cur_preset in $naming.name_abd_presets:
-                                                #set $tmp = $naming.test_name($cur_preset)
-                                                #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN:
-                                                    #set is_abd_custom = False
-                                                #end if
-                                                <option id="$cur_preset" #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
-                                            #end for
-                                            <option id="$sickbeard.NAMING_ABD_PATTERN" #if $is_abd_custom then "selected=\"selected\"" else ""#>Custom...</option>
+                                            % is_abd_custom = True
+                                            % for cur_preset in naming.name_abd_presets:
+                                                % tmp = $naming.test_name(cur_preset)
+                                                % if cur_preset == sickbeard.NAMING_ABD_PATTERN:
+                                                    % is_abd_custom = False
+                                                % endif
+                                                <option id="${cur_preset}" #if $cur_preset == $sickbeard.NAMING_ABD_PATTERN then "selected=\"selected\"" else ""#>$os.path.join($tmp['dir'], $tmp['name'])</option>
+                                            % endfor
+                                            <option id="${sickbeard.NAMING_ABD_PATTERN}" #if $is_abd_custom then "selected=\"selected\"" else ""#>Custom...</option>
                                         </select>
                                     </span>
                                 </label>
@@ -508,7 +509,7 @@
                                             &nbsp;
                                         </span>
                                         <span class="component-desc">
-                                            <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="$sickbeard.NAMING_ABD_PATTERN" class="form-control input-sm input350" />
+                                            <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${sickbeard.NAMING_ABD_PATTERN}" class="form-control input-sm input350" />
                                             <img src="$sbRoot/images/legend16.png" width="16" height="16" alt="[Toggle Key]" id="show_naming_abd_key" title="Toggle ABD Naming Legend" class="legend" />
                                         </span>
                                     </label>
