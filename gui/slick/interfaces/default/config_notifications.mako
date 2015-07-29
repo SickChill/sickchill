@@ -490,7 +490,7 @@
 
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/synoindex.png" alt="" title="Synology" />
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/synoindex.png" alt="" title="Synology" />
                         <h3><a href="<%= anon_url('http://synology.com/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
                         <p>The Synology DiskStation NAS.</p>
                         <p>Synology Indexer is the daemon running on the Synology NAS to build its media database.</p>
@@ -501,7 +501,7 @@
                             <label for="use_synoindex">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" #if $sickbeard.USE_SYNOINDEX then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${(' checked="checked"', '')[sickbeard.USE_SYNOINDEX == True]}/>
                                     <p>should SickRage send Synology notifications ?</p>
                                 </span>
                             </label>
@@ -531,7 +531,7 @@
                             <label for="use_synologynotifier">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" #if $sickbeard.USE_SYNOLOGYNOTIFIER then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${(' checked="checked"', '')[sickbeard.USE_SYNOLOGYNOTIFIER == True]}/>
                                     <p>should SickRage send notifications to the Synology Notifier ?</p>
                                 </span>
                             </label>
@@ -545,7 +545,7 @@
                                 <label for="synologynotifier_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" #if $sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
@@ -554,7 +554,7 @@
                                 <label for="synologynotifier_notify_ondownload">
                                     <span class="component-title">Notify on download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" #if $sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD == True]}/>
                                         <p>send a notification when a download finishes ?</p>
                                     </span>
                                 </label>
@@ -563,7 +563,7 @@
                                 <label for="synologynotifier_notify_onsubtitledownload">
                                     <span class="component-title">Notify on subtitle download</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" #if $sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${(' checked="checked"', '')[sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD == True]}/>
                                         <p>send a notification when subtitles are downloaded ?</p>
                                     </span>
                                 </label>
@@ -585,7 +585,7 @@
                             <label for="use_pytivo">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" #if $sickbeard.USE_PYTIVO then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${(' checked="checked"', '')[sickbeard.USE_PYTIVO == True]}/>
                                     <p>should SickRage send notifications to pyTivo ?</p>
                                 </span>
                             </label>
@@ -599,7 +599,7 @@
                             <div class="field-pair">
                                 <label for="pytivo_host">
                                     <span class="component-title">pyTivo IP:Port</span>
-                                    <input type="text" name="pytivo_host" id="pytivo_host" value="$sickbeard.PYTIVO_HOST" class="form-control input-sm input250" />
+                                    <input type="text" name="pytivo_host" id="pytivo_host" value="${sickbeard.PYTIVO_HOST}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -609,7 +609,7 @@
                             <div class="field-pair">
                                 <label for="pytivo_share_name">
                                     <span class="component-title">pyTivo share name</span>
-                                    <input type="text" name="pytivo_share_name" id="pytivo_share_name" value="$sickbeard.PYTIVO_SHARE_NAME" class="form-control input-sm input250" />
+                                    <input type="text" name="pytivo_share_name" id="pytivo_share_name" value="${sickbeard.PYTIVO_SHARE_NAME}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -619,7 +619,7 @@
                             <div class="field-pair">
                                 <label for="pytivo_tivo_name">
                                     <span class="component-title">Tivo name</span>
-                                    <input type="text" name="pytivo_tivo_name" id="pytivo_tivo_name" value="$sickbeard.PYTIVO_TIVO_NAME" class="form-control input-sm input250" />
+                                    <input type="text" name="pytivo_tivo_name" id="pytivo_tivo_name" value="${sickbeard.PYTIVO_TIVO_NAME}" class="form-control input-sm input250" />
                                 </label>
                                 <label>
                                     <span class="component-title">&nbsp;</span>
@@ -638,7 +638,7 @@
             <div id="tabs-2">
                 <div class="component-group">
                     <div class="component-group-desc">
-                        <img class="notifier-icon" src="$sbRoot/images/notifiers/growl.png" alt="" title="Growl" />
+                        <img class="notifier-icon" src="${sbRoot}/images/notifiers/growl.png" alt="" title="Growl" />
                         <h3><a href="<%= anon_url('http://growl.info/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Growl</a></h3>
                         <p>A cross-platform unobtrusive global notification system.</p>
                     </div>
@@ -647,7 +647,7 @@
                             <label for="use_growl">
                                 <span class="component-title">Enable</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" #if $sickbeard.USE_GROWL then "checked=\"checked\"" else ""# />
+                                    <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${(' checked="checked"', '')[sickbeard.USE_GROWL == True]}/>
                                     <p>should SickRage send Growl notifications ?</p>
                                 </span>
                             </label>
@@ -658,7 +658,7 @@
                                 <label for="growl_notify_onsnatch">
                                     <span class="component-title">Notify on snatch</span>
                                     <span class="component-desc">
-                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" #if $sickbeard.GROWL_NOTIFY_ONSNATCH then "checked=\"checked\"" else ""# />
+                                        <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${(' checked="checked"', '')[sickbeard.GROWL_NOTIFY_ONSNATCH == True]}/>
                                         <p>send a notification when a download starts ?</p>
                                     </span>
                                 </label>
