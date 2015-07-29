@@ -5,17 +5,17 @@
     from sickbeard import sbdatetime
     from sickbeard.helpers import anon_url
 
-    set global $title = 'Coming Episodes'
-    set global $header = 'Coming Episodes'
+    global title = 'Coming Episodes'
+    global header = 'Coming Episodes'
 
-    set global $sbPath = '..'
+    global sbPath = '..'
 
-    set global $topmenu = 'comingEpisodes'
+    global topmenu = 'comingEpisodes'
     import os.path
-    include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
-    set $sort = $sickbeard.COMING_EPS_SORT
+    include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
+    sort = sickbeard.COMING_EPS_SORT
 %>
-<script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else
@@ -69,7 +69,7 @@
 
 <br>
 
-% if 'list' == $layout:
+% if 'list' == layout:
 <!-- start list view //-->
 
 <script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
@@ -158,7 +158,7 @@
 //-->
 </script>
 
-% $show_div = 'listing-default'
+% show_div = 'listing-default'
 
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
 
@@ -179,27 +179,27 @@
 
     <tbody style="text-shadow:none;">
 
-% for $cur_result in $sql_results:
-    % $cur_indexer = int($cur_result['indexer'])
-    % $runtime = $cur_result['runtime']
+% for cur_result in sql_results:
+    % cur_indexer = int(cur_result['indexer'])
+    % runtime = cur_result['runtime']
 
-    % if int($cur_result['paused']) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
-        #continue
+    % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+        % continue
     % endif
 
-    % $cur_ep_airdate = $cur_result['localtime'].date()
+    % cur_ep_airdate = cur_result['localtime'].date()
 
-    % if $runtime:
-        % $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
-        % if $cur_ep_enddate < $today:
-            % $show_div = 'listing-overdue'
-        % elif $cur_ep_airdate >= $next_week.date():
-            % $show_div = 'listing-toofar'
-        % elif $cur_ep_airdate >= $today.date() and $cur_ep_airdate < $next_week.date():
-            % if $cur_ep_airdate == $today.date():
-                % $show_div = 'listing-current'
+    % if runtime:
+        % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+        % if cur_ep_enddate < today:
+            % show_div = 'listing-overdue'
+        % elif cur_ep_airdate >= next_week.date():
+            % show_div = 'listing-toofar'
+        % elif cur_ep_airdate >= today.date() and cur_ep_airdate < next_week.date():
+            % if cur_ep_airdate == today.date():
+                % show_div = 'listing-current'
             % else:
-                % $show_div = 'listing-default'
+                % show_div = 'listing-default'
             % endif
         % endif
     % endif
@@ -208,11 +208,11 @@
         <tr class="${show_div}">
             ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
-                <div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime(${cur_result['localtime']}).decode($sickbeard.SYS_ENCODING)</div><span class="sort_data">$time.mktime($cur_result['localtime'].timetuple())</span>
+                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(${cur_result['localtime']}).decode($sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime($cur_result['localtime'].timetuple())}</span>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
-% if int($cur_result['paused']):
+% if int(cur_result['paused']):
                 <span class="pause">[paused]</span>
 % endif
             </td>
@@ -222,8 +222,8 @@
             </td>
 
             <td>
-% if $cur_result['description']:
-                <img alt='' src='$sbRoot/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_<%= '%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode'])) %>" />
+% if cur_result['description']:
+                <img alt='' src='${sbRoot}/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_<%= '%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode'])) %>" />
 % else:
                 <img alt="" src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 % endif
@@ -235,15 +235,15 @@
             </td>
 
             <td align="center">
-% if int($cur_result['quality']) in $qualityPresets:
-                <span class="quality $qualityPresetStrings[int($cur_result['quality'])]">$qualityPresetStrings[int($cur_result['quality'])]</span>
+% if int(cur_result['quality']) in qualityPresets:
+                <span class="quality ${qualityPresetStrings[int(cur_result['quality'])]}">${qualityPresetStrings[int(cur_result['quality'])]}</span>
 % else:
                 <span class="quality Custom">Custom</span>
 % endif
             </td>
 
             <td align="center" style="vertical-align: middle;">
-% if $cur_result['imdb_id']:
+% if cur_result['imdb_id']:
                 <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
                 <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
@@ -267,7 +267,7 @@
 <!-- end list view //-->
 
 
-% else if $layout in ['banner', 'poster']:
+% else if layout in ['banner', 'poster']:
 
 
 <!-- start non list view //-->
@@ -308,29 +308,29 @@
     $today_header = False
     $show_div = 'ep_listing listing-default'
 %>
-% if 'show' == $sort:
+% if 'show' == sort:
     <br /><br />
 %  endif
 
-% for $cur_result in $sql_results:
-    % $cur_indexer = int($cur_result['indexer'])
+% for cur_result in sql_results:
+    % cur_indexer = int(cur_result['indexer'])
 
 <!-- start $cur_result['show_name'] //-->
 
-    % if int($cur_result['paused']) and not $sickbeard.COMING_EPS_DISPLAY_PAUSED:
-        #continue
+    % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+        % continue
     % endif
 
-    % $runtime = $cur_result['runtime']
+    % runtime = cur_result['runtime']
 
-    % if 'network' == $sort:
-        % $show_network = $cur_result['network'] if $cur_result['network'] else 'no network'
-        % if $cur_segment != $show_network:
+    % if 'network' == sort:
+        % show_network = cur_result['network'] if cur_result['network'] else 'no network'
+        % if cur_segment != show_network:
             <div class="comingepheader">
                 <br><h2 class="network">${show_network}</h2>
-            % $cur_segment = $cur_result['network']
+            % cur_segment = cur_result['network']
         % endif
-        % $cur_ep_airdate = $cur_result['localtime'].date()
+        % cur_ep_airdate = cur_result['localtime'].date()
 
         % if $runtime:
             % $cur_ep_enddate = $cur_result['localtime'] + datetime.timedelta(minutes = $runtime)
@@ -551,4 +551,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+% include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')

@@ -12,7 +12,7 @@
     global sbPath="../.."
     global topmenu="config"#
 
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
 
 <script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?${sbPID}"></script>
@@ -1147,4 +1147,4 @@
     jQuery('#tv_download_dir').fileBrowser({ title: 'Select TV Download Directory' });
 //-->
 </script>
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
