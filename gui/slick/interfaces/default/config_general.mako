@@ -21,12 +21,12 @@
 % if varExists('header')
     <h1 class="header">${header}</h1>
 % else
-    <h1 class="title">$title</h1>
+    <h1 class="title">${title}</h1>
 % endif
 
-% $indexer = 0
+% indexer = 0
 % if $sickbeard.INDEXER_DEFAULT
-    % $indexer = $sickbeard.INDEXER_DEFAULT
+    % indexer = $sickbeard.INDEXER_DEFAULT
 % endif
 
 <script type="text/javascript" src="${sbRoot}/js/config.js?$sbPID"></script>
@@ -89,7 +89,7 @@
                             <label for="launch_browser">
                                 <span class="component-title">Launch browser</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="launch_browser" id="launch_browser" <% if $sickbeard.LAUNCH_BROWSER then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="launch_browser" id="launch_browser" ${(' checked="checked"', '')[sickbeard.LAUNCH_BROWSER == True]}/>
                                     <p>open the SickRage home page on startup</p>
                                 </span>
                             </label>
@@ -99,11 +99,11 @@
                                 <span class="component-title">Initial page</span>
                                 <span class="component-desc">
                                     <select id="default_page" name="default_page" class="form-control input-sm">
-                                        <option value="news" <% if $sickbeard.DEFAULT_PAGE == 'news' then 'selected="selected"' else '' %>>News</option>
-                                        <option value="home" <% if $sickbeard.DEFAULT_PAGE == 'home' then 'selected="selected"' else '' %>>Home</option>
-                                        <option value="comingEpisodes" <% if $sickbeard.DEFAULT_PAGE == 'comingEpisodes' then 'selected="selected"' else '' %>>Coming Episodes</option>
-                                        <option value="history" <% if $sickbeard.DEFAULT_PAGE == 'history' then 'selected="selected"' else '' %>>History</option>
-                                        <option value="IRC" <% if $sickbeard.DEFAULT_PAGE == 'IRC' then 'selected="selected"' else '' %>>IRC</option>
+                                        <option value="news" ${(' selected="selected"', '')[sickbeard.DEFAULT_PAGE == 'news']}>News</option>
+                                        <option value="home" ${(' selected="selected"', '')[sickbeard.DEFAULT_PAGE == 'home']}>Home</option>
+                                        <option value="comingEpisodes" ${(' selected="selected"', '')[sickbeard.DEFAULT_PAGE == 'comingEpisodes']}>Coming Episodes</option>
+                                        <option value="history" ${(' selected="selected"', '')[sickbeard.DEFAULT_PAGE == 'history']}>History</option>
+                                        <option value="IRC" ${(' selected="selected"', '')[sickbeard.DEFAULT_PAGE == 'IRC']}>IRC</option>
                                     </select>
                                     <span>when launching SickRage interface</span>
                                 </span>
@@ -123,7 +123,7 @@
                             <label for="update_shows_on_start">
                                 <span class="component-title">Update shows on startup</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" <% if $sickbeard.UPDATE_SHOWS_ON_START then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="update_shows_on_start" id="update_shows_on_start" ${(' checked="checked"', '')[sickbeard.UPDATE_SHOWS_ON_START == True]}/>
                                     <p>with information such as next air dates, show ended, etc. Disable for a faster startup as show info is sheduled to update in the background anyway</p>
                                 </span>
                             </label>
@@ -133,7 +133,7 @@
                             <label for="update_shows_on_snatch">
                                 <span class="component-title">Update shows on snatch</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="update_shows_on_snatch" id="update_shows_on_snatch" <% if $sickbeard.UPDATE_SHOWS_ON_SNATCH then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="update_shows_on_snatch" id="update_shows_on_snatch" ${(' checked="checked"', '')[sickbeard.UPDATE_SHOWS_ON_SNATCH == True]}/>
                                     <p>with information such as next air dates, show ended, etc.</p>
                                 </span>
                             </label>
@@ -143,11 +143,11 @@
                             <span class="component-title">Send to trash for actions</span>
                             <span class="component-desc">
                                 <label for="trash_remove_show" class="nextline-block">
-                                    <input type="checkbox" name="trash_remove_show" id="trash_remove_show" <% if $sickbeard.TRASH_REMOVE_SHOW then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="trash_remove_show" id="trash_remove_show" ${(' checked="checked"', '')[sickbeard.TRASH_REMOVE_SHOW == True]}/>
                                     <p>when using show "Remove" and delete files</p>
                                 </label>
                                 <label for="trash_rotate_logs" class="nextline-block">
-                                    <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" <% if $sickbeard.TRASH_ROTATE_LOGS then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" ${(' checked="checked"', '')[sickbeard.TRASH_ROTATE_LOGS == True]}/>
                                     <p>on scheduled deletes of the oldest log files</p>
                                 </label>
                                 <div class="clear-left"><p>selected actions use trash (recycle bin) instead of the default permanent delete</p></div>
@@ -188,9 +188,9 @@
                                 <span class="component-title">Use initial indexer set to</span>
                                 <span class="component-desc">
                                     <select id="indexer_default" name="indexer_default" class="form-control input-sm">
-                                        <option value="0" <% if $indexer == 0 then 'selected="selected"' else '' %>>All Indexers</option>
-                                        % for $indexer in $sickbeard.indexerApi().indexers
-                                        <option value="$indexer" <% if $indexer == $sickbeard.INDEXER_DEFAULT then 'selected="selected"' else '' %>>${sickbeard.indexerApi().indexers[$indexer]}</option>
+                                        <option value="0" ${(' selected="selected"', '')[indexer == 0]}>All Indexers</option>
+                                        % for indexer in $sickbeard.indexerApi().indexers
+                                        <option value="${indexer}" ${(' selected="selected"', '')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
                                         % endfor
                                     </select>
                                     <span>as the default selection when adding new shows</span>
@@ -233,7 +233,7 @@
                             <label for="version_notify">
                                 <span class="component-title">Check software updates</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="version_notify" id="version_notify" <% if $sickbeard.VERSION_NOTIFY then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="version_notify" id="version_notify" ${(' checked="checked"', '')[sickbeard.VERSION_NOTIFY == True]}/>
                                     <p>and display notifications when updates are available.
                                     Checks are run on startup and at the frequency set below*</p>
                                 </span>
@@ -244,7 +244,7 @@
                             <label for="auto_update">
                                 <span class="component-title">Automatically update</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="auto_update" id="auto_update" <% if $sickbeard.AUTO_UPDATE then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="auto_update" id="auto_update" ${(' checked="checked"', '')[sickbeard.AUTO_UPDATE == True]}/>
                                     <p>fetch and install software updates.
                                     Updates are run on startup and in the background at the frequency set below*</p>
                                 </span>
@@ -265,7 +265,7 @@
                             <label for="notify_on_update">
                                 <span class="component-title">Notify on software update</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="notify_on_update" id="notify_on_update" <% if $sickbeard.NOTIFY_ON_UPDATE then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="notify_on_update" id="notify_on_update" ${(' checked="checked"', '')[sickbeard.NOTIFY_ON_UPDATE == True]}/>
                                     <p>send a message to all enabled notifiers when SickRage has been updated</p>
                                 </span>
                             </label>
@@ -293,8 +293,8 @@
                                 <span class="component-title">Display theme:</span>
                                 <span class="component-desc">
                                     <select id="theme_name" name="theme_name" class="form-control input-sm">
-                                        <option value="dark" <% if $sickbeard.THEME_NAME == 'dark' then 'selected="selected"' else '' %>>Dark</option>
-                                        <option value="light" <% if $sickbeard.THEME_NAME == 'light' then 'selected="selected"' else '' %>>Light</option>
+                                        <option value="dark" ${(' selected="selected"', '')[sickbeard.THEME_NAME == 'dark']}>Dark</option>
+                                        <option value="light" ${(' selected="selected"', '')[sickbeard.THEME_NAME == 'light']}>Light</option>
                                     </select>
                                     <span class="red-text">for appearance to take effect, save then refresh your browser</span>
                                 </span>
@@ -304,7 +304,7 @@
                             <label for="display_all_seasons">
                                 <span class="component-title">Show all seasons</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" <% if $sickbeard.DISPLAY_ALL_SEASONS then 'checked="checked"' else '' %>>
+                                    <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${(' checked="checked"', '')[sickbeard.DISPLAY_ALL_SEASONS == True]}>
                                     <p>on the show summary page</p>
                                 </span>
                             </label>
@@ -313,7 +313,7 @@
                             <label for="sort_article">
                                 <span class="component-title">Sort with "The", "A", "An"</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="sort_article" id="sort_article" <% if $sickbeard.SORT_ARTICLE then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="sort_article" id="sort_article" ${(' checked="checked"', '')[sickbeard.SORT_ARTICLE == True]}/>
                                     <p>include articles ("The", "A", "An") when sorting show lists</p>
                                 </span>
                             </label>
@@ -322,7 +322,7 @@
                             <label for="filter_row">
                                 <span class="component-title">Filter Row</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="filter_row" id="filter_row" <% if $sickbeard.FILTER_ROW == True then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="filter_row" id="filter_row" ${(' checked="checked"', '')[sickbeard.FILTER_ROW == True]}/>
                                     <p>Add a filter row to the show display on the home page</p>
                                     <p>Supports =, >, >=, <=, <, xx to yy , xx - yy</p>
                                     <p><b>Note:</b> =, >, >=, <=, < should be first, followed by a space, then the value.</p>
@@ -343,16 +343,16 @@
                             <label for="fuzzy_dating">
                                 <span class="component-title">Display fuzzy dates</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" <% if $sickbeard.FUZZY_DATING == True then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" ${(' checked="checked"', '')[sickbeard.FUZZY_DATING == True]}/>
                                     <p>move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"</p>
                                 </span>
                             </label>
                         </div>
-                        <div class="field-pair show_if_fuzzy_dating<% if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv' %>">
+                        <div class="field-pair show_if_fuzzy_dating ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}">
                             <label for="trim_zero">
                                 <span class="component-title">Trim zero padding</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="trim_zero" id="trim_zero" <% if True == $sickbeard.TRIM_ZERO then 'checked="checked"' else '' %>/>
+                                    <input type="checkbox" name="trim_zero" id="trim_zero" ${(' checked="checked"', '')[sickbeard.TRIM_ZERO == True]}/>
                                     <p>remove the leading number "0" shown on hour of day, and date of month</p>
                                 </span>
                             </label>
@@ -362,10 +362,10 @@
                             <label for="date_presets">
                                 <span class="component-title">Date style:</span>
                                 <span class="component-desc">
-                                    <select class="form-control input-sm <% if True == $sickbeard.FUZZY_DATING then '' else ' metadataDiv' %>" id="date_presets#if True == $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True == $sickbeard.FUZZY_DATING then '' else '_na'#">
-                                        #for $cur_preset in $date_presets:
-                                            <option value="$cur_preset" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
-                                        #end for
+                                    <select class="form-control input-sm ${(' metadataDiv', '')[sickbeard.FUZZY_DATING == False]}" id="date_presets${(' _na', '')[sickbeard.FUZZY_DATING == False]}" name="date_preset${(' _na', '')[sickbeard.FUZZY_DATING == False]}">
+                                        % for cur_preset in date_presets:
+                                            <option value="${cur_preset}" #if $cur_preset == $sickbeard.DATE_PRESET or ("%x" == $sickbeard.DATE_PRESET and "$cur_preset" == '%a, %b %d, %Y') then 'selected="selected"' else ''#>$datetime.datetime($datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime($cur_preset)</option>
+                                        % endfor
                                     </select>
 
                                     <select class="form-control input-sm #if True != $sickbeard.FUZZY_DATING then '' else ' metadataDiv'#" id="date_presets#if True != $sickbeard.FUZZY_DATING then '' else '_na'#" name="date_preset#if True != $sickbeard.FUZZY_DATING then '' else '_na'#">
@@ -383,9 +383,9 @@
                                 <span class="component-title">Time style:</span>
                                 <span class="component-desc">
                                     <select id="time_presets" name="time_preset" class="form-control input-sm">
-                                         #for $cur_preset in $time_presets:
+                                         % for $cur_preset in $time_presets:
                                             <option value="$cur_preset" <% if $cur_preset == $sickbeard.TIME_PRESET_W_SECONDS then 'selected="selected"' else '' %>>$sbdatetime.now().sbftime(show_seconds=True,t_preset=$cur_preset)</option>
-                                         #end for
+                                         % end for
                                     </select>
                                     <span><b>note:</b> seconds are only shown on the History page</span>
                                 </span>
