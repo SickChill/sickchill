@@ -16,7 +16,7 @@
 %>
 
 <script type="text/javascript" src="$sbRoot/js/configPostProcessing.js?${sbPID}"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="$sbRoot/js/config.js?${sbPID}"></script>
 <div id="content960">
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -73,12 +73,7 @@
                                     <select name="process_method" id="process_method" class="form-control input-sm">
                                         % process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link"}
                                         % for curAction in ('copy', 'move', 'hardlink', 'symlink'):
-                                          % if sickbeard.PROCESS_METHOD == curAction:
-                                            % process_method = "selected=\"selected\""
-                                          % else
-                                            % process_method = ""
-                                          % endif
-                                        <option value="${curAction}" ${process_method}>${process_method_text[curAction]}</option>
+                                        <option value="${curAction}" ${(' selected="selected"', '')[sickbeard.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
                                         % endfor
                                     </select>
                                 </span>
@@ -1079,7 +1074,7 @@
                                     % m_dict = metadata.get_metadata_generator_dict()
                                     <select id="metadataType" class="form-control input-sm">
                                     % for (cur_name, cur_generator) in sorted(m_dict.items()):
-                                        <option value="${cur_generator.get_id()}">$cur_name</option>
+                                        <option value="${cur_generator.get_id()}">${cur_name}</option>
                                     % endfor
                                     </select>
                                 </span>
