@@ -3,17 +3,17 @@
     from sickbeard.helpers import anon_url
     from sickbeard.common import *
 
-    global $title="Config - Notifications"
-    global $header="Notifications"
+    global title="Config - Notifications"
+    global header="Notifications"
 
-    global $sbPath="../.."
+    global sbPath="../.."
 
-    global $topmenu="config"#
-    include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="config"#
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
 
-<script type="text/javascript" src="${sbRoot}/js/configNotifications.js?$sbPID"></script>
-<script type="text/javascript" src="${sbRoot}/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/configNotifications.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -1799,4 +1799,4 @@
     jQuery('#config-components').tabs();
 //-->
 </script>
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
