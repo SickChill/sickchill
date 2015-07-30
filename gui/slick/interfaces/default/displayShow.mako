@@ -1,36 +1,36 @@
-#import sickbeard
-#from sickbeard import subtitles, sbdatetime, network_timezones
-#import sickbeard.helpers
-#from sickbeard.common import *
-#from sickbeard.helpers import anon_url
-#import os.path, os
-#import datetime
-#import urllib
-#import ntpath
+<%!
+    import sickbeard
+    from sickbeard import subtitles, sbdatetime, network_timezones
+    import sickbeard.helpers
+    from sickbeard.common import *
+    from sickbeard.helpers import anon_url
+    import os.path, os
+    import datetime
+    import urllib
+    import ntpath
 
-#set global $title=$show.name
-##set global $header = '<a></a>' %
-#set global $topmenu="manageShows"#
-#set $exceptions_string = " | ".join($show.exceptions)
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global title=$show.name
+    global header = '<a></a>'
+    global topmenu="manageShows"#
+    exceptions_string = " | ".join(show.exceptions)
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.bookmarkscroll.js?${sbPID}"></script>
 
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
+<input type="hidden" id="sbRoot" value="${sbRoot}" />
 
-
-<input type="hidden" id="sbRoot" value="$sbRoot" />
-
-<script type="text/javascript" src="$sbRoot/js/displayShow.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/sceneExceptionsTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ratingTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ajaxEpSubtitles.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.collapser.min.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/displayShow.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/sceneExceptionsTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/ratingTooltip.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/ajaxEpSubtitles.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.collapser.min.js?${sbPID}"></script>
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
-    #set $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
+    % fuzzydate = 'airdate'
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
@@ -38,8 +38,8 @@
         timeFormat : '${sickbeard.TIME_PRESET}',
         trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
     });
-    #end if
-    #raw
+    % endif
+    % raw
     $('.addQTip').each(function () {
         $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
         $(this).qtip({
@@ -48,7 +48,7 @@
             style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
         });
     });
-    #end raw
+    % endraw
 
     \$.fn.generateStars = function() {
         return this.each(function(i,e){\$(e).html(\$('<span/>').width(\$(e).text()*12));});
@@ -56,13 +56,11 @@
 
     \$('.imdbstars').generateStars();
 
-
-
-            #if $show.is_anime:
+    % if $show.is_anime:
     \$("#animeTable").tablesorter({
-            #else:
+    % else:
     \$("#showTable").tablesorter({
-            #end if
+    % endif
         widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
         widgetOptions : {
             columnSelector_saveColumns: true,
@@ -72,8 +70,6 @@
             },
         });
 
-
-
     \$('#popover')
         .popover({
           placement: 'bottom',
@@ -82,11 +78,11 @@
         })
         // bootstrap popover event triggered when the popover opens
         .on('shown.bs.popover', function () {
-                #if $show.is_anime:
+                % if show.is_anime:
             \$.tablesorter.columnSelector.attachTo( \$('#animeTable'), '#popover-target');
-                #else:
+                % else:
             \$.tablesorter.columnSelector.attachTo( \$('#showTable'), '#popover-target');
-                #end if
+                % endif
         });
 });
 //-->
@@ -94,138 +90,137 @@
 
     <div class="pull-left form-inline">
         Change Show:
-        <div class="navShow"><img id="prevShow" src="$sbRoot/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
+        <div class="navShow"><img id="prevShow" src="${sbRoot}/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
             <select id="pickShow" class="form-control form-control-inline input-sm">
-            #for $curShowList in $sortedShowLists:
-                #set $curShowType = $curShowList[0]
-                #set $curShowList = $curShowList[1]
+            % for curShowList in sortedShowLists:
+                % curShowType = curShowList[0]
+                % curShowList = curShowList[1]
 
-                #if len($sortedShowLists) > 1:
-                    <optgroup label="$curShowType">
-                #end if
-                    #for $curShow in $curShowList:
-                    <option value="$curShow.indexerid" #if $curShow == $show then "selected=\"selected\"" else ""#>$curShow.name</option>
-                    #end for
-                #if len($sortedShowLists) > 1:
+                % if len(sortedShowLists) > 1:
+                    <optgroup label="${curShowType}">
+                % endif
+                    % for curShow in curShowList:
+                    <option value="${curShow.indexerid}" #if $curShow == $show then "selected=\"selected\"" else ""#>$curShow.name</option>
+                    % endfor
+                % if len(sortedShowLists) > 1:
                     </optgroup>
-                #end if
-            #end for
+                % endif
+            % endfor
             </select>
-        <div class="navShow"><img id="nextShow" src="$sbRoot/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
+        <div class="navShow"><img id="nextShow" src="${sbRoot}/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
     </div>
 
     <div class="clearfix"></div>
 
-    <div id="showtitle" data-showname="$show.name">
-        <h1 class="title" id="scene_exception_$show.indexerid">$show.name</h1>
+    <div id="showtitle" data-showname="${show.name}">
+        <h1 class="title" id="scene_exception_${show.indexerid}">${show.name}</h1>
     </div>
 
-
-        #if $seasonResults:
+        % if seasonResults:
         ##There is a special/season_0?##
-        #if int($seasonResults[-1]["season"]) == 0:
-            #set $season_special = 1
-        #else:
-            #set $season_special = 0
-        #end if
+        % if int(seasonResults[-1]["season"]) == 0:
+            % season_special = 1
+        % else:
+            % season_special = 0
+        % endif
 
-        #if not $sickbeard.DISPLAY_SHOW_SPECIALS and $season_special:
-            #set lastSeason = $seasonResults.pop(-1); del lastSeason
-        #end if
+        % if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
+            % lastSeason = seasonResults.pop(-1); del lastSeason
+        % endif
 
         <span class="h2footer displayspecials pull-right">
-            #if $season_special:
+            % if season_special:
             Display Specials:
-                #if sickbeard.DISPLAY_SHOW_SPECIALS:
-                    <a class="inner" href="$sbRoot/toggleDisplayShowSpecials/?show=$show.indexerid">Hide</a>
-                #else:
-                    <a class="inner" href="$sbRoot/toggleDisplayShowSpecials/?show=$show.indexerid">Show</a>
-                #end if
-            #end if
+                % if sickbeard.DISPLAY_SHOW_SPECIALS:
+                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=$show.indexerid">Hide</a>
+                % else:
+                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=$show.indexerid">Show</a>
+                % endif
+            % endif
         </span>
 
         <div class="h2footer pull-right">
             <span>
-            #if (len($seasonResults) > 14):
+            % if (len(seasonResults) > 14):
                 <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
                     <option value="jump">Jump to Season</option>
-                #for $seasonNum in $seasonResults:
-                    <option value="#season-$seasonNum["season"]">#if int($seasonNum["season"]) == 0 then "Specials" else "Season " + str($seasonNum["season"])#</option>
-                #end for
+                % for seasonNum in seasonResults:
+                    <option value="#season-${seasonNum["season"]}">#if int($seasonNum["season"]) == 0 then "Specials" else "Season " + str($seasonNum["season"])#</option>
+                % endfor
                 </select>
-            #else:
+            % else:
                 Season:
-                #for $seasonNum in $seasonResults:
-                    #if int($seasonNum["season"]) == 0:
-                        <a href="#season-$seasonNum["season"]">Specials</a>
-                    #else:
-                        <a href="#season-$seasonNum["season"]">${str($seasonNum["season"])}</a>
-                    #end if
-                    #if $seasonNum != $seasonResults[-1]:
+                % for seasonNum in seasonResults:
+                    % if int(seasonNum["season"]) == 0:
+                        <a href="#season-${seasonNum["season"]}">Specials</a>
+                    % else:
+                        <a href="#season-${seasonNum["season"]}">${str(seasonNum["season"])}</a>
+                    % endif
+                    % if seasonNum != $seasonResults[-1]:
                         <span class="separator">|</span>
-                    #end if
-                #end for
-            #end if
+                    % endif
+                % endfor
+            % endif
             </span>
 
-        #end if
+        % endif
         </div>
 
     <div class="clearfix"></div>
 
-#if $show_message:
+% if show_message:
     <div class="alert alert-info">
-        $show_message
+        ${show_message}
     </div>
-#end if
+% endif
 
     <div id="container">
         <div id="posterCol">
-            <a href="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster" rel="dialog" title="View Poster for $show.name"><img src="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
+            <a href="${sbRoot}/showPoster/?show=${show.indexerid}&amp;which=poster" rel="dialog" title="View Poster for ${show.name}"><img src="${sbRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
         </div>
 
         <div id="showCol">
 
             <div id="showinfo">
-#if 'rating' in $show.imdb_info:
-    #set $rating_tip = str($show.imdb_info['rating']) + " / 10" + " Stars" + "<br />" + str($show.imdb_info['votes']) + " Votes"
-                <span class="imdbstars" qtip-content="$rating_tip">$show.imdb_info['rating']</span>
-#end if
+% if 'rating' in show.imdb_info:
+    % rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br />" + str(show.imdb_info['votes']) + " Votes"
+                <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
+% endif
 
-#set $_show = $show
-#if not $show.imdbid
-                <span>($show.startyear) - $show.runtime minutes - </span>
-#else
-    #if 'country_codes' in $show.imdb_info:
-        #for $country in $show.imdb_info['country_codes'].split('|')
-                <img src="$sbRoot/images/blank.png" class="country-flag flag-${$country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
-        #end for
-    #end if
-    #if 'year' in $show.imdb_info:
-                <span>($show.imdb_info['year']) - $show.imdb_info['runtimes'] minutes - </span>
-    #end if
-                <a href="<%= anon_url('http://www.imdb.com/title/', _show.imdbid) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/$show.imdbid"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-#end if
-                <a href="<%= anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid) %>" onclick="window.open(this.href, '_blank'); return false;" title="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid"><img alt="$sickbeard.indexerApi($show.indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($show.indexer).config["icon"] "style="margin-top: -1px; vertical-align:middle;"/></a>
-#if $xem_numbering or $xem_absolute_numbering:
-                <a href="<%= anon_url('http://thexem.de/search?q=', _show.name) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-$show.name"><img alt="[xem]" height="16" width="16" src="$sbRoot/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-#end if
+% _show = show
+% if not show.imdbid
+                <span>(${show.startyear}) - ${show.runtime} minutes - </span>
+% else
+    % if 'country_codes' in show.imdb_info:
+        % for country in show.imdb_info['country_codes'].split('|')
+                <img src="${sbRoot}/images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+        % endfor
+    % endif
+    % if 'year' in show.imdb_info:
+                <span>(${show.imdb_info['year']}) - ${show.imdb_info['runtimes']} minutes - </span>
+    % endif
+                <a href="<%= anon_url('http://www.imdb.com/title/', _show.imdbid) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+% endif
+                <a href="<%= anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid) %>" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"]show.indexerid}"><img alt="${sickbeard.indexerApi(show.indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi($how.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/></a>
+% if xem_numbering or xem_absolute_numbering:
+                <a href="<%= anon_url('http://thexem.de/search?q=', _show.name) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><img alt="[xem]" height="16" width="16" src="${sbRoot}/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
+% endif
             </div>
 
             <div id="tags">
                 <ul class="tags">
-                    #if not $show.imdbid
-                    #if $show.genre:
-                    #for $genre in $show.genre[1:-1].split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
-                    #end for
-                    #end if
-                    #end if
-                    #if 'year' in $show.imdb_info:
-                    #for $imdbgenre in $show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
-                    #end for
-                    #end if
+                    % if not show.imdbid
+                    % if show.genre:
+                    % for genre in show.genre[1:-1].split('|')
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>${genre}</li></a>
+                    % endfor
+                    % endif
+                    % endif
+                    % if 'year' in show.imdb_info:
+                    % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>${imdbgenre}</li></a>
+                    % endfor
+                    % endif
                 </ul>
             </div>
 
