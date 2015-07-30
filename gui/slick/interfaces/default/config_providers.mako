@@ -1,48 +1,49 @@
-#import sickbeard
-#from sickbeard.providers.generic import GenericProvider
-#from sickbeard.providers import thepiratebay
-#from sickbeard.helpers import anon_url
+<%!
+    import sickbeard
+    from sickbeard.providers.generic import GenericProvider
+    from sickbeard.providers import thepiratebay
+    from sickbeard.helpers import anon_url
 
-#set global $title="Config - Providers"
-#set global $header="Search Providers"
+    global title="Config - Providers"
+    global header="Search Providers"
 
-#set global $sbPath="../.."
+    global sbPath="../.."
 
-#set global $topmenu="config"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
-<script type="text/javascript" src="$sbRoot/js/configProviders.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
-#if $sickbeard.USE_NZBS
+    global topmenu="config"
+    import os.path
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
+<script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+% if sickbeard.USE_NZBS
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
 var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
-#for $curNewznabProvider in $sickbeard.newznabProviderList:
+% for $curNewznabProvider in $sickbeard.newznabProviderList:
 \$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
-#end for
+% endfor
 });
 //-->
 </script>
-#end if
+% endif
 
-#if $sickbeard.USE_TORRENTS
+% if sickbeard.USE_TORRENTS
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
-#for $curTorrentRssProvider in $sickbeard.torrentRssProviderList:
+% for curTorrentRssProvider in sickbeard.torrentRssProviderList:
     \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
-#end for
+% endfor
 });
 //-->
 </script>
-#end if
+% endif
 
 <div id="config">
     <div id="config-content">
@@ -53,12 +54,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                 <ul>
                     <li><a href="#core-component-group1">Provider Priorities</a></li>
                     <li><a href="#core-component-group2">Provider Options</a></li>
-                  #if $sickbeard.USE_NZBS
+                  % if sickbeard.USE_NZBS
                     <li><a href="#core-component-group3">Configure Custom Newznab Providers</a></li>
-                  #end if
-                  #if $sickbeard.USE_TORRENTS
+                  % endif
+                  % if sickbeard.USE_TORRENTS
                     <li><a href="#core-component-group4">Configure Custom Torrent Providers</a></li>
-                  #end if
+                  % endif
                 </ul>
 
                 <div id="core-component-group1" class="component-group" style='min-height: 550px;'>
@@ -68,11 +69,11 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <p>Check off and drag the providers into the order you want them to be used.</p>
                         <p>At least one provider is required but two are recommended.</p>
 
-                        #if not $sickbeard.USE_NZBS or not $sickbeard.USE_TORRENTS:
-                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="$sbRoot/config/search">Search Settings</a></b></blockquote>
-                        #else:
+                        % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
+                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${sbRoot}/config/search">Search Settings</a></b></blockquote>
+                        % else:
                         <br/>
-                        #end if
+                        % endif
 
                         <div>
                             <p class="note">* Provider does not support backlog searches at this time.</p>
@@ -83,19 +84,19 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                     <fieldset class="component-group-list">
                         <ul id="provider_order_list">
-                        #for $curProvider in $sickbeard.providers.sortedProviderList():
-                            #if $curProvider.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
-                                #continue
-                            #elif $curProvider.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
-                                #continue
-                            #end if
-                            #set $curName = $curProvider.getID()
+                        % for curProvider in sickbeard.providers.sortedProviderList():
+                            % if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
+                                % continue
+                            % elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
+                                % continue
+                            % endif
+                            % curName = curProvider.getID()
                           <li class="ui-state-default" id="$curName">
                             <input type="checkbox" id="enable_$curName" class="provider_enabler" #if $curProvider.isEnabled() then "checked=\"checked\"" else ""#/>
                             <a href="<%= anon_url(curProvider.url) %>" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/$curProvider.imageName()" alt="$curProvider.name" title="$curProvider.name" width="16" height="16" style="vertical-align:middle;"/></a>
                             <span style="vertical-align:middle;">$curProvider.name</span>
-                            #if not $curProvider.supportsBacklog then "*" else ""#
-                            #if $curProvider.name == "EZRSS" then "**" else ""#
+                            % if not curProvider.supportsBacklog then "*" else ""
+                            % if $curProvider.name == "EZRSS" then "**" else ""
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         #end for
@@ -118,25 +119,26 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label for="editAProvider" id="provider-list">
                                 <span class="component-title">Configure provider:</span>
                                 <span class="component-desc">
-                                    #set $provider_config_list = []
-                                    #for $curProvider in $sickbeard.providers.sortedProviderList():
-                                        #if $curProvider.providerType == $GenericProvider.NZB and (not $sickbeard.USE_NZBS or not $curProvider.isEnabled()):
-                                         #continue
-                                        #elif $curProvider.providerType == $GenericProvider.TORRENT and ( not $sickbeard.USE_TORRENTS or not $curProvider.isEnabled()):
-                                         #continue
-                                        #end if
-                                        $provider_config_list.append($curProvider)
-                                    #end for
-
-                                    #if $provider_config_list:
-                                    <select id="editAProvider" class="form-control input-sm">
-                                        #for $cur_provider in $provider_config_list:
-                                            <option value="$cur_provider.getID()">$cur_provider.name</option>
-                                        #end for
-                                    </select>
-                                    #else:
-                                    No providers available to configure.
-                                    #end if
+                                    <%
+                                        provider_config_list = []
+                                        for curProvider in sickbeard.providers.sortedProviderList():
+                                            if curProvider.providerType == GenericProvider.NZB and (not sickbeard.USE_NZBS or not curProvider.isEnabled()):
+                                                continue
+                                            elif curProvider.providerType == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.isEnabled()):
+                                                continue
+                                            endif
+                                            provider_config_list.append(curProvider)
+                                        endfor
+                                    %>
+                                    % if provider_config_list:
+                                        <select id="editAProvider" class="form-control input-sm">
+                                            % for cur_provider in provider_config_list:
+                                                <option value="${cur_provider.getID()}">${cur_provider.name}</option>
+                                            % endfor
+                                        </select>
+                                    % else:
+                                        No providers available to configure.
+                                    % endif
                                 </span>
                             </label>
                         </div>
