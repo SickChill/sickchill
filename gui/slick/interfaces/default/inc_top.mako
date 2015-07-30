@@ -53,7 +53,6 @@
         <link rel="stylesheet" type="text/css" href="${sbRoot}/css/country-flags.css?${sbPID}"/>
         % endif
 
-
         <script type="text/javascript" src="${sbRoot}/js/lib/jquery-1.11.2.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap.min.js?${sbPID}"></script>
         <script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-hover-dropdown.min.js?${sbPID}"></script>
