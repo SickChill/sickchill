@@ -247,8 +247,8 @@ def find_first_level_groups(string, enclosing, blank_sep=None):
     return split_on_groups(string, groups)
 
 
-_camel_word2_set = set(('is', 'to'))
-_camel_word3_set = set(('the'))
+_camel_word2_set = {'is', 'to'}
+_camel_word3_set = {'the'}
 
 
 def _camel_split_and_lower(string, i):

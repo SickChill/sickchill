@@ -98,11 +98,11 @@ class TraktAPI():
                 # It means there basically was no response at all                    
                 else:
                     logger.log(u'Could not connect to Trakt. Error: {0}'.format(e), logger.WARNING)                
-            elif code is 502:
+            elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
                 logger.log(u'Retrying trakt api request: %s' % path, logger.WARNING)
                 return self.traktRequest(path, data, headers, url, method)
-            elif code is 401:
+            elif code == 401:
                 if self.traktToken(refresh=True, count=count):
                     return self.traktRequest(path, data, headers, url, method)
                 else:
@@ -110,7 +110,7 @@ class TraktAPI():
             elif code in (500,501,503,504,520,521,522):
                 #http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.log(u'Trakt may have some issues and it\'s unavailable. Try again later please', logger.WARNING)
-            elif code is 404:
+            elif code == 404:
                 logger.log(u'Trakt error (404) the resource does not exist: %s' % url + path, logger.WARNING)
             else:
                 logger.log(u'Could not connect to Trakt. Code error: {0}'.format(code), logger.ERROR)

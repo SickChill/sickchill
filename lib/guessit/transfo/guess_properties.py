@@ -74,11 +74,11 @@ class GuessProperties(Transformer):
                                      'TV': ['SD-TV', 'SD-TV-Rip', 'Rip-SD-TV', 'TV-Rip', 'Rip-TV'],
                                      'DVB': ['DVB-Rip', 'DVB', 'PD-TV'],
                                      'DVD': ['DVD', 'DVD-Rip', 'VIDEO-TS', 'DVD-R', 'DVD-9', 'DVD-5'],
-                                     'HDTV': ['HD-TV', 'TV-RIP-HD', 'HD-TV-RIP'],
+                                     'HDTV': ['HD-TV', 'TV-RIP-HD', 'HD-TV-RIP', 'HD-RIP'],
                                      'VOD': ['VOD', 'VOD-Rip'],
                                      'WEBRip': ['WEB-Rip'],
                                      'WEB-DL': ['WEB-DL', 'WEB-HD', 'WEB'],
-                                     'HD-DVD': ['HD-(?:DVD)?-Rip', 'HD-DVD'],
+                                     'HD-DVD': ['HD-DVD-Rip', 'HD-DVD'],
                                      'BluRay': ['Blu-ray(?:-Rip)?', 'B[DR]', 'B[DR]-Rip', 'BD[59]', 'BD25', 'BD50']
                                      })
 
