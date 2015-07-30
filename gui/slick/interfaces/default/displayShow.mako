@@ -236,54 +236,54 @@
                 % endif
                 % if bestQualities:
                     <i>Replace with:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%>
-                % end if
-                % end if
+                % endif
+                % endif
 
                 % if show.network and show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
+                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} % if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
                 % else if show.network:
                     <tr><td class="showLegend">Originally Airs: </td><td>${show.network}</td></tr>
                 % else if show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
+                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} % if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
                 % endif
                     <tr><td class="showLegend">Show Status: </td><td>$show.status</td></tr>
                     <tr><td class="showLegend">Default EP Status: </td><td>$statusStrings[$show.default_ep_status]</td></tr>
-                #if $showLoc[1]:
+                % if showLoc[1]:
                     <tr><td class="showLegend">Location: </td><td>$showLoc[0]</td></tr>
-                #else:
+                % else:
                     <tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">$showLoc[0]</span> (dir is missing)</td></tr>
-                #end if
+                % endif
                     <tr><td class="showLegend">Scene Name:</td><td>#if $show.exceptions then $exceptions_string else $show.name#</td></tr>
 
-                #if $show.rls_require_words:
+                % if show.rls_require_words:
                     <tr><td class="showLegend">Required Words: </td><td>#echo $show.rls_require_words#</td></tr>
-                #end if
-                #if $show.rls_ignore_words:
+                % endif
+                % if show.rls_ignore_words:
                     <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
-                #end if
-                #if $bwl and $bwl.whitelist:
+                % endif
+                % if bwl and bwl.whitelist:
                     <tr>
                         <td class="showLegend">Wanted Group#if len($bwl.whitelist)>1 then "s" else ""#:</td>
                         <td>#echo ', '.join($bwl.whitelist)#</td>
                     </tr>
-                #end if
-                #if $bwl and $bwl.blacklist:
+                % endif
+                % if bwl and bwl.blacklist:
                     <tr>
                         <td class="showLegend">Unwanted Group#if len($bwl.blacklist)>1 then "s" else ""#:</td>
                         <td>#echo ', '.join($bwl.blacklist)#</td>
                     </tr>
-                #end if
+                % endif
 
-                <tr><td class="showLegend">Size:</td><td>$sickbeard.helpers.pretty_filesize(sickbeard.helpers.get_size($showLoc[0]))</td></tr>
+                <tr><td class="showLegend">Size:</td><td>${sickbeard.helpers.pretty_filesize(sickbeard.helpers.get_size(showLoc[0]))}</td></tr>
 
                 </table>
 
                 <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
-                    #set $info_flag = $subtitles.fromietf($show.lang).opensubtitles if $show.lang else ''
+                    % info_flag = subtitles.fromietf(show.lang).opensubtitles if show.lang else ''
                     <tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="$show.lang" title="$show.lang" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';"/></td></tr>
-                    #if $sickbeard.USE_SUBTITLES
+                    % if sickbeard.USE_SUBTITLES
                     <tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if $show.subtitles then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #end if
+                    % endif
                     <tr><td class="showLegend">Flat Folders: </td><td><img src="$sbRoot/images/#if $show.flatten_folders == 1 or $sickbeard.NAMING_FORCE_FOLDERS then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Paused: </td><td><img src="$sbRoot/images/#if int($show.paused) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Air-by-Date: </td><td><img src="$sbRoot/images/#if int($show.air_by_date) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
@@ -291,9 +291,9 @@
                     <tr><td class="showLegend">Anime: </td><td><img src="$sbRoot/images/#if int($show.is_anime) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">DVD Order: </td><td><img src="$sbRoot/images/#if int($show.dvdorder) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
                     <tr><td class="showLegend">Scene Numbering: </td><td><img src="$sbRoot/images/#if int($show.scene) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #if $anyQualities + $bestQualities
+                    % if anyQualities + bestQualities
                     <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #end if
+                    % endif
                 </table>
             </div>
         </div>
@@ -304,12 +304,12 @@
     <div class="pull-left" >
         Change selected episodes to:</br>
         <select id="statusSelect" class="form-control form-control-inline input-sm">
-            #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED, $FAILED] + sorted($Quality.DOWNLOADED):
-            #if $curStatus == $DOWNLOADED:
-            #continue
-            #end if
-            <option value="$curStatus">$statusStrings[$curStatus]</option>
-            #end for
+            % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED, FAILED] + sorted(Quality.DOWNLOADED):
+            % if curStatus == DOWNLOADED:
+                % continue
+            % endif
+            <option value="${curStatus}">${statusStrings[curStatus]}</option>
+            % endfor
         </select>
         <input type="hidden" id="showID" value="$show.indexerid" />
         <input type="hidden" id="indexer" value="$show.indexer" />
@@ -320,11 +320,11 @@
 
     <div class="pull-right clearfix" id="checkboxControls">
         <div style="padding-bottom: 5px;">
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>$epCounts[$Overview.WANTED]</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>$epCounts[$Overview.QUAL]</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>$epCounts[$Overview.GOOD]</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>$epCounts[$Overview.SKIPPED]</b></span></label>
-            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>$epCounts[$Overview.SNATCHED]</b></span></label>
+            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>${epCounts[$Overview.WANTED]}</b></span></label>
+            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>${epCounts[$Overview.QUAL]}</b></span></label>
+            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>${epCounts[$Overview.GOOD]}</b></span></label>
+            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>${epCounts[$Overview.SKIPPED]}</b></span></label>
+            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>${epCounts[$Overview.SNATCHED]}</b></span></label>
         </div>
 
         <button id="popover" type="button" class="btn btn-xs">Select Columns</button>
@@ -337,67 +337,67 @@
 <br />
 <br />
 
-<table #if not $show.is_anime then "id=\"showTable\"" else "id=\"animeTable\""# class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
-#set $curSeason = -1
-#set $odd = 0
-    #for $epResult in $sqlResults:
-        #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
-        #if not $epStr in $epCats:
-            #continue
-        #end if
-        #if not $sickbeard.DISPLAY_SHOW_SPECIALS and int($epResult["season"]) == 0:
-            #continue
-        #end if
-        #set $scene = False
-        #set $scene_anime = False
-        #if not $show.air_by_date and not $show.is_sports and not $show.is_anime and $show.is_scene:
-            #set $scene = True
-        #elif not $show.air_by_date and not $show.is_sports and $show.is_anime and $show.is_scene:
-            #set $scene_anime = True
-        #end if
-        #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (0, 0, 0)
-        #if (epResult["season"], epResult["episode"]) in $xem_numbering:
-            #set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
-        #end if
-        #if epResult["absolute_number"] in $xem_absolute_numbering:
-            #set $dfltAbsolute = $xem_absolute_numbering[epResult["absolute_number"]]
-        #end if
+<table % if not $show.is_anime then "id=\"showTable\"" else "id=\"animeTable\""# class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
+% curSeason = -1
+% odd = 0
+    % for epResult in sqlResults:
+        % epStr = str(epResult["season"]) + "x" + str(epResult["episode"])
+        % if not epStr in epCats:
+            % continue
+        % endif
+        % if not sickbeard.DISPLAY_SHOW_SPECIALS and int(epResult["season"]) == 0:
+            % continue
+        % endif
+        % scene = False
+        % scene_anime = False
+        % if not show.air_by_date and not show.is_sports and not show.is_anime and show.is_scene:
+            % scene = True
+        % elif not show.air_by_date and not show.is_sports and show.is_anime and show.is_scene:
+            % scene_anime = True
+        % endif
+        % (dfltSeas, dfltEpis, dfltAbsolute) = (0, 0, 0)
+        % if (epResult["season"], epResult["episode"]) in xem_numbering:
+            % (dfltSeas, dfltEpis) = xem_numbering[(epResult["season"], epResult["episode"])]
+        % endif
+        % if epResult["absolute_number"] in xem_absolute_numbering:
+            % dfltAbsolute = xem_absolute_numbering[epResult["absolute_number"]]
+        % endif
 
-        #if epResult["absolute_number"] in $scene_absolute_numbering:
-            #set $scAbsolute = $scene_absolute_numbering[epResult["absolute_number"]]
-            #set $dfltAbsNumbering = False
-        #else
-            #set $scAbsolute = $dfltAbsolute
-            #set $dfltAbsNumbering = True
-        #end if
+        % if epResult["absolute_number"] in scene_absolute_numbering:
+            % scAbsolute = scene_absolute_numbering[epResult["absolute_number"]]
+            % dfltAbsNumbering = False
+        % else
+            % scAbsolute = dfltAbsolute
+            % dfltAbsNumbering = True
+        % endif
 
-        #if (epResult["season"], epResult["episode"]) in $scene_numbering:
-            #set ($scSeas, $scEpis) = $scene_numbering[(epResult["season"], epResult["episode"])]
-            #set $dfltEpNumbering = False
-        #else
-            #set ($scSeas, $scEpis) = ($dfltSeas, $dfltEpis)
-            #set $dfltEpNumbering = True
-        #end if
+        % if (epResult["season"], epResult["episode"]) in scene_numbering:
+            % (scSeas, scEpis) = scene_numbering[(epResult["season"], epResult["episode"])]
+            % dfltEpNumbering = False
+        % else
+            % (scSeas, scEpis) = (dfltSeas, dfltEpis)
+            % dfltEpNumbering = True
+        % endif
 
-        #set $epLoc = $epResult["location"]
+        % epLoc = epResult["location"]
 
-        #if int($epResult["season"]) != $curSeason:
-            #if $curSeason == -1:
+        % if int(epResult["season"]) != curSeason:
+            % if curSeason == -1:
     <thead>
         <tr class="seasoncols" style="display:none;">
                 <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
                 <th data-sorter="false" class="col-metadata">NFO</th>
                 <th data-sorter="false" class="col-metadata">TBN</th>
                 <th data-sorter="false" class="col-ep">Episode</th>
-                <th data-sorter="false" #if not $show.is_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Absolute</th>
-                <th data-sorter="false" #if not $scene then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene</th>
-                <th data-sorter="false" #if not $scene_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene Absolute</th>
+                <th data-sorter="false" % if not $show.is_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Absolute</th>
+                <th data-sorter="false" % if not $scene then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene</th>
+                <th data-sorter="false" % if not $scene_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene Absolute</th>
                 <th data-sorter="false" class="col-name">Name</th>
                 <th data-sorter="false" class="col-name columnSelector-false">File Name</th>
                 <th data-sorter="false" class="col-ep columnSelector-false">Size</th>
                 <th data-sorter="false" class="col-airdate">Airdate</th>
-                <th data-sorter="false" #if not $sickbeard.DOWNLOAD_URL then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Download</th>
-                <th data-sorter="false" #if not $sickbeard.USE_SUBTITLES then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Subtitles</th>
+                <th data-sorter="false" % if not $sickbeard.DOWNLOAD_URL then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Download</th>
+                <th data-sorter="false" % if not $sickbeard.USE_SUBTITLES then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Subtitles</th>
                 <th data-sorter="false" class="col-status">Status</th>
                 <th data-sorter="false" class="col-search">Search</th>
         </tr>
@@ -420,7 +420,7 @@
                         });
                     //-->
                     </script>
-                #end if
+                % endif
             </th>
         </tr>
     </tbody>
@@ -462,7 +462,7 @@
                         });
                     //-->
                     </script>
-                #end if
+                % endif
             </th>
         </tr>
     </tbody>
@@ -484,36 +484,36 @@
             <th class="col-status">Status</th>
             <th class="col-search">Search</th>
         </tr>
-            #end if
+            % endif
     </tbody>
                 #if $sickbeard.DISPLAY_ALL_SEASONS == False:
     <tbody class="collapse#if $curSeason == -1 then ' in' else ''#" id="collapseSeason-$epResult['season']">
                 #else
     <tbody>
-                #end if
-            #set $curSeason = int($epResult["season"])
-        #end if
-        #set $epLoc = $epResult["location"]
+                % endif
+            % curSeason = int($epResult["season"])
+        % endif
+        % epLoc = $epResult["location"]
         <tr class="$Overview.overviewStrings[$epCats[$epStr]] season-$curSeason seasonstyle">
             <td class="col-checkbox">
                 #if int($epResult["status"]) != $UNAIRED
                     <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
-                #end if
+                % endif
             </td>
             <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
             <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
             <td align="center">
                 #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
-                    #set $epLoc = $epLoc[len($show._location)+1:]
+                    % epLoc = $epLoc[len($show._location)+1:]
                 #elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
-                    #set $epLoc = $epLoc
-                #end if
+                    % epLoc = $epLoc
+                % endif
 
                 #if $epLoc != "" and $epLoc != None:
                     <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
                 #else
                     $epResult["episode"]
-                #end if
+                % endif
             </td>
             <td align="center">$epResult["absolute_number"]</td>
             <td align="center">
@@ -525,7 +525,7 @@
                         value=""
                     #else
                         value="<%=str(scSeas) + 'x' + str(scEpis)%>"
-                    #end if
+                    % endif
                         style="padding: 0; text-align: center; max-width: 60px;" />
             </td>
             <td align="center">
@@ -537,7 +537,7 @@
                         value=""
                     #else
                         value="<%=str(scAbsolute)%>"
-                    #end if
+                    % endif
                         style="padding: 0; text-align: center; max-width: 60px;" />
             </td>
             <td class="col-name">
@@ -545,26 +545,26 @@
                 <img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid<%="_" + str(epResult["season"]) + "_" + str(epResult["episode"])%>" />
             #else:
                 <img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
-            #end if
+            % endif
             $epResult["name"]
             </td>
             <td class="col-name]">
                 #if $epResult['location']
-                    #set $filename = $epResult['location']
+                    % filename = $epResult['location']
                     #for $rootDir in $sickbeard.ROOT_DIRS.split('|')
-                        #if not $rootDir.startswith('/')
-                            #set $filename = $filename.replace('\\','\\\\')
-                        #end if
-                        #set $filename = ntpath.basename($filename)
+                        % if not $rootDir.startswith('/')
+                            % filename = $filename.replace('\\','\\\\')
+                        % endif
+                        % filename = ntpath.basename($filename)
                     #end for
                     $filename
-                #end if
+                % endif
             </td>
             <td class="col-ep">
                 #if $epResult["file_size"]:
-                    #set $file_size = $sickbeard.helpers.pretty_filesize($epResult["file_size"])
+                    % file_size = $sickbeard.helpers.pretty_filesize($epResult["file_size"])
                     $file_size
-                #end if
+                % endif
             </td>
             <td class="col-airdate">
                 <span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
@@ -572,40 +572,40 @@
             <td>
                 #if $sickbeard.DOWNLOAD_URL and $epResult['location']
                     #if $epResult['location']
-                        #set $filename = $epResult['location']
+                        % filename = $epResult['location']
                         #for $rootDir in $sickbeard.ROOT_DIRS.split('|')
                             #if $rootDir.startswith('/')
-                                #set $filename = $filename.replace($rootDir, "")
-                            #end if
+                                % filename = $filename.replace($rootDir, "")
+                            % endif
                         #end for
-                        #set $filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
+                        % filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
                 <center><a href="$filename">Download</a></center>
-                    #end if
-                #end if
+                    % endif
+                % endif
             </td>
             <td class="col-subtitles" align="center">
             #for $sub_lang in [$subtitles.fromietf(x) for x in $epResult["subtitles"].split(',') if $epResult["subtitles"]]:
-                #set $flag = $sub_lang.opensubtitles
+                % flag = $sub_lang.opensubtitles
                 <img src="$sbRoot/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';" />
             #end for
             </td>
-            #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($epResult["status"]))
+            % curStatus, $curQuality = $Quality.splitCompositeStatus(int($epResult["status"]))
                 #if $curQuality != Quality.NONE:
                     <td class="col-status">$statusStrings[$curStatus] <span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
                 #else:
                     <td class="col-status">$statusStrings[$curStatus]</td>
-                #end if
+                % endif
             <td class="col-search">
                 #if int($epResult["season"]) != 0:
                     #if ( int($epResult["status"]) in $Quality.SNATCHED or int($epResult["status"]) in $Quality.DOWNLOADED ) and $sickbeard.USE_FAILED_DOWNLOADS:
                         <a class="epRetry" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
                     #else:
                         <a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
-                    #end if
-                #end if
+                    % endif
+                % endif
                 #if $sickbeard.USE_SUBTITLES and $show.subtitles and $epResult["location"] and frozenset($subtitles.wantedLanguages()).difference($epResult["subtitles"].split(',')):
                     <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
-                #end if
+                % endif
             </td>
         </tr>
     #end for
