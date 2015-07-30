@@ -1,36 +1,35 @@
-#import sickbeard
-#import adba
-#from sickbeard import common
-#from sickbeard.common import *
-#from sickbeard import exceptions
-#from sickbeard import scene_exceptions
-#from sickbeard.blackandwhitelist import *
-#set global $title="Edit " + $show.name
-#set global $header="Edit " + $show.name
+<%!
+    import sickbeard
+    import adba
+    from sickbeard import common
+    from sickbeard.common import *
+    from sickbeard import exceptions
+    from sickbeard import scene_exceptions
+    from sickbeard.blackandwhitelist import *
+    global title="Edit " + $show.name
+    global header="Edit " + $show.name
 
-#set global $sbPath=".."
+    global sbPath=".."
 
-#set global $topmenu="home"
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="home"
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
 
-
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="editShow">
-<script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/bootstrap-formhelpers.min-2.3.0.js?$sbPID"></script>
-
-
+<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/bootstrap-formhelpers.min-2.3.0.js?${sbPID}"></script>
 
 <form action="editShow" method="post">
-<input type="hidden" name="show" value="$show.indexerid" />
+<input type="hidden" name="show" value="${show.indexerid}" />
 <b>Location:</b></br>
-<input type="text" name="location" id="location" value="$show._location" class="form-control form-control-inline input-sm input350" /><br />
+<input type="text" name="location" id="location" value="${show._location}" class="form-control form-control-inline input-sm input350" /><br />
 <br />
 
 <b>Scene Exception:</b><br />
@@ -43,9 +42,9 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
     <div class="pull-left" style="text-align:center;">
         <h4>Exceptions List</h4>
         <select id="exceptions_list" name="exceptions_list" multiple="multiple" style="min-width:10em;" >
-                #for $cur_exception in $show.exceptions:
-                    <option value="$cur_exception">$cur_exception</option>
-                #end for
+                % for cur_exception in show.exceptions:
+                    <option value="${cur_exception}">${cur_exception}</option>
+                % endfor
         </select>
         <div>
             <input id="removeSceneName" value="Remove" class="btn float-left" type="button" style="margin-top: 10px;"/>
@@ -57,18 +56,20 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 <br />
 
 <b>Quality:</b><br />
-#set $qualities = $common.Quality.splitQuality(int($show.quality))
-#set global $anyQualities = $qualities[0]
-#set global $bestQualities = $qualities[1]
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.tmpl")
+<%
+    qualities = common.Quality.splitQuality(int(show.quality))
+    global anyQualities = qualities[0]
+    global bestQualities = qualities[1]
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_qualityChooser.mako")
+%>
 <br />
 
 <b>Default Episode Status:</b><br />
 (this will set the status for future episodes)<br />
 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control form-control-inline input-sm">
-    #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED]:
-    <option value="$curStatus" #if $curStatus == $show.default_ep_status then 'selected="selected"' else ''#>$statusStrings[$curStatus]</option>
-    #end for
+    % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+    <option value="${curStatus}" #if $curStatus == $show.default_ep_status then 'selected="selected"' else ''#>${statusStrings[curStatus]}</option>
+    % endfor
 </select><br />
 <br />
 
@@ -114,12 +115,12 @@ This will <b>affect the episode show search</b> on nzb and torrent provider.<br 
 (check this if you wish to use the DVD order instead of the Airing order. A "Force Full Update" is necessary, and if you have existing episodes you need to move them)
 <br/><br/>
 
-#if $anyQualities + $bestQualities
+% if anyQualities + bestQualities
 <b>Archive on first match:</b>
 <input type="checkbox" name="archive_firstmatch" #if $show.archive_firstmatch == 1 then "checked=\"checked\"" else ""# /><br>
 (check this to have the episode archived after the first best match is found from your archive quality list)</br>
 <br />
-#end if
+% endif
 
 <b>Ignored Words:</b></br>
 <input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$show.rls_ignore_words" class="form-control form-control-inline input-sm input350" /><br />
@@ -133,11 +134,11 @@ Results with no word from this list will be ignored<br />
 Separate words with a comma, e.g. "word1,word2,word3"<br />
 <br />
 
-#if $show.is_anime:
-    #from sickbeard.blackandwhitelist import *
-    #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.tmpl")
-    <script type="text/javascript" src="$sbRoot/js/blackwhite.js?$sbPID"></script>
-#end if
+% if show.is_anime:
+    % from sickbeard.blackandwhitelist import *
+    % include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_blackwhitelist.mako")
+    <script type="text/javascript" src="${sbRoot}/js/blackwhite.js?${sbPID}"></script>
+% endif
 
 <input type="submit" id="submit" value="Submit" class="btn btn-primary" />
 </form>
@@ -157,10 +158,9 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 
         \$("#exceptions_list").val(all_exceptions);
 
-        #if $show.is_anime:
+        % if show.is_anime:
             generate_bwlist()
-
-        #end if
+        % endif
         });
     \$('#addSceneName').click(function() {
         var scene_ex = \$('#SceneName').val()
@@ -207,4 +207,4 @@ Separate words with a comma, e.g. "word1,word2,word3"<br />
 //-->
 </script>
 </div>
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
