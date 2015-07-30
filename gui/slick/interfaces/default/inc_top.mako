@@ -268,7 +268,7 @@
                           <% inner_first = False %>
                       % endfor
                   % else:
-                      <a href="${sbRoot}/$menuItem['path']" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
+                      <a href="${sbRoot}/${menuItem['path']}" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
                       <% first = False %>
                   % endif
             % endif

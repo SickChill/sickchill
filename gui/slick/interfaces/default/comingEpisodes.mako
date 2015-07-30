@@ -301,43 +301,45 @@
 
     if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
         continue
-    endif
 
     runtime = cur_result['runtime']
+%>
+    % if 'network' == sort:
+        <% show_network = ('no network', cur_result['network'])[cur_result['network']] %>
+        % if cur_segment != show_network:
+            <div class="comingepheader">
+               <br><h2 class="network">${show_network}</h2>
 
-    if 'network' == sort:
-        show_network = cur_result['network'] if cur_result['network'] else 'no network'
-        if cur_segment != show_network:
-            <% print <div class="comingepheader"> %>
-            <% print <br><h2 class="network">${show_network}</h2> %>
-            cur_segment = cur_result['network']
+            <% cur_segment = cur_result['network'] %>
+        % endif
+        <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-        cur_ep_airdate = cur_result['localtime'].date()
+        % if runtime:
+            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
+            % if cur_ep_enddate < today:
+                <% show_div = 'ep_listing listing-overdue' %>
+            % elif cur_ep_airdate >= next_week.date():
+                <% show_div = 'ep_listing listing-toofar' %>
+            % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
+                % if cur_ep_airdate == today.date():
+                    <% show_div = 'ep_listing listing-current' %>
+                % else:
+                    <% show_div = 'ep_listing listing-default' %>
+                % endif
+            % endif
+        % endif
+    % elif 'date' == sort:
+        <% cur_ep_airdate = cur_result['localtime'].date() %>
 
-        if runtime:
-            cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
-            if cur_ep_enddate < today:
-                show_div = 'ep_listing listing-overdue'
-            elif cur_ep_airdate >= next_week.date():
-                show_div = 'ep_listing listing-toofar'
-            elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
-                if cur_ep_airdate == today.date():
-                    show_div = 'ep_listing listing-current'
-                else:
-                    show_div = 'ep_listing listing-default'
-
-    elif 'date' == sort:
-        cur_ep_airdate = cur_result['localtime'].date()
-
-        if cur_segment != cur_ep_airdate:
-            if runtime:
-                cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
-                if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
+        % if cur_segment != cur_ep_airdate:
+            %if runtime:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
+                % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
-                % missed_header = True
+                <% missed_header = True %>
                 % elif cur_ep_airdate >= next_week.date() and not too_late_header:
                         <br /><h2 class="day">Later</h2>
-                % too_late_header = True
+                <% too_late_header = True %>
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if cur_ep_airdate == today.date():
                         <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>
