@@ -523,7 +523,7 @@
                             <span class="airtime">
                                 ${airtime} on ${cur_result["network"]}
                             </span>
-                            <span class="episode-title" title="$cur_result['name']">
+                            <span class="episode-title" title="${cur_result['name']}">
                                 <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}
                             </span>
                         </div>
@@ -551,4 +551,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
+% include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
