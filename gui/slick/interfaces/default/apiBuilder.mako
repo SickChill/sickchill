@@ -238,9 +238,9 @@ endOptGroup("quality-archive");
 
 // build out each show's season list for season cmd
 % for curShow in seasonSQLResults:
-addOption("seasons-$curShow", "Optional Param", "", 1);
+addOption("seasons-${curShow}", "Optional Param", "", 1);
     % for curShowSeason in seasonSQLResults[curShow]:
-addOption("seasons-${curShow}", "${curShowSeason.season}", "&season=${curShowSeason.season}");
+addOption("seasons-${curShow}", "${curShowSeason['season']}", "&season=${curShowSeason['season']}");
     % endfor
 % endfor
 
@@ -251,7 +251,7 @@ addList("episode", "${curShow.name}", "&indexerid=${curShow.indexerid}", "episod
 // build out each show's season+episode list for episode cmd
 % for curShow in episodeSQLResults:
     % for curShowSeason in episodeSQLResults[curShow]:
-addList("episode-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}", "episode-${curShow}-full");
+addList("episode-${curShow}", "${curShowSeason['season']} x ${curShowSeason['episode']}", "&season=${curShowSeason['season']}&episode=${curShowSeason['episode']}", "episode-${curShow}-full");
     % endfor
 addOption("episode-${curShow}-full", "Optional Param", "", 1);
 addOption("episode-${curShow}-full", "Show Full Path", "&full_path=1");
@@ -265,7 +265,7 @@ addList("episode.search", "${curShow.name}", "&indexerid=${curShow.indexerid}", 
 // build out each show's season+episode list for episode.search cmd
 % for curShow in episodeSQLResults:
     % for curShowSeason in episodeSQLResults[curShow]:
-addOption("episode.search-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}");
+addOption("episode.search-${curShow}", "${curShowSeason['season']} x ${curShowSeason['episode']}", "&season=${curShowSeason['season']}&episode=${curShowSeason['episode']}");
     % endfor
 % endfor
 
@@ -278,12 +278,12 @@ addList("episode.setstatus", "${curShow.name}", "&indexerid=${curShow.indexerid}
 % for curShow in episodeSQLResults:
     <% curSeason = -1 %>
     % for curShowSeason in episodeSQLResults[curShow]:
-        % if curShowSeason.season != curSeason and curShowSeason.season != 0:
+        % if curShowSeason['season'] != curSeason and curShowSeason['season'] != 0:
             // insert just the season as the ep number is now optional
-            addList("episode.setstatus-${curShow}", "Season ${curShowSeason.season}", "&season=${curShowSeason.season}", "episode-status-${curShow}");
+            addList("episode.setstatus-${curShow}", "Season ${curShowSeason['season']}", "&season=${curShowSeason['season']}", "episode-status-${curShow}");
         % endif
-        <% curSeason = int(curShowSeason.season) %>
-addList("episode.setstatus-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}", "episode-status-${curShow}");
+        <% curSeason = int(curShowSeason['season']) %>
+addList("episode.setstatus-${curShow}", "${curShowSeason['season']} x ${curShowSeason['episode']}", "&season=${curShowSeason['season']}&episode=${curShowSeason['episode']}", "episode-status-${curShow}");
     % endfor
 addList("episode-status-${curShow}", "Wanted", "&status=wanted", "force");
 addList("episode-status-${curShow}", "Skipped", "&status=skipped", "force");

@@ -348,11 +348,11 @@ class WebRoot(WebHandler):
         seasonSQLResults = {}
         episodeSQLResults = {}
 
-        for curShow in t.sortedShowList:
+        for curShow in sortedShowList:
             seasonSQLResults[curShow.indexerid] = myDB.select(
                 "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [curShow.indexerid])
 
-        for curShow in t.sortedShowList:
+        for curShow in sortedShowList:
             episodeSQLResults[curShow.indexerid] = myDB.select(
                 "SELECT DISTINCT season,episode FROM tv_episodes WHERE showid = ? ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
