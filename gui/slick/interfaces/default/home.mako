@@ -6,20 +6,13 @@ import calendar
 
 <%
     import sickbeard
-    from sickbeard import common
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST
     from sickbeard import db, sbdatetime, network_timezones
-
-    title="Home"
-    header="Show List"
-
-    sbPath = ".."
-
-    topmenu="home"
 %>
 
-<%include file="inc_top.mako"/>
+<%inherit file="/inc_top.mako"/>
 
+##<% return STOP_RENDERING %>
 <%
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
@@ -318,7 +311,7 @@ import calendar
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
     % endif
 
-    ${fuzzydate = 'airdate'}
+    <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         dtInline : ${('true', 'false')[sickbeard.layout == 'poster']},
@@ -446,8 +439,8 @@ import calendar
 </div>
 
 $ for curShowlist in showlists:
-    ${curListType = curShowlist[0]}
-    ${myShowList = list(curShowlist[1])}
+    <% curListType = curShowlist[0] %>
+    <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
 
@@ -867,4 +860,4 @@ ${display_status = curShow.status}
 % endif
 % endif
 
-<%include file="inc_bottom.mako"/>
+<%include file="/inc_bottom.mako"/>
