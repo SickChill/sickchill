@@ -5,21 +5,21 @@
     from sickbeard.common import *
     from sickbeard import db, sbdatetime, network_timezones
 
-    global $title="Home"
-    global $header="Show List"
+    global title="Home"
+    global header="Show List"
 
-    global $sbPath = ".."
+    global sbPath = ".."
 
-    global $topmenu="home"
+    global topmenu="home"
     import os.path
-    include $os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 
-    myDB = $db.DBConnection()
-    today = str($datetime.date.today().toordinal())
-    layout = $sickbeard.HOME_LAYOUT
+    myDB = db.DBConnection()
+    today = str(datetime.date.today().toordinal())
+    layout = sickbeard.HOME_LAYOUT
 
-    status_quality = '(' + ','.join([str(x) for x in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
-    status_download = '(' + ','.join([str(x) for x in $Quality.DOWNLOADED + [$ARCHIVED]]) + ')'
+    status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+    status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]]) + ')'
 
     sql_statement = 'SELECT showid, '
 
@@ -27,14 +27,14 @@
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
 
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
-    sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str($SKIPPED) + ' OR status = ' + str($WANTED) + ' OR status = ' + str($FAILED) + ')) '
+    sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + ')) '
     sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
-    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str($UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
     sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-    sql_result = $myDB.select($sql_statement)
+    sql_result = myDB.select(sql_statement)
 
     show_stat = {}
     max_download_count = 1000
@@ -61,7 +61,7 @@
         if (s.indexOf('Loading...') == 0)
           return s.replace('Loading...','000');
         else
-        % if not $sickbeard.SORT_ARTICLE:
+        % if not sickbeard.SORT_ARTICLE:
             return (s || '').replace(/^(The|A|An)\s/i,'');
         % else:
             return (s || '');
@@ -205,7 +205,7 @@
                 },
             % else
                 filter_columnFilters: false,
-            endif
+            % endif
             filter_reset: '.resetshows',
             columnSelector_mediaquery: false,
         },
@@ -230,9 +230,9 @@
             2: { sorter: 'loadingNames' },
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
             6: { filter : 'parsed' }
-            #end if
+            % endif
         },
         widgetOptions : {
             % if sickbeard.FILTER_ROW:
@@ -310,7 +310,7 @@
     % if $sickbeard.ANIME_SPLIT_HOME:
         if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
-    % end if
+    % endif
 
     % fuzzydate = 'airdate'
     % if sickbeard.FUZZY_DATING:
@@ -322,7 +322,7 @@
         timeFormat : '${sickbeard.TIME_PRESET}',
         trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
     });
-    #end if
+    % endif
 
     var \$container = [\$('#container'), \$('#container-anime')];
 
@@ -397,7 +397,7 @@
     <h1 class="header">${header}</h1>
 % else
     <h1 class="title">${title}</h1>
-% end if
+% endif
 
 <div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
     % if layout != 'poster':
@@ -449,12 +449,12 @@
 % endif
 
 % if layout == 'poster':
-<div id=#if $curListType == "Anime" and $layout == 'poster' then "container-anime" else "container"# class="clearfix">
+<div id="${('container-anime', 'container')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
     % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
-    #continue
+        % continue
     % endif
 
     % if curLoadingShow.show == None:
@@ -470,7 +470,7 @@
 % endfor
 
 % myShowList.sort(lambda x, y: cmp(x.name, y.name))
-%for curShow in myShowList:
+% for curShow in myShowList:
 
 <%
         cur_airs_next = ''
@@ -481,28 +481,28 @@
         display_status = curShow.status
 
         if None is not display_status
-            if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
+            if re.search(r'(?i)(?:new|returning)\s*series', curShow.status)
                 display_status = 'Continuing'
-            else if re.search(r'(?i)(?:nded)', $curShow.status)
+            elseif re.search(r'(?i)(?:nded)', curShow.status)
                 display_status = 'Ended'
             endif
         endif
 
         if curShow.indexerid in show_stat:
-            cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
+            cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
 
-            cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
+            cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
             if not cur_snatched:
                 cur_snatched = 0
             endif
 
-            cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
+            cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
             if not cur_downloaded:
                 cur_downloaded = 0
-            end if
+            endif
 
-            cur_total = $show_stat[$curShow.indexerid]['ep_total']
-            if not $cur_total:
+            cur_total = show_stat[curShow.indexerid]['ep_total']
+            if not cur_total:
                 cur_total = 0
             endif
         endif
@@ -584,7 +584,7 @@
             <span class="${fuzzydate}">
                 <%
                     try
-                        sbdatetime.sbdatetime.sbfdate($ldatetime)
+                        sbdatetime.sbdatetime.sbfdate(ldatetime)
                     except ValueError
                         Invalid date
                     endtry
@@ -600,7 +600,7 @@
         % endif
     % endif
     ${output_html}
-% end if
+% endif
         </div>
 
         <table width="100%" cellspacing="1" border="0" cellpadding="0">
@@ -632,8 +632,6 @@
         </table>
 
     </div>
-
-
 
 % endfor
 </div>
@@ -771,7 +769,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
     % endif
 
     % if cur_airs_prev
-    % pdatetime = sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))
+    % pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))
         % try
             % temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime)
             % temp_timegm_prev = calendar.timegm(pdatetime.timetuple())
@@ -781,7 +779,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
             </td>
         % except ValueError
             <td align="center" class="nowrap"></td>
-        % end try
+        % endtry
     % else:
         <td align="center" class="nowrap"></td>
     % endif
@@ -833,7 +831,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
                 \$(function() {
                     \$("\#progressbar$curShow.indexerid").progressbar({
                     value: $progressbar_percent });
-                    \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='$download_stat_tip'>$download_stat</div>" )
+                    \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
                         classtoadd = "progress-20"
@@ -850,7 +848,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    \$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
+                    \$("\#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
                 });
             //-->
             </script>
@@ -887,4 +885,4 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
 % endif
 % endfor
 
-% include os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
