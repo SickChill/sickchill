@@ -15,27 +15,27 @@
 <div class="h2footer pull-right">
     <span>Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')['poster' == sickbeard.COMING_EPS_LAYOUT]}>Poster</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" ${('', 'selected="selected"')['calendar' == sickbeard.COMING_EPS_LAYOUT]}>Calendar</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" ${('', 'selected="selected"')['banner' == sickbeard.COMING_EPS_LAYOUT]}>Banner</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=list" ${('', 'selected="selected"')['list' == sickbeard.COMING_EPS_LAYOUT]}>List</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >Poster</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >Calendar</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >Banner</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >List</option>
         </select>
     </span>
     &nbsp;
 
     <span>Sort By:
         <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsSort/?sort=date" ${('', 'selected="selected"')['date' == sickbeard.COMING_EPS_SORT]}>Date</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=network" ${('', 'selected="selected"')['network' == sickbeard.COMING_EPS_SORT]}>Network</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=show" ${('', 'selected="selected"')['show' == sickbeard.COMING_EPS_SORT]}>Show</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >Date</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >Network</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >Show</option>
         </select>
     </span>
     &nbsp;
 
     <span>View Paused:
         <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${(' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED]}>Hidden</option>
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED]}>Shown</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('selected="selected"', '')[sickbeard.COMING_EPS_DISPLAY_PAUSED == True]}>Hidden</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', 'selected="selected"')[sickbeard.COMING_EPS_DISPLAY_PAUSED == True]}>Shown</option>
         </select>
     </span>
 </div>
@@ -98,7 +98,6 @@
 });
 
 \$(document).ready(function(){
-
 <% sort_codes = {'date': 0, 'show': 1, 'network': 4} %>
 % if sort not in sort_codes:
     <% sort = 'date' %>
@@ -233,7 +232,7 @@
             </td>
 
             <td align="center">
-                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
         <!-- end cur_result['show_name'] //-->
@@ -394,8 +393,8 @@
     <div class="tvshowDiv">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <th #if 'banner' == $layout then 'class="nobg"' else 'rowspan="2"'# valign="top">
-                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="#if 'banner' == $layout then 'bannerThumb' else 'posterThumb'#" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=#if 'poster' == $layout then 'poster_thumb' else $layout#" /></a>
+            <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
+                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('posterThumb', 'bannerThumb')[banner == layout]}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${(layout, 'poster_thumb')['poster' == layout]}" /></a>
             </th>
 % if 'banner' == layout:
         </tr>
@@ -415,8 +414,8 @@
 % if cur_result['imdb_id']:
                         <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                        <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
-                        <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
+                        <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_name']}"><img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
+                        <span><a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}" class="epSearch forceUpdate"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a></span>
                     </span>
                 </div>
 
@@ -504,7 +503,7 @@
                             <span class="airtime">
                                 ${airtime} on ${cur_result["network"]}
                             </span>
-                            <span class="episode-title" title="$cur_result['name']">
+                            <span class="episode-title" title="${cur_result['name']}">
                                 <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - ${cur_result['name']}
                             </span>
                         </div>
@@ -532,4 +531,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-% include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')
+<%include file="/inc_bottom.mako"/>

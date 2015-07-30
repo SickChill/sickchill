@@ -276,7 +276,7 @@ addList("episode.setstatus", "${curShow.name}", "&indexerid=${curShow.indexerid}
 
 // build out each show's season+episode list for episode.setstatus cmd
 % for curShow in episodeSQLResults:
-    <% curSeason = -1 %>
+    % curSeason = -1
     % for curShowSeason in episodeSQLResults[curShow]:
         % if curShowSeason['season'] != curSeason and curShowSeason['season'] != 0:
             // insert just the season as the ep number is now optional

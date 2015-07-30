@@ -52,13 +52,14 @@
 
         <span class="footerhighlight">${shows_total}</span> Shows (<span class="footerhighlight">${shows_active}</span> Active)
         | <span class="footerhighlight">${ep_downloaded}</span>
+
+        ## FIXME
         ##${
 ##('', (' (<span class="footerhighlight">+%s</span> Snatched)' % (str(ep_snatched), '<a href="%s/manage/episodeStatuses?whichStatus=2" title="View overview of snatched episodes">%s</a>' % (localRoot, str(ep_snatched))
 ##)['Episode Overview' != localheader])[0 < ep_snatched]}
                 &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
         | Daily Search: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span>
         | Backlog Search: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span>
-
     </div>
         <!--
         <ul style="display: table; margin: 0 auto; font-size: 12px; list-style-type: none; padding: 0; padding-top: 10px;">
