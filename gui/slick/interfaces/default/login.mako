@@ -1,13 +1,4 @@
-<%
-    import sickbeard
-
-    global title="Login"
-    global topmenu="login"
-
-    import os.path
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-%>
-
+<%inherit file="/inc_top.tmpl"/>
 <div class="login">
     <form action="" method="post">
         <h1>SickRage</h1>

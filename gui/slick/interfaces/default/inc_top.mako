@@ -1,6 +1,13 @@
+<%!
+    import datetime
+    import os.path
+    import calendar
+%>
+
 <%
     import sickbeard
-    sbRoot = sickbeard.WEB_ROOT
+    from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard import db, sbdatetime, network_timezones
 %>
 
 <!DOCTYPE html>

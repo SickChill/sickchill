@@ -1,4 +1,4 @@
 <%!import os.path%>
-<%include file="/inc_top.mako"/>
+<%inherit file="/inc_top.mako"/>
 ${data}
 <%include file="/inc_bottom.mako"/>

@@ -28,6 +28,7 @@ homedir=${SR_HOME-/opt/sickrage}
 datadir=${SR_DATA-/opt/sickrage}
 pidfile=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
 nice=${SR_NICE-}
+python_bin=${PYTHON_BIN-/usr/bin/python}
 ##
 
 pidpath=`dirname ${pidfile}`
@@ -47,7 +48,7 @@ fi
 start() {
         # Start daemon.
         echo -n $"Starting $prog: "
-        daemon --user=${username} --pidfile=${pidfile} ${nice} python ${homedir}/SickBeard.py ${options}
+        daemon --user=${username} --pidfile=${pidfile} ${nice} ${python_bin} ${homedir}/SickBeard.py ${options}
         RETVAL=$?
         echo
         [ $RETVAL -eq 0 ] && touch $lockfile
@@ -56,7 +57,7 @@ start() {
 
 stop() {
         echo -n $"Shutting down $prog: "
-        killproc -p ${pidfile} python
+        killproc -p ${pidfile} ${python_bin}
         RETVAL=$?
         echo
         [ $RETVAL -eq 0 ] && rm -f $lockfile
