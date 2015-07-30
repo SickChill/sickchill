@@ -8,7 +8,6 @@
 #set global $title='Trending Shows'
 #set global $header='Trending Shows'
 
-#set global $sbPath='..'
 
 #set global $topmenu='home'
 #import os.path

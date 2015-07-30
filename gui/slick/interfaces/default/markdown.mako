@@ -1,10 +1,4 @@
-<%!
-    import sickbeard
-    from sickbeard.common import *
-
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
-%>
+<%!import os.path%>
+<%include file="/inc_top.mako"/>
 ${data}
-
-% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

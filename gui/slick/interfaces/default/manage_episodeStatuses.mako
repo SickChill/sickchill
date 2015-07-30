@@ -5,7 +5,6 @@
     global title="Episode Overview"
     global header="Episode Overview"
 
-    global sbPath=".."
 
     global topmenu="manage"#
     import os.path

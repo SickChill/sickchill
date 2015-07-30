@@ -1,36 +1,36 @@
 <%!
+import datetime
+import os.path
+import calendar
+%>
+
+<%
     import sickbeard
-    import calendar
-    import datetime
-    from sickbeard.common import *
+    from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST
     from sickbeard import db, sbdatetime, network_timezones
+%>
 
-    global title="Home"
-    global header="Show List"
+<%inherit file="/inc_top.mako"/>
 
-    global sbPath = ".."
-
-    global topmenu="home"
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
-
+<%
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
     layout = sickbeard.HOME_LAYOUT
 
-    status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+    status_quality  = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
     status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]]) + ')'
 
-    sql_statement = 'SELECT showid, '
+    sql_statement  = 'SELECT showid, '
 
-    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_quality + ') AS ep_snatched, '
-    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_quality + ') AS ep_snatched, '
+
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download + ') AS ep_downloaded, '
 
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
-    sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + ')) '
+    sql_statement += ' AND ((airdate <= ' + today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + ')) '
     sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
-    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
     sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
     sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
@@ -43,8 +43,6 @@
         show_stat[cur_result['showid']] = cur_result
         if cur_result['ep_total'] > max_download_count:
             max_download_count = cur_result['ep_total']
-        endif
-    endfor
 
     max_download_count = max_download_count * 100
 %>
@@ -139,7 +137,7 @@
             2: { sorter: 'loadingNames' },
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
-            % if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
                 6: { filter : 'parsed' }
             % endif
         },
@@ -203,7 +201,7 @@
                         return test;
                     },
                 },
-            % else
+            % else:
                 filter_columnFilters: false,
             % endif
             filter_reset: '.resetshows',
@@ -294,7 +292,7 @@
                         return test;
                     },
                 },
-            % else
+            % else:
                 filter_columnFilters: false,
             % endif
             filter_reset: '.resetanime',
@@ -307,12 +305,12 @@
     if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
         \$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
 
-    % if $sickbeard.ANIME_SPLIT_HOME:
+    % if sickbeard.ANIME_SPLIT_HOME:
         if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
     % endif
 
-    % fuzzydate = 'airdate'
+    <% fuzzydate = 'airdate' %>
     % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         dtInline : ${('true', 'false')[sickbeard.layout == 'poster']},
@@ -320,7 +318,7 @@
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
+        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO == True]}
     });
     % endif
 
@@ -395,7 +393,7 @@
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
@@ -436,27 +434,19 @@
     </span>
     &nbsp;
 
-    #end if
+    % endif
 </div>
 
-<%
-    curShowlist in showlists:
-    curListType = curShowlist[0]
-    myShowList = list(curShowlist[1])
-%>
-% if curListType == "Anime":
-<h1 class="header">Anime List</h1>
-% endif
+$ for curShowlist in showlists:
+    <% curListType = curShowlist[0] %>
+    <% myShowList = list(curShowlist[1]) %>
+    % if curListType == "Anime":
+        <h1 class="header">Anime List</h1>
 
 % if layout == 'poster':
 <div id="${('container-anime', 'container')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
-
-    % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
-        % continue
-    % endif
-
     % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
             <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
@@ -466,46 +456,39 @@
         </div>
 
     % endif
-
 % endfor
 
-% myShowList.sort(lambda x, y: cmp(x.name, y.name))
+${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
 % for curShow in myShowList:
 
 <%
-        cur_airs_next = ''
-        cur_snatched = 0
-        cur_downloaded = 0
-        cur_total = 0
-        download_stat_tip = ''
-        display_status = curShow.status
+    cur_airs_next = ''
+    cur_snatched = 0
+    cur_downloaded = 0
+    cur_total = 0
+    download_stat_tip = ''
+    display_status = curShow.status
 
-        if None is not display_status
-            if re.search(r'(?i)(?:new|returning)\s*series', curShow.status)
-                display_status = 'Continuing'
-            elseif re.search(r'(?i)(?:nded)', curShow.status)
-                display_status = 'Ended'
-            endif
-        endif
+    if None is not display_status:
+        if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
+            display_status = 'Continuing'
+        elif re.search(r'(?i)(?:nded)', curShow.status):
+            display_status = 'Ended'
 
-        if curShow.indexerid in show_stat:
-            cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
+    if curShow.indexerid in show_stat:
+        cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
 
-            cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
-            if not cur_snatched:
-                cur_snatched = 0
-            endif
+        cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
+        if not cur_snatched:
+            cur_snatched = 0
 
-            cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
-            if not cur_downloaded:
-                cur_downloaded = 0
-            endif
+        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
+        if not cur_downloaded:
+            cur_downloaded = 0
 
-            cur_total = show_stat[curShow.indexerid]['ep_total']
-            if not cur_total:
-                cur_total = 0
-            endif
-        endif
+        cur_total = show_stat[curShow.indexerid]['ep_total']
+        if not cur_total:
+            cur_total = 0
 
     if cur_total != 0:
         download_stat = str(cur_downloaded)
@@ -513,34 +496,30 @@
         if cur_snatched > 0:
             download_stat = download_stat
             download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
-        endif
+
         download_stat = download_stat + " / " + str(cur_total)
         download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else
+    else:
         download_stat = '?'
         download_stat_tip = "no data"
-    endif
 
     nom = cur_downloaded
     den = cur_total
     if den == 0:
         den = 1
-    endif
 
     progressbar_percent = nom * 100 / den
 
     data_date = '6000000000.0'
     if cur_airs_next:
         data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
-    else if None is not display_status
-        if 'nded' not in display_status and 1 == int(curShow.paused)
+    elif None is not display_status:
+        if 'nded' not in display_status and 1 == int(curShow.paused):
             data_date = '5000000500.0'
-        else if 'ontinu' in display_status
+        elif 'ontinu' in display_status:
             data_date = '5000000000.0'
-        else if 'nded' in display_status
+        elif 'nded' in display_status:
             data_date = '5000000100.0'
-        endif
-    endif
 %>
     <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
@@ -579,23 +558,23 @@
         </div>
 
         <div class="show-date">
-% if cur_airs_next
-    % ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
+% if cur_airs_next:
+    ${ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))}
             <span class="${fuzzydate}">
                 <%
-                    try
-                        sbdatetime.sbdatetime.sbfdate(ldatetime)
-                    except ValueError
-                        Invalid date
-                    endtry
+                    try:
+                        print str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+                    except ValueError:
+                        print 'Invalid date'
+                        pass
                 %>
             </span>
-% else
-    % output_html = '?'
-    % if None is not display_status
-        % if 'nded' not in display_status and 1 == int(curShow.paused)
+% else:
+    ${output_html = '?'}
+    % if None is not display_status:
+        % if 'nded' not in display_status and 1 == int(curShow.paused):
             output_html = 'Paused'
-        % else if display_status
+        % elif display_status:
             output_html = display_status
         % endif
     % endif
@@ -637,7 +616,7 @@
 </div>
 </div>
 
-% else
+% else:
 
 <table id="showListTable${curListType}" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
 
@@ -668,13 +647,14 @@
     </tfoot>
 
 
-% if sickbeard.showQueueScheduler.action.loadingShowList
+% if sickbeard.showQueueScheduler.action.loadingShowList:
     <tbody class="tablesorter-infoOnly">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-  % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
-    % continue
-  % endif
+  <%
+      if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+          continue
+  %>
 
   <tr>
     <td align="center">(loading)</td>
@@ -715,18 +695,14 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
         cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
         if not cur_snatched:
             cur_snatched = 0
-        endif
 
         cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
         if not cur_downloaded:
             cur_downloaded = 0
-        endif
 
         cur_total = show_stat[curShow.indexerid]['ep_total']
         if not cur_total:
             cur_total = 0
-        endif
-    endif
 
     if cur_total != 0:
         download_stat = str(cur_downloaded)
@@ -734,50 +710,48 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
         if cur_snatched > 0:
             download_stat = download_stat + "+" + str(cur_snatched)
             download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
-        endif
+
         download_stat = download_stat + " / " + str(cur_total)
         download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
-    else
+    else:
         download_stat = '?'
         download_stat_tip = "no data"
-    endif
 
     nom = cur_downloaded
     den = cur_total
     if den == 0:
         den = 1
-    endif
 
     progressbar_percent = nom * 100 / den
 %>
     <tr>
 
-    % if cur_airs_next
-    % ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
-        % try
-            % temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime)
-            % temp_timegm_next = calendar.timegm(ldatetime.timetuple())
+    % if cur_airs_next:
+        ${ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))}
+        % try:
+            ${temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime)}
+            ${temp_timegm_next = calendar.timegm(ldatetime.timetuple())}
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">${temp_sbfdate_next}</div>
                 <span class="sort_data">${temp_timegm_next}</span>
             </td>
-        % except ValueError
+        % except ValueError:
             <td align="center" class="nowrap"></td>
         % endtry
     % else:
         <td align="center" class="nowrap"></td>
     % endif
 
-    % if cur_airs_prev
-    % pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))
-        % try
-            % temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime)
-            % temp_timegm_prev = calendar.timegm(pdatetime.timetuple())
+    % if cur_airs_prev:
+        ${pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))}
+        % try:
+            ${temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime)}
+            ${temp_timegm_prev = calendar.timegm(pdatetime.timetuple())}
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">${temp_sbfdate_prev}</div>
                 <span class="sort_data">${temp_timegm_prev}</span>
             </td>
-        % except ValueError
+        % except ValueError:
             <td align="center" class="nowrap"></td>
         % endtry
     % else:
@@ -793,7 +767,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
                 <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
         </td>
-    % else if % layout == 'banner':
+    % elif layout == 'banner':
         <td>
             <span style="display: none;">${curShow.name}</span>
             <div class="imgbanner ${layout}">
@@ -801,7 +775,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
                 <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
-    % else if layout == 'simple':
+    % elif layout == 'simple':
         <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
     % endif
 
@@ -855,21 +829,21 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
         </td>
 
         <td align="center">
-% if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
+% if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT:
             <img src="${sbRoot}/images/${('yes16.png", alt="Yes"', 'no16.png", alt="No"')[int(curShow.paused) == 0]} width="16" height="16" />
-% else
+% else:
             <img src="${sbRoot}/images/${('yes16.png", alt="Yes"', 'no16.png", alt="No"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
 % endif
         </td>
 
         <td align="center">
-% display_status = curShow.status
-% if None is not display_status
-    % if re.search(r'(?i)(?:new|returning)\s*series', curShow.status)
-        display_status = 'Continuing'
-    % else if re.search(r'(?i)(?:nded)', curShow.status)
-        display_status = 'Ended'
-    % end if
+${display_status = curShow.status}
+% if None is not display_status:
+    % if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
+        ${display_status = 'Continuing'}
+    % elif re.search(r'(?i)(?:nded)', curShow.status):
+        ${display_status = 'Ended'}
+    % endif
 % endif
 
         ${display_status}
@@ -883,6 +857,6 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
 </table>
 
 % endif
-% endfor
+% endif
 
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

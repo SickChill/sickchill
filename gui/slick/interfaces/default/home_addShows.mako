@@ -5,7 +5,6 @@
     global title="Add Show"
     global header="Add Show"
 
-    global sbPath="../.."
 
     global statpath="../.."
     global topmenu="home"

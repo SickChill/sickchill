@@ -8,7 +8,6 @@
     global title = 'Coming Episodes'
     global header = 'Coming Episodes'
 
-    global sbPath = '..'
 
     global topmenu = 'comingEpisodes'
     import os.path

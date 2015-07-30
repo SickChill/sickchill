@@ -4,7 +4,6 @@
     from sickbeard.common import *
     global title="Manage Torrents"
     global header="Manage Torrents"
-    global sbPath=".."
 
     global topmenu="manage"#
     import os.path

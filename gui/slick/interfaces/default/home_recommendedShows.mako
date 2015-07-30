@@ -9,7 +9,6 @@
     global title="Recommended Shows"
     global header="Recommended Shows"
 
-    global sbPath='..'
 
     global topmenu='home'
     import os.path

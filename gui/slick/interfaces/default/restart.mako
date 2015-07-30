@@ -7,7 +7,6 @@
     global title="Home"
     global header="Restarting SickRage"
 
-    global sbPath = ".."
 
     global topmenu="home"
     import os.path

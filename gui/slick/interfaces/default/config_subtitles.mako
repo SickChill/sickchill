@@ -5,7 +5,6 @@
 
     global title="Config - Subtitles"
     global header="Subtitles"
-    global sbPath="../.."
     global topmenu="config"
 
     import os.path

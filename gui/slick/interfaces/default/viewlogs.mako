@@ -1,17 +1,18 @@
-<%!
+<%
     import sickbeard
     from sickbeard import classes
-    from sickbeard.common import *
     from sickbeard.logger import reverseNames
-    global header="Log File"
-    global title="Logs"
-
-    global sbPath = ".."
-
-    global topmenu="errorlogs"
-    import os.path
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%!
+    header="Log File"
+    title="Logs"
+
+
+    topmenu="errorlogs"
+%>
+
+<%include file="/inc_top.mako"/>
+
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(
@@ -27,7 +28,7 @@ function(){
         \$('#logFilter').prop('disabled', true);
         \$('#logSearch').prop('disabled', true);
         document.body.style.cursor='wait'
-        url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
+        url = '${sbRoot}/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
         window.location.href = url
 
     });
@@ -53,7 +54,7 @@ function(){
             \$('#minLevel option[value=20]').prop('selected', true);
             \$('#minLevel').prop('disabled', false);
             \$('#logFilter').prop('disabled', false);
-            url = '$sbRoot/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
+            url = '${sbRoot}/errorlogs/viewlog/?minLevel='+\$('select[name=minLevel]').val()+'&logFilter='+\$('select[name=logFilter]').val()+'&logSearch='+\$('#logSearch').val()
             window.location.href = url
         } else {
             \$('#minLevel').prop('disabled', true);
@@ -66,34 +67,32 @@ function(){
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
-% else
+% else:
     <h1 class="title">${title}</h1>
 % endif
 
 <div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
-% levels = reverseNames.keys()
-${levels.sort(lambda x,y: cmp(reverseNames[x], reverseNames[y]))}
+<% levels = reverseNames.keys() %>
+<% levels.sort(lambda x,y: cmp(reverseNames[x], reverseNames[y])) %>
 % for level in levels:
-    % if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB')
-        % continue
+    % if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB'):
+       <% continue %>
     % endif
 <option value="${reverseNames[level]}" ${(' selected="selected"', '')[minLevel == reverseNames[level]]}>${level.title()}</option>
 % endfor
 </select>
 
 Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
-% for logNameFilter in sorted(logNameFilters)
+% for logNameFilter in sorted(logNameFilters):
 <option value="${logNameFilter}" #if $logFilter == $logNameFilter then "selected=\"selected\"" else ""#>${logNameFilters[logNameFilter]}</option>
 % endfor
 </select>
 Search log by:
-<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${(logSearch, '')[logSearch == True}" class="form-control form-control-inline input-sm" />
+<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${('', logsearch)[logSearch == True]}" class="form-control form-control-inline input-sm" />
 </div>
 <br />
 <div class="align-left"><pre>
-% filter WebSafe
 ${logLines}
-% endfilter
 </pre>
 </div>
 <br />
@@ -103,4 +102,4 @@ window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minute
 //-->
 </script>
 
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>

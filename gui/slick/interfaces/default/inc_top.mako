@@ -1,5 +1,6 @@
-<%!
+<%
     import sickbeard
+    sbRoot = sickbeard.WEB_ROOT
 %>
 
 <!DOCTYPE html>
@@ -82,9 +83,9 @@
         <script type="text/javascript" charset="utf-8">
         <!--
             sbRoot = '${sbRoot}'; // needed for browser.js & ajaxNotifications.js
-            //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
+            ##//HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
             top_image_html = '<img src="${sbRoot}/images/top.gif" width="31" height="11" alt="Jump to top" />';
-            themeSpinner = <% '\'\'' if 'dark' != sickbeard.THEME_NAME else '\'-dark\'' %>;
+            themeSpinner = '${('', '-dark')[sickbeard.THEME_NAME == 'dark']}';
             anonURL = '${sickbeard.ANON_REDIRECT}'
         //-->
         </script>
@@ -130,7 +131,7 @@
                 \$("#SubMenu a:contains('Pause')").addClass('btn').html('<span class="ui-icon ui-icon-pause pull-left"></span> Pause');
                 \$("#SubMenu a:contains('Resume')").addClass('btn').html('<span class="ui-icon ui-icon-play pull-left"></span> Resume');
 
-            }
+            };
 
             \$(document).ready(function() {
 
@@ -252,22 +253,22 @@
         % if not submenu is UNDEFINED:
         <div id="SubMenu">
         <span>
-        % first = True
+        <% first = True %>
         % for menuItem in submenu:
-            % if 'requires' not in menuItem or menuItem.requires():
-                  % if type(menuItem.path) == dict:
-                      ${"" if first else "</span><span>"}#<b>${menuItem.title}</b>
+            % if 'requires' not in menuItem or menuItem['requires']:
+                  % if type(menuItem['path']) == dict:
+                      ${("</span><span>", "")[first]}</span><span>"}#<b>${menuItem['title']}</b>
                       <%
                           first = False
                           inner_first = True
                       %>
                       % for cur_link in menuItem.path:
-                          ${"" if inner_first else "&middot; "}#<a class="inner" href="${sbRoot}/${menuItem.path[cur_link]}">${cur_link}</a>
-                          % inner_first = False
+                          ${("", "&middot; ")[inner_first]}#<a class="inner" href="${sbRoot}/${menuItem['path'][cur_link]}">${cur_link}</a>
+                          <% inner_first = False %>
                       % endfor
                   % else:
-                      <a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %>>${menuItem.title}</a>
-                      % first = False
+                      <a href="${sbRoot}/$menuItem['path']" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
+                      <% first = False %>
                   % endif
             % endif
         % endfor

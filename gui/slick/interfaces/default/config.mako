@@ -11,7 +11,6 @@
     global title="Configuration"
     global header="Configuration"
 
-    global sbPath=".."
 
     global topmenu="config"
     include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")

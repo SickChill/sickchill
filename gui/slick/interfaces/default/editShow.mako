@@ -9,7 +9,6 @@
     global title="Edit " + $show.name
     global header="Edit " + $show.name
 
-    global sbPath=".."
 
     global topmenu="home"
     import os.path

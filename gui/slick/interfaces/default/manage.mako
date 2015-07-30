@@ -4,7 +4,6 @@
     global title="Mass Update"
     global header="Mass Update"
 
-    global sbPath="../.."
 
     global topmenu="manage"
     import os.path
