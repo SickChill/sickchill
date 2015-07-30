@@ -31,7 +31,7 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
 -[Mobile](http://imgur.com/a/WPyG6)
 
 ## Dependencies
- To run SickRage from source you will need Python 2.7.x, Cheetah 2.1.0+, and PyOpenSSL
+ To run SickRage from source you will need Python 2.7.x, Mako, and PyOpenSSL
 
 ## Forums
  Any questions or setup info your looking for can be found at out forums https://www.sickrage.tv
