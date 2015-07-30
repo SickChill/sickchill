@@ -1,4 +1,13 @@
-<%inherit file="/inc_top.mako"/>
+<%
+    import sickbeard
+    import calendar
+    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
+    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickbeard import db, sbdatetime, network_timezones
+    import datetime
+    import re
+%>	
+<%include file="/inc_top.mako"/>
 
 <%
     myDB = db.DBConnection()
@@ -544,18 +553,18 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
 
         <div class="show-date">
 % if cur_airs_next:
-    ${ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))}
+    <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
             <span class="${fuzzydate}">
-                <%
-                    try:
-                        print str(sbdatetime.sbdatetime.sbfdate(ldatetime))
-                    except ValueError:
-                        print 'Invalid date'
-                        pass
-                %>
+            <%
+                try:
+                    print str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+                except ValueError:
+                    print 'Invalid date'
+                    pass
+            %>
             </span>
 % else:
-    ${output_html = '?'}
+    <% output_html = '?' %>
     % if None is not display_status:
         % if 'nded' not in display_status and 1 == int(curShow.paused):
             output_html = 'Paused'
