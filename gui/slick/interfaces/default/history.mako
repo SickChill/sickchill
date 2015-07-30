@@ -91,17 +91,17 @@
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${(' selected="selected"', '')[history_limit == 100]}>100</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${(' selected="selected"', '')[history_limit == 250]}>250</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${(' selected="selected"', '')[history_limit == 500]}>500</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=0" ${(' selected="selected"', '')[history_limit == 0]}>All</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${('', ' selected="selected"')[history_limit == 100]}>100</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${('', ' selected="selected"')[history_limit == 250]}>250</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${('', ' selected="selected"')[history_limit == 500]}>500</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=0" ${('', ' selected="selected"')[history_limit == 0]}>All</option>
     </select>
 
 
     <span> Layout:
         <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHistoryLayout/?layout=compact" ${(' selected="selected"', '')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
-            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${(' selected="selected"', '')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=compact" ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
         </select>
     </span>
 </div>
@@ -159,7 +159,7 @@
                 % endif
                 </td>
                 <span style="display: none;">${curQuality}</span>
-                <td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
+                <td align="center"><span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
             </tr>
         % endfor
         </tbody>
@@ -175,7 +175,7 @@
                 <th>Downloaded</th>
             % if sickbeard.USE_SUBTITLES
                 <th>Subtitled</th>
-            % end if
+            % endif
                 <th>Quality</th>
             </tr>
         </thead>
@@ -192,7 +192,7 @@
                 % curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), history.dateFormat)
                 <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
                 <td class="tvShow" width="25%">
-                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>${(' <span class="quality Proper">Proper</span>', '')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
                 </td>
                 <td align="center" provider="<%=str(sorted(hItem["actions"])[0]["provider"])%>">
                     % for action in sorted(hItem["actions"]):
