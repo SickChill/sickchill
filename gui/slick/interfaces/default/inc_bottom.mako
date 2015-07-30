@@ -10,21 +10,21 @@
 <footer>
     <div class="footer clearfix">
         <%
-            myDB = $db.DBConnection()
-            today = str($datetime.date.today().toordinal())
-            status_quality = '(%s)' % ','.join([str(quality) for quality in $Quality.SNATCHED + $Quality.SNATCHED_PROPER])
-            status_download = '(%s)' % ','.join([str(quality) for quality in $Quality.DOWNLOADED + [$ARCHIVED]])
+            myDB = db.DBConnection()
+            today = str(datetime.date.today().toordinal())
+            status_quality = '(%s)' % ','.join([str(quality) for quality in Quality.SNATCHED + Quality.SNATCHED_PROPER])
+            status_download = '(%s)' % ','.join([str(quality) for quality in Quality.DOWNLOADED + [ARCHIVED]])
 
             sql_statement = 'SELECT '\
                 + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_snatched, '\
-                % $status_quality\
+                % status_quality\
                 + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 AND status IN %s) AS ep_downloaded, '\
-                % $status_download\
+                % status_download\
                 + '(SELECT COUNT(*) FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1 '\
                 + ' AND ((airdate <= %s AND (status = %s OR status = %s)) '\
-                % ($today, str($SKIPPED), str($WANTED))\
+                % (today, str(SKIPPED), str(WANTED))\
                 + ' OR (status IN %s) OR (status IN %s))) AS ep_total FROM tv_episodes tv_eps LIMIT 1'\
-                % ($status_quality, $status_download)
+                % (status_quality, status_download)
 
             sql_result = myDB.select(sql_statement)
 
@@ -46,12 +46,12 @@
                 localRoot = sbRoot
             except NotFound
                 localRoot = ''
-            end try
+            endtry
             try
                 localheader = header
             except NotFound
                 localheader = ''
-            end try
+            endtry
         %>
 
         <span class="footerhighlight">${shows_total}</span> Shows (<span class="footerhighlight">${shows_active}</span> Active)
@@ -66,7 +66,7 @@
                         )['Episode Overview' != localheader]
                     )[0 < ep_snatched]
                 %>
-                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded $ep_percentage
+                &nbsp;/&nbsp;<span class="footerhighlight">${ep_total}</span> Episodes Downloaded ${ep_percentage}
         | Daily Search: <span class="footerhighlight"><%=str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]%></span>
         | Backlog Search: <span class="footerhighlight"><%=str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]%></span>
 
