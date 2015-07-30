@@ -7,8 +7,8 @@
 
     global sbPath="../.."
 
-    global statpath="../.."#
-    global topmenu="home"#
+    global statpath="../.."
+    global topmenu="home"
     import os.path
     include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
