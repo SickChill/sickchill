@@ -276,13 +276,13 @@ addList("episode.setstatus", "${curShow.name}", "&indexerid=${curShow.indexerid}
 
 // build out each show's season+episode list for episode.setstatus cmd
 % for curShow in episodeSQLResults:
-    <% curSeason = -1 %>
+    % curSeason = -1
     % for curShowSeason in episodeSQLResults[curShow]:
         % if curShowSeason.season != curSeason and curShowSeason.season != 0:
             // insert just the season as the ep number is now optional
             addList("episode.setstatus-${curShow}", "Season ${curShowSeason.season}", "&season=${curShowSeason.season}", "episode-status-${curShow}");
         % endif
-        <% curSeason = int(curShowSeason.season) %>
+        % curSeason = int(curShowSeason.season)
 addList("episode.setstatus-${curShow}", "${curShowSeason.season} x ${curShowSeason.episode}", "&season=${curShowSeason.season}&episode=${curShowSeason.episode}", "episode-status-${curShow}");
     % endfor
 addList("episode-status-${curShow}", "Wanted", "&status=wanted", "force");
