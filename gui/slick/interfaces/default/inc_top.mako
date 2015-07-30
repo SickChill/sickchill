@@ -1,3 +1,9 @@
+<%!
+    import datetime
+    import os.path
+    import calendar
+%>
+
 <%
     import sickbeard
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED

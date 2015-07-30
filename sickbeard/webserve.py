@@ -147,6 +147,7 @@ class PageTemplate(MakoTemplate):
 
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"
+        self.arguments['topmenu'] = "FixME"
         #self.arguments['title'] = "FixME"
 
     def render(self, *args, **kwargs):
