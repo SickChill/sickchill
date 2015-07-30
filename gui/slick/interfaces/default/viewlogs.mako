@@ -1,18 +1,9 @@
+<%include file="/inc_top.mako"/>
 <%
     import sickbeard
     from sickbeard import classes
     from sickbeard.logger import reverseNames
 %>
-<%!
-    header="Log File"
-    title="Logs"
-
-
-    topmenu="errorlogs"
-%>
-
-<%inherit file="/inc_top.mako"/>
-
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(

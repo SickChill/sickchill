@@ -1,26 +1,12 @@
 <%!
-    import sickbeard
-    import datetime
-    from sickbeard.common import *
-    from sickbeard import sbdatetime
     from sickbeard.helpers import anon_url
-
-    global title = 'Coming Episodes'
-    global header = 'Coming Episodes'
-
-
-    global topmenu = 'comingEpisodes'
-    import os.path
-    include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
+%>
+<%include file="/inc_top.mako"/>
+<%
     sort = sickbeard.COMING_EPS_SORT
 %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else
-    <h1 class="title">${title}</h1>
-% endif
-
+<h1 class="header">${header}</h1>
 <style type="text/css">
 #SubMenu {display:none}
 #contentWrapper {padding-top:30px}
@@ -29,33 +15,33 @@
 <div class="h2footer pull-right">
     <span>Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" #if 'poster' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Poster</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" #if 'calendar' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Calendar</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" #if 'banner' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>Banner</option>
-            <option value="${sbRoot}/setComingEpsLayout/?layout=list" #if 'list' == $sickbeard.COMING_EPS_LAYOUT then 'selected="selected"' else ''#>List</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=poster" ${('', 'selected="selected"')['poster' == sickbeard.COMING_EPS_LAYOUT]}>Poster</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=calendar" ${('', 'selected="selected"')['calendar' == sickbeard.COMING_EPS_LAYOUT]}>Calendar</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=banner" ${('', 'selected="selected"')['banner' == sickbeard.COMING_EPS_LAYOUT]}>Banner</option>
+            <option value="${sbRoot}/setComingEpsLayout/?layout=list" ${('', 'selected="selected"')['list' == sickbeard.COMING_EPS_LAYOUT]}>List</option>
         </select>
     </span>
     &nbsp;
 
     <span>Sort By:
         <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setComingEpsSort/?sort=date" #if 'date' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Date</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=network" #if 'network' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Network</option>
-            <option value="${sbRoot}/setComingEpsSort/?sort=show" #if 'show' == $sickbeard.COMING_EPS_SORT then 'selected="selected"' else ''#>Show</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=date" ${('', 'selected="selected"')['date' == sickbeard.COMING_EPS_SORT]}>Date</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=network" ${('', 'selected="selected"')['network' == sickbeard.COMING_EPS_SORT]}>Network</option>
+            <option value="${sbRoot}/setComingEpsSort/?sort=show" ${('', 'selected="selected"')['show' == sickbeard.COMING_EPS_SORT]}>Show</option>
         </select>
     </span>
     &nbsp;
 
     <span>View Paused:
         <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused"<%= (' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Hidden</option>
-            <option value="${sbRoot}/toggleComingEpsDisplayPaused"<%= ('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED] %>>Shown</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${(' selected="selected"', '')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED]}>Hidden</option>
+            <option value="${sbRoot}/toggleComingEpsDisplayPaused" ${('', ' selected="selected"')[True == sickbeard.COMING_EPS_DISPLAY_PAUSED]}>Shown</option>
         </select>
     </span>
 </div>
 
 <div class="key pull-right">
-% if 'calendar' != $layout:
+% if 'calendar' != layout:
     <b>Key:</b>
     <span class="listing-key listing-overdue">Missed</span>
     <span class="listing-key listing-current">Current</span>
@@ -82,7 +68,7 @@
     format: function(s) {
         if (0 == s.indexOf('Loading...'))
             return s.replace('Loading...', '000')
-% if not $sickbeard.SORT_ARTICLE:
+% if not sickbeard.SORT_ARTICLE:
             return (s || '').replace(/^(The|A|An)\s/i, '')
 % else:
             return (s || '')
@@ -113,12 +99,12 @@
 
 \$(document).ready(function(){
 
-% $sort_codes = {'date': 0, 'show': 1, 'network': 4}
-% if $sort not in $sort_codes:
-    $sort = 'date'
+<% sort_codes = {'date': 0, 'show': 1, 'network': 4} %>
+% if sort not in sort_codes:
+    <% sort = 'date' %>
 % endif
 
-    sortList = [[${sort_codes[$sort]}, 0]];
+    sortList = [[${sort_codes[sort]}, 0]];
 
     \$('#showListTable:has(tbody tr)').tablesorter({
         widgets: ['stickyHeaders'],
@@ -142,14 +128,14 @@
 
     \$('#sbRoot').ajaxEpSearch();
 
-    % $fuzzydate = 'airdate'
-    % if $sickbeard.FUZZY_DATING:
+    <% fuzzydate = 'airdate' %>
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then 'true' else 'false'#
+        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
     });
     % endif
 
@@ -157,7 +143,7 @@
 //-->
 </script>
 
-% show_div = 'listing-default'
+<% show_div = 'listing-default' %>
 
 <input type="hidden" id="sbRoot" value="${sbRoot}" />
 
@@ -179,35 +165,33 @@
     <tbody style="text-shadow:none;">
 
 % for cur_result in sql_results:
-    % cur_indexer = int(cur_result['indexer'])
-    % runtime = cur_result['runtime']
+<%
+    cur_indexer = int(cur_result['indexer'])
+    runtime = cur_result['runtime']
 
-    % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
-        % continue
-    % endif
+    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+        continue
 
-    % cur_ep_airdate = cur_result['localtime'].date()
+    cur_ep_airdate = cur_result['localtime'].date()
 
-    % if runtime:
-        % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
-        % if cur_ep_enddate < today:
-            % show_div = 'listing-overdue'
-        % elif cur_ep_airdate >= next_week.date():
-            % show_div = 'listing-toofar'
-        % elif cur_ep_airdate >= today.date() and cur_ep_airdate < next_week.date():
-            % if cur_ep_airdate == today.date():
-                % show_div = 'listing-current'
-            % else:
-                % show_div = 'listing-default'
-            % endif
-        % endif
-    % endif
+    if runtime:
+        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+        if cur_ep_enddate < today:
+            show_div = 'listing-overdue'
+        elif cur_ep_airdate >= next_week.date():
+            show_div = 'listing-toofar'
+        elif cur_ep_airdate >= today.date() and cur_ep_airdate < next_week.date():
+            if cur_ep_airdate == today.date():
+                show_div = 'listing-current'
+            else:
+                show_div = 'listing-default'
+%>
 
         <!-- start $cur_result['show_name'] //-->
         <tr class="${show_div}">
             ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
-                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(${cur_result['localtime']}).decode($sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime($cur_result['localtime'].timetuple())}</span>
+                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime']).decode(sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime(cur_result['localtime'].timetuple())}</span>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -217,12 +201,12 @@
             </td>
 
             <td nowrap="nowrap" align="center">
-                <%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %>
+                ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
             </td>
 
             <td>
 % if cur_result['description']:
-                <img alt='' src='${sbRoot}/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_<%= '%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode'])) %>" />
+                <img alt='' src='${sbRoot}/images/info32.png' height='16' width='16' class='plotInfo' id="plot_info_${'%s_%s_%s' % (str(cur_result['showid']), str(cur_result['season']), str(cur_result['episode']))}" />
 % else:
                 <img alt="" src="${sbRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"  />
 % endif
@@ -243,16 +227,16 @@
 
             <td align="center" style="vertical-align: middle;">
 % if cur_result['imdb_id']:
-                <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
+                <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
+                <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid'])}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
             </td>
 
             <td align="center">
                 <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
-        <!-- end $cur_result['show_name'] //-->
+        <!-- end cur_result['show_name'] //-->
 % endfor
     </tbody>
 
@@ -266,7 +250,7 @@
 <!-- end list view //-->
 
 
-% else if layout in ['banner', 'poster']:
+% elif layout in ['banner', 'poster']:
 
 
 <!-- start non list view //-->
@@ -283,8 +267,8 @@
         });
     });
 
-    % $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
+    <% fuzzydate = 'airdate' %>
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         dtInline : true,
         dtGlue : ' at ',
@@ -292,7 +276,7 @@
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then 'true' else 'false'#
+        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO]}
     });
     % endif
 
@@ -301,63 +285,61 @@
 </script>
 
 <%
-    $cur_segment = None
-    $too_late_header = False
-    $missed_header = False
-    $today_header = False
-    $show_div = 'ep_listing listing-default'
+    cur_segment = None
+    too_late_header = False
+    missed_header = False
+    today_header = False
+    show_div = 'ep_listing listing-default'
 %>
 % if 'show' == sort:
     <br /><br />
 %  endif
 
 % for cur_result in sql_results:
-    % cur_indexer = int(cur_result['indexer'])
+<%
+    cur_indexer = int(cur_result['indexer'])
 
-<!-- start ${cur_result['show_name']} //-->
+    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+        continue
 
-    % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
-        % continue
-    % endif
-
-    % runtime = cur_result['runtime']
-
+    runtime = cur_result['runtime']
+%>
     % if 'network' == sort:
-        % show_network = cur_result['network'] if cur_result['network'] else 'no network'
+        <% show_network = ('no network', cur_result['network'])[cur_result['network']] %>
         % if cur_segment != show_network:
             <div class="comingepheader">
-                <br><h2 class="network">${show_network}</h2>
-            % cur_segment = cur_result['network']
+               <br><h2 class="network">${show_network}</h2>
+
+            <% cur_segment = cur_result['network'] %>
         % endif
-        % cur_ep_airdate = cur_result['localtime'].date()
+        <% cur_ep_airdate = cur_result['localtime'].date() %>
 
         % if runtime:
-            % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+            <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
             % if cur_ep_enddate < today:
-                % show_div = 'ep_listing listing-overdue'
+                <% show_div = 'ep_listing listing-overdue' %>
             % elif cur_ep_airdate >= next_week.date():
-                % show_div = 'ep_listing listing-toofar'
+                <% show_div = 'ep_listing listing-toofar' %>
             % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
-                % if $cur_ep_airdate == $today.date():
-                % $show_div = 'ep_listing listing-current'
-                    % else:
-                        % show_div = 'ep_listing listing-default'
-                    % endif
+                % if cur_ep_airdate == today.date():
+                    <% show_div = 'ep_listing listing-current' %>
+                % else:
+                    <% show_div = 'ep_listing listing-default' %>
                 % endif
             % endif
-
+        % endif
     % elif 'date' == sort:
-        % cur_ep_airdate = cur_result['localtime'].date()
+        <% cur_ep_airdate = cur_result['localtime'].date() %>
 
         % if cur_segment != cur_ep_airdate:
-            % if runtime:
-                % cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime)
+            %if runtime:
+                <% cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = runtime) %>
                 % if cur_ep_enddate < today and cur_ep_airdate != today.date() and not missed_header:
                         <br /><h2 class="day">Missed</h2>
-                % missed_header = True
+                <% missed_header = True %>
                 % elif cur_ep_airdate >= next_week.date() and not too_late_header:
                         <br /><h2 class="day">Later</h2>
-                % too_late_header = True
+                <% too_late_header = True %>
                 % elif cur_ep_enddate >= today and cur_ep_airdate < next_week.date():
                     % if cur_ep_airdate == today.date():
                         <br /><h2 class="day">${datetime.date.fromordinal(cur_ep_airdate.toordinal).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()} <span style="font-size: 14px; vertical-align: top;">[Today]</span></h2>

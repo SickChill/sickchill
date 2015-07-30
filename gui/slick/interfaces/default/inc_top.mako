@@ -1,9 +1,3 @@
-<%!
-    import datetime
-    import os.path
-    import calendar
-%>
-
 <%
     import sickbeard
     from sickbeard.common import Quality, SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, FAILED
@@ -274,7 +268,7 @@
                           <% inner_first = False %>
                       % endfor
                   % else:
-                      <a href="${sbRoot}/$menuItem['path']" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
+                      <a href="${sbRoot}/${menuItem['path']}" ${("", "class=\"confirm\"")['confirm' in menuItem]}>${menuItem['title']}</a>
                       <% first = False %>
                   % endif
             % endif
