@@ -2405,8 +2405,8 @@ class HomeAddShows(Home):
         return t.render(submenu=self.HomeMenu(), enable_anime_options=True,
                 use_provided_info=use_provided_info, default_show_name=default_show_name, other_shows=other_shows,
                 provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id, provided_indexer_name=provided_indexer_name,
-                provided_indexer=provided_indexer, indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[])
-)
+                provided_indexer=provided_indexer, indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[]
+        )
 
     def recommendedShows(self):
         """
