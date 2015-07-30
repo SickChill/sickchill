@@ -1,4 +1,4 @@
-<%include file="/inc_top.tmpl"/>
+<%inherit file="/inc_top.tmpl"/>
 <div class="login">
     <form action="" method="post">
         <h1>SickRage</h1>

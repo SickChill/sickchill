@@ -11,7 +11,7 @@
     topmenu="errorlogs"
 %>
 
-<%include file="/inc_top.mako"/>
+<%inherit file="/inc_top.mako"/>
 
 <script type="text/javascript" charset="utf-8">
 <!--

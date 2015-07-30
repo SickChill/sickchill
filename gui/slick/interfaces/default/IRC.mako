@@ -1,5 +1,5 @@
 <%!import os.path%>
-<%include file="/inc_top.mako"/>
+<%inherit file="/inc_top.mako"/>
 <%
 from sickbeard import GIT_USERNAME
 if GIT_USERNAME:

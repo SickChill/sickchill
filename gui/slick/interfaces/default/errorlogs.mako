@@ -6,7 +6,7 @@
 
     topmenu="errorlogs"
 %>
-<%include file="/inc_top.mako"/>
+<%inherit file="/inc_top.mako"/>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
