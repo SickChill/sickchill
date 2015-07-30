@@ -11,7 +11,7 @@
     global title="History"
     global header="History"
     global sbPath=".."
-    global topmenu="history"#
+    global topmenu="history"
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
 
@@ -130,24 +130,24 @@
             % curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"]))
             <tr>
                 % curdatetime = datetime.datetime.strptime(str(hItem["date"]), history.dateFormat)
-                <td align="center"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
-                <td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
+                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
+                <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["showid"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
                 <td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
-                #if $curStatus == SUBTITLED:
-                    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
-                #end if
-                    <span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem['resource'])">$statusStrings[$curStatus]</span>
+                % if curStatus == SUBTITLED:
+                    <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
+                % endif
+                    <span style="cursor: help; vertical-align:middle;" title="${os.path.basename(hItem['resource'])}">${statusStrings[curStatus]}</span>
                 </td>
                 <td align="center">
-                #if $curStatus in [DOWNLOADED, ARCHIVED]:
-                    #if $hItem["provider"] != "-1":
-                        <span style="vertical-align:middle;"><i>$hItem["provider"]</i></span>
-                    #end if
-                #else
-                    #if $hItem["provider"] > 0
-                        #if $curStatus in [SNATCHED, FAILED]:
-                            #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
-                            #if $provider != None:
+                % if curStatus in [DOWNLOADED, ARCHIVED]:
+                    % if hItem["provider"] != "-1":
+                        <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
+                    % endif
+                % else
+                    % if hItem["provider"] > 0
+                        % if curStatus in [SNATCHED, FAILED]:
+                            % provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"]))
+                            % if provider != None:
                                 <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">$provider.name</span>
                             #else:
                                 <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
