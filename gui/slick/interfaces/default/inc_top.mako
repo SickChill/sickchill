@@ -266,7 +266,7 @@
                           % inner_first = False
                       % endfor
                   % else:
-                      <a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %> #>${menuItem.title}</a>
+                      <a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %>>${menuItem.title}</a>
                       % first = False
                   % endif
             % endif
