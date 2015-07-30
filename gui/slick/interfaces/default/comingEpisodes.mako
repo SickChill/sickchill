@@ -12,7 +12,7 @@
 
     global topmenu = 'comingEpisodes'
     import os.path
-    include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
+    include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')
     sort = sickbeard.COMING_EPS_SORT
 %>
 <script type="text/javascript" src="${sbRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
@@ -56,7 +56,7 @@
 </div>
 
 <div class="key pull-right">
-% if 'calendar' != $layout:
+% if 'calendar' != layout:
     <b>Key:</b>
     <span class="listing-key listing-overdue">Missed</span>
     <span class="listing-key listing-current">Current</span>
@@ -114,12 +114,12 @@
 
 \$(document).ready(function(){
 
-% $sort_codes = {'date': 0, 'show': 1, 'network': 4}
-% if $sort not in $sort_codes:
-    $sort = 'date'
+% sort_codes = {'date': 0, 'show': 1, 'network': 4}
+% if sort not in sort_codes:
+    sort = 'date'
 % endif
 
-    sortList = [[${sort_codes[$sort]}, 0]];
+    sortList = [[${sort_codes[sort]}, 0]];
 
     \$('#showListTable:has(tbody tr)').tablesorter({
         widgets: ['stickyHeaders'],
@@ -143,14 +143,14 @@
 
     \$('#sbRoot').ajaxEpSearch();
 
-    % $fuzzydate = 'airdate'
-    % if $sickbeard.FUZZY_DATING:
+    % fuzzydate = 'airdate'
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         containerClass : '.${fuzzydate}',
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then 'true' else 'false'#
+        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
     });
     % endif
 
@@ -208,7 +208,7 @@
         <tr class="${show_div}">
             ## forced to use a div to wrap airdate, the column sort went crazy with a span
             <td align="center" nowrap="nowrap">
-                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(${cur_result['localtime']}).decode($sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime($cur_result['localtime'].timetuple())}</span>
+                <div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime({cur_result['localtime']}).decode(sickbeard.SYS_ENCODING)}</div><span class="sort_data">${time.mktime(cur_result['localtime'].timetuple())}</span>
             </td>
 
             <td class="tvShow" nowrap="nowrap"><a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -246,14 +246,14 @@
 % if cur_result['imdb_id']:
                 <a href="<%= anon_url('http://www.imdb.com/title/', cur_result['imdb_id']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}"><img alt="[imdb]" height="16" width="16" src="${sbRoot}/images/imdb.png" />
 % endif
-                <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/$sickbeard.indexerApi($cur_indexer).config['icon']" /></a>
+                <a href="<%= anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="$sickbeard.indexerApi($cur_indexer).config['show_url']${cur_result['showid']}"><img alt="$sickbeard.indexerApi($cur_indexer).name" height="16" width="16" src="${sbRoot}/images/${sickbeard.indexerApi(cur_indexer).config['icon']}" /></a>
             </td>
 
             <td align="center">
-                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
+                <a href="${sbRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}" title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}" class="forceUpdate epSearch"><img alt="[search]" height="16" width="16" src="${sbRoot}/images/search16.png" id="forceUpdateImage-${cur_result['showid']}" /></a>
             </td>
         </tr>
-        <!-- end $cur_result['show_name'] //-->
+        <!-- end ${cur_result['show_name']} //-->
 % endfor
     </tbody>
 
@@ -284,8 +284,8 @@
         });
     });
 
-    % $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
+    % fuzzydate = 'airdate'
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
         dtInline : true,
         dtGlue : ' at ',
@@ -293,7 +293,7 @@
         dateHasTime : true,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then 'true' else 'false'#
+        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
     });
     % endif
 
@@ -413,8 +413,8 @@
     <div class="tvshowDiv">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
-            <th #if 'banner' == $layout then 'class="nobg"' else 'rowspan="2"'# valign="top">
-                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="#if 'banner' == $layout then 'bannerThumb' else 'posterThumb'#" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=#if 'poster' == $layout then 'poster_thumb' else $layout#" /></a>
+            <th ${('class="nobg"', 'rowspan="2"')[banner == layout]} valign="top">
+                <a href="${sbRoot}/home/displayShow?show=${cur_result['showid']}"><img alt="" class="${('bannerThumb', 'posterThumb')[banner == layout]}" src="${sbRoot}/showPoster/?show=${cur_result['showid']}&amp;which=${('poster_thumb', layout)['poster' == layout]}" /></a>
             </th>
 % if 'banner' == layout:
         </tr>
