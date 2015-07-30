@@ -8,14 +8,15 @@
     from sickbeard import sbdatetime
     from sickbeard.providers import generic
     from sickbeard.common import *
-    global title="History"
-    global header="History"
-    global topmenu="history"#
+    title="History"
+    header="History"
+
+    topmenu="history"
+
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
-
-    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
+<%include file="/inc_top.mako"/>
 
 <style type="text/css">
 .sort_data {display:none}
@@ -90,17 +91,17 @@
 % endif
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${(' selected="selected"', '')[history_limit == 100]}>100</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${(' selected="selected"', '')[history_limit == 250]}>250</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${(' selected="selected"', '')[history_limit == 500]}>500</option>
-        <option value="${sbRoot}/setHistoryLimit/?history_limit=0" ${(' selected="selected"', '')[history_limit == 0]}>All</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=100" ${('', ' selected="selected"')[history_limit == 100]}>100</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=250" ${('', ' selected="selected"')[history_limit == 250]}>250</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=500" ${('', ' selected="selected"')[history_limit == 500]}>500</option>
+        <option value="${sbRoot}/setHistoryLimit/?history_limit=0" ${('', ' selected="selected"')[history_limit == 0]}>All</option>
     </select>
 
 
     <span> Layout:
         <select name="HistoryLayout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="${sbRoot}/setHistoryLayout/?layout=compact" ${(' selected="selected"', '')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
-            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${(' selected="selected"', '')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=compact" ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>Compact</option>
+            <option value="${sbRoot}/setHistoryLayout/?layout=detailed" ${('', ' selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>Detailed</option>
         </select>
     </span>
 </div>
@@ -129,42 +130,41 @@
             % curStatus, curQuality = Quality.splitCompositeStatus(int(hItem["action"]))
             <tr>
                 % curdatetime = datetime.datetime.strptime(str(hItem["date"]), history.dateFormat)
-                <td align="center"><div class="${fuzzydate}">$sbdatetime.sbdatetime.sbfdatetime($curdatetime, show_seconds=True)</div><span class="sort_data">$time.mktime($curdatetime.timetuple())</span></td>
-                <td class="tvShow" width="35%"><a href="$sbRoot/home/displayShow?show=$hItem["showid"]#season-$hItem["season"]">$hItem["show_name"] - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
+                <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
+                <td class="tvShow" width="35%"><a href="${sbRoot}/home/displayShow?show=${hItem["showid"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>#if "proper" in $hItem["resource"].lower() or "repack" in $hItem["resource"].lower() then ' <span class="quality Proper">Proper</span>' else ""#</a></td>
                 <td align="center" #if $curStatus == SUBTITLED then 'class="subtitles_column"' else ''#>
-                #if $curStatus == SUBTITLED:
-                    <img width="16" height="11" style="vertical-align:middle;" src="$sbRoot/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
-                #end if
-                    <span style="cursor: help; vertical-align:middle;" title="$os.path.basename($hItem['resource'])">$statusStrings[$curStatus]</span>
+                % if curStatus == SUBTITLED:
+                    <img width="16" height="11" style="vertical-align:middle;" src="${sbRoot}/images/subtitles/flags/${hItem['resource']}.png" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';">
+                % endif
+                    <span style="cursor: help; vertical-align:middle;" title="${os.path.basename(hItem['resource'])}">${statusStrings[curStatus]}</span>
                 </td>
                 <td align="center">
-                #if $curStatus in [DOWNLOADED, ARCHIVED]:
-                    #if $hItem["provider"] != "-1":
-                        <span style="vertical-align:middle;"><i>$hItem["provider"]</i></span>
-                    #end if
-                #else
-                    #if $hItem["provider"] > 0
-                        #if $curStatus in [SNATCHED, FAILED]:
-                            #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
-                            #if $provider != None:
+                % if curStatus in [DOWNLOADED, ARCHIVED]:
+                    % if hItem["provider"] != "-1":
+                        <span style="vertical-align:middle;"><i>${hItem["provider"]}</i></span>
+                    % endif
+                % else
+                    % if hItem["provider"] > 0
+                        % if curStatus in [SNATCHED, FAILED]:
+                            % provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"]))
+                            % if provider != None:
                                 <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">$provider.name</span>
-                            #else:
+                            % else:
                                 <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
-                            #end if
-                        #else:
+                            % endif
+                        % else:
                                 <img src="$sbRoot/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;"><%=hItem["provider"].capitalize()%></span>
-                        #end if
-                    #end if
-                #end if
+                        % endif
+                    % endif
+                % endif
                 </td>
-                <span style="display: none;">$curQuality</span>
-                <td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
+                <span style="display: none;">${curQuality}</span>
+                <td align="center"><span class="quality ${Quality.qualityStrings[curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")}">${Quality.qualityStrings[curQuality]}</span></td>
             </tr>
-        #end for
+        % endfor
         </tbody>
     </table>
-
-#else:
+% else:
 
     <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
         <thead>
@@ -173,9 +173,9 @@
                 <th>Episode</th>
                 <th>Snatched</th>
                 <th>Downloaded</th>
-            #if sickbeard.USE_SUBTITLES
+            % if sickbeard.USE_SUBTITLES
                 <th>Subtitled</th>
-            #end if
+            % endif
                 <th>Quality</th>
             </tr>
         </thead>
@@ -192,7 +192,7 @@
                 % curdatetime = datetime.datetime.strptime(str(hItem["actions"][0]["time"]), history.dateFormat)
                 <td align="center"><div class="${fuzzydate}">${sbdatetime.sbdatetime.sbfdatetime(curdatetime, show_seconds=True)}</div><span class="sort_data">${time.mktime(curdatetime.timetuple())}</span></td>
                 <td class="tvShow" width="25%">
-                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>${(' <span class="quality Proper">Proper</span>', '')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                    <span><a href="${sbRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - <%="S%02i" % int(hItem["season"])+"E%02i" % int(hItem["episode"]) %>${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
                 </td>
                 <td align="center" provider="<%=str(sorted(hItem["actions"])[0]["provider"])%>">
                     % for action in sorted(hItem["actions"]):
@@ -202,7 +202,7 @@
                             % if provider != None:
                                 <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>
                             % else:
-                                <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
+                                <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
                             % endif
                         % endif
                     % endfor
@@ -240,4 +240,4 @@
 
 % endif
 
-% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
+<%include file="/inc_bottom.mako"/>
