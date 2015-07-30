@@ -1,16 +1,17 @@
-#import sickbeard
-#from sickbeard import classes
-#from sickbeard.common import *
-#from sickbeard.logger import reverseNames
-#set global $header="Log File"
-#set global $title="Logs"
+<%!
+    import sickbeard
+    from sickbeard import classes
+    from sickbeard.common import *
+    from sickbeard.logger import reverseNames
+    global header="Log File"
+    global title="Logs"
 
-#set global $sbPath = ".."
+    global sbPath = ".."
 
-#set global $topmenu="errorlogs"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
+    global topmenu="errorlogs"
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(
@@ -63,36 +64,36 @@ function(){
 //-->
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div class="h2footer pull-right">Minimum logging level to display: <select name="minLevel" id="minLevel" class="form-control form-control-inline input-sm">
-#set $levels = $reverseNames.keys()
-$levels.sort(lambda x,y: cmp($reverseNames[$x], $reverseNames[$y]))
-#for $level in $levels:
-    #if not $sickbeard.DEBUG and ($level == 'DEBUG' or $level == 'DB')
-        #continue
-    #end if
-<option value="$reverseNames[$level]" #if $minLevel == $reverseNames[$level] then "selected=\"selected\"" else ""#>$level.title()</option>
-#end for
+% levels = reverseNames.keys()
+${levels.sort(lambda x,y: cmp(reverseNames[x], reverseNames[y]))}
+% for level in levels:
+    % if not sickbeard.DEBUG and (level == 'DEBUG' or level == 'DB')
+        % continue
+    % endif
+<option value="${reverseNames[level]}" ${(' selected="selected"', '')[minLevel == reverseNames[level]]}>${level.title()}</option>
+% endfor
 </select>
 
 Filter log by: <select name="logFilter" id="logFilter" class="form-control form-control-inline input-sm">
-#for $logNameFilter in sorted($logNameFilters)
-<option value="$logNameFilter" #if $logFilter == $logNameFilter then "selected=\"selected\"" else ""#>$logNameFilters[$logNameFilter]</option>
-#end for
+% for logNameFilter in sorted(logNameFilters)
+<option value="${logNameFilter}" #if $logFilter == $logNameFilter then "selected=\"selected\"" else ""#>${logNameFilters[logNameFilter]}</option>
+% endfor
 </select>
 Search log by:
-<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="#if $logSearch then $logSearch else ""#" class="form-control form-control-inline input-sm" />
+<input type="text" name="logSearch" placeholder="clear to reset" id="logSearch" value="${(logSearch, '')[logSearch == True}" class="form-control form-control-inline input-sm" />
 </div>
 <br />
 <div class="align-left"><pre>
-#filter WebSafe
-$logLines
-#end filter
+% filter WebSafe
+${logLines}
+% endfilter
 </pre>
 </div>
 <br />
@@ -102,4 +103,4 @@ window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minute
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
