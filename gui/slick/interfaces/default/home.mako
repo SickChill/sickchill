@@ -422,12 +422,12 @@
     % endif
 </div>
 
-$ for curShowlist in showlists:
+% for curShowlist in showlists:
     <% curListType = curShowlist[0] %>
     <% myShowList = list(curShowlist[1]) %>
     % if curListType == "Anime":
         <h1 class="header">Anime List</h1>
-
+    % endif
 % if layout == 'poster':
 <div id="${('container-anime', 'container')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
 <div class="posterview">
@@ -842,6 +842,5 @@ ${display_status = curShow.status}
 </table>
 
 % endif
-% endif
-
+% endfor
 <%include file="/inc_bottom.mako"/>

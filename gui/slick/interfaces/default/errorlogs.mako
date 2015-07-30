@@ -1,18 +1,10 @@
+<%include file="/inc_top.mako"/>
 <%
+    import sickbeard
     from sickbeard import classes
-    header="Logs &amp; Errors"
-    title="Logs &amp; Errors"
-
-
-    topmenu="errorlogs"
+    from sickbeard.logger import reverseNames
 %>
-<%inherit file="/inc_top.mako"/>
-
-% if not header is UNDEFINED:
-    <h1 class="header">${header}</h1>
-% else:
-    <h1 class="title">${title}</h1>
-% endif
+<h1 class="header">${title}</h1>
 <div class="align-left"><pre>
 % if classes.ErrorViewer.errors:
     % for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:

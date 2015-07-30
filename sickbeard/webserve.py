@@ -148,7 +148,6 @@ class PageTemplate(MakoTemplate):
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"
         self.arguments['topmenu'] = "FixME"
-        #self.arguments['title'] = "FixME"
 
     def render(self, *args, **kwargs):
         kwargs.update(self.arguments)
@@ -568,7 +567,8 @@ class WebRoot(WebHandler):
         else:
             layout = sickbeard.COMING_EPS_LAYOUT
 
-        return t.render(submenu=submenu, next_week=next_week, today=today, sql_results=sql_results, layout=layout)
+        return t.render(submenu=submenu, next_week=next_week, today=today, sql_results=sql_results, layout=layout,
+                title='Coming Episodes', header='Coming Episodes', topmenu='comingEpisodes')
 
 
 class CalendarHandler(BaseHandler):
@@ -5004,9 +5004,7 @@ class ErrorLogs(WebRoot):
     def index(self):
 
         t = PageTemplate(rh=self, file="errorlogs.mako")
-        t.submenu = self.ErrorLogsMenu()
-
-        return t.render()
+        return t.render(header="Logs &amp; Errors", title="Logs &amp; Errors", topmenu="errorlogs", submenu=self.ErrorLogsMenu())
 
     def haveErrors(self):
         if len(classes.ErrorViewer.errors) > 0:
@@ -5064,7 +5062,6 @@ class ErrorLogs(WebRoot):
             return finalData
             
         t = PageTemplate(rh=self, file="viewlogs.mako")
-        t.submenu = self.ErrorLogsMenu()
 
         minLevel = int(minLevel)
 
@@ -5103,15 +5100,9 @@ class ErrorLogs(WebRoot):
                 with ek.ek(codecs.open, *[logger.logFile + "." + str(i), 'r', 'utf-8']) as f:
                         data += Get_Data(minLevel, f.readlines(), len(data), regex, logFilter, logSearch, maxLines)
 
-        result = "".join(data)
-
-        t.logLines = result
-        t.minLevel = minLevel
-        t.logNameFilters = logNameFilters
-        t.logFilter = logFilter
-        t.logSearch = logSearch
-
-        return t.render()
+        return t.render(header="Log File", title="Logs", topmenu="errorlogs", submenu=self.ErrorLogsMenu(),
+                logLines="".join(data), minLevel=minLevel, logNameFilters=logNameFilters,
+                logFilter=logFilter, logSearch=logSearch)
 
     def submit_errors(self):
         if not (sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD):
