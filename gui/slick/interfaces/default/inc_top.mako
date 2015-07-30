@@ -266,8 +266,8 @@
                           % inner_first = False
                       % endfor
                   % else:
-                      % if first then "" else ""#<a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %> #>${menuItem.title}</a>
-                      <% first = False %>
+                      <a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %> #>${menuItem.title}</a>
+                      % first = False
                   % endif
             % endif
         % endfor
@@ -275,7 +275,7 @@
         </div>
         % endif
 
-          % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
+        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
         <div class="alert alert-danger upgrade-notification" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
         </div>
