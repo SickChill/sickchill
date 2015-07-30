@@ -14,7 +14,7 @@
     global sbPath="../.."
 
     global topmenu="config"#
-    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
 <script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
 
@@ -24,10 +24,10 @@
     <h1 class="title">${title}</h1>
 % endif
 
-% $indexer = 0
+% indexer = 0
 % if sickbeard.INDEXER_DEFAULT
     % indexer = sickbeard.INDEXER_DEFAULT
-% end if
+% endif
 
 <script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
@@ -100,4 +100,4 @@
 //-->
 </script>
 
-% include os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")
+% include file=os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")
