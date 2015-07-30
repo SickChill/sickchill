@@ -139,9 +139,9 @@
             2: { sorter: 'loadingNames' },
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
-            #if $sickbeard.FILTER_ROW:
+            % if $sickbeard.FILTER_ROW:
                 6: { filter : 'parsed' }
-                #end if
+            % endif
         },
         widgetOptions : {
             % if sickbeard.FILTER_ROW:
