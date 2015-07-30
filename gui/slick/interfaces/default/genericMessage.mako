@@ -1,14 +1,14 @@
-#import sickbeard
-#set global $title=""
+<%!
+    import sickbeard
 
-#set global $sbPath="../.."
+    global title=""
+    global sbPath="../.."
+    global topmenu="home"#
 
+    import os.path
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+%>
+<h2>${subject}</h2>
+${message}
 
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-<h2>$subject</h2>
-$message
-
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")

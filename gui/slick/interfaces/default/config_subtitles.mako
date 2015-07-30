@@ -1,18 +1,19 @@
-#from sickbeard import subtitles
-#import sickbeard
-#from sickbeard.helpers import anon_url
-#set global $title="Config - Subtitles"
-#set global $header="Subtitles"
+<%!
+    from sickbeard import subtitles
+    import sickbeard
+    from sickbeard.helpers import anon_url
 
-#set global $sbPath="../.."
+    global title="Config - Subtitles"
+    global header="Subtitles"
+    global sbPath="../.."
+    global topmenu="config"
 
-#set global $topmenu="config"
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-<script type="text/javascript" src="$sbRoot/js/configSubtitles.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.tokeninput.js"></script>
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+<script type="text/javascript" src="${sbRoot}/js/configSubtitles.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js"></script>
+<script type="text/javascript" src="${sbRoot}/js/lib/jquery.tokeninput.js"></script>
 
 <script type="text/javascript">
       \$(document).ready(function() {
@@ -36,11 +37,11 @@
     });
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="config">
 <div id="config-content">
@@ -167,7 +168,7 @@
 
                     <fieldset class="component-group-list" style="margin-left: 50px; margin-top:36px">
                         <ul id="service_order_list">
-                        #for $curService in $sickbeard.subtitles.sortedServiceList():
+                        % for curService in sickbeard.subtitles.sortedServiceList():
                             <li class="ui-state-default" id="$curService['name']">
                                 <input type="checkbox" id="enable_$curService['name']" class="service_enabler" #if $curService['enabled'] then "checked=\"checked\"" else ""#/>
                                 <a href="<%= anon_url(curService['url']) %>" class="imgLink" target="_new">
@@ -176,7 +177,7 @@
                             <span style="vertical-align:middle;">$curService['name'].capitalize()</span>
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
-                        #end for
+                        % endfor
                         </ul>
                         <input type="hidden" name="service_order" id="service_order" value="<%=" ".join(['%s:%d' % (x['name'], x['enabled']) for x in sickbeard.subtitles.sortedServiceList()])%>"/>
 
@@ -199,4 +200,4 @@
     jQuery('#subtitles_dir').fileBrowser({ title: 'Select Subtitles Download Directory' });
 //-->
 </script>
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")

@@ -160,7 +160,7 @@
                     <a class="navbar-brand" href="${sbRoot}/home/" title="SickRage"><img alt="SickRage" src="${sbRoot}/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
                 </div>
 
-            % if ${sbLogin}:
+            % if sbLogin:
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li id="NAVnews">
@@ -209,7 +209,7 @@
                         </li>
 
                         <li id="NAVerrorlogs" class="dropdown">
-                            <a href="${sbRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">$logPageTitle <b class="caret"></b></a>
+                            <a href="${sbRoot}/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">${logPageTitle} <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="${sbRoot}/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
                                 <li><a href="${sbRoot}/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
@@ -249,10 +249,10 @@
             </div><!-- /.container-fluid -->
         </nav>
 
-        % if $varExists('submenu'):
+        % if not submenu is UNDEFINED:
         <div id="SubMenu">
         <span>
-        <% first = True %>
+        % first = True
         % for menuItem in submenu:
             % if 'requires' not in menuItem or menuItem.requires():
                   % if type(menuItem.path) == dict:
@@ -263,11 +263,11 @@
                       %>
                       % for cur_link in menuItem.path:
                           ${"" if inner_first else "&middot; "}#<a class="inner" href="${sbRoot}/${menuItem.path[cur_link]}">${cur_link}</a>
-                          #set $inner_first = False
+                          % inner_first = False
                       % endfor
                   % else:
-                      % if first then "" else ""#<a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %> #>${menuItem.title}</a>
-                      <% first = False %>
+                      <a href="${sbRoot}/$menuItem.path" <% if 'confirm' in menuItem then "class=\"confirm\"" else "" %>>${menuItem.title}</a>
+                      % first = False
                   % endif
             % endif
         % endfor
@@ -275,7 +275,7 @@
         </div>
         % endif
 
-          % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
+        % if sickbeard.BRANCH and sickbeard.BRANCH != 'master' and not sickbeard.DEVELOPER and sbLogin:
         <div class="alert alert-danger upgrade-notification" role="alert">
             <span>You're using the ${sickbeard.BRANCH} branch. Please use 'master' unless specifically asked</span>
         </div>

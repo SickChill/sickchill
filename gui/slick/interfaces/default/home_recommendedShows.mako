@@ -1,22 +1,23 @@
-#import sickbeard
-#import datetime
-#import re
-#from sickbeard.common import *
-#from sickbeard import sbdatetime
-#from sickbeard.helpers import anon_url
+<%!
+    import sickbeard
+    import datetime
+    import re
+    from sickbeard.common import *
+    from sickbeard import sbdatetime
+    from sickbeard.helpers import anon_url
 
-#set global $title="Recommended Shows"
-#set global $header="Recommended Shows"
+    global title="Recommended Shows"
+    global header="Recommended Shows"
 
-#set global $sbPath='..'
+    global sbPath='..'
 
-#set global $topmenu='home'
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-<script type="text/javascript" src="$sbRoot/js/recommendedShows.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/rootDirs.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
+    global topmenu='home'
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+<script type="text/javascript" src="${sbRoot}/js/recommendedShows.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/rootDirs.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/plotTooltip.js?${sbPID}"></script>
 
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -86,11 +87,11 @@
 </script>
 
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="tabs">
     <ul>
@@ -98,10 +99,10 @@
         <li><a href="#tabs-2">Customize Options</a></li>
     </ul>
     <div id="tabs-1" class="existingtabs">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+        % include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.mako")
     </div>
     <div id="tabs-2" class="existingtabs">
-        #include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+        % include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.mako")
     </div>
     <br>
 
@@ -131,4 +132,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+% include file=os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.mako')

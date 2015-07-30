@@ -1,12 +1,13 @@
-#import sickbeard
+<%
+    import sickbeard
 
-#set global $title="Login"
+    global title="Login"
+    global sbPath = ".."
+    global topmenu="login"
 
-#set global $sbPath = ".."
-
-#set global $topmenu="login"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    import os.path
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+%>
 
 <div class="login">
     <form action="" method="post">

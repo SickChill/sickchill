@@ -1,51 +1,53 @@
-#import sickbeard
-#import calendar
-#import datetime
-#from sickbeard.common import *
-#from sickbeard import db, sbdatetime, network_timezones
+<%!
+    import sickbeard
+    import calendar
+    import datetime
+    from sickbeard.common import *
+    from sickbeard import db, sbdatetime, network_timezones
 
-#set global $title="Home"
-#set global $header="Show List"
+    global title="Home"
+    global header="Show List"
 
-#set global $sbPath = ".."
+    global sbPath = ".."
 
-#set global $topmenu="home"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="home"
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 
-#set $myDB = $db.DBConnection()
-#set $today = str($datetime.date.today().toordinal())
-#set $layout = $sickbeard.HOME_LAYOUT
+    myDB = db.DBConnection()
+    today = str(datetime.date.today().toordinal())
+    layout = sickbeard.HOME_LAYOUT
 
-#set status_quality = '(' + ','.join([str(x) for x in $Quality.SNATCHED + $Quality.SNATCHED_PROPER]) + ')'
-#set status_download = '(' + ','.join([str(x) for x in $Quality.DOWNLOADED + [$ARCHIVED]]) + ')'
+    status_quality = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
+    status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]]) + ')'
 
-#set $sql_statement = 'SELECT showid, '
+    sql_statement = 'SELECT showid, '
 
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_quality + ') AS ep_snatched, '
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_quality + ') AS ep_snatched, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + $status_download + ') AS ep_downloaded, '
 
-#set $sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
-#set $sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str($SKIPPED) + ' OR status = ' + str($WANTED) + ' OR status = ' + str($FAILED) + ')) '
-#set $sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
+    sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '
+    sql_statement += ' AND ((airdate <= ' + $today + ' AND (status = ' + str(SKIPPED) + ' OR status = ' + str(WANTED) + ' OR status = ' + str(FAILED) + ')) '
+    sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total, '
 
-#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str($UNAIRED) + ' OR status = ' + str($WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
-#set $sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str($UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
-#set $sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + $today + ' AND (status = ' + str(UNAIRED) + ' OR status = ' + str(WANTED) + ') ORDER BY airdate ASC LIMIT 1) AS ep_airs_next, '
+    sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1 AND status <> ' + str(UNAIRED) + ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev '
+    sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
-#set $sql_result = $myDB.select($sql_statement)
+    sql_result = myDB.select(sql_statement)
 
-#set $show_stat = {}
-#set $max_download_count = 1000
+    show_stat = {}
+    max_download_count = 1000
 
-#for $cur_result in $sql_result:
-    #set $show_stat[$cur_result['showid']] = $cur_result
-    #if $cur_result['ep_total'] > $max_download_count:
-        #set $max_download_count = $cur_result['ep_total']
-    #end if
-#end for
+    for cur_result in sql_result:
+        show_stat[cur_result['showid']] = cur_result
+        if cur_result['ep_total'] > max_download_count:
+            max_download_count = cur_result['ep_total']
+        endif
+    endfor
 
-#set $max_download_count = $max_download_count * 100
+    max_download_count = max_download_count * 100
+%>
 
 <script type="text/javascript" charset="utf-8">
 <!--
@@ -59,11 +61,11 @@
         if (s.indexOf('Loading...') == 0)
           return s.replace('Loading...','000');
         else
-        #if not $sickbeard.SORT_ARTICLE:
+        % if not sickbeard.SORT_ARTICLE:
             return (s || '').replace(/^(The|A|An)\s/i,'');
-        #else:
+        % else:
             return (s || '');
-        #end if
+        % endif
     },
     type: 'text'
 });
@@ -137,12 +139,12 @@
             2: { sorter: 'loadingNames' },
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
-            #if $sickbeard.FILTER_ROW:
+            % if $sickbeard.FILTER_ROW:
                 6: { filter : 'parsed' }
-                #end if
+            % endif
         },
         widgetOptions : {
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
                 filter_saveFilters : true,
@@ -201,9 +203,9 @@
                         return test;
                     },
                 },
-            #else
+            % else
                 filter_columnFilters: false,
-            #end if
+            % endif
             filter_reset: '.resetshows',
             columnSelector_mediaquery: false,
         },
@@ -228,12 +230,12 @@
             2: { sorter: 'loadingNames' },
             4: { sorter: 'quality' },
             5: { sorter: 'eps' },
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
             6: { filter : 'parsed' }
-            #end if
+            % endif
         },
         widgetOptions : {
-            #if $sickbeard.FILTER_ROW:
+            % if sickbeard.FILTER_ROW:
                 filter_columnFilters: true,
                 filter_hideFilters : true,
                 filter_saveFilters : true,
@@ -292,9 +294,9 @@
                         return test;
                     },
                 },
-            #else
+            % else
                 filter_columnFilters: false,
-            #end if
+            % endif
             filter_reset: '.resetanime',
             columnSelector_mediaquery: false,
         },
@@ -305,30 +307,30 @@
     if (\$("#showListTableShows").find("tbody").find("tr").size() > 0)
         \$.tablesorter.filter.bindSearch( "#showListTableShows", \$('.search') );
 
-    #if $sickbeard.ANIME_SPLIT_HOME:
+    % if $sickbeard.ANIME_SPLIT_HOME:
         if (\$("#showListTableAnime").find("tbody").find("tr").size() > 0)
             \$.tablesorter.filter.bindSearch( "#showListTableAnime", \$('.search') );
-    #end if
+    % endif
 
-    #set $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
+    % fuzzydate = 'airdate'
+    % if sickbeard.FUZZY_DATING:
     fuzzyMoment({
-        dtInline : #if $layout == 'poster' then "true" else "false"#,
+        dtInline : ${('true', 'false')[sickbeard.layout == 'poster']},
         containerClass : '.${fuzzydate}',
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
+        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
     });
-    #end if
+    % endif
 
     var \$container = [\$('#container'), \$('#container-anime')];
 
     jQuery.each(\$container, function (j) {
         this.isotope({
             itemSelector: '.show',
-            sortBy : '$sickbeard.POSTER_SORTBY',
-            sortAscending: $sickbeard.POSTER_SORTDIR,
+            sortBy : '${sickbeard.POSTER_SORTBY}',
+            sortAscending: ${sickbeard.POSTER_SORTDIR},
             layoutMode: 'masonry',
             masonry: {
                 columnWidth: 13,
@@ -337,11 +339,11 @@
             getSortData: {
                 name: function( itemElem ) {
                     var name = \$( itemElem ).attr('data-name');
-                    #if not $sickbeard.SORT_ARTICLE:
+                    % if not sickbeard.SORT_ARTICLE:
                         return (name || '').replace(/^(The|A|An)\s/i,'');
-                    #else:
+                    % else:
                         return (name || '');
-                    #end if
+                    % endif
                 },
                 network: '[data-network]',
                 date: function( itemElem ) {
@@ -381,9 +383,9 @@
         .on('shown.bs.popover', function () {
           // call this function to copy the column selection code into the popover
           \$.tablesorter.columnSelector.attachTo( \$('#showListTableShows'), '#popover-target');
-          #if $sickbeard.ANIME_SPLIT_HOME:
+          % if sickbeard.ANIME_SPLIT_HOME:
             \$.tablesorter.columnSelector.attachTo( \$('#showListTableAnime'), '#popover-target');
-          #end if
+          % endif
         });
 
 });
@@ -391,45 +393,45 @@
 //-->
 </script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div id="HomeLayout" class="pull-right" style="margin-top: -40px;">
-    #if $layout != 'poster':
+    % if layout != 'poster':
         <button id="popover" type="button" class="btn btn-inline">Select Column</button>
-    #end if
+    % endif
     <span> Layout:
         <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;">
-            <option value="$sbRoot/setHomeLayout/?layout=poster" #if $sickbeard.HOME_LAYOUT == "poster" then "selected=\"selected\"" else ""#>Poster</option>
-            <option value="$sbRoot/setHomeLayout/?layout=small" #if $sickbeard.HOME_LAYOUT == "small" then "selected=\"selected\"" else ""#>Small Poster</option>
-            <option value="$sbRoot/setHomeLayout/?layout=banner" #if $sickbeard.HOME_LAYOUT == "banner" then "selected=\"selected\"" else ""#>Banner</option>
-            <option value="$sbRoot/setHomeLayout/?layout=simple" #if $sickbeard.HOME_LAYOUT == "simple" then "selected=\"selected\"" else ""#>Simple</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=poster" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'poster']}>Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=small" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'small']}>Small Poster</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=banner" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'banner']}>Banner</option>
+            <option value="${sbRoot}/setHomeLayout/?layout=simple" ${(' selected="selected"', '')[sickbeard.HOME_LAYOUT == 'simple']}>Simple</option>
         </select>
-        #if $layout != 'poster':
+        % if layout != 'poster':
         Search:
             <input class="search form-control form-control-inline input-sm input200" type="search" data-column="2" placeholder="Search Show Name">
             <button type="button" class="resetshows resetanime btn btn-inline">Reset Search</button>
-        #end if
+        % endif
     </span>
 
-    #if $layout == 'poster':
+    % if layout == 'poster':
     &nbsp;
     <span> Sort By:
         <select id="postersort" class="form-control form-control-inline input-sm">
-            <option value="name" data-sort="$sbRoot/setPosterSortBy/?sort=name" #if $sickbeard.POSTER_SORTBY == "name" then "selected=\"selected\"" else ""#>Name</option>
-            <option value="date" data-sort="$sbRoot/setPosterSortBy/?sort=date" #if $sickbeard.POSTER_SORTBY == "date" then "selected=\"selected\"" else ""#>Next Episode</option>
-            <option value="network" data-sort="$sbRoot/setPosterSortBy/?sort=network" #if $sickbeard.POSTER_SORTBY == "network" then "selected=\"selected\"" else ""#>Network</option>
-            <option value="progress" data-sort="$sbRoot/setPosterSortBy/?sort=progress" #if $sickbeard.POSTER_SORTBY == "progress" then "selected=\"selected\"" else ""#>Progress</option>
+            <option value="name" data-sort="${sbRoot}/setPosterSortBy/?sort=name" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'name']}>Name</option>
+            <option value="date" data-sort="${sbRoot}/setPosterSortBy/?sort=date" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'date']}>Next Episode</option>
+            <option value="network" data-sort="${sbRoot}/setPosterSortBy/?sort=network" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'network']}>Network</option>
+            <option value="progress" data-sort="${sbRoot}/setPosterSortBy/?sort=progress" ${(' selected="selected"', '')[sickbeard.POSTER_SORTBY == 'progress']}>Progress</option>
         </select>
     </span>
     &nbsp;
     <span> Sort Order:
         <select id="postersortdirection" class="form-control form-control-inline input-sm">
-            <option value="true" data-sort="$sbRoot/setPosterSortDir/?direction=1" #if $sickbeard.POSTER_SORTDIR == 1 then "selected=\"selected\"" else ""#>Asc</option>
-            <option value="false" data-sort="$sbRoot/setPosterSortDir/?direction=0" #if $sickbeard.POSTER_SORTDIR == 0 then "selected=\"selected\"" else ""#>Desc</option>
+            <option value="true" data-sort="${sbRoot}/setPosterSortDir/?direction=1" ${(' selected="selected"', '')[sickbeard.POSTER_SORTDIR == 1]}>Asc</option>
+            <option value="false" data-sort="${sbRoot}/setPosterSortDir/?direction=0" ${(' selected="selected"', '')[sickbeard.POSTER_SORTDIR == 0]}>Desc</option>
         </select>
     </span>
     &nbsp;
@@ -437,114 +439,119 @@
     #end if
 </div>
 
-#for $curShowlist in $showlists:
-#set $curListType = $curShowlist[0]
-#set $myShowList = $list($curShowlist[1])
-#if $curListType == "Anime":
+<%
+    curShowlist in showlists:
+    curListType = curShowlist[0]
+    myShowList = list(curShowlist[1])
+%>
+% if curListType == "Anime":
 <h1 class="header">Anime List</h1>
-#end if
+% endif
 
-#if $layout == 'poster':
-<div id=#if $curListType == "Anime" and $layout == 'poster' then "container-anime" else "container"# class="clearfix">
+% if layout == 'poster':
+<div id="${('container-anime', 'container')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
 <div class="posterview">
-#for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
+% for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-    #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
-    #continue
-    #end if
+    % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+        % continue
+    % endif
 
-    #if $curLoadingShow.show == None:
+    % if curLoadingShow.show == None:
         <div class="show" data-name="0" data-date="010101" data-network="0" data-progress="101">
-            <img alt="" title="$curLoadingShow.show_name" class="show-image" style="border-bottom: 1px solid #111;" src="$sbRoot/images/poster.png" />
+            <img alt="" title="${curLoadingShow.show_name}" class="show-image" style="border-bottom: 1px solid #111;" src="${sbRoot}/images/poster.png" />
             <div class="show-details">
-                <div class="show-add">Loading... ($curLoadingShow.show_name)</div>
+                <div class="show-add">Loading... (${curLoadingShow.show_name})</div>
             </div>
         </div>
 
-    #end if
+    % endif
 
-#end for
+% endfor
 
-$myShowList.sort(lambda x, y: cmp(x.name, y.name))
-#for $curShow in $myShowList:
+% myShowList.sort(lambda x, y: cmp(x.name, y.name))
+% for curShow in myShowList:
 
-    #set $cur_airs_next = ''
-    #set $cur_snatched = 0
-    #set $cur_downloaded = 0
-    #set $cur_total = 0
-    #set $download_stat_tip = ''
-    #set $display_status = $curShow.status
-    #if None is not $display_status
-        #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-            #set $display_status = 'Continuing'
-        #else if re.search(r'(?i)(?:nded)', $curShow.status)
-            #set $display_status = 'Ended'
-        #end if
-    #end if
+<%
+        cur_airs_next = ''
+        cur_snatched = 0
+        cur_downloaded = 0
+        cur_total = 0
+        download_stat_tip = ''
+        display_status = curShow.status
 
-    #if $curShow.indexerid in $show_stat:
-        #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
+        if None is not display_status
+            if re.search(r'(?i)(?:new|returning)\s*series', curShow.status)
+                display_status = 'Continuing'
+            elseif re.search(r'(?i)(?:nded)', curShow.status)
+                display_status = 'Ended'
+            endif
+        endif
 
-        #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
-        #if not $cur_snatched:
-            #set $cur_snatched = 0
-        #end if
+        if curShow.indexerid in show_stat:
+            cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
 
-        #set $cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
-        #if not $cur_downloaded:
-            #set $cur_downloaded = 0
-        #end if
+            cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
+            if not cur_snatched:
+                cur_snatched = 0
+            endif
 
-        #set $cur_total = $show_stat[$curShow.indexerid]['ep_total']
-        #if not $cur_total:
-            #set $cur_total = 0
-        #end if
-    #end if
+            cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
+            if not cur_downloaded:
+                cur_downloaded = 0
+            endif
 
-    #if $cur_total != 0:
-        #set $download_stat = str($cur_downloaded)
-        #set $download_stat_tip = "Downloaded: " + str($cur_downloaded)
-        #if $cur_snatched > 0:
-            #set $download_stat = download_stat
-            #set $download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
-        #end if
-        #set $download_stat = download_stat + " / " + str($cur_total)
-        #set $download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str($cur_total)
-    #else
-        #set $download_stat = '?'
-        #set $download_stat_tip = "no data"
-    #end if
+            cur_total = show_stat[curShow.indexerid]['ep_total']
+            if not cur_total:
+                cur_total = 0
+            endif
+        endif
 
-    #set $nom = $cur_downloaded
-    #set $den = $cur_total
-    #if $den == 0:
-        #set $den = 1
-    #end if
+    if cur_total != 0:
+        download_stat = str(cur_downloaded)
+        download_stat_tip = "Downloaded: " + str(cur_downloaded)
+        if cur_snatched > 0:
+            download_stat = download_stat
+            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+        endif
+        download_stat = download_stat + " / " + str(cur_total)
+        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
+    else
+        download_stat = '?'
+        download_stat_tip = "no data"
+    endif
 
-    #set $progressbar_percent = $nom * 100 / $den
+    nom = cur_downloaded
+    den = cur_total
+    if den == 0:
+        den = 1
+    endif
 
-#set $data_date = '6000000000.0'
-#if $cur_airs_next:
-    #set $data_date = $calendar.timegm($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network)).timetuple())
-#else if None is not $display_status
-    #if 'nded' not in $display_status and 1 == int($curShow.paused)
-        #set $data_date = '5000000500.0'
-    #else if 'ontinu' in $display_status
-        #set $data_date = '5000000000.0'
-    #else if 'nded' in $display_status
-        #set $data_date = '5000000100.0'
-    #end if
-#end if
-    <div class="show" id="show$curShow.indexerid" data-name="$curShow.name" data-date="$data_date" data-network="$curShow.network" data-progress="$progressbar_percent">
+    progressbar_percent = nom * 100 / den
+
+    data_date = '6000000000.0'
+    if cur_airs_next:
+        data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
+    else if None is not display_status
+        if 'nded' not in display_status and 1 == int(curShow.paused)
+            data_date = '5000000500.0'
+        else if 'ontinu' in display_status
+            data_date = '5000000000.0'
+        else if 'nded' in display_status
+            data_date = '5000000100.0'
+        endif
+    endif
+%>
+    <div class="show" id="show${curShow.indexerid}" data-name="${curShow.name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}">
         <div class="show-image">
-            <a href="$sbRoot/home/displayShow?show=$curShow.indexerid"><img alt="" class="show-image" src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" /></a>
+            <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
         </div>
 
-        <div id="progressbar$curShow.indexerid"></div>
+        <div id="progressbar${curShow.indexerid}"></div>
             <script type="text/javascript">
             <!--
                 \$(function() {
-                    \$("\#progressbar$curShow.indexerid").progressbar({
+                    \$("\#progressbar${curShow.indexerid}").progressbar({
                     value: $progressbar_percent });
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
@@ -568,71 +575,71 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
             </script>
 
         <div class="show-title">
-            $curShow.name
+            ${curShow.name}
         </div>
 
         <div class="show-date">
-#if $cur_airs_next
-    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
+% if cur_airs_next
+    % ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
             <span class="${fuzzydate}">
-                #try
-                    $sbdatetime.sbdatetime.sbfdate($ldatetime)
-                #except ValueError
-                    Invalid date
-                #end try
+                <%
+                    try
+                        sbdatetime.sbdatetime.sbfdate(ldatetime)
+                    except ValueError
+                        Invalid date
+                    endtry
+                %>
             </span>
-#else
-    #set $output_html = '?'
-    #if None is not $display_status
-        #if 'nded' not in $display_status and 1 == int($curShow.paused)
-            #set $output_html = 'Paused'
-        #else if $display_status
-            #set $output_html = $display_status
-        #end if
-    #end if
-    $output_html
-#end if
+% else
+    % output_html = '?'
+    % if None is not display_status
+        % if 'nded' not in display_status and 1 == int(curShow.paused)
+            output_html = 'Paused'
+        % else if display_status
+            output_html = display_status
+        % endif
+    % endif
+    ${output_html}
+% endif
         </div>
 
         <table width="100%" cellspacing="1" border="0" cellpadding="0">
             <tr>
                 <td class="show-table">
-                    <span class="show-dlstats" title="$download_stat_tip">$download_stat</span>
+                    <span class="show-dlstats" title="${download_stat_tip}">${download_stat}</span>
                 </td>
 
                 <td class="show-table">
-                    #if $layout != 'simple':
-                        #if $curShow.network:
-                            <span title="$curShow.network"><img class="show-network-image" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
-                        #else:
-                            <span title="No Network"><img class="show-network-image" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
-                        #end if
-                    #else:
-                        <span title="$curShow.network">$curShow.network</span>
-                    #end if
+                    % if layout != 'simple':
+                        % if curShow.network:
+                            <span title="${curShow.network}"><img class="show-network-image" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+                        % else:
+                            <span title="No Network"><img class="show-network-image" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+                        % endif
+                    % else:
+                        <span title="${curShow.network}">${curShow.network}</span>
+                    % endif
                 </td>
 
                 <td class="show-table">
-                    #if $curShow.quality in $qualityPresets:
-                        <span class="show-quality">$qualityPresetStrings[$curShow.quality]</span>
-                    #else:
+                    % if curShow.quality in qualityPresets:
+                        <span class="show-quality">${qualityPresetStrings[curShow.quality]}</span>
+                    % else:
                         <span class="show-quality">Custom</span>
-                    #end if
+                    % endif
                 </td>
             </tr>
         </table>
 
     </div>
 
-
-
-#end for
+% endfor
 </div>
 </div>
 
-#else
+% else
 
-<table id="showListTable$curListType" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
+<table id="showListTable${curListType}" class="tablesorter" cellspacing="1" border="0" cellpadding="0">
 
     <thead>
         <tr>
@@ -649,7 +656,7 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
 
     <tfoot>
         <tr>
-            <th rowspan="1" colspan="1" align="center"><a href="$sbRoot/home/addShows/">Add Show</a></th>
+            <th rowspan="1" colspan="1" align="center"><a href="${sbRoot}/home/addShows/">Add Show</a></th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
@@ -661,170 +668,170 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
     </tfoot>
 
 
-#if $sickbeard.showQueueScheduler.action.loadingShowList
+% if sickbeard.showQueueScheduler.action.loadingShowList
     <tbody class="tablesorter-infoOnly">
-#for $curLoadingShow in $sickbeard.showQueueScheduler.action.loadingShowList:
+% for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
 
-  #if $curLoadingShow.show != None and $curLoadingShow.show in $sickbeard.showList:
-    #continue
-  #end if
+  % if curLoadingShow.show != None and curLoadingShow.show in sickbeard.showList:
+    % continue
+  % endif
 
   <tr>
     <td align="center">(loading)</td>
     <td></td>
     <td>
-    #if $curLoadingShow.show == None:
-    <span title="">Loading... ($curLoadingShow.show_name)</span>
-    #else:
-    <a href="displayShow?show=$curLoadingShow.show.indexerid">$curLoadingShow.show.name</a>
-    #end if
+    % if curLoadingShow.show == None:
+    <span title="">Loading... (${curLoadingShow.show_name})</span>
+    % else:
+    <a href="displayShow?show=${curLoadingShow.show.indexerid}">${curLoadingShow.show.name}</a>
+    % endif
     </td>
     <td></td>
     <td></td>
     <td></td>
     <td></td>
   </tr>
-#end for
+% endfor
     </tbody>
-#end if
+% endif
 
     <tbody>
 
-$myShowList.sort(lambda x, y: cmp(x.name, y.name))
-#for $curShow in $myShowList:
+${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
+% for curShow in myShowList:
 
-    #set $cur_airs_next = ''
-    #set $cur_airs_prev = ''
-    #set $cur_snatched = 0
-    #set $cur_downloaded = 0
-    #set $cur_total = 0
-    #set $download_stat_tip = ''
+<%
+    cur_airs_next = ''
+    cur_airs_prev = ''
+    cur_snatched = 0
+    cur_downloaded = 0
+    cur_total = 0
+    download_stat_tip = ''
 
-    #if $curShow.indexerid in $show_stat:
-        #set $cur_airs_next = $show_stat[$curShow.indexerid]['ep_airs_next']
-        #set $cur_airs_prev = $show_stat[$curShow.indexerid]['ep_airs_prev']
+    if curShow.indexerid in show_stat:
+        cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
+        cur_airs_prev = show_stat[curShow.indexerid]['ep_airs_prev']
 
+        cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
+        if not cur_snatched:
+            cur_snatched = 0
+        endif
 
-        #set $cur_snatched = $show_stat[$curShow.indexerid]['ep_snatched']
-        #if not $cur_snatched:
-            #set $cur_snatched = 0
-        #end if
+        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
+        if not cur_downloaded:
+            cur_downloaded = 0
+        endif
 
-        #set $cur_downloaded = $show_stat[$curShow.indexerid]['ep_downloaded']
-        #if not $cur_downloaded:
-            #set $cur_downloaded = 0
-        #end if
+        cur_total = show_stat[curShow.indexerid]['ep_total']
+        if not cur_total:
+            cur_total = 0
+        endif
+    endif
 
-        #set $cur_total = $show_stat[$curShow.indexerid]['ep_total']
-        #if not $cur_total:
-            #set $cur_total = 0
-        #end if
-    #end if
+    if cur_total != 0:
+        download_stat = str(cur_downloaded)
+        download_stat_tip = "Downloaded: " + str(cur_downloaded)
+        if cur_snatched > 0:
+            download_stat = download_stat + "+" + str(cur_snatched)
+            download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str(cur_snatched)
+        endif
+        download_stat = download_stat + " / " + str(cur_total)
+        download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str(cur_total)
+    else
+        download_stat = '?'
+        download_stat_tip = "no data"
+    endif
 
-    #if $cur_total != 0:
-        #set $download_stat = str($cur_downloaded)
-        #set $download_stat_tip = "Downloaded: " + str($cur_downloaded)
-        #if $cur_snatched > 0:
-            #set $download_stat = download_stat + "+" + str($cur_snatched)
-            #set $download_stat_tip = download_stat_tip + "&#013;" + "Snatched: " + str($cur_snatched)
-        #end if
-        #set $download_stat = download_stat + " / " + str($cur_total)
-        #set $download_stat_tip = download_stat_tip + "&#013;" + "Total: " + str($cur_total)
-    #else
-        #set $download_stat = '?'
-        #set $download_stat_tip = "no data"
-    #end if
+    nom = cur_downloaded
+    den = cur_total
+    if den == 0:
+        den = 1
+    endif
 
-    #set $nom = $cur_downloaded
-    #set $den = $cur_total
-    #if $den == 0:
-        #set $den = 1
-    #end if
-
-    #set $progressbar_percent = $nom * 100 / $den
-
+    progressbar_percent = nom * 100 / den
+%>
     <tr>
 
-    #if $cur_airs_next
-    #set $ldatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_next,$curShow.airs,$curShow.network))
-        #try
-            #set $temp_sbfdate_next = $sbdatetime.sbdatetime.sbfdate($ldatetime)
-            #set $temp_timegm_next = $calendar.timegm($ldatetime.timetuple())
+    % if cur_airs_next
+    % ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
+        % try
+            % temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime)
+            % temp_timegm_next = calendar.timegm(ldatetime.timetuple())
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">$temp_sbfdate_next</div>
-                <span class="sort_data">$temp_timegm_next</span>
+                <div class="${fuzzydate}">${temp_sbfdate_next}</div>
+                <span class="sort_data">${temp_timegm_next}</span>
             </td>
-        #except ValueError
+        % except ValueError
             <td align="center" class="nowrap"></td>
-        #end try
-    #else:
+        % endtry
+    % else:
         <td align="center" class="nowrap"></td>
-    #end if
+    % endif
 
-    #if $cur_airs_prev
-    #set $pdatetime = $sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($cur_airs_prev,$curShow.airs,$curShow.network))
-        #try
-            #set $temp_sbfdate_prev = $sbdatetime.sbdatetime.sbfdate($pdatetime)
-            #set $temp_timegm_prev = $calendar.timegm($pdatetime.timetuple())
+    % if cur_airs_prev
+    % pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))
+        % try
+            % temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime)
+            % temp_timegm_prev = calendar.timegm(pdatetime.timetuple())
             <td align="center" class="nowrap">
-                <div class="${fuzzydate}">$temp_sbfdate_prev</div>
-                <span class="sort_data">$temp_timegm_prev</span>
+                <div class="${fuzzydate}">${temp_sbfdate_prev}</div>
+                <span class="sort_data">${temp_timegm_prev}</span>
             </td>
-        #except ValueError
+        % except ValueError
             <td align="center" class="nowrap"></td>
-        #end try
-    #else:
+        % endtry
+    % else:
         <td align="center" class="nowrap"></td>
-    #end if
+    % endif
 
-    #if $layout == 'small':
+    % if layout == 'small':
         <td class="tvShow">
-            <div class="imgsmallposter $layout">
-                <a href="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=$layout" rel="dialog" title="$curShow.name">
-                    <img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=poster_thumb" class="$layout" alt="$curShow.indexerid"/>
+            <div class="imgsmallposter ${layout}">
+                <a href="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=${layout}" rel="dialog" title="${curShow.name}">
+                    <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="$layout" alt="${curShow.indexerid}"/>
                 </a>
-                <a href="$sbRoot/home/displayShow?show=$curShow.indexerid" style="vertical-align: middle;">$curShow.name</a>
+                <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
             </div>
         </td>
-    #else if $layout == 'banner':
+    % else if % layout == 'banner':
         <td>
-            <span style="display: none;">$curShow.name</span>
-            <div class="imgbanner $layout">
-                <a href="$sbRoot/home/displayShow?show=$curShow.indexerid">
-                <img src="$sbRoot/showPoster/?show=$curShow.indexerid&amp;which=banner" class="$layout" alt="$curShow.indexerid" title="$curShow.name"/>
+            <span style="display: none;">${curShow.name}</span>
+            <div class="imgbanner ${layout}">
+                <a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">
+                <img src="${sbRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${layout}" alt="${curShow.indexerid}" title="${curShow.name}"/>
             </div>
         </td>
-    #else if $layout == 'simple':
-        <td class="tvShow"><a href="$sbRoot/home/displayShow?show=$curShow.indexerid">$curShow.name</a></td>
-    #end if
+    % else if layout == 'simple':
+        <td class="tvShow"><a href="${sbRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
+    % endif
 
-    #if $layout != 'simple':
+    % if layout != 'simple':
         <td align="center">
-        #if $curShow.network:
-            <span title="$curShow.network"><img id="network" width="54" height="27" src="$sbRoot/showNetworkLogo/?show=$curShow.indexerid" alt="$curShow.network" title="$curShow.network" /></span>
-        #else:
-            <span title="No Network"><img id="network" width="54" height="27" src="$sbRoot/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
-        #end if
+        % if curShow.network:
+            <span title="${curShow.network}"><img id="network" width="54" height="27" src="${sbRoot}/showNetworkLogo/?show=${curShow.indexerid}" alt="${curShow.network}" title="${curShow.network}" /></span>
+        % else:
+            <span title="No Network"><img id="network" width="54" height="27" src="${sbRoot}/images/network/nonetwork.png" alt="No Network" title="No Network" /></span>
+        % endif
         </td>
-    #else:
+    % else:
         <td>
-            <span title="$curShow.network">$curShow.network</span>
+            <span title="${curShow.network}">${curShow.network}</span>
         </td>
-    #end if
+    % endif
 
-    #if $curShow.quality in $qualityPresets:
-        <td align="center"><span class="quality $qualityPresetStrings[$curShow.quality]">$qualityPresetStrings[$curShow.quality]</span></td>
-    #else:
+    % if curShow.quality in qualityPresets:
+        <td align="center"><span class="quality ${qualityPresetStrings[curShow.quality]}">${qualityPresetStrings[curShow.quality]}</span></td>
+    % else:
         <td align="center"><span class="quality Custom">Custom</span></td>
-    #end if
+    % endif
 
-        <td align="center"><span style="display: none;">$download_stat</span><div id="progressbar$curShow.indexerid" style="position:relative;"></div>
+        <td align="center"><span style="display: none;">${download_stat}</span><div id="progressbar${curShow.indexerid}" style="position:relative;"></div>
             <script type="text/javascript">
             <!--
                 \$(function() {
                     \$("\#progressbar$curShow.indexerid").progressbar({
                     value: $progressbar_percent });
-                    \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='$download_stat_tip'>$download_stat</div>" )
+                    \$("\#progressbar$curShow.indexerid").append( "<div class='progressbarText' title='${download_stat_tip}'>${download_stat}</div>" )
                     classvalue = $progressbar_percent
                     if (classvalue<20) {
                         classtoadd = "progress-20"
@@ -841,41 +848,41 @@ $myShowList.sort(lambda x, y: cmp(x.name, y.name))
                     if (classvalue==100) {
                         classtoadd = "progress-100"
                     }
-                    \$("\#progressbar$curShow.indexerid > .ui-progressbar-value").addClass(classtoadd);
+                    \$("\#progressbar${curShow.indexerid} > .ui-progressbar-value").addClass(classtoadd);
                 });
             //-->
             </script>
         </td>
 
         <td align="center">
-#if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
-            <img src="$sbRoot/images/#if int($curShow.paused) == 0 then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
-#else
-            <img src="$sbRoot/images/#if int($curShow.paused) == 0 and $curShow.status == "Continuing" then "yes16.png\" alt=\"Yes\"" else "no16.png\" alt=\"No\""# width="16" height="16" />
-#end if
+% if sickbeard.TRAKT_USE_ROLLING_DOWNLOAD and sickbeard.USE_TRAKT
+            <img src="${sbRoot}/images/${('yes16.png", alt="Yes"', 'no16.png", alt="No"')[int(curShow.paused) == 0]} width="16" height="16" />
+% else
+            <img src="${sbRoot}/images/${('yes16.png", alt="Yes"', 'no16.png", alt="No"')[int(curShow.paused) == 0 and curShow.status == 'Continuing']} width="16" height="16" />
+% endif
         </td>
 
         <td align="center">
-#set $display_status = $curShow.status
-#if None is not $display_status
-    #if re.search(r'(?i)(?:new|returning)\s*series', $curShow.status)
-        #set $display_status = 'Continuing'
-    #else if re.search(r'(?i)(?:nded)', $curShow.status)
-        #set $display_status = 'Ended'
-    #end if
-#end if
+% display_status = curShow.status
+% if None is not display_status
+    % if re.search(r'(?i)(?:new|returning)\s*series', curShow.status)
+        display_status = 'Continuing'
+    % else if re.search(r'(?i)(?:nded)', curShow.status)
+        display_status = 'Ended'
+    % end if
+% endif
 
-        $display_status
+        ${display_status}
 
         </td>
 
     </tr>
 
-#end for
+% endfor
 </tbody>
 </table>
 
-#end if
-#end for
+% endif
+% endfor
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")

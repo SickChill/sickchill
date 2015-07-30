@@ -1,34 +1,35 @@
-#import os.path
-#import datetime
-#import locale
-#import sickbeard
-#from sickbeard.common import *
-#from sickbeard.sbdatetime import *
-#from sickbeard import config
-#from sickbeard import metadata
-#from sickbeard.metadata.generic import GenericMetadata
-#set global $title  = "Config - Backup/Restore"
-#set global $header = "Backup/Restore"
+<%!
+    import os.path
+    import datetime
+    import locale
+    import sickbeard
+    from sickbeard.common import *
+    from sickbeard.sbdatetime import *
+    from sickbeard import config
+    from sickbeard import metadata
+    from sickbeard.metadata.generic import GenericMetadata
+    global title  = "Config - Backup/Restore"
+    global header = "Backup/Restore"
 
-#set global $sbPath="../.."
+    global sbPath="../.."
 
-#set global $topmenu="config"#
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+    global topmenu="config"#
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+<script type="text/javascript" src="${sbRoot}/js/configBackupRestore.js?${sbPID}"></script>
 
-<script type="text/javascript" src="$sbRoot/js/configBackupRestore.js?$sbPID"></script>
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% $indexer = 0
+% if sickbeard.INDEXER_DEFAULT
+    % indexer = sickbeard.INDEXER_DEFAULT
+% end if
 
-#set $indexer = 0
-#if $sickbeard.INDEXER_DEFAULT
-    #set $indexer = $sickbeard.INDEXER_DEFAULT
-#end if
-
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
 
 <div id="config">
     <div id="config-content">
@@ -99,4 +100,4 @@
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include os.path.join(sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.mako")

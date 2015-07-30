@@ -1,662 +1,288 @@
 #import sickbeard
-#from sickbeard import subtitles, sbdatetime, network_timezones
-#import sickbeard.helpers
-#from sickbeard.common import *
-#from sickbeard.helpers import anon_url
-#import os.path, os
-#import datetime
 #import urllib
-#import ntpath
 
-#set global $title=$show.name
-##set global $header = '<a></a>' %
-#set global $topmenu="manageShows"#
-#set $exceptions_string = " | ".join($show.exceptions)
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width">
 
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.bookmarkscroll.js?$sbPID"></script>
+        <!-- These values come from css/dark.css and css/light.css -->
+        #if $sickbeard.THEME_NAME == "dark":
+        <meta name="theme-color" content="#15528F">
+        #elif $sickbeard.THEME_NAME == "light":
+        <meta name="theme-color" content="#333333">
+        #end if
+
+        <title>SickRage - BRANCH:[$sickbeard.BRANCH] - $title</title>
+
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <link rel="shortcut icon" href="$sbRoot/images/ico/favicon.ico">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="$sbRoot/images/ico/favicon.ico">
+        <link rel="icon" type="image/png" sizes="196x196" href="$sbRoot/images/ico/favicon-196.png">
+        <link rel="icon" type="image/png" sizes="160x160" href="$sbRoot/images/ico/favicon-160.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="$sbRoot/images/ico/favicon-96.png">
+        <link rel="icon" type="image/png" sizes="64x64" href="$sbRoot/images/ico/favicon-64.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="$sbRoot/images/ico/favicon-32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="$sbRoot/images/ico/favicon-16.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="$sbRoot/images/ico/favicon-152.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="$sbRoot/images/ico/favicon-144.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="$sbRoot/images/ico/favicon-120.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="$sbRoot/images/ico/favicon-114.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="$sbRoot/images/ico/favicon-76.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="$sbRoot/images/ico/favicon-72.png">
+        <link rel="apple-touch-icon" href="$sbRoot/images/ico/favicon-57.png">
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+        <meta name="msapplication-TileImage" content="$sbRoot/images/ico/favicon-144.png">
+        <meta name="msapplication-config" content="$sbRoot/css/browserconfig.xml">
+
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/bootstrap.css?$sbPID"/>
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/browser.css?$sbPID" />
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery-ui-1.10.4.custom.css?$sbPID" />
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/jquery.qtip-2.2.1.min.css?$sbPID"/>
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/style.css?$sbPID"/>
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/${sickbeard.THEME_NAME}.css?$sbPID" />
+        #if $sbLogin:
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/lib/pnotify.custom.min.css?$sbPID" />
+        <link rel="stylesheet" type="text/css" href="$sbRoot/css/country-flags.css?$sbPID"/>
+        #end if
 
 
-<input type="hidden" id="sbRoot" value="$sbRoot" />
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery-1.11.2.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/bootstrap.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/bootstrap-hover-dropdown.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery-ui-1.10.4.custom.min.js?$sbPID"></script>
+        #if $sbLogin:
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.cookie.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.cookiejar.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.json-2.2.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.selectboxes.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter-2.17.7.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter.widgets-2.17.7.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.tablesorter.widget-columnSelector-2.17.7.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.qtip-2.2.1.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/pnotify.custom.min.js"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.form-3.35.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.ui.touch-punch-0.2.2.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/isotope.pkgd.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.confirm.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/script.js?$sbPID"></script>
 
-<script type="text/javascript" src="$sbRoot/js/displayShow.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/plotTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/sceneExceptionsTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ratingTooltip.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ajaxEpSearch.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/ajaxEpSubtitles.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/lib/jquery.collapser.min.js?$sbPID"></script>
-<script type="text/javascript" charset="utf-8">
-<!--
-\$(document).ready(function(){
-    #set $fuzzydate = 'airdate'
-    #if $sickbeard.FUZZY_DATING:
-    fuzzyMoment({
-        containerClass : '.${fuzzydate}',
-        dateHasTime : false,
-        dateFormat : '${sickbeard.DATE_PRESET}',
-        timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : #if $sickbeard.TRIM_ZERO then "true" else "false"#
-    });
+
+        #if $sickbeard.FUZZY_DATING:
+        <script type="text/javascript" src="$sbRoot/js/moment/moment.min.js?$sbPID"></script>
+        <script type="text/javascript" src="$sbRoot/js/fuzzyMoment.js?$sbPID"></script>
+        #end if
+        <script type="text/javascript" charset="utf-8">
+        <!--
+            sbRoot = '$sbRoot'; // needed for browser.js & ajaxNotifications.js
+            //HTML for scrolltopcontrol, which is auto wrapped in DIV w/ ID="topcontrol"
+            top_image_html = '<img src="$sbRoot/images/top.gif" width="31" height="11" alt="Jump to top" />';
+            themeSpinner = <%= '\'\'' if 'dark' != sickbeard.THEME_NAME else '\'-dark\'' %>;
+            anonURL = '<%= sickbeard.ANON_REDIRECT %>'
+        //-->
+        </script>
+        <script type="text/javascript" src="$sbRoot/js/lib/jquery.scrolltopcontrol-1.1.js"></script>
+        <script type="text/javascript" src="$sbRoot/js/browser.js"></script>
+        <script type="text/javascript" src="$sbRoot/js/ajaxNotifications.js"></script>
+        <script type="text/javascript">
+        <!--
+            function initActions() {
+                \$("#SubMenu a[href*='/home/restart/']").addClass('btn restart').html('<span class="submenu-icon-restart pull-left"></span> Restart');
+                \$("#SubMenu a[href*='/home/shutdown/']").addClass('btn shutdown').html('<span class="submenu-icon-shutdown pull-left"></span> Shutdown');
+                \$("#SubMenu a[href*='/home/logout/']").addClass('btn').html('<span class="ui-icon ui-icon-power pull-left"></span> Logout');
+                \$("#SubMenu a:contains('Edit')").addClass('btn').html('<span class="ui-icon ui-icon-pencil pull-left"></span> Edit');
+                \$("#SubMenu a:contains('Remove')").addClass('btn remove').html('<span class="ui-icon ui-icon-trash pull-left"></span> Remove');
+                \$("#SubMenu a:contains('Clear History')").addClass('btn clearhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear History');
+                \$("#SubMenu a:contains('Trim History')").addClass('btn trimhistory').html('<span class="ui-icon ui-icon-trash pull-left"></span> Trim History');
+                \$("#SubMenu a[href$='/errorlogs/clearerrors/']").addClass('btn').html('<span class="ui-icon ui-icon-trash pull-left"></span> Clear Errors');
+                #if sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+                \$("#SubMenu a[href$='/errorlogs/submit_errors/']").addClass('btn submiterrors').html('<span class="ui-icon ui-icon-arrowreturnthick-1-n pull-left"></span> Submit Errors');
+                #end if
+                \$("#SubMenu a:contains('Re-scan')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Re-scan');
+                \$("#SubMenu a:contains('Backlog Overview')").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Backlog Overview');
+                \$("#SubMenu a[href$='/home/updatePLEX/']").addClass('btn').html('<span class="ui-icon ui-icon-refresh pull-left"></span> Update PLEX');
+                \$("#SubMenu a:contains('Force')").addClass('btn').html('<span class="ui-icon ui-icon-transfer-e-w pull-left"></span> Force Full Update');
+                \$("#SubMenu a:contains('Rename')").addClass('btn').html('<span class="ui-icon ui-icon-tag pull-left"></span> Preview Rename');
+                \$("#SubMenu a[href$='/config/subtitles/']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Search Subtitles');
+                \$("#SubMenu a[href*='/home/subtitleShow']").addClass('btn').html('<span class="ui-icon ui-icon-comment pull-left"></span> Download Subtitles');
+                \$("#SubMenu a:contains('Anime')").addClass('btn').html('<span class="submenu-icon-anime pull-left"></span> Anime');
+                \$("#SubMenu a:contains('Settings')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Settings');
+                \$("#SubMenu a:contains('Provider')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Search Providers');
+                \$("#SubMenu a:contains('Backup/Restore')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> Backup/Restore');
+                \$("#SubMenu a:contains('General')").addClass('btn').html('<span class="ui-icon ui-icon-gear pull-left"></span> General');
+                \$("#SubMenu a:contains('Episode Status')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Episode Status Management');
+                \$("#SubMenu a:contains('Missed Subtitle')").addClass('btn').html('<span class="ui-icon ui-icon-transferthick-e-w pull-left"></span> Missed Subtitles');
+                \$("#SubMenu a[href$='/home/addShows/']").addClass('btn').html('<span class="ui-icon ui-icon-video pull-left"></span> Add Show');
+                \$("#SubMenu a:contains('Processing')").addClass('btn').html('<span class="ui-icon ui-icon-folder-open pull-left"></span> Post-Processing');
+                \$("#SubMenu a:contains('Manage Searches')").addClass('btn').html('<span class="ui-icon ui-icon-search pull-left"></span> Manage Searches');
+                \$("#SubMenu a:contains('Manage Torrents')").addClass('btn').html('<span class="submenu-icon-bittorrent pull-left"></span> Manage Torrents');
+                \$("#SubMenu a[href$='/manage/failedDownloads/']").addClass('btn').html('<span class="submenu-icon-failed-download pull-left"></span> Failed Downloads');
+                \$("#SubMenu a:contains('Notification')").addClass('btn').html('<span class="ui-icon ui-icon-note pull-left"></span> Notifications');
+                \$("#SubMenu a:contains('Update show in KODI')").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update show in KODI');
+                \$("#SubMenu a[href$='/home/updateKODI/']").addClass('btn').html('<span class="submenu-icon-kodi pull-left"></span> Update KODI');
+                \$("#SubMenu a:contains('Pause')").addClass('btn').html('<span class="ui-icon ui-icon-pause pull-left"></span> Pause');
+                \$("#SubMenu a:contains('Resume')").addClass('btn').html('<span class="ui-icon ui-icon-play pull-left"></span> Resume');
+
+            }
+
+            \$(document).ready(function() {
+
+                initActions();
+
+                \$("#NAV$topmenu").addClass("active");
+
+                \$('.dropdown-toggle').dropdownHover();
+
+            });
+        //-->
+        </script>
+    <script type="text/javascript" src="$sbRoot/js/confirmations.js?$sbPID"></script>
     #end if
-    #raw
-    $('.addQTip').each(function () {
-        $(this).css({'cursor':'help', 'text-shadow':'0px 0px 0.5px #666'});
-        $(this).qtip({
-            show: {solo:true},
-            position: {viewport:$(window), my:'left center', adjust:{ y: -10, x: 2 }},
-            style: {tip:{corner:true, method:'polygon'}, classes:'qtip-rounded qtip-shadow ui-tooltip-sb'}
-        });
-    });
-    #end raw
+    </head>
 
-    \$.fn.generateStars = function() {
-        return this.each(function(i,e){\$(e).html(\$('<span/>').width(\$(e).text()*12));});
-    };
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="$sbRoot/home/" title="SickRage"><img alt="SickRage" src="$sbRoot/images/sickrage.png" style="height: 50px;" class="img-responsive pull-left" /></a>
+                </div>
 
-    \$('.imdbstars').generateStars();
+            #if $sbLogin:
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li id="NAVnews">
+                            <a href="$sbRoot/news/">News</a>
+                        </li>
+                        <li id="NAVnews">
+                            <a href="$sbRoot/IRC/">IRC</a>
+                        </li>
+                        <li id="NAVhome">
+                            <a href="$sbRoot/home/">Shows</a>
+                        </li>
 
+                        <li id="NAVcomingEpisodes">
+                            <a href="$sbRoot/comingEpisodes/">Coming Episodes</a>
+                        </li>
 
+                        <li id="NAVhistory">
+                            <a href="$sbRoot/history/">History</a>
+                        </li>
 
-            #if $show.is_anime:
-    \$("#animeTable").tablesorter({
-            #else:
-    \$("#showTable").tablesorter({
-            #end if
-        widgets: ['saveSort', 'stickyHeaders', 'columnSelector'],
-        widgetOptions : {
-            columnSelector_saveColumns: true,
-            columnSelector_layout : '<br/><label><input type="checkbox">{name}</label>',
-            columnSelector_mediaquery: false,
-            columnSelector_cssChecked : 'checked'
-            },
-        });
-
-
-
-    \$('#popover')
-        .popover({
-          placement: 'bottom',
-          html: true, // required if content has HTML
-          content: '<div id="popover-target"></div>'
-        })
-        // bootstrap popover event triggered when the popover opens
-        .on('shown.bs.popover', function () {
-                #if $show.is_anime:
-            \$.tablesorter.columnSelector.attachTo( \$('#animeTable'), '#popover-target');
-                #else:
-            \$.tablesorter.columnSelector.attachTo( \$('#showTable'), '#popover-target');
-                #end if
-        });
-});
-//-->
-</script>
-
-    <div class="pull-left form-inline">
-        Change Show:
-        <div class="navShow"><img id="prevShow" src="$sbRoot/images/prev.png" alt="&lt;&lt;" title="Prev Show" /></div>
-            <select id="pickShow" class="form-control form-control-inline input-sm">
-            #for $curShowList in $sortedShowLists:
-                #set $curShowType = $curShowList[0]
-                #set $curShowList = $curShowList[1]
-
-                #if len($sortedShowLists) > 1:
-                    <optgroup label="$curShowType">
-                #end if
-                    #for $curShow in $curShowList:
-                    <option value="$curShow.indexerid" #if $curShow == $show then "selected=\"selected\"" else ""#>$curShow.name</option>
-                    #end for
-                #if len($sortedShowLists) > 1:
-                    </optgroup>
-                #end if
-            #end for
-            </select>
-        <div class="navShow"><img id="nextShow" src="$sbRoot/images/next.png" alt="&gt;&gt;" title="Next Show" /></div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div id="showtitle" data-showname="$show.name">
-        <h1 class="title" id="scene_exception_$show.indexerid">$show.name</h1>
-    </div>
-
-
-        #if $seasonResults:
-        ##There is a special/season_0?##
-        #if int($seasonResults[-1]["season"]) == 0:
-            #set $season_special = 1
-        #else:
-            #set $season_special = 0
-        #end if
-
-        #if not $sickbeard.DISPLAY_SHOW_SPECIALS and $season_special:
-            #set lastSeason = $seasonResults.pop(-1); del lastSeason
-        #end if
-
-        <span class="h2footer displayspecials pull-right">
-            #if $season_special:
-            Display Specials:
-                #if sickbeard.DISPLAY_SHOW_SPECIALS:
-                    <a class="inner" href="$sbRoot/toggleDisplayShowSpecials/?show=$show.indexerid">Hide</a>
-                #else:
-                    <a class="inner" href="$sbRoot/toggleDisplayShowSpecials/?show=$show.indexerid">Show</a>
-                #end if
-            #end if
-        </span>
-
-        <div class="h2footer pull-right">
-            <span>
-            #if (len($seasonResults) > 14):
-                <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
-                    <option value="jump">Jump to Season</option>
-                #for $seasonNum in $seasonResults:
-                    <option value="#season-$seasonNum["season"]">#if int($seasonNum["season"]) == 0 then "Specials" else "Season " + str($seasonNum["season"])#</option>
-                #end for
-                </select>
-            #else:
-                Season:
-                #for $seasonNum in $seasonResults:
-                    #if int($seasonNum["season"]) == 0:
-                        <a href="#season-$seasonNum["season"]">Specials</a>
-                    #else:
-                        <a href="#season-$seasonNum["season"]">${str($seasonNum["season"])}</a>
-                    #end if
-                    #if $seasonNum != $seasonResults[-1]:
-                        <span class="separator">|</span>
-                    #end if
-                #end for
-            #end if
-            </span>
-
-        #end if
-        </div>
-
-    <div class="clearfix"></div>
-
-#if $show_message:
-    <div class="alert alert-info">
-        $show_message
-    </div>
-#end if
-
-    <div id="container">
-        <div id="posterCol">
-            <a href="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster" rel="dialog" title="View Poster for $show.name"><img src="$sbRoot/showPoster/?show=$show.indexerid&amp;which=poster_thumb" class="tvshowImg" alt=""/></a>
-        </div>
-
-        <div id="showCol">
-
-            <div id="showinfo">
-#if 'rating' in $show.imdb_info:
-    #set $rating_tip = str($show.imdb_info['rating']) + " / 10" + " Stars" + "<br />" + str($show.imdb_info['votes']) + " Votes"
-                <span class="imdbstars" qtip-content="$rating_tip">$show.imdb_info['rating']</span>
-#end if
-
-#set $_show = $show
-#if not $show.imdbid
-                <span>($show.startyear) - $show.runtime minutes - </span>
-#else
-    #if 'country_codes' in $show.imdb_info:
-        #for $country in $show.imdb_info['country_codes'].split('|')
-                <img src="$sbRoot/images/blank.png" class="country-flag flag-${$country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
-        #end for
-    #end if
-    #if 'year' in $show.imdb_info:
-                <span>($show.imdb_info['year']) - $show.imdb_info['runtimes'] minutes - </span>
-    #end if
-                <a href="<%= anon_url('http://www.imdb.com/title/', _show.imdbid) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/$show.imdbid"><img alt="[imdb]" height="16" width="16" src="$sbRoot/images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-#end if
-                <a href="<%= anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid) %>" onclick="window.open(this.href, '_blank'); return false;" title="$sickbeard.indexerApi($show.indexer).config["show_url"]$show.indexerid"><img alt="$sickbeard.indexerApi($show.indexer).name" height="16" width="16" src="$sbRoot/images/$sickbeard.indexerApi($show.indexer).config["icon"] "style="margin-top: -1px; vertical-align:middle;"/></a>
-#if $xem_numbering or $xem_absolute_numbering:
-                <a href="<%= anon_url('http://thexem.de/search?q=', _show.name) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-$show.name"><img alt="[xem]" height="16" width="16" src="$sbRoot/images/xem.png" style="margin-top: -1px; vertical-align:middle;"/></a>
-#end if
-            </div>
-
-            <div id="tags">
-                <ul class="tags">
-                    #if not $show.imdbid
-                    #if $show.genre:
-                    #for $genre in $show.genre[1:-1].split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>$genre</li></a>
-                    #end for
-                    #end if
-                    #end if
-                    #if 'year' in $show.imdb_info:
-                    #for $imdbgenre in $show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>$imdbgenre</li></a>
-                    #end for
-                    #end if
-                </ul>
-            </div>
-
-            <div id="summary">
-                <table class="summaryTable pull-left">
-                #set $anyQualities, $bestQualities = $Quality.splitQuality(int($show.quality))
-                    <tr><td class="showLegend">Quality: </td><td>
-                #if $show.quality in $qualityPresets:
-                    <span class="quality $qualityPresetStrings[$show.quality]">$qualityPresetStrings[$show.quality]</span>
-                #else:
-                #if $anyQualities:
-                    <i>Initial:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])%> #if $bestQualities then " </br> " else ""#
-                #end if
-                #if $bestQualities:
-                    <i>Replace with:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%>
-                #end if
-                #end if
-
-                #if $show.network and $show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
-                #else if $show.network:
-                    <tr><td class="showLegend">Originally Airs: </td><td>$show.network</td></tr>
-                #else if $show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
-                #end if
-                    <tr><td class="showLegend">Show Status: </td><td>$show.status</td></tr>
-                    <tr><td class="showLegend">Default EP Status: </td><td>$statusStrings[$show.default_ep_status]</td></tr>
-                #if $showLoc[1]:
-                    <tr><td class="showLegend">Location: </td><td>$showLoc[0]</td></tr>
-                #else:
-                    <tr><td class="showLegend"><span style="color: red;">Location: </span></td><td><span style="color: red;">$showLoc[0]</span> (dir is missing)</td></tr>
-                #end if
-                    <tr><td class="showLegend">Scene Name:</td><td>#if $show.exceptions then $exceptions_string else $show.name#</td></tr>
-
-                #if $show.rls_require_words:
-                    <tr><td class="showLegend">Required Words: </td><td>#echo $show.rls_require_words#</td></tr>
-                #end if
-                #if $show.rls_ignore_words:
-                    <tr><td class="showLegend">Ignored Words: </td><td>#echo $show.rls_ignore_words#</td></tr>
-                #end if
-                #if $bwl and $bwl.whitelist:
-                    <tr>
-                        <td class="showLegend">Wanted Group#if len($bwl.whitelist)>1 then "s" else ""#:</td>
-                        <td>#echo ', '.join($bwl.whitelist)#</td>
-                    </tr>
-                #end if
-                #if $bwl and $bwl.blacklist:
-                    <tr>
-                        <td class="showLegend">Unwanted Group#if len($bwl.blacklist)>1 then "s" else ""#:</td>
-                        <td>#echo ', '.join($bwl.blacklist)#</td>
-                    </tr>
-                #end if
-
-                <tr><td class="showLegend">Size:</td><td>$sickbeard.helpers.pretty_filesize(sickbeard.helpers.get_size($showLoc[0]))</td></tr>
-
-                </table>
-
-                <table style="width:180px; float: right; vertical-align: middle; height: 100%;">
-                    #set $info_flag = $subtitles.fromietf($show.lang).opensubtitles if $show.lang else ''
-                    <tr><td class="showLegend">Info Language:</td><td><img src="$sbRoot/images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="$show.lang" title="$show.lang" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';"/></td></tr>
-                    #if $sickbeard.USE_SUBTITLES
-                    <tr><td class="showLegend">Subtitles: </td><td><img src="$sbRoot/images/#if $show.subtitles then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #end if
-                    <tr><td class="showLegend">Flat Folders: </td><td><img src="$sbRoot/images/#if $show.flatten_folders == 1 or $sickbeard.NAMING_FORCE_FOLDERS then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Paused: </td><td><img src="$sbRoot/images/#if int($show.paused) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Air-by-Date: </td><td><img src="$sbRoot/images/#if int($show.air_by_date) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Sports: </td><td><img src="$sbRoot/images/#if int($show.is_sports) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Anime: </td><td><img src="$sbRoot/images/#if int($show.is_anime) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">DVD Order: </td><td><img src="$sbRoot/images/#if int($show.dvdorder) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    <tr><td class="showLegend">Scene Numbering: </td><td><img src="$sbRoot/images/#if int($show.scene) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #if $anyQualities + $bestQualities
-                    <tr><td class="showLegend">Archive First Match: </td><td><img src="$sbRoot/images/#if int($show.archive_firstmatch) == 1 then "yes16.png\" alt=\"Y" else "no16.png\" alt=\"N"#" width="16" height="16" /></td></tr>
-                    #end if
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="pull-left" >
-        Change selected episodes to:</br>
-        <select id="statusSelect" class="form-control form-control-inline input-sm">
-            #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED, $FAILED] + sorted($Quality.DOWNLOADED):
-            #if $curStatus == $DOWNLOADED:
-            #continue
-            #end if
-            <option value="$curStatus">$statusStrings[$curStatus]</option>
-            #end for
-        </select>
-        <input type="hidden" id="showID" value="$show.indexerid" />
-        <input type="hidden" id="indexer" value="$show.indexer" />
-        <input class="btn btn-inline" type="button" id="changeStatus" value="Go" />
-    </div>
-
-    </br>
-
-    <div class="pull-right clearfix" id="checkboxControls">
-        <div style="padding-bottom: 5px;">
-            <label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> Wanted: <b>$epCounts[$Overview.WANTED]</b></span></label>
-            <label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> Low Quality: <b>$epCounts[$Overview.QUAL]</b></span></label>
-            <label for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> Downloaded: <b>$epCounts[$Overview.GOOD]</b></span></label>
-            <label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> Skipped: <b>$epCounts[$Overview.SKIPPED]</b></span></label>
-            <label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> Snatched: <b>$epCounts[$Overview.SNATCHED]</b></span></label>
-        </div>
-
-        <button id="popover" type="button" class="btn btn-xs">Select Columns</button>
-        <div class="pull-right" >
-            <button class="btn btn-xs seriesCheck">Select Filtered Episodes</button>
-            <button class="btn btn-xs clearAll">Clear All</button>
-        </div>
-    </div>
-<br />
-<br />
-<br />
-
-<table #if not $show.is_anime then "id=\"showTable\"" else "id=\"animeTable\""# class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
-#set $curSeason = -1
-#set $odd = 0
-    #for $epResult in $sqlResults:
-        #set $epStr = str($epResult["season"]) + "x" + str($epResult["episode"])
-        #if not $epStr in $epCats:
-            #continue
-        #end if
-        #if not $sickbeard.DISPLAY_SHOW_SPECIALS and int($epResult["season"]) == 0:
-            #continue
-        #end if
-        #set $scene = False
-        #set $scene_anime = False
-        #if not $show.air_by_date and not $show.is_sports and not $show.is_anime and $show.is_scene:
-            #set $scene = True
-        #elif not $show.air_by_date and not $show.is_sports and $show.is_anime and $show.is_scene:
-            #set $scene_anime = True
-        #end if
-        #set ($dfltSeas, $dfltEpis, $dfltAbsolute) = (0, 0, 0)
-        #if (epResult["season"], epResult["episode"]) in $xem_numbering:
-            #set ($dfltSeas, $dfltEpis) = $xem_numbering[(epResult["season"], epResult["episode"])]
-        #end if
-        #if epResult["absolute_number"] in $xem_absolute_numbering:
-            #set $dfltAbsolute = $xem_absolute_numbering[epResult["absolute_number"]]
-        #end if
-
-        #if epResult["absolute_number"] in $scene_absolute_numbering:
-            #set $scAbsolute = $scene_absolute_numbering[epResult["absolute_number"]]
-            #set $dfltAbsNumbering = False
-        #else
-            #set $scAbsolute = $dfltAbsolute
-            #set $dfltAbsNumbering = True
-        #end if
-
-        #if (epResult["season"], epResult["episode"]) in $scene_numbering:
-            #set ($scSeas, $scEpis) = $scene_numbering[(epResult["season"], epResult["episode"])]
-            #set $dfltEpNumbering = False
-        #else
-            #set ($scSeas, $scEpis) = ($dfltSeas, $dfltEpis)
-            #set $dfltEpNumbering = True
-        #end if
-
-        #set $epLoc = $epResult["location"]
-
-        #if int($epResult["season"]) != $curSeason:
-            #if $curSeason == -1:
-    <thead>
-        <tr class="seasoncols" style="display:none;">
-                <th data-sorter="false" data-priority="critical" class="col-checkbox"><input type="checkbox" class="seasonCheck"/></th>
-                <th data-sorter="false" class="col-metadata">NFO</th>
-                <th data-sorter="false" class="col-metadata">TBN</th>
-                <th data-sorter="false" class="col-ep">Episode</th>
-                <th data-sorter="false" #if not $show.is_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Absolute</th>
-                <th data-sorter="false" #if not $scene then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene</th>
-                <th data-sorter="false" #if not $scene_anime then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Scene Absolute</th>
-                <th data-sorter="false" class="col-name">Name</th>
-                <th data-sorter="false" class="col-name columnSelector-false">File Name</th>
-                <th data-sorter="false" class="col-ep columnSelector-false">Size</th>
-                <th data-sorter="false" class="col-airdate">Airdate</th>
-                <th data-sorter="false" #if not $sickbeard.DOWNLOAD_URL then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Download</th>
-                <th data-sorter="false" #if not $sickbeard.USE_SUBTITLES then "class=\"col-ep columnSelector-false\"" else "class=\"col-ep\""#>Subtitles</th>
-                <th data-sorter="false" class="col-status">Status</th>
-                <th data-sorter="false" class="col-search">Search</th>
-        </tr>
-    </thead>
-    <tbody class="tablesorter-no-sort">
-        <tr style="height: 60px;">
-            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
-                    <script type="text/javascript">
-                    <!--
-                        \$(function() {
-                            \$('#collapseSeason-$epResult['season']').on('hide.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').text('Show Episodes');
-                            })
-                            \$('#collapseSeason-$epResult['season']').on('show.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').text('Hide Episodes');
-                            })
-                        });
-                    //-->
-                    </script>
-                #end if
-            </th>
-        </tr>
-    </tbody>
-    <tbody class="tablesorter-no-sort">
-        <tr id="season-$epResult["season"]-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
-            <th class="col-metadata">NFO</th>
-            <th class="col-metadata">TBN</th>
-            <th class="col-ep">Episode</th>
-            <th class="col-ep">Absolute</th>
-            <th class="col-ep">Scene</th>
-            <th class="col-ep">Scene Absolute</th>
-            <th class="col-name">Name</th>
-            <th class="col-name">File Name</th>
-            <th class="col-ep">Size</th>
-            <th class="col-airdate">Airdate</th>
-            <th class="col-ep">Download</th>
-            <th class="col-ep">Subtitles</th>
-            <th class="col-status">Status</th>
-            <th class="col-search">Search</th>
-        </tr>
-            #else:
-    </tbody>
-    <tbody class="tablesorter-no-sort">
-        <tr style="height: 60px;">
-            <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
-                    <script type="text/javascript">
-                    <!--
-                        \$(function() {
-                            \$('#collapseSeason-$epResult['season']').on('hide.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').text('Show Episodes');
-                            })
-                            \$('#collapseSeason-$epResult['season']').on('show.bs.collapse', function () {
-                                \$('#showseason-$epResult['season']').text('Hide Episodes');
-                            })
-                        });
-                    //-->
-                    </script>
-                #end if
-            </th>
-        </tr>
-    </tbody>
-    <tbody class="tablesorter-no-sort">
-        <tr id="season-$epResult["season"]-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
-            <th class="col-metadata">NFO</th>
-            <th class="col-metadata">TBN</th>
-            <th class="col-ep">Episode</th>
-            <th class="col-ep">Absolute</th>
-            <th class="col-ep">Scene</th>
-            <th class="col-ep">Scene Absolute</th>
-            <th class="col-name">Name</th>
-            <th class="col-name">File Name</th>
-            <th class="col-ep">Size</th>
-            <th class="col-airdate">Airdate</th>
-            <th class="col-ep">Download</th>
-            <th class="col-ep">Subtitles</th>
-            <th class="col-status">Status</th>
-            <th class="col-search">Search</th>
-        </tr>
-            #end if
-    </tbody>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-    <tbody class="collapse#if $curSeason == -1 then ' in' else ''#" id="collapseSeason-$epResult['season']">
-                #else
-    <tbody>
-                #end if
-            #set $curSeason = int($epResult["season"])
-        #end if
-        #set $epLoc = $epResult["location"]
-        <tr class="$Overview.overviewStrings[$epCats[$epStr]] season-$curSeason seasonstyle">
-            <td class="col-checkbox">
-                #if int($epResult["status"]) != $UNAIRED
-                    <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
-                #end if
-            </td>
-            <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
-            <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
-            <td align="center">
-                #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
-                    #set $epLoc = $epLoc[len($show._location)+1:]
-                #elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
-                    #set $epLoc = $epLoc
-                #end if
-
-                #if $epLoc != "" and $epLoc != None:
-                    <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
-                #else
-                    $epResult["episode"]
-                #end if
-            </td>
-            <td align="center">$epResult["absolute_number"]</td>
-            <td align="center">
-                <input type="text" placeholder="<%=str(dfltSeas) + 'x' + str(dfltEpis)%>" size="6" maxlength="8"
-                    class="sceneSeasonXEpisode form-control input-scene" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
-                    id="sceneSeasonXEpisode_$show.indexerid<%="_"+str(epResult["season"])+"_"+str(epResult["episode"])%>"
-                    title="Change the value here if scene numbering differs from the indexer episode numbering"
-                    #if $dfltEpNumbering:
-                        value=""
-                    #else
-                        value="<%=str(scSeas) + 'x' + str(scEpis)%>"
-                    #end if
-                        style="padding: 0; text-align: center; max-width: 60px;" />
-            </td>
-            <td align="center">
-                <input type="text" placeholder="<%=str(dfltAbsolute)%>" size="6" maxlength="8"
-                    class="sceneAbsolute form-control input-scene" data-for-absolute="$epResult["absolute_number"]"
-                    id="sceneAbsolute_$show.indexerid<%="_"+str(epResult["absolute_number"])%>"
-                    title="Change the value here if scene absolute numbering differs from the indexer absolute numbering"
-                    #if $dfltAbsNumbering:
-                        value=""
-                    #else
-                        value="<%=str(scAbsolute)%>"
-                    #end if
-                        style="padding: 0; text-align: center; max-width: 60px;" />
-            </td>
-            <td class="col-name">
-            #if $epResult["description"] != "" and $epResult["description"] != None:
-                <img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_$show.indexerid<%="_" + str(epResult["season"]) + "_" + str(epResult["episode"])%>" />
-            #else:
-                <img src="$sbRoot/images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
-            #end if
-            $epResult["name"]
-            </td>
-            <td class="col-name]">
-                #if $epResult['location']
-                    #set $filename = $epResult['location']
-                    #for $rootDir in $sickbeard.ROOT_DIRS.split('|')
-                        #if not $rootDir.startswith('/')
-                            #set $filename = $filename.replace('\\','\\\\')
-                        #end if
-                        #set $filename = ntpath.basename($filename)
-                    #end for
-                    $filename
-                #end if
-            </td>
-            <td class="col-ep">
-                #if $epResult["file_size"]:
-                    #set $file_size = $sickbeard.helpers.pretty_filesize($epResult["file_size"])
-                    $file_size
-                #end if
-            </td>
-            <td class="col-airdate">
-                <span class="${fuzzydate}">#if int($epResult['airdate']) == 1 then 'never' else $sbdatetime.sbdatetime.sbfdate($sbdatetime.sbdatetime.convert_to_setting($network_timezones.parse_date_time($epResult['airdate'],$show.airs,$show.network)))#</span>
-            </td>
-            <td>
-                #if $sickbeard.DOWNLOAD_URL and $epResult['location']
-                    #if $epResult['location']
-                        #set $filename = $epResult['location']
-                        #for $rootDir in $sickbeard.ROOT_DIRS.split('|')
-                            #if $rootDir.startswith('/')
-                                #set $filename = $filename.replace($rootDir, "")
+                        <li id="NAVmanage" class="dropdown">
+                            <a href="$sbRoot/manage/" class="dropdown-toggle" data-toggle="dropdown">Manage <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="$sbRoot/manage/"><i class="menu-icon-manage"></i>&nbsp;Mass Update</a></li>
+                                <li><a href="$sbRoot/manage/backlogOverview/"><i class="menu-icon-backlog-view"></i>&nbsp;Backlog Overview</a></li>
+                                <li><a href="$sbRoot/manage/manageSearches/"><i class="menu-icon-manage-searches"></i>&nbsp;Manage Searches</a></li>
+                                <li><a href="$sbRoot/manage/episodeStatuses/"><i class="menu-icon-backlog"></i>&nbsp;Episode Status Management</a></li>
+                            #if $sickbeard.USE_PLEX and $sickbeard.PLEX_SERVER_HOST != "":
+                                <li><a href="$sbRoot/home/updatePLEX/"><i class="menu-icon-backlog-view"></i>&nbsp;Update PLEX</a></li>
                             #end if
-                        #end for
-                        #set $filename = $sickbeard.DOWNLOAD_URL + $urllib.quote($filename.encode('utf8'))
-                <center><a href="$filename">Download</a></center>
-                    #end if
-                #end if
-            </td>
-            <td class="col-subtitles" align="center">
-            #for $sub_lang in [$subtitles.fromietf(x) for x in $epResult["subtitles"].split(',') if $epResult["subtitles"]]:
-                #set $flag = $sub_lang.opensubtitles
-                <img src="$sbRoot/images/subtitles/flags/${flag}.png" width="16" height="11" alt="${sub_lang.name}" onError="this.onerror=null;this.src='$sbRoot/images/flags/unknown.png';" />
-            #end for
-            </td>
-            #set $curStatus, $curQuality = $Quality.splitCompositeStatus(int($epResult["status"]))
-                #if $curQuality != Quality.NONE:
-                    <td class="col-status">$statusStrings[$curStatus] <span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
-                #else:
-                    <td class="col-status">$statusStrings[$curStatus]</td>
-                #end if
-            <td class="col-search">
-                #if int($epResult["season"]) != 0:
-                    #if ( int($epResult["status"]) in $Quality.SNATCHED or int($epResult["status"]) in $Quality.DOWNLOADED ) and $sickbeard.USE_FAILED_DOWNLOADS:
-                        <a class="epRetry" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="retryEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
-                    #else:
-                        <a class="epSearch" id="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" name="#echo $str($show.indexerid)+'x'+$str(epResult["season"])+'x'+$str(epResult["episode"])#" href="searchEpisode?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/search16.png" width="16" height="16" alt="search" title="Manual Search" /></a>
-                    #end if
-                #end if
-                #if $sickbeard.USE_SUBTITLES and $show.subtitles and $epResult["location"] and frozenset($subtitles.wantedLanguages()).difference($epResult["subtitles"].split(',')):
-                    <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=$show.indexerid&amp;season=$epResult["season"]&amp;episode=$epResult["episode"]"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
-                #end if
-            </td>
-        </tr>
-    #end for
-    </tbody>
-</table>
+                            #if $sickbeard.USE_KODI and $sickbeard.KODI_HOST != "":
+                                <li><a href="$sbRoot/home/updateKODI/"><i class="menu-icon-kodi"></i>&nbsp;Update KODI</a></li>
+                            #end if
+                            #if $sickbeard.USE_TORRENTS and $sickbeard.TORRENT_METHOD != 'blackhole' \
+                            and ($sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'https' \
+                            or not $sickbeard.ENABLE_HTTPS and $sickbeard.TORRENT_HOST[:5] == 'http:'):
+                                <li><a href="$sbRoot/manage/manageTorrents/"><i class="menu-icon-bittorrent"></i>&nbsp;Manage Torrents</a></li>
+                            #end if
+                            #if $sickbeard.USE_FAILED_DOWNLOADS:
+                                <li><a href="$sbRoot/manage/failedDownloads/"><i class="menu-icon-failed-download"></i>&nbsp;Failed Downloads</a></li>
+                            #end if
+                            #if $sickbeard.USE_SUBTITLES:
+                                <li><a href="$sbRoot/manage/subtitleMissed/"><i class="menu-icon-backlog"></i>&nbsp;Missed Subtitle Management</a></li>
+                            #end if
+                            </ul>
+                        </li>
 
-<!--Begin - Bootstrap Modal-->
+                        <li id="NAVerrorlogs" class="dropdown">
+                            <a href="$sbRoot/errorlogs/" class="dropdown-toggle" data-toggle="dropdown">$logPageTitle <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="$sbRoot/errorlogs/"><i class="menu-icon-viewlog-errors"></i>&nbsp;View Log (Errors)</a></li>
+                                <li><a href="$sbRoot/errorlogs/viewlog/"><i class="menu-icon-viewlog"></i>&nbsp;View Log</a></li>
+                            </ul>
+                        </li>
 
-<div id="manualSearchModalFailed" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Manual Search</h4>
-            </div>
-            <div class="modal-body">
-                <p>Do you want to mark this episode as failed?</p>
-                <p class="text-warning"><small>The episode release name will be added to the failed history, preventing it to be downloaded again.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
-            </div>
+                        <li id="NAVconfig" class="dropdown">
+                            <a href="$sbRoot/config/" class="dropdown-toggle" data-toggle="dropdown"><img src="$sbRoot/images/menu/system18.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="$sbRoot/config/"><i class="menu-icon-help"></i>&nbsp;Help &amp; Info</a></li>
+                                <li><a href="$sbRoot/config/general/"><i class="menu-icon-config"></i>&nbsp;General</a></li>
+                                <li><a href="$sbRoot/config/backuprestore/"><i class="menu-icon-config"></i>&nbsp;Backup &amp; Restore</a></li>
+                                <li><a href="$sbRoot/config/search/"><i class="menu-icon-config"></i>&nbsp;Search Settings</a></li>
+                                <li><a href="$sbRoot/config/providers/"><i class="menu-icon-config"></i>&nbsp;Search Providers</a></li>
+                                <li><a href="$sbRoot/config/subtitles/"><i class="menu-icon-config"></i>&nbsp;Subtitles Settings</a></li>
+                                <li><a href="$sbRoot/config/postProcessing/"><i class="menu-icon-config"></i>&nbsp;Post Processing</a></li>
+                                <li><a href="$sbRoot/config/notifications/"><i class="menu-icon-config"></i>&nbsp;Notifications</a></li>
+                                <li><a href="$sbRoot/config/anime/"><i class="menu-icon-config"></i>&nbsp;Anime</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="$sbRoot/images/menu/system18-2.png" class="navbaricon hidden-xs" /><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="$sbRoot/home/updateCheck?pid=$sbPID"><i class="menu-icon-update"></i>&nbsp;Check For Updates</a></li>
+                                <li><a href="$sbRoot/changes"><i class="menu-icon-help"></i>&nbsp;Changelog</a></li>
+                                <li><a href="$sbRoot/home/restart/?pid=$sbPID" class="confirm restart"><i class="menu-icon-restart"></i>&nbsp;Restart</a></li>
+                                <li><a href="$sbRoot/home/shutdown/?pid=$sbPID" class="confirm shutdown"><i class="menu-icon-shutdown"></i>&nbsp;Shutdown</a></li>
+                                <li><a href="$sbRoot/logout" class="confirm logout"><i class="menu-icon-shutdown"></i>&nbsp;Logout</a></li>
+                                <li><a href="$sbRoot/home/status/"><i class="menu-icon-help"></i>&nbsp;Server Status</a></li>
+                            </ul>
+                        </li>
+                        <li id="donate"><a href="https://github.com/SiCKRAGETV/SickRage/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><img src="$sbRoot/images/donate.jpg" alt="[donate]" class="navbaricon hidden-xs" /></a></li>
+                    </ul>
+            #end if
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        #if $varExists('submenu'):
+        <div id="SubMenu">
+        <span>
+        #set $first = True
+        #for $menuItem in $submenu:
+            #if 'requires' not in $menuItem or $menuItem.requires():
+                  #if type($menuItem.path) == dict:
+                      #if $first then "" else "</span><span>"#<b>$menuItem.title</b>
+                      #set $first = False
+                      #set $inner_first = True
+                      #for $cur_link in $menuItem.path:
+                          #if $inner_first then "" else "&middot; "#<a class="inner" href="$sbRoot/$menuItem.path[$cur_link]">$cur_link</a>
+                          #set $inner_first = False
+                      #end for
+                  #else
+                      #if $first then "" else ""#<a href="$sbRoot/$menuItem.path" #if 'confirm' in $menuItem then "class=\"confirm\"" else "" #>$menuItem.title</a>
+                      #set $first = False
+                  #end if
+            #end if
+        #end for
+        </span>
         </div>
-    </div>
-</div>
+        #end if
 
-<div id="manualSearchModalQuality" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Manual Search</h4>
-            </div>
-            <div class="modal-body">
-                <p>Do you want to include the current episode quality in the search?</p>
-                <p class="text-warning"><small>Choosing No will ignore any releases with the same episode quality as the one currently downloaded/snatched.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
-            </div>
+          #if $sickbeard.BRANCH and $sickbeard.BRANCH != 'master' and not $sickbeard.DEVELOPER and $sbLogin
+        <div class="alert alert-danger upgrade-notification" role="alert">
+            <span>You're using the $sickbeard.BRANCH branch. Please use 'master' unless specifically asked</span>
         </div>
-    </div>
-</div>
+        #end if
 
-<!--End - Bootstrap Modal-->
+        #if $sickbeard.NEWEST_VERSION_STRING and $sbLogin
+        <div class="alert alert-success upgrade-notification" role="alert">
+            <span>$sickbeard.NEWEST_VERSION_STRING</span>
+        </div>
+        #end if
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+<div id="contentWrapper">
+    <div id="content">

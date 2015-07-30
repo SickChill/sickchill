@@ -1,18 +1,19 @@
-#import sickbeard
-#import os.path
-#import datetime
-#import re
-#from sickbeard import providers
-#from sickbeard.providers import generic
-#from sickbeard.common import *
-#set global $header="Failed Downloads"
-#set global $title="Failed Downloads"
+<%!
+    import sickbeard
+    import os.path
+    import datetime
+    import re
+    from sickbeard import providers
+    from sickbeard.providers import generic
+    from sickbeard.common import *
+    global header="Failed Downloads"
+    global title="Failed Downloads"
 
-#set global $sbPath=".."
+    global sbPath=".."
 
-#set global $topmenu="manage"#
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
+    global topmenu="manage"#
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
 <script type="text/javascript">
 <!--
 \$(document).ready(function()
@@ -29,13 +30,13 @@
 });
 //-->
 </script>
-<script type="text/javascript" src="$sbRoot/js/failedDownloads.js?$sbPID"></script>
+<script type="text/javascript" src="${sbRoot}/js/failedDownloads.js?${sbPID}"></script>
 
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
 
 <div class="h2footer pull-right"><b>Limit:</b>
     <select name="limit" id="limit" class="form-control form-control-inline input-sm">
@@ -53,7 +54,7 @@
       <th width="10%">Size</th>
       <th width="14%">Provider</th>
       <th width="1%">Remove<br />
-        <input type="checkbox" class="bulkCheck" id="removeCheck" />
+          <input type="checkbox" class="bulkCheck" id="removeCheck" />
       </th>
     </tr>
   </thead>
@@ -63,29 +64,29 @@
     </tr>
   </tfoot>
   <tbody>
-#for $hItem in $failedResults:
-#set $curRemove  = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+$hItem["release"]+"\" />"
+% for hItem in failedResults:
+% curRemove  = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-"+hItem["release"]+"\" />"
   <tr>
-    <td class="nowrap">$hItem["release"]</td>
+    <td class="nowrap">${hItem["release"]}</td>
     <td align="center">
-    #if $hItem["size"] != -1
-        $hItem["size"]
-    #else
+    % if hItem["size"] != -1
+        ${hItem["size"]}
+    % else
         ?
-    #end if
+    % endif
     </td>
-       <td align="center">
-    #set $provider = $providers.getProviderClass($generic.GenericProvider.makeID($hItem["provider"]))
-    #if $provider != None:
-        <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" alt="$provider.name" title="$provider.name"/>
-    #else:
-        <img src="$sbRoot/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
-    #end if
+    <td align="center">
+    % provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"]))
+    % if provider != None:
+        <img src="${sbRoot}/images/providers/<%=provider.imageName()%>" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
+    % else:
+        <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" alt="missing provider" title="missing provider"/>
+    % endif
     </td>
-    <td align="center">$curRemove</td>
+    <td align="center">${curRemove}</td>
   </tr>
-#end for
+% endfor
   </tbody>
 </table>
 
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")

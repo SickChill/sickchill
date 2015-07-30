@@ -1,48 +1,49 @@
-#import sickbeard
-#from sickbeard.providers.generic import GenericProvider
-#from sickbeard.providers import thepiratebay
-#from sickbeard.helpers import anon_url
+<%!
+    import sickbeard
+    from sickbeard.providers.generic import GenericProvider
+    from sickbeard.providers import thepiratebay
+    from sickbeard.helpers import anon_url
 
-#set global $title="Config - Providers"
-#set global $header="Search Providers"
+    global title="Config - Providers"
+    global header="Search Providers"
 
-#set global $sbPath="../.."
+    global sbPath="../.."
 
-#set global $topmenu="config"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-
-#if $varExists('header')
-    <h1 class="header">$header</h1>
-#else
-    <h1 class="title">$title</h1>
-#end if
-<script type="text/javascript" src="$sbRoot/js/configProviders.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/config.js?$sbPID"></script>
-#if $sickbeard.USE_NZBS
+    global topmenu="config"
+    import os.path
+    include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+%>
+% if not header is UNDEFINED:
+    <h1 class="header">${header}</h1>
+% else
+    <h1 class="title">${title}</h1>
+% endif
+<script type="text/javascript" src="${sbRoot}/js/configProviders.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/config.js?${sbPID}"></script>
+% if sickbeard.USE_NZBS
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
-var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
-#for $curNewznabProvider in $sickbeard.newznabProviderList:
+var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
+% for curNewznabProvider in sickbeard.newznabProviderList:
 \$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
-#end for
+% endfor
 });
 //-->
 </script>
-#end if
+% endif
 
-#if $sickbeard.USE_TORRENTS
+% if sickbeard.USE_TORRENTS
 <script type="text/javascript" charset="utf-8">
 <!--
 \$(document).ready(function(){
-#for $curTorrentRssProvider in $sickbeard.torrentRssProviderList:
+% for curTorrentRssProvider in sickbeard.torrentRssProviderList:
     \$(this).addTorrentRssProvider('$curTorrentRssProvider.getID()', '$curTorrentRssProvider.name', '$curTorrentRssProvider.url', '$curTorrentRssProvider.cookies', '$curTorrentRssProvider.titleTAG');
-#end for
+% endfor
 });
 //-->
 </script>
-#end if
+% endif
 
 <div id="config">
     <div id="config-content">
@@ -53,12 +54,12 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                 <ul>
                     <li><a href="#core-component-group1">Provider Priorities</a></li>
                     <li><a href="#core-component-group2">Provider Options</a></li>
-                  #if $sickbeard.USE_NZBS
+                  % if sickbeard.USE_NZBS
                     <li><a href="#core-component-group3">Configure Custom Newznab Providers</a></li>
-                  #end if
-                  #if $sickbeard.USE_TORRENTS
+                  % endif
+                  % if sickbeard.USE_TORRENTS
                     <li><a href="#core-component-group4">Configure Custom Torrent Providers</a></li>
-                  #end if
+                  % endif
                 </ul>
 
                 <div id="core-component-group1" class="component-group" style='min-height: 550px;'>
@@ -68,11 +69,11 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                         <p>Check off and drag the providers into the order you want them to be used.</p>
                         <p>At least one provider is required but two are recommended.</p>
 
-                        #if not $sickbeard.USE_NZBS or not $sickbeard.USE_TORRENTS:
-                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="$sbRoot/config/search">Search Settings</a></b></blockquote>
-                        #else:
+                        % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
+                        <blockquote style="margin: 20px 0;">NZB/Torrent providers can be toggled in <b><a href="${sbRoot}/config/search">Search Settings</a></b></blockquote>
+                        % else:
                         <br/>
-                        #end if
+                        % endif
 
                         <div>
                             <p class="note">* Provider does not support backlog searches at this time.</p>
@@ -83,19 +84,19 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                     <fieldset class="component-group-list">
                         <ul id="provider_order_list">
-                        #for $curProvider in $sickbeard.providers.sortedProviderList():
-                            #if $curProvider.providerType == $GenericProvider.NZB and not $sickbeard.USE_NZBS:
-                                #continue
-                            #elif $curProvider.providerType == $GenericProvider.TORRENT and not $sickbeard.USE_TORRENTS:
-                                #continue
-                            #end if
-                            #set $curName = $curProvider.getID()
+                        % for curProvider in sickbeard.providers.sortedProviderList():
+                            % if curProvider.providerType == GenericProvider.NZB and not sickbeard.USE_NZBS:
+                                % continue
+                            % elif curProvider.providerType == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
+                                % continue
+                            % endif
+                            % curName = curProvider.getID()
                           <li class="ui-state-default" id="$curName">
-                            <input type="checkbox" id="enable_$curName" class="provider_enabler" #if $curProvider.isEnabled() then "checked=\"checked\"" else ""#/>
+                            <input type="checkbox" id="enable_$curName" class="provider_enabler" % if curProvider.isEnabled() then "checked=\"checked\"" else ""#/>
                             <a href="<%= anon_url(curProvider.url) %>" class="imgLink" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><img src="$sbRoot/images/providers/$curProvider.imageName()" alt="$curProvider.name" title="$curProvider.name" width="16" height="16" style="vertical-align:middle;"/></a>
                             <span style="vertical-align:middle;">$curProvider.name</span>
-                            #if not $curProvider.supportsBacklog then "*" else ""#
-                            #if $curProvider.name == "EZRSS" then "**" else ""#
+                            % if not curProvider.supportsBacklog then "*" else ""
+                            % if $curProvider.name == "EZRSS" then "**" else ""
                             <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
                           </li>
                         #end for
@@ -118,39 +119,40 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label for="editAProvider" id="provider-list">
                                 <span class="component-title">Configure provider:</span>
                                 <span class="component-desc">
-                                    #set $provider_config_list = []
-                                    #for $curProvider in $sickbeard.providers.sortedProviderList():
-                                        #if $curProvider.providerType == $GenericProvider.NZB and (not $sickbeard.USE_NZBS or not $curProvider.isEnabled()):
-                                         #continue
-                                        #elif $curProvider.providerType == $GenericProvider.TORRENT and ( not $sickbeard.USE_TORRENTS or not $curProvider.isEnabled()):
-                                         #continue
-                                        #end if
-                                        $provider_config_list.append($curProvider)
-                                    #end for
-
-                                    #if $provider_config_list:
-                                    <select id="editAProvider" class="form-control input-sm">
-                                        #for $cur_provider in $provider_config_list:
-                                            <option value="$cur_provider.getID()">$cur_provider.name</option>
-                                        #end for
-                                    </select>
-                                    #else:
-                                    No providers available to configure.
-                                    #end if
+                                    <%
+                                        provider_config_list = []
+                                        for curProvider in sickbeard.providers.sortedProviderList():
+                                            if curProvider.providerType == GenericProvider.NZB and (not sickbeard.USE_NZBS or not curProvider.isEnabled()):
+                                                continue
+                                            elif curProvider.providerType == GenericProvider.TORRENT and ( not sickbeard.USE_TORRENTS or not curProvider.isEnabled()):
+                                                continue
+                                            endif
+                                            provider_config_list.append(curProvider)
+                                        endfor
+                                    %>
+                                    % if provider_config_list:
+                                        <select id="editAProvider" class="form-control input-sm">
+                                            % for cur_provider in provider_config_list:
+                                                <option value="${cur_provider.getID()}">${cur_provider.name}</option>
+                                            % endfor
+                                        </select>
+                                    % else:
+                                        No providers available to configure.
+                                    % endif
                                 </span>
                             </label>
                         </div>
 
 
                     <!-- start div for editing providers //-->
-                    #for $curNewznabProvider in [$curProvider for $curProvider in $sickbeard.newznabProviderList]:
+                    % for curNewznabProvider in [curProvider for curProvider in sickbeard.newznabProviderList]:
                     <div class="providerDiv" id="${curNewznabProvider.getID()}Div">
-                        #if $curNewznabProvider.default and $curNewznabProvider.needs_auth
+                        % if curNewznabProvider.default and curNewznabProvider.needs_auth
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_url">
                                 <span class="component-title">URL:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_url" value="$curNewznabProvider.url" class="form-control input-sm input350" disabled/>
+                                    <input type="text" id="${curNewznabProvider.getID()}_url" value="${curNewznabProvider.url}" class="form-control input-sm input350" disabled/>
                                 </span>
                             </label>
                         </div>
@@ -158,49 +160,49 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label for="${curNewznabProvider.getID()}_hash">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" id="${curNewznabProvider.getID()}_hash" value="$curNewznabProvider.key" newznab_name="${curNewznabProvider.getID()}_hash" class="newznab_key form-control input-sm input350" />
+                                    <input type="text" id="${curNewznabProvider.getID()}_hash" value="${curNewznabProvider.key}" newznab_name="${curNewznabProvider.getID()}_hash" class="newznab_key form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNewznabProvider, 'enable_daily'):
+                        % if hasattr(curNewznabProvider, 'enable_daily'):
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" #if $curNewznabProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_daily" id="${curNewznabProvider.getID()}_enable_daily" % if curNewznabProvider.enable_daily then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNewznabProvider, 'enable_backlog'):
+                        % if hasattr(curNewznabProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" #if $curNewznabProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_enable_backlog" id="${curNewznabProvider.getID()}_enable_backlog" % if curNewznabProvider.enable_backlog then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNewznabProvider, 'search_fallback'):
+                        % if hasattr(curNewznabProvider, 'search_fallback'):
                         <div class="field-pair">
                             <label for="${curNewznabProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" #if $curNewznabProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNewznabProvider.getID()}_search_fallback" id="${curNewznabProvider.getID()}_search_fallback" % if curNewznabProvider.search_fallback then "checked=\"checked\"" else ""#/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNewznabProvider, 'search_mode'):
+                        % if $hasattr(curNewznabProvider, 'search_mode'):
                         <div class="field-pair">
                             <label>
                                 <span class="component-title">Season search mode</span>
@@ -211,83 +213,83 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" #if $curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_sponly" value="sponly" % if curNewznabProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" #if $curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
+                                    <input type="radio" name="${curNewznabProvider.getID()}_search_mode" id="${curNewznabProvider.getID()}_search_mode_eponly" value="eponly" % if curNewznabProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
                     </div>
-                    #end for
+                    % endfor
 
-                    #for $curNzbProvider in [$curProvider for $curProvider in $sickbeard.providers.sortedProviderList() if $curProvider.providerType == $GenericProvider.NZB and $curProvider not in $sickbeard.newznabProviderList]:
+                    % for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.NZB and curProvider not in sickbeard.newznabProviderList]:
                     <div class="providerDiv" id="${curNzbProvider.getID()}Div">
-                        #if $hasattr($curNzbProvider, 'username'):
+                        % if hasattr(curNzbProvider, 'username'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_username" value="$curNzbProvider.username" class="form-control input-sm input350" />
+                                    <input type="text" name="${curNzbProvider.getID()}_username" value="${curNzbProvider.username}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNzbProvider, 'api_key'):
+                        % if hasattr(curNzbProvider, 'api_key'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_api_key">
                                 <span class="component-title">API key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curNzbProvider.getID()}_api_key" value="$curNzbProvider.api_key" class="form-control input-sm input350" />
+                                    <input type="text" name="${curNzbProvider.getID()}_api_key" value="${curNzbProvider.api_key}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
 
-                        #if $hasattr($curNzbProvider, 'enable_daily'):
+                        % if hasattr(curNzbProvider, 'enable_daily'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" #if $curNzbProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_daily" id="${curNzbProvider.getID()}_enable_daily" % if curNzbProvider.enable_daily then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNzbProvider, 'enable_backlog'):
+                        % if hasattr(curNzbProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" #if $curNzbProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_enable_backlog" id="${curNzbProvider.getID()}_enable_backlog" % if curNzbProvider.enable_backlog then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNzbProvider, 'search_fallback'):
+                        % if hasattr(curNzbProvider, 'search_fallback'):
                         <div class="field-pair">
                             <label for="${curNzbProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" #if $curNzbProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curNzbProvider.getID()}_search_fallback" id="${curNzbProvider.getID()}_search_fallback" % if curNzbProvider.search_fallback then "checked=\"checked\"" else ""#/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curNzbProvider, 'search_mode'):
+                        % if hasattr(curNzbProvider, 'search_mode'):
                         <div class="field-pair">
                             <label>
                                 <span class="component-title">Season search mode</span>
@@ -298,95 +300,95 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" #if $curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_sponly" value="sponly" % if curNzbProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" #if $curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
+                                    <input type="radio" name="${curNzbProvider.getID()}_search_mode" id="${curNzbProvider.getID()}_search_mode_eponly" value="eponly" % if curNzbProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
                     </div>
-                    #end for
+                    % endfor
 
-                    #for $curTorrentProvider in [$curProvider for $curProvider in $sickbeard.providers.sortedProviderList() if $curProvider.providerType == $GenericProvider.TORRENT]:
+                    % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.providerType == GenericProvider.TORRENT]:
                     <div class="providerDiv" id="${curTorrentProvider.getID()}Div">
-                        #if $hasattr($curTorrentProvider, 'api_key'):
+                        % if hasattr(curTorrentProvider, 'api_key'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_api_key">
                                 <span class="component-title">Api key:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="$curTorrentProvider.api_key" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_api_key" id="${curTorrentProvider.getID()}_api_key" value="${curTorrentProvider.api_key}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'digest'):
+                        % if hasattr(curTorrentProvider, 'digest'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_digest">
                                 <span class="component-title">Digest:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="$curTorrentProvider.digest" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_digest" id="${curTorrentProvider.getID()}_digest" value="${curTorrentProvider.digest}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'hash'):
+                        % if hasattr(curTorrentProvider, 'hash'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_hash">
                                 <span class="component-title">Hash:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="$curTorrentProvider.hash" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_hash" id="${curTorrentProvider.getID()}_hash" value="${curTorrentProvider.hash}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'username'):
+                        % if hasattr(curTorrentProvider, 'username'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_username">
                                 <span class="component-title">Username:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="$curTorrentProvider.username" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_username" id="${curTorrentProvider.getID()}_username" value="${curTorrentProvider.username}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'password'):
+                        % if hasattr(curTorrentProvider, 'password'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_password">
                                 <span class="component-title">Password:</span>
                                 <span class="component-desc">
-                                    <input type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="$curTorrentProvider.password" class="form-control input-sm input350" />
+                                    <input type="password" name="${curTorrentProvider.getID()}_password" id="${curTorrentProvider.getID()}_password" value="${curTorrentProvider.password}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'passkey'):
+                        % if hasattr(curTorrentProvider, 'passkey'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_passkey">
                                 <span class="component-title">Passkey:</span>
                                 <span class="component-desc">
-                                    <input type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="$curTorrentProvider.passkey" class="form-control input-sm input350" />
+                                    <input type="text" name="${curTorrentProvider.getID()}_passkey" id="${curTorrentProvider.getID()}_passkey" value="${curTorrentProvider.passkey}" class="form-control input-sm input350" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'ratio'):
+                        % if hasattr(curTorrentProvider, 'ratio'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_ratio">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_ratio_desc">Seed ratio:</span>
                                 <span class="component-desc">
-                                    <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="$curTorrentProvider.ratio" class="form-control input-sm input75" />
+                                    <input type="number" step="0.1" name="${curTorrentProvider.getID()}_ratio" id="${curTorrentProvider.getID()}_ratio" value="${curTorrentProvider.ratio}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                             <label>
@@ -396,145 +398,145 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'minseed'):
+                        % if hasattr(curTorrentProvider, 'minseed'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_minseed">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minseed_desc">Minimum seeders:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="$curTorrentProvider.minseed" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.getID()}_minseed" id="${curTorrentProvider.getID()}_minseed" value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'minleech'):
+                        % if hasattr(curTorrentProvider, 'minleech'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_minleech">
                                 <span class="component-title" id="${curTorrentProvider.getID()}_minleech_desc">Minimum leechers:</span>
                                 <span class="component-desc">
-                                    <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="$curTorrentProvider.minleech" class="form-control input-sm input75" />
+                                    <input type="number" name="${curTorrentProvider.getID()}_minleech" id="${curTorrentProvider.getID()}_minleech" value="${curTorrentProvider.minleech}" class="form-control input-sm input75" />
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'confirmed'):
+                        % if hasattr(curTorrentProvider, 'confirmed'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_confirmed">
                                 <span class="component-title">Confirmed download</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" #if $curTorrentProvider.confirmed then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_confirmed" id="${curTorrentProvider.getID()}_confirmed" % if curTorrentProvider.confirmed then "checked=\"checked\"" else ""#/>
                                     <p>only download torrents from trusted or verified uploaders ?</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'ranked'):
+                        % if hasattr(curTorrentProvider, 'ranked'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_ranked">
                                 <span class="component-title">Ranked torrents</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" #if $curTorrentProvider.ranked then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_ranked" id="${curTorrentProvider.getID()}_ranked" % if curTorrentProvider.ranked then "checked=\"checked\"" else ""#/>
                                     <p>only download ranked torrents (internal releases)</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'sorting'):
+                        % if hasattr(curTorrentProvider, 'sorting'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_sorting">
                                 <span class="component-title">Sorting results by</span>
                                 <span class="component-desc">
                                     <select name="${curTorrentProvider.getID()}_sorting" id="${curTorrentProvider.getID()}_sorting" class="form-control input-sm">
-#for $curAction in ('last', 'seeders', 'leechers'):
-    <option value="$curAction" #if $curAction == $curTorrentProvider.sorting then ' selected="selected"' else ''#>$curAction</option>
-#end for
+% for curAction in ('last', 'seeders', 'leechers'):
+    <option value="${curAction}" % if curAction == $curTorrentProvider.sorting then ' selected="selected"' else ''#>${curAction}</option>
+% endfor
                                     </select>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'proxy'):
+                        % if hasattr(curTorrentProvider, 'proxy'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_proxy">
                                 <span class="component-title">Access provider via proxy</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" #if $curTorrentProvider.proxy.enabled then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" class="enabler" name="${curTorrentProvider.getID()}_proxy" id="${curTorrentProvider.getID()}_proxy" % if curTorrentProvider.proxy.enabled then "checked=\"checked\"" else ""#/>
                                     <p>to bypass country blocking mechanisms</p>
                                 </span>
                             </label>
                         </div>
 
-                        #if $hasattr($curTorrentProvider.proxy, 'url'):
+                        % if hasattr(curTorrentProvider.proxy, 'url'):
                         <div class="field-pair content_${curTorrentProvider.getID()}_proxy" id="content_${curTorrentProvider.getID()}_proxy">
                             <label for="${curTorrentProvider.getID()}_proxy_url">
                                 <span class="component-title">Proxy URL:</span>
                                 <span class="component-desc">
                                   <select name="${curTorrentProvider.getID()}_proxy_url" id="${curTorrentProvider.getID()}_proxy_url" class="form-control input-sm">
-                                    #for $i in $curTorrentProvider.proxy.urls.keys():
-                                    <option value="$curTorrentProvider.proxy.urls[$i]" #if $curTorrentProvider.proxy.urls[$i] == $curTorrentProvider.proxy.url then "selected=\"selected\"" else ""#>$i</option>
-                                    #end for
+                                    % for i in curTorrentProvider.proxy.urls.keys():
+                                    <option value="${curTorrentProvider.proxy.urls[i]}" % if curTorrentProvider.proxy.urls[$i] == $curTorrentProvider.proxy.url then "selected=\"selected\"" else ""#>$i</option>
+                                    % endfor
                                     </select>
                                 </span>
                             </label>
                         </div>
-                        #end if
-                        #end if
+                        % endif
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'freeleech'):
+                        % if hasattr(curTorrentProvider, 'freeleech'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_freeleech">
                                 <span class="component-title">Freeleech</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" #if $curTorrentProvider.freeleech then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_freeleech" id="${curTorrentProvider.getID()}_freeleech" % if curTorrentProvider.freeleech then "checked=\"checked\"" else ""#/>
                                     <p>only download <b>[FreeLeech]</b> torrents.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'enable_daily'):
+                        % if hasattr(curTorrentProvider, 'enable_daily'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_enable_daily">
                                 <span class="component-title">Enable daily searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" #if $curTorrentProvider.enable_daily then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_daily" id="${curTorrentProvider.getID()}_enable_daily" % if curTorrentProvider.enable_daily then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform daily searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'enable_backlog'):
+                        % if hasattr(curTorrentProvider, 'enable_backlog'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_enable_backlog">
                                 <span class="component-title">Enable backlog searches</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" #if $curTorrentProvider.enable_backlog then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_enable_backlog" id="${curTorrentProvider.getID()}_enable_backlog" % if curTorrentProvider.enable_backlog then "checked=\"checked\"" else ""#/>
                                     <p>enable provider to perform backlog searches.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'search_fallback'):
+                        % if hasattr(curTorrentProvider, 'search_fallback'):
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_search_fallback">
                                 <span class="component-title">Season search fallback</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" #if $curTorrentProvider.search_fallback then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_search_fallback" id="${curTorrentProvider.getID()}_search_fallback" % if curTorrentProvider.search_fallback then "checked=\"checked\"" else ""#/>
                                     <p>when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'search_mode'):
+                        % if hasattr(curTorrentProvider, 'search_mode'):
                         <div class="field-pair">
                             <label>
                                 <span class="component-title">Season search mode</span>
@@ -545,47 +547,47 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" #if $curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_sponly" value="sponly" % if curTorrentProvider.search_mode=="sponly" then "checked=\"checked\"" else ""# />season packs only.
                                 </span>
                             </label>
                             <label>
                                 <span class="component-title"></span>
                                 <span class="component-desc">
-                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" #if $curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
+                                    <input type="radio" name="${curTorrentProvider.getID()}_search_mode" id="${curTorrentProvider.getID()}_search_mode_eponly" value="eponly" % if curTorrentProvider.search_mode=="eponly" then "checked=\"checked\"" else ""# />episodes only.
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'cat') and $curTorrentProvider.getID() == 'tntvillage':
+                        % if hasattr(curTorrentProvider, 'cat') and curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_cat">
                                 <span class="component-title">Category:</span>
                                 <span class="component-desc">
                                     <select name="${curTorrentProvider.getID()}_cat" id="${curTorrentProvider.getID()}_cat" class="form-control input-sm">
                                         #for $i in $curTorrentProvider.category_dict.keys():
-                                        <option value="$curTorrentProvider.category_dict[$i]" #if $curTorrentProvider.category_dict[$i] == $curTorrentProvider.cat then "selected=\"selected\"" else ""#>$i</option>
+                                        <option value="$curTorrentProvider.category_dict[$i]" % if curTorrentProvider.category_dict[$i] == $curTorrentProvider.cat then "selected=\"selected\"" else ""#>$i</option>
                                         #end for
                                     </select>
                                 </span>
                            </label>
                         </div>
-                        #end if
+                        % endif
 
-                        #if $hasattr($curTorrentProvider, 'subtitle') and $curTorrentProvider.getID() == 'tntvillage':
+                        % if hasattr(curTorrentProvider, 'subtitle') and curTorrentProvider.getID() == 'tntvillage':
                         <div class="field-pair">
                             <label for="${curTorrentProvider.getID()}_subtitle">
                                 <span class="component-title">Subtitled</span>
                                 <span class="component-desc">
-                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" #if $curTorrentProvider.subtitle then "checked=\"checked\"" else ""#/>
+                                    <input type="checkbox" name="${curTorrentProvider.getID()}_subtitle" id="${curTorrentProvider.getID()}_subtitle" % if curTorrentProvider.subtitle then "checked=\"checked\"" else ""#/>
                                     <p>select torrent with Italian subtitle</p>
                                 </span>
                             </label>
                         </div>
-                        #end if
+                        % endif
 
                     </div>
-                    #end for
+                    % endfor
 
 
                     <!-- end div for editing providers -->
@@ -595,7 +597,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                     </fieldset>
                 </div><!-- /component-group2 //-->
 
-                #if $sickbeard.USE_NZBS
+                % if sickbeard.USE_NZBS
                 <div id="core-component-group3" class="component-group">
 
                     <div class="component-group-desc">
@@ -668,9 +670,9 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
 
                     </fieldset>
                 </div><!-- /component-group3 //-->
-                #end if
+                % endif
 
-                #if $sickbeard.USE_TORRENTS:
+                % if sickbeard.USE_TORRENTS:
 
                 <div id="core-component-group4" class="component-group">
 
@@ -734,7 +736,7 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
                     </div>
                 </fieldset>
             </div><!-- /component-group4 //-->
-            #end if
+            % endif
 
             <br/><input type="submit" class="btn config_submitter_refresh" value="Save Changes" /><br/>
 
@@ -749,4 +751,4 @@ var show_nzb_providers = #if $sickbeard.USE_NZBS then "true" else "false"#;
     jQuery('#config-components').tabs();
 //-->
 </script>
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")

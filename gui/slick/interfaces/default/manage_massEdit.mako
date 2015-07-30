@@ -1,40 +1,41 @@
-#import sickbeard
-#from sickbeard import common
-#from sickbeard.common import *
-#from sickbeard import exceptions
-#set global $title="Mass Edit"
-#set global $header="Mass Edit"
+<%!
+    import sickbeard
+    from sickbeard import common
+    from sickbeard.common import *
+    from sickbeard import exceptions
 
-#set global $sbPath=".."
+    global $title="Mass Edit"
+    global $header="Mass Edit"
+    global $sbPath=".."
+    global $topmenu="manage"#
 
-#set global $topmenu="manage"#
-#import os.path
-#include $os.path.join($sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
-#if $quality_value != None:
-#set $initial_quality = int($quality_value)
-#else:
-#set $initial_quality = $common.SD
-#end if
-#set $anyQualities, $bestQualities = $common.Quality.splitQuality($initial_quality)
-<script type="text/javascript" src="$sbRoot/js/qualityChooser.js?$sbPID"></script>
-<script type="text/javascript" src="$sbRoot/js/massEdit.js?$sbPID"></script>
+    import os.path
+    include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
+    if quality_value != None:
+        initial_quality = int(quality_value)
+    else:
+        initial_quality = common.SD
+    endif
+    anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
+%>
+<script type="text/javascript" src="${sbRoot}/js/qualityChooser.js?${sbPID}"></script>
+<script type="text/javascript" src="${sbRoot}/js/massEdit.js?${sbPID}"></script>
 
 <form action="massEditSubmit" method="post">
-<input type="hidden" name="toEdit" value="$showList" />
+<input type="hidden" name="toEdit" value="${showList}" />
 
 <div class="optionWrapper">
-<span class="selectTitle">Root Directories <span class="separator">*</span></span><br />
-        #for $cur_dir in $root_dir_list:
-        #set $cur_index = $root_dir_list.index($cur_dir)
+    <span class="selectTitle">Root Directories <span class="separator">*</span></span><br />
+    % for cur_dir in root_dir_list:
+        % cur_index = root_dir_list.index(cur_dir)
         <div>
-            <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_$cur_index" value="Edit" />
-            <input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_$cur_index" value="Delete" />
-            $cur_dir => <span id="display_new_root_dir_$cur_index">$cur_dir</span>
+            <input class="btn edit_root_dir" type="button" class="edit_root_dir" id="edit_root_dir_${cur_index}" value="Edit" />
+            <input class="btn delete_root_dir" type="button" class="delete_root_dir" id="delete_root_dir_${cur_index}" value="Delete" />
+            ${cur_dir} => <span id="display_new_root_dir_${cur_index}">${cur_dir}</span>
         </div>
-        <input type="hidden" name="orig_root_dir_$cur_index" value="$cur_dir" />
-        <input type="text" style="display: none" name="new_root_dir_$cur_index" id="new_root_dir_$cur_index" class="new_root_dir" value="$cur_dir" />
-        #end for
-
+        <input type="hidden" name="orig_root_dir_${cur_index}" value="${cur_dir}" />
+        <input type="text" style="display: none" name="new_root_dir_${cur_index}" id="new_root_dir_${cur_index}" class="new_root_dir" value="${cur_dir}" />
+    % endfor
 </div>
 
 <div class="optionWrapper">
@@ -42,53 +43,59 @@
     <div class="selectChoices">
         <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            #set $selected = None
+            % selected = None
             <option value="0"  #if $quality_value != None and $quality_value not in $common.qualityPresets then "selected=\"selected\"" else ""#>Custom</option>
-            #for $curPreset in sorted($common.qualityPresets):
-            <option value="$curPreset" #if $quality_value == $curPreset then "selected=\"selected\"" else ""#>$common.qualityPresetStrings[$curPreset]</option>
-            #end for
+            % for curPreset in sorted(common.qualityPresets):
+            <option value="${curPreset}" #if $quality_value == $curPreset then "selected=\"selected\"" else ""#>${common.qualityPresetStrings[curPreset]}</option>
+            % endfor
         </select>
     </div><br />
 
     <div id="customQuality">
         <div class="manageCustom pull-left">
         <h4>Inital</h4>
-            #set $anyQualityList = filter(lambda x: x > $common.Quality.NONE, $common.Quality.qualityStrings)
+            % anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings)
             <select id="anyQualities" name="anyQualities" multiple="multiple" size="len($anyQualityList)">
-            #for $curQuality in sorted($anyQualityList):
-            <option value="$curQuality" #if $curQuality in $anyQualities then "selected=\"selected\"" else ""#>$common.Quality.qualityStrings[$curQuality]</option>
-            #end for
+            % for curQuality in sorted(anyQualityList):
+            <option value="${curQuality}" #if $curQuality in $anyQualities then "selected=\"selected\"" else ""#>${common.Quality.qualityStrings[curQuality]}</option>
+            % endfor
             </select>
         </div>
         <div class="manageCustom pull-left">
         <h4>Archive</h4>
-            #set $bestQualityList = filter(lambda x: x >= $common.Quality.SDTV, $common.Quality.qualityStrings)
-            <select id="bestQualities" name="bestQualities" multiple="multiple" size="len($bestQualityList)">
-            #for $curQuality in sorted($bestQualityList):
-            <option value="$curQuality" #if $curQuality in $bestQualities then "selected=\"selected\"" else ""#>$common.Quality.qualityStrings[$curQuality]</option>
-            #end for
+            % bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings)
+            <select id="bestQualities" name="bestQualities" multiple="multiple" size="len(${bestQualityList})">
+            % for curQuality in sorted(bestQualityList):
+            <option value="${curQuality}" #if $curQuality in $bestQualities then "selected=\"selected\"" else ""#>${common.Quality.qualityStrings[curQuality]}</option>
+            % endfor
             </select>
         </div>
     <br />
     </div>
 </div>
 
-#if $anyQualities + $bestQualities:
-#set $isSelected = ' selected="selected"'
-#set $isEnabled = $isSelected
-#set $isDisabled = $isSelected
-#if $archive_firstmatch_value##set $isDisabled = ''##else##set $isEnabled = ''##end if#
+% if anyQualities + bestQualities:
+<%
+    isSelected = ' selected="selected"'
+    isEnabled = isSelected
+    isDisabled = isSelected
+    if archive_firstmatch_value:
+        isDisabled = ''
+    else
+        isEnabled = ''
+    endif
+%>
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Archive on first match</span>
     <div class="selectChoices">
         <select id="edit_archive_firstmatch" name="archive_firstmatch" class="form-control form-control-inline input-sm">
             <option value="keep">&lt; keep &gt;</option>
-            <option value="enable"${isEnabled}>enable</option>
-            <option value="disable"${isDisabled}>disable</option>
+            <option value="enable" ${isEnabled}>enable</option>
+            <option value="disable" ${isDisabled}>disable</option>
         </select>
     </div>
 </div>
-#end if
+% endif
 
 <div class="optionWrapper clearfix">
 <span class="selectTitle">Flatten Folders <span class="separator">*</span></span>
@@ -117,9 +124,9 @@
     <div class="selectChoices">
       <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
           <option value="keep">&lt; keep &gt;</option>
-          #for $curStatus in [$WANTED, $SKIPPED, $ARCHIVED, $IGNORED]:
-          <option value="$curStatus" #if $curStatus == $default_ep_status_value then 'selected="selected"' else ''#>$statusStrings[$curStatus]</option>
-          #end for
+          % for curStatus in [WANTED, SKIPPED, ARCHIVED, IGNORED]:
+          <option value="${curStatus}" #if $curStatus == $default_ep_status_value then 'selected="selected"' else ''#>${statusStrings[curStatus]}</option>
+          % endfor
       </select>
     </div><br />
 </div>
@@ -197,4 +204,4 @@
 //-->
 </script>
 
-#include $os.path.join($sickbeard.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+% include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_bottom.mako")
