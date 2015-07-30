@@ -406,8 +406,8 @@
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
                 <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
+                % if sickbeard.DISPLAY_ALL_SEASONS == False:
+                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
                     <script type="text/javascript">
                     <!--
                         \$(function() {
@@ -426,7 +426,7 @@
     </tbody>
     <tbody class="tablesorter-no-sort">
         <tr id="season-$epResult["season"]-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
             <th class="col-metadata">NFO</th>
             <th class="col-metadata">TBN</th>
             <th class="col-ep">Episode</th>
@@ -442,14 +442,14 @@
             <th class="col-status">Status</th>
             <th class="col-search">Search</th>
         </tr>
-            #else:
+            % else:
     </tbody>
     <tbody class="tablesorter-no-sort">
         <tr style="height: 60px;">
             <th class="row-seasonheader displayShowTable" colspan="13" style="vertical-align: bottom; width: auto;">
-                <h3 style="display: inline;"><a name="season-$epResult["season"]"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-                    <button id="showseason-$epResult['season']" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
+                <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>#if int($epResult["season"]) == 0 then "Specials" else "Season " + str($epResult["season"])#</h3>
+                % if sickbeard.DISPLAY_ALL_SEASONS == False:
+                    <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-$epResult['season']">Show Episodes</button>
                     <script type="text/javascript">
                     <!--
                         \$(function() {
@@ -467,8 +467,8 @@
         </tr>
     </tbody>
     <tbody class="tablesorter-no-sort">
-        <tr id="season-$epResult["season"]-cols" class="seasoncols">
-            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="$epResult["season"]" /></th>
+        <tr id="season-${epResult["season"]}-cols" class="seasoncols">
+            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${epResult["season"]}" /></th>
             <th class="col-metadata">NFO</th>
             <th class="col-metadata">TBN</th>
             <th class="col-ep">Episode</th>
@@ -486,36 +486,36 @@
         </tr>
             % endif
     </tbody>
-                #if $sickbeard.DISPLAY_ALL_SEASONS == False:
-    <tbody class="collapse#if $curSeason == -1 then ' in' else ''#" id="collapseSeason-$epResult['season']">
-                #else
-    <tbody>
-                % endif
-            % curSeason = int($epResult["season"])
+        % if sickbeard.DISPLAY_ALL_SEASONS == False:
+        <tbody class="collapse#if $curSeason == -1 then ' in' else ''#" id="collapseSeason-${epResult['season']}">
+        #else
+        <tbody>
         % endif
-        % epLoc = $epResult["location"]
-        <tr class="$Overview.overviewStrings[$epCats[$epStr]] season-$curSeason seasonstyle">
+        % curSeason = int(epResult["season"])
+        % endif
+        % epLoc = epResult["location"]
+        <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle">
             <td class="col-checkbox">
-                #if int($epResult["status"]) != $UNAIRED
+                % if int(epResult["status"]) != $UNAIRED
                     <input type="checkbox" class="epCheck" id="<%=str(epResult["season"])+'x'+str(epResult["episode"])%>" name="<%=str(epResult["season"]) +"x"+str(epResult["episode"]) %>" />
                 % endif
             </td>
-            <td align="center"><img src="$sbRoot/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
-            <td align="center"><img src="$sbRoot/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if $epResult["hasnfo"] == 1 then "nfo.gif\" alt=\"Y" else "nfo-no.gif\" alt=\"N"#" width="23" height="11" /></td>
+            <td align="center"><img src="${sbRoot}/images/#if $epResult["hastbn"] == 1 then "tbn.gif\" alt=\"Y" else "tbn-no.gif\" alt=\"N"#" width="23" height="11" /></td>
             <td align="center">
-                #if $epLoc and $show._location and $epLoc.lower().startswith($show._location.lower()):
-                    % epLoc = $epLoc[len($show._location)+1:]
-                #elif $epLoc and (not $epLoc.lower().startswith($show._location.lower()) or not $show._location):
-                    % epLoc = $epLoc
+                % if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
+                    % epLoc = epLoc[len(show._location)+1:]
+                % elif epLoc and (not epLoc.lower().startswith(show._location.lower()) or not show._location):
+                    % epLoc = epLoc
                 % endif
 
-                #if $epLoc != "" and $epLoc != None:
-                    <span title="$epLoc" class="addQTip">$epResult["episode"]</span>
-                #else
-                    $epResult["episode"]
+                % if $epLoc != "" and epLoc != None:
+                    <span title="${epLoc}" class="addQTip">${epResult["episode"]}</span>
+                % else
+                    ${epResult["episode"]}
                 % endif
             </td>
-            <td align="center">$epResult["absolute_number"]</td>
+            <td align="center">${epResult["absolute_number"]}</td>
             <td align="center">
                 <input type="text" placeholder="<%=str(dfltSeas) + 'x' + str(dfltEpis)%>" size="6" maxlength="8"
                     class="sceneSeasonXEpisode form-control input-scene" data-for-season="$epResult["season"]" data-for-episode="$epResult["episode"]"
