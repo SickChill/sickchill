@@ -1,14 +1,13 @@
 <%
     from sickbeard import classes
-    from sickbeard.common import *
     global header="Logs &amp; Errors"
-    global title="Logs &amp; Errors"
+    title="Logs &amp; Errors"
 
-    global sbPath = ".."
+    sbPath = ".."
 
-    global topmenu="errorlogs"
+    topmenu="errorlogs"
 %>
-<%!include file="/inc_top.mako"/>
+<%include file="/inc_top.mako"/>
 
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
@@ -18,7 +17,7 @@
 <div class="align-left"><pre>
 % if classes.ErrorViewer.errors:
     % for curError in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
-${curError.time} ${curError.message}
+        ${curError.time} ${curError.message}
     % endfor
 % endif
 </pre>
@@ -30,4 +29,4 @@ window.setInterval( "location.reload(true)", 600000); // Refresh every 10 minute
 //-->
 </script>
 
-<!%include file="/inc_bottom.mako"/>
+<%include file="/inc_bottom.mako"/>
