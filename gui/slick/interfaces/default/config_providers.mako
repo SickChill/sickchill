@@ -25,7 +25,7 @@
 <!--
 \$(document).ready(function(){
 var show_nzb_providers = % if sickbeard.USE_NZBS then "true" else "false"#;
-% for $curNewznabProvider in $sickbeard.newznabProviderList:
+% for curNewznabProvider in sickbeard.newznabProviderList:
 \$(this).addProvider('$curNewznabProvider.getID()', '$curNewznabProvider.name', '$curNewznabProvider.url', '$curNewznabProvider.key', '$curNewznabProvider.catIDs', $int($curNewznabProvider.default), show_nzb_providers);
 % endfor
 });
