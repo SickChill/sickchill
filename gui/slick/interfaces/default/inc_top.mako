@@ -1,6 +1,5 @@
 <%
     import sickbeard
-    sbRoot = sickbeard.WEB_ROOT
 %>
 
 <!DOCTYPE html>

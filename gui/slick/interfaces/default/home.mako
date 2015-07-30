@@ -10,20 +10,22 @@ import calendar
     from sickbeard import db, sbdatetime, network_timezones
 %>
 
-<%inherit file="/inc_top.mako"/>
+<%include file="/inc_top.mako"/>
 
 <%
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
     layout = sickbeard.HOME_LAYOUT
-
+%>
+<%
     status_quality  = '(' + ','.join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER]) + ')'
     status_download = '(' + ','.join([str(x) for x in Quality.DOWNLOADED + [ARCHIVED]]) + ')'
 
     sql_statement  = 'SELECT showid, '
 
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_quality + ') AS ep_snatched, '
-
+%>
+<%
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 AND status IN ' + status_download + ') AS ep_downloaded, '
 
     sql_statement += '(SELECT COUNT(*) FROM tv_episodes WHERE showid=tv_eps.showid AND season > 0 AND episode > 0 AND airdate > 1 '

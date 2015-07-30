@@ -109,7 +109,7 @@ class PageTemplate(MakoTemplate):
 
         self.arguments = {}
 
-        self.sbRoot = sickbeard.WEB_ROOT
+        self.arguments['sbRoot'] = sickbeard.WEB_ROOT
         self.arguments['sbHttpPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsPort'] = sickbeard.WEB_PORT
         self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
@@ -272,7 +272,7 @@ class LoginHandler(BaseHandler):
             self.redirect('/' + sickbeard.DEFAULT_PAGE +'/')
         else:
             t = PageTemplate(rh=self, file="login.mako")
-            self.finish(t.render())
+            self.finish(t.render(title="Login", topmenu="login"))
 
     def post(self, *args, **kwargs):
 
@@ -743,8 +743,7 @@ class Home(WebRoot):
                     anime.append(show)
                 else:
                     shows.append(show)
-            showlists = [["Shows", shows],
-                           ["Anime", anime]]
+            showlists = [["Shows", shows],["Anime", anime]]
         else:
             showlists = [["Shows", sickbeard.showList]]
 
