@@ -7,7 +7,6 @@
     global title="Config - Providers"
     global header="Search Providers"
 
-    global sbPath="../.."
 
     global topmenu="config"
     import os.path

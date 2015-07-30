@@ -9,7 +9,6 @@
 
     global title  = "Config - Post Processing"
     global header = "Post Processing"
-    global sbPath="../.."
     global topmenu="config"#
 
     include os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")

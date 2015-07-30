@@ -12,7 +12,6 @@ import calendar
 
 <%inherit file="/inc_top.mako"/>
 
-##<% return STOP_RENDERING %>
 <%
     myDB = db.DBConnection()
     today = str(datetime.date.today().toordinal())
@@ -319,7 +318,7 @@ import calendar
         dateHasTime : false,
         dateFormat : '${sickbeard.DATE_PRESET}',
         timeFormat : '${sickbeard.TIME_PRESET}',
-        trimZero : ${('true', 'false')[sickbeard.TRIM_ZERO == True]}
+        trimZero : ${('false', 'true')[sickbeard.TRIM_ZERO == True]}
     });
     % endif
 

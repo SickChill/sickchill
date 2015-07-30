@@ -1,9 +1,8 @@
 <%
     from sickbeard import classes
-    global header="Logs &amp; Errors"
+    header="Logs &amp; Errors"
     title="Logs &amp; Errors"
 
-    sbPath = ".."
 
     topmenu="errorlogs"
 %>

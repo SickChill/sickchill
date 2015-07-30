@@ -5,7 +5,6 @@
 #set global $header="New Show"
 #set global $title="New Show"
 
-#set global $sbPath="../.."
 
 #set global $statpath="../.."#
 #set global $topmenu="home"#

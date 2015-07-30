@@ -2,7 +2,6 @@
     import sickbeard
 
     global title="Login"
-    global sbPath = ".."
     global topmenu="login"
 
     import os.path

@@ -7,7 +7,6 @@
     header="Log File"
     title="Logs"
 
-    sbPath = ".."
 
     topmenu="errorlogs"
 %>

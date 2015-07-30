@@ -145,6 +145,10 @@ class PageTemplate(MakoTemplate):
             {'title': logPageTitle, 'key': 'errorlogs'},
         ]
 
+        self.arguments['title'] = "FixME"
+        self.arguments['header'] = "FixME"
+        #self.arguments['title'] = "FixME"
+
     def render(self, *args, **kwargs):
         kwargs.update(self.arguments)
         return super(PageTemplate, self).render(*args, **kwargs)
@@ -744,7 +748,7 @@ class Home(WebRoot):
         else:
             showlists = [["Shows", sickbeard.showList]]
 
-        return t.render(title="Home", header="Home", topmenu="home", sbPath="..", showlists=showlists, submenu=self.HomeMenu())
+        return t.render(title="Home", header="Home", topmenu="home", showlists=showlists, submenu=self.HomeMenu())
 
     def is_alive(self, *args, **kwargs):
         if 'callback' in kwargs and '_' in kwargs:

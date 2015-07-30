@@ -1,7 +1,6 @@
 <%
     import sickbeard
     sbRoot = sickbeard.WEB_ROOT
-    sbPID = 25112
 %>
 
 <!DOCTYPE html>

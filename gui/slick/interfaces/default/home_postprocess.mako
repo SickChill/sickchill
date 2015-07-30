@@ -2,7 +2,6 @@
     global header="Post Processing"
     global title="Post Processing"
 
-    global $sbPath="../.."
 
     global topmenu="home"
 %>

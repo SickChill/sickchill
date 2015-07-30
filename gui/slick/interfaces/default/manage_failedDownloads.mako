@@ -9,7 +9,6 @@
     global header="Failed Downloads"
     global title="Failed Downloads"
 
-    global sbPath=".."
 
     global topmenu="manage"#
     include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")

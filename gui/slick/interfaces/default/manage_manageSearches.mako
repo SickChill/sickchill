@@ -4,7 +4,6 @@
     from sickbeard.common import *
     global title="Manage Searches"
     global header="Manage Searches"
-    global sbPath=".."
 
     global topmenu="manage"#
     import os.path

@@ -6,7 +6,6 @@
 
     global $title="Mass Edit"
     global $header="Mass Edit"
-    global $sbPath=".."
     global $topmenu="manage"#
 
     import os.path

@@ -6,7 +6,6 @@
     global title = 'Backlog Overview'
     global header = 'Backlog Overview'
 
-    global sbPath = '..'
 
     global topmenu = 'manage'#
     import os.path

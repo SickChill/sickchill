@@ -1,6 +1,5 @@
 <%
     global title=""
-    global sbPath="../.."
     global topmenu="home"
 %>
 <%!include file="/inc_top.tmpl"/>

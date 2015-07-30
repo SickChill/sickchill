@@ -5,7 +5,6 @@
     global title="Existing Show"
     global header="Existing Show"
 
-    global sbPath="../.."
 
     global statpath="../.."
     global topmenu="home"

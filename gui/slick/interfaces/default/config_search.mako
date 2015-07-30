@@ -4,7 +4,6 @@
     global title = 'Config - Episode Search'
     global header = 'Search Settings'
 
-    global sbPath = '../..'
 
     global topmenu = 'config'
     import os.path

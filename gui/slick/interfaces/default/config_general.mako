@@ -10,10 +10,9 @@
     from sickbeard.metadata.generic import GenericMetadata
     from sickbeard.helpers import anon_url
 
-    global title  = 'Config - General'
-    global header = 'General Configuration'
+    title  = 'Config - General'
+    header = 'General Configuration'
 
-    global sbPath = '../..'
 
     global topmenu = 'config'
     include os.path.join(sickbeard.PROG_DIR, 'gui/slick/interfaces/default/inc_top.mako')

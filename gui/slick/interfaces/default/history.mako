@@ -10,7 +10,6 @@
     from sickbeard.common import *
     global title="History"
     global header="History"
-    global sbPath=".."
     global topmenu="history"#
     layout = sickbeard.HISTORY_LAYOUT
     history_limit = sickbeard.HISTORY_LIMIT
