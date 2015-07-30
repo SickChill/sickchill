@@ -149,23 +149,22 @@
                             % provider = providers.getProviderClass(generic.GenericProvider.makeID(hItem["provider"]))
                             % if provider != None:
                                 <img src="$sbRoot/images/providers/<%=provider.imageName()%>" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">$provider.name</span>
-                            #else:
+                            % else:
                                 <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" title="missing provider"/> <span style="vertical-align:middle;">Missing Provider</span>
-                            #end if
-                        #else:
+                            % endif
+                        % else:
                                 <img src="$sbRoot/images/subtitles/${hItem['provider']}.png" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;"><%=hItem["provider"].capitalize()%></span>
-                        #end if
-                    #end if
-                #end if
+                        % endif
+                    % endif
+                % endif
                 </td>
-                <span style="display: none;">$curQuality</span>
+                <span style="display: none;">${curQuality}</span>
                 <td align="center"><span class="quality $Quality.qualityStrings[$curQuality].replace("720p","HD720p").replace("1080p","HD1080p").replace("HDTV", "HD720p")">$Quality.qualityStrings[$curQuality]</span></td>
             </tr>
-        #end for
+        % endfor
         </tbody>
     </table>
-
-#else:
+% else:
 
     <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
         <thead>
@@ -174,9 +173,9 @@
                 <th>Episode</th>
                 <th>Snatched</th>
                 <th>Downloaded</th>
-            #if sickbeard.USE_SUBTITLES
+            % if sickbeard.USE_SUBTITLES
                 <th>Subtitled</th>
-            #end if
+            % end if
                 <th>Quality</th>
             </tr>
         </thead>
@@ -203,7 +202,7 @@
                             % if provider != None:
                                 <img src="${sbRoot}/images/providers/${provider.imageName()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>
                             % else:
-                                <img src="$sbRoot/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
+                                <img src="${sbRoot}/images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="missing provider"/>
                             % endif
                         % endif
                     % endfor
