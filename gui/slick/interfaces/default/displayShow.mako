@@ -9,9 +9,9 @@
     import urllib
     import ntpath
 
-    global title=$show.name
+    global title=show.name
     global header = '<a></a>'
-    global topmenu="manageShows"#
+    global topmenu="manageShows"
     exceptions_string = " | ".join(show.exceptions)
     include file=os.path.join(sickbeard.PROG_DIR, "gui/slick/interfaces/default/inc_top.mako")
 %>
@@ -100,7 +100,7 @@
                     <optgroup label="${curShowType}">
                 % endif
                     % for curShow in curShowList:
-                    <option value="${curShow.indexerid}" #if $curShow == $show then "selected=\"selected\"" else ""#>$curShow.name</option>
+                    <option value="${curShow.indexerid}" #if $curShow == $show then "selected=\"selected\"" else ""#>${curShow.name}</option>
                     % endfor
                 % if len(sortedShowLists) > 1:
                     </optgroup>
@@ -132,9 +132,9 @@
             % if season_special:
             Display Specials:
                 % if sickbeard.DISPLAY_SHOW_SPECIALS:
-                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=$show.indexerid">Hide</a>
+                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">Hide</a>
                 % else:
-                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=$show.indexerid">Show</a>
+                    <a class="inner" href="${sbRoot}/toggleDisplayShowSpecials/?show=${show.indexerid}">Show</a>
                 % endif
             % endif
         </span>
@@ -145,7 +145,7 @@
                 <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;">
                     <option value="jump">Jump to Season</option>
                 % for seasonNum in seasonResults:
-                    <option value="#season-${seasonNum["season"]}">#if int($seasonNum["season"]) == 0 then "Specials" else "Season " + str($seasonNum["season"])#</option>
+                    <option value="#season-${seasonNum["season"]}">${('Specials', 'Season ' + str(seasonNum["season"]))[int($seasonNum["season"]) == 0]}</option>
                 % endfor
                 </select>
             % else:
@@ -212,13 +212,13 @@
                     % if not show.imdbid
                     % if show.genre:
                     % for genre in show.genre[1:-1].split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular $genre shows on trakt.tv."><li>${genre}</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower()) %>" target="_blank" title="View other popular ${genre} shows on trakt.tv."><li>${genre}</li></a>
                     % endfor
                     % endif
                     % endif
                     % if 'year' in show.imdb_info:
                     % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi','Science-Fiction').split('|')
-                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular $imdbgenre shows on trakt.tv."><li>${imdbgenre}</li></a>
+                        <a href="<%= anon_url('http://trakt.tv/shows/popular/?genres=', imdbgenre.lower()) %>" target="_blank" title="View other popular ${imdbgenre} shows on trakt.tv."><li>${imdbgenre}</li></a>
                     % endfor
                     % endif
                 </ul>
@@ -226,26 +226,26 @@
 
             <div id="summary">
                 <table class="summaryTable pull-left">
-                #set $anyQualities, $bestQualities = $Quality.splitQuality(int($show.quality))
+                % anyQualities, bestQualities = Quality.splitQuality(int(show.quality))
                     <tr><td class="showLegend">Quality: </td><td>
-                #if $show.quality in $qualityPresets:
-                    <span class="quality $qualityPresetStrings[$show.quality]">$qualityPresetStrings[$show.quality]</span>
-                #else:
-                #if $anyQualities:
+                % if show.quality in qualityPresets:
+                    <span class="quality ${qualityPresetStrings[show.quality]}">${qualityPresetStrings[show.quality]}</span>
+                % else:
+                % if anyQualities:
                     <i>Initial:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(anyQualities)])%> #if $bestQualities then " </br> " else ""#
-                #end if
-                #if $bestQualities:
+                % endif
+                % if bestQualities:
                     <i>Replace with:</i> <%=", ".join([Quality.qualityStrings[x] for x in sorted(bestQualities)])%>
-                #end if
-                #end if
+                % end if
+                % end if
 
-                #if $show.network and $show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
-                #else if $show.network:
-                    <tr><td class="showLegend">Originally Airs: </td><td>$show.network</td></tr>
-                #else if $show.airs:
-                    <tr><td class="showLegend">Originally Airs: </td><td>>$show.airs #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
-                #end if
+                % if show.network and show.airs:
+                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""# on $show.network</td></tr>
+                % else if show.network:
+                    <tr><td class="showLegend">Originally Airs: </td><td>${show.network}</td></tr>
+                % else if show.airs:
+                    <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} #if not $network_timezones.test_timeformat($show.airs) then " <font color='#FF0000'><b>(invalid Timeformat)</b></font> " else ""#</td></tr>
+                % endif
                     <tr><td class="showLegend">Show Status: </td><td>$show.status</td></tr>
                     <tr><td class="showLegend">Default EP Status: </td><td>$statusStrings[$show.default_ep_status]</td></tr>
                 #if $showLoc[1]:
