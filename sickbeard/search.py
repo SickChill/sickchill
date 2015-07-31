@@ -453,8 +453,8 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         searchCount = 0
         search_mode = curProvider.search_mode
 
-        # Always search for episode when manually searching when in sponly and fallback false
-        if search_mode == 'sponly' and manualSearch == True and curProvider.search_fallback == False:
+        # Always search for episode when manually searching when in sponly
+        if search_mode == 'sponly' and manualSearch == True:
             search_mode = 'eponly'
 
         while(True):
@@ -491,11 +491,11 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             elif not curProvider.search_fallback or searchCount == 2:
                 break
 
-            if search_mode == 'sponly':
-                logger.log(u"FALLBACK EPISODE SEARCH INITIATED ...", logger.DEBUG)
+            if search_mode == 'eponly':
+                logger.log(u"Fallback episode search initiated", logger.DEBUG)
                 search_mode = 'eponly'
             else:
-                logger.log(u"FALLBACK SEASON PACK SEARCH INITIATED ...", logger.DEBUG)
+                logger.log(u"Fallback season pack search initiate, logger.DEBUG)
                 search_mode = 'sponly'
 
         # skip to next provider if we have no results to process
