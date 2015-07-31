@@ -95,6 +95,33 @@ $(document).ready(function(){
 			});
 	});
 
+    $('#testEMBY').click(function () {
+        var emby_host = $('#emby_host').val();
+        var emby_apikey = $('#emby_apikey').val();
+        if (!emby_host || !emby_apikey) {
+            $('#testEMBY-result').html('Please fill out the necessary fields above.');
+            if (!emby_host) {
+                $('#emby_host').addClass('warning');
+            } else {
+                $('#emby_host').removeClass('warning');
+            }
+            if (!emby_apikey) {
+                $('#emby_apikey').addClass('warning');
+            } else {
+                $('#emby_apikey').removeClass('warning');
+            }
+            return;
+        }
+        $('#emby_host,#emby_apikey').removeClass('warning');
+        $(this).prop('disabled', true);
+        $('#testEMBY-result').html(loading);
+        $.get(sbRoot + '/home/testEMBY', {'host': emby_host, 'emby_apikey': emby_apikey})
+            .done(function (data) {
+                $('#testEMBY-result').html(data);
+                $('#testEMBY').prop('disabled', false);
+            });
+    });
+
     $('#testBoxcar').click(function() {
 		var boxcar_username = $.trim($('#boxcar_username').val());
 		if (!boxcar_username) {
