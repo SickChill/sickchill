@@ -495,7 +495,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 logger.log(u"Fallback episode search initiated", logger.DEBUG)
                 search_mode = 'eponly'
             else:
-                logger.log(u"Fallback season pack search initiate, logger.DEBUG)
+                logger.log(u"Fallback season pack search initiate", logger.DEBUG)
                 search_mode = 'sponly'
 
         # skip to next provider if we have no results to process
