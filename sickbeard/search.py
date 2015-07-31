@@ -474,8 +474,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 logger.log(u"Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 break
-            finally:
-                threading.currentThread().name = origThreadName
 
             didSearch = True
 
@@ -491,7 +489,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             elif not curProvider.search_fallback or searchCount == 2:
                 break
 
-            if search_mode == 'eponly':
+            if search_mode == 'sponly':
                 logger.log(u"Fallback episode search initiated", logger.DEBUG)
                 search_mode = 'eponly'
             else:
