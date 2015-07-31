@@ -439,7 +439,7 @@
         <h1 class="header">Anime List</h1>
     % endif
 % if layout == 'poster':
-<div id="${('container-anime', 'container')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
+<div id="${('container', 'container-anime')[curListType == 'Anime' and layout == 'poster']}" class="clearfix">
 <div class="posterview">
 % for curLoadingShow in sickbeard.showQueueScheduler.action.loadingShowList:
     % if curLoadingShow.show == None:
@@ -453,7 +453,7 @@
     % endif
 % endfor
 
-${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
+<% myShowList.sort(lambda x, y: cmp(x.name, y.name)) %>
 % for curShow in myShowList:
 
 <%
@@ -555,24 +555,25 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
         <div class="show-date">
 % if cur_airs_next:
     <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
-            <span class="${fuzzydate}">
-            <%
-                try:
-                    print str(sbdatetime.sbdatetime.sbfdate(ldatetime))
-                except ValueError:
-                    print 'Invalid date'
-                    pass
-            %>
-            </span>
+    <span class="${fuzzydate}">
+    <%
+        try:
+            out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+        except ValueError:
+            out = 'Invalid date'
+            pass
+    %>
+        ${out}
+    </span>
 % else:
-    <% output_html = '?' %>
-    % if None is not display_status:
-        % if 'nded' not in display_status and 1 == int(curShow.paused):
-            output_html = 'Paused'
-        % elif display_status:
+    <%
+    output_html = '?'
+    if None is not display_status:
+        if 'nded' not in display_status and 1 == int(curShow.paused):
+          output_html = 'Paused'
+        elif display_status:
             output_html = display_status
-        % endif
-    % endif
+    %>
     ${output_html}
 % endif
         </div>
@@ -672,7 +673,7 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
 
     <tbody>
 
-${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
+<% myShowList.sort(lambda x, y: cmp(x.name, y.name)) %>
 % for curShow in myShowList:
 
 <%
@@ -722,10 +723,10 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
     <tr>
 
     % if cur_airs_next:
-        ${ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))}
+        <% ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
         % try:
-            ${temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime)}
-            ${temp_timegm_next = calendar.timegm(ldatetime.timetuple())}
+            <% temp_sbfdate_next = sbdatetime.sbdatetime.sbfdate(ldatetime) %>
+            <% temp_timegm_next = calendar.timegm(ldatetime.timetuple()) %>
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">${temp_sbfdate_next}</div>
                 <span class="sort_data">${temp_timegm_next}</span>
@@ -738,10 +739,10 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
     % endif
 
     % if cur_airs_prev:
-        ${pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network))}
+        <% pdatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
         % try:
-            ${temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime)}
-            ${temp_timegm_prev = calendar.timegm(pdatetime.timetuple())}
+            <% temp_sbfdate_prev = sbdatetime.sbdatetime.sbfdate(pdatetime) %>
+            <% temp_timegm_prev = calendar.timegm(pdatetime.timetuple()) %>
             <td align="center" class="nowrap">
                 <div class="${fuzzydate}">${temp_sbfdate_prev}</div>
                 <span class="sort_data">${temp_timegm_prev}</span>
@@ -832,12 +833,12 @@ ${myShowList.sort(lambda x, y: cmp(x.name, y.name))}
         </td>
 
         <td align="center">
-${display_status = curShow.status}
+<% display_status = curShow.status %>
 % if None is not display_status:
     % if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
-        ${display_status = 'Continuing'}
+        <% display_status = 'Continuing' %>
     % elif re.search(r'(?i)(?:nded)', curShow.status):
-        ${display_status = 'Ended'}
+        <% display_status = 'Ended' %>
     % endif
 % endif
 
